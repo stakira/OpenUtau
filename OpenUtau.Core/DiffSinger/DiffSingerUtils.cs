@@ -5,7 +5,7 @@ namespace OpenUtau.Core.DiffSinger {
     public static class DiffSingerUtils {
         public const string VELC = "velc";
         public const string ENE = "ene";
-        public const string EXPR = "expr";
+        public const string PEXP = "pexp";
         public const string VoiceColorHeader = "cl";
         public const float headMs = 100;
         public const float tailMs = 100;

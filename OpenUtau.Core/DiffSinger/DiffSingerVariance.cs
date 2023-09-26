@@ -153,7 +153,7 @@ namespace OpenUtau.Core.DiffSinger{
             //Speaker
             if(dsConfig.speakers != null) {
                 var speakerEmbedManager = getSpeakerEmbedManager();
-                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbed(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
+                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
             var varianceOutputs = varianceModel.Run(varianceInputs);

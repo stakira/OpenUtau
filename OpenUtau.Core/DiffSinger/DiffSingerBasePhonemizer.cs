@@ -15,17 +15,18 @@ namespace OpenUtau.Core.DiffSinger
     {
         USinger singer;
         DsConfig dsConfig;
+        string rootPath;
         float frameMs;
         InferenceSession linguisticModel;
         InferenceSession durationModel;
         IG2p g2p;
         List<string> phonemes;
+        DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
         string defaultPause = "SP";
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
-            string rootPath;
             if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
                 rootPath = Path.Combine(singer.Location, "dsdur");
             } else {
@@ -160,7 +161,12 @@ namespace OpenUtau.Core.DiffSinger
             result.RemoveAt(result.Count - 1);
             return result;
         }
-
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
+            if(speakerEmbedManager is null) {
+                speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
+            }
+            return speakerEmbedManager;
+        }
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
             float frameMs = dsConfig.frameMs();
@@ -227,6 +233,7 @@ namespace OpenUtau.Core.DiffSinger
             durationInputs.Add(NamedOnnxValue.CreateFromTensor("ph_midi",
                 new DenseTensor<Int64>(ph_midi, new int[] { ph_midi.Length }, false)
                 .Reshape(new int[] { 1, ph_midi.Length })));
+
             var durationOutputs = durationModel.Run(durationInputs);
             List<double> durationFrames = durationOutputs.First().AsTensor<float>().Select(x=>(double)x).ToList();
             

@@ -64,7 +64,8 @@ namespace OpenUtau.Core.DiffSinger
             return speakerIndex;
         }
 
-        public Tensor<float> PhraseSpeakerEmbed(RenderPhrase phrase, IList<int> durations, float frameMs, int totalFrames, int headFrames, int tailFrames){
+        //used by variance, pitch and acoustic
+        public Tensor<float> PhraseSpeakerEmbedByFrame(RenderPhrase phrase, IList<int> durations, float frameMs, int totalFrames, int headFrames, int tailFrames){
             var singer = phrase.singer;
             var hiddenSize = dsConfig.hiddenSize;
             var speakerEmbeds = getSpeakerEmbeds();

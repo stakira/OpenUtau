@@ -22,8 +22,10 @@ namespace OpenUtau.Core.DiffSinger
         InferenceSession pitchModel;
         IG2p g2p;
         float frameMs;
+        DiffSingerSpeakerEmbedManager speakerEmbedManager;
         const float headMs = DiffSingerUtils.headMs;
-        const string EXPR = DiffSingerUtils.EXPR;
+        const float tailMs = DiffSingerUtils.tailMs;
+        const string PEXP = DiffSingerUtils.PEXP;
 
         public DsPitch(string rootPath)
         {
@@ -58,22 +60,31 @@ namespace OpenUtau.Core.DiffSinger
             return new G2pFallbacks(g2ps.ToArray());
         }
 
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
+            if(speakerEmbedManager is null) {
+                speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
+            }
+            return speakerEmbedManager;
+        }
+
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
-            var endMs = phrase.notes[^1].endMs;
+            var endMs = phrase.notes[^1].endMs + tailMs;
             int headFrames = (int)Math.Round(headMs / frameMs);
-
-            int n_frames = (int)(endMs/frameMs)-(int)(startMs/frameMs);
+            int tailFrames = (int)Math.Round(tailMs / frameMs);
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
             var tokens = phrase.phones
                 .Select(p => (Int64)phonemes.IndexOf(p.phoneme))
                 .Prepend((Int64)phonemes.IndexOf("SP"))
+                .Append((Int64)phonemes.IndexOf("SP"))
                 .ToArray();
             var ph_dur = phrase.phones
-                .Select(p=>(Int64)(p.endMs/frameMs) - (Int64)(p.positionMs/frameMs))
-                .Prepend((Int64)(phrase.phones[0].positionMs/frameMs) - (Int64)(startMs/frameMs))
+                .Select(p=>(int)Math.Round(p.endMs/frameMs) - (int)Math.Round(p.positionMs/frameMs))
+                .Prepend(headFrames)
+                .Append(tailFrames)
                 .ToArray();
+            int totalFrames = ph_dur.Sum();
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
                 new DenseTensor<Int64>(tokens, new int[] { tokens.Length }, false)
                 .Reshape(new int[] { 1, tokens.Length })));
@@ -81,14 +92,15 @@ namespace OpenUtau.Core.DiffSinger
                 //if predict_dur is true, use word encode mode
                 var vowelIds = Enumerable.Range(0,phrase.phones.Length)
                     .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
-                    .Append(phrase.phones.Length)
                     .ToArray();
                 var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
                     .Prepend(vowelIds[0] + 1)
+                    .Append(phrase.phones.Length - vowelIds[^1] + 1)
                     .ToArray();
                 var word_dur = vowelIds.Zip(vowelIds.Skip(1),
                         (a,b)=>(Int64)(phrase.phones[b-1].endMs/frameMs) - (Int64)(phrase.phones[a].positionMs/frameMs))
-                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs/frameMs) - (Int64)(startMs/frameMs))
+                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs/frameMs) - (Int64)(phrase.phones[0].positionMs/frameMs) + headFrames)
+                    .Append((Int64)(phrase.notes[^1].endMs/frameMs) - (Int64)(phrase.phones[vowelIds[^1]].positionMs/frameMs) + tailFrames)
                     .ToArray();
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("word_div",
                     new DenseTensor<Int64>(word_div, new int[] { word_div.Length }, false)
@@ -99,7 +111,7 @@ namespace OpenUtau.Core.DiffSinger
             }else{
                 //if predict_dur is true, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                    new DenseTensor<Int64>(ph_dur, new int[] { ph_dur.Length }, false)
+                    new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
             
@@ -112,6 +124,7 @@ namespace OpenUtau.Core.DiffSinger
                 .Where(o => o.Name == "x_masks")
                 .First()
                 .AsTensor<bool>();
+            
             //Pitch Predictor            
             var note_midi = phrase.notes
                 .Select(n=>(float)n.tone)
@@ -120,13 +133,14 @@ namespace OpenUtau.Core.DiffSinger
             //use the delta of the positions of the next note and the current note
             //to prevent incorrect timing when there is a small space between two notes
             var note_dur = phrase.notes.Zip(phrase.notes.Skip(1),
-                    (curr,next)=> (Int64)(next.positionMs/frameMs) - (Int64)(curr.positionMs/frameMs))
-                .Prepend((Int64)(phrase.notes[0].positionMs/frameMs) - (Int64)(startMs/frameMs))
-                .Append((Int64)(phrase.notes[^1].endMs/frameMs)-(Int64)(phrase.notes[^1].positionMs/frameMs))
-                .ToArray();
+                    (curr,next)=> (int)Math.Round(next.positionMs/frameMs) - (int)Math.Round(curr.positionMs/frameMs))
+                .Prepend((int)Math.Round(phrase.notes[0].positionMs/frameMs) - (int)Math.Round(startMs/frameMs))
+                .Append(0)
+                .ToList();
+            note_dur[^1]=totalFrames-note_dur.Sum();
 
-            var pitch = Enumerable.Repeat(60f, n_frames).ToArray();
-            var retake = Enumerable.Repeat(true, n_frames).ToArray();
+            var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
+            var retake = Enumerable.Repeat(true, totalFrames).ToArray();
             var speedup = Preferences.Default.DiffsingerSpeedup;
             var pitchInputs = new List<NamedOnnxValue>();
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
@@ -134,28 +148,11 @@ namespace OpenUtau.Core.DiffSinger
                 new DenseTensor<float>(note_midi, new int[] { note_midi.Length }, false)
                 .Reshape(new int[] { 1, note_midi.Length })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_dur",
-                new DenseTensor<Int64>(note_dur, new int[] { note_dur.Length }, false)
-                .Reshape(new int[] { 1, note_dur.Length })));
+                new DenseTensor<Int64>(note_dur.Select(x=>(Int64)x).ToArray(), new int[] { note_dur.Count }, false)
+                .Reshape(new int[] { 1, note_dur.Count })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                new DenseTensor<Int64>(ph_dur, new int[] { ph_dur.Length }, false)
+                new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
-
-            //expressiveness
-            if (dsConfig.allow_expr) {
-                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == EXPR);
-                float[] expr;
-                if (exprCurve != null) {
-                    expr = DiffSingerUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, n_frames, headFrames, 0,
-                            x => Math.Min(1, Math.Max(0, x / 100)))
-                        .Select(f => (float)f).ToArray();
-                } else {
-                    expr = Enumerable.Repeat(1f, n_frames).ToArray();
-                }
-                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("expr",
-                    new DenseTensor<float>(expr, new int[] { expr.Length }, false)
-                        .Reshape(new int[] { 1, expr.Length })));
-            }
-
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, pitch.Length })));
@@ -164,12 +161,36 @@ namespace OpenUtau.Core.DiffSinger
                 .Reshape(new int[] { 1, retake.Length })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+
+            //expressiveness
+            if (dsConfig.use_expr) {
+                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == PEXP);
+                float[] expr;
+                if (exprCurve != null) {
+                    expr = DiffSingerUtils.SampleCurve(phrase, exprCurve.Item2, 1, frameMs, totalFrames, headFrames, tailFrames,
+                            x => Math.Min(1, Math.Max(0, x / 100)))
+                        .Select(f => (float)f).ToArray();
+                } else {
+                    expr = Enumerable.Repeat(1f, totalFrames).ToArray();
+                }
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("expr",
+                    new DenseTensor<float>(expr, new int[] { expr.Length }, false)
+                        .Reshape(new int[] { 1, expr.Length })));
+            }
+
+            //Speaker
+            if(dsConfig.speakers != null) {
+                var speakerEmbedManager = getSpeakerEmbedManager();
+                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
+            }
+
             var pitchOutputs = pitchModel.Run(pitchInputs);
             var pitch_out = pitchOutputs.First().AsTensor<float>().ToArray();
-            var pitchEnd = phrase.timeAxis.MsPosToTickPos(startMs + (n_frames - 1) * frameMs) - phrase.position;
+            var pitchEnd = phrase.timeAxis.MsPosToTickPos(startMs + (totalFrames - 1) * frameMs) - phrase.position;
             if(pitchEnd<=phrase.duration){
                 return new RenderPitchResult{
-                    ticks = Enumerable.Range(0,n_frames)
+                    ticks = Enumerable.Range(0,totalFrames)
                     .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
                     .Append((float)phrase.duration + 1)
                     .ToArray(),
@@ -177,7 +198,7 @@ namespace OpenUtau.Core.DiffSinger
                 };
             }else{
                 return new RenderPitchResult{
-                    ticks = Enumerable.Range(0,n_frames)
+                    ticks = Enumerable.Range(0,totalFrames)
                     .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
                     .ToArray(),
                     tones = pitch_out
