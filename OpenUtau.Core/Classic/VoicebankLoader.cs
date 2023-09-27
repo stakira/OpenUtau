@@ -317,7 +317,7 @@ namespace OpenUtau.Classic {
                             otoSet.Otos.Add(oto);
                         }
                         if (!string.IsNullOrEmpty(oto.Error)) {
-                            Log.Error($"Failed to parse\n{trace}: {oto.Error}");
+                            Log.Error($"Failed to parse\n{oto.Error}");
                         }
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to parse\n{trace}");
@@ -384,6 +384,11 @@ namespace OpenUtau.Classic {
             }
             if (!ParseDouble(parts.ElementAtOrDefault(5), out oto.Overlap)) {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
+                return oto;
+            }
+            string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
+            if (!File.Exists(path)) {
+                oto.Error = $"{trace}\nSound file missing. {path}";
                 return oto;
             }
             oto.IsValid = true;

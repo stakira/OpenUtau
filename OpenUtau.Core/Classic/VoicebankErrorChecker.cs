@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using NAudio.Wave;
 
 namespace OpenUtau.Classic {
     public class VoicebankError {
@@ -91,6 +93,13 @@ namespace OpenUtau.Classic {
                     CheckOto(oto, fileDuration);
                 }
             }
+            if (FindDuplication(out List<Oto> duplicates)) {
+                string message = "";
+                duplicates.ForEach(oto => message += "\n" + oto.FileTrace.file + " : " + oto.Alias);
+                Errors.Add(new VoicebankError() {
+                    message = $"There are duplicate aliases.{message}"
+                });
+            }
         }
 
         bool TryGetFileDuration(string filePath, Oto oto, out double fileDuration) {
@@ -108,6 +117,29 @@ namespace OpenUtau.Classic {
             try {
                 using (var wav = Core.Format.Wave.OpenFile(filePath)) {
                     fileDuration = wav.TotalTime.TotalMilliseconds;
+                    var waveFormat = wav.ToSampleProvider().WaveFormat;
+                    if (waveFormat.SampleRate != 44100) {
+                        Errors.Add(new VoicebankError() {
+                            trace = oto.FileTrace,
+                            soundFile = filePath,
+                            message = $"Sample rate of the sound file is not 44100Hz."
+                        });
+                    }
+                    if (waveFormat.Channels != 1) {
+                        Errors.Add(new VoicebankError() {
+                            trace = oto.FileTrace,
+                            soundFile = filePath,
+                            message = $"Sound file is not mono channel."
+                        });
+                    }
+                    /* If sound is not 16bit, it cannot be opened.
+                    if (waveFormat.BitsPerSample != 16) {
+                        Errors.Add(new VoicebankError() {
+                            trace = oto.FileTrace,
+                            soundFile = filePath,
+                            message = $"Bit rate of the sound file is not 16bit."
+                        });
+                    }*/
                 }
             } catch (Exception e) {
                 Errors.Add(new VoicebankError() {
@@ -196,6 +228,16 @@ namespace OpenUtau.Classic {
                 valid = false;
             }
             return valid;
+        }
+
+        bool FindDuplication(out List<Oto> duplicates) {
+            duplicates = voicebank.OtoSets
+                .SelectMany(set => set.Otos)
+                .GroupBy(oto => oto.Alias)
+                .Where(alias => alias.Count() > 1)
+                .SelectMany(group => group).ToList();
+
+            return duplicates.Count > 0;
         }
     }
 }
