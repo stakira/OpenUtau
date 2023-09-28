@@ -91,7 +91,7 @@ namespace OpenUtau.App.ViewModels {
 
         private VoicebankConfig? LoadCharacterYaml(string archiveFilePath) {
             using (var archive = ArchiveFactory.Open(archiveFilePath)) {
-                var entry = archive.Entries.FirstOrDefault(e => e.Key.EndsWith("character.yaml"));
+                var entry = archive.Entries.FirstOrDefault(e => Path.GetFileName(e.Key)=="character.yaml");
                 if (entry == null) {
                     return null;
                 }

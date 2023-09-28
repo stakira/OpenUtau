@@ -157,11 +157,17 @@ namespace OpenUtau.App.Controls {
                 foreach (UPart otherPart in otherPartsInView) {
                     if (otherPart is UVoicePart otherVoicePart) {
                         var xOffset = otherVoicePart.position - Part.position;
+                        var brush = ThemeManager.NeutralAccentBrushSemi;
+                        if (otherVoicePart.trackNo >= 0) {
+                            var track = DocManager.Inst.Project.tracks[otherVoicePart.trackNo];
+                            brush = ThemeManager.GetTrackColor(track.TrackColor).AccentColorLightSemi;
+                        }
+
                         foreach (var note in otherVoicePart.notes) {
                             if (note.LeftBound + xOffset >= rightTick || note.RightBound + xOffset <= leftTick) {
                                 continue;
                             }
-                            RenderGhostNote(note, viewModel, context, xOffset);
+                            RenderGhostNote(note, viewModel, context, xOffset, brush);
                         }
                     }
                 }
@@ -226,7 +232,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        private void RenderGhostNote(UNote note, NotesViewModel viewModel, DrawingContext context, int partOffset) {
+        private void RenderGhostNote(UNote note, NotesViewModel viewModel, DrawingContext context, int partOffset, IBrush brush) {
             // REVIEW should ghost note be smaller?
             double relativeSize = 0.5d;
             double height = TrackHeight * relativeSize;
@@ -239,8 +245,6 @@ namespace OpenUtau.App.Controls {
 
             Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
 
-            // REVIEW Using existing color to avoid problems with theming. Not sure if ideal color.
-            var brush = ThemeManager.NeutralAccentBrushSemi;
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
         }
 

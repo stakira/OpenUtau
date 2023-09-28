@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 
 namespace OpenUtau.App.Views {
     public partial class EditSubbanksDialog : Window {
@@ -57,6 +58,11 @@ namespace OpenUtau.App.Views {
 
         void OnClear(object sender, RoutedEventArgs e) {
             ViewModel.Clear(SuffixGrid.SelectedItems);
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
         }
     }
 }

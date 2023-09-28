@@ -75,6 +75,7 @@ namespace OpenUtau.App.Controls {
                 bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
                 var brush = isCenterKey ? ThemeManager.CenterKeyBrush
+                    : IsKeyboard ? (isAltTrack ? ThemeManager.BlackKeyBrush : ThemeManager.WhiteKeyBrush)
                     : isAltTrack ? Foreground : Background;
                 context.DrawRectangle(
                     brush,

@@ -55,8 +55,6 @@
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
-                         Foreground="{DynamicResource BlackKeyBrush}"
-                         Background="{DynamicResource WhiteKeyBrush}"
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
                          TrackOffset="{Binding TrackOffset}"

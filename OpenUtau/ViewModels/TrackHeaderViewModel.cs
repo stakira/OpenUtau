@@ -285,6 +285,7 @@ namespace OpenUtau.App.ViewModels {
             items.Add(new MenuItemViewModel() {
                 Header = $"{ThemeManager.GetString("tracks.more")} ...",
                 Items = DocManager.Inst.PhonemizerFactories.GroupBy(factory => factory.language)
+                .OrderBy(group => group.Key)
                 .Select(group => new MenuItemViewModel() {
                     Header = (group.Key is null) ? "General" : group.Key,
                     Items = group.Select(factory => new MenuItemViewModel() {
