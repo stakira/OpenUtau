@@ -60,7 +60,7 @@ namespace OpenUtau.Classic {
                 });
             }
             try {
-                VoicebankLoader.LoadVoicebank(voicebank, false);
+                VoicebankLoader.LoadVoicebank(voicebank);
             } catch (Exception e) {
                 Errors.Add(new VoicebankError() {
                     message = "Failed to load voicebank",

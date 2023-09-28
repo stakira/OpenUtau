@@ -39,7 +39,7 @@ aoieu.wav=u R,5,,33,44,
 ".Replace("\r\n", "\n");
 
             using (MemoryStream stream = new MemoryStream(Encoding.ASCII.GetBytes(text))) {
-                var otoSet = VoicebankLoader.ParseOtoSet(stream, "oto.ini", Encoding.ASCII, true);
+                var otoSet = VoicebankLoader.ParseOtoSet(stream, "oto.ini", Encoding.ASCII);
                 using (MemoryStream stream2 = new MemoryStream()) {
                     VoicebankLoader.WriteOtoSet(otoSet, stream2, Encoding.ASCII);
                     string actual = Encoding.ASCII.GetString(stream2.ToArray());
