@@ -26,9 +26,9 @@ namespace OpenUtau.Plugins {
             var file = Path.Join(basePath, singerName, "character.txt");
 
             var voicebank = new Voicebank() { File = file, BasePath = dir };
-            VoicebankLoader.LoadVoicebank(voicebank);
+            VoicebankLoader.LoadVoicebank(voicebank, true);
             var singer = new ClassicSinger(voicebank);
-            singer.EnsureLoaded();
+            singer.EnsureLoaded(true);
 
             var timeAxis = new Core.TimeAxis();
             timeAxis.BuildSegments(new Core.Ustx.UProject());

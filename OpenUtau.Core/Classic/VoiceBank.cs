@@ -25,6 +25,9 @@ namespace OpenUtau.Classic {
         public string Id;
 
         public void Reload() {
+            Reload(false);
+        }
+        public void Reload(bool isTest) {
             Name = null;
             Image = null;
             Portrait = null;
@@ -40,7 +43,7 @@ namespace OpenUtau.Classic {
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;
-            VoicebankLoader.LoadVoicebank(this);
+            VoicebankLoader.LoadVoicebank(this, isTest);
         }
 
         public override string ToString() {

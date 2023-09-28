@@ -57,15 +57,15 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        public static void LoadVoicebank(Voicebank voicebank) {
+        public static void LoadVoicebank(Voicebank voicebank, bool isTest) {
             LoadInfo(voicebank, voicebank.File, voicebank.BasePath);
-            LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
+            LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File), isTest);
         }
 
-        public static void LoadOtoSets(Voicebank voicebank, string dirPath) {
+        public static void LoadOtoSets(Voicebank voicebank, string dirPath, bool isTest) {
             var otoFile = Path.Combine(dirPath, kOtoIni);
             if (File.Exists(otoFile)) {
-                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding);
+                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding, isTest);
                 var voicebankDir = Path.GetDirectoryName(voicebank.File);
                 otoSet.Name = Path.GetRelativePath(voicebankDir, dirPath);
                 if (otoSet.Name == ".") {
@@ -75,7 +75,7 @@ namespace OpenUtau.Classic {
             }
             var dirs = Directory.GetDirectories(dirPath);
             foreach (var dir in dirs) {
-                LoadOtoSets(voicebank, dir);
+                LoadOtoSets(voicebank, dir, isTest);
             }
         }
 
@@ -288,10 +288,10 @@ namespace OpenUtau.Classic {
             }
         }
 
-        public static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
+        public static OtoSet ParseOtoSet(string filePath, Encoding encoding, bool isTest) {
             try {
                 using (var stream = File.OpenRead(filePath)) {
-                    var otoSet = ParseOtoSet(stream, filePath, encoding);
+                    var otoSet = ParseOtoSet(stream, filePath, encoding, isTest);
                     AddAliasForMissingFiles(otoSet);
                     return otoSet;
                 }
@@ -301,7 +301,7 @@ namespace OpenUtau.Classic {
             return null;
         }
 
-        public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
+        public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding, bool isTest) {
             OtoSet otoSet;
             using (var reader = new StreamReader(stream, encoding)) {
                 var trace = new FileTrace { file = filePath, lineNumber = 0 };
@@ -312,7 +312,7 @@ namespace OpenUtau.Classic {
                     var line = reader.ReadLine().Trim();
                     trace.line = line;
                     try {
-                        Oto oto = ParseOto(line, trace);
+                        Oto oto = ParseOto(line, trace, isTest);
                         if (oto != null) {
                             otoSet.Otos.Add(oto);
                         }
@@ -346,7 +346,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        static Oto ParseOto(string line, FileTrace trace) {
+        static Oto ParseOto(string line, FileTrace trace, bool isTest) {
             const string format = "<wav>=<alias>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
             var oto = new Oto {
                 FileTrace = new FileTrace(trace),
@@ -386,13 +386,13 @@ namespace OpenUtau.Classic {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
             }
-#if DEBUG == false
-            string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
-            if (!File.Exists(path)) {
-                oto.Error = $"{trace}\nSound file missing. {path}";
-                return oto;
+            if (!isTest) {
+                string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
+                if (!File.Exists(path)) {
+                    oto.Error = $"{trace}\nSound file missing. {path}";
+                    return oto;
+                }
             }
-#endif
             oto.IsValid = true;
             return oto;
         }

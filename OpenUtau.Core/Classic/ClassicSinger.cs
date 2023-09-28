@@ -47,18 +47,24 @@ namespace OpenUtau.Classic {
         }
 
         public override void EnsureLoaded() {
+            EnsureLoaded(false);
+        }
+        public void EnsureLoaded(bool isTest) {
             if (Loaded) {
                 return;
             }
-            Reload();
+            Reload(isTest);
         }
 
         public override void Reload() {
+            Reload(false);
+        }
+        private void Reload(bool isTest) {
             if (!Found) {
                 return;
             }
             try {
-                voicebank.Reload();
+                voicebank.Reload(isTest);
                 Load();
                 loaded = true;
                 if (otoWatcher == null) {
