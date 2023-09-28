@@ -386,11 +386,13 @@ namespace OpenUtau.Classic {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
             }
+#if DEBUG == false
             string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
             if (!File.Exists(path)) {
                 oto.Error = $"{trace}\nSound file missing. {path}";
                 return oto;
             }
+#endif
             oto.IsValid = true;
             return oto;
         }
