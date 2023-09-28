@@ -18,6 +18,8 @@ namespace OpenUtau.App.ViewModels {
         int selection = -1;
         [Reactive]public string ResultCount { get; private set; } = "";
         static string searchWord = "";
+        bool CaseSensitive{ get; set; } = true;
+        bool WholeWord{ get; set; } = false;
 
         public SearchNoteViewModel(NotesViewModel notesViewModel) {
             this.notesViewModel = notesViewModel;
@@ -40,11 +42,21 @@ namespace OpenUtau.App.ViewModels {
                         break;
                 }
             });
-    }
+        }
+
+        bool IsMatch(UNote note){
+            string noteStr = CaseSensitive ? note.lyric : note.lyric.ToLower();
+            string matchStr = CaseSensitive ? SearchWord : SearchWord.ToLower();
+            if(WholeWord){
+                return noteStr == matchStr;
+            } else {
+                return noteStr.Contains(matchStr);
+            }
+        }
 
         void Search() {
             if (!string.IsNullOrEmpty(SearchWord) && notesViewModel.Part != null) {
-                notes = notesViewModel.Part.notes.Where(note => note.lyric.Contains(SearchWord)).ToList();
+                notes = notesViewModel.Part.notes.Where(IsMatch).ToList();
                 Count = notes.Count();
             } else {
                 notes.Clear();
