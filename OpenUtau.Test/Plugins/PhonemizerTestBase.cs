@@ -25,6 +25,7 @@ namespace OpenUtau.Plugins {
             var basePath = Path.Join(dir, "Files");
             var file = Path.Join(basePath, singerName, "character.txt");
 
+            VoicebankLoader.IsTest = true;
             var voicebank = new Voicebank() { File = file, BasePath = dir };
             VoicebankLoader.LoadVoicebank(voicebank);
             var singer = new ClassicSinger(voicebank);

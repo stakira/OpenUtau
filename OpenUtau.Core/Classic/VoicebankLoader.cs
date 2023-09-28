@@ -33,6 +33,8 @@ namespace OpenUtau.Classic {
 
         readonly string basePath;
 
+        public static bool IsTest = false;
+
         public VoicebankLoader(string basePath) {
             this.basePath = basePath;
         }
@@ -386,10 +388,12 @@ namespace OpenUtau.Classic {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
             }
-            string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
-            if (!File.Exists(path)) {
-                oto.Error = $"{trace}\nSound file missing. {path}";
-                return oto;
+            if (!IsTest) {
+                string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
+                if (!File.Exists(path)) {
+                    oto.Error = $"{trace}\nSound file missing. {path}";
+                    return oto;
+                }
             }
             oto.IsValid = true;
             return oto;
