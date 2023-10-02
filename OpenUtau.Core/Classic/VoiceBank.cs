@@ -16,6 +16,7 @@ namespace OpenUtau.Classic {
         public string Voice;
         public string Web;
         public string Version;
+        public string Sample;
         public string OtherInfo;
         public string DefaultPhonemizer;
         public Encoding TextFileEncoding;
@@ -34,6 +35,7 @@ namespace OpenUtau.Classic {
             Voice = null;
             Web = null;
             Version = null;
+            Sample = null;
             OtherInfo = null;
             TextFileEncoding = null;
             SingerType = USingerType.Classic;

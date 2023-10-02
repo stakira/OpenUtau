@@ -163,12 +163,13 @@
   <system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>
   <system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Length</system:String>
   <system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Period</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>
-  <system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>
+  <system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>
 
   <system:String x:Key="noteproperty">Note Properties</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
@@ -203,6 +204,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.insertslur">Insert slur lyric</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
@@ -236,6 +238,7 @@
   <system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
@@ -362,6 +365,7 @@
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
   <system:String x:Key="singers.readme">Open readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>
+  <system:String x:Key="singers.playsample">Play sample</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>

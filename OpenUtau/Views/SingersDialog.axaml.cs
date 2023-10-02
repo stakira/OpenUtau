@@ -7,9 +7,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using NAudio.Wave;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -28,6 +30,11 @@ namespace OpenUtau.App.Views {
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             DocManager.Inst.RemoveSubscriber(this);
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
         }
 
         void OnSingerMenuButton(object sender, RoutedEventArgs args) {
@@ -107,11 +114,21 @@ namespace OpenUtau.App.Views {
             var dialog = new EditSubbanksDialog();
             dialog.ViewModel.SetSinger(viewModel.Singer!);
             dialog.RefreshSinger = () => viewModel.RefreshSinger();
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
             await dialog.ShowDialog(this);
         }
 
         void OnSelectedSingerChanged(object sender, SelectionChangedEventArgs e) {
             OtoPlot.WaveFile = null;
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
         }
 
         void OnSelectedOtoChanged(object sender, SelectionChangedEventArgs e) {
@@ -209,6 +226,41 @@ namespace OpenUtau.App.Views {
                         ThemeManager.GetString("errors.caption"),
                         MessageBox.MessageBoxButtons.Ok);
                     return;
+                }
+            }
+        }
+
+        public void OnPlaySample(object sender, RoutedEventArgs e) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (viewModel.Singer != null) {
+                var sample = viewModel.Singer.Sample;
+                if (sample != null && File.Exists(sample)) {
+                    var playSample = Wave.OpenFile(sample);
+                    playBack.Init(playSample.ToSampleProvider());
+                    playBack.Play();
+                    if (playbackState == PlaybackState.Playing) {
+                        playBack.Stop();
+                    }
+                } else {
+                    var path = viewModel.Singer.Location;
+                    string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
+                            .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.flac", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.aiff", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
+                            .ToArray();
+                    Random rnd = new Random(Guid.NewGuid().GetHashCode());
+                    int choice = rnd.Next(0, files.Length - 1);
+                    string soundFile = files[choice];
+                    var playSound = Wave.OpenFile(soundFile);
+                    playBack.Init(playSound.ToSampleProvider());
+                    playBack.Play();
+                    if (playbackState == PlaybackState.Playing) {
+                        playBack.Stop();
+                    }
                 }
             }
         }

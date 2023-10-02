@@ -176,6 +176,7 @@ namespace OpenUtau.App.ViewModels {
                 new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
+                new InsertSlur(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,

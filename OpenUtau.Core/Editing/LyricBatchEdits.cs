@@ -170,4 +170,31 @@ namespace OpenUtau.Core.Editing {
             }
         }
     }
+
+    public class InsertSlur : BatchEdit{
+        public virtual string Name => name;
+        private string name;
+
+        public InsertSlur() {
+            name = "pianoroll.menu.lyrics.insertslur";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            if(selectedNotes.Count == 0){
+                return;
+            }
+            var startPos = selectedNotes.First().position;
+            Queue<string> lyricsQueue = new Queue<string>();
+            docManager.StartUndoGroup(true);
+            foreach(var note in part.notes.Where(n => n.position >= startPos)){
+                lyricsQueue.Enqueue(note.lyric);
+                if(selectedNotes.Contains(note)){
+                    docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, "+~"));
+                } else {
+                    docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyricsQueue.Dequeue()));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
 }
