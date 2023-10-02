@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             x:Class="OpenUtau.App.Controls.SearchBar" Focusable="False">
+  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="114,54,28,28,28,28" Width="280" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+    <!--Row 1-->
+    <TextBox Name="box" Grid.Row="0" Padding="4,3" Margin="0" Height="24" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+             Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+             Text="{Binding SearchWord}" Focusable="True" Watermark="{DynamicResource pianoroll.menu.searchnote}"
+             GotFocus="Box_GotFocus"  KeyDown="Box_KeyDown"/>
+    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ResultCount}" Width="54" VerticalAlignment="Center" TextAlignment="Center"/>
+    <Button Grid.Row="0" Grid.Column="2" Command="{Binding SelectCommand}" CommandParameter="prev"
+      ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.prev}"
+      Width="24" Height="24" Margin="2,2,2,2"
+      Background="Transparent" BorderThickness="0">
+      <!-- icon source: https://github.com/microsoft/vscode-icons/blob/main/icons/light/arrow-left.svg -->
+      <Path  Classes="clear" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Data="M7.00024 3.0929L2.00024 8.09288L2.00024 8.79999L7.00024 13.8L7.70734 13.0929L3.56091 8.94644L14.0002 8.94644L14.0002 7.94644L3.56091 7.94644L7.70734 3.8L7.00024 3.0929Z"
+            Fill="{StaticResource NeutralAccentBrush}">
+        <Path.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform ScaleX=".75" ScaleY=".75"/>
+            <TranslateTransform X="0" Y="1"/>
+          </TransformGroup>
+        </Path.RenderTransform>
+      </Path>
+    </Button>
+    <Button Grid.Row="0" Grid.Column="3" Command="{Binding SelectCommand}" CommandParameter="next"
+      ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.next}"
+      Width="24" Height="24" Margin="2,2,2,2"
+      Background="Transparent" BorderThickness="0">
+      <!-- icon source: https://github.com/microsoft/vscode-icons/blob/main/icons/light/arrow-right.svg -->
+      <Path  Classes="clear" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Data="M9.00025 13.8871L14.0002 8.8871L14.0002 8.17999L9.00025 3.17999L8.29314 3.8871L12.4396 8.03354L2.00024 8.03354L2.00024 9.03354L12.4396 9.03354L8.29314 13.18L9.00025 13.8871Z"
+            Fill="{StaticResource NeutralAccentBrush}">
+        <Path.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform ScaleX=".75" ScaleY=".75"/>
+            <TranslateTransform X="0" Y="1"/>
+          </TransformGroup>
+        </Path.RenderTransform>
+      </Path>
+    </Button>
+    <Button Grid.Row="0" Grid.Column="4" Command="{Binding SelectCommand}"  CommandParameter="all"
+      ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.all}"
+      Width="24" Height="24" Margin="2,2,2,2"
+      Background="Transparent" BorderThickness="0">
+      <!-- icon source: https://github.com/microsoft/vscode-icons/blob/main/icons/light/new-folder.svg -->
+      <Path  Classes="clear" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Data="M7.00024 3H4.00024V0H3.00024V3H0.000244141V4H3.00024V7H4.00024V4H7.00024V3ZM5.50024 7H5.00024V6H5.30024L6.10024 5.1L6.50024 5H14.0002V4H8.00024V3H14.5002L15.0002 3.5V13.5L14.5002 14H1.50024L1.00024 13.5V6.5V6V5H2.00024V6V6.5V13H14.0002V7V6H6.70024L5.90024 6.9L5.50024 7Z"
+            Fill="{StaticResource NeutralAccentBrush}">
+        <Path.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform ScaleX=".75" ScaleY=".75"/>
+            <TranslateTransform X="0" Y="1"/>
+          </TransformGroup>
+        </Path.RenderTransform>
+      </Path>
+    </Button>
+    <Button Grid.Row="0" Grid.Column="5" Click="OnClose"
+      ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.close}"
+      Width="24" Height="24" Margin="2,2,2,2"
+      Background="Transparent" BorderThickness="0">
+      <!-- icon source: https://github.com/microsoft/vscode-icons/blob/main/icons/light/close.svg -->
+      <Path  Classes="clear" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+            Data="M8.00028 8.70711L11.6467 12.3536L12.3538 11.6465L8.70739 8.00001L12.3538 4.35356L11.6467 3.64645L8.00028 7.2929L4.35384 3.64645L3.64673 4.35356L7.29317 8.00001L3.64673 11.6465L4.35384 12.3536L8.00028 8.70711Z"
+            Fill="{StaticResource NeutralAccentBrush}">
+        <Path.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform ScaleX=".75" ScaleY=".75"/>
+            <TranslateTransform X="0" Y="1"/>
+          </TransformGroup>
+        </Path.RenderTransform>
+      </Path>
+    </Button>
+  </Grid>
+</UserControl>

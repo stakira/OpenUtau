@@ -96,11 +96,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null || ViewModel.NotesViewModel.Part.notes.Count == 0) {
                 return;
             }
-            var vm = new SearchNoteViewModel(ViewModel.NotesViewModel);
-            var dialog = new SearchNoteDialog() {
-                DataContext = vm,
-            };
-            dialog.ShowDialog(this);
+            SearchBar.Show(ViewModel.NotesViewModel);
         }
 
         void ReplaceLyrics() {
@@ -840,6 +836,10 @@ namespace OpenUtau.App.Views {
 
         void OnKeyDown(object sender, KeyEventArgs args) {
             if (LyricBox != null && LyricBox.IsVisible) {
+                args.Handled = false;
+                return;
+            }
+            if (SearchBar != null && SearchBar.IsVisible && SearchBar.box.IsFocused) {
                 args.Handled = false;
                 return;
             }
