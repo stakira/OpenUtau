@@ -49,7 +49,7 @@ namespace OpenUtau.Classic {
             inputTemp = VoicebankFiles.Inst.GetSourceTempPath(phrase.singer.Id, phone.oto, ".wav");
             tone = phone.tone;
 
-            flags = phone.flags.Where(flag=>resampler.SupportsFlag(flag.Item3)).ToArray();
+            flags = phone.flags.Where(flag => resampler.SupportsFlag(flag.Item3)).ToArray();
             velocity = (int)(phone.velocity * 100);
             volume = (int)(phone.volume * 100);
             modulation = (int)(phone.modulation * 100);
@@ -84,13 +84,16 @@ namespace OpenUtau.Classic {
                 int tempoPitchSkip = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, startMs - phoneStartMs) / 5.0);
                 tempoPitchCount = Math.Min(tempoPitchCount, pitches.Length - tempoPitchSkip);
                 int phrasePitchSkip = (int)Math.Floor(phrase.timeAxis.TicksBetweenMsPos(phraseStartMs, startMs) / 5.0);
+                double intervalPitchMs = phrase.timeAxis.TickPosToMsPos(5);
+                double diffPitchMs = startMs - phraseStartMs - phrase.timeAxis.TickPosToMsPos(phrasePitchSkip * 5);
                 double tempoRatio = phone.tempos[i].bpm / tempo;
                 for (int j = 0; j < tempoPitchCount; j++) {
                     int index = tempoPitchSkip + j;
                     int scaled = phrasePitchSkip + (int)Math.Ceiling(j * tempoRatio);
                     scaled = Math.Clamp(scaled, 0, phrase.pitches.Length - 1);
+                    int nextScaled = Math.Clamp(scaled + 1, 0, phrase.pitches.Length - 1);
                     index = Math.Clamp(index, 0, pitchCount - 1);
-                    pitches[index] = (int)Math.Round(phrase.pitches[scaled] - phone.tone * 100);
+                    pitches[index] = (int)Math.Round((phrase.pitches[nextScaled]- phrase.pitches[scaled]) /intervalPitchMs * diffPitchMs + phrase.pitches[scaled] - phone.tone * 100);
                 }
             }
 
