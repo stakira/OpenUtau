@@ -1,0 +1,14 @@
+{
+    "name": "openutau-devcontainer",
+    "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",  // Any generic, debian-based image.
+    "features": {
+        "ghcr.io/devcontainers/features/desktop-lite:1": {}
+    },
+    "customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.csdevkit"
+			]
+		}
+	}
+}
