@@ -158,6 +158,7 @@ namespace OpenUtau.Classic {
                         } else if (s[0].StartsWith("voice") || s[0] == "cv") {
                             voicebank.Voice = s[1];
                         } else if (s[0] == "sample") {
+                            voicebank.Sample = s[1];
                         } else if (s[0] == "web") {
                             voicebank.Web = s[1];
                         } else if (s[0] == "version") {
@@ -200,6 +201,9 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Version)) {
                 bank.Version = bankConfig.Version;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Sample)) {
+                bank.Sample = bankConfig.Sample;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.DefaultPhonemizer)) {
                 bank.DefaultPhonemizer = bankConfig.DefaultPhonemizer;
