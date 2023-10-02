@@ -69,7 +69,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string Prefix { get; set; }
         [Reactive] public string Suffix { get; set; }
 
-        private USinger? singer;
+        public USinger? singer;
 
         public EditSubbanksViewModel() {
             Colors = new ObservableCollectionExtended<VoiceColor>();
