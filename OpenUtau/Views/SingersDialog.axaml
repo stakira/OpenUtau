@@ -96,6 +96,7 @@
     </StackPanel>
     <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0" Height="20"
             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+      <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
       <Button Margin="0" Content="{DynamicResource singers.playsample}" Click="OnPlaySample"/>
     </StackPanel>
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"

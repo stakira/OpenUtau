@@ -209,6 +209,27 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnOpenReadme(object sender, RoutedEventArgs e) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer != null) {
+                var readme = Path.Join(viewModel.Singer.Location, "readme.txt");
+                if (File.Exists(readme)) {
+                    var p = new Process();
+                    p.StartInfo = new ProcessStartInfo(readme) {
+                        UseShellExecute = true
+                    };
+                    p.Start();
+                } else {
+                    MessageBox.Show(
+                        this,
+                        ThemeManager.GetString("singers.readme.notfound"),
+                        ThemeManager.GetString("errors.caption"),
+                        MessageBox.MessageBoxButtons.Ok);
+                    return;
+                }
+            }
+        }
+
         public void OnPlaySample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             var playBack = PlaybackManager.Inst.AudioOutput;
