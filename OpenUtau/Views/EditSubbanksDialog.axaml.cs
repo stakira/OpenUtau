@@ -6,9 +6,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
-using OpenUtau.Core.Ustx;
-using SharpCompress.Common;
-using Tmds.DBus.Protocol;
 
 namespace OpenUtau.App.Views {
     public partial class EditSubbanksDialog : Window {
@@ -67,10 +64,10 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnImportMap(object sender, RoutedEventArgs args) {
-            if (ViewModel.singer == null || ViewModel.Rows == null) {
+            if (ViewModel.Singer == null || ViewModel.Rows == null) {
                 return;
             }
-            var file = await FilePicker.OpenFile(this, "singers.subbanks.import", ViewModel.singer.Location, FilePicker.PrefixMap);
+            var file = await FilePicker.OpenFile(this, "singers.subbanks.import", ViewModel.Singer.Location, FilePicker.PrefixMap);
             if (!string.IsNullOrEmpty(file)) {
                 try {
                     using (var reader = new StreamReader(file, Encoding.GetEncoding("shift_jis"))) {
@@ -93,11 +90,11 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnExportMap(object sender, RoutedEventArgs args) {
-            if (ViewModel.singer == null) {
+            if (ViewModel.Singer == null) {
                 return;
             }
             if (ViewModel.Colors.Count > 0 && ViewModel.Colors.First(c => c.Name == string.Empty) is VoiceColor main) {
-                var file = await FilePicker.SaveFile(this, "singers.subbanks.export", ViewModel.singer.Location, "prefix.map", FilePicker.PrefixMap);
+                var file = await FilePicker.SaveFile(this, "singers.subbanks.export", ViewModel.Singer.Location, "prefix.map", FilePicker.PrefixMap);
                 if (!string.IsNullOrEmpty(file)) {
                     try {
                         using (var writer = new StreamWriter(file, false, Encoding.GetEncoding("shift_jis"))) {
