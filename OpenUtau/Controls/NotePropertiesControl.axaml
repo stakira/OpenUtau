@@ -128,6 +128,13 @@
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       GotFocus="OnGotFocus" LostFocus="OnLostFocus"/>
             </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.vibrato.vollink}"/>
+              <TextBox Grid.Column="2" Text="{Binding VibratoVolLink}" GotFocus="OnGotFocus" LostFocus="OnLostFocus"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoVolLink}" Minimum="-100" Maximum="100"
+                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
+                      GotFocus="OnGotFocus" LostFocus="OnLostFocus"/>
+            </Grid>
             <Grid ColumnDefinitions="123,20,*">
               <Label Content="{DynamicResource noteproperty.setlongnote}"/>
               <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>

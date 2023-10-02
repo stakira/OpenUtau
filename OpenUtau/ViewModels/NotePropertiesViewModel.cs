@@ -25,6 +25,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float VibratoOut { get; set; }
         [Reactive] public float VibratoShift { get; set; }
         [Reactive] public float VibratoDrift { get; set; }
+        [Reactive] public float VibratoVolLink { get; set; }
         [Reactive] public float AutoVibratoNoteLength { get; set; }
         [Reactive] public bool AutoVibratoToggle { get; set; }
         [Reactive] public bool IsNoteSelected { get; set; } = false;
@@ -98,6 +99,7 @@ namespace OpenUtau.App.ViewModels {
                 VibratoOut = note.vibrato.@out;
                 VibratoShift = note.vibrato.shift;
                 VibratoDrift = note.vibrato.drift;
+                VibratoVolLink = note.vibrato.volLink;
             } else {
                 IsNoteSelected = false;
                 Lyric = NotePresets.Default.DefaultLyric;
@@ -111,6 +113,7 @@ namespace OpenUtau.App.ViewModels {
                 VibratoOut = NotePresets.Default.DefaultVibrato.VibratoOut;
                 VibratoShift = NotePresets.Default.DefaultVibrato.VibratoShift;
                 VibratoDrift = NotePresets.Default.DefaultVibrato.VibratoDrift;
+                VibratoVolLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
             }
             AutoVibratoNoteLength = NotePresets.Default.AutoVibratoNoteDuration;
             AutoVibratoToggle = NotePresets.Default.AutoVibratoToggle;
@@ -219,6 +222,10 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is VibratoDriftCommand) {
                     if (noteCommand.Notes.Contains(note)) {
                         VibratoDrift = note.vibrato.drift;
+                    }
+                } else if (cmd is VibratoVolumeLinkCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoVolLink = note.vibrato.volLink;
                     }
                 }
             } else if (cmd is ExpCommand) {
@@ -375,6 +382,18 @@ namespace OpenUtau.App.ViewModels {
                         }
                     }
                 });
+            this.WhenAnyValue(vm => vm.VibratoVolLink)
+                .Subscribe(value => {
+                    if (value >= -100 && value <= 100) {
+                        if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
+                            foreach (UNote note in selectedNotes) {
+                                if (note.vibrato.volLink != value) {
+                                    DocManager.Inst.ExecuteCmd(new VibratoVolumeLinkCommand(Part, note, value));
+                                }
+                            }
+                        }
+                    }
+                });
 
             this.WhenAnyValue(vm => vm.ApplyPortamentoPreset)
                 .WhereNotNull()
@@ -482,7 +501,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrEmpty(name)) {
                 return;
             }
-            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift));
+            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift, VibratoVolLink));
             NotePresets.Save();
             VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
         }
