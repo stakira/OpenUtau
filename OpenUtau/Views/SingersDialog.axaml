@@ -50,7 +50,7 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="0" Spacing="10" Margin="10,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0" Height="20"
                 Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
       <Button Content="{DynamicResource singers.location}" Margin="0" Width="100"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
@@ -99,7 +99,7 @@
       <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
       <Button Margin="0" Content="{DynamicResource singers.playsample}" Click="OnPlaySample" IsVisible="{Binding IsClassic}"/>
     </StackPanel>
-    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="5" Margin="0" Height="20"
                 Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.editoto.reset}" Command="{Binding RefreshSinger}"
               IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>
