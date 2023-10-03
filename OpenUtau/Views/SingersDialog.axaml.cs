@@ -243,7 +243,7 @@ namespace OpenUtau.App.Views {
                     if (playbackState == PlaybackState.Playing) {
                         playBack.Stop();
                     }
-                } else {
+                } else if (viewModel.Singer.SingerType == USingerType.Classic) {
                     var path = viewModel.Singer.Location;
                     string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
                             .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
