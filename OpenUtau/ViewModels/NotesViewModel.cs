@@ -429,9 +429,12 @@ namespace OpenUtau.App.ViewModels {
                             } else {
                                 using (var stream = new MemoryStream(data)) {
                                     var portrait = new Bitmap(stream);
-                                    if (portrait.Size.Height > 800) {
+                                    if (portrait.Size.Height > 800 && singer.PortraitHeight == 0) {
                                         int width = (int)Math.Round(800 * portrait.Size.Width / portrait.Size.Height);
                                         portrait = portrait.CreateScaledBitmap(new PixelSize(width, 800));
+                                    } else {
+                                        int width = (int)Math.Round(singer.PortraitHeight * portrait.Size.Width / portrait.Size.Height);
+                                        portrait = portrait.CreateScaledBitmap(new PixelSize(width, singer.PortraitHeight));
                                     }
                                     Portrait = portrait;
                                     portraitSource = singer.Portrait;
@@ -458,14 +461,14 @@ namespace OpenUtau.App.ViewModels {
         private void LoadTrackColor(UPart? part, UProject? project) {
             if (part == null || project == null) {
                 TrackAccentColor = ThemeManager.GetTrackColor("Blue").AccentColor;
-                ThemeManager.ChangeTrackColor("Blue");
+                ThemeManager.ChangePianorollColor("Blue");
                 return;
             }
             TrackAccentColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor).AccentColor;
             string name = Preferences.Default.UseTrackColor
                 ? project.tracks[part.trackNo].TrackColor
                 : "Blue";
-            ThemeManager.ChangeTrackColor(name);
+            ThemeManager.ChangePianorollColor(name);
         }
 
         private void UnloadPart() {
@@ -785,7 +788,7 @@ namespace OpenUtau.App.ViewModels {
                             switch (i) {
                                 case 0:
                                     if (vm.Params[i].IsSelected) {
-                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch));
+                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch.Clone()));
                                     }
                                     break;
                                 case 1:
@@ -796,7 +799,7 @@ namespace OpenUtau.App.ViewModels {
                                         DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, copyNote.vibrato.@in));
                                         DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, copyNote.vibrato.@out));
                                         DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, copyNote.vibrato.shift));
-                                        // DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, copyNote.vibrato.drift));
+                                        DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, copyNote.vibrato.drift));
                                     }
                                     break;
                                 default:
@@ -880,7 +883,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         bool IsExpSupported(string expKey) {
-            if (Project == null || Part == null || Project.tracks.Count > Part.trackNo) {
+            if (Project == null || Part == null || Project.tracks.Count <= Part.trackNo) {
                 return true;
             }
             var track = Project.tracks[Part.trackNo];

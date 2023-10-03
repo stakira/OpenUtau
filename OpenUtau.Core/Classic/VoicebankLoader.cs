@@ -165,6 +165,7 @@ namespace OpenUtau.Classic {
                         } else if (s[0].StartsWith("voice") || s[0] == "cv") {
                             voicebank.Voice = s[1];
                         } else if (s[0] == "sample") {
+                            voicebank.Sample = s[1];
                         } else if (s[0] == "web") {
                             voicebank.Web = s[1];
                         } else if (s[0] == "version") {
@@ -194,6 +195,7 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Portrait)) {
                 bank.Portrait = bankConfig.Portrait;
                 bank.PortraitOpacity = bankConfig.PortraitOpacity;
+                bank.PortraitHeight = bankConfig.PortraitHeight;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
                 bank.Author = bankConfig.Author;
@@ -206,6 +208,9 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Version)) {
                 bank.Version = bankConfig.Version;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Sample)) {
+                bank.Sample = bankConfig.Sample;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.DefaultPhonemizer)) {
                 bank.DefaultPhonemizer = bankConfig.DefaultPhonemizer;
@@ -416,7 +421,7 @@ namespace OpenUtau.Classic {
         public static void WriteOtoSet(OtoSet otoSet, Stream stream, Encoding encoding) {
             using (var writer = new StreamWriter(stream, encoding)) {
                 foreach (var oto in otoSet.Otos) {
-                    if (!oto.IsValid) {
+                    if (!oto.IsValid && (oto.FileTrace != null)) {
                         writer.Write(oto.FileTrace.line);
                         writer.Write('\n');
                         continue;

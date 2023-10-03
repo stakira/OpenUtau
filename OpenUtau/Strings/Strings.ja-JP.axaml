@@ -45,6 +45,8 @@
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
@@ -53,7 +55,7 @@
   <system:String x:Key="exps.caption">表情</system:String>
   <system:String x:Key="exps.defaultvalue">初期値</system:String>
   <system:String x:Key="exps.flag">フラグ</system:String>
-  <system:String x:Key="exps.getsuggestions">現在の設定をこのレンダラーのデフォルト値にする</system:String>
+  <system:String x:Key="exps.getsuggestions">使用可能な表情をまとめて追加する</system:String>
   <system:String x:Key="exps.isflag">エンジン内フラグ</system:String>
   <system:String x:Key="exps.maxvalue">最大</system:String>
   <system:String x:Key="exps.minvalue">最小</system:String>
@@ -159,12 +161,15 @@
   <system:String x:Key="notedefaults.vibrato.autominlength">最短の音符長</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">長い音符に自動でビブラートをかける</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深さ</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">高さ</system:String>
   <system:String x:Key="notedefaults.vibrato.in">フェードイン</system:String>
   <system:String x:Key="notedefaults.vibrato.length">長さ</system:String>
   <system:String x:Key="notedefaults.vibrato.out">フェードアウト</system:String>
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">位相</system:String>
+  <system:String x:Key="notedefaults.vibrato.vollink">音量の連動</system:String>
 
+  <system:String x:Key="noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="noteproperty.apply">適用</system:String>
   <system:String x:Key="noteproperty.cancel">キャンセル</system:String>
   <system:String x:Key="noteproperty.set">セット</system:String>
@@ -204,7 +209,6 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">音程のSuffixを削除</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
-  <system:String x:Key="pianoroll.menu.noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
@@ -217,13 +221,22 @@
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
+  <system:String x:Key="pianoroll.menu.notes.autolegato">音符の隙間を埋める</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">全ての表情をリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">音素のタイミングをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">ピッチベンドをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">ビブラートをリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の"R"を削除</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">従来のプラグイン (試験中)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
+  <system:String x:Key="pianoroll.menu.plugin.openfolder">フォルダを開く</system:String>
+  <system:String x:Key="pianoroll.menu.plugin.reload">再読み込み</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">音符を検索</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">すべて選択</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">次へ</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">前へ</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">音符のパラメータを表示 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
@@ -255,6 +268,7 @@
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.rememberfiletypes">以下のタイプのファイルを「最近開いたファイル」として記憶する</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resamplerログ出力</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Resamplerの出力をログファイルに格納します。この設定はUIやレンダリングが遅くなります。</system:String>
   <system:String x:Key="prefs.advanced.stable">安定版</system:String>
@@ -355,15 +369,15 @@
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトへ</system:String>
 
-  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
-  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
-  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
-  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
-  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
-  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+  <system:String x:Key="singersetup.archivefileencoding">アーカイブファイルのエンコード</system:String>
+  <system:String x:Key="singersetup.archivefileencoding.prompt">ファイル名が文字化けしないエンコードを選択してください。</system:String>
+  <system:String x:Key="singersetup.back">戻る</system:String>
+  <system:String x:Key="singersetup.install">インストール</system:String>
+  <system:String x:Key="singersetup.next">次へ</system:String>
+  <system:String x:Key="singersetup.missinginfo">このボイスバンクのcharacter.yamlに以下の設定を追加します。</system:String>
+  <system:String x:Key="singersetup.singertype">シンガーのタイプ</system:String>
+  <system:String x:Key="singersetup.textfileencoding">テキストファイルのエンコード</system:String>
+  <system:String x:Key="singersetup.textfileencoding.prompt">テキストが文字化けしないエンコードを選択してください。</system:String>
   
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">

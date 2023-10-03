@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using OpenUtau.Core.Ustx;
 
@@ -10,10 +11,12 @@ namespace OpenUtau.Classic {
         public string Image;
         public string Portrait;
         public float PortraitOpacity;
+        public int PortraitHeight;
         public string Author;
         public string Voice;
         public string Web;
         public string Version;
+        public string Sample;
         public string OtherInfo;
         public string DefaultPhonemizer;
         public Encoding TextFileEncoding;
@@ -27,10 +30,12 @@ namespace OpenUtau.Classic {
             Image = null;
             Portrait = null;
             PortraitOpacity = 0;
+            PortraitHeight = 0;
             Author = null;
             Voice = null;
             Web = null;
             Version = null;
+            Sample = null;
             OtherInfo = null;
             TextFileEncoding = null;
             SingerType = USingerType.Classic;

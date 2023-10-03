@@ -26,6 +26,8 @@ namespace OpenUtau.Core.Enunu {
         public override byte[] AvatarData => avatarData;
         public override string Portrait => voicebank.Portrait == null ? null : Path.Combine(Location, voicebank.Portrait);
         public override float PortraitOpacity => voicebank.PortraitOpacity;
+        public override int PortraitHeight => voicebank.PortraitHeight;
+        public override string Sample => voicebank.Sample == null ? null : Path.Combine(Location, voicebank.Sample);
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
@@ -188,6 +190,12 @@ namespace OpenUtau.Core.Enunu {
             return string.IsNullOrEmpty(Portrait)
                 ? null
                 : File.ReadAllBytes(Portrait);
+        }
+
+        public override byte[] LoadSample() {
+            return string.IsNullOrEmpty(Sample)
+                ? null
+                : File.ReadAllBytes(Sample);
         }
     }
 }

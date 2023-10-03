@@ -16,7 +16,7 @@
   </Window.Styles>
   <Grid>
   <Border>
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[2].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
@@ -55,8 +55,6 @@
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
-                         Foreground="{DynamicResource BlackKeyBrush}"
-                         Background="{DynamicResource WhiteKeyBrush}"
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
                          TrackOffset="{Binding TrackOffset}"
@@ -376,6 +374,7 @@
                   Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
               <MenuItem Header="{DynamicResource pianoroll.menu.part}">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
+                <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" Click="OnMenuSearchNote"/>
               </MenuItem>
               <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
                 <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
@@ -392,10 +391,10 @@
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}" Height="{Binding Height}"/>
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
@@ -404,6 +403,12 @@
               <MenuItem Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
             </Menu>
           </Border>
+        </Border>
+      </StackPanel>
+      <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                  Margin="12,12,12,70" Orientation="Horizontal">
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
+          <c:SearchBar Name="SearchBar"/>
         </Border>
       </StackPanel>
       <Rectangle Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"

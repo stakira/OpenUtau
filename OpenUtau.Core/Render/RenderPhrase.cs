@@ -329,6 +329,24 @@ namespace OpenUtau.Core.Render {
                         break;
                 }
             }
+            // Linking vibrato and volume
+            // int dynamicsInterval = 5;
+            foreach (var note in uNotes) {
+                if (note.vibrato.length <= 0 || note.vibrato.volLink == 0) {
+                    continue;
+                }
+                if (dynamics == null) {
+                    dynamics = new float[(end - part.position - pitchStart) / pitchInterval + 1];
+                }
+                int startIndex = Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval));
+                int endIndex = Math.Min(pitches.Length, (note.End - pitchStart) / pitchInterval);
+                float nPeriod = (float)(note.vibrato.period / note.DurationMs);
+                for (int i = startIndex; i < endIndex; ++i) {
+                    float nPos = (float)(pitchStart + i * pitchInterval - note.position) / note.duration;
+                    float ratio = note.vibrato.EvaluateVolume(nPos, nPeriod);
+                    dynamics[i] = dynamics[i] * ratio;
+                }
+            }
             this.curves = curves.ToArray();
             preEffectHash = Hash(false);
             hash = Hash(true);

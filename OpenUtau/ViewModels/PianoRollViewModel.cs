@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Classic;
@@ -45,6 +47,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
+            = new Dictionary<Key, MenuItemViewModel>();
 
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
@@ -129,11 +133,7 @@ namespace OpenUtau.App.ViewModels {
                 var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
                 runner.Execute(NotesViewModel.Project, part, first, last, plugin);
             });
-            LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
-                Header = plugin.Name,
-                Command = legacyPluginCommand,
-                CommandParameter = plugin,
-            }));
+            LoadLegacyPlugins();
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {
@@ -176,12 +176,52 @@ namespace OpenUtau.App.ViewModels {
                 new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
+                new InsertSlur(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
             DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void LoadLegacyPlugins() {
+            LegacyPlugins.Clear();
+            LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
+                Header = plugin.Name,
+                Command = legacyPluginCommand,
+                CommandParameter = plugin,
+            }));
+
+            LegacyPluginShortcuts.Clear();
+            foreach (MenuItemViewModel menu in LegacyPlugins) {
+                if (menu.CommandParameter is Classic.Plugin plugin) {
+                    if (Enum.TryParse(plugin.Shortcut, out Key key) && !LegacyPluginShortcuts.ContainsKey(key)) {
+                        LegacyPluginShortcuts.Add(key, menu);
+                    }
+                }
+            }
+            LegacyPlugins.Add(new MenuItemViewModel() { // Separator
+                Header = "-",
+                Height = 1
+            });
+            LegacyPlugins.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.plugin.openfolder"),
+                Command = ReactiveCommand.Create(() => {
+                    try {
+                        OS.OpenFolder(PathManager.Inst.PluginsPath);
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                    }
+                })
+            });
+            LegacyPlugins.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.plugin.reload"),
+                Command = ReactiveCommand.Create(() => {
+                    DocManager.Inst.SearchAllLegacyPlugins();
+                    LoadLegacyPlugins();
+                })
+            });
         }
 
         public void Undo() => DocManager.Inst.Undo();

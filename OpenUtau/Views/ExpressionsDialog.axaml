@@ -13,6 +13,10 @@
   <Design.DataContext>
     <vm:ExpressionsViewModel/>
   </Design.DataContext>
+  <Window.Styles>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+  </Window.Styles>
+
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Border Margin="10,10,10,40" Width="150" HorizontalAlignment="Left">
       <ListBox ItemsSource="{Binding Expressions}" SelectedItem="{Binding Expression}">

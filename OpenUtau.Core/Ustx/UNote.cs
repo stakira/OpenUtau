@@ -230,7 +230,10 @@ namespace OpenUtau.Core.Ustx {
         float _out = NotePresets.Default.DefaultVibrato.VibratoOut;
         // Shift percentage of period length.
         float _shift = NotePresets.Default.DefaultVibrato.VibratoShift;
-        float _drift;
+        // Shift the whole vibrato up and down.
+        float _drift = NotePresets.Default.DefaultVibrato.VibratoDrift;
+        // Percentage of volume reduction in linkage with vibrato. When this is 100%, volume will be 1.2 times to 0.2 times regardless of depth.
+        float _volLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
 
         public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
         public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
@@ -253,6 +256,7 @@ namespace OpenUtau.Core.Ustx {
         }
         public float shift { get => _shift; set => _shift = Math.Max(0, Math.Min(100, value)); }
         public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
+        public float volLink { get => _volLink; set => _volLink = Math.Max(-100, Math.Min(100, value)); }
 
         [YamlIgnore] public float NormalizedStart => 1f - length / 100f;
 
@@ -264,7 +268,8 @@ namespace OpenUtau.Core.Ustx {
                 @in = @in,
                 @out = @out,
                 shift = shift,
-                drift = drift
+                drift = drift,
+                volLink = volLink
             };
             return result;
         }
@@ -286,7 +291,7 @@ namespace OpenUtau.Core.Ustx {
             float nOut = length / 100f * @out / 100f;
             float nOutPos = 1f - nOut;
             float t = (nPos - nStart) / nPeriod + shift / 100f;
-            float y = (float)Math.Sin(2 * Math.PI * t) * depth;
+            float y = (float)Math.Sin(2 * Math.PI * t) * depth + (depth / 100 * drift);
             if (nPos < nStart) {
                 y = 0;
             } else if (nPos < nInPos) {
@@ -295,6 +300,36 @@ namespace OpenUtau.Core.Ustx {
                 y *= (1f - nPos) / nOut;
             }
             return new Vector2(note.position + note.duration * nPos, note.tone + y / 100f);
+        }
+        /// <summary>
+        /// Evaluate the volume of the position on the vibrato curve.
+        /// </summary>
+        public float EvaluateVolume(float nPos, float nPeriod) {
+            float nStart = NormalizedStart;
+            float nIn = length / 100f * @in / 100f;
+            float nInPos = nStart + nIn;
+            float nOut = length / 100f * @out / 100f;
+            float nOutPos = 1f - nOut;
+            float shift = this.shift;
+            float volLink = this.volLink;
+            if (volLink < 0) {
+                shift += 50;
+                if (shift > 100) {
+                    shift -= 100;
+                }
+                volLink *= -1;
+            }
+            float t = (nPos - nStart) / nPeriod + shift / 100f;
+            float reduction = (-(float)Math.Sin(2 * Math.PI * t) / 2 + 0.3f) * volLink / 100;
+            if (nPos < nStart) {
+                reduction = 0;
+            } else if (nPos < nInPos) {
+                reduction *= (nPos - nStart) / nIn;
+            } else if (nPos > nOutPos) {
+                reduction *= (1f - nPos) / nOut;
+            }
+            float y = 1 - reduction;
+            return y;
         }
 
         public Vector2 GetEnvelopeStart(UNote note) {

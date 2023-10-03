@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Render {
     public static class Renderers {
@@ -34,8 +35,19 @@ namespace OpenUtau.Core.Render {
             }
         }
 
+        public static List<string> getRendererOptions() {
+            return new List<string> {
+                "WORLDLINE-R",
+                "Classic"
+            };
+        }
+
         public static string GetDefaultRenderer(USingerType singerType) {
-            return GetSupportedRenderers(singerType)[0];
+            if (Preferences.Default.DefaultRenderer == "Classic" && singerType == USingerType.Classic) {
+                return CLASSIC;
+            } else {
+                return GetSupportedRenderers(singerType)[0];
+            }
         }
 
         public static IRenderer CreateRenderer(string renderer) {

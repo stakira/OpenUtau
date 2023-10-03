@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -309,6 +308,55 @@ namespace OpenUtau.Core {
             }
         }
     }
+
+    public class VibratoDriftCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newDrift;
+        readonly float oldDrift;
+        public VibratoDriftCommand(UVoicePart part, UNote note, float drift) : base(part, note) {
+            this.note = note;
+            newDrift = drift;
+            oldDrift = note.vibrato.drift;
+        }
+        public override string ToString() {
+            return "Change vibrato drift";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.drift = newDrift;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.drift = oldDrift;
+            }
+        }
+    }
+
+    public class VibratoVolumeLinkCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newVolLink;
+        readonly float oldVolLink;
+        public VibratoVolumeLinkCommand(UVoicePart part, UNote note, float volLink) : base(part, note) {
+            this.note = note;
+            newVolLink = volLink;
+            oldVolLink = note.vibrato.volLink;
+        }
+        public override string ToString() {
+            return "Change vibrato volume link";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.volLink = newVolLink;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.volLink = oldVolLink;
+            }
+        }
+    }
+
 
     public class PhonemeOffsetCommand : NoteCommand {
         readonly UNote note;

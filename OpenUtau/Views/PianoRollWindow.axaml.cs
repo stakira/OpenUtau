@@ -88,6 +88,17 @@ namespace OpenUtau.App.Views {
             } catch { }
         }
 
+        void OnMenuSearchNote(object sender, RoutedEventArgs args) {
+            SearchNote();
+        }
+
+        void SearchNote() {
+            if (ViewModel.NotesViewModel.Part == null || ViewModel.NotesViewModel.Part.notes.Count == 0) {
+                return;
+            }
+            SearchBar.Show(ViewModel.NotesViewModel);
+        }
+
         void ReplaceLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
@@ -828,6 +839,10 @@ namespace OpenUtau.App.Views {
                 args.Handled = false;
                 return;
             }
+            if (SearchBar != null && SearchBar.IsVisible && SearchBar.box.IsFocused) {
+                args.Handled = false;
+                return;
+            }
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 args.Handled = false;
@@ -853,6 +868,16 @@ namespace OpenUtau.App.Views {
             bool isCtrl = args.KeyModifiers == cmdKey;
             bool isShift = args.KeyModifiers == KeyModifiers.Shift;
             bool isBoth = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+
+            if (PluginMenu.IsSubMenuOpen && isNone) {
+                if (ViewModel.LegacyPluginShortcuts.ContainsKey(args.Key)) {
+                    var plugin = ViewModel.LegacyPluginShortcuts[args.Key];
+                    if (plugin != null && plugin.Command != null) {
+                        plugin.Command.Execute(plugin.CommandParameter);
+                    }
+                }
+                return true;
+            }
 
             switch (args.Key) {
                 #region document keys
@@ -1121,6 +1146,13 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.N:
+                    if (isNone && PluginMenu.Parent is MenuItem batch) {
+                        batch.Open();
+                        PluginMenu.Open();
+                        return true;
+                    }
+                    break;
                 // INSERT + DELETE
                 case Key.Insert:
                     if (isNone) {
@@ -1276,6 +1308,10 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
+                        SearchNote();
+                        return true;
+                    }
+                    if (isAlt) {
                         if (!notesVm.Selection.IsEmpty) {
                             playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position);
                         }

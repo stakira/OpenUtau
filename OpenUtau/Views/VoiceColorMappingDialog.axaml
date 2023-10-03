@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" MinWidth="200" MinHeight="200" Width="350" Height="350"
+        x:Class="OpenUtau.App.Views.VoiceColorMappingDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="{DynamicResource dialogs.voicecolorremapping}"
+        WindowStartupLocation="CenterOwner"
+        ExtendClientAreaToDecorationsHint="False">
+  <Grid RowDefinitions="40,1*,30" Margin="10">
+    <StackPanel Grid.Row="0" >
+      <TextBlock Text="{DynamicResource dialogs.voicecolorremapping.caption}" />
+      <TextBlock Text="{Binding TrackName}" />
+    </StackPanel>
+
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" >
+      <ItemsControl ItemsSource="{Binding ColorMappings}" VerticalAlignment="Stretch" >
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Grid ColumnDefinitions="1*,1*">
+              <TextBlock Text="{Binding Name}"
+                         Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,10,5"/>
+              <ComboBox ItemsSource="{Binding NewColors}" SelectedIndex="{Binding SelectedIndex}"
+                        Grid.Column="1" HorizontalAlignment="Left" Margin="10,5,0,5" MinWidth="100" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Spacing="10">
+      <Button Content="{DynamicResource dialogs.messagebox.ok}" Click="Ok_OnClick" Width="100" />
+      <Button Content="{DynamicResource dialogs.messagebox.cancel}" Click="Cancel_OnClick" Width="100"/>
+    </StackPanel>
+  </Grid>
+</Window>

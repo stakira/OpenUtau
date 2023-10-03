@@ -204,6 +204,8 @@ namespace OpenUtau.Core.Ustx {
         public virtual byte[] AvatarData { get; }
         public virtual string Portrait { get; }
         public virtual float PortraitOpacity { get; }
+        public virtual int PortraitHeight { get; }
+        public virtual string Sample { get; }
         public virtual string DefaultPhonemizer { get; }
         public virtual Encoding TextFileEncoding => Encoding.UTF8;
         public virtual IList<USubbank> Subbanks { get; }
@@ -245,6 +247,7 @@ namespace OpenUtau.Core.Ustx {
 
         public virtual IEnumerable<UOto> GetSuggestions(string text) { return emptyOtos; }
         public virtual byte[] LoadPortrait() => null;
+        public virtual byte[] LoadSample() => null;
         public override string ToString() => Name;
 
         public static USinger CreateMissing(string name) {

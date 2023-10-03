@@ -26,7 +26,9 @@ namespace OpenUtau.Classic {
         public override byte[] AvatarData => avatarData;
         public override string Portrait => voicebank.Portrait == null ? null : Path.Combine(Location, voicebank.Portrait);
         public override float PortraitOpacity => voicebank.PortraitOpacity;
+        public override int PortraitHeight => voicebank.PortraitHeight;
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
+        public override string Sample => voicebank.Sample == null ? null : Path.Combine(Location, voicebank.Sample);
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
         public override IList<UOto> Otos => otos;

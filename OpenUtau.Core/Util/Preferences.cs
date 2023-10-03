@@ -113,8 +113,11 @@ namespace OpenUtau.Core.Util {
             public bool ShowTips = true;
             public int Theme;
             public bool UseTrackColor = false;
+            public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
+            public string DefaultRenderer = string.Empty;
+            public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
             public int DiffsingerSpeedup = 50;
