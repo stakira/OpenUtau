@@ -835,14 +835,6 @@ namespace OpenUtau.App.Views {
         #endregion
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (LyricBox != null && LyricBox.IsVisible) {
-                args.Handled = false;
-                return;
-            }
-            if (SearchBar != null && SearchBar.IsVisible && SearchBar.box.IsFocused) {
-                args.Handled = false;
-                return;
-            }
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 args.Handled = false;
