@@ -849,6 +849,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
+            if (FocusManager != null && FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
+                if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+                    args.Handled = false;
+                    return;
+                }
+            }
+
             // returns true if handled
             args.Handled = OnKeyExtendedHandler(args);
         }
