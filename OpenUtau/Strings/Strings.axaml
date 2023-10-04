@@ -378,6 +378,8 @@
   <system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Rename</system:String>
   <system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>
+  <system:String x:Key="singers.subbanks.export">Export prefix.map</system:String>
+  <system:String x:Key="singers.subbanks.import">Import prefix.map</system:String>
   <system:String x:Key="singers.subbanks.reset">Reset</system:String>
   <system:String x:Key="singers.subbanks.save">Save</system:String>
   <system:String x:Key="singers.subbanks.selectall">Select All</system:String>
