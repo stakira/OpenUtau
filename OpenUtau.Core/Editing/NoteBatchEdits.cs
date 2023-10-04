@@ -287,6 +287,29 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class ResetAliases : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetAliases() {
+            name = "pianoroll.menu.notes.reset.aliases";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup(true);
+            foreach (var note in notes) {
+                foreach (var o in note.phonemeOverrides) {
+                    if (o.phoneme!=null) {
+                        docManager.ExecuteCmd(new ChangePhonemeAliasCommand(part, note, o.index, null));
+                    }
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class LengthenCrossfade : BatchEdit {
         public virtual string Name => name;
         private string name;
