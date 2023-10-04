@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
@@ -88,8 +89,12 @@ namespace OpenUtau.Integrations {
         }
 
         private void OpenOrCreate(Core.Ustx.USinger singer, Core.Ustx.UOto? oto) {
+            var existingProjectName = Directory.GetFiles(singer.Location)
+                .Where(path => Path.GetExtension(path) == ".lbp")
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .FirstOrDefault();
             var request = new OpenOrCreateRequest() {
-                projectFile = Path.Combine(singer.Location, "_vlabeler.lbp"),
+                projectFile = Path.Combine(singer.Location, existingProjectName ?? "_vlabeler.lbp"),
                 newProjectArgs = new NewProjectArgs {
                     cacheDirectory = Path.Combine(PathManager.Inst.CachePath, $"vlabeler-{HashHex(singer.Id)}"),
                     labelerParams = new Dictionary<string, TypedValue> {
