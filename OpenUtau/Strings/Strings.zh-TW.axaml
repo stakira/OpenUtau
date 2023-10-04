@@ -184,7 +184,7 @@
   <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">使用 "+" 替換 "-"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">使用 "+~" 替換 "-"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">編輯歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名轉羅馬拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日文 VCV 轉 CV</system:String>

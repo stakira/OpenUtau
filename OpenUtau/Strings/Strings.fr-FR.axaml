@@ -184,7 +184,7 @@ Attention: cela va effacer le préréglage.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copier</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Paroles</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Remplacer "-" par "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Remplacer "-" par "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifier les paroles</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana -> Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV -> CV</system:String>

@@ -184,7 +184,7 @@ Waarschuwing: deze optie verwijdert aangepaste voorinstellingen.</system:String>
   <system:String x:Key="phoneticassistant.copy">Kopieer</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Songtekst</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Vervang "-" door "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Vervang "-" door "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Bewerk Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana naar Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV naar CV</system:String>

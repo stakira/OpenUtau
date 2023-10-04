@@ -184,7 +184,7 @@
   <system:String x:Key="phoneticassistant.copy">คัดลอก</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">เนื้อเพลง</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">แทนที่ "-" ด้วย "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">แทนที่ "-" ด้วย "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">แก้ไขเนื้อเพลง</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">เปลี่ยนฮิระงะนะเป็นโรมันจิ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">เปลี่ยนระบบ JP VCV  เป็น CV</system:String>

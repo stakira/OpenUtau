@@ -184,7 +184,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="phoneticassistant.copy">Sao chép</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sửa lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV sang CV</system:String>

@@ -164,7 +164,7 @@ namespace OpenUtau.Core.Editing {
         public override string Name => "pianoroll.menu.lyrics.dashtoplus";
         protected override string Transform(string lyric) {
             if (lyric == "-") {
-                return lyric.Replace("-", "+");
+                return "+~";
             } else {
                 return lyric;
             }

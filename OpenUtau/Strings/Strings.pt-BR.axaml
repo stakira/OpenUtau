@@ -184,7 +184,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana para Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">(Japonês) VCV para CV</system:String>

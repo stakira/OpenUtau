@@ -184,7 +184,7 @@
   <system:String x:Key="phoneticassistant.copy">복사</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">가사</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+~" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">가사 편집</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV를 CV로</system:String>

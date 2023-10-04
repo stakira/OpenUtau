@@ -184,7 +184,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="phoneticassistant.copy">Salin</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Ganti "-" dengan "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Ganti "-" dengan "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV Jepang ke CV</system:String>

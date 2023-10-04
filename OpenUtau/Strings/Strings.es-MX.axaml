@@ -184,7 +184,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>

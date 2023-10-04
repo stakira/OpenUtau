@@ -192,7 +192,7 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
   <system:String x:Key="phoneticassistant.copy">Kopieren</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" mit "+" ersetzen</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" mit "+~" ersetzen</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Lyrics bearbeiten</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana zu Romaji konvertieren</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanisches VCV zu CV umwandeln</system:String>

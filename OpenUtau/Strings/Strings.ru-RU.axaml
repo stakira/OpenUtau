@@ -184,7 +184,7 @@
   <system:String x:Key="phoneticassistant.copy">Скопировть</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Текст</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Заменить "-" на "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Заменить "-" на "+~"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Редактировать текст</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Хирагана в ромадзи</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Японский VCV в CV</system:String>
