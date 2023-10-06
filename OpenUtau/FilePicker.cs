@@ -30,7 +30,7 @@ namespace OpenUtau.App {
             Patterns = new[] { "*.wav" },
         };
         public static FilePickerFileType ArchiveFiles { get; } = new("Archive File") {
-            Patterns = new[] { "*.zip", "*.rar", "*.uar", "*.vogeon" },
+            Patterns = new[] { "*.zip", "*.rar", "*.uar", "*.vogeon", "*.dsvocoder" },
         };
         public static FilePickerFileType EXE { get; } = new("EXE") {
             Patterns = new[] { "*.exe" },
@@ -40,6 +40,9 @@ namespace OpenUtau.App {
         };
         public static FilePickerFileType PrefixMap { get; } = new("Prefix Map") {
             Patterns = new[] { "*.map" },
+        };
+        public static FilePickerFileType DS { get; } = new("DS") {
+            Patterns = new[] { "*.ds" },
         };
 
         public async static Task<string?> OpenFile(
@@ -93,7 +96,7 @@ namespace OpenUtau.App {
 
         public async static Task<string?> SaveFile
             (Window window, string titleKey, params FilePickerFileType[] types) {
-            return await SaveFile(window, titleKey, null, null, types);
+return await SaveFile(window, titleKey, null, null, types);
         }
 
         public async static Task<string?> SaveFile
@@ -107,7 +110,7 @@ namespace OpenUtau.App {
                      Title = ThemeManager.GetString(titleKey),
                      FileTypeChoices = types,
                      ShowOverwritePrompt = true,
-                     SuggestedStartLocation = location,
+SuggestedStartLocation = location,
                      SuggestedFileName = filename,
                  });
             return file?.TryGetLocalPath();
