@@ -361,6 +361,8 @@
   <system:String x:Key="singers.subbanks.color.remove">Colorを削除</system:String>
   <system:String x:Key="singers.subbanks.color.rename">名前を変更</system:String>
   <system:String x:Key="singers.subbanks.edit">サブバンクを編集</system:String>
+  <system:String x:Key="singers.subbanks.export">prefix.mapをエクスポート</system:String>
+  <system:String x:Key="singers.subbanks.import">prefix.mapをインポート</system:String>
   <system:String x:Key="singers.subbanks.reset">リセット</system:String>
   <system:String x:Key="singers.subbanks.save">保存</system:String>
   <system:String x:Key="singers.subbanks.selectall">すべて選択</system:String>

@@ -8,7 +8,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource singers.caption}" Width="1000" MinWidth="850" MinHeight="640"
+        Title="{DynamicResource singers.caption}" Width="1050" MinWidth="1050" MinHeight="640"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
   <Design.DataContext>
@@ -50,7 +50,7 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="0" Spacing="10" Margin="10,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0" Height="20"
                 Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
       <Button Content="{DynamicResource singers.location}" Margin="0" Width="100"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
@@ -99,7 +99,7 @@
       <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
       <Button Margin="0" Content="{DynamicResource singers.playsample}" Click="OnPlaySample"/>
     </StackPanel>
-    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="5" Margin="0" Height="20"
                 Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.editoto.reset}" Command="{Binding RefreshSinger}"
               IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>

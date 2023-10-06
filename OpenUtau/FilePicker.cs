@@ -38,6 +38,9 @@ namespace OpenUtau.App {
         public static FilePickerFileType APP { get; } = new("APP") {
             Patterns = new[] { "*.app" },
         };
+        public static FilePickerFileType PrefixMap { get; } = new("Prefix Map") {
+            Patterns = new[] { "*.map" },
+        };
 
         public async static Task<string?> OpenFile(
             Window window, string titleKey, params FilePickerFileType[] types) {
@@ -88,13 +91,24 @@ namespace OpenUtau.App {
                 ?.FirstOrDefault();
         }
 
-        public async static Task<string?> SaveFile(
-            Window window, string titleKey, params FilePickerFileType[] types) {
+        public async static Task<string?> SaveFile
+            (Window window, string titleKey, params FilePickerFileType[] types) {
+            return await SaveFile(window, titleKey, null, null, types);
+        }
+
+        public async static Task<string?> SaveFile
+            (Window window, string titleKey, string? startLocation, string? filename, params FilePickerFileType[] types) {
+            var location = startLocation == null
+                ? null
+                : await window.StorageProvider.TryGetFolderFromPathAsync(startLocation);
+
             var file = await window.StorageProvider.SaveFilePickerAsync(
                  new FilePickerSaveOptions {
                      Title = ThemeManager.GetString(titleKey),
                      FileTypeChoices = types,
                      ShowOverwritePrompt = true,
+                     SuggestedStartLocation = location,
+                     SuggestedFileName = filename,
                  });
             return file?.TryGetLocalPath();
         }

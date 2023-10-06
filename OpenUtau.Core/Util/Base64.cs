@@ -3,7 +3,7 @@ using System.Text;
 
 namespace OpenUtau.Core.Util
 {
-    internal static class Base64
+    public static class Base64
     {
         public static string Base64EncodeInt12(int[] data)
         {
@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Util
                 else
                 {
                     base64.Append('#');
-                    base64.Append(dups + 1);
+                    base64.Append(dups);
                     base64.Append('#');
                     dups = 0;
                     base64.Append(b);
@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Util
             if (dups != 0)
             {
                 base64.Append('#');
-                base64.Append(dups + 1);
+                base64.Append(dups);
                 base64.Append('#');
             }
             return base64.ToString();

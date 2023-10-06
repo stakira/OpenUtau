@@ -243,8 +243,11 @@ namespace OpenUtau.App.Views {
                     if (playbackState == PlaybackState.Playing) {
                         playBack.Stop();
                     }
-                } else {
+                } else if (viewModel.Singer.SingerType == USingerType.Classic) {
                     var path = viewModel.Singer.Location;
+                    if(!Directory.Exists(path)){
+                        return;
+                    }
                     string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
                             .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
                             .Union(Directory.EnumerateFiles(path, "*.flac", SearchOption.AllDirectories))
@@ -252,6 +255,9 @@ namespace OpenUtau.App.Views {
                             .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
                             .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
                             .ToArray();
+                    if(files.Length==0){
+                        return;
+                    }
                     Random rnd = new Random(Guid.NewGuid().GetHashCode());
                     int choice = rnd.Next(0, files.Length - 1);
                     string soundFile = files[choice];
