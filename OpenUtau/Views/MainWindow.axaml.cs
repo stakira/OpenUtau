@@ -117,17 +117,6 @@ namespace OpenUtau.App.Views {
             args.Pointer.Capture(null);
         }
 
-        void OnEditKey(object sender, PointerPressedEventArgs args) {
-            var project = DocManager.Inst.Project;
-            var dialog = new KeyDialog(project.key);
-            dialog.OnOk = key => {
-                viewModel.PlaybackViewModel.SetKey(key);
-            };
-            dialog.ShowDialog(this);
-            // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
-            args.Pointer.Capture(null);
-        }
-
         private void AddTempoChange(int tick) {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog {

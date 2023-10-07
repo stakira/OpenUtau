@@ -802,6 +802,19 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnKeyMenuButton(object sender, RoutedEventArgs args) {
+            KeyMenu.PlacementTarget = sender as Button;
+            KeyMenu.Open();
+        }
+
+        void OnKeyKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None) {
+                if (sender is ContextMenu menu && menu.SelectedItem is MenuItemViewModel item) {
+                    item.Command?.Execute(item.CommandParameter);
+                }
+            }
+        }
+
         #region value tip
 
         void IValueTip.ShowValueTip() {
