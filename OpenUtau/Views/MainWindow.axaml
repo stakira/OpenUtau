@@ -89,7 +89,7 @@
           </MenuItem>
         </Menu>
         <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
-          <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
+          <Border Classes="playback" Width="96" HorizontalAlignment="Left" Margin="4,0">
             <Grid>
               <TextBlock Width="28" HorizontalAlignment="Left"
                          Background="Transparent" PointerPressed="OnEditTimeSignature">
@@ -100,11 +100,19 @@
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
-              <TextBlock Width="42" HorizontalAlignment="Right"
+              <TextBlock Width="42" HorizontalAlignment="Center"
                           Background="Transparent" PointerPressed="OnEditBpm">
                 <TextBlock.Text>
                   <MultiBinding StringFormat="{}{0:#0.00}">
                     <Binding Path="PlaybackViewModel.Bpm"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <TextBlock Width="28" HorizontalAlignment="Right"
+                         Background="Transparent" PointerPressed="OnEditKey">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0}">
+                    <Binding Path="PlaybackViewModel.KeyName"/>
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
