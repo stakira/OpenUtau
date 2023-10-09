@@ -51,7 +51,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"ir","Er"},
                 {"9 l","9l"},
                 {"8 n","8n"},
-                {"A ng","Ang"},
+                {"A ng","Ang"}
             };
 
         private readonly Dictionary<string, string> vvExceptions =
@@ -67,7 +67,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"i","y"},
                 {"3","r"},
                 {"8n","n"},
-                {"9l","l"}
+                {"9l","l"},
                 {"Ang","g"}
             };
 
