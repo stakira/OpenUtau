@@ -65,7 +65,6 @@ namespace OpenUtau.Plugin.Builtin {
                 {"3","r"},
                 {"8n","n"},
                 {"9l","l"},
-                {"Ang","g"}
             };
 
         private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
