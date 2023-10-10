@@ -96,7 +96,7 @@ namespace OpenUtau.App {
 
         public async static Task<string?> SaveFile
             (Window window, string titleKey, params FilePickerFileType[] types) {
-return await SaveFile(window, titleKey, null, null, types);
+            return await SaveFile(window, titleKey, null, null, types);
         }
 
         public async static Task<string?> SaveFile
@@ -110,7 +110,7 @@ return await SaveFile(window, titleKey, null, null, types);
                      Title = ThemeManager.GetString(titleKey),
                      FileTypeChoices = types,
                      ShowOverwritePrompt = true,
-SuggestedStartLocation = location,
+                     SuggestedStartLocation = location,
                      SuggestedFileName = filename,
                  });
             return file?.TryGetLocalPath();

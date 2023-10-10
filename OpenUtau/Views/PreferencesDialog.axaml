@@ -13,7 +13,7 @@
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
-<Window.Styles>
+  <Window.Styles>
     <Style Selector="TextBlock">
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
@@ -103,7 +103,7 @@
             <Grid>
               <TextBlock Text="{DynamicResource prefs.rendering.prerender}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding PreRender}"/>
-              </Grid>
+            </Grid>
             <Grid ColumnDefinitions="Auto,8,16,8,*">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.threads.numthreads}"/>
               <TextBlock Grid.Column="2">
@@ -174,11 +174,11 @@
             <Grid Margin="0,5,0,0">
               <TextBlock Text="{DynamicResource prefs.appearance.showportrait}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding ShowPortrait}"/>
-              </Grid>
-              <Grid>
-            <TextBlock Text="{DynamicResource prefs.appearance.showghostnotes}" HorizontalAlignment="Left"/>
+            </Grid>
+            <Grid>
+              <TextBlock Text="{DynamicResource prefs.appearance.showghostnotes}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding ShowGhostNotes}"/>
-              </Grid>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.otoeditor}">
@@ -204,16 +204,16 @@
             <Grid>
               <TextBlock Text="{DynamicResource prefs.advanced.beta}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding Beta}"/>
-              </Grid>
+            </Grid>
             <TextBlock Classes="restart"/>
             <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding LyricsHelpers}" SelectedItem="{Binding LyricsHelper}"/>
             <Grid>
-            <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" HorizontalAlignment="Left"/>
+              <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding LyricsHelperBrackets}"/>
-              </Grid>
+            </Grid>
             <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" Margin="0,5,0,0"/>
-              <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center" Margin="4">
+            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center" Margin="4">
               <CheckBox IsChecked="{Binding RememberMid}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
               <TextBlock Text=" .mid" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
               <CheckBox IsChecked="{Binding RememberUst}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>

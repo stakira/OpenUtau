@@ -4,6 +4,7 @@
 
   <system:String x:Key="context.note.copy">复制音符</system:String>
   <system:String x:Key="context.note.delete">删除音符</system:String>
+  <system:String x:Key="context.note.pasteparameters">粘贴表情</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
   <system:String x:Key="context.part.rename">重命名片段</system:String>
   <system:String x:Key="context.part.replaceaudio">替换音频</system:String>
@@ -74,7 +75,7 @@
   <system:String x:Key="lyrics.reset">重置</system:String>
   <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符</system:String>
-  
+
   <system:String x:Key="lyricsreplace.after">替换为：</system:String>
   <system:String x:Key="lyricsreplace.before">查找内容：</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">去除英文字母</system:String>
@@ -196,7 +197,7 @@
   <system:String x:Key="phoneticassistant.caption">语音学助手</system:String>
   <system:String x:Key="phoneticassistant.copy">复制</system:String>
 
-<system:String x:Key="pianoroll.menu.batch">批量编辑</system:String>
+  <system:String x:Key="pianoroll.menu.batch">批量编辑</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
@@ -208,29 +209,29 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">去除音阶后缀</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
-<system:String x:Key="pianoroll.menu.noteproperty">音符属性</system:String>
+  <system:String x:Key="pianoroll.menu.noteproperty">音符属性</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
-<system:String x:Key="pianoroll.menu.notes.autolegato">自动连奏</system:String>
+  <system:String x:Key="pianoroll.menu.notes.autolegato">自动连奏</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">将手绘音高转换为锚点音高</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">汉字转拼音</system:String>
-<!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
-<system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
-    <system:String x:Key="pianoroll.menu.part">片段</system:String>
+  <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
-<system:String x:Key="pianoroll.menu.part.singer">歌手与原音设定</system:String>
+  <system:String x:Key="pianoroll.menu.part.singer">歌手与原音设定</system:String>
   <system:String x:Key="pianoroll.menu.plugin.openfolder">打开插件文件夹</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">重新加载</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">搜索音符</system:String>
@@ -249,7 +250,7 @@
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">显示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
-    <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">笔(增强)工具 (Ctrl + 2)
 鼠标左键绘制音符
@@ -277,7 +278,7 @@
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
-<system:String x:Key="prefs.appearance.trackcolor">在界面上使用音轨颜色</system:String>
+  <system:String x:Key="prefs.appearance.trackcolor">在界面上使用音轨颜色</system:String>
   <system:String x:Key="prefs.cache">缓存</system:String>
   <system:String x:Key="prefs.cache.clearonquit">退出时清空缓存</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
@@ -307,10 +308,11 @@
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 渲染加速</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
-    <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
+  <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
@@ -328,10 +330,10 @@
   <system:String x:Key="prefs.rendering.threads.numthreads">最大渲染线程数</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
-<system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
+  <system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
-  
+
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">在vLabeler中编辑</system:String>
   <system:String x:Key="singers.editoto.gotosource">在文件夹中显示源文件</system:String>
@@ -353,7 +355,7 @@
   <system:String x:Key="singers.refresh">刷新</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">选择默认音素器</system:String>
   <system:String x:Key="singers.setencoding">选择编码</system:String>
-<system:String x:Key="singers.setimage">选择图标</system:String>
+  <system:String x:Key="singers.setimage">选择图标</system:String>
   <system:String x:Key="singers.setportrait">选择立绘</system:String>
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清空</system:String>
@@ -413,7 +415,7 @@
   <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
-<system:String x:Key="tracks.mute">静音</system:String>
+  <system:String x:Key="tracks.mute">静音</system:String>
   <system:String x:Key="tracks.mute.allothers">使其他所有音轨静音</system:String>
   <system:String x:Key="tracks.mute.only">仅使这个音轨静音</system:String>
   <system:String x:Key="tracks.mute.unmuteall">全部取消静音</system:String>
@@ -421,7 +423,7 @@
   <system:String x:Key="tracks.rename">重命名音轨</system:String>
   <system:String x:Key="tracks.selectrenderer">选择渲染器</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
-<!--<system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>-->
+  <!--<system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>-->
   <!--<system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>-->
   <system:String x:Key="tracks.solo.unsoloall">全部取消独奏</system:String>
   <system:String x:Key="tracks.trackcolor">修改音轨颜色</system:String>
