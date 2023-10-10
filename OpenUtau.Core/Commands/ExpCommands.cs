@@ -193,16 +193,35 @@ namespace OpenUtau.Core {
     }
 
     public class SetPitchPointsCommand : PitchExpCommand {
-        UPitch oldPitch;
+        UPitch[] oldPitch;
+        UNote[] Notes;
         UPitch newPitch;
         public SetPitchPointsCommand(UVoicePart part, UNote note, UPitch pitch) : base(part) {
-            Note = note;
-            oldPitch = note.pitch;
+            Notes = new UNote[] { note };
+            oldPitch = Notes.Select(note => note.pitch).ToArray();
+            newPitch = pitch;
+        }
+
+        public SetPitchPointsCommand(UVoicePart part, IEnumerable<UNote> notes, UPitch pitch) : base(part) {
+            Notes = notes.ToArray();
+            oldPitch = Notes.Select(note => note.pitch).ToArray();
             newPitch = pitch;
         }
         public override string ToString() => "Set pitch points";
-        public override void Execute() => Note.pitch = newPitch;
-        public override void Unexecute() => Note.pitch = oldPitch;
+        public override void Execute(){
+            lock (Part) {
+                for (var i=0; i<Notes.Length; i++) {
+                    Notes[i].pitch = newPitch.Clone();
+                }
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                for (var i = 0; i < Notes.Length; i++) {
+                    Notes[i].pitch = oldPitch[i];
+                }
+            }
+        }
     }
 
     public class SetCurveCommand : ExpCommand {
