@@ -106,26 +106,43 @@ namespace OpenUtau.Core.DiffSinger
             return new string[] { defaultPause };
         }
 
+        string GetSpeakerAtIndex(Note note, int index){
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
+            var speaker = singer.Subbanks
+                .Where(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone))
+                .FirstOrDefault();
+            if(speaker is null) {
+                return "";
+            }
+            return speaker.Suffix;
+        }
+
+        dsPhoneme[] GetDsPhonemes(Note note){
+            return GetSymbols(note)
+                .Select((symbol, index) => new dsPhoneme(symbol, GetSpeakerAtIndex(note, index)))
+                .ToArray();            
+        }
+
         protected bool IsSyllableVowelExtensionNote(Note note) {
             return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
         }
 
         List<phonemesPerNote> ProcessWord(Note[] notes){
             var wordPhonemes = new List<phonemesPerNote>{
-                new phonemesPerNote(-1, notes[0].tone, new List<string>())
+                new phonemesPerNote(-1, notes[0].tone)
             };
-            var symbols = GetSymbols(notes[0]);
-            var isVowel = symbols.Select(s => g2p.IsVowel(s)).ToArray();
+            var dsPhonemes = GetDsPhonemes(notes[0]);
+            var isVowel = dsPhonemes.Select(s => g2p.IsVowel(s.Symbol)).ToArray();
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
             //distribute phonemes to notes
             var noteIndex = 0;
-            for (int i = 0; i < symbols.Length; i++) {
+            for (int i = 0; i < dsPhonemes.Length; i++) {
                 if (isVowel[i] && noteIndex < nonExtensionNotes.Length) {
                     var note = nonExtensionNotes[noteIndex];
-                    wordPhonemes.Add(new phonemesPerNote(note.position, note.tone, new List<string>()));
+                    wordPhonemes.Add(new phonemesPerNote(note.position, note.tone));
                     noteIndex++;
                 }
-                wordPhonemes[^1].Phonemes.Add(symbols[i]);
+                wordPhonemes[^1].Phonemes.Add(dsPhonemes[i]);
             }
             return wordPhonemes;
         }
@@ -161,12 +178,14 @@ namespace OpenUtau.Core.DiffSinger
             result.RemoveAt(result.Count - 1);
             return result;
         }
+        
         public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
             if(speakerEmbedManager is null) {
                 speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
             }
             return speakerEmbedManager;
         }
+        
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
             float frameMs = dsConfig.frameMs();
@@ -176,7 +195,7 @@ namespace OpenUtau.Core.DiffSinger
             //[(Tick position of note, [phonemes])]
             //The first item of this list is for the consonants before the first note.
             var phrasePhonemes = new List<phonemesPerNote>{
-                new phonemesPerNote(-1,phrase[0][0].tone, new List<string>{"SP"})
+                new phonemesPerNote(-1,phrase[0][0].tone, new List<dsPhoneme>{new dsPhoneme("SP", GetSpeakerAtIndex(phrase[0][0], 0))})
             };
             var notePhIndex = new List<int> { 1 };
             foreach (var word in phrase) {
@@ -186,14 +205,14 @@ namespace OpenUtau.Core.DiffSinger
                 notePhIndex.Add(notePhIndex[^1]+wordPhonemes.SelectMany(n=>n.Phonemes).Count());
             }
             
-            phrasePhonemes.Add(new phonemesPerNote(endTick,lastNote.tone, new List<string>()));
+            phrasePhonemes.Add(new phonemesPerNote(endTick,lastNote.tone));
             phrasePhonemes[0].Position = timeAxis.MsPosToTickPos(
                 timeAxis.TickPosToMsPos(phrasePhonemes[1].Position)-padding
                 );
             //Linguistic Encoder
             var tokens = phrasePhonemes
                 .SelectMany(n => n.Phonemes)
-                .Select(p => (Int64)phonemes.IndexOf(p))
+                .Select(p => (Int64)phonemes.IndexOf(p.Symbol))
                 .ToArray();
             var word_div = phrasePhonemes.Take(phrasePhonemes.Count-1)
                 .Select(n => (Int64)n.Phonemes.Count)
@@ -233,7 +252,16 @@ namespace OpenUtau.Core.DiffSinger
             durationInputs.Add(NamedOnnxValue.CreateFromTensor("ph_midi",
                 new DenseTensor<Int64>(ph_midi, new int[] { ph_midi.Length }, false)
                 .Reshape(new int[] { 1, ph_midi.Length })));
-
+            //Speaker
+            if(dsConfig.speakers != null){
+                var speakerEmbedManager = getSpeakerEmbedManager();
+                var speakersByPhone =  phrasePhonemes
+                    .SelectMany(n => n.Phonemes)
+                    .Select(p => p.Speaker)
+                    .ToArray();
+                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByPhone(speakersByPhone);
+                durationInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
+            }
             var durationOutputs = durationModel.Run(durationInputs);
             List<double> durationFrames = durationOutputs.First().AsTensor<float>().Select(x=>(double)x).ToList();
             
@@ -269,8 +297,8 @@ namespace OpenUtau.Core.DiffSinger
                 }
                 double notePos = timeAxis.TickPosToMsPos(group[0].position);//start position of the note, ms
                 for (int phIndex = notePhIndex[groupIndex]; phIndex < notePhIndex[groupIndex + 1]; ++phIndex) {
-                    if (!String.IsNullOrEmpty(phs[phIndex])) {
-                        noteResult.Add(Tuple.Create(phs[phIndex], timeAxis.TicksBetweenMsPos(
+                    if (!String.IsNullOrEmpty(phs[phIndex].Symbol)) {
+                        noteResult.Add(Tuple.Create(phs[phIndex].Symbol, timeAxis.TicksBetweenMsPos(
                            notePos, positions[phIndex - 1])));
                     }
                 }
@@ -278,16 +306,34 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
     }
+
+    struct dsPhoneme{
+        public string Symbol;
+        public string Speaker;
+
+        public dsPhoneme(string symbol, string speaker){
+            Symbol = symbol;
+            Speaker = speaker;
+        }
+    }
+
     class phonemesPerNote{
         public int Position;
         public int Tone;
-        public List<string> Phonemes;
+        public List<dsPhoneme> Phonemes;
 
-        public phonemesPerNote(int position,int tone, List<string> phonemes)
+        public phonemesPerNote(int position, int tone, List<dsPhoneme> phonemes)
         {
             Position = position;
             Tone = tone;
             Phonemes = phonemes;
+        }
+
+        public phonemesPerNote(int position, int tone)
+        {
+            Position = position;
+            Tone = tone;
+            Phonemes = new List<dsPhoneme>();
         }
     }
 }

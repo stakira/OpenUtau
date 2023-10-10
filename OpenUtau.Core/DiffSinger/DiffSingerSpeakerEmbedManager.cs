@@ -64,6 +64,23 @@ namespace OpenUtau.Core.DiffSinger
             return speakerIndex;
         }
 
+        //used by phonemizer (duration model)
+        public Tensor<float> PhraseSpeakerEmbedByPhone(string[] speakerByPhone){
+            var hiddenSize = dsConfig.hiddenSize;
+            var speakerEmbeds = getSpeakerEmbeds();
+            var totalPhones = speakerByPhone.Length;
+            NDArray spkCurves = np.zeros<float>(totalPhones, dsConfig.speakers.Count);
+            foreach(int phoneId in Enumerable.Range(0,totalPhones)) {
+                var spkId = getSpeakerIndexBySuffix(speakerByPhone[phoneId]);
+                spkCurves[phoneId, spkId] = 1;
+            }
+            var spkEmbedResult = np.dot(spkCurves, speakerEmbeds.T);
+            var spkEmbedTensor = new DenseTensor<float>(spkEmbedResult.ToArray<float>(), 
+                new int[] { totalPhones, hiddenSize })
+                .Reshape(new int[] { 1, totalPhones, hiddenSize });
+            return spkEmbedTensor;
+        }
+
         //used by variance, pitch and acoustic
         public Tensor<float> PhraseSpeakerEmbedByFrame(RenderPhrase phrase, IList<int> durations, float frameMs, int totalFrames, int headFrames, int tailFrames){
             var singer = phrase.singer;
@@ -92,7 +109,7 @@ namespace OpenUtau.Core.DiffSinger
                 if (spkSum > 1) {
                     spkCurves[frameId, ":"] /= spkSum;
                 } else {
-                    spkCurves[frameId,defaultSpkByFrame[frameId]] += 1 - spkSum;
+                    spkCurves[frameId, defaultSpkByFrame[frameId]] += 1 - spkSum;
                 }
             }
             var spkEmbedResult = np.dot(spkCurves, speakerEmbeds.T);
