@@ -29,12 +29,16 @@ namespace OpenUtau.Core.DiffSinger {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
+        public override IList<UOto> Otos => otos;
 
         Voicebank voicebank;
         List<string> errors = new List<string>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
         public byte[] avatarData;
         List<USubbank> subbanks = new List<USubbank>();
+        List<UOto> otos = new List<UOto>();
+        Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
+
         public List<string> phonemes = new List<string>();
         public DsConfig dsConfig;
         public InferenceSession acousticSession = null;
@@ -75,6 +79,17 @@ namespace OpenUtau.Core.DiffSinger {
             //Load phoneme list
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath,TextFileEncoding).ToList();
+
+            var dummyOtoSet = new UOtoSet(new OtoSet(), Location);
+            foreach (var phone in phonemes) {
+                var uOto = UOto.OfDummy(phone);
+                if (!otoMap.ContainsKey(uOto.Alias)) {
+                    otos.Add(uOto);
+                    otoMap.Add(uOto.Alias, uOto);
+                } else {
+                    //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
+                }
+            }
 
             found = true;
             loaded = true;

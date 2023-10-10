@@ -333,9 +333,6 @@ ASALocalRun/
 # Test usts
 OpenUtau.Test/Usts/*
 
-# Visual Studio Code
-.vscode
-
 .DS_Store
 *.dmg
 *.exe
