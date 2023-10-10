@@ -394,8 +394,11 @@ namespace OpenUtau.App.ViewModels {
             } else {
                 targetHeight = PortraitHeight;
             }
-            int width = (int)Math.Round(targetHeight * Portrait.Size.Width / Portrait.Size.Height);
-            return Portrait.CreateScaledBitmap(new PixelSize(width, targetHeight));
+            int targetWidth = (int)Math.Round(targetHeight * Portrait.Size.Width / Portrait.Size.Height);
+            if(targetWidth == 0){
+                targetWidth = 1;
+            }
+            return Portrait.CreateScaledBitmap(new PixelSize(targetWidth, targetHeight));
         }
 
         private void LoadPortrait(UPart? part, UProject? project) {
