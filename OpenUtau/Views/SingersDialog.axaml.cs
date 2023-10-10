@@ -230,43 +230,52 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        string? FindSample(USinger singer){
+            var sample = singer.Sample;
+            if(sample!=null && File.Exists(sample)){
+                return sample;
+            } else if (singer.SingerType == USingerType.Classic) {
+                var path = singer.Location;
+                if(!Directory.Exists(path)){
+                    return null;
+                }
+                string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
+                        .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
+                        .Union(Directory.EnumerateFiles(path, "*.flac", SearchOption.AllDirectories))
+                        .Union(Directory.EnumerateFiles(path, "*.aiff", SearchOption.AllDirectories))
+                        .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
+                        .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
+                        .ToArray();
+                if(files.Length==0){
+                    return null;
+                }
+                Random rnd = new Random(Guid.NewGuid().GetHashCode());
+                int choice = rnd.Next(0, files.Length - 1);
+                string soundFile = files[choice];
+                return soundFile;
+            }
+            return null;
+        }
+
         public void OnPlaySample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             var playBack = PlaybackManager.Inst.AudioOutput;
             var playbackState = playBack.PlaybackState;
             if (viewModel.Singer != null) {
-                var sample = viewModel.Singer.Sample;
-                if (sample != null && File.Exists(sample)) {
-                    var playSample = Wave.OpenFile(sample);
-                    playBack.Init(playSample.ToSampleProvider());
-                    playBack.Play();
-                    if (playbackState == PlaybackState.Playing) {
-                        playBack.Stop();
-                    }
-                } else if (viewModel.Singer.SingerType == USingerType.Classic) {
-                    var path = viewModel.Singer.Location;
-                    if(!Directory.Exists(path)){
-                        return;
-                    }
-                    string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
-                            .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
-                            .Union(Directory.EnumerateFiles(path, "*.flac", SearchOption.AllDirectories))
-                            .Union(Directory.EnumerateFiles(path, "*.aiff", SearchOption.AllDirectories))
-                            .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
-                            .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
-                            .ToArray();
-                    if(files.Length==0){
-                        return;
-                    }
-                    Random rnd = new Random(Guid.NewGuid().GetHashCode());
-                    int choice = rnd.Next(0, files.Length - 1);
-                    string soundFile = files[choice];
-                    var playSound = Wave.OpenFile(soundFile);
+                var sample = FindSample(viewModel.Singer);
+                if(sample == null){
+                    return;
+                }
+                try{
+                    var playSound = Wave.OpenFile(sample);
                     playBack.Init(playSound.ToSampleProvider());
-                    playBack.Play();
-                    if (playbackState == PlaybackState.Playing) {
-                        playBack.Stop();
-                    }
+                } catch (Exception ex) {
+                    Log.Error(ex, $"Failed to load sample {sample}.");
+                    return;
+                }
+                playBack.Play();
+                if (playbackState == PlaybackState.Playing) {
+                    playBack.Stop();
                 }
             }
         }
