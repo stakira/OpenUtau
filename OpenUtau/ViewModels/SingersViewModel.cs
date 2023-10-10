@@ -223,7 +223,14 @@ namespace OpenUtau.App.ViewModels {
         public void OpenLocation() {
             try {
                 if (Singer != null) {
-                    OS.OpenFolder(Singer.Location);
+                    var location = Singer.Location;
+                    if(File.Exists(location)) {
+                        //Vogen voicebank is a singlefile
+                        OS.GotoFile(location);
+                    } else {
+                        //classic or ENUNU voicebank is a folder
+                        OS.OpenFolder(location);
+                    }
                 }
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
