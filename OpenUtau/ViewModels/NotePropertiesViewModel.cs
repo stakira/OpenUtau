@@ -267,9 +267,7 @@ namespace OpenUtau.App.ViewModels {
                             var pitch = new UPitch() { snapFirst = true };
                             pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
                             pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
-                            foreach (UNote note in selectedNotes) {
-                                DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, pitch));
-                            }
+                            DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
                         }
                     }
                 });
@@ -280,9 +278,7 @@ namespace OpenUtau.App.ViewModels {
                             var pitch = new UPitch() { snapFirst = true };
                             pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
                             pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
-                            foreach (UNote note in selectedNotes) {
-                                DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, pitch));
-                            }
+                            DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
                         }
                     }
                 });

@@ -228,6 +228,7 @@ Warning: this option removes custom presets.
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>

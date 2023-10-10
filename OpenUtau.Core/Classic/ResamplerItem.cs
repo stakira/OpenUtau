@@ -84,7 +84,7 @@ namespace OpenUtau.Classic {
                 int tempoPitchSkip = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, startMs - phoneStartMs) / 5.0);
                 tempoPitchCount = Math.Min(tempoPitchCount, pitches.Length - tempoPitchSkip);
                 int phrasePitchSkip = (int)Math.Floor(phrase.timeAxis.TicksBetweenMsPos(phraseStartMs, startMs) / 5.0);
-                double intervalPitchMs = phrase.timeAxis.TickPosToMsPos(5);
+                double intervalPitchMs = 120 / tempo * 500 / 480 * 5;
                 double diffPitchMs = startMs - phraseStartMs - phrase.timeAxis.TickPosToMsPos(phrasePitchSkip * 5);
                 double tempoRatio = phone.tempos[i].bpm / tempo;
                 for (int j = 0; j < tempoPitchCount; j++) {

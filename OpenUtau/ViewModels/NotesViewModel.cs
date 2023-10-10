@@ -380,6 +380,27 @@ namespace OpenUtau.App.ViewModels {
             LoadTrackColor(part, project);
         }
 
+        //If PortraitHeight is 0, the default behaviour is resizing any image taller than 800px to 800px,
+        //and keeping the sizes of images shorter than 800px unchanged.
+        //If PortraitHeight isn't 0, then the image will be resized to the specified height.
+        private Bitmap ResizePortrait(Bitmap Portrait, int PortraitHeight) {
+            int targetHeight;
+            if (PortraitHeight == 0) {
+                if (Portrait.Size.Height > 800) {
+                    targetHeight = 800;
+                } else {
+                    return Portrait;
+                }
+            } else {
+                targetHeight = PortraitHeight;
+            }
+            int targetWidth = (int)Math.Round(targetHeight * Portrait.Size.Width / Portrait.Size.Height);
+            if(targetWidth == 0){
+                targetWidth = 1;
+            }
+            return Portrait.CreateScaledBitmap(new PixelSize(targetWidth, targetHeight));
+        }
+
         private void LoadPortrait(UPart? part, UProject? project) {
             if (part == null || project == null) {
                 lock (portraitLock) {
@@ -427,16 +448,8 @@ namespace OpenUtau.App.ViewModels {
                                 Portrait = null;
                                 portraitSource = null;
                             } else {
-                                using (var stream = new MemoryStream(data)) {
-                                    var portrait = new Bitmap(stream);
-                                    if (portrait.Size.Height > 800 && singer.PortraitHeight == 0) {
-                                        int width = (int)Math.Round(800 * portrait.Size.Width / portrait.Size.Height);
-                                        portrait = portrait.CreateScaledBitmap(new PixelSize(width, 800));
-                                    } else {
-                                        int width = (int)Math.Round(singer.PortraitHeight * portrait.Size.Width / portrait.Size.Height);
-                                        portrait = portrait.CreateScaledBitmap(new PixelSize(width, singer.PortraitHeight));
-                                    }
-                                    Portrait = portrait;
+                                using (var stream = new MemoryStream(data)) { 
+                                    Portrait = ResizePortrait(new Bitmap(stream), singer.PortraitHeight);
                                     portraitSource = singer.Portrait;
                                 }
                             }

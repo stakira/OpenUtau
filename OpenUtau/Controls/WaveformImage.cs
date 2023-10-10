@@ -120,6 +120,9 @@ namespace OpenUtau.App.Controls {
         private WriteableBitmap? GetBitmap() {
             int desiredWidth = (int)Bounds.Width;
             int desiredHeight = (int)Bounds.Height;
+            if (desiredWidth == 0 || desiredHeight == 0) {
+                return null;
+            }
             if (bitmap == null || bitmap.Size.Width < desiredWidth) {
                 bitmap?.Dispose();
                 var size = new PixelSize(desiredWidth, desiredHeight);
