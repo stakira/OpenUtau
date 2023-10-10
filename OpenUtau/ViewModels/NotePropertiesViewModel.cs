@@ -264,10 +264,10 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(value => {
                     if (value >= 2 && value <= 320) {
                         if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
-                            var pitch = new UPitch() { snapFirst = true };
-                            pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
-                            pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
                             foreach (UNote note in selectedNotes) {
+                                var pitch = new UPitch() { snapFirst = true };
+                                pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
+                                pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
                                 DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, pitch));
                             }
                         }
@@ -277,10 +277,10 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(value => {
                     if (value >= -200 && value <= 200) {
                         if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
-                            var pitch = new UPitch() { snapFirst = true };
-                            pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
-                            pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
                             foreach (UNote note in selectedNotes) {
+                                var pitch = new UPitch() { snapFirst = true };
+                                pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
+                                pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
                                 DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, pitch));
                             }
                         }
