@@ -28,7 +28,7 @@ namespace OpenUtau.Core.DiffSinger
                 return np.array<float>(Enumerable.Range(0, dsConfig.hiddenSize)
                     .Select(i => reader.ReadSingle()));
             } else {
-                throw new Exception("Speaker embed file {path} not found");
+                throw new Exception($"Speaker embed file {path} not found");
             }
         }
 
