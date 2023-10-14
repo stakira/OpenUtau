@@ -294,6 +294,9 @@ namespace OpenUtau.Classic {
             try {
                 using (var stream = File.OpenRead(filePath)) {
                     var otoSet = ParseOtoSet(stream, filePath, encoding);
+                    if (!IsTest) {
+                        CheckWavExist(otoSet);
+                    }
                     AddAliasForMissingFiles(otoSet);
                     return otoSet;
                 }
@@ -341,9 +344,26 @@ namespace OpenUtau.Classic {
                     var oto = new Oto {
                         Alias = Path.GetFileNameWithoutExtension(file),
                         Wav = file,
+                        FileTrace = new FileTrace { file = wav, lineNumber = 0 }
                     };
                     oto.Phonetic = oto.Alias;
                     otoSet.Otos.Add(oto);
+                }
+            }
+        }
+
+        static void CheckWavExist(OtoSet otoSet) {
+            var wavGroups = otoSet.Otos.GroupBy(oto => oto.Wav);
+            foreach(var group in wavGroups) {
+                string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
+                if (!File.Exists(path)) {
+                    Log.Error($"Sound file missing. {path}");
+                    foreach (Oto oto in group) {
+                        if(string.IsNullOrEmpty(oto.Error)) {
+                            oto.Error = $"Sound file missing. {path}";
+                        }
+                        oto.IsValid = false;
+                    }
                 }
             }
         }
@@ -387,13 +407,6 @@ namespace OpenUtau.Classic {
             if (!ParseDouble(parts.ElementAtOrDefault(5), out oto.Overlap)) {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
-            }
-            if (!IsTest) {
-                string path = Path.Combine(Path.GetDirectoryName(trace.file), oto.Wav);
-                if (!File.Exists(path)) {
-                    oto.Error = $"{trace}\nSound file missing. {path}";
-                    return oto;
-                }
             }
             oto.IsValid = true;
             return oto;
