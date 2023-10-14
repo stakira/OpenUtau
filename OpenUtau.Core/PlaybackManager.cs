@@ -151,8 +151,13 @@ namespace OpenUtau.Core {
                     RenderEngine engine = new RenderEngine(project);
                     var projectMix = engine.RenderMixdown(0,DocManager.Inst.MainScheduler, ref renderCancellation,wait:true).Item1;
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
-                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
+                    if (isWritableFile(exportPath, out Exception? e)) {
+                        WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
+                    } else {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {exportPath}."));
+                        Log.Error(e, $"Failed to export {exportPath}.");
+                    }
                 });
                 try {
                     task.Wait();
@@ -175,8 +180,13 @@ namespace OpenUtau.Core {
                         }
                         var file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
-                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                        if (isWritableFile(file, out Exception? e)) {
+                            WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
+                            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                        } else {
+                            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {file}."));
+                            Log.Error(e, $"Failed to export {file}.");
+                        }
                     }
                 });
                 try {
@@ -187,6 +197,21 @@ namespace OpenUtau.Core {
                     }
                 }
             });
+        }
+
+        private bool isWritableFile(string filePath, out Exception? e) {
+            e = null;
+            try {
+                if(!File.Exists(filePath)) {
+                    return true;
+                }
+                using (FileStream fp = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)) {
+                    return true;
+                }
+            } catch (Exception ioe) {
+                e = ioe;
+                return false;
+            }
         }
 
         void SchedulePreRender() {
