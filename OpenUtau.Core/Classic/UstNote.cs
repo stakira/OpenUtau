@@ -305,12 +305,7 @@ namespace OpenUtau.Classic {
                 y = pby.Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
             }
             if (w.Count != 0 || y.Count != 0) {
-                if (points.Count > 1 && points.Count - 1 == w.Count && w.Count == y.Count) { // replace to new point
-                    for (var i = 0; i < w.Count(); i++) {
-                        x += w[i];
-                        points[i + 1] = new PitchPoint(x, y[i]);
-                    }
-                } else if (points.Count > 1 && points.Count - 1 == w.Count && y.Count == 0) { // replace w only
+                if (points.Count > 1 && points.Count - 1 == w.Count && y.Count == 0) { // replace w only
                     for (var i = 0; i < w.Count(); i++) {
                         x += w[i];
                         points[i + 1].X = x;
