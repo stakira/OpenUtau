@@ -506,8 +506,8 @@ namespace OpenUtau.App.Views {
                 Core.Vogen.VogenSingerInstaller.Install(file);
                 return;
             }
-            if (file.EndsWith(Core.DiffSinger.DiffSingerDependencyInstaller.FileExt)) {
-                Core.DiffSinger.DiffSingerDependencyInstaller.Install(file);
+            if (file.EndsWith(DependencyInstaller.FileExt)) {
+                DependencyInstaller.Install(file);
                 return;
             }
             try {
@@ -766,8 +766,15 @@ namespace OpenUtau.App.Views {
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
-            } else if (ext == Core.DiffSinger.DiffSingerDependencyInstaller.FileExt) {
-                Core.DiffSinger.DiffSingerDependencyInstaller.Install(file);
+            } else if (ext == DependencyInstaller.FileExt) {
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.installdependency.message") + file,
+                    ThemeManager.GetString("dialogs.installdependency.caption"),
+                    MessageBox.MessageBoxButtons.OkCancel);
+                if (result == MessageBox.MessageBoxResult.Ok) {
+                    DependencyInstaller.Install(file);
+                }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);
