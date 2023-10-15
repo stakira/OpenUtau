@@ -41,7 +41,7 @@ namespace OpenUtau.Core {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key));
                     }
                 }
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"dependency \"{name}\" installaion finished"));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Installed dependency \"{name}\""));
             }
         }
     }
