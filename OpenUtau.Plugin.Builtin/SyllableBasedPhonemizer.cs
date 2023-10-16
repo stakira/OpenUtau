@@ -60,9 +60,17 @@ namespace OpenUtau.Plugin.Builtin {
             /// </summary>
             public int tone;
             /// <summary>
+            /// Other phoneme attributes for VC and CC
+            /// </summary>
+            public PhonemeAttributes[] attr;
+            /// <summary>
             /// tone for base "vowel" phoneme
             /// </summary>
             public int vowelTone;
+            /// <summary>
+            /// Other phoneme attributes for base "vowel" phoneme
+            /// </summary>
+            public PhonemeAttributes[] vowelAttr;
 
             /// <summary>
             /// 0 if no consonants are taken from previous word;
@@ -119,6 +127,10 @@ namespace OpenUtau.Plugin.Builtin {
             /// the tone from last syllable, for all ending phonemes
             /// </summary>
             public int tone;
+            /// <summary>
+            /// Other phoneme attributes from last syllable
+            /// </summary>
+            public PhonemeAttributes[] attr;
 
             // helpers
             public bool IsEndingV => cc.Length == 0;
@@ -313,9 +325,11 @@ namespace OpenUtau.Plugin.Builtin {
                     cc = beginningCc.ToArray(),
                     v = symbols[firstVowelId],
                     tone = prevEndingValue.tone,
+                    attr = prevEndingValue.attr,
                     duration = prevEndingValue.duration,
                     position = 0,
                     vowelTone = notes[0].tone,
+                    vowelAttr = notes[0].phonemeAttributes,
                     prevWordConsonantsCount = prevEndingValue.cc.Count()
                 };
             } else {
@@ -325,9 +339,11 @@ namespace OpenUtau.Plugin.Builtin {
                     cc = symbols.Take(firstVowelId).ToArray(),
                     v = symbols[firstVowelId],
                     tone = notes[0].tone,
+                    attr = notes[0].phonemeAttributes,
                     duration = -1,
                     position = 0,
-                    vowelTone = notes[0].tone
+                    vowelTone = notes[0].tone,
+                    vowelAttr = notes[0].phonemeAttributes
                 };
             }
 
@@ -346,9 +362,11 @@ namespace OpenUtau.Plugin.Builtin {
                         cc = ccs.ToArray(),
                         v = symbols[lastSymbolI],
                         tone = notes[noteI - 1].tone,
+                        attr = notes[noteI - 1].phonemeAttributes,
                         duration = notes[noteI - 1].duration,
                         position = position,
                         vowelTone = notes[noteI].tone,
+                        vowelAttr = notes[noteI].phonemeAttributes,
                         canAliasBeExtended = true // for all not-first notes is allowed
                     };
                     ccs = new List<string>();
@@ -378,6 +396,7 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = symbols[vowelIds.Last()],
                 cc = symbols.Skip(vowelIds.Last() + 1).ToArray(),
                 tone = notes.Last().tone,
+                attr = notes.Last().phonemeAttributes,
                 duration = notes.Skip(vowelIds.Length - 1).Sum(n => n.duration),
                 position = notes.Sum(n => n.duration)
             };
@@ -614,6 +633,27 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return true;
+        }
+
+        protected bool AreTonesFromTheSameSubbank(int tone1, string? color1, int tone2, string? color2) {
+            if (singer.Subbanks.Count == 1) {
+                return true;
+            }
+            if (color1 == color2) {
+                if (tone1 == tone2) {
+                    return true;
+                }
+                var toneSets = singer.Subbanks.Where(n => n.Color == color1).Select(n => n.toneSet);
+                foreach (var toneSet in toneSets) {
+                    if (toneSet.Contains(tone1) && toneSet.Contains(tone2)) {
+                        return true;
+                    }
+                    if (toneSet.Contains(tone1) != toneSet.Contains(tone2)) {
+                        return false;
+                    }
+                }
+            }
+            return false;
         }
 
         #endregion
