@@ -15,6 +15,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Analysis.Some;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -44,6 +45,7 @@ namespace OpenUtau.App.Views {
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -79,6 +81,7 @@ namespace OpenUtau.App.Views {
 
             PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
             PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(part => ReplaceAudio(part));
+            PartTranscribeCommand = ReactiveCommand.Create<UPart>(part => Transcribe(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -905,6 +908,7 @@ namespace OpenUtau.App.Views {
                             PartDeleteCommand = viewModel.PartDeleteCommand,
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
                             PartRenameCommand = PartRenameCommand,
+                            PartTranscribeCommand = PartTranscribeCommand,
                         };
                         shouldOpenPartsContextMenu = true;
                     }
@@ -1055,6 +1059,23 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, part, newPart));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        void Transcribe(UPart part){
+            if(part is UWavePart wavePart){
+                using(Some some = new Some()){
+                    UVoicePart voicePart = some.Transcribe(DocManager.Inst.Project, wavePart);
+                    //Add voicePart into project
+                    var project = DocManager.Inst.Project;
+                    var track = new UTrack(project);
+                    track.TrackNo = project.tracks.Count;
+                    voicePart.trackNo = track.TrackNo;
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                    DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            }
         }
 
         async void ValidateTracksVoiceColor() {

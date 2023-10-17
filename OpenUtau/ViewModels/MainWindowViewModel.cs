@@ -18,6 +18,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartDeleteCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartRenameCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
