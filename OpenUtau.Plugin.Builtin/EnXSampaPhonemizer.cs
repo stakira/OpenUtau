@@ -146,7 +146,7 @@ namespace OpenUtau.Plugin.Builtin {
             string[] diphthongs = new[] { "aI", "eI", "OI", "aU", "oU", "VI", "VU", "@U" };
             string[] affricates = new[] { "dZ", "tS" };
             foreach (string s in original) {
-                if (diphthongs.Contains(HasOto(s, note.tone) ? s : s) && !HasOto($"- {s}", note.tone) && !HasOto(s, note.tone) && !HasOto(ValidateAlias($"- {s}"), note.tone) && !HasOto(ValidateAlias(s), note.tone)) {
+                if (diphthongs.Contains(s) && !HasOto($"- {s}", note.tone) && !HasOto(s, note.tone) && !HasOto(ValidateAlias($"- {s}"), note.tone) && !HasOto(ValidateAlias(s), note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1] + '^'.ToString() });
                 } else if (affricates.Contains(s) && !HasOto($"{s}A", note.tone) && !HasOto($"{s} A", note.tone) && !HasOto($"{s}Q", note.tone) && !HasOto($"{s} Q", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
