@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
@@ -67,6 +68,11 @@ namespace OpenUtau.Core.DiffSinger
             return speakerEmbedManager;
         }
 
+        void SetRange<T>(T[] list, T value, int startIndex, int endIndex){
+            for(int i=startIndex;i<endIndex;i++){
+                list[i] = value;
+            }
+        }
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
             var endMs = phrase.notes[^1].endMs + tailMs;
@@ -125,11 +131,80 @@ namespace OpenUtau.Core.DiffSinger
                 .First()
                 .AsTensor<bool>();
             
-            //Pitch Predictor            
+            //Pitch Predictor   
+            var note_rest = new List<bool>{true};
+                bool prevNoteRest = true;
+                int phIndex = 0;
+                foreach(var note in phrase.notes) {
+                    //Slur notes follow the previous note's rest status
+                    if(note.lyric.StartsWith("+")) {
+                        note_rest.Add(prevNoteRest);
+                        continue;
+                    }
+                    //find all the phonemes in the note's time range
+                    while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
+                        phIndex++;
+                    }
+                    var phs = phrase.phones
+                        .SkipWhile(ph => ph.end <= note.position + 1)
+                        .TakeWhile(ph => ph.position < note.end - 1)
+                        .ToArray();
+                    //If all the phonemes in a note's time range are AP, SP or consonant,
+                    //it is a rest note
+                    bool isRest = phs.Length == 0 
+                        || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
+                    note_rest.Add(isRest);
+                    prevNoteRest = isRest;
+                }
+
             var note_midi = phrase.notes
                 .Select(n=>(float)n.tone)
                 .Prepend((float)phrase.notes[0].tone)
                 .ToArray();
+            //get the index of groups of consecutive rest notes
+            int restGroupStart = 0;
+            var restGroups = new List<Tuple<int,int>>{};
+            foreach(int noteIndex in Enumerable.Range(1,note_rest.Count - 1)) {
+                if(!note_rest[noteIndex-1] && note_rest[noteIndex]) {
+                    //start a new rest group
+                    restGroupStart = noteIndex;
+                }
+                if(note_rest[noteIndex-1] && !note_rest[noteIndex]) {
+                    //end the current rest group
+                    restGroups.Add(new Tuple<int,int>(restGroupStart,noteIndex));
+                }
+            }
+            if(!note_rest[^1]) {
+                //end the last rest group
+                restGroups.Add(new Tuple<int,int>(restGroupStart,note_rest.Count));
+            }
+            //Set tone for each rest group
+            foreach(var restGroup in restGroups){
+                if(restGroup.Item1 == 0 && restGroup.Item2 == note_rest.Count){
+                    //If All the notes are rest notes, don't set tone
+                    break;
+                }
+                if(restGroup.Item1 == 0){
+                    //If the first note is a rest note, set the tone to the tone of the first non-rest note
+                    SetRange<float>(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
+                } else if(restGroup.Item2 == note_rest.Count){
+                    //If the last note is a rest note, set the tone to the tone of the last non-rest note
+                    SetRange<float>(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count);
+                } else {
+                    //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
+                    SetRange<float>(note_midi, 
+                        note_midi[restGroup.Item1-1], 
+                        restGroup.Item1, 
+                        (restGroup.Item1 + restGroup.Item2 + 1)/2
+                    );
+                    SetRange<float>(note_midi, 
+                        note_midi[restGroup.Item2], 
+                        (restGroup.Item1 + restGroup.Item2 + 1)/2, 
+                        restGroup.Item2
+                    );
+                }
+            }
+
             //use the delta of the positions of the next note and the current note
             //to prevent incorrect timing when there is a small space between two notes
             var note_dur = phrase.notes.Zip(phrase.notes.Skip(1),
@@ -138,7 +213,6 @@ namespace OpenUtau.Core.DiffSinger
                 .Append(0)
                 .ToList();
             note_dur[^1]=totalFrames-note_dur.Sum();
-
             var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
             var retake = Enumerable.Repeat(true, totalFrames).ToArray();
             var speedup = Preferences.Default.DiffsingerSpeedup;
@@ -183,6 +257,13 @@ namespace OpenUtau.Core.DiffSinger
                 var speakerEmbedManager = getSpeakerEmbedManager();
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
+            }
+
+            //Melody encoder
+            if(dsConfig.use_note_rest) {
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_rest",
+                new DenseTensor<bool>(note_rest.ToArray(), new int[] { note_rest.Count }, false)
+                .Reshape(new int[] { 1, note_rest.Count })));
             }
 
             var pitchOutputs = pitchModel.Run(pitchInputs);
