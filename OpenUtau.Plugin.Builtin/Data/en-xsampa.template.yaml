@@ -141,6 +141,13 @@ symbols:
   - {symbol: 'u:', type: vowel}
   - {symbol: 'O:', type: vowel}
   - {symbol: e@0, type: vowel}
+  - {symbol: ai, type: vowel}
+  - {symbol: ei, type: vowel}
+  - {symbol: Oi, type: vowel}
+  - {symbol: au, type: vowel}
+  - {symbol: ou, type: vowel}
+  - {symbol: Ou, type: vowel}
+  - {symbol: '@u', type: vowel}
   - {symbol: 4, type: tap}
   - {symbol: W, type: fricative}
   - {symbol: 't_}', type: stop}
