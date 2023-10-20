@@ -126,6 +126,7 @@ namespace OpenUtau.Core {
                 StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
+                    Log.Error(task.Exception, "Failed to render.");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
                     throw task.Exception;
                 }
