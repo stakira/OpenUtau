@@ -58,6 +58,9 @@
               <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.exportproject}">
+              <MenuItem Header="{DynamicResource menu.file.exportds}" Click="OnMenuExportDsTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2To"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
               <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>

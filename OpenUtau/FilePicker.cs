@@ -30,7 +30,7 @@ namespace OpenUtau.App {
             Patterns = new[] { "*.wav" },
         };
         public static FilePickerFileType ArchiveFiles { get; } = new("Archive File") {
-            Patterns = new[] { "*.zip", "*.rar", "*.uar", "*.vogeon" },
+            Patterns = new[] { "*.zip", "*.rar", "*.uar", "*.vogeon", "*.oudep" },
         };
         public static FilePickerFileType EXE { get; } = new("EXE") {
             Patterns = new[] { "*.exe" },
@@ -40,6 +40,9 @@ namespace OpenUtau.App {
         };
         public static FilePickerFileType PrefixMap { get; } = new("Prefix Map") {
             Patterns = new[] { "*.map" },
+        };
+        public static FilePickerFileType DS { get; } = new("DS") {
+            Patterns = new[] { "*.ds" },
         };
 
         public async static Task<string?> OpenFile(

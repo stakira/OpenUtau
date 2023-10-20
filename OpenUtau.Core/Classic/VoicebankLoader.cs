@@ -28,6 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
+        public const string kDsconfigYaml = "dsconfig.yaml";
         public const string kConfigYaml = "config.yaml";
         public const string kOtoIni = "oto.ini";
 
@@ -99,11 +100,17 @@ namespace OpenUtau.Classic {
                 case "enunu":
                     voicebank.SingerType = USingerType.Enunu;
                     break;
+                case "diffsinger":
+                    voicebank.SingerType = USingerType.DiffSinger;
+                    break;
                 default:
                     // Legacy detection code. Do not add more here.
                     var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+                    var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
                     if (File.Exists(enuconfigFile)) {
                         voicebank.SingerType = USingerType.Enunu;
+                    } else if(File.Exists(dsconfigFile)){
+                        voicebank.SingerType = USingerType.DiffSinger;
                     } else if (voicebank.SingerType != USingerType.Enunu) {
                         voicebank.SingerType = USingerType.Classic;
                     }

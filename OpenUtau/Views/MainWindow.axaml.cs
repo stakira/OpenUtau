@@ -22,6 +22,8 @@ using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
 
+using OpenUtau.Core.DiffSinger;
+
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
         private readonly KeyModifiers cmdKey =
@@ -351,6 +353,54 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var file = await FilePicker.SaveFile(
+                this, "menu.file.exportds", FilePicker.DS);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var file = await FilePicker.SaveFile(
+                this, "menu.file.exportds.v2", FilePicker.DS);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var file = await FilePicker.SaveFile(
+                this, "menu.file.exportds.v2withoutpitch", FilePicker.DS);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true, false);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
         async void OnMenuExportUst(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
@@ -454,6 +504,10 @@ namespace OpenUtau.App.Views {
             }
             if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
+                return;
+            }
+            if (file.EndsWith(DependencyInstaller.FileExt)) {
+                DependencyInstaller.Install(file);
                 return;
             }
             try {
@@ -711,6 +765,15 @@ namespace OpenUtau.App.Views {
                 _ = setup.ShowDialog(this);
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
+                }
+            } else if (ext == DependencyInstaller.FileExt) {
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.installdependency.message") + file,
+                    ThemeManager.GetString("dialogs.installdependency.caption"),
+                    MessageBox.MessageBoxButtons.OkCancel);
+                if (result == MessageBox.MessageBoxResult.Ok) {
+                    DependencyInstaller.Install(file);
                 }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
