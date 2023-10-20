@@ -123,8 +123,6 @@ namespace OpenUtau.App.ViewModels {
                 Core.Format.Formats.LoadProject(files);
                 DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 this.RaisePropertyChanged(nameof(Title));
-            } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
             }
