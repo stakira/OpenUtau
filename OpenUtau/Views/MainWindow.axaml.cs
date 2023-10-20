@@ -15,14 +15,13 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
-
-using OpenUtau.Core.DiffSinger;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
@@ -188,7 +187,9 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
+                MessageBox loading = MessageBox.ShowLoading(this);
                 viewModel.OpenProject(files);
+                loading.Close();
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
                 _ = await MessageBox.ShowError(this, e);
@@ -476,6 +477,7 @@ namespace OpenUtau.App.Views {
             }
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             if (dialog == null) {
+                MessageBox loading = MessageBox.ShowLoading(this);
                 USinger? singer = null;
                 if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                     singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
@@ -489,6 +491,7 @@ namespace OpenUtau.App.Views {
                 }
                 dialog = new SingersDialog() { DataContext = vm };
                 dialog.Show();
+                loading.Close();
             }
             dialog.Activate();
             if (dialog.Position.Y < 0) {
@@ -972,10 +975,12 @@ namespace OpenUtau.App.Views {
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
+                    MessageBox loading = MessageBox.ShowLoading(this);
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
                     };
                     pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
+                    loading.Close();
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;

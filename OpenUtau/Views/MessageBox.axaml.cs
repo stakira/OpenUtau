@@ -93,5 +93,14 @@ namespace OpenUtau.App.Views {
             msgbox.ShowDialog(parent);
             return msgbox;
         }
+
+        public static MessageBox ShowLoading(Window parent) {
+            var msgbox = new MessageBox() {
+                Title = "Loading"
+            };
+            msgbox.Text.Text = "Please wait...";
+            msgbox.Show(parent);
+            return msgbox;
+        }
     }
 }
