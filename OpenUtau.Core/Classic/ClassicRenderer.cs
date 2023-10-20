@@ -78,7 +78,7 @@ namespace OpenUtau.Classic {
                             VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
                     }
-                    progress.Complete(1, $"Track {trackNo} : {item.resampler} \"{item.phone.phoneme}\"");
+                    progress.Complete(1, $"Track {trackNo}: {item.resampler} \"{item.phone.phoneme}\"");
                 });
                 var result = Layout(phrase);
                 var wavtool = new SharpWavtool(true);
