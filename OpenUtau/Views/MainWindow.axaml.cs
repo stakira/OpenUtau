@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
@@ -217,7 +218,7 @@ namespace OpenUtau.App.Views {
                     MessageBox.MessageBoxButtons.Ok);
             }
             try {
-                var dir = System.IO.Path.GetDirectoryName(project.FilePath);
+                var dir = Path.GetDirectoryName(project.FilePath);
                 if (dir != null) {
                     OS.OpenFolder(dir);
                 } else {
@@ -259,9 +260,9 @@ namespace OpenUtau.App.Views {
                 if (string.IsNullOrEmpty(file)) {
                     return;
                 }
-                file = System.IO.Path.GetFileNameWithoutExtension(file);
+                file = Path.GetFileNameWithoutExtension(file);
                 file = $"{file}.ustx";
-                file = System.IO.Path.Combine(PathManager.Inst.TemplatesPath, file);
+                file = Path.Combine(PathManager.Inst.TemplatesPath, file);
                 Ustx.Save(file, project.CloneAsTemplate());
             };
             dialog.ShowDialog(this);
@@ -328,17 +329,17 @@ namespace OpenUtau.App.Views {
             var file = await FilePicker.SaveFile(
                 this, "menu.file.exportmixdown", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
-                PlaybackManager.Inst.RenderMixdown(project, file);
+                await PlaybackManager.Inst.RenderMixdown(project, file);
             }
         }
 
         async void OnMenuExportWav(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
-                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
-                var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export", $"{name}.wav");
-                PlaybackManager.Inst.RenderToFiles(project, path);
+                var name = Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = Path.GetDirectoryName(project.FilePath);
+                path = Path.Combine(path!, "Export", $"{name}.wav");
+                await PlaybackManager.Inst.RenderToFiles(project, path);
             }
         }
 
@@ -347,16 +348,16 @@ namespace OpenUtau.App.Views {
             var file = await FilePicker.SaveFile(
                 this, "menu.file.exportwavto", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
-                PlaybackManager.Inst.RenderToFiles(project, file);
+                await PlaybackManager.Inst.RenderToFiles(project, file);
             }
         }
 
         async void OnMenuExportUst(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
-                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
-                var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export", $"{name}.ust");
+                var name = Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = Path.GetDirectoryName(project.FilePath);
+                path = Path.Combine(path!, "Export", $"{name}.ust");
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
@@ -665,7 +666,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             string file = storageItem.Path.LocalPath;
-            var ext = System.IO.Path.GetExtension(file);
+            var ext = Path.GetExtension(file);
             if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext==".ufdata") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
