@@ -74,27 +74,29 @@ namespace OpenUtau.Classic {
             pitchCount = Math.Max(pitchCount, 0);
             pitches = new int[pitchCount];
 
-            double phoneStartMs = phone.positionMs - pitchLeadingMs;
-            double phraseStartMs = phrase.positionMs - phrase.leadingMs;
-            for (int i = 0; i < phone.tempos.Length; i++) {
-                double startMs = Math.Max(phrase.timeAxis.TickPosToMsPos(phone.tempos[i].position), phoneStartMs);
-                double endMs = i + 1 < phone.tempos.Length ? phrase.timeAxis.TickPosToMsPos(phone.tempos[i + 1].position) : phone.positionMs + phone.envelope[4].X;
-                double durationMs = endMs - startMs;
-                int tempoPitchCount = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, durationMs) / 5.0);
-                int tempoPitchSkip = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, startMs - phoneStartMs) / 5.0);
-                tempoPitchCount = Math.Min(tempoPitchCount, pitches.Length - tempoPitchSkip);
-                int phrasePitchSkip = (int)Math.Floor(phrase.timeAxis.TicksBetweenMsPos(phraseStartMs, startMs) / 5.0);
-                double intervalPitchMs = 120 / tempo * 500 / 480 * 5;
-                double diffPitchMs = startMs - phraseStartMs - phrase.timeAxis.TickPosToMsPos(phrasePitchSkip * 5);
-                double tempoRatio = phone.tempos[i].bpm / tempo;
-                for (int j = 0; j < tempoPitchCount; j++) {
-                    int index = tempoPitchSkip + j;
-                    int scaled = phrasePitchSkip + (int)Math.Ceiling(j * tempoRatio);
-                    scaled = Math.Clamp(scaled, 0, phrase.pitches.Length - 1);
-                    int nextScaled = Math.Clamp(scaled + 1, 0, phrase.pitches.Length - 1);
-                    index = Math.Clamp(index, 0, pitchCount - 1);
-                    pitches[index] = (int)Math.Round((phrase.pitches[nextScaled]- phrase.pitches[scaled]) /intervalPitchMs * diffPitchMs + phrase.pitches[scaled] - phone.tone * 100);
-                }
+            var phrasePitchStartMs = phrase.positionMs - phrase.leadingMs;
+            var phrasePitchStartTick = (int)Math.Floor(phrase.timeAxis.MsPosToNonExactTickPos(phrasePitchStartMs));
+
+            var pitchIntervalMs = MusicMath.TempoTickToMs(tempo, 5);
+            var pitchSampleStartMs = phone.positionMs - pitchLeadingMs;
+
+            for (int i=0; i<pitches.Length; i++) {
+                var samplePosMs = pitchSampleStartMs + pitchIntervalMs * i;
+                var samplePosTick = (int)Math.Floor(phrase.timeAxis.MsPosToNonExactTickPos(samplePosMs));
+
+                var sampleInterval = phrase.timeAxis.TickPosToMsPos(samplePosTick + 5) - phrase.timeAxis.TickPosToMsPos(samplePosTick);
+                var sampleIndex = (samplePosTick - phrasePitchStartTick) / 5.0;
+                sampleIndex = Math.Clamp(sampleIndex, 0, phrase.pitches.Length - 1);
+
+                var sampleStart = (int)Math.Floor(sampleIndex);
+                var sampleEnd = (int)Math.Ceiling(sampleIndex);
+
+                var diffPitchMs = samplePosMs - phrase.timeAxis.TickPosToMsPos(phrasePitchStartTick + sampleStart * 5);
+                var sampleAlpha = diffPitchMs / sampleInterval;
+
+                var sampleLerped = phrase.pitches[sampleStart] + (phrase.pitches[sampleEnd] - phrase.pitches[sampleStart]) * sampleAlpha;
+
+                pitches[i] = (int)Math.Round(sampleLerped - phone.tone * 100);
             }
 
             hash = Hash();
