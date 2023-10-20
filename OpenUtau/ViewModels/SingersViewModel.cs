@@ -10,6 +10,7 @@ using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using NAudio.Wave;
 using NWaves.Signals;
+using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -56,17 +57,24 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    singer.EnsureLoaded();
-                    Avatar = LoadAvatar(singer);
-                    Otos.Clear();
-                    Otos.AddRange(singer.Otos);
-                    DisplayedOtos.Clear();
-                    DisplayedOtos.AddRange(singer.Otos);
-                    Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
-                    HasWebsite = !string.IsNullOrEmpty(singer.Web);
-                    LoadSubbanks();
-                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
-                    this.RaisePropertyChanged(nameof(IsClassic));
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
+                    try {
+                        singer.EnsureLoaded();
+                        Avatar = LoadAvatar(singer);
+                        Otos.Clear();
+                        Otos.AddRange(singer.Otos);
+                        DisplayedOtos.Clear();
+                        DisplayedOtos.AddRange(singer.Otos);
+                        Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                        HasWebsite = !string.IsNullOrEmpty(singer.Web);
+                        LoadSubbanks();
+                        DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+                        this.RaisePropertyChanged(nameof(IsClassic));
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                    } finally {
+                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
+                    }
                 });
             this.WhenAnyValue(vm => vm.SearchAlias)
                 .Subscribe(alias => {

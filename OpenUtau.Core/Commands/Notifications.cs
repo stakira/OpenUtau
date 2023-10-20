@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core {
     public class UNotification : UCommand {
@@ -15,15 +16,36 @@ namespace OpenUtau.Core {
         public readonly Exception e;
         public ErrorMessageNotification(Exception e) {
             this.e = e;
+            Log.Error(e.Message, e);
         }
         public ErrorMessageNotification(string message) {
             this.message = message;
+            Log.Error(message);
         }
         public ErrorMessageNotification(string message, Exception e) {
             this.message = message;
             this.e = e;
+            Log.Error(e.Message, e);
         }
         public override string ToString() => $"Error message: {message} {e}";
+    }
+
+    public class LoadingNotification : UNotification {
+        public readonly Type window;
+        public readonly bool startLoading;
+        public readonly string loadObject;
+        public LoadingNotification(Type window, bool startLoading, string loadObject) {
+            this.window = window;
+            this.startLoading = startLoading;
+            this.loadObject = loadObject;
+        }
+        public override string ToString() {
+            if (startLoading) {
+                return $"Start loading {loadObject}";
+            } else {
+                return $"Finish loading {loadObject}";
+            }
+        }
     }
 
     public class LoadPartNotification : UNotification {
