@@ -511,17 +511,24 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void ToggleSelectNote(UNote note) {
+            /// <summary>
+            /// Change the selection state of a note without affecting the selection state of the other notes.
+            /// Add it to selection if it isn't selected, or deselect it if it is already selected.
+            /// </summary>
             if (Part == null) {
                 return;
             }
             if (Selection.Contains(note)) {
                 DeselectNote(note);
             } else {
-                SelectNote(note);
+                SelectNote(note, false);
             }
         }
 
         public void SelectNote(UNote note) {
+            /// <summary>
+            /// Select a note and deselect all the other notes.
+            /// </summary>
             SelectNote(note, true);
         }
         public void SelectNote(UNote note, bool deselectExisting) {
