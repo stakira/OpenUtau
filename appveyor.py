@@ -1,5 +1,6 @@
 import os
 import sys
+import urllib.request
 from datetime import datetime
 
 appcast_ver = os.environ.get('APPVEYOR_BUILD_VERSION')
@@ -36,6 +37,10 @@ if sys.platform == 'win32':
         os.system("git push origin build/%s 2>&1" % (appcast_ver))
 
     os.system("del *.xml 2>&1")
+
+    urllib.request.urlretrieve("https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0", "Microsoft.AI.DirectML.nupkg")
+    os.system("mkdir Microsoft.AI.DirectML")
+    os.system("tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML")
 
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
