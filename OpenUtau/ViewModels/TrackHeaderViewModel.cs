@@ -247,9 +247,9 @@ namespace OpenUtau.App.ViewModels {
             items.AddRange(Preferences.Default.RecentSingers
                 .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
-                .LocalizedOrderBy(singer => singer.Name)
+                .LocalizedOrderBy(singer => singer.LocalizedName)
                 .Select(singer => new MenuItemViewModel() {
-                    Header = singer.Name,
+                    Header = singer.LocalizedName,
                     Command = SelectSingerCommand,
                     CommandParameter = singer,
                 }));
@@ -259,7 +259,7 @@ namespace OpenUtau.App.ViewModels {
                     Header = $"{key} ...",
                     Items = SingerManager.Inst.SingerGroups[key]
                         .Select(singer => new MenuItemViewModel() {
-                            Header = singer.Name,
+                            Header = singer.LocalizedName,
                             Command = SelectSingerCommand,
                             CommandParameter = singer,
                         }).ToArray(),
