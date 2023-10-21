@@ -162,21 +162,13 @@ namespace OpenUtau.Core.DiffSinger
                 .Prepend((float)phrase.notes[0].tone)
                 .ToArray();
             //get the index of groups of consecutive rest notes
-            int restGroupStart = 0;
-            var restGroups = new List<Tuple<int,int>>{};
-            foreach(int noteIndex in Enumerable.Range(1,note_rest.Count - 1)) {
-                if(!note_rest[noteIndex-1] && note_rest[noteIndex]) {
-                    //start a new rest group
-                    restGroupStart = noteIndex;
-                }
-                if(note_rest[noteIndex-1] && !note_rest[noteIndex]) {
-                    //end the current rest group
-                    restGroups.Add(new Tuple<int,int>(restGroupStart,noteIndex));
-                }
-            }
-            if(!note_rest[^1]) {
-                //end the last rest group
-                restGroups.Add(new Tuple<int,int>(restGroupStart,note_rest.Count));
+            var restGroups = new List<Tuple<int,int>>();
+            for (var i = 0; i < note_rest.Count; ++i) {
+                if (!note_rest[i]) continue;
+                var j = i + 1;
+                for (; j < note_rest.Count && note_rest[j]; ++j) { }
+                restGroups.Add(new Tuple<int, int>(i, j));
+                i = j;
             }
             //Set tone for each rest group
             foreach(var restGroup in restGroups){
