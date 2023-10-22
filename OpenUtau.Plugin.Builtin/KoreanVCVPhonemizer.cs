@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -115,9 +115,6 @@ namespace OpenUtau.Plugin.Builtin
 
 		// Store singer
 		public override void SetSinger(USinger singer) => this.singer = singer;
-        
-        // Legacy mapping. Might adjust later to new mapping style.
-		public override bool LegacyMapping => true;
 
 		public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours)
 		{
@@ -134,7 +131,7 @@ namespace OpenUtau.Plugin.Builtin
 			string[] prevIMF;
 
 			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
-			if (note.lyric == "R" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
+			if (note.lyric == "R" || note.lyric == "R2" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
 			{
 				currPhoneme = note.lyric;
 
@@ -169,8 +166,13 @@ namespace OpenUtau.Plugin.Builtin
 						if (string.IsNullOrEmpty(prevIMF[2])) currPhoneme = $"{((prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oi") ? prevIMF[1].Remove(0, 1) : ((prevIMF[1] == "eui" || prevIMF[1] == "ui") ? "i" : prevIMF[1]))} {currPhoneme}";
 						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, color, out _) ? prevIMF[2].ToUpper() : prevIMF[2])} {currPhoneme}";
 					}
-					
-					return new Result {
+
+                    // Map alias (apply shift + color)
+                    if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto)) {
+                        currPhoneme = oto.Alias;
+                    }
+
+                    return new Result {
 						phonemes = new Phoneme[] {
 							new Phoneme { phoneme = currPhoneme }
 						}
@@ -209,7 +211,7 @@ namespace OpenUtau.Plugin.Builtin
 			if (prevNeighbour != null && prevNeighbour?.lyric != "bre" && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
 			else
 			{
-				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B" || prevNeighbour?.lyric == "bre") currPhoneme = $"- {currPhoneme}";
+				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "R2" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B" || prevNeighbour?.lyric == "bre") currPhoneme = $"- {currPhoneme}";
 				else
 				{
 					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))
@@ -251,7 +253,12 @@ namespace OpenUtau.Plugin.Builtin
 			// Return Result now if note has no batchim
 			if (string.IsNullOrEmpty(currIMF[2]))
 			{
-				return new Result
+                // Map alias (apply shift + color)
+                if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto)) {
+                    currPhoneme = oto.Alias;
+                }
+
+                return new Result
 				{
 					phonemes = new Phoneme[] {
 						new Phoneme { phoneme = currPhoneme }
@@ -284,8 +291,14 @@ namespace OpenUtau.Plugin.Builtin
 
 				int secondPosition = Math.Max(noteLength - (nextNeighbour == null ? 120 : 180), noteLength / 2);
 
-				// Return Result
-				return new Result
+				// Map alias (apply shift + color)
+                if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto) && singer.TryGetMappedOto(secondPhoneme, note.tone + shift, color, out var oto1)) {
+                    currPhoneme = oto.Alias;
+                    secondPhoneme = oto1.Alias;
+                }
+
+                // Return Result
+                return new Result
 				{
 					phonemes = new Phoneme[] {
 						new Phoneme { phoneme = currPhoneme },
