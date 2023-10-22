@@ -189,6 +189,11 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Name)) {
                 bank.Name = bankConfig.Name;
             }
+            if (bankConfig.LocalizedNames != null) {
+                foreach (var kv in bankConfig.LocalizedNames) {
+                    bank.LocalizedNames[kv.Key] = kv.Value;
+                }
+            }
             if (!string.IsNullOrWhiteSpace(bankConfig.Image)) {
                 bank.Image = bankConfig.Image;
             }
