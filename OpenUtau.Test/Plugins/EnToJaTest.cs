@@ -4,6 +4,7 @@ using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
+using System.Linq;
 
 namespace OpenUtau.Plugins {
     public class EnToJaTest : PhonemizerTestBase {
@@ -37,16 +38,30 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("ja_cvvc",
-            new string[] { "", "強", },
-            new string[] { "て_C4", "e s_強B3", "と_C4", "うぉ_C4", "o d_C4", "ず_C4" })]
-        [InlineData("ja_vcv",
-            new string[] { "", "Clear", },
-            new string[] { "- てA3", "e すCA3", "u とA3", "o うぉA3", "o どA3", "o ずA3" })]
-        // Colors are per-phoneme
-        public void VoiceColorTest(string singerName, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, new string[] { "test", "words" },
-                RepeatString(2, ""), RepeatString(2, "C4"), colors, aliases);
+        [InlineData("ja_cvvc", "強",
+        new string[] { "ご_強B3", "o w_C4" })]
+        [InlineData("ja_vcv", "Clear",
+        new string[] { "- ごCA3", "o うA3" })]
+        public void VoiceColorTest(string singerName, string color, string[] aliases) {
+            RunPhonemizeTest(singerName, new NoteParams[] {
+                new NoteParams { 
+                    lyric = "go", 
+                    hint = "", 
+                    tone = "C4", 
+                    phonemes = new PhonemeParams[] {
+                        new PhonemeParams {
+                            shift = 0,
+                            alt = 0,
+                            color = color
+                        },
+                        new PhonemeParams {
+                            shift = 0,
+                            alt = 0,
+                            color = ""
+                        }
+                    }
+                }
+            }, aliases);
         }
 
         [Theory]
@@ -231,7 +246,17 @@ namespace OpenUtau.Plugins {
             SameAltsTonesColorsTest("ja_cvvc", aliases, lyrics);
         }
 
-        private void SameAltsTonesColorsTest(string singerName, string[] aliases, string[] lyrics) { 
+        [Theory]
+        [InlineData("live", "", new string[] { "ら", "い", "ふ" })]
+        [InlineData("live", "l e v", new string[] { "れ", "ふ" })]
+
+        [InlineData("asdfjkl", "l e v", new string[] { "れ", "ふ" })]
+        [InlineData("", "l e v", new string[] { "れ", "ふ" })]
+        public void HintTest(string lyric, string hint, string[] aliases) {
+            RunPhonemizeTest("ja_cv", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
+        }
+
+        private void SameAltsTonesColorsTest(string singerName, string[] aliases, string[] lyrics) {
             SameAltsTonesColorsTest(singerName, lyrics, aliases, "", "C4", "");
         }
     }
