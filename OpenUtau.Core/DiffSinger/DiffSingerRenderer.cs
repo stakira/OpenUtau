@@ -29,6 +29,7 @@ namespace OpenUtau.Core.DiffSinger {
             Format.Ustx.GENC,
             Format.Ustx.CLR,
             Format.Ustx.BREC,
+            Format.Ustx.TENC,
             VELC,
             ENE,
             PEXP,
@@ -218,7 +219,7 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //Variance: Energy and Breathiness
-            if(singer.dsConfig.useBreathinessEmbed || singer.dsConfig.useEnergyEmbed){
+            if(singer.dsConfig.useBreathinessEmbed || singer.dsConfig.useEnergyEmbed || singer.dsConfig.useTensionEmbed){
                 var varianceResult = singer.getVariancePredictor().Process(phrase);
                 //TODO: let user edit variance curves
                 if(singer.dsConfig.useEnergyEmbed){
@@ -231,7 +232,7 @@ namespace OpenUtau.Core.DiffSinger {
                     } else{
                         userEnergy = Enumerable.Repeat(0d, totalFrames);
                     }
-                    var energy = varianceResult.energy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    var energy = varianceResult.energy!.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
                         new DenseTensor<float>(energy, new int[] { energy.Length })
                         .Reshape(new int[] { 1, energy.Length })));
@@ -240,10 +241,19 @@ namespace OpenUtau.Core.DiffSinger {
                     var userBreathiness = DiffSingerUtils.SampleCurve(phrase, phrase.breathiness,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
-                    var breathiness = varianceResult.breathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    var breathiness = varianceResult.breathiness!.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
                         new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
                         .Reshape(new int[] { 1, breathiness.Length })));
+                }
+                if(singer.dsConfig.useTensionEmbed){
+                    var userTension = DiffSingerUtils.SampleCurve(phrase, phrase.tension,
+                        0, frameMs, totalFrames, headFrames, tailFrames,
+                        x => x);
+                    var tension = varianceResult.tension!.Zip(userTension, (x,y)=>(float)(x + y * 5 / 100)).ToArray();
+                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
+                        new DenseTensor<float>(tension, new int[] { tension.Length })
+                        .Reshape(new int[] { 1, tension.Length })));
                 }
             }
 

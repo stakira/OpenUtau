@@ -14,8 +14,9 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.DiffSinger{
     public struct VarianceResult{
-        public float[] energy;
-        public float[] breathiness;
+        public float[]? energy;
+        public float[]? breathiness;
+        public float[]? tension;
     }
     public class DsVariance{
         string rootPath;
@@ -115,7 +116,7 @@ namespace OpenUtau.Core.DiffSinger{
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
-            
+
             var linguisticOutputs = linguisticModel.Run(linguisticInputs);
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -126,9 +127,6 @@ namespace OpenUtau.Core.DiffSinger{
             var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => x * 0.01)
                 .Select(f => (float)f).ToArray();
-            var energy = Enumerable.Repeat(0f, totalFrames).ToArray();
-            var breathiness = Enumerable.Repeat(0f, totalFrames).ToArray();
-            var retake = Enumerable.Repeat(true, totalFrames*2).ToArray();
             var speedup = Preferences.Default.DiffsingerSpeedup;
 
             var varianceInputs = new List<NamedOnnxValue>();
@@ -139,15 +137,34 @@ namespace OpenUtau.Core.DiffSinger{
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, totalFrames })));
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
-                new DenseTensor<float>(energy, new int[] { energy.Length }, false)
-                .Reshape(new int[] { 1, totalFrames })));
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
-                new DenseTensor<float>(breathiness, new int[] { breathiness.Length }, false)
-                .Reshape(new int[] { 1, totalFrames })));
+            if (dsConfig.predict_energy) {
+                var energy = Enumerable.Repeat(0f, totalFrames).ToArray();
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
+                    new DenseTensor<float>(energy, new int[] { energy.Length }, false)
+                        .Reshape(new int[] { 1, totalFrames })));
+            }
+            if (dsConfig.predict_breathiness) {
+                var breathiness = Enumerable.Repeat(0f, totalFrames).ToArray();
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
+                    new DenseTensor<float>(breathiness, new int[] { breathiness.Length }, false)
+                        .Reshape(new int[] { 1, totalFrames })));
+            }
+            if (dsConfig.predict_tension) {
+                var tension = Enumerable.Repeat(0f, totalFrames).ToArray();
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
+                    new DenseTensor<float>(tension, new int[] { tension.Length }, false)
+                        .Reshape(new int[] { 1, totalFrames })));
+            }
+
+            var numVariances = new[] {
+                dsConfig.predict_energy,
+                dsConfig.predict_breathiness,
+                dsConfig.predict_tension,
+            }.Sum(Convert.ToInt32);
+            var retake = Enumerable.Repeat(true, totalFrames * numVariances).ToArray();
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
-                .Reshape(new int[] { 1, totalFrames, 2 })));
+                .Reshape(new int[] { 1, totalFrames, numVariances })));
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
             //Speaker
@@ -157,17 +174,28 @@ namespace OpenUtau.Core.DiffSinger{
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
             var varianceOutputs = varianceModel.Run(varianceInputs);
-            Tensor<float> energy_pred = varianceOutputs
-                .Where(o => o.Name == "energy_pred")
-                .First()
-                .AsTensor<float>();
-            Tensor<float> breathiness_pred = varianceOutputs
-                .Where(o => o.Name == "breathiness_pred")
-                .First()
-                .AsTensor<float>();
+            Tensor<float>? energy_pred = dsConfig.predict_energy
+                ? varianceOutputs
+                    .Where(o => o.Name == "energy_pred")
+                    .First()
+                    .AsTensor<float>()
+                : null;
+            Tensor<float>? breathiness_pred = dsConfig.predict_breathiness
+                ? varianceOutputs
+                    .Where(o => o.Name == "breathiness_pred")
+                    .First()
+                    .AsTensor<float>()
+                : null;
+            Tensor<float>? tension_pred = dsConfig.predict_tension
+                ? varianceOutputs
+                    .Where(o => o.Name == "tension_pred")
+                    .First()
+                    .AsTensor<float>()
+                : null;
             return new VarianceResult{
-                energy = energy_pred.ToArray(),
-                breathiness = breathiness_pred.ToArray()
+                energy = energy_pred?.ToArray(),
+                breathiness = breathiness_pred?.ToArray(),
+                tension = tension_pred?.ToArray(),
             };
         }
     }
