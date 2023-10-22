@@ -1,0 +1,32 @@
+The Mandarin dictionary files in this folder are based on CC-CEDICT, a community-maintained free Chinese-English dictionary. CC-CEDICT is a continuation of the CEDICT project started by Paul Denisowski in 1997. The aim of CC-CEDICT is to provide a complete downloadable Chinese to English dictionary with pronunciation in pinyin for the Chinese characters.
+
+# CC-CEDICT
+# Community maintained free Chinese-English dictionary.
+#
+# Published by MDBG
+#
+# License:
+# Creative Commons Attribution-ShareAlike 4.0 International License
+# https://creativecommons.org/licenses/by-sa/4.0/
+#
+# Referenced works:
+# CEDICT - Copyright (C) 1997, 1998 Paul Andrew Denisowski
+#
+# CC-CEDICT can be downloaded from:
+# https://www.mdbg.net/chinese/dictionary?page=cc-cedict
+#
+# Additions and corrections can be sent through:
+# https://cc-cedict.org/editor/editor.php
+#
+# For more information about CC-CEDICT see:
+# https://cc-cedict.org/wiki/
+#
+#! version=1
+#! subversion=0
+#! format=ts
+#! charset=UTF-8
+#! entries=121646
+#! publisher=MDBG
+#! license=https://creativecommons.org/licenses/by-sa/4.0/
+#! date=2023-04-16T01:18:48Z
+#! time=1681607928

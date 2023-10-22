@@ -1,0 +1,13 @@
+The Cantonese dictionary files in this folder are based on CC-Canto.
+
+
+# CC-CEDICT Cantonese Readings
+# Version 2015-09-23
+#
+# Copyright (c) 2015 Pleco Software Incorporated
+# Distributed under a Creative Commons Attribution-Share Alike 3.0 license (http://creativecommons.org/licenses/by-sa/3.0/)
+#
+# For more information + to submit feedback, see our website at cccanto.org
+
+CC-Canto and the CC-CEDICT Cantonese readings are copyright (c) 2015-16 Pleco Software Incorporated.
+url: https://github.com/amadeusine/cc-canto-data

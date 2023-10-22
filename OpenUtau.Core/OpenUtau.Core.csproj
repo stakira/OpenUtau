@@ -8,6 +8,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="G2p\Dicts\cantonese\License.txt" />
+    <EmbeddedResource Include="G2p\Dicts\cantonese\phrases_dict.txt" />
+    <EmbeddedResource Include="G2p\Dicts\cantonese\phrases_map.txt" />
+    <EmbeddedResource Include="G2p\Dicts\cantonese\trans_word.txt" />
+    <EmbeddedResource Include="G2p\Dicts\cantonese\user_dict.txt" />
+    <EmbeddedResource Include="G2p\Dicts\cantonese\word.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\License.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\phrases_dict.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\phrases_map.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\trans_word.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\user_dict.txt" />
+    <EmbeddedResource Include="G2p\Dicts\mandarin\word.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="BunLabs.NAudio.Flac" Version="2.0.1" />
     <PackageReference Include="Concentus.OggFile" Version="1.0.4" />
     <PackageReference Include="K4os.Hash.xxHash" Version="1.0.8" />
