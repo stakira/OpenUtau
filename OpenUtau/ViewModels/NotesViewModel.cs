@@ -65,6 +65,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowNoteParams { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapDivText { get; set; }
+        [Reactive] public string KeyText { get; set; }
         [Reactive] public Rect ExpBounds { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
         [Reactive] public bool PrimaryKeyNotSupported { get; set; }
@@ -85,8 +86,10 @@ namespace OpenUtau.App.ViewModels {
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
+        [Reactive] public List<MenuItemViewModel> Keys { get; set; }
 
         public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
+        public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
 
         // See the comments on TracksViewModel.playPosXToTickOffset
         private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
@@ -109,6 +112,14 @@ namespace OpenUtau.App.ViewModels {
             SetSnapUnitCommand = ReactiveCommand.Create<int>(div => {
                 userSnapDiv = div;
                 UpdateSnapDiv();
+            });
+
+            Keys = new List<MenuItemViewModel>();
+            SetKeyCommand = ReactiveCommand.Create<int>(key => {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new KeyCommand(Project, key));
+                DocManager.Inst.EndUndoGroup();
+                UpdateKey();
             });
 
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
@@ -173,6 +184,13 @@ namespace OpenUtau.App.ViewModels {
                             Command = SetSnapUnitCommand,
                             CommandParameter = div,
                         }));
+                    Keys.Clear();
+                    Keys.AddRange(MusicMath.KeysInOctave
+                        .Select((key, index) => new MenuItemViewModel {
+                            Header = $"1={key.Item1}",
+                            Command = SetKeyCommand,
+                            CommandParameter = index,
+                        }));
                 });
 
             CursorTool = false;
@@ -193,6 +211,7 @@ namespace OpenUtau.App.ViewModels {
             ShowTips = Preferences.Default.ShowTips;
             IsSnapOn = true;
             SnapDivText = string.Empty;
+            KeyText = string.Empty;
 
             PlayTone = Preferences.Default.PlayTone;
             this.WhenAnyValue(x => x.PlayTone)
@@ -265,6 +284,11 @@ namespace OpenUtau.App.ViewModels {
                 out int div);
             SnapDiv = div;
             SnapDivText = $"(1/{div})";
+        }
+
+        private void UpdateKey(){
+            int key = Project.key;
+            KeyText = "1="+MusicMath.KeysInOctave[key].Item1;
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -378,6 +402,7 @@ namespace OpenUtau.App.ViewModels {
             LoadPortrait(part, project);
             LoadWindowTitle(part, project);
             LoadTrackColor(part, project);
+            UpdateKey();
         }
 
         //If PortraitHeight is 0, the default behaviour is resizing any image taller than 800px to 800px,
