@@ -52,6 +52,7 @@
 不可数:bu4 ke3 shu3
 不可数集:bu4 ke3 shuo4 ji2
 不咋地:bu4 za3 de5
+不咋的:bu4 za3 de5
 不在乎:bu4 zai4 hu5
 不在了:bu4 zai4 le5
 不安分:bu4 an1 fen5
@@ -115,6 +116,7 @@
 人模狗样:ren2 mu2 gou3 yang4
 人给家足:ren2 ji3 jia1 zu2
 什刹海:shi2 cha4 hai3
+什么的:shen2 me5 de5
 今儿个:jin1 er5 ge5
 仡佬族:ge1 lao3 zu2
 令人发指:ling4 ren2 fa4 zhi3
@@ -134,6 +136,7 @@
 使徒行传:shi3 tu2 xing2 zhuan4
 来不及:lai2 bu5 ji2
 来不得:lai2 bu5 de2
+来硬的:lai2 ying4 de5
 供佛花:gong4 fo2 hua1
 保不住:bao3 bu5 zhu4
 保不齐:bao3 bu5 qi2
@@ -176,6 +179,7 @@
 儿媳妇儿:er2 xi2 fu5 er5
 儿茶素:er2 cha2 su4
 内比都:nei4 bi3 du1
+内生的:nei4 sheng1 de5
 全地形车:quan2 di4 xing2 che1
 两岸三地:liang3 an4 san1 di4
 两弹一星:liang3 dan4 yi1 xing1
@@ -240,6 +244,7 @@
 功不可没:gong1 bu4 ke3 mo4
 功高望重:gong1 gao1 wang4 zhong4
 加德满都:jia1 de2 man3 du1
+加的夫:jia1 de5 fu1
 加的斯:jia1 di4 si1
 勃艮第:bo2 gen3 di4
 勉勉强强:mian3 mian3 qiang3 qiang3
@@ -285,6 +290,7 @@
 原则上:yuan2 ze2 shang5
 原子弹:yuan2 zi3 dan4
 原产地:yuan2 chan3 di4
+去你的:qu4 ni3 de5
 去皮重:qu4 pi2 zhong4
 参谋长:can1 mou2 zhang3
 参鸡汤:shen1 ji1 tang1
@@ -484,6 +490,7 @@
 多钱善贾:duo1 qian2 shan4 gu3
 多难兴邦:duo1 nan4 xing1 bang1
 够不着:gou4 bu5 zhao2
+够受的:gou4 shou4 de5
 够得着:gou4 de5 zhao2
 大不列蹀:da4 bu5 lie1 die1
 大伯子:da4 bai3 zi5
@@ -514,6 +521,7 @@
 天悬地隔:tian1 xuan2 di4 ge2
 天摇地转:tian1 yao2 di4 zhuan3
 天旋地转:tian1 xuan2 di4 zhuan4
+天杀的:tian1 sha1 de5
 天灾地孽:tian1 zai1 di4 nie4
 天经地义:tian1 jing1 di4 yi4
 天罗地网:tian1 luo2 di4 wang3
@@ -543,12 +551,14 @@
 奥西娜斯:ao4 xi1 nuo2 si1
 女体盛:nv3 ti3 cheng2
 奴儿干:nu2 er2 gan1
+奶奶的:nai3 nai5 de5
 好不好:hao3 bu5 hao3
 好久不见:hao3 jiu3 bu5 jian4
 好大喜功:hao4 da4 xi3 gong1
 好好儿:hao3 hao1 er5
 好意思:hao3 yi4 si5
 好整以暇:hao4 zheng3 yi3 xia2
+好样的:hao3 yang4 de5
 好为人师:hao4 wei2 ren2 shi1
 好起来:hao3 qi3 lai5
 好逸恶劳:hao4 yi4 wu4 lao2
@@ -556,6 +566,7 @@
 好高骛远:hao4 gao1 wu4 yuan3
 如其所好:ru2 qi2 suo3 hao4
 如数家珍:ru2 shu3 jia1 zhen1
+妥妥的:tuo3 tuo3 de5
 妻离子散:qi1 li2 zi3 san4
 委员长:wei3 yuan2 zhang3
 姜子牙:jiang1 zi3 ya2
@@ -751,6 +762,7 @@
 忙忙叨叨:mang2 mang5 dao1 dao1
 念想儿:nian4 xiang5 er5
 怎么了:zen3 me5 le5
+怎么搞的:zen3 me5 gao3 de5
 怎么着:zen3 me5 zhao1
 怎么说呢:zen3 me5 shuo1 ne5
 怒发冲冠:nu4 fa4 chong1 guan1
@@ -789,10 +801,12 @@
 应付账款:ying1 fu4 zhang4 kuan3
 应采儿:ying1 cai3 er2
 应许之地:ying1 xu3 zhi1 di4
+应该的:ying1 gai1 de5
 懒得搭理:lan3 de5 da1 li3
 懒洋洋:lan3 yang1 yang1
 成吉思汗:cheng2 ji2 si1 han2
 我勒个去:wo3 le4 ge5 qu4
+我的世界:wo3 de5 shi4 jie4
 我这个人:wo3 zhe4 ge5 ren2
 我这儿:wo3 zhe5 er5
 戳不住:chuo1 bu5 zhu4
@@ -999,6 +1013,7 @@
 有时候:you3 shi2 hou5
 有机分子:you3 ji1 fen1 zi3
 有的放矢:you3 di4 fang4 shi3
+有的没的:you3 de5 mei2 de5
 有益处:you3 yi4 chu5
 有缘无分:you3 yuan2 wu2 fen4
 有道理:you3 dao4 li5
@@ -1122,7 +1137,9 @@
 没得说:mei2 de5 shuo1
 没准头:mei2 zhun3 tou5
 没溜儿:mei2 liu4 er5
+没的说:mei2 de5 shuo1
 没亲没故:mei2 qin2 mei2 gu4
+没说的:mei2 shuo1 de5
 没谁了:mei2 sei2 le5
 没长眼睛:mei2 zhang3 yan3 jing5
 没齿不忘:mo4 chi3 bu4 wang4
@@ -1247,6 +1264,8 @@
 犯得上:fan4 de5 shang4
 犯得着:fan4 de5 zhao2
 狂想曲:kuang2 xiang3 qu3
+狗娘养的:gou3 niang2 yang3 de5
+狗玩儿的:gou3 wan2 er5 de5
 狗逮老鼠:gou3 dai3 lao3 shu3
 狼吞虎咽:lang2 tun1 hu3 yan4
 狼子野心:lang2 zi3 ye3 xin1
@@ -1264,6 +1283,7 @@
 玩不起:wan2 bu5 qi3
 玩儿不转:wan2 er5 bu4 zhuan4
 玩儿得转:wan2 er5 de2 zhuan4
+玩阴的:wan2 yin1 de5
 玫瑰念珠:mei2 gui5 nian4 zhu1
 玫瑰茄:mei2 gui5 qie2
 玻璃市:bo1 li2 shi4
@@ -1338,6 +1358,7 @@
 百里挑一:bai3 li3 tiao1 yi1
 的士高:di2 shi4 gao1
 的黎波里:di4 li2 bo1 li3
+皮下的:pi2 xia4 de5
 皮诺切特:pi2 nuo4 qie1 te4
 卢塞恩:lu2 sai4 en1
 目下十行:mu4 xia4 shi2 hang2
@@ -1349,6 +1370,7 @@
 相平面:xiang4 ping2 mian4
 相空间:xiang4 kong1 jian1
 相体裁衣:xiang4 ti3 cai2 yi1
+省油的灯:sheng3 you2 de5 deng1
 省省吧:sheng3 sheng5 ba5
 看上去:kan4 shang5 qu5
 看不中:kan4 bu5 zhong1
@@ -1370,6 +1392,8 @@
 看花眼:kan1 hua1 yan3
 看起来:kan4 qi3 lai5
 看门人:kan1 men2 ren2
+真是的:zhen1 shi5 de5
+真有你的:zhen1 you3 ni3 de5
 真番郡:zhen1 pan1 jun4
 眵目糊:chi1 mu5 hu1
 眼不转睛:yan3 bu4 zhuan4 jing1
@@ -1403,6 +1427,7 @@
 磨豆腐:mo4 dou4 fu5
 神出鬼没:shen2 chu1 gui3 mo4
 神差鬼使:shen2 chai1 gui3 shi3
+神的儿子:shen2 de5 er2 zi5
 神神叨叨:shen2 shen5 dao1 dao1
 神神道道:shen2 shen5 dao4 dao4
 禁不住:jin1 bu5 zhu4
@@ -1446,6 +1471,7 @@
 箍节儿:gu1 jie5 er5
 管不着:guan3 bu5 zhao2
 管他呢:guan3 ta1 ne5
+管他的:guan3 ta1 de5
 管得着:guan3 de5 zhao2
 节骨眼:jie1 gu5 yan3
 节骨眼儿:jie1 gu5 yan3 er5
@@ -1500,6 +1526,7 @@
 缝针迹:feng2 zhen1 ji4
 总参谋长:zong3 can1 mou2 zhang3
 总杆赛:zong3 gan1 sai4
+总的来说:zong3 de5 lai2 shuo1
 绷不住:beng1 bu5 zhu4
 绷巴吊拷:beng4 ba1 diao4 kao3
 绷扒吊拷:beng4 ba1 diao4 kao3
@@ -1568,6 +1595,7 @@
 自个儿:zi4 ge3 er5
 自各儿:zi4 ge3 er5
 自怨自艾:zi4 yuan4 zi4 yi4
+自我的人:zi4 wo3 de5 ren2
 自留地:zi4 liu2 di4
 台儿庄:tai2 er2 zhuang1
 台面呢:tai2 mian4 ni2
@@ -1723,6 +1751,7 @@
 说得上:shuo1 de5 shang4
 说得过去:shuo1 de5 guo4 qu4
 说白了:shuo1 bai2 le5
+说真的:shuo1 zhen1 de5
 说老实话:shuo1 lao3 shi5 hua4
 调三窝四:tiao2 san1 wo1 si4
 调光器:tiao2 guang1 qi4
@@ -1751,6 +1780,7 @@
 卖光了:mai4 guang1 le5
 卖力气:mai4 li4 qi5
 赋格曲:fu4 ge2 qu3
+质的飞跃:zhi4 de5 fei1 yue4
 赤嵌楼:chi4 kan3 lou2
 赤诚相见:chi4 cheng2 xiang4 jian4
 赫氏角鹰:he4 shi4 jue2 ying1
@@ -1763,6 +1793,7 @@
 趟浑水:tang1 hun2 shui3
 足高气强:zu2 gao1 qi4 jiang4
 跌跌撞撞:die1 die5 zhuang4 zhuang4
+跑堂儿的:pao3 tang2 er5 de5
 跑马地:pao3 ma3 di4
 跟不上:gen1 bu5 shang4
 跪地求饶:gui4 di4 qiu2 rao2
@@ -1949,6 +1980,7 @@
 露一手:lou4 yi1 shou3
 露脐装:lou4 qi2 zhuang1
 露马脚:lou4 ma3 jiao3
+灵的世界:ling2 de5 shi4 jie4
 灵雀寺:ling2 qiao3 si4
 非利士地:fei1 li4 shi4 di4
 非都会郡:fei1 du1 hui4 jun4
@@ -2027,6 +2059,7 @@
 鼎铛玉石:ding3 cheng1 yu4 shi2
 鼓鼓囊囊:gu3 gu5 nang1 nang1
 龙生九子:long2 sheng1 jiu3 zi3
+龙的传人:long2 de5 chuan2 ren2
 一匙:yi1 chi2
 一应:yi1 ying1
 一打:yi1 da2
@@ -2285,6 +2318,7 @@
 假日:jia4 ri4
 假期:jia4 qi1
 假条:jia4 tiao2
+假的:jia3 de5
 假发:jia3 fa4
 偏好:pian1 hao4
 偏重:pian1 zhong4
@@ -2443,6 +2477,7 @@
 判处:pan4 chu3
 别人:bie2 ren5
 别传:bie2 zhuan4
+别的:bie2 de5
 刨根:pao2 gen1
 利害:li4 hai5
 利索:li4 suo5
@@ -2616,6 +2651,7 @@
 右边:you4 bian5
 叶韵:xie2 yun4
 司长:si1 zhang3
+吃的:chi1 de5
 吃相:chi1 xiang4
 吃重:chi1 zhong4
 吃食:chi1 shi5
@@ -2642,6 +2678,7 @@
 君长:jun1 zhang3
 吞咽:tun1 yan4
 吞没:tun1 mo4
+吟哦:yin2 e2
 吡咯:bi3 luo4
 吧唧:ba1 ji5
 吧嗒:ba1 da5
@@ -2705,7 +2742,6 @@
 哈欠:ha1 qian5
 哈迪:ha3 di2
 哈达:ha3 da2
-哎哟:ai1 yo1
 哥哥:ge1 ge5
 哨卡:shao4 qia3
 哪个:na3 ge5
@@ -2759,6 +2795,7 @@
 单相:dan1 xiang4
 单县:shan4 xian4
 喳喳:cha1 cha5
+喵的:miao1 de5
 呛到:qiang1 dao4
 呛咕:qiang1 gu5
 唝吥:gong4 bu4
@@ -3058,6 +3095,7 @@
 女儿:nv3 er2
 女婿:nv3 xu5
 女子:nv3 zi3
+女的:nv3 de5
 女红:nv3 gong1
 奴才:nu2 cai5
 奶奶:nai3 nai5
@@ -3108,6 +3146,7 @@
 娘娘:niang2 niang5
 娘子:niang2 zi3
 娘家:niang2 jia5
+娘的:niang2 de5
 婀娜:e1 nuo2
 娄宿:lou2 xiu4
 婆婆:po2 po5
@@ -3116,6 +3155,7 @@
 媒人:mei2 ren5
 妈咪:ma1 mi5
 妈妈:ma1 ma5
+妈的:ma1 de5
 嫁妆:jia4 zhuang5
 嫁装:jia4 zhuang5
 嫂嫂:sao3 sao5
@@ -3211,6 +3251,7 @@
 家传:jia1 zhuan4
 家儿:jia1 er2
 家当:jia1 dang4
+家的:jia1 de5
 家长:jia1 zhang3
 宿分:su4 fen4
 寄子:ji4 zi3
@@ -3268,6 +3309,7 @@
 小姐:xiao3 jie5
 小弹:xiao3 dan4
 小曲:xiao3 qu3
+小的:xiao3 de5
 少儿:shao4 er2
 少女:shao4 nv3
 少妇:shao4 fu4
@@ -3502,6 +3544,7 @@
 念头:nian4 tou5
 忽地:hu1 de5
 忽悠:hu1 you5
+怎的:zen3 de5
 怔怔:zheng4 zheng4
 思量:si1 liang5
 急难:ji2 nan4
@@ -3921,6 +3964,7 @@
 春假:chun1 jia4
 春兴:chun1 xing4
 昧没:mei4 mo4
+是的:shi4 de5
 昵比:ni4 bi4
 时候:shi2 hou5
 时辰:shi2 chen5
@@ -3979,6 +4023,7 @@
 月相:yue4 xiang4
 有了:you3 le5
 有朝:you3 zhao1
+有的:you3 de5
 有空:you3 kong4
 朋友:peng2 you5
 服事:fu2 shi5
@@ -4505,6 +4550,7 @@
 申曲:shen1 qu3
 男儿:nan2 er2
 男子:nan2 zi3
+男的:nan2 de5
 留空:liu2 kong4
 留都:liu2 du1
 留难:liu2 nan4
@@ -4565,6 +4611,7 @@
 的姐:di1 jie3
 的款:di2 kuan3
 的确:di2 que4
+的话:de5 hua4
 皇上:huang2 shang5
 皇子:huang2 zi3
 皇历:huang2 li5
@@ -5973,6 +6020,7 @@
 雪茄:xue3 jia1
 云彩:yun2 cai5
 零散:ling2 san3
+零的:ling2 de5
 电子:dian4 zi3
 电磨:dian4 mo4
 电荷:dian4 he4

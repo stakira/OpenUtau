@@ -160,7 +160,7 @@ namespace G2p {
                         } else if (cursor + 1 - length >= 0) {
                             var xSubPhrase = string.Join("", inputList.GetRange(cursor + 1 - length, length));
                             if (PhrasesDict.ContainsKey(xSubPhrase)) {
-                                var pos = xSubPhrase.IndexOf(currentChar);
+                                var pos = xSubPhrase.LastIndexOf(currentChar);
                                 RemoveElements(result, cursor + 1 - length, pos);
                                 AddString(PhrasesDict[xSubPhrase], result);
                                 cursor += 1;
