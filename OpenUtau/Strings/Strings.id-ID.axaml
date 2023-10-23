@@ -7,7 +7,7 @@
   <system:String x:Key="context.note.pasteparameters">Pilih dan tempel parameter</system:String>
   <system:String x:Key="context.part.delete">Hapus bagian</system:String>
   <system:String x:Key="context.part.rename">Namai ulang bagian</system:String>
-  <system:String x:Key="context.part.replaceaudio">Pilih ulang berkas audio</system:String>-->
+  <system:String x:Key="context.part.replaceaudio">Pilih ulang berkas audio</system:String>
   <system:String x:Key="context.pitch.easein">Reda awal</system:String>
   <system:String x:Key="context.pitch.easeinout">Reda awal/akhir</system:String>
   <system:String x:Key="context.pitch.easeout">Reda akhir</system:String>
@@ -424,8 +424,7 @@ Umum
   </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
-
-  <system:String x:Key="tracks.duplicate">Duplikat Trek</system:String>-->
+  <system:String x:Key="tracks.duplicate">Duplikat Trek</system:String>
   <system:String x:Key="tracks.duplicatesettings">Duplikat Pengaturan Trek </system:String>
   <system:String x:Key="tracks.more">Lainnya</system:String>
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
