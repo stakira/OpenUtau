@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using G2p;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
@@ -54,7 +55,9 @@ namespace OpenUtau.Core.Util {
     public class PinyinLyricsHelper : ILyricsHelper {
         public string Source => "汉->han";
         public string Convert(string lyric) {
-            return TinyPinyin.PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
+            var zhG2p = new ZhG2p("mandarin");
+            var pinyinRes = zhG2p.Convert(lyric, false, false);
+            return pinyinRes;
         }
     }
 
