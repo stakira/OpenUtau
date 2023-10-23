@@ -152,15 +152,17 @@ namespace G2p {
                 } else {
                     var found = false;
                     for (var length = 4; length >= 2 && !found; length--) {
-                        var subPhrase = string.Join("", inputList.GetRange(cursor, Math.Min(length, inputList.Count - cursor)));
-                        if (PhrasesDict.ContainsKey(subPhrase)) {
-                            AddString(PhrasesDict[subPhrase], result);
-                            cursor += length;
-                            found = true;
+                        if (cursor + length <= inputList.Count) {
+                            var subPhrase = string.Join("", inputList.GetRange(cursor, length));
+                            if (PhrasesDict.ContainsKey(subPhrase)) {
+                                AddString(PhrasesDict[subPhrase], result);
+                                cursor += length;
+                                found = true;
+                            }
                         } else if (cursor + 1 - length >= 0) {
                             var xSubPhrase = string.Join("", inputList.GetRange(cursor + 1 - length, length));
                             if (PhrasesDict.ContainsKey(xSubPhrase)) {
-                                var pos = xSubPhrase.LastIndexOf(currentChar);
+                                var pos = xSubPhrase.IndexOf(currentChar);
                                 RemoveElements(result, cursor + 1 - length, pos);
                                 AddString(PhrasesDict[xSubPhrase], result);
                                 cursor += 1;
