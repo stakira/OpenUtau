@@ -168,7 +168,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato Otomatis menurut Panjangnya</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Kedalaman</system:String>
   <system:String x:Key="notedefaults.vibrato.in">Pudar awal</system:String>
-  <<system:String x:Key="notedefaults.vibrato.length">Panjang</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">Panjang</system:String>
   <system:String x:Key="notedefaults.vibrato.out">Pudar akhir</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
   <system:String x:Key="notedefaults.vibrato.shift">Geser</system:String>
