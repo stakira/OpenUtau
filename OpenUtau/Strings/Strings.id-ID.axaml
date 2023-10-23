@@ -249,11 +249,11 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Perlihatkan Waveform (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Alat Penggambar Pitch (4)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Alat Penggambar Pitch (4)
   Klik kiri untuk menggambar
   Klik kanan untuk mengatur ulang
   Tahan Ctrl untuk memilih
-  Tahan Alt untuk memperhalus</system:String>-->
+  Tahan Alt untuk memperhalus</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Alat Pisau (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">
