@@ -37,6 +37,11 @@ if sys.platform == 'win32':
 
     os.system("del *.xml 2>&1")
 
+    import urllib.request
+    urllib.request.urlretrieve("https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0", "Microsoft.AI.DirectML.nupkg")
+    os.system("mkdir Microsoft.AI.DirectML")
+    os.system("tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML")
+
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
         "dotnet publish OpenUtau -c Release -r win-x86 --self-contained true -o bin/win-x86")

@@ -8,6 +8,7 @@ namespace OpenUtau.Core.Vogen {
     class VogenSinger : USinger {
         public override string Id => meta.id;
         public override string Name => meta.name;
+        public override Dictionary<string, string> LocalizedNames => new Dictionary<string, string>();
         public override USingerType SingerType => USingerType.Vogen;
         public override string BasePath => basePath;
         public override string Author => meta.builtBy;

@@ -274,7 +274,7 @@
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">在钢琴窗上显示其他音轨的音符</system:String>
   <system:String x:Key="prefs.appearance.showportrait">在钢琴窗上显示歌手背景图</system:String>
-  <system:String x:Key="prefs.appearance.sortorder">歌手排序方式</system:String>
+  <system:String x:Key="prefs.appearance.sortorder">歌手名称显示语言</system:String>
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>

@@ -13,6 +13,7 @@ namespace OpenUtau.Core.Enunu {
     public class EnunuSinger : USinger {
         public override string Id => voicebank.Id;
         public override string Name => voicebank.Name;
+        public override Dictionary<string, string> LocalizedNames => voicebank.LocalizedNames;
         public override USingerType SingerType => voicebank.SingerType;
         public override string BasePath => voicebank.BasePath;
         public override string Author => voicebank.Author;

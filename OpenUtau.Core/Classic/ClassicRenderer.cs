@@ -47,15 +47,15 @@ namespace OpenUtau.Classic {
             };
         }
 
-        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
             if (phrase.wavtool == SharpWavtool.nameConvergence || phrase.wavtool == SharpWavtool.nameSimple) {
-                return RenderInternal(phrase, progress, cancellation, isPreRender);
+                return RenderInternal(phrase, progress, trackNo, cancellation, isPreRender);
             } else {
-                return RenderExternal(phrase, progress, cancellation, isPreRender);
+                return RenderExternal(phrase, progress, trackNo, cancellation, isPreRender);
             }
         }
 
-        public Task<RenderResult> RenderInternal(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> RenderInternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
                 resamplerItems.Add(new ResamplerItem(phrase, phone));
@@ -78,7 +78,7 @@ namespace OpenUtau.Classic {
                             VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
                     }
-                    progress.Complete(1, $"{item.resampler} \"{item.phone.phoneme}\"");
+                    progress.Complete(1, $"Track {trackNo}: {item.resampler} \"{item.phone.phoneme}\"");
                 });
                 var result = Layout(phrase);
                 var wavtool = new SharpWavtool(true);
@@ -91,13 +91,13 @@ namespace OpenUtau.Classic {
             return task;
         }
 
-        public Task<RenderResult> RenderExternal(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> RenderExternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
                 resamplerItems.Add(new ResamplerItem(phrase, phone));
             }
             var task = Task.Run(() => {
-                string progressInfo = $"{phrase.wavtool} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
+                string progressInfo = $"Track {trackNo} : {phrase.wavtool} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                 progress.Complete(0, progressInfo);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"cat-{phrase.hash:x16}.wav");
                 var result = Layout(phrase);

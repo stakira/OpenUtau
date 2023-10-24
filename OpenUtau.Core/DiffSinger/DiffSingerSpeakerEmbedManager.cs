@@ -37,10 +37,11 @@ namespace OpenUtau.Core.DiffSinger
                 if(dsConfig.speakers == null) {
                     return null;
                 } else {
-                    speakerEmbeds = np.zeros<float>(dsConfig.hiddenSize, dsConfig.speakers.Count);
+                    var embeds = np.zeros<float>(dsConfig.hiddenSize, dsConfig.speakers.Count);
                     foreach(var spkId in Enumerable.Range(0, dsConfig.speakers.Count)) {
-                        speakerEmbeds[":", spkId] = loadSpeakerEmbed(dsConfig.speakers[spkId]);
+                        embeds[":", spkId] = loadSpeakerEmbed(dsConfig.speakers[spkId]);
                     }
+                    speakerEmbeds = embeds;
                 }
             }
             return speakerEmbeds;
