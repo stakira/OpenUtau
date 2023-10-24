@@ -35,6 +35,7 @@ namespace OpenUtau.Core.Util {
         public readonly List<Type> Available = new List<Type>() {
             typeof(HiraganaLyricsHelper),
             typeof(PinyinLyricsHelper),
+            typeof(JyutpingLyricsHelper),
             typeof(ArpabetG2pLyricsHelper),
             typeof(FrenchG2pLyricsHelper),
             typeof(GermanG2pLyricsHelper),
@@ -58,6 +59,15 @@ namespace OpenUtau.Core.Util {
             var zhG2p = new ZhG2p("mandarin");
             var pinyinRes = zhG2p.Convert(lyric, false, false);
             return pinyinRes;
+        }
+    }
+
+    public class JyutpingLyricsHelper : ILyricsHelper {
+        public string Source => "粤->jyut";
+        public string Convert(string lyric) {
+            var zhG2p = new ZhG2p("cantonese");
+            var jyutpingRes = zhG2p.Convert(lyric, false, false);
+            return jyutpingRes;
         }
     }
 
