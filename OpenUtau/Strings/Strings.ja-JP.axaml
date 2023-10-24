@@ -289,7 +289,7 @@
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">ピアノロール上に他トラックの音符を表示</system:String>
   <system:String x:Key="prefs.appearance.showportrait">ピアノロール上に背景イラストを表示</system:String>
-  <system:String x:Key="prefs.appearance.sortorder">シンガーの表示順</system:String>
+  <system:String x:Key="prefs.appearance.sortorder">シンガー名の表示言語</system:String>
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">ダーク</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
