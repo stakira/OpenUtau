@@ -105,9 +105,13 @@ namespace OpenUtau.App.Views {
         }
 
         public static void CloseLoading() {
-            if(loadingDialog != null) {
+            if (loadingDialog != null) {
                 loadingDialog.Close();
             }
+        }
+
+        public static bool LoadingIsActive() {
+            return loadingDialog != null && loadingDialog.IsActive;
         }
     }
 }

@@ -57,8 +57,23 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
-                    try {
+                    if (MessageBox.LoadingIsActive()) {
+                        try {
+                            AttachSinger();
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        }
+                    } else {
+                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
+                        try {
+                            AttachSinger();
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        } finally {
+                            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
+                        }
+                    }
+                    void AttachSinger() {
                         singer.EnsureLoaded();
                         Avatar = LoadAvatar(singer);
                         Otos.Clear();
@@ -70,10 +85,6 @@ namespace OpenUtau.App.ViewModels {
                         LoadSubbanks();
                         DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                         this.RaisePropertyChanged(nameof(IsClassic));
-                    } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                    } finally {
-                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
                     }
                 });
             this.WhenAnyValue(vm => vm.SearchAlias)
@@ -203,15 +214,22 @@ namespace OpenUtau.App.ViewModels {
             if (Singer == null) {
                 return;
             }
-            var singerId = Singer.Id;
-            SingerManager.Inst.SearchAllSingers();
-            this.RaisePropertyChanged(nameof(Singers));
-            if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
-                Singer = singer;
-            } else {
-                Singer = Singers.FirstOrDefault();
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
+            try {
+                var singerId = Singer.Id;
+                SingerManager.Inst.SearchAllSingers();
+                this.RaisePropertyChanged(nameof(Singers));
+                if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                    Singer = singer;
+                } else {
+                    Singer = Singers.FirstOrDefault();
+                }
+                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
             }
-            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
 
         Bitmap? LoadAvatar(USinger singer) {
