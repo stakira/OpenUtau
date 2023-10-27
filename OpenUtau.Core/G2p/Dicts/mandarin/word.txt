@@ -2248,7 +2248,7 @@
 偿:chang2
 填:tian2
 泊:bo2
-拓:tuo4
+拓:ta4
 扑:pu1
 簇:cu4
 羔:gao1
@@ -6886,7 +6886,7 @@
 湣:min3
 湩:dong4
 湫:jiao3
-湮:yin1
+湮:yan1
 麟:lin2
 湱:huo4
 湲:yuan2
@@ -17505,3 +17505,5 @@
 龗:ling2
 龞:bie1
 龣:jue2
+濛:meng2
+尅:kei2

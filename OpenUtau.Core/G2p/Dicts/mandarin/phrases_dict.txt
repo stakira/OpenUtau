@@ -2516,6 +2516,7 @@
 劈腿:pi3 tui3
 刘禅:liu2 shan4
 劐弄:huo1 leng5
+力拓:li4 tuo4
 力气:li4 qi5
 力量:li4 liang5
 功夫:gong1 fu5
@@ -3710,9 +3711,12 @@
 抛撒:pao1 sa3
 拌和:ban4 huo4
 拍打:pai1 da5
-拓印:ta4 yin4
-拓本:ta4 ben3
-拓片:ta4 pian4
+拓宽:tuo4 kuan1
+拓展:tuo4 zhan3
+拓拔:tuo4 ba2
+拓扑:tuo4 pu1
+拓荒:tuo4 huang1
+拓跋:tuo4 ba2
 拔地:ba2 di4
 拖地:tuo1 di4
 拖拽:tuo1 ye4
@@ -4349,6 +4353,7 @@
 凑合:cou4 he5
 湖泊:hu2 po1
 湮没:yan1 mo4
+湮灭:yin1 mie4
 汤匙:tang1 chi2
 准的:zhun3 di4
 准头:zhun3 tou5
@@ -5155,6 +5160,7 @@
 落地:luo4 di4
 落子:lao4 zi5
 落得:luo4 de5
+落拓:luo4 tuo4
 落枕:lao4 zhen3
 落汗:lao4 han4
 落炕:lao4 kang4
@@ -5739,6 +5745,7 @@
 乡下:xiang1 xia5
 乡戚:xiang1 qi5
 乡长:xiang1 zhang3
+邓拓:deng4 tuo4
 郑重:zheng4 zhong4
 酆都:feng1 du1
 酊剂:ding1 ji4
@@ -5936,6 +5943,7 @@
 闭塞:bi4 se4
 开卷:kai1 juan4
 开地:kai1 di4
+开拓:kai1 tuo4
 开衩:kai1 cha4
 开通:kai1 tong5
 闲在:xian2 zai5

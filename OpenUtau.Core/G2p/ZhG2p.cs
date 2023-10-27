@@ -174,8 +174,7 @@ namespace G2p {
                             // cursor: 好, xSubPhrase: 各有所好
                             var xSubPhrase = string.Join("", inputList.GetRange(cursor + 1 - length, length));
                             if (PhrasesDict.ContainsKey(xSubPhrase)) {
-                                var pos = xSubPhrase.LastIndexOf(currentChar);
-                                RemoveElements(result, cursor + 1 - length, pos);
+                                RemoveElements(result, cursor + 1 - length, length - 1);
                                 AddString(PhrasesDict[xSubPhrase], result);
                                 cursor += 1;
                                 found = true;
@@ -186,8 +185,7 @@ namespace G2p {
                             // cursor: 好, xSubPhrase: 叶公好龙
                             var xSubPhrase_1 = string.Join("", inputList.GetRange(cursor + 2 - length, length));
                             if (PhrasesDict.ContainsKey(xSubPhrase_1)) {
-                                var pos = xSubPhrase_1.LastIndexOf(currentChar);
-                                RemoveElements(result, cursor + 2 - length, pos);
+                                RemoveElements(result, cursor + 2 - length, length - 2);
                                 AddString(PhrasesDict[xSubPhrase_1], result);
                                 cursor += 2;
                                 found = true;
