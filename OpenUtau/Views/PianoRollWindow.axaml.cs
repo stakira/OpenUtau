@@ -11,6 +11,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 
@@ -75,6 +76,53 @@ namespace OpenUtau.App.Views {
 
         void OnMenuPointerLeave(object sender, PointerEventArgs args) {
             Focus(); // Force unfocus menu for key down events.
+        }
+
+        // View menu
+        void OnMenuShowPortrait(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowPortrait = !Preferences.Default.ShowPortrait;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowPortrait));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
+        }
+        void OnMenuShowGhostNotes(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowGhostNotes = !Preferences.Default.ShowGhostNotes;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowGhostNotes));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+            
+        }
+        void OnMenuUseTrackColor(object sender, RoutedEventArgs args) {
+            Preferences.Default.UseTrackColor = !Preferences.Default.UseTrackColor;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.UseTrackColor));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
+        }
+        void OnMenuDegreeStyle(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.DegreeStyle = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle0));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle1));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle2));
+                MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+            }
+        }
+        void OnMenuLockStartTime(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.LockStartTime = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime));
+            }
+        }
+        void OnMenuPlaybackAutoScroll(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.PlaybackAutoScroll = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll0));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll1));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll2));
+            }
         }
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {

@@ -9,6 +9,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -33,11 +34,29 @@ namespace OpenUtau.App.ViewModels {
         public PitchPointHitInfo PitchPointHitInfo { get; set; }
     }
 
+    public class PianorollRefreshEvent {
+        public readonly string refreshItem;
+        public PianorollRefreshEvent(string refreshItem) {
+            this.refreshItem = refreshItem;
+        }
+    }
+
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
         public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
+
+        public bool ShowPortrait { get => Preferences.Default.ShowPortrait; }
+        public bool ShowGhostNotes { get => Preferences.Default.ShowGhostNotes; }
+        public bool UseTrackColor { get => Preferences.Default.UseTrackColor; }
+        public bool DegreeStyle0 { get => Preferences.Default.DegreeStyle == 0 ? true : false; }
+        public bool DegreeStyle1 { get => Preferences.Default.DegreeStyle == 1 ? true : false; }
+        public bool DegreeStyle2 { get => Preferences.Default.DegreeStyle == 2 ? true : false; }
+        public bool LockStartTime { get => Preferences.Default.LockStartTime == 1 ? true : false; }
+        public bool PlaybackAutoScroll0 { get => Preferences.Default.PlaybackAutoScroll == 0 ? true : false; }
+        public bool PlaybackAutoScroll1 { get => Preferences.Default.PlaybackAutoScroll == 1 ? true : false; }
+        public bool PlaybackAutoScroll2 { get => Preferences.Default.PlaybackAutoScroll == 2 ? true : false; }
 
         public ObservableCollectionExtended<MenuItemViewModel> LegacyPlugins { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();

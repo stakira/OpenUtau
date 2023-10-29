@@ -1,10 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 using Serilog;
 
 namespace OpenUtau.App.Controls {
@@ -14,6 +16,13 @@ namespace OpenUtau.App.Controls {
         public NotePropertiesControl() {
             InitializeComponent();
             DataContext = ViewModel = new NotePropertiesViewModel();
+
+            MessageBus.Current.Listen<PianorollRefreshEvent>()
+                .Subscribe(e => {
+                    if(e.refreshItem == "Part") {
+                        LoadPart(ViewModel.Part);
+                    }
+                });
 
             DocManager.Inst.AddSubscriber(this);
         }
@@ -102,10 +111,6 @@ namespace OpenUtau.App.Controls {
                 if (cmd is RemoveTrackCommand removeTrack) {
                     if (ViewModel.Part != null && removeTrack.removedParts.Contains(ViewModel.Part)) {
                         LoadPart(null);
-                    }
-                } else if (cmd is TrackChangeSingerCommand trackChangeSinger) {
-                    if (ViewModel.Part != null && trackChangeSinger.track.TrackNo == ViewModel.Part.trackNo) {
-                        // LoadPart(ViewModel.Part); can't load crl
                     }
                 }
             }

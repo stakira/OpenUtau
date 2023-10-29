@@ -268,6 +268,25 @@ namespace OpenUtau.App.ViewModels {
 
             HitTest = new NotesViewModelHitTest(this);
             DocManager.Inst.AddSubscriber(this);
+
+            MessageBus.Current.Listen<PianorollRefreshEvent>()
+                .Subscribe(e => {
+                    switch (e.refreshItem) {
+                        case "Part":
+                            if (Part == null || Project == null) {
+                                UnloadPart();
+                            } else {
+                                LoadPart(Part, Project);
+                            }
+                            break;
+                        case "Portrait":
+                            LoadPortrait(Part, Project);
+                            break;
+                        case "TrackColor":
+                            LoadTrackColor(Part, Project);
+                            break;
+                    }
+                });
         }
 
         private void UpdateSnapDiv() {
