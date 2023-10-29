@@ -1061,19 +1061,24 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        void Transcribe(UPart part){
+        async void Transcribe(UPart part){
             if(part is UWavePart wavePart){
-                using(Some some = new Some()){
-                    UVoicePart voicePart = some.Transcribe(DocManager.Inst.Project, wavePart);
-                    //Add voicePart into project
-                    var project = DocManager.Inst.Project;
-                    var track = new UTrack(project);
-                    track.TrackNo = project.tracks.Count;
-                    voicePart.trackNo = track.TrackNo;
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-                    DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
-                    DocManager.Inst.EndUndoGroup();
+                try{
+                    using(Some some = new Some()){
+                        UVoicePart voicePart = some.Transcribe(DocManager.Inst.Project, wavePart);
+                        //Add voicePart into project
+                        var project = DocManager.Inst.Project;
+                        var track = new UTrack(project);
+                        track.TrackNo = project.tracks.Count;
+                        voicePart.trackNo = track.TrackNo;
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                        DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to transcribe part {part.name}");
+                    _ = await MessageBox.ShowError(this, e);
                 }
             }
         }

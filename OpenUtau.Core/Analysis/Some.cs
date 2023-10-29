@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NWaves.Signals;
@@ -11,7 +10,7 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Analysis.Some{
     public static class AudioSlicer{
         static int sample_rate = 44100;
-        static float threshold = 0.01f;
+        static float threshold = 0.02f;
         static int hop_size = 441;
         static int win_size = 1764;
         static int min_length = 500;
@@ -41,7 +40,7 @@ namespace OpenUtau.Core.Analysis.Some{
             //reference: https://github.com/openvpi/audio-slicer/blob/main/slicer2.py#L5
             //y = np.pad(samples, padding, mode="constant")
             float[] y = new float[samples.Length + frame_length];
-            Array.Copy(samples, 0, y, 0, samples.Length / 2);
+            Array.Copy(samples, 0, y, frame_length / 2, samples.Length);
             for(int i=0; i<y.Length; i++){
                 y[i] = y[i] * y[i];
             }
@@ -232,7 +231,7 @@ namespace OpenUtau.Core.Analysis.Some{
             }
             float[] monoSamples = new float[stereoSamples.Length / channels];
             for(int i = 0; i < monoSamples.Length; i++){
-                monoSamples[i] = stereoSamples[(i*channels)..(i*(channels+1))].Average();
+                monoSamples[i] = stereoSamples[(i*channels)..((i+1)*channels-1)].Average();
             }
             return monoSamples;
         }
