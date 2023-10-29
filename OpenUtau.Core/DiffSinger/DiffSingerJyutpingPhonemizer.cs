@@ -8,7 +8,7 @@ namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerJyutpingPhonemizer : DiffSingerBasePhonemizer {
         protected override string[] Romanize(IEnumerable<string> lyrics) {
             var YueG2p = new ZhG2p("cantonese");
-            return YueG2p.Convert(lyrics.ToList(), false, false).Split(" ");
+            return YueG2p.Convert(lyrics.ToList(), false, true).Split(" ");
         }
     }
 }

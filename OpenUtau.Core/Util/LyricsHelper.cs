@@ -57,7 +57,7 @@ namespace OpenUtau.Core.Util {
         public string Source => "汉->han";
         public string Convert(string lyric) {
             var zhG2p = new ZhG2p("mandarin");
-            var pinyinRes = zhG2p.Convert(lyric, false, false);
+            var pinyinRes = zhG2p.Convert(lyric, false, true);
             return pinyinRes;
         }
     }
@@ -66,7 +66,7 @@ namespace OpenUtau.Core.Util {
         public string Source => "粤->jyut";
         public string Convert(string lyric) {
             var zhG2p = new ZhG2p("cantonese");
-            var jyutpingRes = zhG2p.Convert(lyric, false, false);
+            var jyutpingRes = zhG2p.Convert(lyric, false, true);
             return jyutpingRes;
         }
     }
