@@ -189,9 +189,8 @@ namespace OpenUtau.Core.Analysis.Some{
             }
             catch (Exception ex) {
                 //TODO: onnx download site
-                throw new Exception($"Error loading SOME. Please download SOME from");
+                throw new Exception($"Error loading SOME. Please download SOME from https://github.com/xunmengshe/OpenUtau/releases/0.0.0.0");
             }
-            
         }
 
         SomeResult Analyze(float[] samples) {
