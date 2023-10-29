@@ -108,10 +108,13 @@ namespace G2p {
             }
         }
 
-        private void ZhPosition(List<string> input, List<string> res, List<int> positions) {
+        private void ZhPosition(List<string> input, List<string> res, List<int> positions, bool convertNum) {
             for (int i = 0; i < input.Count; i++) {
                 if (WordDict.ContainsKey(input[i]) || TransDict.ContainsKey(input[i])) {
                     res.Add(input[i]);
+                    positions.Add(i);
+                } else if (convertNum && NumMap.ContainsKey(input[i])) {
+                    res.Add(NumMap[input[i]]);
                     positions.Add(i);
                 }
             }
@@ -124,18 +127,13 @@ namespace G2p {
         public string Convert(List<string> input, bool tone, bool convertNum) {
             var inputList = new List<string>();
             var inputPos = new List<int>();
-            ZhPosition(input, inputList, inputPos);
+            ZhPosition(input, inputList, inputPos, convertNum);
             var result = new List<string>();
             var cursor = 0;
 
             while (cursor < inputList.Count) {
                 var rawCurrentChar = inputList[cursor];
                 var currentChar = TradToSim(rawCurrentChar);
-
-                if (convertNum && NumMap.ContainsKey(currentChar)) {
-                    result.Add(NumMap[currentChar]);
-                    cursor++;
-                }
 
                 if (!WordDict.ContainsKey(currentChar)) {
                     result.Add(currentChar);
