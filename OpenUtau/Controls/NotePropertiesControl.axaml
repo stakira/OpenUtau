@@ -22,11 +22,17 @@
       <StackPanel Margin="10">
         <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
-        <Expander Header="{DynamicResource notedefaults.lyric}" HorizontalAlignment="Stretch" Margin="5">
-          <Grid ColumnDefinitions="143,*">
-            <Label Content="{DynamicResource notedefaults.lyric}" Grid.Column="0"/>
-            <TextBox Text="{Binding Lyric, Mode=OneWay}" IsEnabled="{Binding IsNoteSelected}" Grid.Column="1" Tag="Lyric"/>
-          </Grid>
+        <Expander Header="{DynamicResource noteproperty.basic}" HorizontalAlignment="Stretch" Margin="5">
+          <StackPanel IsEnabled="{Binding IsNoteSelected}">
+            <Grid ColumnDefinitions="143,*">
+              <Label Content="{DynamicResource notedefaults.lyric}" Grid.Column="0"/>
+              <TextBox Text="{Binding Lyric, Mode=OneWay}" Grid.Column="1" Tag="Lyric"/>
+            </Grid>
+            <Grid ColumnDefinitions="143,*">
+              <Label Content="{DynamicResource noteproperty.tone}" Grid.Column="0"/>
+              <TextBox Text="{Binding Tone, Mode=OneWay}" Grid.Column="1" Tag="Tone"/>
+            </Grid>
+          </StackPanel>
         </Expander>
 
         <Expander Header="{DynamicResource notedefaults.portamento}" HorizontalAlignment="Stretch" Margin="5">

@@ -14,7 +14,8 @@ using SharpCompress;
 namespace OpenUtau.App.ViewModels {
     public class NotePropertiesViewModel : ViewModelBase, ICmdSubscriber {
         public string Title { get => ThemeManager.GetString("noteproperty") + " (" + selectedNotes.Count + " notes)"; }
-        [Reactive] public string Lyric { get; set; } = "a";
+        [Reactive] public string Lyric { get; set; } = string.Empty;
+        [Reactive] public string Tone { get; set; } = string.Empty;
         [Reactive] public float PortamentoLength { get; set; }
         [Reactive] public float PortamentoStart { get; set; }
         [Reactive] public bool VibratoEnable { get; set; }
@@ -115,6 +116,7 @@ namespace OpenUtau.App.ViewModels {
                 var note = selectedNotes.First();
 
                 Lyric = note.lyric;
+                Tone = MusicMath.GetToneName(note.tone);
                 if (note.pitch.data.Count == 2) {
                     PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
                     PortamentoStart = note.pitch.data[0].X;
@@ -133,7 +135,8 @@ namespace OpenUtau.App.ViewModels {
                 VibratoVolLink = note.vibrato.volLink;
             } else {
                 IsNoteSelected = false;
-                Lyric = NotePresets.Default.DefaultLyric;
+                Lyric = string.Empty;
+                Tone = string.Empty;
                 PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                 PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
                 VibratoEnable = false;
@@ -220,6 +223,9 @@ namespace OpenUtau.App.ViewModels {
                 if (cmd is ChangeNoteLyricCommand) {
                     Lyric = note.lyric;
                     this.RaisePropertyChanged(nameof(Lyric));
+                } else if (cmd is MoveNoteCommand) {
+                    Tone = MusicMath.GetToneName(note.tone);
+                    this.RaisePropertyChanged(nameof(Tone));
                 } else if (cmd is VibratoLengthCommand) {
                     if (note.vibrato.length > 0) {
                         VibratoEnable = true;
@@ -276,14 +282,38 @@ namespace OpenUtau.App.ViewModels {
         public void SetNoteParams(string tag, object? obj) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 if (tag == "Lyric") {
-                    string value;
                     if (obj is string s && !string.IsNullOrEmpty(s)) {
-                        value = s;
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, note, s));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultLyric;
+                        var note = selectedNotes.FirstOrDefault();
+                        Lyric = note != null ? note.lyric : string.Empty;
+                        this.RaisePropertyChanged(nameof(Lyric));
                     }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, note, value));
+                } else if (tag == "Tone") {
+                    try {
+                        if (obj is string s && !string.IsNullOrEmpty(s)) {
+                            int tone = MusicMath.NameToTone(s);
+
+                            if ((s.StartsWith("+") || s.StartsWith("-")) && int.TryParse(s, out int i) && i != 0) {
+                                foreach (UNote note in selectedNotes) {
+                                    DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, note, 0, i));
+                                }
+                            } else if (tone >= 0) {
+                                foreach (UNote note in selectedNotes) {
+                                    DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, note, 0, tone - note.tone));
+                                }
+                            } else {
+                                throw new FormatException();
+                            }
+                        } else {
+                            throw new FormatException();
+                        }
+                    } catch {
+                        var note = selectedNotes.FirstOrDefault();
+                        Tone = note != null ? MusicMath.GetToneName(note.tone) : string.Empty;
+                        this.RaisePropertyChanged(nameof(Tone));
                     }
                 } else if (tag == "PortamentoLength") {
                     if (obj != null && (obj is float value || float.TryParse(obj.ToString(), out value)) && value >= 2 && value <= 320) {
