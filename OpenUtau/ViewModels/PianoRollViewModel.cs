@@ -155,6 +155,7 @@ namespace OpenUtau.App.ViewModels {
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
                 new AutoLegato(),
+                new FixOverlap(),
                 new HanziToPinyin(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
