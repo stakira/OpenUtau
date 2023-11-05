@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NWaves.Signals;
@@ -235,46 +237,51 @@ namespace OpenUtau.Core.Analysis.Some{
             return monoSamples;
         }
 
-        public UVoicePart Transcribe(UProject project, UWavePart wavePart){
+        public Task<UVoicePart> Transcribe(UProject project, UWavePart wavePart, Action<int> progress){
             //Run SOME model with the audio part user selected to extract note information
             //convert samples to mono and slice
-            
-            var monoSamples = ToMono(wavePart.Samples, wavePart.channels);
-            var chunks = AudioSlicer.Slice(monoSamples);
-            var part = new UVoicePart();
-            part.position = wavePart.position;
-            part.Duration = wavePart.Duration;
-            var timeAxis = project.timeAxis;
-            double partOffsetMs = timeAxis.TickPosToMsPos(wavePart.position);
-            double currMs = partOffsetMs;
-            foreach(var chunk in chunks){
-                var someResult = Analyze(chunk.samples);
-                var note_midi = someResult.note_midi;
-                var note_rest = someResult.note_rest;
-                var note_dur = someResult.note_dur;
-                //Put the notes into a new voice part
-                double chunkOffsetMs = chunk.offsetMs + partOffsetMs;
-                currMs = chunkOffsetMs;
-                foreach(int index in Enumerable.Range(0, note_midi.Length)){
-                    var noteDurMs = note_dur[index] * 1000;
-                    if(!note_rest[index]){
-                        var posTick = timeAxis.MsPosToTickPos(currMs);
-                        var durTick = timeAxis.MsPosToTickPos(currMs + noteDurMs) - posTick;
-                        var note = project.CreateNote(
-                            (int)Math.Round(note_midi[index]),
-                            posTick - wavePart.position,
-                            durTick
-                        );
-                        part.notes.Add(note);
+            return Task.Run(()=>{
+                var monoSamples = ToMono(wavePart.Samples, wavePart.channels);
+                var chunks = AudioSlicer.Slice(monoSamples);
+                var part = new UVoicePart();
+                part.position = wavePart.position;
+                part.Duration = wavePart.Duration;
+                var timeAxis = project.timeAxis;
+                double partOffsetMs = timeAxis.TickPosToMsPos(wavePart.position);
+                double currMs = partOffsetMs;
+
+                int wavPosS = 0;//position of current slice in seconds
+                foreach(var chunk in chunks){
+                    wavPosS = (int)(chunk.offsetMs / 1000);
+                    progress.Invoke(wavPosS);
+                    var someResult = Analyze(chunk.samples);
+                    var note_midi = someResult.note_midi;
+                    var note_rest = someResult.note_rest;
+                    var note_dur = someResult.note_dur;
+                    //Put the notes into a new voice part
+                    double chunkOffsetMs = chunk.offsetMs + partOffsetMs;
+                    currMs = chunkOffsetMs;
+                    foreach(int index in Enumerable.Range(0, note_midi.Length)){
+                        var noteDurMs = note_dur[index] * 1000;
+                        if(!note_rest[index]){
+                            var posTick = timeAxis.MsPosToTickPos(currMs);
+                            var durTick = timeAxis.MsPosToTickPos(currMs + noteDurMs) - posTick;
+                            var note = project.CreateNote(
+                                (int)Math.Round(note_midi[index]),
+                                posTick - wavePart.position,
+                                durTick
+                            );
+                            part.notes.Add(note);
+                        }
+                        currMs += noteDurMs;
                     }
-                    currMs += noteDurMs;
                 }
-            }
-            var endTick = timeAxis.MsPosToTickPos(currMs);
-            if(endTick > part.End){
-                part.Duration = endTick - part.position;
-            }
-            return part;
+                var endTick = timeAxis.MsPosToTickPos(currMs);
+                if(endTick > part.End){
+                    part.Duration = endTick - part.position;
+                }
+                return part;
+            });
         }
 
         protected virtual void Dispose(bool disposing) {

@@ -1061,24 +1061,36 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        async void Transcribe(UPart part){
+        void Transcribe(UPart part){
             if(part is UWavePart wavePart){
                 try{
                     using(Some some = new Some()){
-                        UVoicePart voicePart = some.Transcribe(DocManager.Inst.Project, wavePart);
+                        string text = ThemeManager.GetString("context.part.transcribing");
+                        var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                        //Duration of the wave file in seconds
+                        int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
+                        var transcribeTask = some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS =>{
+                            //msgbox?.SetText($"{text} {part.name}\n{wavPosS}/{wavDurS}");
+                            msgbox.SetText(string.Format("{0} {1}\n{2} / {3}",text, part.name, wavPosS, wavDurS));
+                        });
+                        transcribeTask.Wait();
+                        var voicePart = transcribeTask.Result;
+                        msgbox?.Close();
                         //Add voicePart into project
-                        var project = DocManager.Inst.Project;
-                        var track = new UTrack(project);
-                        track.TrackNo = project.tracks.Count;
-                        voicePart.trackNo = track.TrackNo;
-                        DocManager.Inst.StartUndoGroup();
-                        DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-                        DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
-                        DocManager.Inst.EndUndoGroup();
+                        if(voicePart != null){
+                            var project = DocManager.Inst.Project;
+                            var track = new UTrack(project);
+                            track.TrackNo = project.tracks.Count;
+                            voicePart.trackNo = track.TrackNo;
+                            DocManager.Inst.StartUndoGroup();
+                            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                            DocManager.Inst.EndUndoGroup();
+                        }
                     }
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to transcribe part {part.name}");
-                    _ = await MessageBox.ShowError(this, e);
+                    MessageBox.ShowError(this, e);
                 }
             }
         }

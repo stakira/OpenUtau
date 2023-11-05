@@ -9,6 +9,7 @@
   <system:String x:Key="context.part.rename">Rename part</system:String>
   <system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>
   <system:String x:Key="context.part.transcribe">Transcribe</system:String>
+  <system:String x:Key="context.part.transcribing">Transcribing</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
