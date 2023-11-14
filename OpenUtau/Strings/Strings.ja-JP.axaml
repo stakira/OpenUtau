@@ -37,6 +37,7 @@
   <system:String x:Key="dialogs.installdll.caption">Phonemizerのインストール</system:String>
   <system:String x:Key="dialogs.installdll.message">インストールします : </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
+  <system:String x:Key="dialogs.messagebox.copy">エラーをクリップボードにコピー</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
   <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>

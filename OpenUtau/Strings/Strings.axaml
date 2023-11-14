@@ -37,6 +37,7 @@
   <system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>
   <system:String x:Key="dialogs.installdll.message">Installing </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>
+  <system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
   <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
