@@ -279,22 +279,35 @@ namespace OpenUtau.App.Views {
 
     class NoteResizeEditState : NoteEditState {
         public readonly UNote note;
-        public readonly UNote? nextNote;
-        public readonly bool resizeNext;
+        public readonly UNote? neighborNote;
+        public readonly bool resizeNeighbor;
+        public readonly bool fromStart;
         public NoteResizeEditState(
             Control control,
             PianoRollViewModel vm,
             IValueTip valueTip,
             UNote note,
-            bool resizeNext) : base(control, vm, valueTip) {
+            bool resizeNeighbor,
+            bool fromStart = false) : base(control, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
             if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
             }
-            this.resizeNext = notesVm.Selection.Count == 0 &&
-                resizeNext && note.Next != null && note.End == note.Next.position;
-            nextNote = note.Next;
+            if (fromStart) {
+                this.resizeNeighbor = notesVm.Selection.Count == 0
+                                      && resizeNeighbor
+                                      && note.Prev != null
+                                      && note.position == note.Prev.End;
+                neighborNote = note.Prev;
+            } else {
+                this.resizeNeighbor = notesVm.Selection.Count == 0
+                                      && resizeNeighbor
+                                      && note.Next != null
+                                      && note.End == note.Next.position;
+                neighborNote = note.Next;
+            }
+            this.fromStart = fromStart;
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
@@ -304,11 +317,16 @@ namespace OpenUtau.App.Views {
                 return;
             }
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
-            int newEnd = notesVm.PointToTick(point);
+            int newTick = notesVm.PointToTick(point);
             if (notesVm.IsSnapOn) {
-                newEnd = (int)Math.Floor((double)newEnd / snapUnit) * snapUnit + snapUnit;
+                newTick = this.fromStart
+                    ? (int)Math.Floor((double)newTick / snapUnit) * snapUnit
+                    : (int)Math.Floor((double)newTick / snapUnit) * snapUnit + snapUnit;
             }
-            int deltaDuration = newEnd - note.End;
+
+            int deltaDuration = this.fromStart
+                ? note.position - newTick
+                : newTick - note.End;
             int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
@@ -320,8 +338,8 @@ namespace OpenUtau.App.Views {
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
             }
-            if (resizeNext && nextNote != null) {
-                var maxDelta = Math.Max(0, nextNote.duration - minNoteTicks);
+            if (resizeNeighbor && neighborNote != null) {
+                var maxDelta = Math.Max(0, neighborNote.duration - minNoteTicks);
                 deltaDuration = Math.Min(deltaDuration, maxDelta);
             }
             if (deltaDuration == 0) {
@@ -329,13 +347,21 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (notesVm.Selection.Count == 0) {
-                if (resizeNext && nextNote != null) {
-                    DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, nextNote, deltaDuration, 0));
-                    DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, nextNote, -deltaDuration));
+                if (resizeNeighbor && neighborNote != null) {
+                    if (!fromStart) {
+                        DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, neighborNote, deltaDuration, 0));
+                    }
+                    DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, neighborNote, -deltaDuration));
+                }
+                if (fromStart) {
+                    DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, note, -deltaDuration, 0));
                 }
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, note, deltaDuration));
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
+            }
+            if (fromStart) {
+                DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, notesVm.Selection.ToList(), -deltaDuration, 0));
             }
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, notesVm.Selection.ToList(), deltaDuration));
             valueTip.UpdateValueTip(note.duration.ToString());
