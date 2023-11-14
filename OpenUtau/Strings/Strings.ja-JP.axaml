@@ -177,9 +177,11 @@
 
   <system:String x:Key="noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="noteproperty.apply">適用</system:String>
+  <system:String x:Key="noteproperty.basic">基本</system:String>
   <system:String x:Key="noteproperty.cancel">キャンセル</system:String>
   <system:String x:Key="noteproperty.set">セット</system:String>
   <system:String x:Key="noteproperty.setlongnote">長い音符のみセットする</system:String>
+  <system:String x:Key="noteproperty.tone">音程</system:String>
   <system:String x:Key="noteproperty.vibratoenable">オン</system:String>
   
   <system:String x:Key="oto.alias">エイリアス</system:String>

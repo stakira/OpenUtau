@@ -177,9 +177,11 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="noteproperty">Note Properties</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
+  <system:String x:Key="noteproperty.basic">Basic</system:String>
   <system:String x:Key="noteproperty.cancel">Cancel</system:String>
   <system:String x:Key="noteproperty.set">Set</system:String>
   <system:String x:Key="noteproperty.setlongnote">Set only on long notes</system:String>
+  <system:String x:Key="noteproperty.tone">Tone</system:String>
   <system:String x:Key="noteproperty.vibratoenable">Enable</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
