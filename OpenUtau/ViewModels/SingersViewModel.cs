@@ -85,6 +85,7 @@ namespace OpenUtau.App.ViewModels {
                         LoadSubbanks();
                         DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                         this.RaisePropertyChanged(nameof(IsClassic));
+                        this.RaisePropertyChanged(nameof(UseSearchAlias));
                     }
                 });
             this.WhenAnyValue(vm => vm.SearchAlias)
