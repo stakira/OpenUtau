@@ -442,10 +442,12 @@ General
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
+  <system:String x:Key="tracks.solo">Solo</system:String>
   <system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>
   <system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>
   <system:String x:Key="tracks.trackcolor">Change track color</system:String>
+  <system:String x:Key="tracks.tracksettings">Track Settings</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
