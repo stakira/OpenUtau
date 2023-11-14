@@ -36,7 +36,6 @@
   <system:String x:Key="dialogs.installdependency.message">Installing </system:String>
   <system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>
   <system:String x:Key="dialogs.installdll.message">Installing </system:String>
-  <system:String x:Key="dialogs.key.caption">Key</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
   <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
@@ -161,10 +160,8 @@
   <system:String x:Key="notedefaults.preset.save">Save</system:String>
   <system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>
   <system:String x:Key="notedefaults.reset">Reset All Settings</system:String>
-  <system:String x:Key="notedefaults.reset.tooltip">
-    Reset every setting to default values.
-    Warning: this option removes custom presets.
-  </system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
+Warning: this option removes custom presets.</system:String>
   <system:String x:Key="notedefaults.vibrato">Vibrato</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>
@@ -259,26 +256,20 @@
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">
-    Draw Pitch Tool (4)
+  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
     Left click to draw
     Right click to reset
     Hold Ctrl to select
-    Hold Alt to smoothen
-  </system:String>
+    Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
-  <system:String x:Key="pianoroll.tool.penplus">
-    Pen Plus Tool (Ctrl + 2)
+  <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
-    Hold Ctrl to select
-  </system:String>
-  <system:String x:Key="pianoroll.tool.penv2">
-    Pen Tool (2)
+    Hold Ctrl to select</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
     Left click to draw
-    Hold Ctrl to select
-  </system:String>
+    Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
@@ -412,30 +403,26 @@
   <system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>
 
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
-  <system:String x:Key="tip.exps">
-    Left Button Draw: Set expressions
-    Right Button Draw: Reset expressions
-  </system:String>
+  <system:String x:Key="tip.exps">Left Button Draw: Set expressions
+Right Button Draw: Reset expressions</system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
-  <system:String x:Key="tip.notes.basics">
-    Selection Tool
+  <system:String x:Key="tip.notes.basics">Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-    Pen Tool
+Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-    General
+General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note
     Alt + Drag End of Note: Resize neighbouring notes
-    Space: Play
-  </system:String>
+    Space: Play</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 
