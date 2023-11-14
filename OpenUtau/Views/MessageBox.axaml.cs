@@ -7,7 +7,7 @@ using Avalonia.Threading;
 
 namespace OpenUtau.App.Views {
     public partial class MessageBox : Window {
-        public enum MessageBoxButtons { Ok, OkCancel, YesNo, YesNoCancel }
+        public enum MessageBoxButtons { Ok, OkCancel, YesNo, YesNoCancel, OkCopy }
         public enum MessageBoxResult { Ok, Cancel, Yes, No }
 
         public MessageBox() {
@@ -45,7 +45,7 @@ namespace OpenUtau.App.Views {
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
             string title = ThemeManager.GetString("errors.caption");
-            return Show(parent, builder.ToString(), title, MessageBoxButtons.Ok);
+            return Show(parent, builder.ToString(), title, MessageBoxButtons.OkCopy);
         }
 
         public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {
@@ -67,7 +67,7 @@ namespace OpenUtau.App.Views {
                     res = r;
             }
 
-            if (buttons == MessageBoxButtons.Ok || buttons == MessageBoxButtons.OkCancel)
+            if (buttons == MessageBoxButtons.Ok || buttons == MessageBoxButtons.OkCancel || buttons == MessageBoxButtons.OkCopy)
                 AddButton(ThemeManager.GetString("dialogs.messagebox.ok"), MessageBoxResult.Ok, true);
             if (buttons == MessageBoxButtons.YesNo || buttons == MessageBoxButtons.YesNoCancel) {
                 AddButton(ThemeManager.GetString("dialogs.messagebox.yes"), MessageBoxResult.Yes);
@@ -76,6 +76,15 @@ namespace OpenUtau.App.Views {
 
             if (buttons == MessageBoxButtons.OkCancel || buttons == MessageBoxButtons.YesNoCancel)
                 AddButton(ThemeManager.GetString("dialogs.messagebox.cancel"), MessageBoxResult.Cancel, true);
+            if (buttons == MessageBoxButtons.OkCopy) {
+                var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.copy") };
+                btn.Click += (_, __) => {
+                    try {
+                        GetTopLevel(parent)?.Clipboard?.SetTextAsync(text);
+                    } catch { }
+                };
+                msgbox.Buttons.Children.Add(btn);
+            }
 
             var tcs = new TaskCompletionSource<MessageBoxResult>();
             msgbox.Closed += delegate { tcs.TrySetResult(res); };

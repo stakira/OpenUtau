@@ -1,13 +1,16 @@
-﻿using System;
+using System;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.App.Controls {
     public partial class NotePropertiesControl : UserControl, ICmdSubscriber {
@@ -17,6 +20,16 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
             DataContext = ViewModel = new NotePropertiesViewModel();
 
+            this.GetLogicalDescendants().OfType<TextBox>().ForEach(box => {
+                box.AddHandler(GotFocusEvent, OnTextBoxGotFocus);
+                box.AddHandler(LostFocusEvent, OnTextBoxLostFocus);
+            });
+            this.GetLogicalDescendants().OfType<Slider>().ForEach(slider => {
+                slider.AddHandler(PointerPressedEvent, SliderPointerPressed, RoutingStrategies.Tunnel);
+                slider.AddHandler(PointerReleasedEvent, SliderPointerReleased, RoutingStrategies.Tunnel);
+                slider.AddHandler(PointerMovedEvent, SliderPointerMoved, RoutingStrategies.Tunnel);
+            });
+          
             MessageBus.Current.Listen<PianorollRefreshEvent>()
                 .Subscribe(e => {
                     if(e.refreshItem == "Part") {
@@ -44,15 +57,53 @@ namespace OpenUtau.App.Controls {
             NotePropertiesViewModel.NoteLoading = false;
         }
 
-        void OnGotFocus(object sender, GotFocusEventArgs e) {
-            Log.Information("Note property panel got focus");
-            DocManager.Inst.StartUndoGroup();
-            NotePropertiesViewModel.PanelControlPressed = true;
+        private string textBoxValue = string.Empty;
+        void OnTextBoxGotFocus(object? sender, GotFocusEventArgs args) {
+            Log.Debug("Note property textbox got focus");
+            if(sender is TextBox text) {
+                textBoxValue = text.Text ?? string.Empty;
+            }
         }
-        void OnLostFocus(object sender, RoutedEventArgs e) {
-            Log.Information("Note property panel lost focus");
-            NotePropertiesViewModel.PanelControlPressed = false;
-            DocManager.Inst.EndUndoGroup();
+        void OnTextBoxLostFocus(object? sender, RoutedEventArgs args) {
+            Log.Debug("Note property textbox lost focus");
+            if (sender is TextBox textBox && textBoxValue != textBox.Text && textBox.Tag is string tag && !string.IsNullOrEmpty(tag)) {
+                DocManager.Inst.StartUndoGroup();
+                NotePropertiesViewModel.PanelControlPressed = true;
+                ViewModel.SetNoteParams(tag, textBox.Text);
+                NotePropertiesViewModel.PanelControlPressed = false;
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
+        void SliderPointerPressed(object? sender, PointerPressedEventArgs args) {
+            Log.Debug("Slider pressed");
+            if (sender is Control control) {
+                var point = args.GetCurrentPoint(control);
+                if (point.Properties.IsLeftButtonPressed) {
+                    DocManager.Inst.StartUndoGroup();
+                    NotePropertiesViewModel.PanelControlPressed = true;
+                } else if (point.Properties.IsRightButtonPressed) {
+                    if (control.Tag is string tag && !string.IsNullOrEmpty(tag)) {
+                        DocManager.Inst.StartUndoGroup();
+                        NotePropertiesViewModel.PanelControlPressed = true;
+                        ViewModel.SetNoteParams(tag, null);
+                        NotePropertiesViewModel.PanelControlPressed = false;
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                }
+            }
+        }
+        void SliderPointerReleased(object? sender, PointerReleasedEventArgs args) {
+            Log.Debug("Slider released");
+            if (NotePropertiesViewModel.PanelControlPressed) {
+                NotePropertiesViewModel.PanelControlPressed = false;
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+        void SliderPointerMoved(object? sender, PointerEventArgs args) {
+            if (sender is Slider slider && slider.Tag is string tag && !string.IsNullOrEmpty(tag)) {
+                ViewModel.SetNoteParams(tag, slider.Value);
+            }
         }
 
         void VibratoEnableClicked(object sender, RoutedEventArgs e) {
@@ -113,6 +164,8 @@ namespace OpenUtau.App.Controls {
                         LoadPart(null);
                     }
                 }
+            } else if (cmd is ConfigureExpressionsCommand) {
+                LoadPart(null);
             }
         }
     }
