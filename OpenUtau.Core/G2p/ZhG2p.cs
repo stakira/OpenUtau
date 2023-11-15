@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using OpenUtau.Api;
 using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.G2p {
     public class ZhG2p {
+        private static ZhG2p? mandarinInstance;
+        private static ZhG2p? cantoneseInstance;
+        private static readonly object mandarinLock = new object();
+        private static readonly object cantoneseLock = new object();
+
         private Dictionary<string, string> PhrasesMap = new Dictionary<string, string>();
         private Dictionary<string, string> TransDict = new Dictionary<string, string>();
         private Dictionary<string, string> WordDict = new Dictionary<string, string>();
         private Dictionary<string, string> PhrasesDict = new Dictionary<string, string>();
 
-        public ZhG2p(string language) {
+        private ZhG2p(string language) {
             byte[] data;
             if (language == "mandarin") {
                 data = Data.Resources.g2p_man;
@@ -24,6 +28,28 @@ namespace OpenUtau.Core.G2p {
             LoadDict(data, "user_dict.txt", PhrasesDict);
             LoadDict(data, "word.txt", WordDict);
             LoadDict(data, "trans_word.txt", TransDict);
+        }
+
+        public static ZhG2p GetMandarinInstance() {
+            if (mandarinInstance == null) {
+                lock (mandarinLock) {
+                    if (mandarinInstance == null) {
+                        mandarinInstance = new ZhG2p("mandarin");
+                    }
+                }
+            }
+            return mandarinInstance;
+        }
+
+        public static ZhG2p GetCantoneseInstance() {
+            if (cantoneseInstance == null) {
+                lock (cantoneseLock) {
+                    if (cantoneseInstance == null) {
+                        cantoneseInstance = new ZhG2p("cantonese");
+                    }
+                }
+            }
+            return cantoneseInstance;
         }
 
         public static bool LoadDict(byte[] data, string fileName, Dictionary<string, string> resultMap) {
