@@ -370,9 +370,9 @@
   <system:String x:Key="singers.otoview.showall">全て表示</system:String>
   <system:String x:Key="singers.otoview.zoomin">ズームイン</system:String>
   <system:String x:Key="singers.otoview.zoomout">ズームアウト</system:String>
+  <system:String x:Key="singers.playsample">サンプルボイスを再生</system:String>
   <system:String x:Key="singers.readme">readme.txtを開く</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txtが見つかりません</system:String>
-  <system:String x:Key="singers.playsample">サンプルボイスを再生</system:String>
   <system:String x:Key="singers.refresh">再読み込み</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">デフォルトのPhonemizerを設定</system:String>
   <system:String x:Key="singers.setencoding">文字コードを設定</system:String>
@@ -393,6 +393,7 @@
   <system:String x:Key="singers.subbanks.set">セット</system:String>
   <system:String x:Key="singers.subbanks.tone">音程</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
+  <system:String x:Key="singers.usefilename">ファイル名をエイリアスとして使用する</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトを開く</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">アーカイブファイルのエンコード</system:String>

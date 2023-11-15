@@ -371,9 +371,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.otoview.showall">Show All</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
+  <system:String x:Key="singers.playsample">Play sample</system:String>
   <system:String x:Key="singers.readme">Open readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>
-  <system:String x:Key="singers.playsample">Play sample</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
@@ -394,6 +394,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.subbanks.set">Set</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
+  <system:String x:Key="singers.usefilename">Use filename as alias</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>

@@ -106,6 +106,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            viewModel.SetUseFilenameAsAlias();
+        }
+
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {
