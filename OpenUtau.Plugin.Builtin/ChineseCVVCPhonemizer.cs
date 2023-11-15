@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,11 +44,16 @@ namespace OpenUtau.Plugin.Builtin {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
             }
-            if (singer.TryGetMappedOto($"{prevVowel} {consonant}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+            var vcPhoneme = $"{prevVowel} {consonant}";
+            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                vcPhoneme = oto.Alias;
+            }
+
+            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = oto.Alias,
+                            phoneme = vcPhoneme,
                             position = -vcLen,
                         },
                         new Phoneme() {

@@ -142,6 +142,46 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class FixOverlap: BatchEdit {
+        /// <summary>
+        /// Fix overlapping notes.
+        /// If multiple notes start at the same time, only the one with the highest tone will be kept
+        /// If one notes's end is overlapped by another note, the end will be moved to the start of the next note
+        /// </summary>
+        public virtual string Name => name;
+
+        private string name;
+
+        public FixOverlap() {
+            name = $"pianoroll.menu.notes.fixoverlap";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if(notes.Count == 0){
+                return;
+            }
+            docManager.StartUndoGroup();
+            var currentNote = notes[0];
+            foreach(var note in notes.Skip(1)){
+                if(note.position == currentNote.position){
+                    if(note.tone > currentNote.tone){
+                        docManager.ExecuteCmd(new RemoveNoteCommand(part, currentNote));
+                        currentNote = note;
+                    }else{
+                        docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
+                    }
+                }else if(note.position < currentNote.End){
+                    docManager.ExecuteCmd(new ResizeNoteCommand(part, currentNote, note.position - currentNote.End));
+                    currentNote = note;
+                }else{
+                    currentNote = note;
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class HanziToPinyin : BatchEdit {
         public virtual string Name => name;
 

@@ -201,4 +201,11 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Goto oto.";
     }
+
+    public class NotePresetChangedNotification : UNotification {
+        public NotePresetChangedNotification() {
+
+        }
+        public override string ToString() => "Note preset changed.";
+    }
 }

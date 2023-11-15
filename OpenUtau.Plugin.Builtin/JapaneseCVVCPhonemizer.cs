@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -131,11 +131,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         // checking VCs
         // when VC does not exist, it will not be inserted
-        // TODO: fix duplicate voice color fallback bug (for now, this is better than nothing)
         private bool checkOtoUntilHitVc(string[] input, Note note, out UOto oto) {
             oto = default;
-            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             var otos = new List<UOto>();
             foreach (string test in input) {
