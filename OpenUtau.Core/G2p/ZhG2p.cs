@@ -226,6 +226,5 @@ namespace OpenUtau.Core.G2p {
             return WordDict.ContainsKey(text) ? WordDict[text] : string.Empty;
         }
 
-
     }
 }
