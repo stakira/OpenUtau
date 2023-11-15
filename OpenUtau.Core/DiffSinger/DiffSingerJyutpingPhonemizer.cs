@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using OpenUtau.Api;
-using G2p;
+using OpenUtau.Core.G2p;
 using System.Linq;
 
 namespace OpenUtau.Core.DiffSinger {

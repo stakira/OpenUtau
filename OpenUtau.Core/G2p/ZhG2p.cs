@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
+using OpenUtau.Api;
+using OpenUtau.Core.Util;
 
-namespace G2p {
+namespace OpenUtau.Core.G2p {
     public class ZhG2p {
         private Dictionary<string, string> PhrasesMap = new Dictionary<string, string>();
         private Dictionary<string, string> TransDict = new Dictionary<string, string>();
@@ -13,48 +13,29 @@ namespace G2p {
         private Dictionary<string, string> PhrasesDict = new Dictionary<string, string>();
 
         public ZhG2p(string language) {
-            string dictDir;
+            byte[] data;
             if (language == "mandarin") {
-                dictDir = "Dicts.mandarin";
+                data = Data.Resources.g2p_man;
             } else {
-                dictDir = "Dicts.cantonese";
+                data = Data.Resources.g2p_jyutping;
             }
-
-            LoadDict(dictDir, "phrases_map.txt", PhrasesMap);
-            LoadDict(dictDir, "phrases_dict.txt", PhrasesDict);
-            LoadDict(dictDir, "user_dict.txt", PhrasesDict);
-            LoadDict(dictDir, "word.txt", WordDict);
-            LoadDict(dictDir, "trans_word.txt", TransDict);
+            LoadDict(data, "phrases_map.txt", PhrasesMap);
+            LoadDict(data, "phrases_dict.txt", PhrasesDict);
+            LoadDict(data, "user_dict.txt", PhrasesDict);
+            LoadDict(data, "word.txt", WordDict);
+            LoadDict(data, "trans_word.txt", TransDict);
         }
 
-        public static bool LoadDict(string dictDir, string fileName, Dictionary<string, string> resultMap) {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "OpenUtau.Core.G2p." + dictDir + "." + fileName;
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName)) {
-                if (stream != null) {
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8)) {
-                        string content = reader.ReadToEnd();
-                        string[] lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+        public static bool LoadDict(byte[] data, string fileName, Dictionary<string, string> resultMap) {
+            string[] content = Zip.ExtractText(data, fileName);
 
-                        foreach (string line in lines) {
-                            string trimmedLine = line.Trim();
-                            string[] keyValuePair = trimmedLine.Split(':');
+            content.Select(line => line.Trim())
+                .Select(line => line.Split(":"))
+                .Where(parts => parts.Length == 2)
+                .ToList()
+                .ForEach(parts => resultMap[parts[0]] = parts[1]);
 
-                            if (keyValuePair.Length == 2) {
-                                string key = keyValuePair[0];
-                                string value = keyValuePair[1];
-                                resultMap[key] = value;
-                            }
-                        }
-
-                        return true;
-                    }
-                } else {
-                    Console.WriteLine($"Resource {fileName} not found.");
-                    return false;
-                }
-            }
-
+            return true;
         }
 
         private static readonly Dictionary<string, string> NumMap = new Dictionary<string, string>

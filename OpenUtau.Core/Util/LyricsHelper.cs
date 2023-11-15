@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using G2p;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
