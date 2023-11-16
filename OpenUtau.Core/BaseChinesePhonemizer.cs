@@ -19,9 +19,7 @@ namespace OpenUtau.Core {
         }
 
         public static string[] Romanize(IEnumerable<string> lyrics) {
-            var zhG2p = ZhG2p.GetMandarinInstance();
-            var pinyinRes = zhG2p.Convert(lyrics.ToList(), false, true).Split(" ");
-            return pinyinRes;
+            return ZhG2p.MandarinInstance.Convert(lyrics.ToList(), false, true).Split(" ");
         }
 
         public static void RomanizeNotes(Note[][] groups) {

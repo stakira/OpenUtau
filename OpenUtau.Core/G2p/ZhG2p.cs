@@ -6,10 +6,11 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.G2p {
     public class ZhG2p {
-        private static ZhG2p? mandarinInstance;
-        private static ZhG2p? cantoneseInstance;
-        private static readonly object mandarinLock = new object();
-        private static readonly object cantoneseLock = new object();
+        private static Lazy<ZhG2p> mandarinInstance = new Lazy<ZhG2p>(() => new ZhG2p("mandarin"));
+        private static Lazy<ZhG2p> cantoneseInstance = new Lazy<ZhG2p>(() => new ZhG2p("cantonese"));
+
+        public static ZhG2p MandarinInstance => mandarinInstance.Value;
+        public static ZhG2p CantoneseInstance => cantoneseInstance.Value;
 
         private Dictionary<string, string> PhrasesMap = new Dictionary<string, string>();
         private Dictionary<string, string> TransDict = new Dictionary<string, string>();
@@ -28,28 +29,6 @@ namespace OpenUtau.Core.G2p {
             LoadDict(data, "user_dict.txt", PhrasesDict);
             LoadDict(data, "word.txt", WordDict);
             LoadDict(data, "trans_word.txt", TransDict);
-        }
-
-        public static ZhG2p GetMandarinInstance() {
-            if (mandarinInstance == null) {
-                lock (mandarinLock) {
-                    if (mandarinInstance == null) {
-                        mandarinInstance = new ZhG2p("mandarin");
-                    }
-                }
-            }
-            return mandarinInstance;
-        }
-
-        public static ZhG2p GetCantoneseInstance() {
-            if (cantoneseInstance == null) {
-                lock (cantoneseLock) {
-                    if (cantoneseInstance == null) {
-                        cantoneseInstance = new ZhG2p("cantonese");
-                    }
-                }
-            }
-            return cantoneseInstance;
         }
 
         public static bool LoadDict(byte[] data, string fileName, Dictionary<string, string> resultMap) {
@@ -223,7 +202,7 @@ namespace OpenUtau.Core.G2p {
         }
 
         string GetDefaultPinyin(string text) {
-            return WordDict.ContainsKey(text) ? WordDict[text] : string.Empty;
+            return WordDict.ContainsKey(text) ? WordDict[text] : text;
         }
 
     }

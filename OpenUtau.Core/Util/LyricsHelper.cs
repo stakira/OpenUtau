@@ -55,18 +55,14 @@ namespace OpenUtau.Core.Util {
     public class PinyinLyricsHelper : ILyricsHelper {
         public string Source => "汉->han";
         public string Convert(string lyric) {
-            var zhG2p = ZhG2p.GetMandarinInstance();
-            var pinyinRes = zhG2p.Convert(lyric, false, true);
-            return pinyinRes;
+            return ZhG2p.MandarinInstance.Convert(lyric, false, true);
         }
     }
 
     public class JyutpingLyricsHelper : ILyricsHelper {
         public string Source => "粤->jyut";
         public string Convert(string lyric) {
-            var zhG2p = ZhG2p.GetCantoneseInstance();
-            var jyutpingRes = zhG2p.Convert(lyric, false, true);
-            return jyutpingRes;
+            return ZhG2p.CantoneseInstance.Convert(lyric, false, true);
         }
     }
 
