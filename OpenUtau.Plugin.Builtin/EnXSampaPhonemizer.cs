@@ -639,18 +639,14 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
-            UOto? oto;
-            oto = default;
-            var suffix = oto?.Suffix;
-
             foreach (var c in longConsonants) {
-                if (alias.EndsWith(c) && suffix == null) {
+                if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 2.0;
                 }
             }
 
             foreach (var c in shortConsonants) {
-                if (alias.EndsWith(c) && suffix == null) {
+                if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
