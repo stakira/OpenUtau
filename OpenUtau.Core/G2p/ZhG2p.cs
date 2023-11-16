@@ -114,6 +114,7 @@ namespace OpenUtau.Core.G2p {
         public string Convert(List<string> input, bool tone, bool convertNum) {
             var inputList = new List<string>();
             var inputPos = new List<int>();
+
             ZhPosition(input, inputList, inputPos, convertNum);
             var result = new List<string>();
             var cursor = 0;
