@@ -24,6 +24,7 @@ namespace OpenUtau.Core.G2p {
             } else {
                 data = Data.Resources.g2p_jyutping;
             }
+
             LoadDict(data, "phrases_map.txt", PhrasesMap);
             LoadDict(data, "phrases_dict.txt", PhrasesDict);
             LoadDict(data, "user_dict.txt", PhrasesDict);
