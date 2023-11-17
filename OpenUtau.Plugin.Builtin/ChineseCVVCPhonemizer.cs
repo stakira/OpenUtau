@@ -33,7 +33,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 return MakeSimpleResult($"{prevVowel} R");
             }
-            int totalDuration = notes.Sum(n => n.duration);
             if (singer.TryGetMappedOto($"{prevVowel} {lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 return MakeSimpleResult(oto.Alias);
             }
