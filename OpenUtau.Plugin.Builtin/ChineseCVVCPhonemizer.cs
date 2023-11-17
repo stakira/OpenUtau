@@ -38,18 +38,24 @@ namespace OpenUtau.Plugin.Builtin {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
+            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto)) {
                 vcLen = MsToTick(cvOto.Preutter);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
             }
             var vcPhoneme = $"{prevVowel} {consonant}";
-            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
-                vcPhoneme = oto.Alias;
+            if (prevNeighbour != null) {
+                if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    vcPhoneme = oto.Alias;
+                }
+            } else {
+                if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    vcPhoneme = oto.Alias;
+                }
             }
 
-            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+            if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
