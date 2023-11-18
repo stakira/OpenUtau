@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -429,14 +425,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in longConsonants) {
-                foreach (var v in vowels) {
-                    foreach (var cc in consonants) {
-                        if (alias.Contains(" " + c) || alias.Contains(v + c) || alias.Contains(cc + c)) {
-                            return base.GetTransitionBasicLengthMs() * 2.0;
-                        }
-                    }
+                if (alias.Contains(c)) {
+                    return base.GetTransitionBasicLengthMs() * 2.0;
                 }
-
             }
             return base.GetTransitionBasicLengthMs();
         }
