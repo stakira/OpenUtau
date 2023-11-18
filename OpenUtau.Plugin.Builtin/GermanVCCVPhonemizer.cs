@@ -20,7 +20,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// 
 
-        private readonly string[] vowels = "a,6,e,E,2,i,I,y,Y,u,U,o,O,@,aU,OY,aI".Split(',');
+        private readonly string[] vowels = "a,6,e,E,2,9,i,I,y,Y,u,U,o,O,@,aU,OY,aI".Split(',');
         private readonly string[] consonants = "-,b,C,d,f,g,h,j,k,kh,l,m,n,N,p,ph,R;,s,S,t,th,v,x,z,Z,dZ,ks,pf,st,St,tS,w".Split(',');
         private readonly string[] longConsonants = "k,kh,p,ph,s,S,t,th,dZ,ks,pf,st,St,tS".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=a,ae=E,ah=@,ao=O,aw=aU,ax=@,ay=aI," +
