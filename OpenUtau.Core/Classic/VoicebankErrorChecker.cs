@@ -32,6 +32,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankErrorChecker {
         public List<VoicebankError> Errors = new List<VoicebankError>();
+        public List<VoicebankError> Infos = new List<VoicebankError>();
 
         readonly string path;
         readonly Voicebank voicebank;
@@ -55,7 +56,7 @@ namespace OpenUtau.Classic {
             }
             string charYaml = Path.Combine(path, VoicebankLoader.kCharYaml);
             if (!File.Exists(charYaml)) {
-                Errors.Add(new VoicebankError() {
+                Infos.Add(new VoicebankError() {
                     message = "character.yaml not found",
                 });
             }
@@ -126,7 +127,7 @@ namespace OpenUtau.Classic {
                         });
                     }
                     if (waveFormat.Channels != 1) {
-                        Errors.Add(new VoicebankError() {
+                        Infos.Add(new VoicebankError() {
                             trace = oto.FileTrace,
                             soundFile = filePath,
                             message = $"Sound file is not mono channel."

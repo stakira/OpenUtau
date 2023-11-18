@@ -179,10 +179,18 @@ namespace OpenUtau.App.ViewModels {
                 string outFile = Path.Combine(Singer.Location, "errors.txt");
                 using (var stream = File.Open(outFile, FileMode.Create)) {
                     using (var writer = new StreamWriter(stream)) {
+                        writer.WriteLine($"------ Informations ------");
+                        writer.WriteLine();
+                        for (var i = 0; i < checker.Infos.Count; i++) {
+                            writer.WriteLine($"--- Info {i + 1} ---");
+                            writer.WriteLine(checker.Infos[i].ToString());
+                        }
+                        writer.WriteLine();
+                        writer.WriteLine($"------ Errors ------");
                         writer.WriteLine($"Total errors: {checker.Errors.Count}");
                         writer.WriteLine();
                         for (var i = 0; i < checker.Errors.Count; i++) {
-                            writer.WriteLine($"------ Error {i + 1} ------");
+                            writer.WriteLine($"--- Error {i + 1} ---");
                             writer.WriteLine(checker.Errors[i].ToString());
                         }
                     }
