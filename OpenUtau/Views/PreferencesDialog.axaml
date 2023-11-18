@@ -119,7 +119,7 @@
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"/>
             </Grid>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.threads.cpuwarn}"
-                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
+                       Foreground="Crimson" Background="Transparent" IsVisible="{Binding HighThreads}" FontSize="11"/>
             <TextBlock FontWeight="Bold" Text="{DynamicResource prefs.rendering.onnxrunner}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
             <TextBlock Classes="restart"/>
