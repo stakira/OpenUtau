@@ -7,7 +7,8 @@
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource lyrics.caption}"
         KeyDown="OnKeyDown"
-        Opened="OnOpened">
+        Opened="OnOpened"
+        Focusable="True">
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>

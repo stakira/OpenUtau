@@ -6,7 +6,8 @@
         x:Class="OpenUtau.App.Views.SearchNoteDialog"
         WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource pianoroll.menu.searchnote}">
+        Title="{DynamicResource pianoroll.menu.searchnote}"
+        Focusable="True">
   <StackPanel Margin="20" Spacing="5" HorizontalAlignment="Stretch" VerticalAlignment="Center">
     <TextBox Text="{Binding SearchWord}" />
     <TextBlock HorizontalAlignment="Center" >
