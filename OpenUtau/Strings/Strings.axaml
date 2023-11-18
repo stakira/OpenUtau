@@ -379,6 +379,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
   <system:String x:Key="singers.setimage">Set Icon</system:String>
   <system:String x:Key="singers.setportrait">Set Portrait</system:String>
+  <system:String x:Key="singers.setsingertype">Set Singer Type</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancel</system:String>
   <system:String x:Key="singers.subbanks.clear">Clear</system:String>
   <system:String x:Key="singers.subbanks.color">Color</system:String>

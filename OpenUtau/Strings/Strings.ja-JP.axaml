@@ -378,6 +378,7 @@
   <system:String x:Key="singers.setencoding">文字コードを設定</system:String>
   <system:String x:Key="singers.setimage">アイコンを設定</system:String>
   <system:String x:Key="singers.setportrait">背景イラストを設定</system:String>
+  <system:String x:Key="singers.setsingertype">シンガータイプを設定</system:String>
   <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
   <system:String x:Key="singers.subbanks.clear">クリア</system:String>
   <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
