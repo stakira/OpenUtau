@@ -57,7 +57,7 @@
   <system:String x:Key="exps.apply">적용</system:String>
   <system:String x:Key="exps.caption">표현 설정</system:String>
   <system:String x:Key="exps.defaultvalue">기본값</system:String>
-  <system:String x:Key="exps.flag">리샘플러 고유 플래그</system:String>
+  <system:String x:Key="exps.flag">리샘플러 플래그에요</system:String>
   <system:String x:Key="exps.getsuggestions">렌더러가 제안하는 모든 표현들을 추가할래요</system:String>
   <system:String x:Key="exps.isflag">리샘플러의 플래그에요</system:String>
   <system:String x:Key="exps.maxvalue">최댓값</system:String>
