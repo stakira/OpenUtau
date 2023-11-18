@@ -29,7 +29,7 @@
           <DataTemplate>
             <Grid Margin="0" Width="360" HorizontalAlignment="Left" Background="Transparent" PointerPressed="ListBox_PointerPressed">
               <TextBlock Margin="4" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="{Binding Alias}"/>
-              <TextBlock Margin="4,4,24,4" Grid.Column="1" HorizontalAlignment="Right" IsHitTestVisible="False" FontSize="10" Text="{Binding Source}"/>
+              <TextBlock Margin="4,4,24,4" Grid.Column="1" HorizontalAlignment="Right" IsHitTestVisible="False" FontSize="13" Text="{Binding Source}"/>
             </Grid>
           </DataTemplate>
         </ListBox.ItemTemplate>

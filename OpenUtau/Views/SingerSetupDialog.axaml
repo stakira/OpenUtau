@@ -87,7 +87,7 @@
           <ColumnDefinition Width="120"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,1,0,0" Text="{DynamicResource singersetup.singertype}"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,1,0,0" Text="{DynamicResource singersetup.singertype}"/>
         <ComboBox Grid.Row="0" Grid.Column="1" Width="240" Margin="0" ItemsSource="{Binding SingerTypes}" SelectedItem="{Binding SingerType}"/>
       </Grid>
       <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">

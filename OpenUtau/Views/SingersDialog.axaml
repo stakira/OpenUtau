@@ -56,7 +56,7 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0" Height="24"
                 Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
       <Button Content="{DynamicResource singers.location}" Margin="0" Width="100"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
@@ -97,10 +97,10 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
+      <TextBox Text="{Binding SearchAlias}" Padding="0" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
                MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding UseSearchAlias}" />
     </StackPanel>
-    <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Height="20"
             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
       <Button Margin="0" Content="{DynamicResource singers.playsample}" Click="OnPlaySample"/>

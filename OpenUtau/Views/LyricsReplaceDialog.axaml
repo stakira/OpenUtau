@@ -12,7 +12,7 @@
   <Grid Margin="10" RowDefinitions="auto,10,Auto,10,Auto,10,*,10,Auto">
     <StackPanel Orientation="Horizontal" Grid.Row="0">
       <TextBlock Text="{StaticResource lyricsreplace.before}" />
-      <TextBox Text="{Binding OldValue}" MinWidth="200" Margin="10,0"
+      <TextBox Text="{Binding OldValue}" MinWidth="200" Margin="10,0" Padding="4,0"
                Watermark="{StaticResource lyricsreplace.regex}"/>
     </StackPanel>
 
@@ -35,7 +35,7 @@
 
     <StackPanel Grid.Row="8" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
       <!-- <Button Content="{StaticResource lyrics.cancel}" Margin="0" Click="OnCancel"/>-->
-      <Button Content="{StaticResource lyrics.apply}" Margin="0" MinWidth="50" Click="OnFinish"/>
+      <Button Padding="1" Content="{StaticResource lyrics.apply}" Margin="0" MinWidth="50" Click="OnFinish"/>
     </StackPanel>
   </Grid>
 </Window>
