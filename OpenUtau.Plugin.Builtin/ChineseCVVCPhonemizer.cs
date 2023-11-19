@@ -48,10 +48,16 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                     vcPhoneme = oto.Alias;
                 }
+                // totalDuration calculated on basis of previous note length
+                int totalDuration = prevNeighbour.Value.duration;
+                // vcLength depends on the Vel of the current base note
+                vcLen = Convert.ToInt32(Math.Min(totalDuration / 1.5, Math.Max(60, vcLen * (attr1.consonantStretchRatio ?? 1))));
             } else {
                 if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                     vcPhoneme = oto.Alias;
                 }
+                // no previous note, so length can be minimum velocity regardless of oto
+                vcLen = Convert.ToInt32(Math.Min(vcLen * 2, Math.Max(60, vcLen * (attr1.consonantStretchRatio ?? 1))));
             }
 
             if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
