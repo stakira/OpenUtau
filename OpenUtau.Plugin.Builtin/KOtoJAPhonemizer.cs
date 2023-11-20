@@ -718,18 +718,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 vcPhoneme = otoVcAlt.Alias;
                             } else if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
                                 vcPhoneme = otoVc.Alias;
-                            } else {
-                                return new Result {
-                                    phonemes = new Phoneme[] {
-                                        new Phoneme() {
-                                            phoneme = currPhoneme
-                                        },
-                                        new Phoneme() {
-                                            phoneme = secondPhoneme,
-                                            position = secondPosition
-                                        }
-                                    }
-                                };
                             }
                             if (singer.TryGetMappedOto(secondPhoneme + alt2, note.tone + shift2, color2, out var otoAlt3)) {
                                 secondPhoneme = otoAlt3.Alias;
@@ -760,14 +748,6 @@ namespace OpenUtau.Plugin.Builtin {
                             vcPhoneme = otoVcAlt1.Alias;
                         } else if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
                             vcPhoneme = otoVc.Alias;
-                        } else {
-                            return new Result {
-                                phonemes = new Phoneme[] {
-                                        new Phoneme() {
-                                            phoneme = currPhoneme
-                                        }
-                                    }
-                            };
                         }
                         if (singer.TryGetMappedOto(vcPhoneme, note.tone + shift, color, out _)
                             && singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out _)) {
