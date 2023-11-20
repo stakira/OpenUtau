@@ -42,6 +42,9 @@ namespace OpenUtau.Plugin.Builtin {
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
+                if (cvOto.Overlap < 0) {
+                    vcLen = MsToTick(cvOto.Preutter - cvOto.Overlap);
+                }
             }
             var vcPhoneme = $"{prevVowel} {consonant}";
             if (prevNeighbour != null) {
@@ -51,13 +54,13 @@ namespace OpenUtau.Plugin.Builtin {
                 // totalDuration calculated on basis of previous note length
                 int totalDuration = prevNeighbour.Value.duration;
                 // vcLength depends on the Vel of the current base note
-                vcLen = Convert.ToInt32(Math.Min(totalDuration / 1.5, Math.Max(60, vcLen * (attr1.consonantStretchRatio ?? 1))));
+                vcLen = Convert.ToInt32(Math.Min(totalDuration / 1.5, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
             } else {
                 if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                     vcPhoneme = oto.Alias;
                 }
                 // no previous note, so length can be minimum velocity regardless of oto
-                vcLen = Convert.ToInt32(Math.Min(vcLen * 2, Math.Max(60, vcLen * (attr1.consonantStretchRatio ?? 1))));
+                vcLen = Convert.ToInt32(Math.Min(vcLen * 2, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
             }
 
             if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
