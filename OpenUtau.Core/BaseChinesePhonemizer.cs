@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using TinyPinyin;
 using ToolGood.Words.Pinyin;
 
 namespace OpenUtau.Core {
@@ -28,7 +29,7 @@ namespace OpenUtau.Core {
             var lyricsArray = lyrics.ToArray();
             var hanziLyrics = String.Join("", lyricsArray
                 .Where(IsHanzi));
-            var pinyinResult = WordsHelper.GetPinyin(hanziLyrics, " ").ToLower().Split();
+            var pinyinResult = PinyinHelper.GetPinyin(hanziLyrics, " ").ToLower().Split();
             var pinyinIndex = 0;
             for(int i=0; i < lyricsArray.Length; i++) {
                 if (lyricsArray[i].Length == 1 && WordsHelper.IsAllChinese(lyricsArray[i])) {
