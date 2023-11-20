@@ -714,14 +714,10 @@ namespace OpenUtau.Plugin.Builtin {
                             } else if (singer.TryGetMappedOto(currPhoneme, note.tone + shift1, color1, out var oto0)) {
                                 currPhoneme = oto0.Alias;
                             }
-                            if (singer.TryGetMappedOto(vcPhoneme + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAlt)) {
+                            if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAlt)) {
                                 vcPhoneme = otoVcAlt.Alias;
-                            } else if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
+                            } else if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
                                 vcPhoneme = otoVc.Alias;
-                            } else if (singer.TryGetMappedOto(vcPhonemes[1] + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAltSub)) {
-                                vcPhoneme = otoVcAltSub.Alias;
-                            } else if (singer.TryGetMappedOto(vcPhonemes[1], prevNeighbour.Value.tone + shift, color, out var otoVcSub)) {
-                                vcPhoneme = otoVcAltSub.Alias;
                             } else {
                                 return new Result {
                                     phonemes = new Phoneme[] {
@@ -760,14 +756,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 };
                             }
                         }
-                        if (singer.TryGetMappedOto(vcPhoneme + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAlt1)) {
+                        if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAlt1)) {
                             vcPhoneme = otoVcAlt1.Alias;
-                        } else if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
+                        } else if (singer.TryGetMappedOto(vcPhoneme ?? vcPhonemes[1] ?? string.Empty, prevNeighbour.Value.tone + shift, color, out var otoVc)) {
                             vcPhoneme = otoVc.Alias;
-                        } else if (singer.TryGetMappedOto(vcPhonemes[1] + alt, prevNeighbour.Value.tone + shift, color, out var otoVcAltSub)) {
-                            vcPhoneme = otoVcAltSub.Alias;
-                        } else if (singer.TryGetMappedOto(vcPhonemes[1], prevNeighbour.Value.tone + shift, color, out var otoVcSub)) {
-                            vcPhoneme = otoVcSub.Alias;
                         } else {
                             return new Result {
                                 phonemes = new Phoneme[] {
