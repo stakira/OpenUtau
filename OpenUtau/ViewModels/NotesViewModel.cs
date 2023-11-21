@@ -909,10 +909,14 @@ namespace OpenUtau.App.ViewModels {
         internal (UNote[], string[]) PrepareInsertLyrics() {
             var first = Selection.FirstOrDefault();
             var last = Selection.LastOrDefault();
-            List<UNote> notes = new List<UNote>();
-            if (first == null || last == null) {
-                return (notes.ToArray(), new string[0]);
+            if(Part == null){
+                return (new UNote[0], new string[0]);
             }
+            //If no note is selected, InsertLyrics will apply to all notes in the part.
+            if (first == null || last == null) {
+                return (Part.notes.ToArray(), Part.notes.Select(n => n.lyric).ToArray());
+            }
+            List<UNote> notes = new List<UNote>();
             var note = first;
             while (note != last) {
                 notes.Add(note);
