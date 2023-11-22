@@ -353,6 +353,11 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
+  <system:String x:Key="singerlocation.add">Add</system:String>
+  <system:String x:Key="singerlocation.remove">Remove</system:String>
+  <system:String x:Key="singerlocation.set">Set Singer Locations</system:String>
+  <system:String x:Key="singerlocation.where">Where to install new singers:</system:String>
+  
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
@@ -395,6 +400,11 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
+
+  <system:String x:Key="singerselection.foldersettings">Folder Settings</system:String>
+  <system:String x:Key="singerselection.loaddeepfolders">Load all depth folders</system:String>
+  <system:String x:Key="singerselection.reload">Reload</system:String>
+  <system:String x:Key="singerselection.search">Search singer</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>

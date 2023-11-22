@@ -76,18 +76,8 @@
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.paths}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.paths.addlsinger}"/>
-            <TextBlock HorizontalAlignment="Stretch" Margin="4"
-                       TextWrapping="Wrap" FontSize="11" Text="{Binding AdditionalSingersPath}"/>
-            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
-              <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
-                      HorizontalAlignment="Stretch" Click="ResetAddlSingersPath"/>
-              <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
-                      HorizontalAlignment="Stretch" Click="SelectAddlSingersPath"/>
-            </Grid>
-            <Grid Margin="0,5,0,0">
-              <TextBlock Text="{DynamicResource prefs.paths.addlsinger.install}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding InstallToAdditionalSingersPath}"/>
-            </Grid>
+            <Button Content="{DynamicResource singerlocation.set}" Margin="0,10"
+                    HorizontalAlignment="Stretch" Click="SelectAddlSingersPath"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.cache}">

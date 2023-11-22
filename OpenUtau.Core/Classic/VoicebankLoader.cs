@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -43,7 +44,14 @@ namespace OpenUtau.Classic {
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            result.AddRange(Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+            IEnumerable<string> files;
+            if (Preferences.Default.LoadDeepFolderSinger) {
+                files = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories);
+            } else {
+                files = Directory.GetDirectories(basePath) // TopDirectoryOnly
+                    .SelectMany(path => Directory.EnumerateFiles(path, kCharTxt));
+            }
+            result.AddRange(files
                 .Select(filePath => {
                     try {
                         var voicebank = new Voicebank();

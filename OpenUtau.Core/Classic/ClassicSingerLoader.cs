@@ -17,11 +17,7 @@ namespace OpenUtau.Classic {
         }
         public static IEnumerable<USinger> FindAllSingers() {
             List<USinger> singers = new List<USinger>();
-            foreach (var path in new string[] {
-                PathManager.Inst.SingersPathOld,
-                PathManager.Inst.SingersPath,
-                PathManager.Inst.AdditionalSingersPath,
-            }) {
+            foreach (var path in PathManager.Inst.SingersPaths) {
                 var loader = new VoicebankLoader(path);
                 singers.AddRange(loader.SearchAll()
                     .Select(AdjustSingerType));

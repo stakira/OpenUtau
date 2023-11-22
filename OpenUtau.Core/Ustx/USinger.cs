@@ -187,7 +187,7 @@ namespace OpenUtau.Core.Ustx {
 
     [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
 
-    public class USinger : INotifyPropertyChanged {
+    public class USinger : INotifyPropertyChanged, IEquatable<USinger> {
         protected static readonly List<UOto> emptyOtos = new List<UOto>();
 
         public virtual string Id { get; }
@@ -222,6 +222,19 @@ namespace OpenUtau.Core.Ustx {
                 NotifyPropertyChanged(nameof(OtoDirty));
             }
         }
+        public bool Favored {
+            get => Preferences.Default.FavoriteSingers.Contains(Id);
+            set {
+                if (value) {
+                    if (!Preferences.Default.FavoriteSingers.Contains(Id)) {
+                        Preferences.Default.FavoriteSingers.Add(Id);
+                    }
+                } else {
+                    Preferences.Default.FavoriteSingers.Remove(Id);
+                }
+                Preferences.Save();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -231,21 +244,19 @@ namespace OpenUtau.Core.Ustx {
 
         private string name;
 
-        public string DisplayName { get { return Found ? name : $"[Missing] {name}"; } }
-
         public string LocalizedName { 
             get {
                 if(LocalizedNames == null) {
-                    return Name;
+                    return Found ? Name : $"[Missing] {Name}"; ;
                 }
                 string language = Preferences.Default.SortingOrder;
-                if(String.IsNullOrEmpty(language)){
+                if(string.IsNullOrEmpty(language)){
                     language = Preferences.Default.Language;
                 }
                 if(LocalizedNames.TryGetValue(language, out var localizedName)){
-                    return localizedName;
+                    return Found ? localizedName : $"[Missing] {localizedName}";
                 } else {
-                    return Name;
+                    return Found ? Name : $"[Missing] {Name}";
                 }
             }
         }
@@ -268,6 +279,16 @@ namespace OpenUtau.Core.Ustx {
         public virtual byte[] LoadPortrait() => null;
         public virtual byte[] LoadSample() => null;
         public override string ToString() => Name;
+        public bool Equals(USinger other) {
+            // Tentative: Since only the singer's Id is recorded in ustx and preferences, singers with the same Id are considered identical.
+            // Singer with the same directory name in different locations may be identical.
+            if (other != null && other.Id == this.Id) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public static USinger CreateMissing(string name) {
             return new USinger() {

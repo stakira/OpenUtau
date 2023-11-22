@@ -83,9 +83,10 @@ namespace OpenUtau.App.Controls {
         }
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
-            if (SingerManager.Inst.Singers.Count > 0) {
-                ViewModel?.RefreshSingers();
-                SingersMenu.Open();
+            if (VisualRoot is Window window) {
+                var dialog = new Views.SingerSelectionDialog(track != null ? track.TrackNo : 0);
+                dialog.onFinish = singer => ViewModel?.ChangeSinger(singer);
+                dialog.ShowDialog(window);
             }
             args.Handled = true;
         }

@@ -27,8 +27,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         [Reactive] public int LockStartTime { get; set; }
-        public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
-        [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool PreRender { get; set; }
         public List<string> DefaultRendererOptions { get; set; }
         [Reactive] public string DefaultRenderer { get; set; }
@@ -109,7 +107,6 @@ namespace OpenUtau.App.ViewModels {
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
-            InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = App.GetLanguages().Keys
@@ -180,11 +177,6 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.LockStartTime)
                 .Subscribe(lockStartTime => {
                     Preferences.Default.LockStartTime = lockStartTime;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.InstallToAdditionalSingersPath)
-                .Subscribe(additionalSingersPath => {
-                    Preferences.Default.InstallToAdditionalSingersPath = additionalSingersPath;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PreRender)
@@ -315,12 +307,6 @@ namespace OpenUtau.App.ViewModels {
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
-        }
-
-        public void SetAddlSingersPath(string path) {
-            Preferences.Default.AdditionalSingerPath = path;
-            Preferences.Save();
-            this.RaisePropertyChanged(nameof(AdditionalSingersPath));
         }
 
         public void SetVLabelerPath(string path) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -68,11 +69,16 @@ namespace OpenUtau.Core {
         public bool IsInstalled { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
-        public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
-        public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath
-            && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
-                ? AdditionalSingersPath
-                : SingersPath;
+        public string SingersInstallPath {
+            get {
+                string addpath = Preferences.Default.AdditionalSingerPaths.FirstOrDefault();
+                if (Preferences.Default.InstallToAdditionalSingersPath && !string.IsNullOrEmpty(addpath) && Directory.Exists(addpath)) {
+                    return addpath;
+                } else {
+                    return SingersPath;
+                }
+            }
+        }
         public string ResamplersPath => Path.Combine(DataPath, "Resamplers");
         public string WavtoolsPath => Path.Combine(DataPath, "Wavtools");
         public string DependencyPath => Path.Combine(DataPath, "Dependencies");
@@ -86,6 +92,21 @@ namespace OpenUtau.Core {
         public string BackupsPath => Path.Combine(DataPath, "Backups");
 
         Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
+
+        public List<string> SingersPaths {
+            get {
+                var list = new List<string> { SingersPath };
+                if (Directory.Exists(SingersPathOld)) {
+                    list.Add(SingersPathOld);
+                }
+                foreach (string path in Preferences.Default.AdditionalSingerPaths) {
+                    if (Directory.Exists(path)) {
+                        list.Add(path);
+                    }
+                }
+                return list.Distinct().ToList();
+            }
+        }
 
         public string GetPartSavePath(string exportPath, string partName, int partNo) {
             var dir = Path.GetDirectoryName(exportPath);
