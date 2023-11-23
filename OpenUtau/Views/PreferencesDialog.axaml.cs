@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
@@ -10,18 +9,9 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
-        void ResetAddlSingersPath(object sender, RoutedEventArgs e) {
-            ((PreferencesViewModel)DataContext!).SetAddlSingersPath(string.Empty);
-        }
-
         async void SelectAddlSingersPath(object sender, RoutedEventArgs e) {
-            var path = await FilePicker.OpenFolder(this, "prefs.paths.addlsinger");
-            if (string.IsNullOrEmpty(path)) {
-                return;
-            }
-            if (Directory.Exists(path)) {
-                ((PreferencesViewModel)DataContext!).SetAddlSingersPath(path);
-            }
+            var dialog = new SingerLocationDialog();
+            await dialog.ShowDialog(this);
         }
 
         void ResetVLabelerPath(object sender, RoutedEventArgs e) {

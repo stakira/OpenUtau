@@ -307,7 +307,6 @@
   <system:String x:Key="prefs.otoeditor.select">デフォルトの原音設定エディタ</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
-  <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
@@ -347,10 +346,19 @@
   </system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <system:String x:Key="prefs.singer">シンガー</system:String>
+  <system:String x:Key="prefs.singer.extension">拡張</system:String>
+  <system:String x:Key="prefs.singer.select">シンガーの選択画面</system:String>
+  <system:String x:Key="prefs.singer.simple">シンプル</system:String>
 
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>
+
+  <system:String x:Key="singerlocation.add">追加</system:String>
+  <system:String x:Key="singerlocation.remove">削除</system:String>
+  <system:String x:Key="singerlocation.set">シンガーの場所を設定</system:String>
+  <system:String x:Key="singerlocation.where">シンガーを新たにインストールする場所：</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabelerで編集</system:String>
@@ -394,6 +402,11 @@
   <system:String x:Key="singers.subbanks.tone">音程</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトを開く</system:String>
+
+  <system:String x:Key="singerselection.foldersettings">フォルダ設定</system:String>
+  <system:String x:Key="singerselection.loaddeepfolders">深い階層のフォルダも読み込む</system:String>
+  <system:String x:Key="singerselection.reload">再読み込み</system:String>
+  <system:String x:Key="singerselection.search">シンガーを検索</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">アーカイブファイルのエンコード</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">ファイル名が文字化けしないエンコードを選択してください。</system:String>

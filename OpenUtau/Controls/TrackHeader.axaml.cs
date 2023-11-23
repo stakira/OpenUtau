@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -83,9 +84,13 @@ namespace OpenUtau.App.Controls {
         }
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
-            if (SingerManager.Inst.Singers.Count > 0) {
+            if (SingerManager.Inst.Singers.Count > 0 && Preferences.Default.SingerSelectionMode == 1) {
                 ViewModel?.RefreshSingers();
                 SingersMenu.Open();
+            } else if (VisualRoot is Window window) {
+                var dialog = new Views.SingerSelectionDialog(track != null ? track.TrackNo : 0);
+                dialog.onFinish = singer => ViewModel?.ChangeSinger(singer);
+                dialog.ShowDialog(window);
             }
             args.Handled = true;
         }

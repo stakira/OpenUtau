@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.SingerSelectionDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="{DynamicResource tracks.selectsinger}" Width="800" Height="600" MinWidth="600" MinHeight="400"
+        WindowStartupLocation="CenterScreen">
+  <Window.Styles>
+    <Style Selector="Expander">
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+    <Style Selector="ListBox">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="SelectionMode" Value="Single" />
+    </Style>
+    <Style Selector="ListBox.singers">
+      <Setter Property="ItemTemplate">
+        <DataTemplate>
+          <DockPanel ToolTip.Tip="{Binding Location}" MinHeight="18">
+            <TextBlock Text="{Binding LocalizedName}" HorizontalAlignment="Stretch"/>
+            <ToggleButton Classes="Fav" IsChecked="{Binding Favored}" HorizontalAlignment="Right" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+          </DockPanel>
+        </DataTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ToggleButton.Fav">
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Margin" Value="20,0"/>
+      <Setter Property="Content" Value="♡"/>
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Style Selector="^:checked">
+        <Setter Property="Content" Value="♥"/>
+      </Style>
+      <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
+        <Setter Property="Background" Value="Transparent"/>
+      </Style>
+      <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
+        <Setter Property="Background" Value="Transparent"/>
+      </Style>
+    </Style>
+  </Window.Styles>
+  
+  <Grid RowDefinitions="Auto,*" Margin="10" Name="grid">
+    <StackPanel Orientation="Horizontal" Spacing="12">
+      <TextBox Text="{Binding Search}" Watermark="{DynamicResource singerselection.search}" MinWidth="100" VerticalAlignment="Center"/>
+      <Button Content="{DynamicResource singerselection.reload}" Click="Reload" VerticalAlignment="Center" />
+      <Button Content="{DynamicResource singerselection.foldersettings}" Click="FolderSettings" VerticalAlignment="Center" />
+      <StackPanel Orientation="Horizontal" Spacing="5">
+        <TextBlock Text="{DynamicResource singerselection.loaddeepfolders}" VerticalAlignment="Center" />
+        <ToggleSwitch IsChecked="{Binding LoadDeepFolders, Mode=OneWay}" Click="ToggleLoadAllFolders" VerticalAlignment="Center" />
+      </StackPanel>
+    </StackPanel>
+    
+    <Grid ColumnDefinitions="2*,2,3*" Grid.Row="1" >
+      <Border BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrush}" Grid.Column="0" >
+        <ListBox ItemsSource="{Binding Categories}" SelectedIndex="{Binding SelectedCategory}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" ToolTip.Tip="{Binding}" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+      
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns"
+                    Background="{DynamicResource NeutralAccentBrush}" />
+
+      <Border BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrush}" Grid.Column="2" >
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Name="SingersPanel"/>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

@@ -27,12 +27,11 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         [Reactive] public int LockStartTime { get; set; }
-        public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
-        [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
+        [Reactive] public int SingerSelectionMode { get; set; }
+        public string CachePath => PathManager.Inst.CachePath;
         [Reactive] public bool PreRender { get; set; }
         public List<string> DefaultRendererOptions { get; set; }
         [Reactive] public string DefaultRenderer { get; set; }
-        public string CachePath => PathManager.Inst.CachePath;
         [Reactive] public int NumRenderThreads { get; set; }
         public List<string> OnnxRunnerOptions { get; set; }
         [Reactive] public string OnnxRunner { get; set; }
@@ -109,7 +108,6 @@ namespace OpenUtau.App.ViewModels {
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
-            InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = App.GetLanguages().Keys
@@ -149,6 +147,7 @@ namespace OpenUtau.App.ViewModels {
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
+            SingerSelectionMode = Preferences.Default.SingerSelectionMode;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -180,11 +179,6 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.LockStartTime)
                 .Subscribe(lockStartTime => {
                     Preferences.Default.LockStartTime = lockStartTime;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.InstallToAdditionalSingersPath)
-                .Subscribe(additionalSingersPath => {
-                    Preferences.Default.InstallToAdditionalSingersPath = additionalSingersPath;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PreRender)
@@ -301,6 +295,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.DiffSingerDepth = index;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.SingerSelectionMode)
+                .Subscribe(index => {
+                    Preferences.Default.SingerSelectionMode = index;
+                    Preferences.Save();
+                });
         }
 
         public void TestAudioOutputDevice() {
@@ -315,12 +314,6 @@ namespace OpenUtau.App.ViewModels {
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
-        }
-
-        public void SetAddlSingersPath(string path) {
-            Preferences.Default.AdditionalSingerPath = path;
-            Preferences.Save();
-            this.RaisePropertyChanged(nameof(AdditionalSingersPath));
         }
 
         public void SetVLabelerPath(string path) {

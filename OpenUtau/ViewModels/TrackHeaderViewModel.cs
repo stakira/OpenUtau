@@ -58,39 +58,7 @@ namespace OpenUtau.App.ViewModels {
         public TrackHeaderViewModel(UTrack track) {
             this.track = track;
             SelectSingerCommand = ReactiveCommand.Create<USinger>(singer => {
-                if (track.Singer != singer) {
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
-                    if (!string.IsNullOrEmpty(singer?.Id) &&
-                        Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName) &&
-                        TryChangePhonemizer(phonemizerName)) {
-                    } else if (!string.IsNullOrEmpty(singer?.DefaultPhonemizer)) {
-                        TryChangePhonemizer(singer.DefaultPhonemizer);
-                    }
-                    if (singer == null || !singer.Found) {
-                        var settings = new URenderSettings();
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
-                    } else if (singer.SingerType != track.RendererSettings.Renderer?.SingerType) {
-                        var settings = new URenderSettings {
-                            renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType),
-                        };
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
-                    }
-                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
-                    DocManager.Inst.EndUndoGroup();
-                    if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
-                        Preferences.Default.RecentSingers.Remove(singer.Id);
-                        Preferences.Default.RecentSingers.Insert(0, singer.Id);
-                        if (Preferences.Default.RecentSingers.Count > 16) {
-                            Preferences.Default.RecentSingers.RemoveRange(
-                                16, Preferences.Default.RecentSingers.Count - 16);
-                        }
-                    }
-                    Preferences.Save();
-                }
-                this.RaisePropertyChanged(nameof(Singer));
-                this.RaisePropertyChanged(nameof(Renderer));
-                RefreshAvatar();
+                ChangeSinger(singer);
             });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
@@ -267,6 +235,42 @@ namespace OpenUtau.App.ViewModels {
             }
             SingerMenuItems = items;
             this.RaisePropertyChanged(nameof(SingerMenuItems));
+        }
+            
+        public void ChangeSinger(USinger singer) {
+            if (track.Singer != singer) {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
+                if (!string.IsNullOrEmpty(singer?.Id) &&
+                    Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName) &&
+                    TryChangePhonemizer(phonemizerName)) {
+                } else if (!string.IsNullOrEmpty(singer?.DefaultPhonemizer)) {
+                    TryChangePhonemizer(singer.DefaultPhonemizer);
+                }
+                if (singer == null || !singer.Found) {
+                    var settings = new URenderSettings();
+                    DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
+                } else if (singer.SingerType != track.RendererSettings.Renderer?.SingerType) {
+                    var settings = new URenderSettings {
+                        renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType),
+                    };
+                    DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
+                }
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
+                DocManager.Inst.EndUndoGroup();
+                if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
+                    Preferences.Default.RecentSingers.Remove(singer.Id);
+                    Preferences.Default.RecentSingers.Insert(0, singer.Id);
+                    if (Preferences.Default.RecentSingers.Count > 16) {
+                        Preferences.Default.RecentSingers.RemoveRange(
+                            16, Preferences.Default.RecentSingers.Count - 16);
+                    }
+                }
+                Preferences.Save();
+            }
+            this.RaisePropertyChanged(nameof(Singer));
+            this.RaisePropertyChanged(nameof(Renderer));
+            RefreshAvatar();
         }
 
         public void RefreshPhonemizers() {

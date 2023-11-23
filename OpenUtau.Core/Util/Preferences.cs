@@ -12,6 +12,12 @@ namespace OpenUtau.Core.Util {
 
         static Preferences() {
             Load();
+            if(Default != null && !string.IsNullOrEmpty(Default.AdditionalSingerPath)) {
+                if (!Default.AdditionalSingerPaths.Contains(Default.AdditionalSingerPath)) {
+                    Default.AdditionalSingerPaths.Insert(0, Default.AdditionalSingerPath);
+                }
+                Default.AdditionalSingerPath = string.Empty;
+            }
         }
 
         public static void Save() {
@@ -29,12 +35,12 @@ namespace OpenUtau.Core.Util {
             Save();
         }
 
-        public static List<string> GetSingerSearchPaths() {
-            return new List<string>(Default.SingerSearchPaths);
-        }
-
         public static void SetSingerSearchPaths(List<string> paths) {
-            Default.SingerSearchPaths = new List<string>(paths);
+            var list = new List<string>(paths);
+            list.Remove(PathManager.Inst.SingersPath);
+            list.Remove(PathManager.Inst.SingersPathOld);
+            list.RemoveAll(path => !Directory.Exists(path));
+            Default.AdditionalSingerPaths = list;
             Save();
         }
 
@@ -105,7 +111,6 @@ namespace OpenUtau.Core.Util {
             public bool MainMaximized;
             public bool MidiMaximized;
             public int UndoLimit = 100;
-            public List<string> SingerSearchPaths = new List<string>();
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
@@ -114,6 +119,7 @@ namespace OpenUtau.Core.Util {
             public int Theme;
             public int DegreeStyle;
             public bool UseTrackColor = false;
+            public int SingerSelectionMode = 0;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
@@ -127,11 +133,14 @@ namespace OpenUtau.Core.Util {
             public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
-            public string AdditionalSingerPath = string.Empty;
-            public bool InstallToAdditionalSingersPath = true;
+            public string AdditionalSingerPath = string.Empty; // legacy
+            public List<string> AdditionalSingerPaths = new List<string>();
+            public bool LoadDeepFolderSinger = true;
+            public bool InstallToAdditionalSingersPath = true; // Use AdditionalSingerPaths.First()
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
             public List<string> RecentSingers = new List<string>();
+            public List<string> FavoriteSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
