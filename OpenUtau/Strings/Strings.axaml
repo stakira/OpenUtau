@@ -308,7 +308,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
-  <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
@@ -348,6 +347,10 @@ Warning: this option removes custom presets.</system:String>
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
+  <system:String x:Key="prefs.singer">Singer</system:String>
+  <system:String x:Key="prefs.singer.extension">Extension</system:String>
+  <system:String x:Key="prefs.singer.select">Singer selection mode</system:String>
+  <system:String x:Key="prefs.singer.simple">Simple</system:String>
 
   <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>

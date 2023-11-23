@@ -73,11 +73,16 @@
             </Grid>
           </StackPanel>
         </HeaderedContentControl>
-        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.paths}">
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.singer}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.paths.addlsinger}"/>
             <Button Content="{DynamicResource singerlocation.set}" Margin="0,10"
                     HorizontalAlignment="Stretch" Click="SelectAddlSingersPath"/>
+            <TextBlock Text="{DynamicResource prefs.singer.select}" />
+            <ComboBox  SelectedIndex="{Binding SingerSelectionMode}">
+              <ComboBoxItem Content="{DynamicResource prefs.singer.extension}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.singer.simple}"/>
+            </ComboBox>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.cache}">

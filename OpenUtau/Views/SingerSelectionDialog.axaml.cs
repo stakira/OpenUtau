@@ -8,7 +8,6 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.App.Views {
     public partial class SingerSelectionDialog : Window {
         private SingerSelectionViewModel viewModel;
-        private Dictionary<string, ListBox> listBoxes = new Dictionary<string, ListBox>();
 
         public Action<USinger>? onFinish;
 
@@ -24,38 +23,22 @@ namespace OpenUtau.App.Views {
 
         public void RefreshSingers() {
             SingersPanel.Children.Clear();
-            listBoxes.Clear();
 
             foreach (var type in viewModel.SortedSingers) {
                 var singersListBox = new ListBox { ItemsSource = type.Value };
                 singersListBox.Classes.Add("singers");
                 singersListBox.SelectionChanged += SingerSelectionChanged;
-                listBoxes.Add(type.Key.ToString(), singersListBox);
                 var expander = new Expander {
                     Header = type.Key.ToString() + ": " + type.Value.Count + " singers",
                     Content = singersListBox
                 };
                 SingersPanel.Children.Add(expander);
             }
-            SelectionRefresh();
         }
 
         private void SingerSelectionChanged(object? sender, SelectionChangedEventArgs e) {
-            if(e.AddedItems.Count > 0) {
-                viewModel.SelectedSinger = e.AddedItems[0] as USinger;
-            }
-            SelectionRefresh();
-        }
-
-        public void SelectionRefresh() {
-            foreach (ListBox list in listBoxes.Values) {
-                if (list.Items.Contains(viewModel.SelectedSinger)) {
-                    if (list.SelectedItem != viewModel.SelectedSinger) {
-                        list.SelectedItem = viewModel.SelectedSinger;
-                    }
-                } else {
-                    list.UnselectAll();
-                }
+            if(e.AddedItems.Count > 0 && e.AddedItems[0] is USinger singer && singer.Found) {
+                OnFinish(singer);
             }
         }
 
@@ -81,9 +64,9 @@ namespace OpenUtau.App.Views {
             Reload(sender, e);
         }
 
-        void OnFinish(object? sender, RoutedEventArgs args) {
-            if (onFinish != null && viewModel.SelectedSinger != null && viewModel.SelectedSinger.Found) {
-                onFinish.Invoke(viewModel.SelectedSinger);
+        void OnFinish(USinger singer) {
+            if (onFinish != null) {
+                onFinish.Invoke(singer);
             }
             Close();
         }

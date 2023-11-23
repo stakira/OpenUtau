@@ -119,6 +119,7 @@ namespace OpenUtau.Core.Util {
             public int Theme;
             public int DegreeStyle;
             public bool UseTrackColor = false;
+            public int SingerSelectionMode = 0;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
             public int NumRenderThreads = 2;

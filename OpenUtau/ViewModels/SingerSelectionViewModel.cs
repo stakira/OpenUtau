@@ -15,8 +15,6 @@ namespace OpenUtau.App.ViewModels {
     public class SingerSelectionViewModel : ViewModelBase {
         [Reactive] public ObservableCollection<string> Categories { get; set; } = new ObservableCollection<string>();
         [Reactive] public int SelectedCategory { get; set; } = 0;
-        [Reactive] public USinger? SelectedSinger { get; set; }
-        [Reactive] public string SelectedSingerPath { get; set; } = string.Empty;
         [Reactive] public string Search { get; set; } = string.Empty;
         public bool LoadDeepFolders { get => Preferences.Default.LoadDeepFolderSinger; }
         private int trackNo;
@@ -26,14 +24,6 @@ namespace OpenUtau.App.ViewModels {
 
         public SingerSelectionViewModel() { }
         public SingerSelectionViewModel(int trackNo, SingerSelectionDialog dialog) {
-            this.WhenAnyValue(x => x.SelectedSinger)
-                .Subscribe(value => {
-                    if (value != null) {
-                        SelectedSingerPath = value.Name + " [" + value.Location + "]";
-                    } else {
-                        SelectedSingerPath = "";
-                    }
-                });
             this.WhenAnyValue(x => x.Search)
                 .Subscribe(value => SortSingers());
             this.WhenAnyValue(x => x.SelectedCategory)
@@ -43,7 +33,6 @@ namespace OpenUtau.App.ViewModels {
             this.dialog = dialog;
 
             SetCategories();
-            SelectedSinger = DocManager.Inst.Project.tracks[trackNo].Singer;
         }
 
         private void SetCategories() {
@@ -76,7 +65,7 @@ namespace OpenUtau.App.ViewModels {
                     SingerManager.Inst.SingerGroups.ForEach(type => SortedSingers.Add(type.Key,
                         type.Value.Where(singer => Preferences.Default.FavoriteSingers.Contains(singer.Id)).ToList()));
                     break;
-                default: //directries
+                default: //directories
                     string dir = Categories[SelectedCategory];
                     SingerManager.Inst.SingerGroups.ForEach(type => SortedSingers.Add(type.Key,
                         type.Value.Where(singer => singer.BasePath == dir).ToList()));
@@ -91,7 +80,6 @@ namespace OpenUtau.App.ViewModels {
         public async Task Reload() {
             await Task.Run(() => SingerManager.Inst.SearchAllSingers());
             SetCategories();
-            SelectedSinger = DocManager.Inst.Project.tracks[trackNo].Singer;
         }
 
         public void ToggleLoadAllFolders() {

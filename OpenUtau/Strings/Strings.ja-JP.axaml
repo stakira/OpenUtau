@@ -307,7 +307,6 @@
   <system:String x:Key="prefs.otoeditor.select">デフォルトの原音設定エディタ</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
-  <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
@@ -347,6 +346,10 @@
   </system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <system:String x:Key="prefs.singer">シンガー</system:String>
+  <system:String x:Key="prefs.singer.extension">拡張</system:String>
+  <system:String x:Key="prefs.singer.select">シンガーの選択画面</system:String>
+  <system:String x:Key="prefs.singer.simple">シンプル</system:String>
 
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
