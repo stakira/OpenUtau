@@ -60,24 +60,8 @@ namespace OpenUtau.Classic {
 
         public static void LoadVoicebank(Voicebank voicebank) {
             LoadInfo(voicebank, voicebank.File, voicebank.BasePath);
+            LoadSubbanks(voicebank);
             LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
-        }
-
-        public static void LoadOtoSets(Voicebank voicebank, string dirPath) {
-            var otoFile = Path.Combine(dirPath, kOtoIni);
-            if (File.Exists(otoFile)) {
-                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding);
-                var voicebankDir = Path.GetDirectoryName(voicebank.File);
-                otoSet.Name = Path.GetRelativePath(voicebankDir, dirPath);
-                if (otoSet.Name == ".") {
-                    otoSet.Name = string.Empty;
-                }
-                voicebank.OtoSets.Add(otoSet);
-            }
-            var dirs = Directory.GetDirectories(dirPath);
-            foreach (var dir in dirs) {
-                LoadOtoSets(voicebank, dir);
-            }
         }
 
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
@@ -125,14 +109,6 @@ namespace OpenUtau.Classic {
             }
             if (bankConfig != null) {
                 ApplyConfig(voicebank, bankConfig);
-            }
-            if (voicebank.Subbanks.Count == 0) {
-                LoadPrefixMap(voicebank);
-            }
-            if (voicebank.Subbanks.Count == 0) {
-                voicebank.Subbanks.Add(new Subbank() {
-                    ToneRanges = new string[0],
-                });
             }
         }
 
@@ -230,6 +206,17 @@ namespace OpenUtau.Classic {
             }
         }
 
+        public static void LoadSubbanks(Voicebank voicebank) {
+            if (voicebank.Subbanks.Count == 0) {
+                LoadPrefixMap(voicebank);
+            }
+            if (voicebank.Subbanks.Count == 0) {
+                voicebank.Subbanks.Add(new Subbank() {
+                    ToneRanges = new string[0],
+                });
+            }
+        }
+
         public static void LoadPrefixMap(Voicebank voicebank) {
             var dir = Path.GetDirectoryName(voicebank.File);
             var filePath = Path.Combine(dir, "prefix.map");
@@ -301,6 +288,23 @@ namespace OpenUtau.Classic {
                     }
                 }
                 return result;
+            }
+        }
+
+        public static void LoadOtoSets(Voicebank voicebank, string dirPath) {
+            var otoFile = Path.Combine(dirPath, kOtoIni);
+            if (File.Exists(otoFile)) {
+                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding);
+                var voicebankDir = Path.GetDirectoryName(voicebank.File);
+                otoSet.Name = Path.GetRelativePath(voicebankDir, dirPath);
+                if (otoSet.Name == ".") {
+                    otoSet.Name = string.Empty;
+                }
+                voicebank.OtoSets.Add(otoSet);
+            }
+            var dirs = Directory.GetDirectories(dirPath);
+            foreach (var dir in dirs) {
+                LoadOtoSets(voicebank, dir);
             }
         }
 
