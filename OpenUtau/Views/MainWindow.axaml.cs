@@ -455,6 +455,18 @@ namespace OpenUtau.App.Views {
             return true;
         }
 
+        void OnMenuDownloadCenter(object sender, RoutedEventArgs args) {
+            var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (desktop == null) {
+                return;
+            }
+            var window = desktop.Windows.FirstOrDefault(w => w is DownloadCenter);
+            if (window == null) {
+                window = new DownloadCenter();
+            }
+            window.Show();
+        }
+
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
             var dialog = new ExpressionsDialog() {
                 DataContext = new ExpressionsViewModel(),

@@ -109,5 +109,15 @@ namespace OpenUtau.Plugin.Builtin.Data {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] download_center_template {
+            get {
+                object obj = ResourceManager.GetObject("download_center_template", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

@@ -148,7 +148,8 @@
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
-
+  <system:String x:Key="menu.tools.dlcenter">Download Center</system:String>
+  
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>
   <system:String x:Key="notedefaults.portamento">Portamento</system:String>
@@ -449,6 +450,11 @@ General
   <system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>
   <system:String x:Key="tracks.trackcolor">Change track color</system:String>
   <system:String x:Key="tracks.tracksettings">Track Settings</system:String>
+
+  <system:String x:Key="dlcenter.caption">Dependency Download Center</system:String>
+  <system:String x:Key="dlcenter.category">Category: </system:String>
+  <system:String x:Key="dlcenter.download">Download</system:String>
+  <system:String x:Key="dlcenter.showinfo">Show Information</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>

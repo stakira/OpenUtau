@@ -1,0 +1,17 @@
+%YAML 1.2
+---
+categories:
+#types of dependencies
+  - Classic
+  - WORLDLINE-R
+  - ENUNU
+  - Diffsinger
+  - Vogen
+  
+dependencies:
+  - {
+    name: nsf_hifiGAN, 
+    category: Diffsinger, 
+    link: https://github.com/xunmengshe/OpenUtau/releases/download/0.0.0.0/nsf_hifigan.oudep, 
+    meta: {size(mb): 50, version: 1.0.0, info: -} 
+  }
