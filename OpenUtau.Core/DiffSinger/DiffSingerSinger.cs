@@ -131,6 +131,10 @@ namespace OpenUtau.Core.DiffSinger {
 
         public DsVocoder getVocoder() {
             if(vocoder is null) {
+                if(File.Exists(Path.Join(Location, "dsvocoder", "vocoder.yaml"))) {
+                    vocoder = new DsVocoder(Path.Join(Location, "dsvocoder"));
+                    return vocoder;
+                }
                 vocoder = new DsVocoder(dsConfig.vocoder);
             }
             return vocoder;
