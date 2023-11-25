@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NWaves.Signals;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Analysis.Some{
+namespace OpenUtau.Core.Analysis.Some {
     public static class AudioSlicer{
         static int sample_rate = 44100;
         static float threshold = 0.02f;
