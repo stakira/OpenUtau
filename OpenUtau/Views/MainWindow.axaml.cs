@@ -16,14 +16,13 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
-
-using OpenUtau.Core.DiffSinger;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
@@ -475,25 +474,33 @@ namespace OpenUtau.App.Views {
             if (lifetime == null) {
                 return;
             }
-            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
-            if (dialog == null) {
-                USinger? singer = null;
-                if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
-                    singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            try {
+                var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
+                if (dialog == null) {
+                    USinger? singer = null;
+                    if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                        singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                    }
+                    if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
+                        singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                    }
+                    var vm = new SingersViewModel();
+                    if (singer != null) {
+                        vm.Singer = singer;
+                    }
+                    dialog = new SingersDialog() { DataContext = vm };
+                    dialog.Show();
                 }
-                if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
-                    singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                dialog.Activate();
+                if (dialog.Position.Y < 0) {
+                    dialog.Position = dialog.Position.WithY(0);
                 }
-                var vm = new SingersViewModel();
-                if (singer != null) {
-                    vm.Singer = singer;
-                }
-                dialog = new SingersDialog() { DataContext = vm };
-                dialog.Show();
-            }
-            dialog.Activate();
-            if (dialog.Position.Y < 0) {
-                dialog.Position = dialog.Position.WithY(0);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
             }
         }
 
@@ -973,10 +980,12 @@ namespace OpenUtau.App.Views {
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "pianoroll window"));
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
                     };
                     pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "pianoroll window"));
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
@@ -1161,6 +1170,12 @@ namespace OpenUtau.App.Views {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ErrorMessageNotification notif) {
                 MessageBox.ShowError(this, notif.message, notif.e);
+            } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
+                if (loadingNotif.startLoading) {
+                    MessageBox.ShowLoading(this);
+                } else {
+                    MessageBox.CloseLoading();
+                }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if(voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
                     ValidateTracksVoiceColor();

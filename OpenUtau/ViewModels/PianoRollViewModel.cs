@@ -5,6 +5,7 @@ using System.Reactive;
 using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
@@ -120,18 +121,25 @@ namespace OpenUtau.App.ViewModels {
                 if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
-                var part = NotesViewModel.Part;
-                UNote? first;
-                UNote? last;
-                if (NotesViewModel.Selection.IsEmpty) {
-                    first = part.notes.First();
-                    last = part.notes.Last();
-                } else {
-                    first = NotesViewModel.Selection.FirstOrDefault();
-                    last = NotesViewModel.Selection.LastOrDefault();
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PianoRollWindow), true, "legacy plugin"));
+                try {
+                    var part = NotesViewModel.Part;
+                    UNote? first;
+                    UNote? last;
+                    if (NotesViewModel.Selection.IsEmpty) {
+                        first = part.notes.First();
+                        last = part.notes.Last();
+                    } else {
+                        first = NotesViewModel.Selection.FirstOrDefault();
+                        last = NotesViewModel.Selection.LastOrDefault();
+                    }
+                    var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
+                    runner.Execute(NotesViewModel.Project, part, first, last, plugin);
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                } finally {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PianoRollWindow), false, "legacy plugin"));
                 }
-                var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
-                runner.Execute(NotesViewModel.Project, part, first, last, plugin);
             });
             LoadLegacyPlugins();
 
@@ -139,8 +147,8 @@ namespace OpenUtau.App.ViewModels {
                 if (NotesViewModel.Part != null) {
                     try{
                         edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
-                    }catch(System.Exception e){
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro",e));
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
                     }
                 }
             });
