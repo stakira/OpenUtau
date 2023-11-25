@@ -33,23 +33,37 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 return MakeSimpleResult($"{prevVowel} R");
             }
-            int totalDuration = notes.Sum(n => n.duration);
             if (singer.TryGetMappedOto($"{prevVowel} {lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
+            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto)) {
                 vcLen = MsToTick(cvOto.Preutter);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
+                if (cvOto.Overlap < 0) {
+                    vcLen = MsToTick(cvOto.Preutter - cvOto.Overlap);
+                }
             }
             var vcPhoneme = $"{prevVowel} {consonant}";
-            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
-                vcPhoneme = oto.Alias;
+            if (prevNeighbour != null) {
+                if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    vcPhoneme = oto.Alias;
+                }
+                // totalDuration calculated on basis of previous note length
+                int totalDuration = prevNeighbour.Value.duration;
+                // vcLength depends on the Vel of the current base note
+                vcLen = Convert.ToInt32(Math.Min(totalDuration / 1.5, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
+            } else {
+                if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    vcPhoneme = oto.Alias;
+                }
+                // no previous note, so length can be minimum velocity regardless of oto
+                vcLen = Convert.ToInt32(Math.Min(vcLen * 2, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
             }
 
-            if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+            if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
