@@ -153,14 +153,6 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
-                _ = MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("lyrics.selectnotes"),
-                    ThemeManager.GetString("lyrics.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
-                return;
-            }
             var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
             var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
             var dialog = new LyricsReplaceDialog() {
@@ -175,14 +167,6 @@ namespace OpenUtau.App.Views {
 
         void EditLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
-                return;
-            }
-            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
-                _ = MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("lyrics.selectnotes"),
-                    ThemeManager.GetString("lyrics.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
                 return;
             }
             var vm = new LyricsViewModel();
