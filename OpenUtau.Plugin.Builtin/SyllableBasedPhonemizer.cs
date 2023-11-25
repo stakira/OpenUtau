@@ -634,8 +634,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="syllable"></param>
         /// <returns></returns>
         protected bool CanMakeAliasExtension(Syllable syllable) {
-            return syllable.canAliasBeExtended && syllable.prevV == syllable.v && syllable.cc.Length == 0
-                && AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone);
+            return syllable.canAliasBeExtended && syllable.prevV == syllable.v && syllable.cc.Length == 0;
         }
 
         /// <summary>
