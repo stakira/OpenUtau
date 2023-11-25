@@ -34,6 +34,8 @@ namespace OpenUtau.Classic {
 
         readonly string basePath;
 
+        public static bool IsTest = false;
+
         public VoicebankLoader(string basePath) {
             this.basePath = basePath;
         }
@@ -312,6 +314,9 @@ namespace OpenUtau.Classic {
             try {
                 using (var stream = File.OpenRead(filePath)) {
                     var otoSet = ParseOtoSet(stream, filePath, encoding);
+                    if (!IsTest) {
+                        CheckWavExist(otoSet);
+                    }
                     AddAliasForMissingFiles(otoSet);
                     return otoSet;
                 }
@@ -337,7 +342,7 @@ namespace OpenUtau.Classic {
                             otoSet.Otos.Add(oto);
                         }
                         if (!string.IsNullOrEmpty(oto.Error)) {
-                            Log.Error($"Failed to parse\n{trace}: {oto.Error}");
+                            Log.Error($"Failed to parse\n{oto.Error}");
                         }
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to parse\n{trace}");
@@ -359,9 +364,26 @@ namespace OpenUtau.Classic {
                     var oto = new Oto {
                         Alias = Path.GetFileNameWithoutExtension(file),
                         Wav = file,
+                        FileTrace = new FileTrace { file = wav, lineNumber = 0 }
                     };
                     oto.Phonetic = oto.Alias;
                     otoSet.Otos.Add(oto);
+                }
+            }
+        }
+
+        static void CheckWavExist(OtoSet otoSet) {
+            var wavGroups = otoSet.Otos.GroupBy(oto => oto.Wav);
+            foreach(var group in wavGroups) {
+                string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
+                if (!File.Exists(path)) {
+                    Log.Error($"Sound file missing. {path}");
+                    foreach (Oto oto in group) {
+                        if(string.IsNullOrEmpty(oto.Error)) {
+                            oto.Error = $"Sound file missing. {path}";
+                        }
+                        oto.IsValid = false;
+                    }
                 }
             }
         }
