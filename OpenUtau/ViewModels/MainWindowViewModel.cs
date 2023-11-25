@@ -18,7 +18,9 @@ namespace OpenUtau.App.ViewModels {
         public bool IsWavePart => Part is UWavePart;
         public ReactiveCommand<UPart, Unit>? PartDeleteCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartRenameCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartGotoFileCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {

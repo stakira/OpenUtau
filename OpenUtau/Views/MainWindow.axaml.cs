@@ -16,6 +16,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Analysis.Some;
 using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -43,7 +44,9 @@ namespace OpenUtau.App.Views {
         private bool shouldOpenPartsContextMenu;
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartGotoFileCommand;
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -78,7 +81,9 @@ namespace OpenUtau.App.Views {
             autosaveTimer.Start();
 
             PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
+            PartGotoFileCommand = ReactiveCommand.Create<UPart>(part => GotoFile(part));
             PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(part => ReplaceAudio(part));
+            PartTranscribeCommand = ReactiveCommand.Create<UPart>(part => Transcribe(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -911,8 +916,10 @@ namespace OpenUtau.App.Views {
                         PartsContextMenu.DataContext = new PartsContextMenuArgs {
                             Part = partControl.part,
                             PartDeleteCommand = viewModel.PartDeleteCommand,
+                            PartGotoFileCommand = PartGotoFileCommand,
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
                             PartRenameCommand = PartRenameCommand,
+                            PartTranscribeCommand = PartTranscribeCommand,
                         };
                         shouldOpenPartsContextMenu = true;
                     }
@@ -1050,6 +1057,17 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
         }
 
+        void GotoFile(UPart part) {
+            //View the location of the audio file in explorer if the part is a wave part
+            if (part is UWavePart wavePart) {
+                try {
+                    OS.GotoFile(wavePart.FilePath);
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                }
+            }
+        }
+
         async void ReplaceAudio(UPart part) {
             var file = await FilePicker.OpenFile(
                 this, "context.part.replaceaudio", FilePicker.AudioFiles);
@@ -1065,6 +1083,45 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, part, newPart));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        void Transcribe(UPart part){
+            //Convert audio to notes
+            if(part is UWavePart wavePart){
+                try{
+                    string text = ThemeManager.GetString("context.part.transcribing");
+                    var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                    //Duration of the wave file in seconds
+                    int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
+                    var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                    var transcribeTask = Task.Run(()=>{
+                        using(var some = new Some()){
+                            return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS =>{
+                                //msgbox?.SetText($"{text} {part.name}\n{wavPosS}/{wavDurS}");
+                                msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s",text, part.name, wavPosS, wavDurS));
+                            });
+                        }
+                    });
+                    transcribeTask.ContinueWith(task =>{
+                        var voicePart = task.Result;
+                        msgbox?.Close();
+                        //Add voicePart into project
+                        if(voicePart != null){
+                            var project = DocManager.Inst.Project;
+                            var track = new UTrack(project);
+                            track.TrackNo = project.tracks.Count;
+                            voicePart.trackNo = track.TrackNo;
+                            DocManager.Inst.StartUndoGroup();
+                            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                            DocManager.Inst.EndUndoGroup();
+                        }
+                    }, scheduler);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to transcribe part {part.name}");
+                    MessageBox.ShowError(this, e);
+                }
+            }
         }
 
         async void ValidateTracksVoiceColor() {
