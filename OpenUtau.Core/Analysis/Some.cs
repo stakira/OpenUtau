@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -182,17 +182,16 @@ namespace OpenUtau.Core.Analysis.Some{
         }        
 
         public Some() {
-            try {
-                Location = Path.Combine(PathManager.Inst.DependencyPath, "some");
-                var config = Yaml.DefaultDeserializer.Deserialize<SomeConfig>(
-                    File.ReadAllText(Path.Combine(Location, "some.yaml"),
-                        System.Text.Encoding.UTF8));
-                session = Onnx.getInferenceSession(Path.Combine(Location, config.model));
-            }
-            catch (Exception ex) {
+            Location = Path.Combine(PathManager.Inst.DependencyPath, "some");
+            string yamlpath = Path.Combine(Location, "some.yaml");
+            if (!File.Exists(yamlpath)) {
                 //TODO: onnx download site
-                throw new Exception($"Error loading SOME. Please download SOME from https://github.com/xunmengshe/OpenUtau/releases/0.0.0.0\n{ex.Message}");
+                throw new FileNotFoundException($"Error loading SOME. Please download SOME from\nhttps://github.com/xunmengshe/OpenUtau/releases/0.0.0.0");
             }
+
+            var config = Yaml.DefaultDeserializer.Deserialize<SomeConfig>(
+                File.ReadAllText(yamlpath, System.Text.Encoding.UTF8));
+            session = Onnx.getInferenceSession(Path.Combine(Location, config.model));
         }
 
         SomeResult Analyze(float[] samples) {

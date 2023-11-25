@@ -1102,9 +1102,14 @@ namespace OpenUtau.App.Views {
                             });
                         }
                     });
-                    transcribeTask.ContinueWith(task =>{
-                        var voicePart = task.Result;
+                    transcribeTask.ContinueWith(task => {
                         msgbox?.Close();
+                        if (task.IsFaulted) {
+                            Log.Error(task.Exception, $"Failed to transcribe part {part.name}");
+                            MessageBox.ShowError(this, task.Exception);
+                            return;
+                        }
+                        var voicePart = task.Result;
                         //Add voicePart into project
                         if(voicePart != null){
                             var project = DocManager.Inst.Project;
