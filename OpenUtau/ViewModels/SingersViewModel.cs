@@ -34,6 +34,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
+        public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
 
         [Reactive] public string SearchAlias { get; set; } = "";
@@ -44,6 +45,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<UOto>();
         private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
         private readonly List<MenuItemViewModel> setEncodingMenuItems;
+        private readonly ReactiveCommand<string, Unit> setSingerTypeCommand;
+        private readonly List<MenuItemViewModel> setSingerTypeMenuItems;
         private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
         private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
@@ -114,6 +117,20 @@ namespace OpenUtau.App.ViewModels {
                 }
             ).ToList();
 
+            setSingerTypeCommand = ReactiveCommand.Create<string>(singerType => {
+                SetSingerType(singerType);
+            });
+            var singerTypes = new string[] {
+                "utau", "enunu", "diffsinger"
+            };
+            setSingerTypeMenuItems = singerTypes.Select(singerType =>
+                new MenuItemViewModel() {
+                    Header = singerType,
+                    Command = setSingerTypeCommand,
+                    CommandParameter = singerType,
+                }
+            ).ToList();
+
             setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
                 SetDefaultPhonemizer(factory);
             });
@@ -156,6 +173,18 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
+            }
+            Refresh();
+        }
+
+        private void SetSingerType(string singerType) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.SingerType = singerType);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set singer type", e));
             }
             Refresh();
         }
