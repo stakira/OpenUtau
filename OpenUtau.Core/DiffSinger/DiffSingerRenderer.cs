@@ -90,7 +90,7 @@ namespace OpenUtau.Core.DiffSinger {
                         ? $"ds-{phrase.hash:x16}-depth{depth}-{speedup}x.wav"  // if the depth changes, phrase should be re-rendered
                         : $"ds-{phrase.hash:x16}-{speedup}x.wav";  // preserve this for not invalidating cache from older versions
                     var wavPath = Path.Join(PathManager.Inst.CachePath, wavName);
-                    string progressInfo = $"{this}{speedup}x \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
+                    string progressInfo = $"Track {trackNo + 1}: {this}{speedup}x \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
                         try {
                             using (var waveStream = Wave.OpenFile(wavPath)) {

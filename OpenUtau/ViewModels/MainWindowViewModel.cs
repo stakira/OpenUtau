@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -61,8 +62,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to open recent.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open recent.", e));
                 }
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
@@ -71,8 +71,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to open template.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open template.", e));
                 }
             });
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
@@ -111,8 +110,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to load default template.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to load default template.", e));
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
@@ -122,9 +120,14 @@ namespace OpenUtau.App.ViewModels {
             if (files == null) {
                 return;
             }
-            Core.Format.Formats.LoadProject(files);
-            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-            this.RaisePropertyChanged(nameof(Title));
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
+            try {
+                Core.Format.Formats.LoadProject(files);
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                this.RaisePropertyChanged(nameof(Title));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
+            }
         }
 
         public void SaveProject(string file = "") {

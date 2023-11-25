@@ -280,7 +280,7 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">Переместить курсор назад к месту начала воспроизведения.</system:String>
   <system:String x:Key="prefs.playback.test">Тест</system:String>
   <system:String x:Key="prefs.rendering">Рендеринг</system:String>
-  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <system:String x:Key="prefs.rendering.onnxgpu">Графический процессор</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
   <system:String x:Key="prefs.rendering.prerender">Пре-рендер</system:String>
@@ -385,7 +385,7 @@
   <system:String x:Key="tracks.movedown">Вниз</system:String>
   <system:String x:Key="tracks.moveup">Вверх</system:String>
   <system:String x:Key="tracks.remove">Убрать</system:String>
-  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
+  <system:String x:Key="tracks.rename">Переименовать трек</system:String>
   <system:String x:Key="tracks.selectrenderer">Выбрать рендерер</system:String>
   <system:String x:Key="tracks.selectsinger">Выберите вокалиста</system:String>
 

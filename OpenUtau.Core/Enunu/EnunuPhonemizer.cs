@@ -6,7 +6,6 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]

@@ -421,7 +421,13 @@ namespace OpenUtau.App.Views {
         #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is OtoChangedNotification otoChanged) {
+            if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(SingersDialog)) {
+                if (loadingNotif.startLoading) {
+                    MessageBox.ShowLoading(this);
+                } else {
+                    MessageBox.CloseLoading();
+                }
+            } else if (cmd is OtoChangedNotification otoChanged) {
                 var viewModel = DataContext as SingersViewModel;
                 if (viewModel == null) {
                     return;

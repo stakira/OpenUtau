@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using OpenUtau.Api;
@@ -24,8 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
-        private readonly string[] longConsonants = "tS,f,dZ,k,p,s,S,t,T,t_}".Split(",");
-        private readonly string[] normalConsonants = "b,d,D,g,h,l,m,n,N,r,v,w,W,j,z,Z,・".Split(',');
+        private readonly string[] longConsonants = "tS,f,dZ,k,p,s,S,t,T,t_},t}".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
             "b=b;ch=tS;d=d;dh=D;" + "dx=4;eh=E;el=@l;em=@m;en=@n;eng=@N;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
             "p=p;q=・;r=r;s=s;sh=S;t=t;th=T;" + "uh=U;uw=u;v=v;w=w;" + "y=j;z=z;zh=Z").Split(';')
@@ -642,27 +640,14 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in longConsonants) {
-                if (alias.Contains(c)) {
-                    if (!alias.StartsWith(c)) {
-                        return base.GetTransitionBasicLengthMs() * 2.0;
-                    }
-                }
-            }
-            foreach (var c in normalConsonants) {
-                if (!alias.Contains("_D")) {
-                    if (alias.Contains(c)) {
-                        if (!alias.StartsWith(c)) {
-                            return base.GetTransitionBasicLengthMs();
-                        }
-                    }
+                if (alias.EndsWith(c)) {
+                    return base.GetTransitionBasicLengthMs() * 2.0;
                 }
             }
 
             foreach (var c in shortConsonants) {
-                if (alias.Contains(c)) {
-                    if (!alias.Contains(" _")) {
-                        return base.GetTransitionBasicLengthMs() * 0.50;
-                    }
+                if (alias.EndsWith(c)) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
             return base.GetTransitionBasicLengthMs();
