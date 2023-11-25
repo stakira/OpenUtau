@@ -236,13 +236,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>
@@ -284,7 +284,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in &quot;Open Recent&quot;</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
@@ -302,9 +302,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
-  <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.cache">Cache</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
+  <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
@@ -331,8 +331,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
@@ -375,9 +375,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.otoview.showall">Show All</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
+  <system:String x:Key="singers.playsample">Play sample</system:String>
   <system:String x:Key="singers.readme">Open readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>
-  <system:String x:Key="singers.playsample">Play sample</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
@@ -405,8 +405,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>
   <system:String x:Key="singersetup.back">Back</system:String>
   <system:String x:Key="singersetup.install">Install</system:String>
-  <system:String x:Key="singersetup.next">Next</system:String>
   <system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>
+  <system:String x:Key="singersetup.next">Next</system:String>
   <system:String x:Key="singersetup.singertype">Singer Type</system:String>
   <system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>
   <system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>

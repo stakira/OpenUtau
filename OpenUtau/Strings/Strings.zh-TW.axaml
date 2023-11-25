@@ -4,9 +4,13 @@
 
   <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.note.pasteparameters">Select and paste parameters</system:String>-->
   <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
   <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
+  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
+  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
   <system:String x:Key="context.pitch.easein">緩入</system:String>
   <system:String x:Key="context.pitch.easeinout">緩入並緩出</system:String>
   <system:String x:Key="context.pitch.easeout">緩出</system:String>
@@ -31,7 +35,12 @@
   <system:String x:Key="dialogs.exitsave.message">專案包含未儲存的變更。是否要儲存?</system:String>
   <system:String x:Key="dialogs.export.caption">匯出</system:String>
   <system:String x:Key="dialogs.export.savefirst">請先儲存專案</system:String>
+  <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
+  <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
+  <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
+  <!--<system:String x:Key="dialogs.installdll.message">Installing </system:String>-->
   <system:String x:Key="dialogs.messagebox.cancel">取消</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>-->
   <system:String x:Key="dialogs.messagebox.no">否</system:String>
   <system:String x:Key="dialogs.messagebox.ok">是</system:String>
   <system:String x:Key="dialogs.messagebox.yes">確定</system:String>
@@ -42,6 +51,8 @@
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
+  <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
   <system:String x:Key="errors.caption">錯誤</system:String>
 
@@ -70,7 +81,7 @@
   <system:String x:Key="lyrics.reset">重設</system:String>
   <system:String x:Key="lyrics.selectnotes">請先選取音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符號</system:String>
-  
+
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
@@ -94,6 +105,9 @@
   <system:String x:Key="menu.file">檔案</system:String>
   <system:String x:Key="menu.file.exit">結束</system:String>
   <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
+  <!--<system:String x:Key="menu.file.exportds">Export DiffSinger Scripts To</system:String>-->
+  <!--<system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To (v2)</system:String>-->
+  <!--<system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (v2, without pitch curve)</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
   <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
@@ -137,6 +151,7 @@
   <system:String x:Key="menu.tools.singer.install">安裝歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手 (進階模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
+  <!--<system:String x:Key="menu.view">View</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">歌詞</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">預設歌詞</system:String>
@@ -156,11 +171,22 @@
   <system:String x:Key="notedefaults.vibrato.autominlength">最短長度</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">長音符自動顫音</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深度</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>-->
   <system:String x:Key="notedefaults.vibrato.in">淡入</system:String>
   <system:String x:Key="notedefaults.vibrato.length">長度</system:String>
   <system:String x:Key="notedefaults.vibrato.out">淡出</system:String>
   <system:String x:Key="notedefaults.vibrato.period">週期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">相位</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>-->
+
+  <!--<system:String x:Key="noteproperty">Note Properties</system:String>-->
+  <!--<system:String x:Key="noteproperty.apply">Apply</system:String>-->
+  <!--<system:String x:Key="noteproperty.basic">Basic</system:String>-->
+  <!--<system:String x:Key="noteproperty.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="noteproperty.set">Set</system:String>-->
+  <!--<system:String x:Key="noteproperty.setlongnote">Set only on long notes</system:String>-->
+  <!--<system:String x:Key="noteproperty.tone">Tone</system:String>-->
+  <!--<system:String x:Key="noteproperty.vibratoenable">Enable</system:String>-->
 
   <system:String x:Key="oto.alias">別名</system:String>
   <system:String x:Key="oto.color">色彩</system:String>
@@ -183,10 +209,12 @@
   <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
   <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
 
+  <!--<system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">使用 "+" 替換 "-"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">編輯歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名轉羅馬拼音</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.insertslur">Insert slur lyric</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日文 VCV 轉 CV</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">移除字母後綴</system:String>
@@ -197,20 +225,34 @@
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">新增音符尾端 "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">新增音符尾端 "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除顫音</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.fixoverlap">Fix overlapping notes</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">載入已算繪的音高曲線</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重設所有表現</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重設音標時間</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重設音高曲線</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重設顫音</system:String>
   <system:String x:Key="pianoroll.menu.part">段落</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">舊版插件 (實驗性)</system:String>
+  <!--<system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.plugin.openfolder">Open folder</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">顯示算繪音高曲線 (R)</system:String>
   <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">顯示音標 (O)</system:String>
@@ -223,10 +265,6 @@
   <system:String x:Key="pianoroll.toggle.vibrato">顯示顫音 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">顯示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">音高繪製工具 (4)</system:String>
-  <!--Left click to draw
-    Right click to reset
-    Hold Ctrl to select
-    Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">橡皮擦工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">剪刀工具 (5)</system:String>
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
@@ -242,18 +280,26 @@
   <system:String x:Key="prefs.advanced.beta">測試版</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">引擎紀錄</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">儲存引擎輸出紀錄至記錄檔。此選項可能影響介面與算繪效能。</system:String>
   <system:String x:Key="prefs.advanced.stable">穩定版</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">外觀</system:String>
+  <!--<system:String x:Key="prefs.appearance.degree">Scale degree display style</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.degree.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <system:String x:Key="prefs.appearance.lang">語言</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">在鋼琴卷軸上顯示角色背景圖</system:String>
-  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">主題</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">深色</system:String>
   <system:String x:Key="prefs.appearance.theme.light">淺色</system:String>
+  <!--<system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>-->
+  <!--<system:String x:Key="prefs.cache">Cache</system:String>-->
+  <!--<system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>-->
   <system:String x:Key="prefs.caption">偏好設定</system:String>
   <system:String x:Key="prefs.note.restart">注意: 請重新啟動 OpenUtau 以套用變更</system:String>
   <system:String x:Key="prefs.off">關閉</system:String>
@@ -280,6 +326,9 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">移動游標至起始播放位置</system:String>
   <system:String x:Key="prefs.playback.test">測試</system:String>
   <system:String x:Key="prefs.rendering">算繪</system:String>
+  <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">相位補償</system:String>
@@ -322,10 +371,15 @@
   <system:String x:Key="singers.otoview.showall">顯示全部</system:String>
   <system:String x:Key="singers.otoview.zoomin">放大</system:String>
   <system:String x:Key="singers.otoview.zoomout">縮小</system:String>
+  <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
+  <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">重新整理</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">設定預設拆音器</system:String>
   <system:String x:Key="singers.setencoding">設定編碼</system:String>
+  <!--<system:String x:Key="singers.setimage">Set Icon</system:String>-->
   <system:String x:Key="singers.setportrait">設定背景圖</system:String>
+  <!--<system:String x:Key="singers.setsingertype">Set Singer Type</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清除</system:String>
   <system:String x:Key="singers.subbanks.color">色彩</system:String>
@@ -333,6 +387,8 @@
   <system:String x:Key="singers.subbanks.color.remove">移除色彩</system:String>
   <system:String x:Key="singers.subbanks.color.rename">重新命名</system:String>
   <system:String x:Key="singers.subbanks.edit">編輯子聲庫</system:String>
+  <!--<system:String x:Key="singers.subbanks.export">Export prefix.map</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.import">Import prefix.map</system:String>-->
   <system:String x:Key="singers.subbanks.reset">重設</system:String>
   <system:String x:Key="singers.subbanks.save">儲存</system:String>
   <system:String x:Key="singers.subbanks.selectall">全選</system:String>
@@ -345,8 +401,8 @@
   <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
   <!--<system:String x:Key="singersetup.back">Back</system:String>-->
   <!--<system:String x:Key="singersetup.install">Install</system:String>-->
-  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
   <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
   <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
@@ -384,13 +440,22 @@
   <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
+  <!--<system:String x:Key="tracks.mute">Mute</system:String>-->
+  <!--<system:String x:Key="tracks.mute.allothers">Mute all others</system:String>-->
+  <!--<system:String x:Key="tracks.mute.only">Mute this only</system:String>-->
+  <!--<system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>-->
   <system:String x:Key="tracks.remove">移除</system:String>
   <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">選取算繪器</system:String>
   <system:String x:Key="tracks.selectsinger">選取歌手</system:String>
+  <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
+  <!--<system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>-->
+  <!--<system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>-->
+  <!--<system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>-->
+  <!--<system:String x:Key="tracks.trackcolor">Change track color</system:String>-->
+  <!--<system:String x:Key="tracks.tracksettings">Track Settings</system:String>-->
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">檢查更新</system:String>
   <system:String x:Key="updater.description">開放歌聲合成平台</system:String>

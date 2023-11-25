@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -6,8 +6,11 @@
   <system:String x:Key="context.note.delete">Hapus not</system:String>
   <system:String x:Key="context.note.pasteparameters">Pilih dan tempel parameter</system:String>
   <system:String x:Key="context.part.delete">Hapus bagian</system:String>
+  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
   <system:String x:Key="context.part.rename">Namai ulang bagian</system:String>
   <system:String x:Key="context.part.replaceaudio">Pilih ulang berkas audio</system:String>
+  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
+  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
   <system:String x:Key="context.pitch.easein">Reda awal</system:String>
   <system:String x:Key="context.pitch.easeinout">Reda awal/akhir</system:String>
   <system:String x:Key="context.pitch.easeout">Reda akhir</system:String>
@@ -36,8 +39,8 @@
   <system:String x:Key="dialogs.installdependency.message">Menginstal </system:String>
   <system:String x:Key="dialogs.installdll.caption">Menginstal fonemizer</system:String>
   <system:String x:Key="dialogs.installdll.message">Menginstal </system:String>
-  <system:String x:Key="dialogs.key.caption">Kunci</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Batal</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>-->
   <system:String x:Key="dialogs.messagebox.no">Tidak</system:String>
   <system:String x:Key="dialogs.messagebox.ok">Oke</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Ya</system:String>
@@ -78,7 +81,7 @@
   <system:String x:Key="lyrics.reset">Setel Ulang</system:String>
   <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
   <system:String x:Key="lyrics.separators">Alat Pemisah</system:String>
-  
+
   <system:String x:Key="lyricsreplace.after">Setelah :</system:String>
   <system:String x:Key="lyricsreplace.before">Sebelum :</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">Hapus abjad</system:String>
@@ -90,7 +93,7 @@
   <system:String x:Key="lyricsreplace.preview">Pratinjau</system:String>
   <system:String x:Key="lyricsreplace.regex">Ekspresi reguler dapat digunakan</system:String>
   <system:String x:Key="lyricsreplace.replace">Penggantian lirik umum</system:String>
-  
+
   <system:String x:Key="menu.edit">Sunting</system:String>
   <system:String x:Key="menu.edit.copy">Salin</system:String>
   <system:String x:Key="menu.edit.cut">Potong</system:String>
@@ -148,6 +151,7 @@
   <system:String x:Key="menu.tools.singer.install">Instal Penyanyi...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Instal Penyanyi (Lanjutan)...</system:String>
   <system:String x:Key="menu.tools.singers">Penyanyi...</system:String>
+  <!--<system:String x:Key="menu.view">View</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">Lirik</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">Lirik Bawaan</system:String>
@@ -167,12 +171,22 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Panjang Minimal</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato Otomatis menurut Panjangnya</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Kedalaman</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>-->
   <system:String x:Key="notedefaults.vibrato.in">Pudar awal</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Panjang</system:String>
   <system:String x:Key="notedefaults.vibrato.out">Pudar akhir</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
   <system:String x:Key="notedefaults.vibrato.shift">Geser</system:String>
-  <system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>-->
+
+  <!--<system:String x:Key="noteproperty">Note Properties</system:String>-->
+  <!--<system:String x:Key="noteproperty.apply">Apply</system:String>-->
+  <!--<system:String x:Key="noteproperty.basic">Basic</system:String>-->
+  <!--<system:String x:Key="noteproperty.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="noteproperty.set">Set</system:String>-->
+  <!--<system:String x:Key="noteproperty.setlongnote">Set only on long notes</system:String>-->
+  <!--<system:String x:Key="noteproperty.tone">Tone</system:String>-->
+  <!--<system:String x:Key="noteproperty.vibratoenable">Enable</system:String>-->
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Warna</system:String>
@@ -211,8 +225,10 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.autolegato">Legato Otomatis</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">Mengonversi PITD ke titik kontrol nada</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Setel Ulang Vibrato</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.fixoverlap">Fix overlapping notes</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi ke Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Perpanjang crossfade</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Muat Pitch yang Dirender</system:String>
@@ -220,14 +236,13 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Naikkan satu oktaf</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
-  <system:String x:Key="pianoroll.menu.notes.autolegato">Legato Otomatis</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">Hapus ekor "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">Hapus ekor "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Setel ulang alias fonem</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Setel ulang pengaturan waktu fonem</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Setel ulang tikungan nada</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Setel ulang vibrato</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">Hapus ekor "-"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">Hapus ekor "R"</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">Pengaturan Penyanyi dan Oto</system:String>
@@ -271,7 +286,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.lyricshelper">Pembantu Lirik</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Pembantu Lirik Menambahkan Tanda Kurung</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">Ingatlah jenis file ini di &quot;Buka Terbaru&quot;</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Ingatlah jenis file ini di "Buka Terbaru"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
@@ -289,9 +304,9 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Gunakan warna trek di UI</system:String>
-  <system:String x:Key="prefs.caption">Preferensi</system:String>
-  <system:String x:Key="prefs.cache">Cache</system:String>
+  <!--<system:String x:Key="prefs.cache">Cache</system:String>-->
   <system:String x:Key="prefs.cache.clearonquit">Hapus cache saat keluar</system:String>
+  <system:String x:Key="prefs.caption">Preferensi</system:String>
   <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
   <system:String x:Key="prefs.off">Mati</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
@@ -318,8 +333,8 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Perender bawaan (untuk voicebank klasik)</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">Kecepatan Render DiffSinger</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Kedalaman Render DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">Kecepatan Render DiffSinger</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">Penjalan Pembelajaran Mesin</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>
@@ -337,7 +352,7 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     Peringatan: terlalu banyak thread render dapat menyebabkan OpenUtau berjalan lambat.
   </system:String>
-  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Utas Render Maksimum</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.loadingsingers">Memuat Penyanyi...</system:String>
@@ -362,14 +377,15 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="singers.otoview.showall">Tampilkan Semua</system:String>
   <system:String x:Key="singers.otoview.zoomin">Perbesar</system:String>
   <system:String x:Key="singers.otoview.zoomout">Perkecil</system:String>
+  <system:String x:Key="singers.playsample">Putar sampel</system:String>
   <system:String x:Key="singers.readme">Buka readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt tidak ditemukan.</system:String>
-  <system:String x:Key="singers.playsample">Putar sampel</system:String>
   <system:String x:Key="singers.refresh">Segarkan</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Tetapkan Phonemizer Bawaan</system:String>
   <system:String x:Key="singers.setencoding">Atur Pengkodean</system:String>
   <system:String x:Key="singers.setimage">Atur Ikon</system:String>
   <system:String x:Key="singers.setportrait">Atur Foto Potret</system:String>
+  <!--<system:String x:Key="singers.setsingertype">Set Singer Type</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">Batal</system:String>
   <system:String x:Key="singers.subbanks.clear">Jelas</system:String>
   <system:String x:Key="singers.subbanks.color">Warna</system:String>
@@ -391,8 +407,8 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="singersetup.archivefileencoding.prompt">Pilih pengkodean yang membuat nama berkas terlihat benar.</system:String>
   <system:String x:Key="singersetup.back">Kembali</system:String>
   <system:String x:Key="singersetup.install">Instal</system:String>
-  <system:String x:Key="singersetup.next">Berikut</system:String>
   <system:String x:Key="singersetup.missinginfo">Tambahkan pengaturan berikut ini ke character.yaml voicebank ini.</system:String>
+  <system:String x:Key="singersetup.next">Berikut</system:String>
   <system:String x:Key="singersetup.singertype">Jenis Penyanyi</system:String>
   <system:String x:Key="singersetup.textfileencoding">Pengkodean Berkas Teks</system:String>
   <system:String x:Key="singersetup.textfileencoding.prompt">Pilih pengkodean yang membuat konten berkas terlihat benar.</system:String>
@@ -424,6 +440,7 @@ Umum
   </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
+
   <system:String x:Key="tracks.duplicate">Duplikat Trek</system:String>
   <system:String x:Key="tracks.duplicatesettings">Duplikat Pengaturan Trek </system:String>
   <system:String x:Key="tracks.more">Lainnya</system:String>
@@ -434,16 +451,17 @@ Umum
   <system:String x:Key="tracks.mute.only">Bisukan ini saja</system:String>
   <system:String x:Key="tracks.mute.unmuteall">Bunyikan semua</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
-  <!--<system:String x:Key="tracks.rename">Ganti nama trek</system:String>-->
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">Pilih Perender</system:String>
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
+  <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
   <system:String x:Key="tracks.solo.add">Solo tambahan (yang tidak menghilangkan solo dari trek lain)</system:String>
   <system:String x:Key="tracks.solo.only">Hanya solo ini saja (yang menghilangkan solo dari trek lain)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">Batalkan solo semuanya</system:String>
   <system:String x:Key="tracks.trackcolor">Ganti warna trek</system:String>
+  <!--<system:String x:Key="tracks.tracksettings">Track Settings</system:String>-->
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
   <system:String x:Key="updater.description">Platform sintesis bernyanyi Terbuka</system:String>

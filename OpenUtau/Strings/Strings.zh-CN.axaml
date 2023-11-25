@@ -6,8 +6,11 @@
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.note.pasteparameters">粘贴表情</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
+  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
   <system:String x:Key="context.part.rename">重命名片段</system:String>
   <system:String x:Key="context.part.replaceaudio">替换音频</system:String>
+  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
+  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>
@@ -148,6 +151,7 @@
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
+  <!--<system:String x:Key="menu.view">View</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">歌词</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">默认歌词</system:String>
@@ -218,7 +222,6 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">去除音阶后缀</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
-  <system:String x:Key="pianoroll.menu.noteproperty">音符属性</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
@@ -376,6 +379,7 @@
   <system:String x:Key="singers.setencoding">选择编码</system:String>
   <system:String x:Key="singers.setimage">选择图标</system:String>
   <system:String x:Key="singers.setportrait">选择立绘</system:String>
+  <!--<system:String x:Key="singers.setsingertype">Set Singer Type</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清空</system:String>
   <system:String x:Key="singers.subbanks.color">色彩</system:String>
@@ -452,7 +456,6 @@
   <system:String x:Key="tracks.tracksettings">音轨设置</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">检查更新</system:String>
   <system:String x:Key="updater.description">开放歌声合成平台</system:String>
