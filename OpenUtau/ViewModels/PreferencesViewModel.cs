@@ -213,21 +213,25 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(degreeStyle => {
                     Preferences.Default.DegreeStyle = degreeStyle;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 });
             this.WhenAnyValue(vm => vm.UseTrackColor)
                 .Subscribe(trackColor => {
                     Preferences.Default.UseTrackColor = trackColor;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
                 });
             this.WhenAnyValue(vm => vm.ShowPortrait)
                 .Subscribe(showPortrait => {
                     Preferences.Default.ShowPortrait = showPortrait;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
                 });
             this.WhenAnyValue(vm => vm.ShowGhostNotes)
                 .Subscribe(showGhostNotes => {
                     Preferences.Default.ShowGhostNotes = showGhostNotes;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 });
             this.WhenAnyValue(vm => vm.Beta)
                 .Subscribe(beta => {

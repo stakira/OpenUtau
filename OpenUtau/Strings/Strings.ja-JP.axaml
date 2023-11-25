@@ -148,6 +148,7 @@
   <system:String x:Key="menu.tools.singer.install">シンガーをインストール...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">シンガーをインストール(高度)...</system:String>
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
+  <system:String x:Key="menu.view">表示</system:String>
 
   <system:String x:Key="notedefaults.lyric">歌詞</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">デフォルト</system:String>
@@ -320,7 +321,7 @@
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">カーソルの場所</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime">一時停止</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime">一時停止した時のカーソル</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">何もしない</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">再生を開始した場所へカーソルを戻す</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
