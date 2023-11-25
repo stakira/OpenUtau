@@ -451,7 +451,6 @@ General
   <system:String x:Key="tracks.tracksettings">Track Settings</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Check for Update</system:String>
   <system:String x:Key="updater.description">Open singing synthesis platform</system:String>
