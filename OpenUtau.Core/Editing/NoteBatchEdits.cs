@@ -192,12 +192,9 @@ namespace OpenUtau.Core.Editing {
         }
         
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
-            var pinyinNotes = selectedNotes
-                .Where(note => BaseChinesePhonemizer.IsHanzi(note.lyric))
-                .ToArray();
-            var pinyinResult = BaseChinesePhonemizer.Romanize(pinyinNotes.Select(note=>note.lyric));
+            var pinyinResult = BaseChinesePhonemizer.Romanize(selectedNotes.Select(note=>note.lyric));
             docManager.StartUndoGroup(true);
-            foreach(var t in Enumerable.Zip(pinyinNotes, pinyinResult,
+            foreach(var t in Enumerable.Zip(selectedNotes, pinyinResult,
                 (note, pinyin) => Tuple.Create(note, pinyin))) {
                 docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, t.Item1, t.Item2));
             }

@@ -9,7 +9,6 @@ using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.G2p;
 using Serilog;
-using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu English Phonemizer", "ENUNU EN", "O3", language:"EN")]
