@@ -335,6 +335,10 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
+                    if (string.IsNullOrWhiteSpace(line) ) {
+                        trace.lineNumber++;
+                        continue;
+                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
