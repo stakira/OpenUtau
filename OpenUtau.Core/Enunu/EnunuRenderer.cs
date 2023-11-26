@@ -14,8 +14,6 @@ using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     public class EnunuRenderer : IRenderer {
-        public const int headTicks = 240;
-        public const int tailTicks = 240;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
@@ -59,8 +57,8 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
-            var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
-            var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
+            var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - EnunuUtils.headTicks);
+            var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + EnunuUtils.tailTicks) - phrase.endMs;
             return new RenderResult() {
                 leadingMs = headMs,
                 positionMs = phrase.positionMs,
@@ -113,8 +111,8 @@ namespace OpenUtau.Core.Enunu {
                         var sp = np.Load<double[,]>(spPath);
                         var ap = np.Load<double[,]>(apPath);
                         int totalFrames = f0.Length;
-                        var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
-                        var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
+                        var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - EnunuUtils.headTicks);
+                        var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + EnunuUtils.tailTicks) - phrase.endMs;
                         int headFrames = (int)Math.Round(headMs / config.framePeriod);
                         int tailFrames = (int)Math.Round(tailMs / config.framePeriod);
                         var editorF0 = SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
@@ -209,7 +207,7 @@ namespace OpenUtau.Core.Enunu {
             var notes = new List<EnunuNote>();
             notes.Add(new EnunuNote {
                 lyric = "R",
-                length = headTicks,
+                length = EnunuUtils.headTicks,
                 noteNum = 60,
             });
             foreach (var phone in phrase.phones) {
@@ -222,7 +220,7 @@ namespace OpenUtau.Core.Enunu {
             }
             notes.Add(new EnunuNote {
                 lyric = "R",
-                length = tailTicks,
+                length = EnunuUtils.tailTicks,
                 noteNum = 60,
             });
             return notes.ToArray();
