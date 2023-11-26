@@ -110,7 +110,7 @@ namespace OpenUtau.App.Views {
                 Title = "Loading"
             };
             loadingDialog.Text.Text = "Please wait...";
-            loadingDialog.Show(parent);
+            loadingDialog.ShowDialog(parent);
         }
 
         public static void CloseLoading() {
