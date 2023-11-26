@@ -99,6 +99,8 @@
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportaudio">音声をエクスポート</system:String>
+  <system:String x:Key="menu.file.exportlab">Labファイルをエクスポート</system:String>
+  <system:String x:Key="menu.file.exportlabandwav">LabとWavファイルをエクスポート</system:String>
   <system:String x:Key="menu.file.exportmidi">MIDIをエクスポート</system:String>
   <system:String x:Key="menu.file.exportmixdown">ミックスダウンしたWavファイルを出力</system:String>
   <system:String x:Key="menu.file.exportproject">プロジェクトファイルをエクスポート</system:String>

@@ -44,6 +44,9 @@ namespace OpenUtau.App {
         public static FilePickerFileType DS { get; } = new("DS") {
             Patterns = new[] { "*.ds" },
         };
+        public static FilePickerFileType LAB { get; } = new("LAB") {
+            Patterns = new[] { "*.lab" },
+        };
 
         public async static Task<string?> OpenFile(
             Window window, string titleKey, params FilePickerFileType[] types) {
