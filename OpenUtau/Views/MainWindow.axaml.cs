@@ -803,23 +803,7 @@ namespace OpenUtau.App.Views {
         }
 
         void PlayOrPause() {
-            try {
-                viewModel.PlaybackViewModel.PlayOrPause();
-            } catch (Core.Render.NoResamplerException) {
-                MessageBox.Show(
-                   this,
-                   ThemeManager.GetString("dialogs.noresampler.message"),
-                   ThemeManager.GetString("dialogs.noresampler.caption"),
-                   MessageBox.MessageBoxButtons.Ok);
-            } catch (Core.Render.NoWavtoolException) {
-                MessageBox.Show(
-                   this,
-                   ThemeManager.GetString("dialogs.noresampler.message"),
-                   ThemeManager.GetString("dialogs.noresampler.caption"),
-                   MessageBox.MessageBoxButtons.Ok);
-            } catch (Exception e) {
-                MessageBox.ShowError(this, e);
-            }
+            viewModel.PlaybackViewModel.PlayOrPause();
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -1226,7 +1210,19 @@ namespace OpenUtau.App.Views {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ErrorMessageNotification notif) {
-                MessageBox.ShowError(this, notif.message, notif.e);
+                switch (notif.e) {
+                    case Core.Render.NoResamplerException:
+                    case Core.Render.NoWavtoolException:
+                        MessageBox.Show(
+                           this,
+                           ThemeManager.GetString("dialogs.noresampler.message"),
+                           ThemeManager.GetString("dialogs.noresampler.caption"),
+                           MessageBox.MessageBoxButtons.Ok);
+                        break;
+                    default:
+                        MessageBox.ShowError(this, notif.message, notif.e);
+                        break;
+                }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
                 if (loadingNotif.startLoading) {
                     MessageBox.ShowLoading(this);

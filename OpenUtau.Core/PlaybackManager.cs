@@ -119,18 +119,18 @@ namespace OpenUtau.Core {
 
         private void Render(UProject project, int tick) {
             Task.Run(() => {
-                RenderEngine engine = new RenderEngine(project, tick);
-                var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
-                faders = result.Item2;
-                StartingToPlay = false;
-                StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
-            }).ContinueWith((task) => {
-                if (task.IsFaulted) {
-                    Log.Error(task.Exception, "Failed to render.");
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
-                    throw task.Exception;
+                try {
+                    RenderEngine engine = new RenderEngine(project, tick);
+                    var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
+                    faders = result.Item2;
+                    StartingToPlay = false;
+                    StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to render.");
+                    StopPlayback();
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
                 }
-            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, DocManager.Inst.MainScheduler);
+            });
         }
 
         public void UpdatePlayPos() {
@@ -145,6 +145,7 @@ namespace OpenUtau.Core {
             return (db <= -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
+        // Exporting mixdown
         public async Task RenderMixdown(UProject project, string exportPath) {
             await Task.Run(() => {
                 try {
@@ -165,6 +166,7 @@ namespace OpenUtau.Core {
             });
         }
 
+        // Exporting each tracks
         public async Task RenderToFiles(UProject project, string exportPath) {
             await Task.Run(() => {
                 string file = "";
