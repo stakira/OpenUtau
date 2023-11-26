@@ -85,6 +85,13 @@
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
+            <MenuItem Header="{DynamicResource singers.setsingertype}" ItemsSource="{Binding SetSingerTypeMenuItems}">
+              <MenuItem.DataTemplates>
+                <DataTemplate DataType="vm:MenuItemViewModel">
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                </DataTemplate>
+              </MenuItem.DataTemplates>
+            </MenuItem>
             <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">

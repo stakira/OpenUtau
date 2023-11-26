@@ -6,7 +6,6 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
@@ -35,14 +34,14 @@ namespace OpenUtau.Core.Enunu {
             if (notes.Length == 0 || singer == null || !singer.Found) {
                 return;
             }
-            ulong hash = HashNoteGroups(notes);
+            double bpm = timeAxis.GetBpmAtTick(notes[0][0].position);
+            ulong hash = HashNoteGroups(notes, bpm);
             var tmpPath = Path.Join(PathManager.Inst.CachePath, $"lab-{hash:x16}");
             var ustPath = tmpPath + ".tmp";
             var enutmpPath = tmpPath + "_enutemp";
             var scorePath = Path.Join(enutmpPath, $"score.lab");
             var timingPath = Path.Join(enutmpPath, $"timing.lab");
             var enunuNotes = NoteGroupsToEnunu(notes);
-            double bpm = timeAxis.GetBpmAtTick(notes[0][0].position);
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
                 var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath });
@@ -63,11 +62,12 @@ namespace OpenUtau.Core.Enunu {
                 });
         }
 
-        ulong HashNoteGroups(Note[][] notes) {
+        ulong HashNoteGroups(Note[][] notes, double bpm) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(this.PhonemizerType);
                     writer.Write(this.singer.Location);
+                    writer.Write(bpm);
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);

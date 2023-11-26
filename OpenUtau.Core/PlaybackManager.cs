@@ -145,48 +145,60 @@ namespace OpenUtau.Core {
             return (db <= -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
-        public void RenderMixdown(UProject project, string exportPath) {
-            Task.Run(() => {
-                var task = Task.Run(() => {
+        public async Task RenderMixdown(UProject project, string exportPath) {
+            await Task.Run(() => {
+                try {
                     RenderEngine engine = new RenderEngine(project);
-                    var projectMix = engine.RenderMixdown(0,DocManager.Inst.MainScheduler, ref renderCancellation,wait:true).Item1;
+                    var projectMix = engine.RenderMixdown(0, DocManager.Inst.MainScheduler, ref renderCancellation, wait: true).Item1;
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
+
+                    CheckFileWritable(exportPath);
                     WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
-                });
-                try {
-                    task.Wait();
-                } catch (AggregateException ae) {
-                    foreach (var e in ae.Flatten().InnerExceptions) {
-                        Log.Error(e, "Failed to render.");
-                    }
+                } catch (IOException ioe) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to export {exportPath}.", ioe));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {exportPath}."));
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
                 }
             });
         }
 
-        public void RenderToFiles(UProject project, string exportPath) {
-            Task.Run(() => {
-                var task = Task.Run(() => {
+        public async Task RenderToFiles(UProject project, string exportPath) {
+            await Task.Run(() => {
+                string file = "";
+                try {
                     RenderEngine engine = new RenderEngine(project);
                     var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
                         }
-                        var file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
+                        file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
+
+                        CheckFileWritable(file);
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
-                });
-                try {
-                    task.Wait();
-                } catch (AggregateException ae) {
-                    foreach (var e in ae.Flatten().InnerExceptions) {
-                        Log.Error(e, "Failed to render.");
-                    }
+                } catch (IOException ioe) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to export {file}.", ioe));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {file}."));
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
                 }
             });
+        }
+
+        private void CheckFileWritable(string filePath) {
+            if (!File.Exists(filePath)) {
+                return;
+            }
+            using (FileStream fp = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite)) {
+                return;
+            }
         }
 
         void SchedulePreRender() {

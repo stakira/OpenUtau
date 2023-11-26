@@ -6,8 +6,11 @@
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.note.pasteparameters">粘贴表情</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
+  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
   <system:String x:Key="context.part.rename">重命名片段</system:String>
   <system:String x:Key="context.part.replaceaudio">替换音频</system:String>
+  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
+  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>
@@ -32,9 +35,12 @@
   <system:String x:Key="dialogs.exitsave.message">当前工程有未保存改动。是否保存？</system:String>
   <system:String x:Key="dialogs.export.caption">导出</system:String>
   <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
+  <system:String x:Key="dialogs.installdependency.caption">安装依赖项</system:String>
+  <system:String x:Key="dialogs.installdependency.message">安装 </system:String>
   <system:String x:Key="dialogs.installdll.caption">安装音素器</system:String>
   <system:String x:Key="dialogs.installdll.message">安装 </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">取消</system:String>
+  <system:String x:Key="dialogs.messagebox.copy">将错误信息复制到剪贴板</system:String>
   <system:String x:Key="dialogs.messagebox.no">否</system:String>
   <system:String x:Key="dialogs.messagebox.ok">好</system:String>
   <system:String x:Key="dialogs.messagebox.yes">是</system:String>
@@ -145,6 +151,7 @@
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
+  <!--<system:String x:Key="menu.view">View</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">歌词</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">默认歌词</system:String>
@@ -164,16 +171,21 @@
   <system:String x:Key="notedefaults.vibrato.autominlength">最短长度</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">长音符自动打开颤音</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深度</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">偏移</system:String>
   <system:String x:Key="notedefaults.vibrato.in">淡入</system:String>
   <system:String x:Key="notedefaults.vibrato.length">长度</system:String>
   <system:String x:Key="notedefaults.vibrato.out">淡出</system:String>
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">相位</system:String>
+  <system:String x:Key="notedefaults.vibrato.vollink">音量关联</system:String>
 
+  <system:String x:Key="noteproperty">音符属性</system:String>
   <system:String x:Key="noteproperty.apply">应用</system:String>
+  <system:String x:Key="noteproperty.basic">基本属性</system:String>
   <system:String x:Key="noteproperty.cancel">取消</system:String>
   <!--<system:String x:Key="noteproperty.set">Set</system:String>-->
   <system:String x:Key="noteproperty.setlongnote">仅应用于长音符</system:String>
+  <system:String x:Key="noteproperty.tone">音高</system:String>
   <system:String x:Key="noteproperty.vibratoenable">启用</system:String>
 
   <system:String x:Key="oto.alias">别名</system:String>
@@ -202,6 +214,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.insertslur">插入转音歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">将音符后缀解析为音色</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
@@ -209,13 +222,13 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">去除音阶后缀</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
-  <system:String x:Key="pianoroll.menu.noteproperty">音符属性</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">自动连奏</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">将手绘音高转换为锚点音高</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
+  <system:String x:Key="pianoroll.menu.notes.fixoverlap">修复重叠音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">汉字转拼音</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
@@ -225,6 +238,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">重置音素别名</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
@@ -236,6 +250,7 @@
   <system:String x:Key="pianoroll.menu.plugin.reload">重新加载</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">搜索音符</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">全选</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.close">关闭</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">下一个</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">上一个</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
@@ -263,14 +278,18 @@
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.lyricshelper">歌词助手</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">歌词助手添加方括号</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">在"最近打开"中记住以下文件格式</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler 路径</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
+  <system:String x:Key="prefs.appearance.degree">音级显示方式</system:String>
+  <system:String x:Key="prefs.appearance.degree.numbered">简谱（1 2 3 4 5 6 7）</system:String>
+  <system:String x:Key="prefs.appearance.degree.off">关闭</system:String>
+  <system:String x:Key="prefs.appearance.degree.solfege">唱名（do re mi fa sol la ti）</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">在钢琴窗上显示其他音轨的音符</system:String>
   <system:String x:Key="prefs.appearance.showportrait">在钢琴窗上显示歌手背景图</system:String>
@@ -308,9 +327,9 @@
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
-  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 渲染加速</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 渲染加速</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
@@ -352,11 +371,15 @@
   <system:String x:Key="singers.otoview.showall">显示全部</system:String>
   <system:String x:Key="singers.otoview.zoomin">放大</system:String>
   <system:String x:Key="singers.otoview.zoomout">缩小</system:String>
+  <system:String x:Key="singers.playsample">播放示例</system:String>
+  <system:String x:Key="singers.readme">打开 readme.txt</system:String>
+  <system:String x:Key="singers.readme.notfound">找不到 readme.txt</system:String>
   <system:String x:Key="singers.refresh">刷新</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">选择默认音素器</system:String>
   <system:String x:Key="singers.setencoding">选择编码</system:String>
   <system:String x:Key="singers.setimage">选择图标</system:String>
   <system:String x:Key="singers.setportrait">选择立绘</system:String>
+  <!--<system:String x:Key="singers.setsingertype">Set Singer Type</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清空</system:String>
   <system:String x:Key="singers.subbanks.color">色彩</system:String>
@@ -364,6 +387,8 @@
   <system:String x:Key="singers.subbanks.color.remove">删除色彩</system:String>
   <system:String x:Key="singers.subbanks.color.rename">重命名</system:String>
   <system:String x:Key="singers.subbanks.edit">编辑子声库</system:String>
+  <system:String x:Key="singers.subbanks.export">导出 prefix.map</system:String>
+  <system:String x:Key="singers.subbanks.import">导入 prefix.map</system:String>
   <system:String x:Key="singers.subbanks.reset">重置</system:String>
   <system:String x:Key="singers.subbanks.save">保存</system:String>
   <system:String x:Key="singers.subbanks.selectall">全选</system:String>
@@ -423,13 +448,14 @@
   <system:String x:Key="tracks.rename">重命名音轨</system:String>
   <system:String x:Key="tracks.selectrenderer">选择渲染器</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
-  <!--<system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>-->
-  <!--<system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>-->
+  <system:String x:Key="tracks.solo">独奏</system:String>
+  <system:String x:Key="tracks.solo.add">添加到独奏（其他音轨的独奏状态保持不变）</system:String>
+  <system:String x:Key="tracks.solo.only">仅独奏该音轨（并使其他音轨不再独奏）</system:String>
   <system:String x:Key="tracks.solo.unsoloall">全部取消独奏</system:String>
   <system:String x:Key="tracks.trackcolor">修改音轨颜色</system:String>
+  <system:String x:Key="tracks.tracksettings">音轨设置</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">检查更新</system:String>
   <system:String x:Key="updater.description">开放歌声合成平台</system:String>
@@ -442,5 +468,5 @@
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau路径"{0}"包含非ASCII字符. Exe格式resampler可能无法正常工作.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
+  <system:String x:Key="warning.renderer">此渲染器没有设置项</system:String>
 </ResourceDictionary>
