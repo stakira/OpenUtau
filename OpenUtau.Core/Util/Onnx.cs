@@ -63,7 +63,7 @@ namespace OpenUtau.Core {
             if (String.IsNullOrEmpty(runner)) {
                 runner = runnerOptions[0];
             }
-            if (!(runnerOptions.Contains(runner))) {
+            if (!runnerOptions.Contains(runner)) {
                 runner = "cpu";
             }
             switch(runner){
