@@ -46,6 +46,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
