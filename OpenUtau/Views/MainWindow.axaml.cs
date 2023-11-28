@@ -538,6 +538,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuInstallDependency(object sender, RoutedEventArgs args){
+            var file = await FilePicker.OpenFile(
+                this, "menu.tools.dependency.install", FilePicker.OUDEP);
+            if (file == null) {
+                return;
+            }
+            if (file.EndsWith(DependencyInstaller.FileExt)) {
+                DependencyInstaller.Install(file);
+                return;
+            }
+        }
+
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
             var dialog = new PreferencesDialog() {
                 DataContext = new PreferencesViewModel(),
