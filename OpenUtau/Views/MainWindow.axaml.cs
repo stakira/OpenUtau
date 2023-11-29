@@ -26,6 +26,8 @@ using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
 
+using System.Collections.Generic;
+
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window, ICmdSubscriber {
         private readonly KeyModifiers cmdKey =
@@ -465,40 +467,6 @@ namespace OpenUtau.App.Views {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
                 }
-            }
-        }
-
-        async void OnMenuExportLabTo(object sender, RoutedEventArgs e) {
-            var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
-                this, "menu.file.exportlab", FilePicker.LAB);
-            if (!string.IsNullOrEmpty(file)) {
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4] + ".lab";
-                        Lab.SavePart(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
-            }
-        }
-
-        async void OnMenuExportLabAndWavTo(object sender, RoutedEventArgs e) {
-            var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
-                this, "menu.file.exportlabandwav", FilePicker.WAV);
-            if (!string.IsNullOrEmpty(file)) {
-                List<string> paths = new List<string>();
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        paths.Add(PathManager.Inst.GetExportPath(file, project.tracks[i])[..^4]);
-                        Lab.SavePart(project, voicePart, paths[i] + ".lab");
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{paths[i] + ".lab"}."));
-                    }
-                }
-                PlaybackManager.Inst.RenderToFiles(project, file + ".wav");
             }
         }
 

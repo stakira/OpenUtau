@@ -15,8 +15,6 @@ namespace OpenUtau.Core.Enunu {
 
     internal static class EnunuUtils {
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
-        public const int headTicks = 240;
-        public const int tailTicks = 240;
 
         internal static void WriteUst(IList<EnunuNote> notes, double tempo, USinger singer, string ustPath) {
             using (var writer = new StreamWriter(ustPath, false, ShiftJIS)) {
