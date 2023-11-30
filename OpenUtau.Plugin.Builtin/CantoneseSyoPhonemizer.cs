@@ -132,7 +132,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 // Try initial and then a plain lyric
-                if (prevNeighbour == null) {
+                if (prevNeighbour == null || (prevNeighbour != null && (prevNeighbour.Value.lyric.EndsWith("p") || prevNeighbour.Value.lyric.EndsWith("t") || prevNeighbour.Value.lyric.EndsWith("k")))) {
                     var initial = $"- {lyric}";
                     var initial2 = $"- {lyrics[1]}";
                     var tests = new List<string> { initial, initial2, lyric, lyrics[1] };
@@ -210,7 +210,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 // Try initial and then a plain lyric
                 var lyrics = new List<string> { lyric };
-                if (prevNeighbour == null) {
+                if (prevNeighbour == null || (prevNeighbour != null && (prevNeighbour.Value.lyric.EndsWith("p") || prevNeighbour.Value.lyric.EndsWith("t") || prevNeighbour.Value.lyric.EndsWith("k")))) {
                     var initial = $"- {lyric}";
                     var tests = new List<string> { initial, lyric };
                     if (checkOtoUntilHit(tests, note, out var otoInit)) {
@@ -246,7 +246,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // Try initial and then a plain lyric
-            if (prevNeighbour == null) {
+            if (prevNeighbour == null || (prevNeighbour != null && (prevNeighbour.Value.lyric.EndsWith("p") || prevNeighbour.Value.lyric.EndsWith("t") || prevNeighbour.Value.lyric.EndsWith("k")))) {
                 var simpleInitial = $"- {lyric}";
                 var tests = new List<string> { simpleInitial, lyric };
                 if (checkOtoUntilHit(tests, note, out var otoInit)) {
