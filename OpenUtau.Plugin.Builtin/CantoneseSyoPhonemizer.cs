@@ -142,8 +142,6 @@ namespace OpenUtau.Plugin.Builtin {
                 } else { // nothing special necessary
                     if (checkOtoUntilHit(lyrics, note, out var otoLyric)) {
                         phoneme0 = otoLyric.Alias;
-                    } else {
-                        return MakeSimpleResult(phoneme0);
                     }
                 }
 
