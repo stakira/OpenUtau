@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -125,6 +126,35 @@ namespace OpenUtau.App.Views {
 
         public static bool LoadingIsActive() {
             return loadingDialog != null && loadingDialog.IsActive;
+        }
+
+        public static Task<MessageBoxResult> ShowProcessing(Window parent, string text, string title, Action<MessageBox, CancellationToken> action) {
+            var msgbox = new MessageBox() {
+                Title = title
+            };
+            msgbox.Text.Text = text;
+            var res = MessageBoxResult.Ok;
+            var tokenSource = new CancellationTokenSource();
+
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            var task = Task.Run(() => {
+                action.Invoke(msgbox, tokenSource.Token);
+                return res;
+            }, tokenSource.Token);
+
+            var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };
+            btn.Click += (_, __) => {
+                res = MessageBoxResult.Cancel;
+                tokenSource.Cancel();
+                msgbox.Close();
+            };
+            msgbox.Buttons.Children.Add(btn);
+            task.ContinueWith(t => {
+                msgbox.Close();
+            }, scheduler);
+            msgbox.ShowDialog(parent);
+
+            return task;
         }
 
         private void SetTextWithLink(string text, StackPanel textPanel) {

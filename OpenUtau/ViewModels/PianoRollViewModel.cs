@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -162,13 +164,33 @@ namespace OpenUtau.App.ViewModels {
             });
             LoadLegacyPlugins();
 
-            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
-                if (NotesViewModel.Part != null) {
-                    try{
-                        edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
-                    } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
+                try {
+                    if (NotesViewModel.Part == null) {
+                        return;
                     }
+
+                    if (edit.IsAsync) {
+                        var mainWindow =
+                            (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+                            ?.MainWindow! as MainWindow;
+                        var name = ThemeManager.GetString(edit.Name);
+                        await MessageBox.ShowProcessing(mainWindow!.pianoRollWindow!, $"{name} - ? / ?",
+                            ThemeManager.GetString("pianoroll.menu.batch.running"),
+                            (messageBox, cancellationToken) => {
+                                edit.RunAsync(NotesViewModel.Project, NotesViewModel.Part,
+                                    NotesViewModel.Selection.ToList(), DocManager.Inst,
+                                    (current, total) => {
+                                        messageBox.SetText($"{name} - {current} / {total}");
+                                    }, cancellationToken);
+                            });
+                    } else {
+                        edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(),
+                            DocManager.Inst);
+                    }
+
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
                 }
             });
             NoteBatchEdits.AddRange(new List<BatchEdit>() {

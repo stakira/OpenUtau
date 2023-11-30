@@ -33,7 +33,7 @@ namespace OpenUtau.App.Views {
 
         private bool splashDone = false;
 
-        private PianoRollWindow? pianoRollWindow;
+        public PianoRollWindow? pianoRollWindow;
         private bool openPianoRollWindow;
 
         private PartEditState? partEditState;
