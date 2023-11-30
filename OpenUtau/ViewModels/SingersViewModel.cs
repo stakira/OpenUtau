@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
+        [Reactive] public bool UseFilenameAsAlias { get; set; } = false;
 
         [Reactive] public string SearchAlias { get; set; } = "";
 
@@ -85,6 +86,9 @@ namespace OpenUtau.App.ViewModels {
                         DisplayedOtos.AddRange(singer.Otos);
                         Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                         HasWebsite = !string.IsNullOrEmpty(singer.Web);
+                        if (Singer is ClassicSinger cSinger) {
+                            UseFilenameAsAlias = cSinger.UseFilenameAsAlias ?? false;
+                        }
                         LoadSubbanks();
                         DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                         this.RaisePropertyChanged(nameof(IsClassic));
@@ -201,6 +205,18 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        public void SetUseFilenameAsAlias() {
+            if (Singer == null || !IsClassic) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set use filename", e));
+            }
+            Refresh();
+        }
+
         private static void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             VoicebankConfig? config = null;
@@ -256,15 +272,15 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Refresh() {
-            if (Singer == null) {
-                return;
+            string singerId = string.Empty;
+            if (Singer != null) {
+                singerId = Singer.Id;
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
             try {
-                var singerId = Singer.Id;
                 SingerManager.Inst.SearchAllSingers();
                 this.RaisePropertyChanged(nameof(Singers));
-                if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                if (!string.IsNullOrEmpty(singerId) && SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
                     Singer = singer;
                 } else {
                     Singer = Singers.FirstOrDefault();
@@ -295,7 +311,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 if (Singer != null) {
                     var location = Singer.Location;
-                    if(File.Exists(location)) {
+                    if (File.Exists(location)) {
                         //Vogen voicebank is a singlefile
                         OS.GotoFile(location);
                     } else {

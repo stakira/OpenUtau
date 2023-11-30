@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -95,7 +95,7 @@ namespace OpenUtau.Classic {
                     var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
                     if (File.Exists(enuconfigFile)) {
                         voicebank.SingerType = USingerType.Enunu;
-                    } else if(File.Exists(dsconfigFile)){
+                    } else if (File.Exists(dsconfigFile)) {
                         voicebank.SingerType = USingerType.DiffSinger;
                     } else if (voicebank.SingerType != USingerType.Enunu) {
                         voicebank.SingerType = USingerType.Classic;
@@ -206,6 +206,9 @@ namespace OpenUtau.Classic {
                 }
                 bank.Subbanks.AddRange(bankConfig.Subbanks);
             }
+            if (bank.SingerType is USingerType.Classic && bankConfig.UseFilenameAsAlias != null) {
+                bank.UseFilenameAsAlias = bankConfig.UseFilenameAsAlias;
+            }
         }
 
         public static void LoadSubbanks(Voicebank voicebank) {
@@ -296,7 +299,7 @@ namespace OpenUtau.Classic {
         public static void LoadOtoSets(Voicebank voicebank, string dirPath) {
             var otoFile = Path.Combine(dirPath, kOtoIni);
             if (File.Exists(otoFile)) {
-                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding);
+                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding, voicebank.UseFilenameAsAlias);
                 var voicebankDir = Path.GetDirectoryName(voicebank.File);
                 otoSet.Name = Path.GetRelativePath(voicebankDir, dirPath);
                 if (otoSet.Name == ".") {
@@ -310,7 +313,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        public static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
+        public static OtoSet ParseOtoSet(string filePath, Encoding encoding, bool? useFilenameAsAlias) {
             try {
                 using (var stream = File.OpenRead(filePath)) {
                     var otoSet = ParseOtoSet(stream, filePath, encoding);
@@ -318,6 +321,9 @@ namespace OpenUtau.Classic {
                         CheckWavExist(otoSet);
                     }
                     AddAliasForMissingFiles(otoSet);
+                    if (useFilenameAsAlias == true) {
+                        AddFilenameAlias(otoSet);
+                    }
                     return otoSet;
                 }
             } catch (Exception e) {
@@ -374,16 +380,41 @@ namespace OpenUtau.Classic {
 
         static void CheckWavExist(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.GroupBy(oto => oto.Wav);
-            foreach(var group in wavGroups) {
+            foreach (var group in wavGroups) {
                 string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
                 if (!File.Exists(path)) {
                     Log.Error($"Sound file missing. {path}");
                     foreach (Oto oto in group) {
-                        if(string.IsNullOrEmpty(oto.Error)) {
+                        if (string.IsNullOrEmpty(oto.Error)) {
                             oto.Error = $"Sound file missing. {path}";
                         }
                         oto.IsValid = false;
                     }
+                }
+            }
+        }
+
+        static void AddFilenameAlias(OtoSet otoSet) {
+            // Use filename as alias.
+            var files = otoSet.Otos.Where(oto => oto.IsValid).Select(oto => oto.Wav).Distinct().ToList();
+            foreach (var wav in files) {
+                string filename = Path.GetFileNameWithoutExtension(wav);
+                if (!otoSet.Otos.Any(oto => oto.Alias == filename)) {
+                    var reference = otoSet.Otos.OrderBy(oto => oto.Offset).First(oto => oto.Wav == wav);
+                    var oto = new Oto {
+                        Alias = filename,
+                        Phonetic = filename,
+                        Wav = wav,
+                        Offset = reference.Offset,
+                        Consonant = reference.Consonant,
+                        Cutoff = reference.Cutoff,
+                        Preutter = reference.Preutter,
+                        Overlap = reference.Overlap,
+                        IsValid = true,
+                        Error = reference.Error,
+                        FileTrace = reference.FileTrace
+                    };
+                    otoSet.Otos.Add(oto);
                 }
             }
         }

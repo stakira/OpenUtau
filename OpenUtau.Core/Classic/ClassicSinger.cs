@@ -43,6 +43,8 @@ namespace OpenUtau.Classic {
         Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
         OtoWatcher otoWatcher;
 
+        public bool? UseFilenameAsAlias { get => voicebank.UseFilenameAsAlias; set => voicebank.UseFilenameAsAlias = value; }
+
         public ClassicSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
             found = true;

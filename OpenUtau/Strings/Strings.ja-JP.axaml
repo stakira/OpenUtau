@@ -399,6 +399,7 @@
   <system:String x:Key="singers.subbanks.set">セット</system:String>
   <system:String x:Key="singers.subbanks.tone">音程</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
+  <system:String x:Key="singers.usefilename">ファイル名をエイリアスとして使用する</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトを開く</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">アーカイブファイルのエンコード</system:String>
