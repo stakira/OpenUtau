@@ -539,8 +539,17 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
+            PreferencesViewModel dataContext;
+            try {
+                dataContext = new PreferencesViewModel();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load prefs. Initialize it.");
+                MessageBox.ShowError(this, e);
+                Preferences.Reset();
+                dataContext = new PreferencesViewModel();
+            }
             var dialog = new PreferencesDialog() {
-                DataContext = new PreferencesViewModel(),
+                DataContext = dataContext
             };
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
