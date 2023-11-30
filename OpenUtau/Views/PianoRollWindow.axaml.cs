@@ -930,11 +930,7 @@ namespace OpenUtau.App.Views {
                 #region document keys
                 case Key.Space:
                     if (isNone) {
-                        try {
-                            playVm.PlayOrPause();
-                        } catch (Exception e) {
-                            MessageBox.ShowError(this, e);
-                        }
+                        playVm.PlayOrPause();
                         return true;
                     }
                     break;

@@ -3,7 +3,6 @@ using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
