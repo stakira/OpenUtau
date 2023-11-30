@@ -752,7 +752,7 @@ namespace OpenUtau.App.Views {
                     Log.Error(e, $"Failed to open file {file}");
                     _ = await MessageBox.ShowError(this, e);
                 }
-            } else if (ext == ".mid") {
+            } else if (ext == ".mid" || ext == ".midi") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
@@ -804,6 +804,12 @@ namespace OpenUtau.App.Views {
                     Log.Error(e, "Failed to import audio");
                     _ = await MessageBox.ShowError(this, e);
                 }
+            } else {
+                _ = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.unsupportedfile.message") + ext,
+                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
             }
         }
 
