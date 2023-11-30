@@ -46,6 +46,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
@@ -139,6 +141,7 @@
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
+  <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
@@ -399,6 +402,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.subbanks.set">Set</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
+  <system:String x:Key="singers.usefilename">Use filename as alias</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>

@@ -221,6 +221,22 @@
     <Setter Property="VerticalAlignment" Value="Top" />
   </Style>
 
+  <Style Selector="CheckBox.menu">
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Style Selector="^:unchecked /template/ Border#NormalRectangle">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="^:checked /template/ Path#CheckGlyph">
+      <Setter Property="Fill" Value="{DynamicResource AccentBrush1}" />
+      <Setter Property="Width" Value="12" />
+    </Style>
+    <Style Selector="^:checked /template/ Border#NormalRectangle">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </Style>
+
   <Style Selector="DataGridColumnHeader">
     <Setter Property="FontSize" Value="12" />
     <Setter Property="MinHeight" Value="20" />

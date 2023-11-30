@@ -538,9 +538,30 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuInstallDependency(object sender, RoutedEventArgs args){
+            var file = await FilePicker.OpenFile(
+                this, "menu.tools.dependency.install", FilePicker.OUDEP);
+            if (file == null) {
+                return;
+            }
+            if (file.EndsWith(DependencyInstaller.FileExt)) {
+                DependencyInstaller.Install(file);
+                return;
+            }
+        }
+
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
+            PreferencesViewModel dataContext;
+            try {
+                dataContext = new PreferencesViewModel();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load prefs. Initialize it.");
+                MessageBox.ShowError(this, e);
+                Preferences.Reset();
+                dataContext = new PreferencesViewModel();
+            }
             var dialog = new PreferencesDialog() {
-                DataContext = new PreferencesViewModel(),
+                DataContext = dataContext
             };
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
@@ -743,7 +764,7 @@ namespace OpenUtau.App.Views {
                     Log.Error(e, $"Failed to open file {file}");
                     _ = await MessageBox.ShowError(this, e);
                 }
-            } else if (ext == ".mid") {
+            } else if (ext == ".mid" || ext == ".midi") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
@@ -795,6 +816,12 @@ namespace OpenUtau.App.Views {
                     Log.Error(e, "Failed to import audio");
                     _ = await MessageBox.ShowError(this, e);
                 }
+            } else {
+                _ = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.unsupportedfile.message") + ext,
+                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
             }
         }
 
@@ -803,23 +830,7 @@ namespace OpenUtau.App.Views {
         }
 
         void PlayOrPause() {
-            try {
-                viewModel.PlaybackViewModel.PlayOrPause();
-            } catch (Core.Render.NoResamplerException) {
-                MessageBox.Show(
-                   this,
-                   ThemeManager.GetString("dialogs.noresampler.message"),
-                   ThemeManager.GetString("dialogs.noresampler.caption"),
-                   MessageBox.MessageBoxButtons.Ok);
-            } catch (Core.Render.NoWavtoolException) {
-                MessageBox.Show(
-                   this,
-                   ThemeManager.GetString("dialogs.noresampler.message"),
-                   ThemeManager.GetString("dialogs.noresampler.caption"),
-                   MessageBox.MessageBoxButtons.Ok);
-            } catch (Exception e) {
-                MessageBox.ShowError(this, e);
-            }
+            viewModel.PlaybackViewModel.PlayOrPause();
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -1102,9 +1113,14 @@ namespace OpenUtau.App.Views {
                             });
                         }
                     });
-                    transcribeTask.ContinueWith(task =>{
-                        var voicePart = task.Result;
+                    transcribeTask.ContinueWith(task => {
                         msgbox?.Close();
+                        if (task.IsFaulted) {
+                            Log.Error(task.Exception, $"Failed to transcribe part {part.name}");
+                            MessageBox.ShowError(this, task.Exception);
+                            return;
+                        }
+                        var voicePart = task.Result;
                         //Add voicePart into project
                         if(voicePart != null){
                             var project = DocManager.Inst.Project;
@@ -1226,7 +1242,19 @@ namespace OpenUtau.App.Views {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ErrorMessageNotification notif) {
-                MessageBox.ShowError(this, notif.message, notif.e);
+                switch (notif.e) {
+                    case Core.Render.NoResamplerException:
+                    case Core.Render.NoWavtoolException:
+                        MessageBox.Show(
+                           this,
+                           ThemeManager.GetString("dialogs.noresampler.message"),
+                           ThemeManager.GetString("dialogs.noresampler.caption"),
+                           MessageBox.MessageBoxButtons.Ok);
+                        break;
+                    default:
+                        MessageBox.ShowError(this, notif.message, notif.e);
+                        break;
+                }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
                 if (loadingNotif.startLoading) {
                     MessageBox.ShowLoading(this);

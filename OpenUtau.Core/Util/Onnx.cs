@@ -63,7 +63,7 @@ namespace OpenUtau.Core {
             if (String.IsNullOrEmpty(runner)) {
                 runner = runnerOptions[0];
             }
-            if (!(runnerOptions.Contains(runner))) {
+            if (!runnerOptions.Contains(runner)) {
                 runner = "cpu";
             }
             switch(runner){
@@ -83,6 +83,25 @@ namespace OpenUtau.Core {
 
         public static InferenceSession getInferenceSession(string modelPath) {
             return new InferenceSession(modelPath,getOnnxSessionOptions());
+        }
+
+        public static void VerifyInputNames(InferenceSession session, IEnumerable<NamedOnnxValue> inputs) {
+            var sessionInputNames = session.InputNames.ToHashSet();
+            var givenInputNames = inputs.Select(v => v.Name).ToHashSet();
+            var missing = sessionInputNames
+                .Except(givenInputNames)
+                .OrderBy(s => s, StringComparer.InvariantCulture)
+                .ToArray();
+            if (missing.Length > 0) {
+                throw new ArgumentException("Missing input(s) for the inference session: " + string.Join(", ", missing));
+            }
+            var unexpected = givenInputNames
+                .Except(sessionInputNames)
+                .OrderBy(s => s, StringComparer.InvariantCulture)
+                .ToArray();
+            if (unexpected.Length > 0) {
+                throw new ArgumentException("Unexpected input(s) for the inference session: " + string.Join(", ", unexpected));
+            }
         }
     }
 }
