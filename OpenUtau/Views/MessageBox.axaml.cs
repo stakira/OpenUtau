@@ -141,17 +141,20 @@ namespace OpenUtau.App.Views {
                 action.Invoke(msgbox, tokenSource.Token);
                 return res;
             }, tokenSource.Token);
-
-            var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };
-            btn.Click += (_, __) => {
-                res = MessageBoxResult.Cancel;
-                tokenSource.Cancel();
-                msgbox.Close();
-            };
-            msgbox.Buttons.Children.Add(btn);
             task.ContinueWith(t => {
                 msgbox.Close();
             }, scheduler);
+
+            var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };
+            btn.Click += (_, __) => {
+                msgbox.Close();
+            };
+            msgbox.Buttons.Children.Add(btn);
+            msgbox.Closed += delegate {
+                if (task.IsCompleted) return;
+                res = MessageBoxResult.Cancel;
+                tokenSource.Cancel();
+            };
             msgbox.ShowDialog(parent);
 
             return task;
