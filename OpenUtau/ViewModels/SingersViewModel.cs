@@ -222,7 +222,8 @@ namespace OpenUtau.App.ViewModels {
             if (Singer == null || Singer.SingerType != USingerType.Classic) {
                 return;
             }
-            Task.Run(() => {
+            Task task = Task.Run(() => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer error report"));
                 var checker = new VoicebankErrorChecker(Singer.Location, Singer.BasePath);
                 checker.Check();
                 string outFile = Path.Combine(Singer.Location, "errors.txt");
@@ -245,6 +246,12 @@ namespace OpenUtau.App.ViewModels {
                     }
                 }
                 OS.GotoFile(outFile);
+            });
+            task.ContinueWith(task => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer error report"));
+                if (task.IsFaulted && task.Exception != null) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(task.Exception));
+                }
             });
         }
 
