@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// It works similarly to the Chinese CVVC phonemizer, including presamp.ini requirement.
     /// The big difference is that it converts hanzi to jyutping instead of pinyin.
     /// </summary>
-    [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", language: "ZH-YUE")]
+    [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", "Lotte V", language: "ZH-YUE")]
     public class CantoneseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
