@@ -5,16 +5,24 @@ using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
-    public class ChineseCVVCPhonemizer : BaseChinesePhonemizer {
+    public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
         private USinger singer;
 
+        public override void SetUp(Note[][] groups) {
+            if (singer.TryGetMappedOto("- jyu", groups.Length, out _) || singer.TryGetMappedOto("jyu", groups.Length, out _)) {
+                JyutpingConversion.RomanizeNotes(groups);
+            } else {
+                BaseChinesePhonemizer.RomanizeNotes(groups);
+            }
+        }
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var lyric = notes[0].lyric;
             string consonant = consonants.TryGetValue(lyric, out consonant) ? consonant : lyric;
@@ -122,6 +130,37 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } catch (Exception e) {
                 Log.Error(e, "failed to load presamp.ini");
+            }
+        }
+
+        /// <summary>
+        /// Converts hanzi to jyutping, based on G2P.
+        /// </summary>
+        public class JyutpingConversion {
+            public static Note[] ChangeLyric(Note[] group, string lyric) {
+                var oldNote = group[0];
+                group[0] = new Note {
+                    lyric = lyric,
+                    phoneticHint = oldNote.phoneticHint,
+                    tone = oldNote.tone,
+                    position = oldNote.position,
+                    duration = oldNote.duration,
+                    phonemeAttributes = oldNote.phonemeAttributes,
+                };
+                return group;
+            }
+
+            public static string[] Romanize(IEnumerable<string> lyrics) {
+                return ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, true).Split(' ');
+            }
+
+            public static void RomanizeNotes(Note[][] groups) {
+                var ResultLyrics = Romanize(groups.Select(group => group[0].lyric));
+                Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
+            }
+
+            public void SetUp(Note[][] groups) {
+                RomanizeNotes(groups);
             }
         }
     }
