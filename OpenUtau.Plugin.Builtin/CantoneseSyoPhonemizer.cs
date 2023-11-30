@@ -291,7 +291,22 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             public static string[] Romanize(IEnumerable<string> lyrics) {
-                return ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, true).Split(' ');
+                var lyricsArray = lyrics.ToArray();
+                var hanziLyrics = lyricsArray
+                    .Where(ZhG2p.CantoneseInstance.IsHanzi)
+                    .ToList();
+                var pinyinResult = ZhG2p.CantoneseInstance.Convert(hanziLyrics, false, false).ToLower().Split();
+                if (pinyinResult == null) {
+                    return lyricsArray;
+                }
+                var pinyinIndex = 0;
+                for (int i = 0; i < lyricsArray.Length; i++) {
+                    if (lyricsArray[i].Length == 1 && ZhG2p.CantoneseInstance.IsHanzi(lyricsArray[i])) {
+                        lyricsArray[i] = pinyinResult[pinyinIndex];
+                        pinyinIndex++;
+                    }
+                }
+                return lyricsArray;
             }
 
             public static void RomanizeNotes(Note[][] groups) {
