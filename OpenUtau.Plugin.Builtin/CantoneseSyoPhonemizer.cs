@@ -21,7 +21,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// The vowel split table.
         /// </summary>
-        static readonly string vowels = "aap=aa p,aat=aa t,aak=aa k,aam=aa m,aan=aa n,aang=aa ng,aai=aa i,aau=aa u,ap=a p,at=a t,ak=a k,am=a m,an=a n,ang=a ng,ai=a i,au=a u,ok=o k,om=o m,on=o n,ong=o ng,oi=o i,ou=o u,oet=oe t,oek=oe k,oeng=oe ng,oei=oe i,eot=eo t,eon=eo n,eoi=eo i,ep=e p,et=e t,ek=e k,em=e m,en=e n,eng=e ng,ei=e i,eu=e u,up=u p,ut=u t,uk=uu k,um=um,un=u n,ung=uu ng,ui=u i,yut=yu t,yun=yu n,ip=i p,it=i t,ik=ii k,im=i m,in=i n,ing=ii ng,iu=i u";
+        static readonly string vowels = "aap=aa p,aat=aa t,aak=aa k,aam=aa m,aan=aa n,aang=aa ng,aai=aa i,aau=aa u,ap=a p,at=a t,ak=a k,am=a m,an=a n,ang=a ng,ai=a i,au=a u,op=o p,ot=o kok=o k,om=o m,on=o n,ong=o ng,oi=o i,ou=o u,oet=oe t,oek=oe k,oeng=oe ng,oei=oe i,eot=eo t,eon=eo n,eoi=eo i,ep=e p,et=e t,ek=e k,em=e m,en=e n,eng=e ng,ei=e i,eu=e u,up=u p,ut=u t,uk=uu k,um=um,un=u n,ung=uu ng,ui=u i,yut=yu t,yun=yu n,ip=i p,it=i t,ik=ii k,im=i m,in=i n,ing=ii ng,iu=i u";
 
         /// <summary>
         /// Check for vowel substitutes.
