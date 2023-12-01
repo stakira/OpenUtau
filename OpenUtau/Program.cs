@@ -54,8 +54,9 @@ namespace OpenUtau.App {
         public static AppBuilder BuildAvaloniaApp() {
             FontManagerOptions fontOptions = new();
             if (OS.IsLinux()) {
-                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match", "--format %{family}")
+                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
                 {
+                    ArgumentList = { "-f", "%{family}" },
                     RedirectStandardOutput = true
                 })!;
                 process.WaitForExit();
