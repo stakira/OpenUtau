@@ -435,10 +435,12 @@
     <Setter Property="Padding" Value="4" />
     <Setter Property="IsExpanded" Value="True" />
     <Setter Property="MinHeight" Value="32" />
+    <Setter Property="Background" Value="Transparent" />
 
     <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
       <Setter Property="Height" Value="32"/>
       <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="FontWeight" Value="Bold"/>
     </Style>
     <Style Selector="^:down /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
       <Setter Property="Height" Value="20"/>
