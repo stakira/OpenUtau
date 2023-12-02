@@ -345,9 +345,14 @@ namespace OpenUtau.Classic {
                         trace.lineNumber++;
                         continue;
                     }
-                    if (line == "#Charaset:UTF-8" && encoding != Encoding.UTF8) {
-                        stream.Position = 0;
-                        return ParseOtoSet(stream, filePath, Encoding.UTF8);
+                    if (line.StartsWith("#Charaset:")) {
+                        try {
+                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
+                            if (encoding != charaset) {
+                                stream.Position = 0;
+                                return ParseOtoSet(stream, filePath, charaset);
+                            }
+                        } catch { }
                     }
                     trace.line = line;
                     try {
@@ -389,9 +394,6 @@ namespace OpenUtau.Classic {
         static void CheckWavExist(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.GroupBy(oto => oto.Wav);
             foreach (var group in wavGroups) {
-                if (string.IsNullOrWhiteSpace(group.Key)) {
-                    continue;
-                }
                 string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
                 if (!File.Exists(path)) {
                     Log.Error($"Sound file missing. {path}");
