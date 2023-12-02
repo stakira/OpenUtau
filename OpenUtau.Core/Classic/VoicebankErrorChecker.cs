@@ -101,6 +101,20 @@ namespace OpenUtau.Classic {
                     message = $"There are duplicate aliases.{message}"
                 });
             }
+            //Cross platform check
+            //Windows path is case insensitive, while MacOS path and Linux path are case sensitive.
+            //On Windows, check if the wave filename in oto.ini is the same as the filename in the file system.
+            if(OS.IsWindows()){
+                foreach(var otoSet in voicebank.OtoSets) {
+                    WindowsCaseCheck(otoSet);
+                }
+                WindowsCaseCheck(voicebank.BasePath, new string[]{
+                    "chatacter.txt", 
+                    "character.yaml", 
+                    "prefix.map",
+                    });
+            }
+            //TODO: On MacOS and Linux, check if there are files that have the same name but different case.
         }
 
         bool TryGetFileDuration(string filePath, Oto oto, out double fileDuration) {
@@ -239,6 +253,42 @@ namespace OpenUtau.Classic {
                 .SelectMany(group => group).ToList();
 
             return duplicates.Count > 0;
+        }
+    
+        /// <summary>
+        /// Check if the file names in the oto.ini are the same as the file names in the file system.
+        /// </summary>
+        /// <param name="otoSet">otoSet to be checked</param>
+        /// <returns></returns>
+        bool WindowsCaseCheck(OtoSet otoSet) {
+            return WindowsCaseCheck(
+                Directory.GetParent(otoSet.File).FullName, 
+                otoSet.Otos
+                    .Select(oto => oto.Wav)
+                    .Append(otoSet.File)//oto.ini itself
+                    .ToHashSet());
+        }
+
+        bool WindowsCaseCheck(string folder, IEnumerable<string> correctFileNames){
+            bool valid = true;
+            Dictionary<string, string> fileNamesLowerToActual = Directory.GetFiles(folder)
+                .Select(Path.GetFileName)
+                .ToDictionary(x => x.ToLower(), x => x);
+            foreach(string fileName in correctFileNames) {
+                if(!fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
+                    continue;
+                }
+                if (fileNamesLowerToActual[fileName.ToLower()] != fileName) {
+                    valid = false;
+                    Infos.Add(new VoicebankError() {
+                        message = $"Wrong case in file name: \n"
+                            + $"expected: {Path.Join(folder,fileName)}\n"
+                            + $"Actual: {Path.Join(folder,fileNamesLowerToActual[fileName.ToLower()])}\n"
+                            + $"voicebank may not work on another OS."
+                    });
+                }
+            }
+            return valid;
         }
     }
 }
