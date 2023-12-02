@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -341,10 +341,6 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
-                    if (string.IsNullOrWhiteSpace(line) ) {
-                        trace.lineNumber++;
-                        continue;
-                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
@@ -366,7 +362,7 @@ namespace OpenUtau.Classic {
 
         static void AddAliasForMissingFiles(OtoSet otoSet) {
             // Use filename as alias if not in oto.
-            var knownFiles = otoSet.Otos.Select(oto => oto.Wav).ToHashSet();
+            var knownFiles = otoSet.Otos.Where(oto => oto.IsValid).Select(oto => oto.Wav).ToHashSet();
             var dir = Path.GetDirectoryName(otoSet.File);
             foreach (var wav in Directory.EnumerateFiles(dir, "*.wav", SearchOption.TopDirectoryOnly)) {
                 var file = Path.GetFileName(wav);
@@ -383,7 +379,7 @@ namespace OpenUtau.Classic {
         }
 
         static void CheckWavExist(OtoSet otoSet) {
-            var wavGroups = otoSet.Otos.GroupBy(oto => oto.Wav);
+            var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
             foreach (var group in wavGroups) {
                 string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
                 if (!File.Exists(path)) {

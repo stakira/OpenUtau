@@ -30,6 +30,7 @@ a.wav=- a,,,,,
 a.wav=a R,500,,,,
 !@#$!@#$
 aoieu.wav=- a,,,,,
+
 aoieu.wav=a o,,,,,
 aoieu.wav=o i,,,,,
 aoieu.wav=i e,,100,150,,
