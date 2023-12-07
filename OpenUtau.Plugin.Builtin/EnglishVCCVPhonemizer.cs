@@ -144,7 +144,7 @@ namespace OpenUtau.Plugin.Builtin {
                         var vc = $"{prevV} {vvExceptions[prevV]}";
                         if (!HasOto(vc, syllable.vowelTone)) {
                             vc = $"{prevV}{vvExceptions[prevV]}";
-                            if ({prevV} == "8n,9l")
+                            if ({prevV} == "8n,9l") {
                                 vc = $"{prevV}{vvExceptions[prevV]}-";
                         }
                         phonemes.Add(vc);
