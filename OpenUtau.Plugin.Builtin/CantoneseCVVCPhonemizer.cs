@@ -31,13 +31,31 @@ namespace OpenUtau.Plugin.Builtin {
             };
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            var attr2 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 2) ?? default;
             if (lyric == "-" || lyric.ToLowerInvariant() == "r") {
                 if (singer.TryGetMappedOto($"{prevVowel} R", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                     return MakeSimpleResult(oto1.Alias);
                 }
                 return MakeSimpleResult($"{prevVowel} R");
             }
+            string currVowel = vowels.TryGetValue(lyric, out currVowel) ? currVowel : lyric;
+            int totalDuration = notes.Sum(n => n.duration); // totalDuration of current note
+
             if (singer.TryGetMappedOto($"{prevVowel} {lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                if (nextNeighbour == null && singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr1.toneShift, attr1.voiceColor, out var oto1)) {
+                    // automatically add ending if present
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                                new Phoneme() {
+                                    phoneme = oto.Alias,
+                                },
+                                new Phoneme() {
+                                    phoneme = oto1.Alias,
+                                    position = totalDuration - (totalDuration / 6),
+                                },
+                            },
+                    };
+                }
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
@@ -55,16 +73,52 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                     vcPhoneme = oto.Alias;
                 }
-                // totalDuration calculated on basis of previous note length
-                int totalDuration = prevNeighbour.Value.duration;
+                // prevDuration calculated on basis of previous note length
+                int prevDuration = prevNeighbour.Value.duration;
                 // vcLength depends on the Vel of the current base note
-                vcLen = Convert.ToInt32(Math.Min(totalDuration / 1.5, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
+                vcLen = Convert.ToInt32(Math.Min(prevDuration / 1.5, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
             } else {
                 if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                     vcPhoneme = oto.Alias;
                 }
                 // no previous note, so length can be minimum velocity regardless of oto
                 vcLen = Convert.ToInt32(Math.Min(vcLen * 2, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
+            }
+
+            if (nextNeighbour == null) { // automatically add ending if present
+                if (!string.IsNullOrEmpty(vcPhoneme)) {
+                    if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var oto1)) {
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                                new Phoneme() {
+                                    phoneme = vcPhoneme,
+                                    position = -vcLen,
+                                },
+                                new Phoneme() {
+                                    phoneme = cvOto?.Alias ?? lyric,
+                                },
+                                new Phoneme() {
+                                    phoneme = oto1.Alias,
+                                    position = totalDuration - (totalDuration / 6),
+                                },
+                            },
+                        };
+                    }
+                } else {
+                    if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr1.toneShift, attr1.voiceColor, out var oto1)) {
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                                new Phoneme() {
+                                    phoneme = cvOto?.Alias ?? lyric,
+                                },
+                                new Phoneme() {
+                                    phoneme = oto1.Alias,
+                                    position = totalDuration - (totalDuration / 6),
+                                },
+                            },
+                        };
+                    }
+                }
             }
 
             if (singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
