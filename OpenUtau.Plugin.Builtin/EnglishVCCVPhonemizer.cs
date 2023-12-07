@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -142,9 +142,9 @@ namespace OpenUtau.Plugin.Builtin {
 
                     if (vvExceptions.ContainsKey(prevV) && prevV != v) {
                         var vc = $"{prevV} {vvExceptions[prevV]}";
-                        if (!HasOto(vc, syllable.vowelTone)) {
-                            vc = $"{prevV}{vvExceptions[prevV]}";
-                            if ({prevV} == "8n,9l") {
+                        if (!HasOto(vc, syllable.vowelTone)) 
+                            vc = $"{prevV}{vvExceptions[prevV]}"; 
+                            if (prevV == "8n,9l") {
                                 vc = $"{prevV}{vvExceptions[prevV]}-";
                         }
                         phonemes.Add(vc);
