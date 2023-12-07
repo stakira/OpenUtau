@@ -63,6 +63,10 @@ namespace OpenUtau.Plugin.Builtin {
                 {"Q","y"},
                 {"i","y"},
                 {"3","r"},
+            };
+
+        private readonly Dictionary<string, string> vcVowelExceptions =
+            new Dictionary<string, string>() {
                 {"8n","n"},
                 {"9l","l"},
             };
@@ -143,13 +147,17 @@ namespace OpenUtau.Plugin.Builtin {
                     if (vvExceptions.ContainsKey(prevV) && prevV != v) {
                         var vc = $"{prevV} {vvExceptions[prevV]}";
                         if (!HasOto(vc, syllable.vowelTone)) {
-                            vc = $"{prevV}{vvExceptions[prevV]}";
-                            if ({prevV} == "8n,9l") {
-                                vc = $"{prevV}{vvExceptions[prevV]}-";
+                            vc = $"{prevV}{vvExceptions[prevV]}"; 
                         }
                         phonemes.Add(vc);
                         basePhoneme = $"{vvExceptions[prevV]}{v}";
                     }
+                    if (vcVowelExceptions.ContainsKey(prevV) && prevV != v)  {
+                        var vc = $"{prevV}{vcExceptions[prevV]}-";
+                    
+                        phonemes.Add(vc);
+                        basePhoneme = $"{vcExceptions[prevV]}{v}";                        
+
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         basePhoneme = $"{v}";
                     }
@@ -517,6 +525,7 @@ namespace OpenUtau.Plugin.Builtin {
             phonemes.Add(basePhoneme);
             return phonemes;
         }
+            }
 
         protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc;
