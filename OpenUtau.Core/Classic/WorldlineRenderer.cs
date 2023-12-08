@@ -10,7 +10,6 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
-using Serilog;
 
 namespace OpenUtau.Classic {
     public class WorldlineRenderer : IRenderer {
@@ -55,15 +54,11 @@ namespace OpenUtau.Classic {
             var task = Task.Run(() => {
                 var result = Layout(phrase);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
-                string progressInfo = $"Track {trackNo}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
+                string progressInfo = $"Track {trackNo + 1}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
                 progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
-                    try {
-                        using (var waveStream = Wave.OpenFile(wavPath)) {
-                            result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
-                        }
-                    } catch (Exception e) {
-                        Log.Error(e, "Failed to render.");
+                    using (var waveStream = Wave.OpenFile(wavPath)) {
+                        result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                     }
                 }
                 if (result.samples == null) {

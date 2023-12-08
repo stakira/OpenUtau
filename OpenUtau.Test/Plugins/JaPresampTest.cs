@@ -18,11 +18,6 @@ namespace OpenUtau.Plugins {
             new string[] { "", "", "波", "" },
             new string[] { "- あ_D4", "a あ波_D4", "a -_D4" })]
         [InlineData("ja_presamp",
-            new string[] { "お", "にょ", "ひょ", "みょ", "びょ", "ぴょ", "りょ", "R" },
-            new string[] { "A3", "C4", "D4", "E4", "F4", "G4", "A4", "A4" },
-            new string[] { "", "", "波", "星", "星", "貝", "貝", "貝" },
-            new string[] { "- お_A3", "o にょ_D4", "o C_D4", "ひょ波_D4", "o みょ星_E4", "o びょ星_E4", "o p'星_E4", "ぴょ貝_F4", "o 4'貝_F4", "りょ貝_A4", "o R貝_A4" })]
-        [InlineData("ja_presamp",
             new string[] { "- ず", "u t", "と", "お・", "o R" },
             new string[] { "A3", "A3", "C4", "D4", "D4" },
             new string[] { "", "", "", "", "" },
@@ -34,6 +29,69 @@ namespace OpenUtau.Plugins {
             new string[] { "- が_A3", "a が_D4", "a ヴ_D4", "u ヴ_F4" })]
         public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
+        }
+
+        [Fact]
+        public void VcColorTest() {
+            RunPhonemizeTest("ja_presamp", new NoteParams[] {
+                    new NoteParams {
+                        lyric = "あ",
+                        hint = "",
+                        tone = "C4",
+                        phonemes = new PhonemeParams[] {
+                            new PhonemeParams {
+                                color = "",
+                                shift = 0,
+                                alt = 0
+                            },
+                            new PhonemeParams {
+                                color = "星",
+                                shift = 0,
+                                alt = 0
+                            }
+                        }
+                    },
+                    new NoteParams {
+                        lyric = "k",
+                        hint = "",
+                        tone = "C4",
+                        phonemes = SamePhonemeParams(1, 0, 0, "")
+                    }
+                },
+                new string[] { "- あ_D4", "a k星_B3", "k" });
+        }
+
+        /// <summary>
+        /// Second phoneme params are ignored here
+        /// </summary>
+        [Fact]
+        public void VcvColorTest() {
+            RunPhonemizeTest("ja_presamp", new NoteParams[] {
+                    new NoteParams {
+                        lyric = "あ",
+                        hint = "",
+                        tone = "C4",
+                        phonemes = new PhonemeParams[] {
+                            new PhonemeParams {
+                                color = "",
+                                shift = 0,
+                                alt = 0
+                            },
+                            new PhonemeParams {
+                                color = "星",
+                                shift = 0,
+                                alt = 0
+                            }
+                        }
+                    },
+                    new NoteParams {
+                        lyric = "か",
+                        hint = "",
+                        tone = "C4",
+                        phonemes = SamePhonemeParams(1, 0, 0, "")
+                    }
+                },
+                new string[] { "- あ_D4", "a か_D4" });
         }
 
         [Theory]

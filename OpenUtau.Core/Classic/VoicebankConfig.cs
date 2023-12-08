@@ -52,6 +52,7 @@ namespace OpenUtau.Classic {
         public string DefaultPhonemizer;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
+        public bool? UseFilenameAsAlias = null;
 
         public void Save(Stream stream) {
             using (var writer = new StreamWriter(stream, Encoding.UTF8)) {

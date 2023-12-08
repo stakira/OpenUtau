@@ -62,7 +62,6 @@
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="FontFamily" Value="{DynamicResource ui.textbox.fontfamily}"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
     <Setter Property="SelectionForegroundBrush" Value="White"/>
   </Style>
@@ -78,6 +77,21 @@
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ContentPresenter x:Name="PART_ContentPresenter"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                          Padding="{TemplateBinding Padding}"
+                          RecognizesAccessKey="False"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+      </ControlTemplate>
+    </Setter>
   </Style>
   <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
     <Setter Property="RenderTransform" Value="scale(1)"/>
@@ -205,6 +219,22 @@
   </Style>
   <Style Selector="CheckBox /template/ Viewbox">
     <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
+
+  <Style Selector="CheckBox.menu">
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Style Selector="^:unchecked /template/ Border#NormalRectangle">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="^:checked /template/ Path#CheckGlyph">
+      <Setter Property="Fill" Value="{DynamicResource AccentBrush1}" />
+      <Setter Property="Width" Value="12" />
+    </Style>
+    <Style Selector="^:checked /template/ Border#NormalRectangle">
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
   </Style>
 
   <Style Selector="DataGridColumnHeader">
@@ -401,14 +431,22 @@
   </Style>
 
   <Style Selector="Expander" >
-    <Setter Property="CornerRadius" Value="5" />
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
-    <Setter Property="Padding" Value="10" />
+    <Setter Property="Margin" Value="4,2" />
+    <Setter Property="Padding" Value="4" />
     <Setter Property="IsExpanded" Value="True" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="Background" Value="Transparent" />
 
     <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
-      <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
+      <Setter Property="Height" Value="20"/>
+    </Style>
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Margin" Value="7,0,0,0"/>
     </Style>
   </Style>
 </Styles>

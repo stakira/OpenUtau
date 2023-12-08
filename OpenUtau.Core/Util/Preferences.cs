@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using OpenUtau.Core.Render;
 using Serilog;
 
 namespace OpenUtau.Core.Util {
@@ -87,12 +89,30 @@ namespace OpenUtau.Core.Util {
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {
                     Default = JsonConvert.DeserializeObject<SerializablePreferences>(
                         File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
+                    if(Default == null) {
+                        Reset();
+                        return;
+                    }
+
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
+                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
+                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
                 } else {
                     Reset();
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to load prefs.");
                 Default = new SerializablePreferences();
+            }
+        }
+
+        private static bool ValidString(Action action) {
+            try {
+                action();
+                return true;
+            } catch {
+                return false;
             }
         }
 

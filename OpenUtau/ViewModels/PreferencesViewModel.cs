@@ -27,7 +27,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         [Reactive] public int LockStartTime { get; set; }
-        public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
+        public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath)? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool PreRender { get; set; }
         public List<string> DefaultRendererOptions { get; set; }
@@ -213,21 +213,25 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(degreeStyle => {
                     Preferences.Default.DegreeStyle = degreeStyle;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 });
             this.WhenAnyValue(vm => vm.UseTrackColor)
                 .Subscribe(trackColor => {
                     Preferences.Default.UseTrackColor = trackColor;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
                 });
             this.WhenAnyValue(vm => vm.ShowPortrait)
                 .Subscribe(showPortrait => {
                     Preferences.Default.ShowPortrait = showPortrait;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
                 });
             this.WhenAnyValue(vm => vm.ShowGhostNotes)
                 .Subscribe(showGhostNotes => {
                     Preferences.Default.ShowGhostNotes = showGhostNotes;
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 });
             this.WhenAnyValue(vm => vm.Beta)
                 .Subscribe(beta => {

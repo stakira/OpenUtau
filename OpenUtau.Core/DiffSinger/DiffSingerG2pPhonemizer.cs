@@ -29,7 +29,7 @@ namespace OpenUtau.Core.DiffSinger
         }
     }
 
-    public abstract class DiffSingerG2pPhonemizer : DiffSingerPhonemizer
+    public abstract class DiffSingerG2pPhonemizer : DiffSingerBasePhonemizer
     {
         protected virtual string GetDictionaryName()=>"dsdict.yaml";
 

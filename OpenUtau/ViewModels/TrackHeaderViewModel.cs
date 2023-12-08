@@ -87,6 +87,7 @@ namespace OpenUtau.App.ViewModels {
                         }
                     }
                     Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 }
                 this.RaisePropertyChanged(nameof(Singer));
                 this.RaisePropertyChanged(nameof(Renderer));

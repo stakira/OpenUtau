@@ -341,9 +341,12 @@ namespace OpenUtau.Classic {
                 var note = first;
                 while (note != last.Next) {
                     if (note.position < position) {
+                        //Ignore current note if it is overlapped with previous note
+                        note = note.Next;
                         continue;
                     }
                     if (note.position > position) {
+                        //Insert R note if there is space between two notes
                         writer.WriteLine($"[#{sequence.Count:D4}]");
                         var spacer = UNote.Create();
                         spacer.position = position;
