@@ -56,7 +56,7 @@ namespace OpenUtau.Core {
             return gpuList;
         }
 
-        public static InferenceSession getInferenceSession(byte[] model) {
+        private static SessionOptions getOnnxSessionOptions(){
             SessionOptions options = new SessionOptions();
             List<string> runnerOptions = getRunnerOptions();
             string runner = Preferences.Default.OnnxRunner;
@@ -74,7 +74,15 @@ namespace OpenUtau.Core {
                     options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
                     break;
             }
-            return new InferenceSession(model,options);
+            return options;
+        }
+
+        public static InferenceSession getInferenceSession(byte[] model) {
+            return new InferenceSession(model,getOnnxSessionOptions());
+        }
+
+        public static InferenceSession getInferenceSession(string modelPath) {
+            return new InferenceSession(modelPath,getOnnxSessionOptions());
         }
     }
 }

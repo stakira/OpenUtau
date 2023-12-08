@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using OpenUtau.Classic;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Ustx {
     public class UOto : INotifyPropertyChanged {
@@ -184,13 +185,14 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4 }
+    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
 
     public class USinger : INotifyPropertyChanged {
         protected static readonly List<UOto> emptyOtos = new List<UOto>();
 
         public virtual string Id { get; }
         public virtual string Name => name;
+        public virtual Dictionary<string, string> LocalizedNames { get; }
         public virtual USingerType SingerType { get; }
         public virtual string BasePath { get; }
         public virtual string Author { get; }
@@ -230,6 +232,23 @@ namespace OpenUtau.Core.Ustx {
         private string name;
 
         public string DisplayName { get { return Found ? name : $"[Missing] {name}"; } }
+
+        public string LocalizedName { 
+            get {
+                if(LocalizedNames == null) {
+                    return Name;
+                }
+                string language = Preferences.Default.SortingOrder;
+                if(String.IsNullOrEmpty(language)){
+                    language = Preferences.Default.Language;
+                }
+                if(LocalizedNames.TryGetValue(language, out var localizedName)){
+                    return localizedName;
+                } else {
+                    return Name;
+                }
+            }
+        }
 
         public virtual void EnsureLoaded() { }
         public virtual void Reload() { }

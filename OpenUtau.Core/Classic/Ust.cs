@@ -180,7 +180,8 @@ namespace OpenUtau.Classic {
                 lyric = note.lyric,
                 position = note.position,
                 duration = note.duration,
-                noteNum = note.tone
+                noteNum = note.tone,
+                pitch = note.pitch
             };
             ustNote.Parse(lastNotePos, lastNoteEnd, iniLines, out noteTempo);
             note.lyric = ustNote.lyric;

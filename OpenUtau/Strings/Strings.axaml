@@ -32,8 +32,11 @@
   <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>
   <system:String x:Key="dialogs.export.caption">Export</system:String>
   <system:String x:Key="dialogs.export.savefirst">Save project file first</system:String>
+  <system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>
+  <system:String x:Key="dialogs.installdependency.message">Installing </system:String>
   <system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>
   <system:String x:Key="dialogs.installdll.message">Installing </system:String>
+  <system:String x:Key="dialogs.key.caption">Key</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
   <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
@@ -99,6 +102,9 @@
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
   <system:String x:Key="menu.file.exportaudio">Export Audio</system:String>
+  <system:String x:Key="menu.file.exportds">Export DiffSinger Scripts To</system:String>
+  <system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To (v2)</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (v2, without pitch curve)</system:String>
   <system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>
   <system:String x:Key="menu.file.exportproject">Export Project</system:String>
@@ -225,6 +231,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
@@ -284,10 +291,14 @@
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
+  <system:String x:Key="prefs.appearance.degree">Scale degree display style</system:String>
+  <system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>
+  <system:String x:Key="prefs.appearance.degree.off">Off</system:String>
+  <system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>
-  <system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>
+  <system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
@@ -321,6 +332,8 @@
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>

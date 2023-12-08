@@ -75,6 +75,7 @@ namespace OpenUtau.Core {
                 : SingersPath;
         public string ResamplersPath => Path.Combine(DataPath, "Resamplers");
         public string WavtoolsPath => Path.Combine(DataPath, "Wavtools");
+        public string DependencyPath => Path.Combine(DataPath, "Dependencies");
         public string PluginsPath => Path.Combine(DataPath, "Plugins");
         public string DictionariesPath => Path.Combine(DataPath, "Dictionaries");
         public string TemplatesPath => Path.Combine(DataPath, "Templates");

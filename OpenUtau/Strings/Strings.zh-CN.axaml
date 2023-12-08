@@ -99,6 +99,9 @@
   <system:String x:Key="menu.file">文件</system:String>
   <system:String x:Key="menu.file.exit">退出</system:String>
   <system:String x:Key="menu.file.exportaudio">导出音频</system:String>
+  <system:String x:Key="menu.file.exportds">导出DiffSinger脚本至</system:String>
+  <system:String x:Key="menu.file.exportds.v2">导出DiffSinger脚本至（v2）</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">导出DiffSinger脚本至（v2，不包含音高曲线）</system:String>
   <system:String x:Key="menu.file.exportmidi">导出Midi文件</system:String>
   <system:String x:Key="menu.file.exportmixdown">混缩为Wav文件</system:String>
   <system:String x:Key="menu.file.exportproject">导出工程</system:String>
@@ -271,7 +274,7 @@
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">在钢琴窗上显示其他音轨的音符</system:String>
   <system:String x:Key="prefs.appearance.showportrait">在钢琴窗上显示歌手背景图</system:String>
-  <system:String x:Key="prefs.appearance.sortorder">歌手排序方式</system:String>
+  <system:String x:Key="prefs.appearance.sortorder">歌手名称显示语言</system:String>
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
@@ -306,6 +309,8 @@
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 渲染加速</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using OpenUtau.Core;
 
@@ -36,6 +37,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankConfig {
         public string Name;
+        public Dictionary<string, string> LocalizedNames;
         public string SingerType;
         public string TextFileEncoding;
         public string Image;

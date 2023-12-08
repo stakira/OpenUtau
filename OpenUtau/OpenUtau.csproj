@@ -57,9 +57,11 @@
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
     <None Include="..\runtimes\win-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+    <None Include="..\Microsoft.AI.DirectML\bin\x64-win\DirectML.dll" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x86'">
     <None Include="..\runtimes\win-x86\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+    <None Include="..\Microsoft.AI.DirectML\bin\x86-win\DirectML.dll" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx.10.14-x64'">
     <None Include="..\runtimes\osx\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />

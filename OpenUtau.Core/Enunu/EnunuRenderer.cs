@@ -68,13 +68,13 @@ namespace OpenUtau.Core.Enunu {
             };
         }
 
-        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
             var task = Task.Run(() => {
                 lock (lockObj) {
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
-                    string progressInfo = $"{this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
+                    string progressInfo = $"Track {trackNo}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";

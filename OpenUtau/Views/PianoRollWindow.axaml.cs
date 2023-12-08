@@ -802,6 +802,19 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnKeyMenuButton(object sender, RoutedEventArgs args) {
+            KeyMenu.PlacementTarget = sender as Button;
+            KeyMenu.Open();
+        }
+
+        void OnKeyKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None) {
+                if (sender is ContextMenu menu && menu.SelectedItem is MenuItemViewModel item) {
+                    item.Command?.Execute(item.CommandParameter);
+                }
+            }
+        }
+
         #region value tip
 
         void IValueTip.ShowValueTip() {
@@ -835,18 +848,17 @@ namespace OpenUtau.App.Views {
         #endregion
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (LyricBox != null && LyricBox.IsVisible) {
-                args.Handled = false;
-                return;
-            }
-            if (SearchBar != null && SearchBar.IsVisible && SearchBar.box.IsFocused) {
-                args.Handled = false;
-                return;
-            }
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 args.Handled = false;
                 return;
+            }
+
+            if (FocusManager != null && FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
+                if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+                    args.Handled = false;
+                    return;
+                }
             }
 
             // returns true if handled

@@ -277,48 +277,77 @@ namespace OpenUtau.Classic {
         }
 
         void ParsePitchBend(string pbs, string pbw, string pby, string pbm) {
+            var pitch = this.pitch != null ? this.pitch.Clone() : new UPitch() ;
+            var points = pitch.data;
+
+            // PBS
             if (!string.IsNullOrWhiteSpace(pbs)) {
-                var pitch = new UPitch();
-                var points = pitch.data;
-                points.Clear();
-                // PBS
                 var parts = pbs.Contains(';') ? pbs.Split(';') : pbs.Split(',');
                 float pbsX = parts.Length >= 1 && ParseFloat(parts[0], out pbsX) ? pbsX : 0;
                 float pbsY = parts.Length >= 2 && ParseFloat(parts[1], out pbsY) ? pbsY : 0;
-                points.Add(new PitchPoint(pbsX, pbsY));
-                // PBW, PBY
-                var x = points.First().X;
-                if (!string.IsNullOrWhiteSpace(pbw)) {
-                    var w = pbw.Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
-                    var y = (pby ?? "").Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
+                if(points.Count > 0) {
+                    points[0] = new PitchPoint(pbsX, pbsY);
+                } else {
+                    points.Add(new PitchPoint(pbsX, pbsY));
+                }
+            }
+            if (points.Count == 0) {
+                return;
+            }
+            // PBW, PBY
+            var x = points.First().X;
+            var w = new List<float>();
+            var y = new List<float>();
+            if (!string.IsNullOrWhiteSpace(pbw)) {
+                w = pbw.Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
+            }
+            if (!string.IsNullOrWhiteSpace(pby)) {
+                y = pby.Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
+            }
+            if (w.Count != 0 || y.Count != 0) {
+                if (points.Count > 1 && points.Count - 1 == w.Count && y.Count == 0) { // replace w only
+                    for (var i = 0; i < w.Count(); i++) {
+                        x += w[i];
+                        points[i + 1].X = x;
+                    }
+                } else if (points.Count > 1 && w.Count == 0 && points.Count - 1 == y.Count) { // replace y only
+                    for (var i = 0; i < y.Count(); i++) {
+                        points[i + 1].Y = y[i];
+                    }
+                } else {
                     while (w.Count > y.Count) {
                         y.Add(0);
+                    }
+                    for (var i = points.Count - 1; i > 0; i--) {
+                        points.Remove(points[i]);
                     }
                     for (var i = 0; i < w.Count(); i++) {
                         x += w[i];
                         points.Add(new PitchPoint(x, y[i]));
                     }
                 }
-                // PBM
-                if (!string.IsNullOrWhiteSpace(pbm)) {
-                    var m = pbm.Split(new[] { ',' });
-                    for (var i = 0; i < m.Count() && i < points.Count; i++) {
-                        switch (m[i]) {
-                            case "r":
-                                points[i].shape = PitchPointShape.o;
-                                break;
-                            case "s":
-                                points[i].shape = PitchPointShape.l;
-                                break;
-                            case "j":
-                                points[i].shape = PitchPointShape.i;
-                                break;
-                            default:
-                                points[i].shape = PitchPointShape.io;
-                                break;
-                        }
+            }
+            // PBM
+            if (!string.IsNullOrWhiteSpace(pbm)) {
+                var m = pbm.Split(new[] { ',' });
+                for (var i = 0; i < m.Count() && i < points.Count; i++) {
+                    switch (m[i]) {
+                        case "r":
+                            points[i].shape = PitchPointShape.o;
+                            break;
+                        case "s":
+                            points[i].shape = PitchPointShape.l;
+                            break;
+                        case "j":
+                            points[i].shape = PitchPointShape.i;
+                            break;
+                        default:
+                            points[i].shape = PitchPointShape.io;
+                            break;
                     }
                 }
+            }
+            if (points.Count > 1) {
                 this.pitch = pitch;
             }
         }

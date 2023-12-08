@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
@@ -70,7 +69,7 @@ namespace OpenUtau.App.Views {
             var file = await FilePicker.OpenFile(this, "singers.subbanks.import", ViewModel.Singer.Location, FilePicker.PrefixMap);
             if (!string.IsNullOrEmpty(file)) {
                 try {
-                    using (var reader = new StreamReader(file, Encoding.GetEncoding("shift_jis"))) {
+                    using (var reader = new StreamReader(file, ViewModel.Singer.TextFileEncoding)) {
                         while (reader.Peek() != -1) {
                             var line = reader.ReadLine()!.Trim();
                             var s = line.Split('\t');
@@ -97,7 +96,7 @@ namespace OpenUtau.App.Views {
                 var file = await FilePicker.SaveFile(this, "singers.subbanks.export", ViewModel.Singer.Location, "prefix.map", FilePicker.PrefixMap);
                 if (!string.IsNullOrEmpty(file)) {
                     try {
-                        using (var writer = new StreamWriter(file, false, Encoding.GetEncoding("shift_jis"))) {
+                        using (var writer = new StreamWriter(file, false, ViewModel.Singer.TextFileEncoding)) {
                             foreach (var row in main.Rows) {
                                 writer.WriteLine($"{row.Tone}\t{row.Prefix}\t{row.Suffix}");
                             }
