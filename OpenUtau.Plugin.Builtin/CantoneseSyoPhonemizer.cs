@@ -145,8 +145,18 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
 
-                var tails = new List<string> { phoneme1 };
-                if (!string.IsNullOrEmpty(phoneme1)) {
+                int length2 = 60;
+                if (length2 > totalDuration / 2) {
+                    length2 = totalDuration / 2;
+                }
+                if (nextNeighbour == null && singer.TryGetMappedOto(fin, note.tone, out _)) {
+                    // Vowel ending is minimum 60 ticks, maximum half of note
+                    var finals = new List<string> { fin };
+                    if (checkOtoUntilHitFinal(finals, note, out var otoFin)) {
+                        phoneme1 = otoFin.Alias;
+                    }
+                } else {
+                    var tails = new List<string> { phoneme1 };
                     // find potential substitute symbol
                     if (finalSubLookup.TryGetValue(phoneme1 ?? string.Empty, out var finSub)) {
                         tails.Add(finSub);
@@ -154,35 +164,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if (checkOtoUntilHitFinal(tails, note, out var otoTail)) {
                         phoneme1 = otoTail.Alias;
                     } else {
-                        // Check for vowel ending if final does not exist and there's no next neighbor
-                        if (nextNeighbour == null && !string.IsNullOrEmpty(fin)) {
-                            // Vowel ending is minimum 60 ticks, maximum half of note
-                            int length2 = 60;
-
-                            if (length2 > totalDuration / 2) {
-                                length2 = totalDuration / 2;
-                            }
-
-                            var finals = new List<string> { fin };
-                            if (checkOtoUntilHitFinal(finals, note, out var otoFin)) {
-                                phoneme1 = otoFin.Alias;
-                            } else {
-                                return MakeSimpleResult(phoneme0);
-                            }
-                            return new Result {
-                                phonemes = new Phoneme[] {
-                                new Phoneme() {
-                                    phoneme = phoneme0,
-                                },
-                                new Phoneme() {
-                                    phoneme = phoneme1,
-                                    position = totalDuration - length2,
-                                }
-                                },
-                            };
-                        } else {
-                            return MakeSimpleResult(phoneme0);
-                        }
+                        return MakeSimpleResult(phoneme0);
                     }
                 }
 
