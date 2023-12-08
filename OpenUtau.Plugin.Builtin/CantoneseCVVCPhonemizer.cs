@@ -110,26 +110,44 @@ namespace OpenUtau.Plugin.Builtin {
                     // use vc if present
                     if (prevNeighbour == null && singer.TryGetMappedOto(vcPhoneme, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var vcOto1)) {
                         vcPhoneme = vcOto1.Alias;
-                    } else if (prevNeighbour != null && singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out var vcOto2)) {
-                        vcPhoneme = vcOto2.Alias;
-                    }
-                    // automatically add ending if present
-                    if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var otoEnd) && singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto1)) {
-                        return new Result {
-                            phonemes = new Phoneme[] {
+                        // automatically add ending if present
+                        if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var otoEnd)) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
                                     new Phoneme() {
                                         phoneme = vcPhoneme,
                                         position = -vcLen,
                                 },
                                     new Phoneme() {
-                                        phoneme = cvOto1?.Alias ?? lyric,
+                                        phoneme = cvOto?.Alias ?? lyric,
                                 },
                                     new Phoneme() {
                                         phoneme = otoEnd.Alias,
                                         position = totalDuration - (totalDuration / 6),
                                 },
                             },
-                        };
+                            };
+                        }
+                    } else if (prevNeighbour != null && singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out var vcOto2)) {
+                        vcPhoneme = vcOto2.Alias;
+                        // automatically add ending if present
+                        if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var otoEnd)) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                                    new Phoneme() {
+                                        phoneme = vcPhoneme,
+                                        position = -vcLen,
+                                },
+                                    new Phoneme() {
+                                        phoneme = cvOto?.Alias ?? lyric,
+                                },
+                                    new Phoneme() {
+                                        phoneme = otoEnd.Alias,
+                                        position = totalDuration - (totalDuration / 6),
+                                },
+                            },
+                            };
+                        }
                     } // just base note and ending
                     if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr1.toneShift, attr1.voiceColor, out var otoEnd1)) {
                         return new Result {
