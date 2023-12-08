@@ -68,6 +68,11 @@ namespace OpenUtau.Plugin.Builtin {
                     vcLen = MsToTick(cvOto.Preutter - cvOto.Overlap);
                 }
             }
+
+            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOtoSimple)) {
+                lyric = cvOtoSimple.Alias;
+            }
+
             var vcPhoneme = $"{prevVowel} {consonant}";
             if (prevNeighbour != null) {
                 if (singer.TryGetMappedOto(vcPhoneme, prevNeighbour.Value.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
@@ -109,7 +114,7 @@ namespace OpenUtau.Plugin.Builtin {
                         vcPhoneme = vcOto2.Alias;
                     }
                     // automatically add ending if present
-                    if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var otoEnd) && singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out cvOto)) {
+                    if (singer.TryGetMappedOto($"{currVowel} R", notes[0].tone + attr2.toneShift, attr2.voiceColor, out var otoEnd) && singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto1)) {
                         return new Result {
                             phonemes = new Phoneme[] {
                                     new Phoneme() {
@@ -117,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
                                         position = -vcLen,
                                 },
                                     new Phoneme() {
-                                        phoneme = cvOto?.Alias ?? lyric,
+                                        phoneme = cvOto1?.Alias ?? lyric,
                                 },
                                     new Phoneme() {
                                         phoneme = otoEnd.Alias,
@@ -130,7 +135,7 @@ namespace OpenUtau.Plugin.Builtin {
                         return new Result {
                             phonemes = new Phoneme[] {
                                 new Phoneme() {
-                                    phoneme = cvOto?.Alias ?? lyric,
+                                    phoneme = cvOtoSimple?.Alias ?? lyric,
                                 },
                                 new Phoneme() {
                                     phoneme = otoEnd1.Alias,
@@ -155,7 +160,7 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
-            return MakeSimpleResult(cvOto?.Alias ?? lyric);
+            return MakeSimpleResult(cvOtoSimple?.Alias ?? lyric);
         }
 
         public override void SetSinger(USinger singer) {
