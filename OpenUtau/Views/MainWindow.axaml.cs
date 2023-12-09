@@ -481,8 +481,8 @@ namespace OpenUtau.App.Views {
             }
 
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {
-                var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
                 if (dialog == null) {
                     USinger? singer = null;
                     if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
@@ -498,7 +498,6 @@ namespace OpenUtau.App.Views {
                     dialog = new SingersDialog() { DataContext = vm };
                     dialog.Show();
                 }
-                dialog.Activate();
                 if (dialog.Position.Y < 0) {
                     dialog.Position = dialog.Position.WithY(0);
                 }
@@ -506,6 +505,9 @@ namespace OpenUtau.App.Views {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
+            }
+            if (dialog != null) {
+                dialog.Activate();
             }
         }
 
