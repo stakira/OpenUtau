@@ -195,7 +195,7 @@ namespace OpenUtau.Plugin.Builtin {
             // Insert 2nd phoneme (when next doesn't have hint)
             if (nextNeighbour != null && string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
                 int totalDuration = notes.Sum(n => n.duration);
-                if (TickToMs(totalDuration) < 100) {
+                if (TickToMs(totalDuration) < 100 && presamp.MustVC == false) {
                     return MakeSimpleResult(currentLyric);
                 }
 
