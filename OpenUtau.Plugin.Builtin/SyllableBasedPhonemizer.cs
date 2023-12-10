@@ -171,7 +171,12 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // Assign pitch/color suffixes
+            return new Result() {
+                phonemes = AssignAllAffixes(phonemes, notes, prevNeighbours)
+            };
+        }
+
+        protected virtual Phoneme[] AssignAllAffixes(List<Phoneme> phonemes, Note[] notes, Note[] prevs) {
             int noteIndex = 0;
             for (int i = 0; i < phonemes.Count; i++) {
                 var attr = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == i) ?? default;
@@ -183,10 +188,10 @@ namespace OpenUtau.Plugin.Builtin {
                     noteIndex++;
                 }
                 var noteStartPosition = notes[noteIndex].position - notes[0].position;
-                int tone = (prevNeighbours != null && prevNeighbours.Length > 0 && phoneme.position < noteStartPosition) ? 
-                    prevNeighbours.Last().tone : (noteIndex > 0 && phoneme.position < noteStartPosition) ?
-                    notes[noteIndex-1].tone : notes[noteIndex].tone;
-                
+                int tone = (prevs != null && prevs.Length > 0 && phoneme.position < noteStartPosition) ?
+                    prevs.Last().tone : (noteIndex > 0 && phoneme.position < noteStartPosition) ?
+                    notes[noteIndex - 1].tone : notes[noteIndex].tone;
+
                 var validatedAlias = phoneme.phoneme;
                 if (validatedAlias != null) {
                     validatedAlias = ValidateAliasIfNeeded(validatedAlias, tone + toneShift);
@@ -200,10 +205,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 phonemes[i] = phoneme;
             }
-
-            return new Result() {
-                phonemes = phonemes.ToArray()
-            };
+            return phonemes.ToArray();
         }
 
         private Result HandleError() {
