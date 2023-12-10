@@ -155,6 +155,17 @@ namespace OpenUtau.Plugin.Builtin {
                     if (checkOtoUntilHitFinal(finals, note, out var otoFin)) {
                         phoneme1 = otoFin.Alias;
                     }
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = phoneme0,
+                        },
+                        new Phoneme() {
+                            phoneme = phoneme1,
+                            position = totalDuration - length2,
+                        }
+                    },
+                    };
                 } else {
                     var tails = new List<string> { phoneme1 };
                     // find potential substitute symbol
