@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -35,6 +37,7 @@ namespace OpenUtau.App.ViewModels {
         private Api.G2pPack? g2p;
 
         public PhoneticAssistantViewModel() {
+            G2p = g2ps.FirstOrDefault(x=>x.name == Preferences.Default.PhoneticAssistant) ?? g2ps.First();
             Grapheme = string.Empty;
             Phonemes = string.Empty;
             this.WhenAnyValue(x => x.G2p)
@@ -42,6 +45,8 @@ namespace OpenUtau.App.ViewModels {
                     g2p = null;
                     if (option != null) {
                         g2p = Activator.CreateInstance(option.klass) as Api.G2pPack;
+                        Preferences.Default.PhoneticAssistant = option.name;
+                        Preferences.Save();
                         Refresh();
                     }
                 });

@@ -178,6 +178,7 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
+            public string PhoneticAssistant = string.Empty;
         }
     }
 }
