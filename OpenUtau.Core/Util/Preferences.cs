@@ -160,6 +160,7 @@ namespace OpenUtau.Core.Util {
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
+            public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
             public bool PlayTone = true;
             public bool ShowVibrato = true;
