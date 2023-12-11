@@ -474,6 +474,18 @@ namespace OpenUtau.App.Views {
             OpenSingersWindow();
         }
 
+        /// <summary>
+        /// Check if a track has a singer and if it exists.
+        /// If the user haven't selected a singer for the track, or the singer specified in ustx project doesn't exist, return null.
+        /// Otherwise, return the singer.
+        /// </summary>
+        public USinger? TrackSingerIfFound(UTrack track){
+            if(track.Singer?.Found ?? false){
+                return track.Singer;
+            }
+            return null;
+        }
+
         public void OpenSingersWindow() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
@@ -486,10 +498,10 @@ namespace OpenUtau.App.Views {
                 if (dialog == null) {
                     USinger? singer = null;
                     if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
-                        singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                        singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo]);
                     }
                     if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
-                        singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                        singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks.First());
                     }
                     var vm = new SingersViewModel();
                     if (singer != null) {
