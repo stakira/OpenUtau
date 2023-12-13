@@ -369,8 +369,8 @@
   <system:String x:Key="singers.editoto.reset">원음 설정 초기화</system:String>
   <system:String x:Key="singers.editoto.save">원음 설정 저장</system:String>
   <system:String x:Key="singers.editoto.searchalias">에일리어스 검색</system:String>
-  <system:String x:Key="singers.editoto.setvlabelerpath">vLabeler 1.0.0-beta1 이상 버전이 필요합니다. https://github.com/sdercolin/vlabeler에서 vlabeler를 다운로드하고, 환경설정의 'vLabeler가 설치된 위치'에 등록해 주세요!</system:String>
-  <system:String x:Key="singers.errorreport">가수의 오류 보고서 생성</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">https://github.com/sdercolin/vlabeler 에서 vLabeler(1.0.0-beta1 이상)를 다운로드하고, 환경 설정에서 vLabeler 경로를 지정해 주세요!</system:String>
+  <system:String x:Key="singers.errorreport">가수 오류 보고서 생성</system:String>
   <system:String x:Key="singers.location">위치 열기</system:String>
   <system:String x:Key="singers.otoview.moveleft">왼쪽으로 이동</system:String>
   <system:String x:Key="singers.otoview.moveright">오른쪽으로 이동</system:String>
@@ -473,5 +473,5 @@
 
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 경로 "{0}"에 ASCII 인코딩에 없는 문자가 포함되어 있습니다. exe 리샘플러가 작동하지 않을 수 있습니다.</system:String>
-  <system:String x:Key="warning.renderer">이 렌더러를 위한 설정이 없습니다.</system:String>
+  <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다.</system:String>
 </ResourceDictionary>
