@@ -6,20 +6,20 @@
   <system:String x:Key="context.note.delete">노트 지우기</system:String>
   <system:String x:Key="context.note.pasteparameters">선택하고 파라미터 붙여넣기</system:String>
   <system:String x:Key="context.part.delete">파트 지우기</system:String>
-  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
-  <system:String x:Key="context.part.rename">파트 이름 바꾸기</system:String>
-  <system:String x:Key="context.part.replaceaudio">오디오 파일 바꾸기</system:String>
-  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
-  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
-  <system:String x:Key="context.pitch.easein">피치선 다듬기(Ease in)</system:String>
-  <system:String x:Key="context.pitch.easeinout">피치선 다듬기(Ease in and out)</system:String>
-  <system:String x:Key="context.pitch.easeout">피치선 다듬기(Ease out)</system:String>
-  <system:String x:Key="context.pitch.linear">피치선 다듬기(Linear)</system:String>
+  <system:String x:Key="context.part.gotofile">파일 위치 열기</system:String>
+  <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
+  <system:String x:Key="context.part.replaceaudio">오디오 파일 변경</system:String>
+  <system:String x:Key="context.part.transcribe">소리를 노트 파트로 변환</system:String>
+  <system:String x:Key="context.part.transcribing">변환 중</system:String>
+  <system:String x:Key="context.pitch.easein">Ease in 곡선</system:String>
+  <system:String x:Key="context.pitch.easeinout">Ease in/out 곡선</system:String>
+  <system:String x:Key="context.pitch.easeout">Ease out 곡선</system:String>
+  <system:String x:Key="context.pitch.linear">선형</system:String>
   <system:String x:Key="context.pitch.pointadd">피치 점 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">피치 점 삭제</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트에 물리기</system:String>
-  <system:String x:Key="context.timeline.addtempo">{0}에서 템포 바꾸기</system:String>
-  <system:String x:Key="context.timeline.addtimesig">박자표 바꾸기</system:String>
+  <system:String x:Key="context.timeline.addtempo">{0}에서 템포 변경</system:String>
+  <system:String x:Key="context.timeline.addtimesig">박자표 변경</system:String>
   <system:String x:Key="context.timeline.deltempo">{0}에서 바뀐 템포 지우기</system:String>
   <system:String x:Key="context.timeline.deltimesig">바뀐 박자표 지우기</system:String>
 
@@ -34,27 +34,29 @@
   <system:String x:Key="dialogs.exitsave.caption">프로젝트 닫기</system:String>
   <system:String x:Key="dialogs.exitsave.message">프로젝트 파일이 저장되지 않았습니다. 저장할까요?</system:String>
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
-  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해야 합니다!</system:String>
+  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해야 합니다</system:String>
   <system:String x:Key="dialogs.installdependency.caption">의존 요소 설치 중…</system:String>
   <system:String x:Key="dialogs.installdependency.message">설치 중…</system:String>
   <system:String x:Key="dialogs.installdll.caption">음소화기 설치 중…</system:String>
   <system:String x:Key="dialogs.installdll.message">설치 중…</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">취소</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>-->
+  <system:String x:Key="dialogs.messagebox.copy">클립보드에 오류 복사</system:String>
   <system:String x:Key="dialogs.messagebox.no">아니요</system:String>
   <system:String x:Key="dialogs.messagebox.ok">확인</system:String>
   <system:String x:Key="dialogs.messagebox.yes">네</system:String>
-  <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없습니다.</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">리샘플러 없음</system:String>
   <system:String x:Key="dialogs.noresampler.message">리샘플러가 없습니다! 좋아하는 리샘플러의 exe나 dll을 'Resamplers' 폴더에 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요.</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">지원하지 않는 파일 유형</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">다음 파일 유형은 지원하지 않습니다. </system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">렌더러</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">기본값으로 설정</system:String>
-  <system:String x:Key="dialogs.voicecolorremapping">보이스 컬러 재맵핑</system:String>
-  <system:String x:Key="dialogs.voicecolorremapping.caption">재맵핑된 컬러가 다음 트랙의 모든 노트에 적용됩니다.</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping">음색 재배치</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.caption">다음 트랙의 모든 노트에 적용됩니다.</system:String>
 
-  <system:String x:Key="errors.caption">오류가 발생했습니다!</system:String>
+  <system:String x:Key="errors.caption">오류</system:String>
 
   <system:String x:Key="exps.abbr">줄임말</system:String>
   <system:String x:Key="exps.apply">적용</system:String>
@@ -65,30 +67,30 @@
   <system:String x:Key="exps.isflag">리샘플러 플래그 여부</system:String>
   <system:String x:Key="exps.maxvalue">최댓값</system:String>
   <system:String x:Key="exps.minvalue">최솟값</system:String>
-  <system:String x:Key="exps.name">표현 이름</system:String>
+  <system:String x:Key="exps.name">이름</system:String>
   <system:String x:Key="exps.optionvalues">선택형 값</system:String>
-  <system:String x:Key="exps.sepbycomma">쉼표(,)로 값을 구분해요</system:String>
-  <system:String x:Key="exps.type">표현 종류</system:String>
-  <system:String x:Key="exps.type.curve">커브형 표현</system:String>
-  <system:String x:Key="exps.type.numerical">숫자형 표현</system:String>
-  <system:String x:Key="exps.type.options">선택지형 표현</system:String>
+  <system:String x:Key="exps.sepbycomma">쉼표(,)로 값을 구분할 수 있습니다</system:String>
+  <system:String x:Key="exps.type">유형</system:String>
+  <system:String x:Key="exps.type.curve">커브형</system:String>
+  <system:String x:Key="exps.type.numerical">숫자형</system:String>
+  <system:String x:Key="exps.type.options">선택지형</system:String>
 
   <system:String x:Key="lyrics.apply">적용</system:String>
   <system:String x:Key="lyrics.cancel">취소</system:String>
   <system:String x:Key="lyrics.caption">가사 편집하기</system:String>
   <system:String x:Key="lyrics.livepreview">실시간 노트 미리보기</system:String>
   <system:String x:Key="lyrics.max">최대</system:String>
-  <system:String x:Key="lyrics.reset">리셋</system:String>
+  <system:String x:Key="lyrics.reset">재설정</system:String>
   <system:String x:Key="lyrics.selectnotes">먼저 원하는 노트를 선택해 주세요!</system:String>
-  <system:String x:Key="lyrics.separators">이 값 기준으로 가사 나누기</system:String>
+  <system:String x:Key="lyrics.separators">구분 기준</system:String>
 
   <system:String x:Key="lyricsreplace.after">수정 전</system:String>
   <system:String x:Key="lyricsreplace.before">수정 후</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvalphabet">알파벳 없애기</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">알파벳 지우기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">히라가나만 남기기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvphonetichint">발음 힌트 지우기</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvspace">스페이스 공백 없애기</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvtone">음계 접미사 없애기</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">스페이스 공백 지우기</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">음계 접미사 지우기</system:String>
   <system:String x:Key="lyricsreplace.presets">프리셋</system:String>
   <system:String x:Key="lyricsreplace.preview">미리보기</system:String>
   <system:String x:Key="lyricsreplace.regex">정규표현식 사용</system:String>
@@ -107,24 +109,24 @@
   <system:String x:Key="menu.file.exportaudio">오디오 내보내기</system:String>
   <system:String x:Key="menu.file.exportds">다른 이름으로 DiffSinger 스크립트 내보내기</system:String>
   <system:String x:Key="menu.file.exportds.v2">다른 이름으로 DiffSinger 스크립트 내보내기 (v2)</system:String>
-  <system:String x:Key="menu.file.exportds.v2withoutpitch">다른 이름으로 DiffSinger 스크립트 내보내기 (v2, 피치선 제외)</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">다른 이름으로 DiffSinger 스크립트 내보내기 (v2, 피치 벤드 제외)</system:String>
   <system:String x:Key="menu.file.exportmidi">Midi로 내보내기</system:String>
   <system:String x:Key="menu.file.exportmixdown">모두 합쳐 Wav로 내보내기</system:String>
   <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
-  <system:String x:Key="menu.file.exportust">Ust 파일로 내보내기</system:String>
-  <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust로 내보내기...</system:String>
-  <system:String x:Key="menu.file.exportwav">개별 트랙을 Wav로 내보내기</system:String>
-  <system:String x:Key="menu.file.exportwavto">다른 이름으로 개별 트랙을 Wav로 내보내기...</system:String>
-  <system:String x:Key="menu.file.importaudio">오디오 불러오기...</system:String>
-  <system:String x:Key="menu.file.importmidi">Midi 불러오기...</system:String>
-  <system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi로 불러오기</system:String>
-  <system:String x:Key="menu.file.importmidi.naudio">Naudio로 불러오기</system:String>
-  <system:String x:Key="menu.file.importtracks">여러 트랙 불러오기...</system:String>
+  <system:String x:Key="menu.file.exportust">Ust 파일 여러 개로 내보내기</system:String>
+  <system:String x:Key="menu.file.exportustto">Ust 파일 여러 개를 다른 이름으로 내보내기...</system:String>
+  <system:String x:Key="menu.file.exportwav">Wav 파일 여러 개로 내보내기</system:String>
+  <system:String x:Key="menu.file.exportwavto">Wav 파일 여러 개를 다른 이름으로 내보내기...</system:String>
+  <system:String x:Key="menu.file.importaudio">오디오 가져오기...</system:String>
+  <system:String x:Key="menu.file.importmidi">Midi 가져오기...</system:String>
+  <system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi로 가져오기</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">Naudio로 가져오기</system:String>
+  <system:String x:Key="menu.file.importtracks">여러 트랙 가져오기...</system:String>
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.newfromtemplate">템플릿 파일로 새로 만들기</system:String>
   <system:String x:Key="menu.file.open">열기...</system:String>
   <system:String x:Key="menu.file.openas">다른 이름으로 열기...</system:String>
-  <system:String x:Key="menu.file.openexportlocation">내보낸 파일 위치 열기</system:String>
+  <system:String x:Key="menu.file.openexportlocation">내보내기 위치 열기</system:String>
   <system:String x:Key="menu.file.openprojectlocation">프로젝트 위치 열기</system:String>
   <system:String x:Key="menu.file.openrecent">최근 파일</system:String>
   <system:String x:Key="menu.file.save">저장</system:String>
@@ -160,14 +162,14 @@
   <system:String x:Key="notedefaults.portamento.length">길이</system:String>
   <system:String x:Key="notedefaults.portamento.start">시작</system:String>
   <system:String x:Key="notedefaults.preset">프리셋</system:String>
-  <system:String x:Key="notedefaults.preset.namenew">새 프리셋 이름 지정</system:String>
-  <system:String x:Key="notedefaults.preset.remove">프리셋 제거</system:String>
-  <system:String x:Key="notedefaults.preset.remove.tooltip">이 프리셋 제거</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">새 프리셋 이름</system:String>
+  <system:String x:Key="notedefaults.preset.remove">삭제</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">마지막 프리셋을 삭제합니다.</system:String>
   <system:String x:Key="notedefaults.preset.save">프리셋 저장</system:String>
   <system:String x:Key="notedefaults.preset.save.tooltip">현재 세팅으로 새 프리셋 추가</system:String>
-  <system:String x:Key="notedefaults.reset">설정 모두 초기화</system:String>
+  <system:String x:Key="notedefaults.reset">모든 설정 초기화</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">모든 설정을 기본값으로 설정합니다.
-    주의: 사용자가 만들어 둔 프리셋이 전부 사라집니다.</system:String>
+주의: 사용자가 만들어 둔 프리셋이 전부 사라집니다.</system:String>
   <system:String x:Key="notedefaults.vibrato">비브라토</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">최소 노트 길이</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">길이에 따라 비브라토 자동 적용</system:String>
@@ -190,10 +192,10 @@
   <system:String x:Key="noteproperty.vibratoenable">비브라토 활성화</system:String>
 
   <system:String x:Key="oto.alias">에일리어스</system:String>
-  <system:String x:Key="oto.color">컬러</system:String>
-  <system:String x:Key="oto.consonant">고정자음부</system:String>
+  <system:String x:Key="oto.color">음색</system:String>
+  <system:String x:Key="oto.consonant">고정 자음부</system:String>
   <system:String x:Key="oto.cutoff">컷오프</system:String>
-  <system:String x:Key="oto.edit.consonant">고정자음부 편집</system:String>
+  <system:String x:Key="oto.edit.consonant">고정 자음부 편집</system:String>
   <system:String x:Key="oto.edit.cutoff">컷오프 편집</system:String>
   <system:String x:Key="oto.edit.offset">오프셋 편집</system:String>
   <system:String x:Key="oto.edit.overlap">오버랩(OVL) 편집</system:String>
@@ -212,25 +214,25 @@
 
   <system:String x:Key="pianoroll.menu.batch">일괄 수정</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">가사 설정</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">'-'를 '+'로 바꾸기</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">'-'를 '+'로 변경</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">가사 편집</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로 바꾸기</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로 변경</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.insertslur">이음줄 기호(+) 삽입</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV 가사를 일본어 CV 가사로 바꾸기</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">가사의 접미사를 컬러로 이동시키기</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">글자 접미사 없애기</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removephonetichint">발음 힌트 없애기</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">음계 접미사 없애기</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로 바꾸기</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV 가사를 일본어 CV 가사로 변경</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">가사의 접미사를 음색으로 이동</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">글자 접미사 제거</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removephonetichint">발음 힌트 제거</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">음계 접미사 제거</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로 변경</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">끝에 '-' 노트 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">끝에 'R' 노트 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">노트를 서로 자동 연결</system:String>
-  <system:String x:Key="pianoroll.menu.notes.bakepitch">PTTD(피치 커브)를 피치선으로 변환</system:String>
+  <system:String x:Key="pianoroll.menu.notes.bakepitch">PTTD(피치 표현)를 피치 벤드로 변환</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 업생기</system:String>
   <system:String x:Key="pianoroll.menu.notes.fixoverlap">겹친 노트 고치기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">중국어 한자를 병음으로</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">중국어 한자를 병음으로 변경</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">크로스페이드 길이 늘리기</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링된 피치 커브 불러오기</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">한 옥타브 아래로</system:String>
@@ -239,11 +241,11 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 퀀타이즈</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">끝에 '-' 노트 지우기</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">끝에 'R' 노트 지우기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.aliases">음소 에일리어스 리셋</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 리셋</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">음소 타이밍 리셋</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">피치선 리셋</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">비브라토 리셋</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">음소 에일리어스 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">음소 타이밍 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">피치 벤드 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">비브라토 재설정</system:String>
   <system:String x:Key="pianoroll.menu.part">파트</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">레거시 플러그인(실험적 기능)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">가수 및 원음 설정</system:String>
@@ -257,7 +259,7 @@
   <system:String x:Key="pianoroll.toggle.finalpitch">최종 렌더링된 피치 커브 보기(R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">노트 설정 열기(\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">음소 표시(O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">피치선 표시(I)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">피치 벤드 표시(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">토글 켜기·끄기(P)</system:String>
   <system:String x:Key="pianoroll.toggle.snap.auto">자동 스냅</system:String>
   <system:String x:Key="pianoroll.toggle.snap.autotriplet">자동 스냅(셋잇단)</system:String>
@@ -267,14 +269,14 @@
   <system:String x:Key="pianoroll.toggle.waveform">파형 표시(W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴(4)
     왼쪽 클릭으로 그리기
-    오른쪽 클릭으로 리셋
+    오른쪽 클릭으로 재설정
     Ctrl 키를 누르며 클릭해 선택
     Alt 키를 누르며 클릭해 다듬기</system:String>
   <system:String x:Key="pianoroll.tool.eraser">지우기 툴(3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">자르기 툴(5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">펜 플러스 툴(Ctrl + 2)
     왼쪽 클릭으로 그리기
-    오른쪽 클릭으로 리셋
+    오른쪽 클릭으로 재설정
     Ctrl 키를 누르며 클릭해 선택</system:String>
   <system:String x:Key="pianoroll.tool.penv2">펜 툴(2)
     왼쪽 클릭으로 그리기
@@ -315,7 +317,7 @@
   <system:String x:Key="prefs.paths">경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger">추가 가수 폴더</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">가수 설치 시 '추가 가수 폴더'에 설치</system:String>
-  <system:String x:Key="prefs.paths.reset">리셋</system:String>
+  <system:String x:Key="prefs.paths.reset">재설정</system:String>
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
   <system:String x:Key="prefs.playback.autoscroll">자동 스크롤</system:String>
@@ -324,7 +326,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">두루마리 읽듯 스크롤</system:String>
   <system:String x:Key="prefs.playback.backend">오디오 백엔드</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">자동 스크롤 여백</system:String>
   <system:String x:Key="prefs.playback.device">오디오 재생 장치</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">일시 정지 동작</system:String>
@@ -340,7 +342,8 @@
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
   <system:String x:Key="prefs.rendering.prerender">미리 렌더링</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
-  <system:String x:Key="prefs.rendering.resampler.morewarn">경고: 아직 moresampler는 완벽하게 지원되는 상태가 아닙니다. 속도가 느릴 수 있고, 높은 CPU 점유율 유발할 수 있습니다. 그래도 사용하시려면 다음을 따라 주세요.
+  <system:String x:Key="prefs.rendering.resampler.morewarn">
+    경고: 아직 moresampler는 완벽하게 지원되는 상태가 아닙니다. 속도가 느릴 수 있고, 높은 CPU 점유율 유발할 수 있습니다. 그래도 사용하시려면 다음을 따라 주세요.
     1. moreconfig.txt를 열어 resampler-compatibility 항목을 "on"으로 설정합니다.
     2. 같은 파일에서 resampler-compatibility 항목을 "off"로 설정합니다.
     3. moresampler가 누락된 llsm 파일을 다 생성할 때까지 느긋하게 기다립니다.
@@ -356,7 +359,7 @@
 
   <system:String x:Key="progress.loadingsingers">가수를 불러오는 중...</system:String>
   <system:String x:Key="progress.saved">{0} 프로젝트를 저장했습니다.</system:String>
-  <system:String x:Key="progress.waitingrendering">렌더링을 기다리는 중<system:String>
+  <system:String x:Key="progress.waitingrendering">렌더링을 기다리는 중</system:String>
 
   <system:String x:Key="singers.caption">가수 목록</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 원음 설정</system:String>
@@ -366,7 +369,7 @@
   <system:String x:Key="singers.editoto.reset">원음 설정 초기화</system:String>
   <system:String x:Key="singers.editoto.save">원음 설정 저장</system:String>
   <system:String x:Key="singers.editoto.searchalias">에일리어스 검색</system:String>
-  <system:String x:Key="singers.editoto.setvlabelerpath">vLabeler 1.0.0-beta1 이상 버전이 필요해요. https://github.com/sdercolin/vlabeler 에서 브이라벨러를 다운로드하고, 환경설정의 "브이라벨러(vLabeler)가 설치된 위치"에 등록해 주세요!</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">vLabeler 1.0.0-beta1 이상 버전이 필요합니다. https://github.com/sdercolin/vlabeler에서 vlabeler를 다운로드하고, 환경설정의 'vLabeler가 설치된 위치'에 등록해 주세요!</system:String>
   <system:String x:Key="singers.errorreport">가수의 오류 보고서 생성</system:String>
   <system:String x:Key="singers.location">위치 열기</system:String>
   <system:String x:Key="singers.otoview.moveleft">왼쪽으로 이동</system:String>
@@ -387,14 +390,14 @@
   <system:String x:Key="singers.setsingertype">가수 유형 설정</system:String>
   <system:String x:Key="singers.subbanks.cancel">취소</system:String>
   <system:String x:Key="singers.subbanks.clear">비우기</system:String>
-  <system:String x:Key="singers.subbanks.color">컬러</system:String>
-  <system:String x:Key="singers.subbanks.color.add">컬러 추가</system:String>
-  <system:String x:Key="singers.subbanks.color.remove">컬러 지우기</system:String>
-  <system:String x:Key="singers.subbanks.color.rename">컬러 이름 바꾸기</system:String>
+  <system:String x:Key="singers.subbanks.color">음색</system:String>
+  <system:String x:Key="singers.subbanks.color.add">음색 추가</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">음색 지우기</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">음색 이름 변경</system:String>
   <system:String x:Key="singers.subbanks.edit">서브 뱅크 편집</system:String>
   <system:String x:Key="singers.subbanks.export">prefix.map 내보내기</system:String>
   <system:String x:Key="singers.subbanks.import">prefix.map 불러오기</system:String>
-  <system:String x:Key="singers.subbanks.reset">리셋</system:String>
+  <system:String x:Key="singers.subbanks.reset">재설정</system:String>
   <system:String x:Key="singers.subbanks.save">저장</system:String>
   <system:String x:Key="singers.subbanks.selectall">모두 선택</system:String>
   <system:String x:Key="singers.subbanks.set">설정</system:String>
@@ -418,7 +421,7 @@
   <system:String x:Key="tip.exps.notsupported">렌더러가 이 표현을 지원하지 않습니다</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 다음 노트</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift + Tab: 이전 노트</system:String>
-  <system:String x:Key="tip.notes.basics"선택 툴
+  <system:String x:Key="tip.notes.basics">선택 툴
     박스 선택: 노트 선택
     Ctrl + 박스 선택: 여러 노트 선택
     위/아래 화살표: 노트를 위로 이동
@@ -447,7 +450,7 @@
   <system:String x:Key="tracks.mute.only">이 트랙만 음소거</system:String>
   <system:String x:Key="tracks.mute.unmuteall">모든 트랙 음소거 해제</system:String>
   <system:String x:Key="tracks.remove">트랙 제거</system:String>
-  <system:String x:Key="tracks.rename">트랙 이름 바꾸기</system:String>
+  <system:String x:Key="tracks.rename">트랙 이름 변경</system:String>
   <system:String x:Key="tracks.selectrenderer">렌더러 선택</system:String>
   <system:String x:Key="tracks.selectsinger">가수 선택</system:String>
   <system:String x:Key="tracks.solo">솔로</system:String>
@@ -469,6 +472,6 @@
   <system:String x:Key="updater.update">업데이트</system:String>
 
   <system:String x:Key="warning">경고</system:String>
-  <system:String x:Key="warning.asciipath">OpenUtau 경로 "{0}"에 ASCII 인코딩에 없는 문자(예컨대 한글, 일본어 등)가 포함되어 있습니다. Exe 리샘플러가 작동하지 않을 수 있습니다.</system:String>
+  <system:String x:Key="warning.asciipath">OpenUtau 경로 "{0}"에 ASCII 인코딩에 없는 문자가 포함되어 있습니다. exe 리샘플러가 작동하지 않을 수 있습니다.</system:String>
   <system:String x:Key="warning.renderer">이 렌더러를 위한 설정이 없습니다.</system:String>
 </ResourceDictionary>
