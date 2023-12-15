@@ -168,5 +168,17 @@ namespace OpenUtau.Core.DiffSinger {
             }
             return variancePredictor;
         }
+
+        public override void FreeMemory(){
+            Log.Information($"Freeing memory for singer {Name}");
+            acousticSession?.Dispose();
+            acousticSession = null;
+            vocoder?.Dispose();
+            vocoder = null;
+            pitchPredictor?.Dispose();
+            pitchPredictor = null;
+            variancePredictor?.Dispose();
+            variancePredictor = null;
+        }
     }
 }

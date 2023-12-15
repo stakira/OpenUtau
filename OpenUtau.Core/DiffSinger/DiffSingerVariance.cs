@@ -17,7 +17,7 @@ namespace OpenUtau.Core.DiffSinger{
         public float[] energy;
         public float[] breathiness;
     }
-    public class DsVariance{
+    public class DsVariance : IDisposable{
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
@@ -171,6 +171,23 @@ namespace OpenUtau.Core.DiffSinger{
                 energy = energy_pred.ToArray(),
                 breathiness = breathiness_pred.ToArray()
             };
+        }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    linguisticModel?.Dispose();
+                    varianceModel?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
