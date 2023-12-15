@@ -170,7 +170,7 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public override void FreeMemory(){
-            Log.Information($"Freeing memory for singer {Name}");
+            Log.Information($"Freeing memory for singer {Id}");
             acousticSession?.Dispose();
             acousticSession = null;
             vocoder?.Dispose();
