@@ -56,23 +56,23 @@ namespace OpenUtau.Classic {
                 segment.posMs = item.phone.positionMs - item.phone.leadingMs - (phrase.positionMs - phrase.leadingMs);
                 segment.posSamples = (int)Math.Round(segment.posMs * 44100 / 1000);
                 segment.skipSamples = (int)Math.Round(item.skipOver * 44100 / 1000);
-                segment.envelope = EnvelopeMsToSamples(item.phone.envelope, segment.skipSamples);
+                segment.envelope = item.EnvelopeMsToSamples();
 
-                if (!phaseComp) {
-                    continue;
+                if (phaseComp) {
+                    var headWindow = GetHeadWindow(segment.samples, segment.envelope, out segment.headWindowStart);
+                    segment.headWindowF0 = GetF0AtSample(phrase,
+                        segment.posSamples - segment.skipSamples + segment.headWindowStart + headWindow.Length / 2);
+                    segment.headPhase = CalcPhase(headWindow,
+                        segment.posSamples - segment.skipSamples + segment.headWindowStart, 44100, segment.headWindowF0);
+
+                    var tailWindow = GetTailWindow(segment.samples, segment.envelope, out segment.tailWindowStart);
+                    segment.tailWindowF0 = GetF0AtSample(phrase,
+                        segment.posSamples - segment.skipSamples + segment.tailWindowStart + tailWindow.Length / 2);
+                    segment.tailPhase = CalcPhase(tailWindow,
+                        segment.posSamples - segment.skipSamples + segment.tailWindowStart, 44100, segment.tailWindowF0);
                 }
 
-                var headWindow = GetHeadWindow(segment.samples, segment.envelope, out segment.headWindowStart);
-                segment.headWindowF0 = GetF0AtSample(phrase,
-                    segment.posSamples - segment.skipSamples + segment.headWindowStart + headWindow.Length / 2);
-                segment.headPhase = CalcPhase(headWindow,
-                    segment.posSamples - segment.skipSamples + segment.headWindowStart, 44100, segment.headWindowF0);
-
-                var tailWindow = GetTailWindow(segment.samples, segment.envelope, out segment.tailWindowStart);
-                segment.tailWindowF0 = GetF0AtSample(phrase,
-                    segment.posSamples - segment.skipSamples + segment.tailWindowStart + tailWindow.Length / 2);
-                segment.tailPhase = CalcPhase(tailWindow,
-                    segment.posSamples - segment.skipSamples + segment.tailWindowStart, 44100, segment.tailWindowF0);
+                item.ApplyEnvelope(segment.samples);
             }
 
             if (phaseComp) {
@@ -100,48 +100,11 @@ namespace OpenUtau.Classic {
             var phraseSamples = new float[0];
             foreach (var segment in segments) {
                 Array.Resize(ref phraseSamples, segment.posSamples + segment.correction + segment.samples.Length - segment.skipSamples);
-                ApplyEnvelope(segment.samples, segment.envelope);
                 for (int i = Math.Max(0, -segment.skipSamples); i < segment.samples.Length - segment.skipSamples; i++) {
                     phraseSamples[segment.posSamples + segment.correction + i] += segment.samples[segment.skipSamples + i];
                 }
             }
             return phraseSamples;
-        }
-
-        private static void ApplyEnvelope(float[] data, IList<Vector2> envelope) {
-            int nextPoint = 0;
-            for (int i = 0; i < data.Length; ++i) {
-                while (nextPoint < envelope.Count && i > envelope[nextPoint].X) {
-                    nextPoint++;
-                }
-                float gain;
-                if (nextPoint == 0) {
-                    gain = envelope.First().Y;
-                } else if (nextPoint >= envelope.Count) {
-                    gain = envelope.Last().Y;
-                } else {
-                    var p0 = envelope[nextPoint - 1];
-                    var p1 = envelope[nextPoint];
-                    if (p0.X >= p1.X) {
-                        gain = p0.Y;
-                    } else {
-                        gain = p0.Y + (p1.Y - p0.Y) * (i - p0.X) / (p1.X - p0.X);
-                    }
-                }
-                data[i] *= gain;
-            }
-        }
-
-        private static IList<Vector2> EnvelopeMsToSamples(IList<Vector2> envelope, int skipOverSamples) {
-            envelope = new List<Vector2>(envelope);
-            double shift = -envelope[0].X;
-            for (var i = 0; i < envelope.Count; i++) {
-                var point = envelope[i];
-                point.X = (float)((point.X + shift) * 44100 / 1000) + skipOverSamples;
-                point.Y /= 100;
-                envelope[i] = point;
-            }
-            return envelope;
         }
 
         private float[] GetHeadWindow(float[] samples, IList<Vector2> envelope, out int windowStart) {
