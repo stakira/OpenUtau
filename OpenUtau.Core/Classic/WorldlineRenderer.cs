@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
+using NumSharp;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using static NetMQ.NetMQSelector;
 
 namespace OpenUtau.Classic {
     public class WorldlineRenderer : IRenderer {
@@ -28,6 +30,7 @@ namespace OpenUtau.Classic {
             Ustx.BREC,
             Ustx.TENC,
             Ustx.VOIC,
+            Ustx.DIR,
         };
 
         public USingerType SingerType => USingerType.Classic;
@@ -83,6 +86,7 @@ namespace OpenUtau.Classic {
                     var voicing = SampleCurve(phrase, phrase.voicing, 1.0, frames, x => 0.01 * x);
                     phraseSynth.SetCurves(f0, gender, tension, breathiness, voicing);
                     result.samples = phraseSynth.Synth();
+                    AddDirects(phrase, resamplerItems, result);
                     var source = new WaveSource(0, 0, 0, 1);
                     source.SetSamples(result.samples);
                     WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
@@ -112,6 +116,30 @@ namespace OpenUtau.Classic {
                 }
             }
             return result;
+        }
+
+        private static void AddDirects(RenderPhrase phrase, List<ResamplerItem> resamplerItems, RenderResult result) {
+            foreach (var item in resamplerItems) {
+                if (!item.phone.direct) {
+                    continue;
+                }
+                double posMs = item.phone.positionMs - item.phone.leadingMs - (phrase.positionMs - phrase.leadingMs);
+                int startPhraseIndex = (int)(posMs / 1000 * 44100);
+                using (var waveStream = Wave.OpenFile(item.phone.oto.File)) {
+                    if (waveStream == null) {
+                        continue;
+                    }
+                    float[] samples = Wave.GetSamples(waveStream!.ToSampleProvider().ToMono(1, 0));
+                    int offset = (int)(item.phone.oto.Offset / 1000 * 44100);
+                    int cutoff = (int)(item.phone.oto.Cutoff / 1000 * 44100);
+                    int length = cutoff >= 0 ? (samples.Length - offset - cutoff) : -cutoff;
+                    samples = samples.Skip(offset).Take(length).ToArray();
+                    item.ApplyEnvelope(samples);
+                    for (int i = 0; i < Math.Min(samples.Length, result.samples.Length - startPhraseIndex); ++i) {
+                        result.samples[startPhraseIndex + i] = samples[i];
+                    }
+                }
+            }
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {

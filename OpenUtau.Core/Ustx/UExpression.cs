@@ -65,7 +65,7 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
-        public override string ToString() => name;
+        public override string ToString() => $"{abbr.ToUpper()}: {name}";
     }
 
     public class UExpression {

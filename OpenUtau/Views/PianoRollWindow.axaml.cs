@@ -87,6 +87,12 @@ namespace OpenUtau.App.Views {
             ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowPortrait));
             MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
         }
+        void OnMenuShowIcon(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowIcon = !Preferences.Default.ShowIcon;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowIcon));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
+        }
         void OnMenuShowGhostNotes(object sender, RoutedEventArgs args) {
             Preferences.Default.ShowGhostNotes = !Preferences.Default.ShowGhostNotes;
             Preferences.Save();

@@ -458,7 +458,7 @@ namespace OpenUtau.App.ViewModels {
             lock (portraitLock) {
                 Avatar?.Dispose();
                 Avatar = null;
-                if (singer != null && singer.AvatarData != null) {
+                if (singer != null && singer.AvatarData != null && Preferences.Default.ShowIcon) {
                     try {
                         using (var stream = new MemoryStream(singer.AvatarData)) {
                             Avatar = new Bitmap(stream);

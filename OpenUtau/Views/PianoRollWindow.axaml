@@ -200,6 +200,11 @@
                   <CheckBox IsChecked="{Binding ShowPortrait}" />
                 </MenuItem.Icon>
               </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.appearance.showicon}" Click="OnMenuShowIcon">
+                <MenuItem.Icon>
+                  <CheckBox IsChecked="{Binding ShowIcon}" />
+                </MenuItem.Icon>
+              </MenuItem>
               <MenuItem Header="{DynamicResource prefs.appearance.showghostnotes}" Click="OnMenuShowGhostNotes">
                 <MenuItem.Icon>
                   <CheckBox IsChecked="{Binding ShowGhostNotes}" />
@@ -457,7 +462,7 @@
                          TextAlignment="Right" FontSize="10" FontFamily="monospace"
                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
+                <ContextMenu Name="SnapDivMenu" PlacementMode="BottomEdgeAlignedLeft" ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
                   <ContextMenu.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
                       <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
@@ -471,7 +476,7 @@
                           TextAlignment="Right" FontSize="10" FontFamily="monospace"
                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="KeyMenu" PlacementMode="Bottom" ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown">
+                <ContextMenu Name="KeyMenu" PlacementMode="BottomEdgeAlignedLeft" ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown">
                   <ContextMenu.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
                       <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>

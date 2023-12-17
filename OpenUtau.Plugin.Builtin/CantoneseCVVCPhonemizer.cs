@@ -1,16 +1,21 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Classic;
-using OpenUtau.Core;
+using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
-    public class ChineseCVVCPhonemizer : BaseChinesePhonemizer {
+    /// <summary>
+    /// Cantonese CVVC phonemizer.
+    /// It works similarly to the Chinese CVVC phonemizer, including presamp.ini requirement.
+    /// The big difference is that it converts hanzi to jyutping instead of pinyin.
+    /// </summary>
+    [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", "Lotte V", language: "ZH-YUE")]
+    public class CantoneseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
         private USinger singer;
@@ -219,6 +224,60 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } catch (Exception e) {
                 Log.Error(e, "failed to load presamp.ini");
+            }
+        }
+
+        /// <summary>
+        /// Converts hanzi notes to jyutping phonemes.
+        /// </summary>
+        /// <param name="groups"></param>
+        public override void SetUp(Note[][] groups) {
+            JyutpingConversion.RomanizeNotes(groups);
+        }
+
+        /// <summary>
+        /// Converts hanzi to jyutping, based on G2P.
+        /// </summary>
+        public class JyutpingConversion {
+            public static Note[] ChangeLyric(Note[] group, string lyric) {
+                var oldNote = group[0];
+                group[0] = new Note {
+                    lyric = lyric,
+                    phoneticHint = oldNote.phoneticHint,
+                    tone = oldNote.tone,
+                    position = oldNote.position,
+                    duration = oldNote.duration,
+                    phonemeAttributes = oldNote.phonemeAttributes,
+                };
+                return group;
+            }
+
+            public static string[] Romanize(IEnumerable<string> lyrics) {
+                var lyricsArray = lyrics.ToArray();
+                var hanziLyrics = lyricsArray
+                    .Where(ZhG2p.CantoneseInstance.IsHanzi)
+                    .ToList();
+                var jyutpingResult = ZhG2p.CantoneseInstance.Convert(hanziLyrics, false, false).ToLower().Split();
+                if (jyutpingResult == null) {
+                    return lyricsArray;
+                }
+                var jyutpingIndex = 0;
+                for (int i = 0; i < lyricsArray.Length; i++) {
+                    if (lyricsArray[i].Length == 1 && ZhG2p.CantoneseInstance.IsHanzi(lyricsArray[i])) {
+                        lyricsArray[i] = jyutpingResult[jyutpingIndex];
+                        jyutpingIndex++;
+                    }
+                }
+                return lyricsArray;
+            }
+
+            public static void RomanizeNotes(Note[][] groups) {
+                var ResultLyrics = Romanize(groups.Select(group => group[0].lyric));
+                Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
+            }
+
+            public void SetUp(Note[][] groups) {
+                RomanizeNotes(groups);
             }
         }
     }
