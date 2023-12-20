@@ -111,7 +111,7 @@
   <system:String x:Key="menu.file.exportds.v2">다른 이름으로 DiffSinger 스크립트 내보내기 (v2)</system:String>
   <system:String x:Key="menu.file.exportds.v2withoutpitch">다른 이름으로 DiffSinger 스크립트 내보내기 (v2, 피치 벤드 제외)</system:String>
   <system:String x:Key="menu.file.exportmidi">Midi로 내보내기</system:String>
-  <system:String x:Key="menu.file.exportmixdown">모두 합쳐 Wav로 내보내기</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Wav 파일로 믹스다운</system:String>
   <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
   <system:String x:Key="menu.file.exportust">Ust 파일 여러 개로 내보내기</system:String>
   <system:String x:Key="menu.file.exportustto">Ust 파일 여러 개를 다른 이름으로 내보내기...</system:String>
