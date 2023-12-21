@@ -63,6 +63,7 @@ namespace OpenUtau.Core.Render {
         public readonly float volume;
         public readonly float velocity;
         public readonly float modulation;
+        public readonly bool direct;
         public readonly Vector2[] envelope;
 
         public readonly UOto oto;
@@ -109,12 +110,13 @@ namespace OpenUtau.Core.Render {
             flags = phoneme.GetResamplerFlags(project, track);
             string voiceColor = phoneme.GetVoiceColor(project, track);
             suffix = track.Singer.Subbanks.FirstOrDefault(
-                subbank => subbank.Color == voiceColor)?.Suffix;
+                subbank => subbank.Color == voiceColor)?.Suffix ?? string.Empty;
             volume = phoneme.GetExpression(project, track, Format.Ustx.VOL).Item1 * 0.01f;
             velocity = phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 * 0.01f;
             modulation = phoneme.GetExpression(project, track, Format.Ustx.MOD).Item1 * 0.01f;
             leadingMs = phoneme.preutter;
             envelope = phoneme.envelope.data.ToArray();
+            direct = phoneme.GetExpression(project, track, Format.Ustx.DIR).Item1 == 1;
 
             oto = phoneme.oto;
             hash = Hash();
@@ -134,10 +136,11 @@ namespace OpenUtau.Core.Render {
                             writer.Write(flag.Item2.Value);
                         }
                     }
-                    writer.Write(suffix ?? string.Empty);
+                    writer.Write(suffix);
                     writer.Write(volume);
                     writer.Write(velocity);
                     writer.Write(modulation);
+                    writer.Write(direct);
                     writer.Write(leadingMs);
                     foreach (var point in envelope) {
                         writer.Write(point.X);
