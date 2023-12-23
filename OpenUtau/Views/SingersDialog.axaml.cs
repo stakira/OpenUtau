@@ -348,6 +348,10 @@ namespace OpenUtau.App.Views {
         }
 
         Tuple<int, double[]>? LoadF0(string wavPath) {
+            if(String.IsNullOrEmpty(wavPath)){
+                //If the wav path is null (machine learning voicebank), return null.
+                return null;
+            }
             string frqFile = Classic.VoicebankFiles.GetFrqFile(wavPath);
             if (!File.Exists(frqFile)) {
                 return null;
@@ -421,7 +425,13 @@ namespace OpenUtau.App.Views {
         #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is OtoChangedNotification otoChanged) {
+            if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(SingersDialog)) {
+                if (loadingNotif.startLoading) {
+                    MessageBox.ShowLoading(this);
+                } else {
+                    MessageBox.CloseLoading();
+                }
+            } else if (cmd is OtoChangedNotification otoChanged) {
                 var viewModel = DataContext as SingersViewModel;
                 if (viewModel == null) {
                     return;

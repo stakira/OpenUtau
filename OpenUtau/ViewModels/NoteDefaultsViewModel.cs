@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -165,6 +166,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.PortamentoPresets.Add(new NotePresets.PortamentoPreset(name, CurrentPortamentoLength, CurrentPortamentoStart));
             NotePresets.Save();
+            DocManager.Inst.ExecuteCmd(new NotePresetChangedNotification());
         }
 
         public void RemoveAppliedPortamentoPreset() {
@@ -173,6 +175,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.PortamentoPresets.Remove(appliedPortamentoPreset);
             NotePresets.Save();
+            DocManager.Inst.ExecuteCmd(new NotePresetChangedNotification());
         }
 
         public void SaveVibratoPreset(string name) {
@@ -181,6 +184,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, CurrentVibratoLength, CurrentVibratoPeriod, CurrentVibratoDepth, CurrentVibratoIn, CurrentVibratoOut, CurrentVibratoShift, CurrentVibratoDrift, CurrentVibratoVolLink));
             NotePresets.Save();
+            DocManager.Inst.ExecuteCmd(new NotePresetChangedNotification());
         }
 
         public void RemoveAppliedVibratoPreset() {
@@ -189,6 +193,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.VibratoPresets.Remove(appliedVibratoPreset);
             NotePresets.Save();
+            DocManager.Inst.ExecuteCmd(new NotePresetChangedNotification());
         }
 
         public void ResetSettings() {

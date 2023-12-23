@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -20,7 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// 
 
-        private readonly string[] vowels = "a,6,e,E,2,i,I,y,Y,u,U,o,O,@,aU,OY,aI".Split(',');
+        private readonly string[] vowels = "a,6,e,E,2,9,i,I,y,Y,u,U,o,O,@,aU,OY,aI".Split(',');
         private readonly string[] consonants = "-,b,C,d,f,g,h,j,k,kh,l,m,n,N,p,ph,R;,s,S,t,th,v,x,z,Z,dZ,ks,pf,st,St,tS,w".Split(',');
         private readonly string[] longConsonants = "k,kh,p,ph,s,S,t,th,dZ,ks,pf,st,St,tS".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=a,ae=E,ah=@,ao=O,aw=aU,ax=@,ay=aI," +
@@ -429,14 +425,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in longConsonants) {
-                foreach (var v in vowels) {
-                    foreach (var cc in consonants) {
-                        if (alias.Contains(" " + c) || alias.Contains(v + c) || alias.Contains(cc + c)) {
-                            return base.GetTransitionBasicLengthMs() * 2.0;
-                        }
-                    }
+                if (alias.Contains(c)) {
+                    return base.GetTransitionBasicLengthMs() * 2.0;
                 }
-
             }
             return base.GetTransitionBasicLengthMs();
         }

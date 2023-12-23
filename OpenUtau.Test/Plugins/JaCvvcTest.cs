@@ -18,11 +18,6 @@ namespace OpenUtau.Plugins {
             new string[] { "", "", "弱", "" },
             new string[] { "- あ_C4", "a あ_弱C4", "-" })]
         [InlineData("ja_cvvc",
-            new string[] { "お", "にょ", "ひょ", "みょ", "びょ", "ぴょ", "りょ" },
-            new string[] { "A3", "C4", "D4", "E4", "F4", "G3", "F3" },
-            new string[] { "", "弱", "", "", "強", "", "" },
-            new string[] { "- お_A3", "o ny_A3", "にょ_弱C4", "o hy_弱C4", "ひょ_C4", "o my_C4", "みょ_F4", "o by_F4", "びょ_強F4", "o py_強F4", "ぴょ_A3", "o ry_A3", "りょ_A3" })]
-        [InlineData("ja_cvvc",
             new string[] { "ラ", "リ", "ル", "ら" },
             new string[] { "C4", "C4", "C4", "C4" },
             new string[] { "", "", "", "" },
@@ -34,6 +29,30 @@ namespace OpenUtau.Plugins {
             new string[] { "が_A3", "a g_A3", "が_C4", "a v_C4", "ヴ_C4", "u v_C4", "ヴ_F4" })]
         public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
+        }
+
+        [Fact]
+        public void ColorTest() {
+            RunPhonemizeTest("ja_cvvc", new NoteParams[] { 
+               new NoteParams {
+                   lyric = "あ",
+                   hint = "",
+                   tone = "C4",
+                   phonemes = new PhonemeParams[] {
+                       new PhonemeParams {
+                           alt = 0,
+                           shift = 0,
+                           color = "",
+                       },
+                       new PhonemeParams {
+                           alt = 0,
+                           shift = 0,
+                           color = "強",
+                       }
+                   }
+               },
+               new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            }, new string[] { "- あ_C4", "a k_強B3", "か_C4" });
         }
     }
 }

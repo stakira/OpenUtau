@@ -169,6 +169,88 @@
         <Border>
           <Menu Grid.Column="1" Grid.Row="0" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
                 Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
+            <Menu.Styles>
+              <Style Selector="CheckBox">
+                <Setter Property="IsHitTestVisible" Value="False" />
+                <Style Selector="^:unchecked /template/ Border#NormalRectangle">
+                  <Setter Property="BorderThickness" Value="0" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="^:checked /template/ Path#CheckGlyph">
+                  <Setter Property="Fill" Value="{DynamicResource SelectedTrackAccentBrush}" />
+                  <Setter Property="Width" Value="12" />
+                </Style>
+                <Style Selector="^:checked /template/ Border#NormalRectangle">
+                  <Setter Property="BorderThickness" Value="0" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+              </Style>
+            </Menu.Styles>
+            
+            <MenuItem Header="{DynamicResource menu.view}">
+              <MenuItem Header="{DynamicResource prefs.appearance.showportrait}" Click="OnMenuShowPortrait">
+                <MenuItem.Icon>
+                  <CheckBox IsChecked="{Binding ShowPortrait}" />
+                </MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.appearance.showghostnotes}" Click="OnMenuShowGhostNotes">
+                <MenuItem.Icon>
+                  <CheckBox IsChecked="{Binding ShowGhostNotes}" />
+                </MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.appearance.trackcolor}" Click="OnMenuUseTrackColor">
+                <MenuItem.Icon>
+                  <CheckBox IsChecked="{Binding UseTrackColor}" />
+                </MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.appearance.degree}">
+                <MenuItem Header="{DynamicResource prefs.appearance.degree.off}" Click="OnMenuDegreeStyle" Tag="0">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding DegreeStyle0}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.appearance.degree.solfege}" Click="OnMenuDegreeStyle" Tag="1">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding DegreeStyle1}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.appearance.degree.numbered}" Click="OnMenuDegreeStyle" Tag="2">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding DegreeStyle2}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.playback.lockstarttime}">
+                <MenuItem Header="{DynamicResource prefs.playback.lockstarttime.off}" Click="OnMenuLockStartTime" Tag="0">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding !LockStartTime}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.playback.lockstarttime.on}" Click="OnMenuLockStartTime" Tag="1">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockStartTime}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource prefs.playback.autoscroll}">
+                <MenuItem Header="{DynamicResource prefs.off}" Click="OnMenuPlaybackAutoScroll" Tag="0">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding PlaybackAutoScroll0}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.playback.autoscrollmode.stationarycursor}" Click="OnMenuPlaybackAutoScroll" Tag="1">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding PlaybackAutoScroll1}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.playback.autoscrollmode.pagescroll}" Click="OnMenuPlaybackAutoScroll" Tag="2">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding PlaybackAutoScroll2}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+            </MenuItem>
+
             <MenuItem Header="{DynamicResource pianoroll.menu.part}">
               <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" Click="OnMenuSearchNote"/>

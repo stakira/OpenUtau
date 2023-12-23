@@ -55,7 +55,7 @@ namespace OpenUtau.Classic {
             var task = Task.Run(() => {
                 var result = Layout(phrase);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
-                string progressInfo = $"Track {trackNo}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
+                string progressInfo = $"Track {trackNo + 1}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
                 progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
                     try {
