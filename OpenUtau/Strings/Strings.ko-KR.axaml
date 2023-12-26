@@ -3,25 +3,25 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.note.copy">노트 복사</system:String>
-  <system:String x:Key="context.note.delete">노트 지우기</system:String>
+  <system:String x:Key="context.note.delete">노트 삭제</system:String>
   <system:String x:Key="context.note.pasteparameters">선택하고 파라미터 붙여넣기</system:String>
-  <system:String x:Key="context.part.delete">파트 지우기</system:String>
+  <system:String x:Key="context.part.delete">파트 삭제</system:String>
   <system:String x:Key="context.part.gotofile">파일 위치 열기</system:String>
   <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
-  <system:String x:Key="context.part.replaceaudio">오디오 파일 변경</system:String>
+<system:String x:Key="context.part.replaceaudio">오디오 파일 교체</system:String>
   <system:String x:Key="context.part.transcribe">소리를 노트 파트로 변환</system:String>
   <system:String x:Key="context.part.transcribing">변환 중</system:String>
-  <system:String x:Key="context.pitch.easein">Ease in 곡선</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out 곡선</system:String>
-  <system:String x:Key="context.pitch.easeout">Ease out 곡선</system:String>
-  <system:String x:Key="context.pitch.linear">선형</system:String>
+  <system:String x:Key="context.pitch.easein">Ease in</system:String>
+  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
+  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
+  <system:String x:Key="context.pitch.linear">Linear</system:String>
   <system:String x:Key="context.pitch.pointadd">피치 점 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">피치 점 삭제</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트에 물리기</system:String>
   <system:String x:Key="context.timeline.addtempo">{0}에서 템포 변경</system:String>
   <system:String x:Key="context.timeline.addtimesig">박자표 변경</system:String>
-  <system:String x:Key="context.timeline.deltempo">{0}에서 바뀐 템포 지우기</system:String>
-  <system:String x:Key="context.timeline.deltimesig">바뀐 박자표 지우기</system:String>
+  <system:String x:Key="context.timeline.deltempo">{0}에서 변경된 템포 삭제</system:String>
+  <system:String x:Key="context.timeline.deltimesig">변경된 박자표 삭제</system:String>
 
   <system:String x:Key="debug.clear">비우기</system:String>
   <system:String x:Key="debug.copylog">로그 복사</system:String>
@@ -29,16 +29,16 @@
 
   <system:String x:Key="dialogs.about.caption">OpenUTAU란?</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtau(오픈 우타우)는 UTAU(우타우) 커뮤니티를 위한 오픈 소스 에디팅 환경으로, 세련된 사용자 경험과 폭넓은 음운 지원을 제공합니다. 지금 GitHub에서 OpenUtau 레포지토리를 방문해 보세요.
+    OpenUtau(오픈우타우)는 세련된 사용자 경험과 유연한 음운 지원을 통해, UTAU 커뮤니티를 위한 오픈 소스 편집 환경이 되고자 합니다. 지금 GitHub의 OpenUtau 레포지토리를 방문해 보세요.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">프로젝트 닫기</system:String>
-  <system:String x:Key="dialogs.exitsave.message">프로젝트 파일이 저장되지 않았습니다. 저장할까요?</system:String>
+  <system:String x:Key="dialogs.exitsave.message">프로젝트가 저장되지 않았습니다. 저장할까요?</system:String>
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
-  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해야 합니다</system:String>
-  <system:String x:Key="dialogs.installdependency.caption">의존 요소 설치 중…</system:String>
-  <system:String x:Key="dialogs.installdependency.message">설치 중…</system:String>
-  <system:String x:Key="dialogs.installdll.caption">음소화기 설치 중…</system:String>
-  <system:String x:Key="dialogs.installdll.message">설치 중…</system:String>
+  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해 주세요</system:String>
+  <system:String x:Key="dialogs.installdependency.caption">의존 요소 설치 중</system:String>
+  <system:String x:Key="dialogs.installdependency.message">설치 중</system:String>
+  <system:String x:Key="dialogs.installdll.caption">음소화기 설치 중</system:String>
+  <system:String x:Key="dialogs.installdll.message">설치 중</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">취소</system:String>
   <system:String x:Key="dialogs.messagebox.copy">클립보드에 오류 복사</system:String>
   <system:String x:Key="dialogs.messagebox.no">아니요</system:String>
@@ -69,7 +69,7 @@
   <system:String x:Key="exps.minvalue">최솟값</system:String>
   <system:String x:Key="exps.name">이름</system:String>
   <system:String x:Key="exps.optionvalues">선택형 값</system:String>
-  <system:String x:Key="exps.sepbycomma">쉼표(,)로 값을 구분할 수 있습니다</system:String>
+  <system:String x:Key="exps.sepbycomma">값은 쉼표(,)로 구분합니다</system:String>
   <system:String x:Key="exps.type">유형</system:String>
   <system:String x:Key="exps.type.curve">커브형</system:String>
   <system:String x:Key="exps.type.numerical">숫자형</system:String>
@@ -80,7 +80,7 @@
   <system:String x:Key="lyrics.caption">가사 편집하기</system:String>
   <system:String x:Key="lyrics.livepreview">실시간 노트 미리보기</system:String>
   <system:String x:Key="lyrics.max">최대</system:String>
-  <system:String x:Key="lyrics.reset">재설정</system:String>
+  <system:String x:Key="lyrics.reset">초기화</system:String>
   <system:String x:Key="lyrics.selectnotes">먼저 원하는 노트를 선택해 주세요!</system:String>
   <system:String x:Key="lyrics.separators">구분 기준</system:String>
 
@@ -93,13 +93,13 @@
   <system:String x:Key="lyricsreplace.preset.rmvtone">음계 접미사 지우기</system:String>
   <system:String x:Key="lyricsreplace.presets">프리셋</system:String>
   <system:String x:Key="lyricsreplace.preview">미리보기</system:String>
-  <system:String x:Key="lyricsreplace.regex">정규표현식 사용</system:String>
+  <system:String x:Key="lyricsreplace.regex">정규식 사용 가능</system:String>
   <system:String x:Key="lyricsreplace.replace">가사 일괄 수정</system:String>
 
   <system:String x:Key="menu.edit">편집</system:String>
   <system:String x:Key="menu.edit.copy">복사</system:String>
   <system:String x:Key="menu.edit.cut">잘라내기</system:String>
-  <system:String x:Key="menu.edit.delete">지우기</system:String>
+  <system:String x:Key="menu.edit.delete">삭제</system:String>
   <system:String x:Key="menu.edit.paste">붙여넣기</system:String>
   <system:String x:Key="menu.edit.redo">다시 실행</system:String>
   <system:String x:Key="menu.edit.selectall">모두 선택</system:String>
@@ -113,17 +113,17 @@
   <system:String x:Key="menu.file.exportmidi">Midi로 내보내기</system:String>
   <system:String x:Key="menu.file.exportmixdown">Wav 파일로 믹스다운</system:String>
   <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
-  <system:String x:Key="menu.file.exportust">Ust 파일 여러 개로 내보내기</system:String>
-  <system:String x:Key="menu.file.exportustto">Ust 파일 여러 개를 다른 이름으로 내보내기...</system:String>
-  <system:String x:Key="menu.file.exportwav">Wav 파일 여러 개로 내보내기</system:String>
-  <system:String x:Key="menu.file.exportwavto">Wav 파일 여러 개를 다른 이름으로 내보내기...</system:String>
+  <system:String x:Key="menu.file.exportust">개별 트랙 Ust로 내보내기</system:String>
+  <system:String x:Key="menu.file.exportustto">다른 이름으로 개별 트랙 Ust로 내보내기...</system:String>
+  <system:String x:Key="menu.file.exportwav">개별 트랙 Wav로 내보내기</system:String>
+  <system:String x:Key="menu.file.exportwavto">다른 이름으로 개별 트랙 Wav로 내보내기...</system:String>
   <system:String x:Key="menu.file.importaudio">오디오 가져오기...</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기...</system:String>
   <system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi로 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi.naudio">Naudio로 가져오기</system:String>
   <system:String x:Key="menu.file.importtracks">여러 트랙 가져오기...</system:String>
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
-  <system:String x:Key="menu.file.newfromtemplate">템플릿 파일로 새로 만들기</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">템플릿 파일에서 새로 만들기</system:String>
   <system:String x:Key="menu.file.open">열기...</system:String>
   <system:String x:Key="menu.file.openas">다른 이름으로 열기...</system:String>
   <system:String x:Key="menu.file.openexportlocation">내보내기 위치 열기</system:String>
@@ -167,14 +167,14 @@
   <system:String x:Key="notedefaults.preset.remove.tooltip">마지막 프리셋을 삭제합니다.</system:String>
   <system:String x:Key="notedefaults.preset.save">프리셋 저장</system:String>
   <system:String x:Key="notedefaults.preset.save.tooltip">현재 세팅으로 새 프리셋 추가</system:String>
-  <system:String x:Key="notedefaults.reset">모든 설정 초기화</system:String>
-  <system:String x:Key="notedefaults.reset.tooltip">모든 설정을 기본값으로 설정합니다.
-주의: 사용자가 만들어 둔 프리셋이 전부 사라집니다.</system:String>
+  <system:String x:Key="notedefaults.reset">사용자 설정 초기화</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">모든 설정 항목을 기본값으로 복구합니다.
+경고: 내 커스텀 프리셋이 전부 사라져요. </system:String>
   <system:String x:Key="notedefaults.vibrato">비브라토</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">최소 노트 길이</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">길이에 따라 비브라토 자동 적용</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">깊이</system:String>
-  <system:String x:Key="notedefaults.vibrato.drift">드리프트(상하 이동)</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">음정 드리프트</system:String>
   <system:String x:Key="notedefaults.vibrato.in">페이드 인</system:String>
   <system:String x:Key="notedefaults.vibrato.length">길이</system:String>
   <system:String x:Key="notedefaults.vibrato.out">페이드 아웃</system:String>
@@ -203,7 +203,7 @@
   <system:String x:Key="oto.file">파일</system:String>
   <system:String x:Key="oto.offset">오프셋</system:String>
   <system:String x:Key="oto.overlap">오버랩(OVL)</system:String>
-  <system:String x:Key="oto.phonetic">음성 기호</system:String>
+  <system:String x:Key="oto.phonetic">음성기호</system:String>
   <system:String x:Key="oto.prefix">접두사</system:String>
   <system:String x:Key="oto.preutter">선행 발성(PRE)</system:String>
   <system:String x:Key="oto.set">폴더</system:String>
@@ -237,7 +237,7 @@
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링된 피치 커브 불러오기</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">한 옥타브 아래로</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">한 옥타브 위로</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">1/128 퀀타이즈</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 퀀타이즈</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 퀀타이즈</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">끝에 '-' 노트 지우기</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">끝에 'R' 노트 지우기</system:String>
