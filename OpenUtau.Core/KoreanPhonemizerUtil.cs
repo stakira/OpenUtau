@@ -1107,6 +1107,14 @@ namespace OpenUtau.Core {
                 else{nextNote_ = null;}
             
                 string lyric = "";
+
+                if (! IsHangeul(currentNote[0].lyric)){
+                    ResultLyrics.Add(currentNote[0].lyric);
+                    prevNote = currentNote;            
+                    noteIdx++;
+                    continue;
+                }
+
                 Hashtable lyricSeparated = Variate(prevNote_, currentNote[0], nextNote_);
                 lyric += firstConsonants[(string)lyricSeparated[3]][0];
                 if (vowels[(string)lyricSeparated[4]][1] != "") {
