@@ -439,6 +439,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public void AdjustPos(Phoneme[] phonemes, Note[] prevNote){
+            //TODO
             Phoneme? prevPhone = null;
             Phoneme? nextPhone = null;
             Phoneme currPhone;
@@ -462,7 +463,7 @@ namespace OpenUtau.Core.Enunu {
                 }
 
                 if (i == 0){
-                    // 받침 + 자음 오면 받침길이 + 자음길이 / 2의 위치에 자음이 오도록 하기
+                    // TODO 받침 + 자음 오면 받침길이 + 자음길이 / 2의 위치에 자음이 오도록 하기
                     if (isPlainVowel(phonemes[i].phoneme)) {
                         phonemes[i].position = 0;
                     }
