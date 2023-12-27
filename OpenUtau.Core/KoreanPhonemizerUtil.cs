@@ -287,6 +287,10 @@ namespace OpenUtau.Core {
                     firstLastConsonant = "ㅂ";
                     nextFirstConsonant = "ㅅ";
                 } 
+                else if (firstLastConsonant.Equals("ㄻ")) {
+                    firstLastConsonant = "ㄹ";
+                    nextFirstConsonant = "ㅁ";
+                } 
                 else if (firstLastConsonant.Equals("ㅇ") && nextFirstConsonant.Equals("ㅇ")) {
                     // Do nothing
                 } 
@@ -1063,7 +1067,7 @@ namespace OpenUtau.Core {
             return group;
         }
 
-        public static void RomanizeNotes(Note[][] groups, Dictionary<string, string[]> firstConsonants, Dictionary<string, string[]> vowels, Dictionary<string, string[]> lastConsonants) {
+        public static void RomanizeNotes(Note[][] groups, Dictionary<string, string[]> firstConsonants, Dictionary<string, string[]> vowels, Dictionary<string, string[]> lastConsonants, string semivowelSeparator=" ") {
             // for ENUNU Phonemizer
             
             int noteIdx = 0;
@@ -1105,9 +1109,17 @@ namespace OpenUtau.Core {
                 string lyric = "";
                 Hashtable lyricSeparated = Variate(prevNote_, currentNote[0], nextNote_);
                 lyric += firstConsonants[(string)lyricSeparated[3]][0];
-                lyric += vowels[(string)lyricSeparated[4]][0];
+                if (vowels[(string)lyricSeparated[4]][1] != "") {
+                    // this vowel contains semivowel
+                    lyric += semivowelSeparator + vowels[(string)lyricSeparated[4]][1] + vowels[(string)lyricSeparated[4]][2];
+                }
+                else{
+                    lyric += " " + vowels[(string)lyricSeparated[4]][2];
+                }
+                
                 lyric += lastConsonants[(string)lyricSeparated[5]][0];
-                ResultLyrics.Add(lyric);
+
+                ResultLyrics.Add(lyric.Trim());
 
                 prevNote = currentNote;
                 
@@ -1116,7 +1128,7 @@ namespace OpenUtau.Core {
             Enumerable.Zip(groups, ResultLyrics.ToArray(), ChangeLyric).Last();
         }
 
-        /// <summary>
+    /// <summary>
     /// abstract class for BaseIniManager(https://github.com/Enichan/Ini/blob/master/Ini.cs)
     /// <para>
     /// Note: This class will be NOT USED when implementing child korean phonemizers. This class is only for BaseIniManager.
