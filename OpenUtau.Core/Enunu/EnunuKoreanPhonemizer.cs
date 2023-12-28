@@ -181,7 +181,7 @@ namespace OpenUtau.Core.Enunu {
 
             this.singer = singer as EnunuSinger;
 
-            koreanENUNUSetting = new KoreanENUNUSetting("ko-ENUNU.yaml");
+            koreanENUNUSetting = new KoreanENUNUSetting("jamo_dict.yaml");
             
             koreanENUNUSetting.Initialize(singer, "ko-ENUNU.ini", new Hashtable(){
                 {
@@ -285,7 +285,7 @@ namespace OpenUtau.Core.Enunu {
 
         }
         private class KoreanENUNUSetting : KoreanPhonemizerUtil.BaseIniManager{
-            // uses KO-ENUNU.ini, KO-ENUNU.yaml
+            // uses KO-ENUNU.ini, jamo_dict.yaml
             public bool isSeparateSemiVowels;
             public string yamlFileName;
             private KoreanPhonemizerUtil.JamoDictionary jamoDict;
@@ -293,7 +293,7 @@ namespace OpenUtau.Core.Enunu {
                 this.yamlFileName = yamlFileName;
             }
             protected override void IniSetUp(Hashtable iniFile) {
-                // ko-ENUNU.ini + ko-ENUNU.yaml
+                // ko-ENUNU.ini + jamo_dict.yaml
                 SetOrReadThisValue("SETTING", "Separate semivowels, like 'n y a'(otherwise 'ny a')", false, out var resultValue); // 반자음 떼기 유무 - 기본값 false
                 isSeparateSemiVowels = resultValue;
                 
