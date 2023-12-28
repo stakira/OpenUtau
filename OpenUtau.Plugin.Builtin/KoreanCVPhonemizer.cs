@@ -22,48 +22,49 @@ namespace OpenUtau.Plugin.Builtin {
             this.singer = singer;
             if (this.singer == null) {return;}
 
+            if (this.singer.SingerType != USingerType.Classic){return;}
+
             koreanCVIniSetting = new KoreanCVIniSetting();
-            koreanCVIniSetting.Initialize(singer, "ko-CV.ini");
+            koreanCVIniSetting.Initialize(singer, "ko-CV.ini", new Hashtable(){
+                {"CV", new Hashtable(){
+                    {"Use rentan", false},
+                    {"Use 'shi' for '시'(otherwise 'si')", false},
+                    {"Use 'i' for '의'(otherwise 'eui')", false},
+                    {"Use 'aX' instead of 'a X'", false}
+                }},
+                {"BATCHIM", new Hashtable(){
+                    {"Use 'aX' instead of 'a X'", false}
+                }}
+            });
 
-            isUsingShi = koreanCVIniSetting.IsUsingShi();
-            isUsing_aX = koreanCVIniSetting.IsUsing_aX();
-            isUsing_i = koreanCVIniSetting.IsUsing_i();
-            isRentan = koreanCVIniSetting.IsRentan();
+            isUsingShi = koreanCVIniSetting.isUsingShi;
+            isUsing_aX = koreanCVIniSetting.isUsing_aX;
+            isUsing_i = koreanCVIniSetting.isUsing_i;
+            isRentan = koreanCVIniSetting.isRentan;
         }
-
-
-
 
         private class KoreanCVIniSetting : BaseIniManager{
-            protected override void IniSetUp(IniFile iniFile) {
+            public bool isRentan;
+            public bool isUsingShi;
+            public bool isUsing_aX;
+            public bool isUsing_i;
+
+            protected override void IniSetUp(Hashtable iniSetting) {
                 // ko-CV.ini
-                SetOrReadThisValue("CV", "Use rentan", false); // 연단음 사용 유무 - 기본값 false
-                SetOrReadThisValue("CV", "Use 'shi' for '시'(otherwise 'si')", false); // 시를 [shi]로 표기할 지 유무 - 기본값 false
-                SetOrReadThisValue("CV", "Use 'i' for '의'(otherwise 'eui')", false); // 의를 [i]로 표기할 지 유무 - 기본값 false
-                SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
-            }
+                SetOrReadThisValue("CV", "Use rentan", false, out var resultValue); // 연단음 사용 유무 - 기본값 false
+                isRentan = resultValue;
+                
+                SetOrReadThisValue("CV", "Use 'shi' for '시'(otherwise 'si')", false, out resultValue); // 시를 [shi]로 표기할 지 유무 - 기본값 false
+                isUsingShi = resultValue;
 
-            public bool IsRentan() {
-                bool isRentan = iniFile["CV"]["Use rentan"].ToBool();
-                return isRentan;
-            }
+                SetOrReadThisValue("CV", "Use 'i' for '의'(otherwise 'eui')", false, out resultValue); // 의를 [i]로 표기할 지 유무 - 기본값 false
+                isUsing_i = resultValue;
 
-            public bool IsUsingShi() {
-                bool isUsingShi = iniFile["CV"]["Use 'shi' for '시'(otherwise 'si')"].ToBool();
-                return isUsingShi;
+                SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false, out resultValue); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
+                isUsing_aX = resultValue;
             }
-
-            public bool IsUsing_aX() {
-                bool isUsing_aX = iniFile["BATCHIM"]["Use 'aX' instead of 'a X'"].ToBool();
-                return isUsing_aX;
-            }
-
-            public bool IsUsing_i() {
-                bool isUsing_i = iniFile["CV"]["Use 'i' for '의'(otherwise 'eui')"].ToBool();
-                return isUsing_i;
-            }
-
         }
+        
         private class KOCV {
             /// <summary>
             /// First Consonant's type.
