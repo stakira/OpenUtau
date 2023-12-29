@@ -331,7 +331,7 @@ namespace OpenUtau.Plugin.Builtin {
                             if (HasOto(vr, syllable.tone) || HasOto(ValidateAlias(vr), syllable.tone)) {
                                 phonemes.Add(vr);
                             }
-                        } else if (HasOto(vcc, syllable.tone) || HasOto(ValidateAlias(vcc), syllable.tone)) {
+                        } else if ((HasOto(vcc, syllable.tone) || HasOto(ValidateAlias(vcc), syllable.tone)) && !affricates.Contains(string.Join("", cc.Take(2)))) {
                             phonemes.Add(vcc);
                             firstC = 1;
                             break;
