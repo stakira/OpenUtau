@@ -6,7 +6,13 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
-      - uses: vedantmgoyal2009/winget-releaser@v2
+      - name: Check if it's a normal release
+        run: echo "Release Type: ${{ github.event.release.prerelease }}"
+        id: check_release
+
+      - name: Publish to WinGet
+        if: steps.check_release.outputs.release_type == 'false'
+        uses: vedantmgoyal2009/winget-releaser@v2
         with:
           identifier: stakira.OpenUTAU
           installers-regex: '\.exe$' # Only .exe files
