@@ -70,7 +70,8 @@ namespace OpenUtau.App {
                 .UsePlatformDetect()
                 .LogToTrace()
                 .UseReactiveUI()
-                .With(fontOptions);
+                .With(fontOptions)
+                .With(new X11PlatformOptions {EnableIme = true});
         }
 
         public static void Run(string[] args)
