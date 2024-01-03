@@ -10,7 +10,7 @@
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Version>0.0.0</Version>
+    <Version>0.0.1</Version>
     <ApplicationIcon>Assets\open-utau.ico</ApplicationIcon>
     <PublishReadyToRun>true</PublishReadyToRun>
     <DebugType>embedded</DebugType>
@@ -20,8 +20,8 @@
     <CFBundleName>OpenUtau</CFBundleName>
     <CFBundleDisplayName>OpenUtau</CFBundleDisplayName>
     <CFBundleIdentifier>com.stakira.openutau</CFBundleIdentifier>
-    <CFBundleVersion>0.0.0</CFBundleVersion>
-    <CFBundleShortVersionString>0.0.0</CFBundleShortVersionString>
+    <CFBundleVersion>0.0.1</CFBundleVersion>
+    <CFBundleShortVersionString>0.0.1</CFBundleShortVersionString>
     <CFBundlePackageType>APPL</CFBundlePackageType>
     <CFBundleSignature>????</CFBundleSignature>
     <CFBundleExecutable>OpenUtau</CFBundleExecutable>
@@ -31,6 +31,9 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\open-utau.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />

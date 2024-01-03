@@ -47,9 +47,9 @@ namespace OpenUtau.Core.Util {
             });
             Default.VibratoPresets.AddRange(new List<VibratoPreset> {
                 new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0, 0, 0),
-                new VibratoPreset("UTAU Default", 65, 180, 35, 20, 20, 0, 0, 0),
-                new VibratoPreset("UTAU Strong", 65, 210, 55, 25, 25, 0, 0, 0),
-                new VibratoPreset("UTAU Weak", 65, 165, 20, 25, 25, 0, 0, 0)
+                new VibratoPreset("Default", 65, 180, 35, 20, 20, 0, 0, 0),
+                new VibratoPreset("Strong", 65, 210, 55, 25, 25, 0, 0, 0),
+                new VibratoPreset("Weak", 65, 165, 20, 25, 25, 0, 0, 0)
             });
 
             Save();

@@ -250,7 +250,7 @@
           </c:PartsCanvas.ContextMenu>
         </c:PartsCanvas>
         <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-                BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
+                BoxShadow="inset 0 0 25 -3 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
           <Border HorizontalAlignment="Center" VerticalAlignment="Center"
                   IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}">
             <TextBlock Text="{DynamicResource progress.waitingrendering}"/>

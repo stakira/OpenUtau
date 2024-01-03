@@ -107,15 +107,15 @@
   <SolidColorBrush x:Key="AccentBrush3Semi"
                    Color="{DynamicResource AccentColor3}" Opacity="0.5" />
   <SolidColorBrush x:Key="SelectedTrackAccentBrush"
-                   Color="#4EA6EA" />
+                   Color="#5B4EEC" />
   <SolidColorBrush x:Key="SelectedTrackAccentLightBrush"
-                   Color="#90CAF9" />
+                   Color="#9A92FB" />
   <SolidColorBrush x:Key="SelectedTrackAccentLightBrushSemi"
-                   Color="#90CAF9" Opacity="0.5"/>
+                   Color="#9A92FB" Opacity="0.5"/>
   <SolidColorBrush x:Key="SelectedTrackAccentDarkBrush"
-                   Color="#1E88E5" />
+                   Color="#2F1EE6" />
   <SolidColorBrush x:Key="SelectedTrackCenterKeyBrush"
-                   Color="#C8E5FC" />
+                   Color="#C8D6FD" />
 
   <LinearGradientBrush x:Key="WhiteKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
     <LinearGradientBrush.GradientStops>

@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Style>
     <Style.Resources>
-      <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
-      <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
+      <CornerRadius x:Key="ControlCornerRadius">5</CornerRadius>
+      <CornerRadius x:Key="OverlayCornerRadius">5</CornerRadius>
       <x:Double x:Key="MenuFlyoutThemeMinHeight">20</x:Double>
       <Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
       <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>

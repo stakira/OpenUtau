@@ -135,13 +135,13 @@ namespace OpenUtau.Core.Util {
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
-            public bool PreRender = true;
+            public bool PreRender = false;
             public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
-            public int DiffsingerSpeedup = 50;
+            public int DiffsingerSpeedup = 100;
             public int DiffSingerDepth = 1000;
             public string Language = string.Empty;
             public string SortingOrder = string.Empty;
@@ -162,7 +162,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowPortrait = true;
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
-            public bool PlayTone = true;
+            public bool PlayTone = false;
             public bool ShowVibrato = true;
             public bool ShowPitch = true;
             public bool ShowFinalPitch = true;
@@ -175,7 +175,7 @@ namespace OpenUtau.Core.Util {
             public bool LyricsHelperBrackets = false;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
-            public bool Beta = false;
+            public bool Beta = true;
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
