@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -183,7 +184,7 @@ namespace OpenUtau.App.Views {
             };
             dialog.ShowDialog(this);
         }
-
+        
         void OnMenuNoteDefaults(object sender, RoutedEventArgs args) {
             EditNoteDefaults();
         }

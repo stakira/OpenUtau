@@ -98,12 +98,6 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
-            <TextBlock Text="{DynamicResource prefs.rendering.defaultrenderer}"/>
-            <ComboBox ItemsSource="{Binding DefaultRendererOptions}" SelectedItem="{Binding DefaultRenderer}"/>
-            <Grid>
-              <TextBlock Text="{DynamicResource prefs.rendering.prerender}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding PreRender}"/>
-            </Grid>
             <Grid ColumnDefinitions="Auto,8,16,8,*">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.threads.numthreads}"/>
               <TextBlock Grid.Column="2">
@@ -117,7 +111,11 @@
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"/>
             </Grid>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.threads.cpuwarn}" FontWeight="Bold"
-                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
+                       Foreground="DarkRed" IsVisible="{Binding HighThreads}" FontSize="11"/>
+            <Grid>
+              <TextBlock Text="{DynamicResource prefs.rendering.prerender}" HorizontalAlignment="Left"/>
+              <ToggleSwitch IsChecked="{Binding PreRender}"/>
+            </Grid>
             <TextBlock Text="{DynamicResource prefs.rendering.onnxrunner}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
             <TextBlock Classes="restart"/>

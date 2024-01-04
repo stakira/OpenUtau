@@ -46,7 +46,7 @@
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
         </Border>
       </Grid>
-      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="18"
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding TrackName}" Click="TrackNameButtonClicked"/>
       <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
