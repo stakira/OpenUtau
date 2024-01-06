@@ -336,98 +336,144 @@ namespace OpenUtau.App.ViewModels {
                     pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
                     DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
                 } else if (tag == "VibratoLength") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 100) {
-                        value = f;
-                    } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoLength;
-                    }
+                    float value = ParseValue(obj, 0, 100, NotePresets.Default.DefaultVibrato.VibratoLength, out bool calculate);
                     UNote first = selectedNotes.First();
-                    foreach (UNote note in selectedNotes) {
-                        if (note != first && AutoVibratoToggle && note.duration < AutoVibratoNoteLength) {
-                            if (note.vibrato.length != 0) {
-                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, 0));
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.length + value;
+                            calValue = Math.Min(100, Math.Max(0, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, calValue));
+                        }
+                    } else {
+                        foreach (UNote note in selectedNotes) {
+                            if (note != first && AutoVibratoToggle && note.duration < AutoVibratoNoteLength) {
+                                if (note.vibrato.length != 0) {
+                                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, 0));
+                                }
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, value));
                             }
-                        } else {
-                            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, value));
                         }
                     }
+
                     if (first.vibrato.length > 0) {
                         VibratoEnable = true;
                     } else {
                         VibratoEnable = false;
                     }
                 } else if (tag == "VibratoPeriod") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 5 && f <= 500) {
-                        value = f;
+                    float value = ParseValue(obj, 5, 500, NotePresets.Default.DefaultVibrato.VibratoPeriod, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.period + value;
+                            calValue = Math.Min(500, Math.Max(5, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoPeriod;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoDepth") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 5 && f <= 200) {
-                        value = f;
+                    float value = ParseValue(obj, 5, 200, NotePresets.Default.DefaultVibrato.VibratoDepth, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.depth + value;
+                            calValue = Math.Min(200, Math.Max(5, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoDepth;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoIn") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 100) {
-                        value = f;
+                    float value = ParseValue(obj, 0, 100, NotePresets.Default.DefaultVibrato.VibratoIn, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.@in + value;
+                            calValue = Math.Min(100, Math.Max(0, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoIn;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoOut") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 100) {
-                        value = f;
+                    float value = ParseValue(obj, 0, 100, NotePresets.Default.DefaultVibrato.VibratoOut, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.@out + value;
+                            calValue = Math.Min(100, Math.Max(0, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoOut;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoShift") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 100) {
-                        value = f;
+                    float value = ParseValue(obj, 0, 100, NotePresets.Default.DefaultVibrato.VibratoShift, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.shift + value;
+                            calValue = Math.Min(100, Math.Max(0, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoShift;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoDrift") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= -100 && f <= 100) {
-                        value = f;
+                    float value = ParseValue(obj, -100, 100, NotePresets.Default.DefaultVibrato.VibratoDrift, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.drift + value;
+                            calValue = Math.Min(100, Math.Max(-100, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoDrift;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, value));
+                        }
                     }
                 } else if (tag == "VibratoVolLink") {
-                    float value;
-                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= -100 && f <= 100) {
-                        value = f;
+                    float value = ParseValue(obj, -100, 100, NotePresets.Default.DefaultVibrato.VibratoVolLink, out bool calculate);
+                    if (calculate) {
+                        foreach (UNote note in selectedNotes) {
+                            float calValue = note.vibrato.volLink + value;
+                            calValue = Math.Min(100, Math.Max(-100, calValue));
+                            DocManager.Inst.ExecuteCmd(new VibratoVolumeLinkCommand(Part, note, calValue));
+                        }
                     } else {
-                        value = NotePresets.Default.DefaultVibrato.VibratoVolLink;
-                    }
-                    foreach (UNote note in selectedNotes) {
-                        DocManager.Inst.ExecuteCmd(new VibratoVolumeLinkCommand(Part, note, value));
+                        foreach (UNote note in selectedNotes) {
+                            DocManager.Inst.ExecuteCmd(new VibratoVolumeLinkCommand(Part, note, value));
+                        }
                     }
                 }
+            }
+        }
+        private float ParseValue(object? obj, float min, float max, float def, out bool calculate) {
+            calculate = false;
+            if (obj != null) {
+                if (obj is string s && !string.IsNullOrEmpty(s)) {
+                    if ((s.StartsWith("+") || s.StartsWith("-")) && float.TryParse(s, out float f)) {
+                        calculate = true;
+                        return f;
+                    } else if (float.TryParse(s, out f) && f >= min && f <= max) {
+                        return f;
+                    } else {
+                        return def;
+                    }
+                } else if (obj is float f && f >= min && f <= max) {
+                    return f;
+                } else {
+                    return def;
+                }
+            } else {
+                return def;
             }
         }
         public void SetVibratoEnable() {
@@ -456,14 +502,31 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             }
         }
-        public void SetNumericalExpressionsChanges(string abbr, float value) {
+        public void SetNumericalExpressionsChanges(string abbr, object? obj) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
-                var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                var project = DocManager.Inst.Project;
+                var track = project.tracks[Part.trackNo];
+                if (!track.TryGetExpression(project, abbr, out var descriptor)) {
+                    return;
+                }
 
-                foreach (UNote note in selectedNotes) {
-                    foreach (UPhoneme phoneme in Part.phonemes) {
-                        if (phoneme.Parent == note) {
-                            DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, Part, phoneme, abbr, value));
+                float value = ParseValue(obj, descriptor.min, descriptor.max, descriptor.defaultValue, out bool calculate);
+                if (calculate) {
+                    foreach (UNote note in selectedNotes) {
+                        foreach (UPhoneme phoneme in Part.phonemes) {
+                            if (phoneme.Parent == note) {
+                                float exp = phoneme.GetExpression(project, track, abbr).Item1 + value;
+                                exp = Math.Min(descriptor.max, Math.Max(descriptor.min, exp));
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(project, track, Part, phoneme, abbr, exp));
+                            }
+                        }
+                    }
+                } else {
+                    foreach (UNote note in selectedNotes) {
+                        foreach (UPhoneme phoneme in Part.phonemes) {
+                            if (phoneme.Parent == note) {
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(project, track, Part, phoneme, abbr, value));
+                            }
                         }
                     }
                 }
@@ -565,13 +628,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SetNumericalExpressions(object? obj) {
-            float value;
-            if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= Min && f <= Max) {
-                value = f;
-            } else {
-                value = defaultValue;
-            }
-            parentViewmodel.SetNumericalExpressionsChanges(abbr, value);
+            parentViewmodel.SetNumericalExpressionsChanges(abbr, obj);
             this.RaisePropertyChanged(nameof(Value));
         }
 
