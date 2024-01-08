@@ -8,9 +8,9 @@
   <system:String x:Key="context.part.delete">파트 삭제</system:String>
   <system:String x:Key="context.part.gotofile">파일 위치 열기</system:String>
   <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
-<system:String x:Key="context.part.replaceaudio">오디오 파일 교체</system:String>
-<system:String x:Key="context.part.transcribe">새 노트 파트로 오디오 전사</system:String>
-<system:String x:Key="context.part.transcribing">전사 중</system:String>
+  <system:String x:Key="context.part.replaceaudio">오디오 파일 교체</system:String>
+  <system:String x:Key="context.part.transcribe">새 노트 파트로 오디오 전사</system:String>
+  <system:String x:Key="context.part.transcribing">전사 중</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
@@ -44,10 +44,10 @@
   <system:String x:Key="dialogs.messagebox.no">아니요</system:String>
   <system:String x:Key="dialogs.messagebox.ok">확인</system:String>
   <system:String x:Key="dialogs.messagebox.yes">네</system:String>
-  <system:String x:Key="dialogs.noresampler.caption">리샘플러 없음</system:String>
-  <system:String x:Key="dialogs.noresampler.message">리샘플러를 찾을 수 없습니다! 좋아하는 리샘플러의 exe나 dll을 'Resamplers' 폴더에 넣고, 환경 설정에서 원하는 리샘플러를 선택해 주세요!</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">지원하지 않는 파일 유형</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.message">다음 파일 유형은 지원하지 않습니다. </system:String>
+  <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없어요</system:String>
+  <system:String x:Key="dialogs.noresampler.message">리샘플러가 없어요! 'Resamplers' 폴더에 좋아하는 리샘플러의 exe나 dll을 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요!</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">이 파일 유형은 지원하지 않아요</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">이 파일 유형은 지원하지 않아요: </system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
@@ -84,8 +84,8 @@
   <system:String x:Key="lyrics.selectnotes">먼저 원하는 노트를 선택해 주세요!</system:String>
   <system:String x:Key="lyrics.separators">구분 기준</system:String>
 
-  <system:String x:Key="lyricsreplace.after">수정 후:</system:String>
-  <system:String x:Key="lyricsreplace.before">수정 전:</system:String>
+  <system:String x:Key="lyricsreplace.after">찾을 내용</system:String>
+  <system:String x:Key="lyricsreplace.before">바꿀 내용</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">알파벳 지우기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">히라가나만 남기기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvphonetichint">발음 힌트 지우기</system:String>
@@ -109,7 +109,7 @@
   <system:String x:Key="menu.file.exportaudio">오디오 내보내기</system:String>
   <system:String x:Key="menu.file.exportds">다른 이름으로 DiffSinger 스크립트 내보내기</system:String>
   <system:String x:Key="menu.file.exportds.v2">다른 이름으로 DiffSinger 스크립트 내보내기 (v2)</system:String>
-  <system:String x:Key="menu.file.exportds.v2withoutpitch">다른 이름으로 DiffSinger 스크립트 내보내기 (v2, 피치 벤드 제외)</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">다른 이름으로 DiffSinger 스크립트 내보내기 (v2, 피치선 제외)</system:String>
   <system:String x:Key="menu.file.exportmidi">Midi로 내보내기</system:String>
   <system:String x:Key="menu.file.exportmixdown">Wav 파일로 믹스다운</system:String>
   <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
@@ -179,7 +179,7 @@
   <system:String x:Key="notedefaults.vibrato.length">길이</system:String>
   <system:String x:Key="notedefaults.vibrato.out">페이드 아웃</system:String>
   <system:String x:Key="notedefaults.vibrato.period">주기</system:String>
-  <system:String x:Key="notedefaults.vibrato.shift">위상</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">평행이동</system:String>
   <system:String x:Key="notedefaults.vibrato.vollink">볼륨 연동</system:String>
 
   <system:String x:Key="noteproperty">노트 속성</system:String>
@@ -188,7 +188,7 @@
   <system:String x:Key="noteproperty.cancel">취소</system:String>
   <system:String x:Key="noteproperty.set">모든 노트에 적용</system:String>
   <system:String x:Key="noteproperty.setlongnote">긴 노트에만 적용</system:String>
-  <system:String x:Key="noteproperty.tone">음높이</system:String>
+  <system:String x:Key="noteproperty.tone">음조</system:String>
   <system:String x:Key="noteproperty.vibratoenable">비브라토 활성화</system:String>
 
   <system:String x:Key="oto.alias">에일리어스</system:String>
@@ -226,25 +226,25 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">끝에 '-' 노트 추가</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">끝에 'R' 노트 추가</system:String>
-  <system:String x:Key="pianoroll.menu.notes.autolegato">노트를 서로 자동 연결</system:String>
-  <system:String x:Key="pianoroll.menu.notes.bakepitch">PTTD(피치 표현)를 피치 벤드로 변환</system:String>
-  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 업생기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.fixoverlap">겹친 노트 고치기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">중국어 한자를 병음으로 변경</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">끝 노트로 '-' 추가</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">끝 노트로 'R' 추가</system:String>
+  <system:String x:Key="pianoroll.menu.notes.autolegato">선택한 노트들 자동 붙이기</system:String>
+  <system:String x:Key="pianoroll.menu.notes.bakepitch">PITD를 피치선으로</system:String>
+  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 제거</system:String>
+  <system:String x:Key="pianoroll.menu.notes.fixoverlap">노트 겹침 수정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">중국어 한자를 병음으로</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">크로스페이드 길이 늘리기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링된 피치 커브 불러오기</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링된 피치 불러오기</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">한 옥타브 아래로</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">한 옥타브 위로</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 퀀타이즈</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 퀀타이즈</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">끝에 '-' 노트 지우기</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">끝에 'R' 노트 지우기</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.aliases">음소 에일리어스 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">에일리어스 재설정</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 재설정</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">음소 타이밍 재설정</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">피치 벤드 재설정</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">피치선 재설정</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">비브라토 재설정</system:String>
   <system:String x:Key="pianoroll.menu.part">파트</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">레거시 플러그인(실험적)</system:String>
@@ -256,32 +256,32 @@
   <system:String x:Key="pianoroll.menu.searchnote.close">닫기</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">다음</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">이전</system:String>
-  <system:String x:Key="pianoroll.toggle.finalpitch">최종 렌더링된 피치 커브 보기(R)</system:String>
-  <system:String x:Key="pianoroll.toggle.noteparams">노트 설정 열기(\)</system:String>
-  <system:String x:Key="pianoroll.toggle.phoneme">음소 표시(O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">피치 벤드 표시(I)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap">토글 켜기·끄기(P)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap.auto">자동 스냅</system:String>
-  <system:String x:Key="pianoroll.toggle.snap.autotriplet">자동 스냅(셋잇단)</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">렌더링된 피치 보기 (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.noteparams">노트 설정 열기 (\)</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">음소 표시 (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">피치선 표시 (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">스냅 활성화 (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">자동</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">자동(3연음)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">도움말 (T)</system:String>
-  <system:String x:Key="pianoroll.toggle.tone">노트 음높이 켜기(Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">노트음 활성 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 표시 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">파형 표시 (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴(4)
-    왼쪽 클릭으로 그리기
-    오른쪽 클릭으로 재설정
-    Ctrl 키를 누르며 클릭해 선택
-    Alt 키를 누르며 클릭해 다듬기</system:String>
-  <system:String x:Key="pianoroll.tool.eraser">지우기 툴(3)</system:String>
-  <system:String x:Key="pianoroll.tool.knife">자르기 툴(5)</system:String>
-  <system:String x:Key="pianoroll.tool.penplus">펜 플러스 툴(Ctrl + 2)
-    왼쪽 클릭으로 그리기
-    오른쪽 클릭으로 재설정
-    Ctrl 키를 누르며 클릭해 선택</system:String>
-  <system:String x:Key="pianoroll.tool.penv2">펜 툴(2)
-    왼쪽 클릭으로 그리기
-    Ctrl 키를 누르며 클릭해 선택</system:String>
-  <system:String x:Key="pianoroll.tool.selectionv2">선택 툴(1)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 펜 (4)
+    피치 그리기: 왼쪽 클릭
+    피치 초기화: 오른쪽 클릭
+    노트 선택: Ctrl + 클릭
+    피치 다듬기: Alt + 클릭</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">지우개 (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">칼 (5)</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">고급 펜 (Ctrl + 2)
+    노트 생성: 왼쪽 클릭
+    노트 삭제: 오른쪽 클릭
+    노트 선택: Ctrl + 클릭</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">펜 (2)
+    노트 생성: 왼쪽 클릭
+    노트 선택: Ctrl + 클릭</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">선택 도구 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">고급</system:String>
   <system:String x:Key="prefs.advanced.beta">베타 버전 사용</system:String>
@@ -343,10 +343,10 @@
   <system:String x:Key="prefs.rendering.prerender">미리보기용 렌더</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-    경고: moresampler는 완벽하게 지원되지 않습니다. 속도가 느릴 수 있고, 높은 CPU 점유율 유발할 수 있습니다. 그래도 사용하시려면 다음을 따라 주세요.
-    1. moreconfig.txt를 열어 resampler-compatibility 항목을 "on"으로 설정
-    2. 같은 파일에서 resampler-compatibility 항목을 "off"로 설정
-    3. moresampler가 누락된 llsm 파일을 다 생성할 때까지 대기
+    경고: 현재 moresampler의 지원은 아직 불완전합니다. 속도가 느릴 수 있고, CPU 점유율이 높아질 수 있습니다. 그래도 사용하시려면 다음을 따라 주세요.
+    1. moreconfig.txt를 열어 "resampler-compatibility"를 "on"으로 바꿉니다.
+    2. 같은 파일에서 "auto-update-llsm-mrq"을 "off"로 바꿉니다.
+    3. moresampler가 누락된 llsm 파일을 생성할 때까지 느긋하게 기다립니다.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     참고: 외부 리샘플러를 사용하려면, OpenUtau 설치 경로 속 Resamplers 폴더에 리샘플러의 DLL 또는 EXE 파일을 넣어 주세요. 그리고 환경 설정에서 리샘플러를 선택합시다.
@@ -362,10 +362,10 @@
   <system:String x:Key="progress.waitingrendering">렌더링을 기다리는 중</system:String>
 
   <system:String x:Key="singers.caption">가수 목록</system:String>
-  <system:String x:Key="singers.editoto.editinvlabeler">vLabeler로 편집</system:String>
+  <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 편집</system:String>
   <system:String x:Key="singers.editoto.gotosource">원본 파일로 이동</system:String>
   <system:String x:Key="singers.editoto.regenfrq">FRQ 재생성</system:String>
-  <system:String x:Key="singers.editoto.regenfrq.regenerating">가수의 FRQ 파일 재생성 중...</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">FRQ 재생성 중</system:String>
   <system:String x:Key="singers.editoto.reset">원음 설정 초기화</system:String>
   <system:String x:Key="singers.editoto.save">원음 설정 저장</system:String>
   <system:String x:Key="singers.editoto.searchalias">에일리어스 검색</system:String>
@@ -401,8 +401,9 @@
   <system:String x:Key="singers.subbanks.save">저장</system:String>
   <system:String x:Key="singers.subbanks.selectall">모두 선택</system:String>
   <system:String x:Key="singers.subbanks.set">설정</system:String>
-  <system:String x:Key="singers.subbanks.tone">음계</system:String>
+  <system:String x:Key="singers.subbanks.tone">음조</system:String>
   <system:String x:Key="singers.subbanks.toneranges">음역대</system:String>
+  <system:String x:Key="singers.usefilename">파일명을 에일리어스로 사용</system:String>
   <system:String x:Key="singers.visitwebsite">웹사이트 방문</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">압축 파일의 인코딩</system:String>
@@ -465,7 +466,7 @@
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
   <system:String x:Key="updater.description">오픈소스 음성 합성 플랫폼</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
-  <system:String x:Key="updater.status.available">v{0} 버전 업데이트가 있습니다!</system:String>
+  <system:String x:Key="updater.status.available">v{0} 버전 업데이트가 있어요!</system:String>
   <system:String x:Key="updater.status.checking">업데이트 확인 중...</system:String>
   <system:String x:Key="updater.status.notavailable">최신 버전</system:String>
   <system:String x:Key="updater.status.unknown">업데이트를 확인할 수 없어요</system:String>
