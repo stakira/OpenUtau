@@ -84,8 +84,8 @@
   <system:String x:Key="lyrics.selectnotes">먼저 원하는 노트를 선택해 주세요!</system:String>
   <system:String x:Key="lyrics.separators">구분 기준</system:String>
 
-  <system:String x:Key="lyricsreplace.after">찾을 내용</system:String>
-  <system:String x:Key="lyricsreplace.before">바꿀 내용</system:String>
+  <system:String x:Key="lyricsreplace.after">바꿀 내용</system:String>
+  <system:String x:Key="lyricsreplace.before">찾을 내용</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">알파벳 지우기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">히라가나만 남기기</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvphonetichint">발음 힌트 지우기</system:String>
