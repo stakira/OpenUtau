@@ -113,8 +113,12 @@ namespace OpenUtau.Classic {
                     "character.yaml", 
                     "prefix.map",
                     });
+            } else {
+                //On MacOS and Linux, check if there are files that have the same name but different case.
+                foreach (var otoSet in voicebank.OtoSets) {
+                    UnixCaseCheck(otoSet);
+                }
             }
-            //TODO: On MacOS and Linux, check if there are files that have the same name but different case.
         }
 
         bool TryGetFileDuration(string filePath, Oto oto, out double fileDuration) {
@@ -289,6 +293,26 @@ namespace OpenUtau.Classic {
                 }
             }
             return valid;
+        }
+
+        /// <summary>
+        /// Check if the file names are duplicated when converted to lower case.
+        /// </summary>
+        /// <param name="otoSet">otoSet to be checked</param>
+        /// <returns></returns>
+        bool UnixCaseCheck(OtoSet otoSet) {
+            var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
+            var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
+                .Where(group => group.Count() > 1)
+                .ToList();
+            foreach (var group in duplicatedGroups) {
+                Infos.Add(new VoicebankError() {
+                    message = $"Duplcated file names defined for case sensitive platforms in oto set \"{otoSet.Name}\":"
+                    + string.Join(", ", group.Select(x => $"\"{x}\""))
+                    + "."
+                });
+            }
+            return duplicatedGroups.Count == 0;
         }
     }
 }
