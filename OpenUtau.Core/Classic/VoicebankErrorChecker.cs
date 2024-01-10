@@ -102,22 +102,20 @@ namespace OpenUtau.Classic {
                 });
             }
             //Cross platform check
-            //Windows path is case insensitive, while MacOS path and Linux path are case sensitive.
-            //On Windows, check if the wave filename in oto.ini is the same as the filename in the file system.
-            if(OS.IsWindows()){
-                foreach(var otoSet in voicebank.OtoSets) {
-                    WindowsCaseCheck(otoSet);
-                }
-                WindowsCaseCheck(voicebank.BasePath, new string[]{
-                    "chatacter.txt", 
-                    "character.yaml", 
-                    "prefix.map",
-                    });
-            } else {
-                //On MacOS and Linux, check if there are files that have the same name but different case.
-                foreach (var otoSet in voicebank.OtoSets) {
-                    UnixCaseCheck(otoSet);
-                }
+            //On case-insensitive systems, check if the wave filename in oto.ini is the same as the filename in the file system.
+            //If not matched, the VB may not work when copied to case-sensitive systems.
+            foreach(var otoSet in voicebank.OtoSets) {
+                CaseCheckOnInsensitiveSystem(otoSet);
+            }
+            CaseCheckOnInsensitiveSystem(voicebank.BasePath, new string[]{
+                "chatacter.txt", 
+                "character.yaml", 
+                "prefix.map",
+                });
+            //On case-sensitive systems, check if there are files with names that only differ in cases.
+            //If such files exist, the VB may not work when copied to case-insensitive systems.
+            foreach (var otoSet in voicebank.OtoSets) {
+                CaseCheckOnSensitiveSystem(otoSet);
             }
         }
 
@@ -264,8 +262,8 @@ namespace OpenUtau.Classic {
         /// </summary>
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
-        bool WindowsCaseCheck(OtoSet otoSet) {
-            return WindowsCaseCheck(
+        bool CaseCheckOnInsensitiveSystem(OtoSet otoSet) {
+            return CaseCheckOnInsensitiveSystem(
                 Directory.GetParent(otoSet.File).FullName, 
                 otoSet.Otos
                     .Select(oto => oto.Wav)
@@ -273,7 +271,7 @@ namespace OpenUtau.Classic {
                     .ToHashSet());
         }
 
-        bool WindowsCaseCheck(string folder, IEnumerable<string> correctFileNames){
+        bool CaseCheckOnInsensitiveSystem(string folder, IEnumerable<string> correctFileNames){
             bool valid = true;
             Dictionary<string, string> fileNamesLowerToActual = Directory.GetFiles(folder)
                 .Select(Path.GetFileName)
@@ -288,7 +286,7 @@ namespace OpenUtau.Classic {
                         message = $"Wrong case in file name: \n"
                             + $"expected: {Path.Join(folder,fileName)}\n"
                             + $"Actual: {Path.Join(folder,fileNamesLowerToActual[fileName.ToLower()])}\n"
-                            + $"voicebank may not work on another OS."
+                            + $"The voicebank may not work on another OS."
                     });
                 }
             }
@@ -300,16 +298,17 @@ namespace OpenUtau.Classic {
         /// </summary>
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
-        bool UnixCaseCheck(OtoSet otoSet) {
+        bool CaseCheckOnSensitiveSystem(OtoSet otoSet) {
             var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
             var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
                 .Where(group => group.Count() > 1)
                 .ToList();
             foreach (var group in duplicatedGroups) {
                 Infos.Add(new VoicebankError() {
-                    message = $"Duplcated file names defined for case sensitive platforms in oto set \"{otoSet.Name}\":"
+                    message = $"Duplicated file names found when ignoreing case in oto set \"{otoSet.Name}\":"
                     + string.Join(", ", group.Select(x => $"\"{x}\""))
-                    + "."
+                    + ".\n"
+                    + "The voicebank may not work on another OS with case-sensitivity."
                 });
             }
             return duplicatedGroups.Count == 0;
