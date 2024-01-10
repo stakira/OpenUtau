@@ -24,6 +24,7 @@ namespace OpenUtau.Core.DiffSinger
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
         string defaultPause = "SP";
+        protected virtual string GetDictionaryName()=>"dsdict.yaml";
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
@@ -66,13 +67,17 @@ namespace OpenUtau.Core.DiffSinger
 
         protected virtual IG2p LoadG2p(string rootPath) {
             var g2ps = new List<IG2p>();
+            var dictionaryNames = new string[] {GetDictionaryName(), "dsdict.yaml"};
             // Load dictionary from singer folder.
-            string file = Path.Combine(rootPath, "dsdict.yaml");
-            if (File.Exists(file)) {
-                try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {file}");
+            foreach(var dictionaryName in dictionaryNames){
+                string dictionaryPath = Path.Combine(rootPath, dictionaryName);
+                if (File.Exists(dictionaryPath)) {
+                    try {
+                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(dictionaryPath)).Build());
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {dictionaryPath}");
+                    }
+                    break;
                 }
             }
             return new G2pFallbacks(g2ps.ToArray());
