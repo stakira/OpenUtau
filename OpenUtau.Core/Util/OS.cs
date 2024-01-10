@@ -13,7 +13,7 @@ namespace OpenUtau {
             if (Directory.Exists(path)) {
                 Process.Start(new ProcessStartInfo {
                     FileName = GetOpener(),
-                    Arguments = path,
+                    Arguments = $"\"{path}\"",
                 });
             }
         }
@@ -23,12 +23,12 @@ namespace OpenUtau {
                 if (IsWindows()) {
                     Process.Start(new ProcessStartInfo {
                         FileName = GetOpener(),
-                        Arguments = $"/select, {path}",
+                        Arguments = $"/select, \"{path}\"",
                     });
                 } else if (IsMacOS()) {
                     Process.Start(new ProcessStartInfo {
                         FileName = GetOpener(),
-                        Arguments = $" -R {path}",
+                        Arguments = $" -R \"{path}\"",
                     });
                 } else {
                     OpenFolder(Path.GetDirectoryName(path));
