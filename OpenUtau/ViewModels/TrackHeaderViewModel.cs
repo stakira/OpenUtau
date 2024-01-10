@@ -270,6 +270,16 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(SingerMenuItems));
         }
 
+        public string GetPhonemizerGroupHeader(string key){
+            if(key is null){
+                return "General";
+            }
+            if(ThemeManager.TryGetString($"languages.{key.ToLowerInvariant()}", out var value)){
+                return $"{key}: {value}";
+            }
+            return key;
+        }
+
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
             //Recently used phonemizers
@@ -288,7 +298,7 @@ namespace OpenUtau.App.ViewModels {
                 Items = DocManager.Inst.PhonemizerFactories.GroupBy(factory => factory.language)
                 .OrderBy(group => group.Key)
                 .Select(group => new MenuItemViewModel() {
-                    Header = (group.Key is null) ? "General" : group.Key,
+                    Header = GetPhonemizerGroupHeader(group.Key),
                     Items = group.Select(factory => new MenuItemViewModel() {
                         Header = factory.ToString(),
                         Command = SelectPhonemizerCommand,
