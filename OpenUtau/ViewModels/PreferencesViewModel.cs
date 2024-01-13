@@ -29,6 +29,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath)? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
+        [Reactive] public bool LoadDeepFolders { get; set; }
         [Reactive] public bool PreRender { get; set; }
         public List<string> DefaultRendererOptions { get; set; }
         [Reactive] public string DefaultRenderer { get; set; }
@@ -111,6 +112,7 @@ namespace OpenUtau.App.ViewModels {
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
+            LoadDeepFolders = Preferences.Default.LoadDeepFolderSinger;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = App.GetLanguages().Keys
@@ -187,6 +189,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.InstallToAdditionalSingersPath)
                 .Subscribe(additionalSingersPath => {
                     Preferences.Default.InstallToAdditionalSingersPath = additionalSingersPath;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LoadDeepFolders)
+                .Subscribe(loadDeepFolders => {
+                    Preferences.Default.LoadDeepFolderSinger = loadDeepFolders;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PreRender)
