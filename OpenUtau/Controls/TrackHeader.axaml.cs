@@ -6,8 +6,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using Org.BouncyCastle.Cms;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -86,6 +88,8 @@ namespace OpenUtau.App.Controls {
             if (SingerManager.Inst.Singers.Count > 0) {
                 ViewModel?.RefreshSingers();
                 SingersMenu.Open();
+            } else {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("There is no singer."));
             }
             args.Handled = true;
         }

@@ -248,18 +248,30 @@ namespace OpenUtau.App.ViewModels {
             items.AddRange(Preferences.Default.RecentSingers
                 .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
-                .LocalizedOrderBy(singer => singer.LocalizedName)
-                .Select(singer => new MenuItemViewModel() {
+                .Select(singer => new SingerMenuItemViewModel() {
                     Header = singer.LocalizedName,
                     Command = SelectSingerCommand,
                     CommandParameter = singer,
                 }));
+            items.Add(new SingerMenuItemViewModel() {
+                Header = "Favs ...",
+                Items = Preferences.Default.FavoriteSingers
+                    .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
+                    .OfType<USinger>()
+                    .LocalizedOrderBy(singer => singer.LocalizedName)
+                    .Select(singer => new SingerMenuItemViewModel() {
+                        Header = singer.LocalizedName,
+                        Command = SelectSingerCommand,
+                        CommandParameter = singer,
+                    }).ToArray(),
+            });
+
             var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
             foreach (var key in keys) {
-                items.Add(new MenuItemViewModel() {
+                items.Add(new SingerMenuItemViewModel() {
                     Header = $"{key} ...",
                     Items = SingerManager.Inst.SingerGroups[key]
-                        .Select(singer => new MenuItemViewModel() {
+                        .Select(singer => new SingerMenuItemViewModel() {
                             Header = singer.LocalizedName,
                             Command = SelectSingerCommand,
                             CommandParameter = singer,
