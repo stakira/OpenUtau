@@ -6,10 +6,8 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
-using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using Org.BouncyCastle.Cms;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
