@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -19,10 +17,12 @@ namespace OpenUtau.Plugin.Builtin {
     public abstract class BaseKoreanPhonemizer : Phonemizer {
         
         protected USinger singer;
-        protected int vcLength = 120; // TODO
+
         protected int vcLengthShort = 90;
 
-
+        protected static readonly string[] PLAIN_VOWELS = new string[]{"ㅏ", "ㅣ", "ㅜ", "ㅔ", "ㅗ", "ㅡ", "ㅓ", "ㅢ"};
+        protected static readonly string[] SOFT_BATCHIMS = new string[]{"ㄴ", "ㄹ", "ㅇ"};
+        protected static readonly string[] HARD_BATCHIMS = new string[]{"ㄱ", "ㄷ", "ㅂ", "ㅁ"};
         public override void SetSinger(USinger singer) => this.singer = singer;
         public static string? FindInOto(USinger singer, string phoneme, Note note, bool nullIfNotFound = false) {
             // 음소와 노트를 입력받고, 다음계 및 보이스컬러 에일리어스를 적용한다. 
@@ -95,7 +95,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         /// <summary>
         /// Returns Result with two input Phonemes. 
-        /// <para>Second Phoneme's position is: totalDuration - Math.Min(totalDuration / totalDurationDivider, secondPhonemePosition). </para>
         /// <param name="firstPhoneme"></param>
         /// <param name="secondPhoneme"></param>
         /// <param name="totalDuration"></param>
@@ -107,6 +106,23 @@ namespace OpenUtau.Plugin.Builtin {
                     new Phoneme { phoneme = firstPhoneme },
                     new Phoneme { phoneme = secondPhoneme,
                     position = totalDuration - Math.Min(totalDuration / totalDurationDivider, secondPhonemePosition)},
+                }
+            };
+        }
+
+        /// <summary>
+        /// Returns Result with two input Phonemes. 
+        /// <param name="firstPhoneme"></param>
+        /// <param name="secondPhoneme"></param>
+        /// <param name="totalDuration"></param>
+        /// <param name="totalDurationDivider"></param>
+        /// </summary>
+        public Result GenerateResult(String firstPhoneme, String secondPhoneme, int totalDuration, int totalDurationDivider=3){
+            return new Result() {
+                phonemes = new Phoneme[] {
+                    new Phoneme { phoneme = firstPhoneme },
+                    new Phoneme { phoneme = secondPhoneme,
+                    position = totalDuration - totalDuration / totalDurationDivider},
                 }
             };
         }
@@ -124,8 +140,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         /// <summary>
         /// Returns Result with three input Phonemes. 
-        /// <para>Second Phoneme's position is: totalDuration - Math.Min(totalDuration / secondTotalDurationDivider, secondPhonemePosition). </para>
-        /// <para>Third Phoneme's position is: totalDuration - totalDuration / thirdTotalDurationDivider. </para>
+        /// 
         /// </summary>
         /// <param name="firstPhoneme"></param>
         /// <param name="secondPhoneme"></param>
@@ -141,6 +156,30 @@ namespace OpenUtau.Plugin.Builtin {
                     new Phoneme { phoneme = firstPhoneme},
                     new Phoneme { phoneme = secondPhoneme,
                     position = totalDuration - Math.Min(totalDuration / secondTotalDurationDivider, secondPhonemePosition)},
+                    new Phoneme { phoneme = thirdPhoneme,
+                    position = totalDuration - totalDuration / thirdTotalDurationDivider},
+                }// -음소 있이 이어줌
+            };
+        }
+
+        /// <summary>
+        /// Returns Result with three input Phonemes. 
+        /// 
+        /// </summary>
+        /// <param name="firstPhoneme"></param>
+        /// <param name="secondPhoneme"></param>
+        /// <param name="thirdPhoneme"></param>
+        /// <param name="totalDuration"></param>
+        /// <param name="secondPhonemePosition"></param>
+        /// <param name="secondTotalDurationDivider"></param>
+        /// <param name="thirdTotalDurationDivider"></param>
+        /// <returns> Result  </returns>
+        public Result GenerateResult(String firstPhoneme, String secondPhoneme, String thirdPhoneme, int totalDuration, int secondTotalDurationDivider=3, int thirdTotalDurationDivider=8){
+            return new Result() {
+                phonemes = new Phoneme[] {
+                    new Phoneme { phoneme = firstPhoneme},
+                    new Phoneme { phoneme = secondPhoneme,
+                    position = totalDuration - totalDuration / secondTotalDurationDivider},
                     new Phoneme { phoneme = thirdPhoneme,
                     position = totalDuration - totalDuration / thirdTotalDurationDivider},
                 }// -음소 있이 이어줌
@@ -253,7 +292,7 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes = phonemes
                 };
             } 
-            else if (KoreanPhonemizerUtil.IsHangeul(lyric) && (!lyric.Equals("-")) && (!lyric.Equals("R"))) {
+            else if (KoreanPhonemizerUtil.IsHangeul(lyric)) {
                 return ConvertPhonemes(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             } 
             else {
