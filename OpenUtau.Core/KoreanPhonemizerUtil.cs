@@ -45,7 +45,7 @@ namespace OpenUtau.Core {
         /// A hashtable of basicsounds - ㄱ/ㄷ/ㅂ/ㅅ/ㅈ.
         /// <br/><br/>예사소리 테이블입니다.
         /// </summary>
-        static readonly Hashtable basicSounds = new Hashtable() {
+        public static readonly Hashtable basicSounds = new Hashtable() {
             ["ㄱ"] = 0,
             ["ㄷ"] = 1,
             ["ㅂ"] = 2,
@@ -59,7 +59,7 @@ namespace OpenUtau.Core {
         /// <br/><br/>거센소리 테이블입니다. 
         /// <br/>[4]의 중복값 "ㅌ"은 오타가 아니며 격음화(거센소리되기) 수행 시에 활용됩니다.
         /// </summary>
-        static readonly Hashtable aspirateSounds = new Hashtable() {
+        public static readonly Hashtable aspirateSounds = new Hashtable() {
             [0] = "ㅋ",
             [1] = "ㅌ",
             [2] = "ㅍ",
@@ -71,7 +71,7 @@ namespace OpenUtau.Core {
         /// A hashtable of fortis sounds - ㄲ/ㄸ/ㅃ/ㅆ/ㅉ.
         /// <br/><br/>된소리 테이블입니다. 
         /// </summary>
-        static readonly Hashtable fortisSounds = new Hashtable() {
+        public static readonly Hashtable fortisSounds = new Hashtable() {
             [0] = "ㄲ",
             [1] = "ㄸ",
             [2] = "ㅃ",
@@ -83,7 +83,7 @@ namespace OpenUtau.Core {
         /// A hashtable of nasal sounds - ㄴ/ㅇ/ㅁ.
         /// <br/><br/>비음 테이블입니다. 
         /// </summary>
-        static readonly Hashtable nasalSounds = new Hashtable() {
+        public static readonly Hashtable nasalSounds = new Hashtable() {
             ["ㄴ"] = 0,
             ["ㅇ"] = 1,
             ["ㅁ"] = 2
@@ -537,6 +537,7 @@ namespace OpenUtau.Core {
         /// </returns>
         private static Hashtable Variate(string firstChar, string nextChar, int returnCharIndex = 0) {
             // 글자 넣어도 쓸 수 있음
+            
             Hashtable firstCharSeparated = Separate(firstChar);
             Hashtable nextCharSeparated = Separate(nextChar);
             return Variate(firstCharSeparated, nextCharSeparated, returnCharIndex);
@@ -649,15 +650,28 @@ namespace OpenUtau.Core {
                         [2] = "null"
                     };
 
-                    Hashtable thisNoteSeparated = Variate(lyrics[1], lyrics[2], -1); // 현글자 뒤글자
+                    if (IsHangeul(lyrics[2])) {
+                        Hashtable thisNoteSeparated = Variate(lyrics[1], lyrics[2], -1); // 현글자 뒤글자
+                    
+                        result.Add(3, thisNoteSeparated[0]); // 현 글자
+                        result.Add(4, thisNoteSeparated[1]);
+                        result.Add(5, thisNoteSeparated[2]);
 
-                    result.Add(3, thisNoteSeparated[0]); // 현 글자
-                    result.Add(4, thisNoteSeparated[1]);
-                    result.Add(5, thisNoteSeparated[2]);
+                        result.Add(6, thisNoteSeparated[3]); 
+                        result.Add(7, thisNoteSeparated[4]);
+                        result.Add(8, thisNoteSeparated[5]);
+                    }
+                    else {
+                        Hashtable thisNoteSeparated = Variate(lyrics[1]);
+                        result.Add(3, thisNoteSeparated[0]); // 현 글자
+                        result.Add(4, thisNoteSeparated[1]);
+                        result.Add(5, thisNoteSeparated[2]);
 
-                    result.Add(6, thisNoteSeparated[3]); // 뒤 글자 없음
-                    result.Add(7, thisNoteSeparated[4]);
-                    result.Add(8, thisNoteSeparated[5]);
+                        result.Add(6, "null"); 
+                        result.Add(7, "null");
+                        result.Add(8, "null");
+                    }
+                    
 
                     return result;
                 }
