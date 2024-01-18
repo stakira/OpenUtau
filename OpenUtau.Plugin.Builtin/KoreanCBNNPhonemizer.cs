@@ -190,11 +190,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (isItNeedsFrontCV){
                     return isRelaxedVC ? 
                     GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), endSound, totalDuration, 120, 2, 3);
+                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), FindInOto(endSound, note), totalDuration, 120, 2, 3);
                 }
                 return isRelaxedVC ? 
                 GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), endSound, totalDuration, 120, 2, 3);
+                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), FindInOto(endSound, note), totalDuration, 120, 2, 3);
             }
             else {
                 if (isItNeedsFrontCV){
