@@ -150,17 +150,19 @@ namespace OpenUtau.App.Views {
         }
 
         /// <summary>
-        /// 
+        /// Remap a tick position from the old time axis to the new time axis without changing its absolute position (in ms).
+        /// Note that this can only be used on positions, not durations.
         /// </summary>
-        /// <param name="tick"></param>
-        /// <param name="oldTimeAxis"></param>
-        /// <param name="newTimeAxis"></param>
         private int RemapTickPos(int tickPos, TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
             double msPos = oldTimeAxis.TickPosToMsPos(tickPos);
             return newTimeAxis.MsPosToTickPos(msPos);
         }
 
-        private void RemapTempo(TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+        /// <summary>
+        /// Remap the starting and ending positions of all the notes and parts in the whole project 
+        /// from the old time axis to the new time axis, without changing their absolute positions in ms.
+        /// </summary>
+        private void RemapTimeAxis(TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
             var project = DocManager.Inst.Project;
             foreach(var part in project.parts){
                 var partOldStartTick = part.position;
@@ -221,7 +223,7 @@ namespace OpenUtau.App.Views {
                             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
                                 project, tempo.position));
                         }
-                        RemapTempo(oldTimeAxis, project.timeAxis.Clone());
+                        RemapTimeAxis(oldTimeAxis, project.timeAxis.Clone());
                         DocManager.Inst.EndUndoGroup();
                     }
                 } catch (Exception e) {
