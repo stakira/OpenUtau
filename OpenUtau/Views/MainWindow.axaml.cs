@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -146,6 +147,89 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <param name="oldTimeAxis"></param>
+        /// <param name="newTimeAxis"></param>
+        private int RemapTickPos(int tickPos, TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+            double msPos = oldTimeAxis.TickPosToMsPos(tickPos);
+            return newTimeAxis.MsPosToTickPos(msPos);
+        }
+
+        private void RemapTempo(TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+            var project = DocManager.Inst.Project;
+            foreach(var part in project.parts){
+                var partOldStartTick = part.position;
+                var partNewStartTick = RemapTickPos(part.position, oldTimeAxis, newTimeAxis);
+                if(partNewStartTick != partOldStartTick){
+                    DocManager.Inst.ExecuteCmd(new MovePartCommand(
+                        project, part, partNewStartTick, part.trackNo));
+                }
+                if(part is UVoicePart voicePart){
+                    var partOldEndTick = voicePart.End;
+                    var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
+                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(
+                            project, voicePart, partNewEndTick - partNewStartTick));
+                    }
+                    var noteCommands = new List<UCommand>();
+                    foreach(var note in voicePart.notes){
+                        var noteOldStartTick = note.position + partOldStartTick;
+                        var noteOldEndTick = note.End + partOldStartTick;
+                        var noteOldDuration = note.duration;
+                        var noteNewStartTick = RemapTickPos(noteOldStartTick, oldTimeAxis, newTimeAxis);
+                        var noteNewEndTick = RemapTickPos(noteOldEndTick, oldTimeAxis, newTimeAxis);
+                        var deltaPosTickInPart = (noteNewStartTick - partNewStartTick) - (noteOldStartTick - partOldStartTick);
+                        if(deltaPosTickInPart != 0){
+                            noteCommands.Add(new MoveNoteCommand(voicePart, note, deltaPosTickInPart, 0));
+                        }
+                        var noteNewDuration = noteNewEndTick - noteNewStartTick;
+                        var deltaDur = noteNewDuration - noteOldDuration;
+                        if(deltaDur != 0){
+                            noteCommands.Add(new ResizeNoteCommand(voicePart, note, deltaDur));
+                        }
+                        //TODO: expression curve remapping, control point pitch remapping
+                    }
+                    foreach(var command in noteCommands){
+                        DocManager.Inst.ExecuteCmd(command);
+                    }
+                }
+            }
+        }
+
+        
+        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e){
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog {
+                Title = ThemeManager.GetString("menu.project.remaptimeaxis")
+            };
+            dialog.Height = 200;
+            dialog.SetPrompt(ThemeManager.GetString("dialogs.remaptimeaxis.message"));
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                try{
+                    if (double.TryParse(s, out double bpm)) {
+                        DocManager.Inst.StartUndoGroup();
+                        var oldTimeAxis = project.timeAxis.Clone();
+                        DocManager.Inst.ExecuteCmd(new BpmCommand(
+                            project, bpm));
+                        foreach(var tempo in project.tempos.Skip(1)){
+                            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
+                                project, tempo.position));
+                        }
+                        RemapTempo(oldTimeAxis, project.timeAxis.Clone());
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to open project location.");
+                    MessageBox.ShowError(this, e);
+                }
+            };
+            dialog.ShowDialog(this);
         }
 
         private void AddTimeSigChange(int bar) {
