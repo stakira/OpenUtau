@@ -224,15 +224,50 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class SetCurveCommand : ExpCommand {
-        readonly UProject project;
-        readonly string abbr;
+    public abstract class CurveCommand : ExpCommand {
+        protected readonly UProject project;
+        protected readonly string abbr;
+        protected int[] oldXs;
+        protected int[] oldYs;
+        public CurveCommand(UProject project, UVoicePart part, string abbr) : base(part) { 
+            this.project = project;
+            this.abbr = abbr;
+        }
+
+        public override void Unexecute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+
+        public override bool CanMerge(IList<UCommand> commands) {
+            return commands.All(c => c is CurveCommand);
+        }
+        public override UCommand Merge(IList<UCommand> commands) {
+            var first = commands.First() as CurveCommand;
+            var last = commands.Last() as CurveCommand;
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            curve.Simplify();
+            int[] newXs = curve?.xs.ToArray();
+            int[] newYs = curve?.ys.ToArray();
+            return new MergedSetCurveCommand(
+                last.project, last.Part, last.abbr,
+                first.oldXs, first.oldYs, newXs, newYs);
+        }
+    }
+
+    public class SetCurveCommand : CurveCommand {
         readonly int x;
         readonly int y;
         readonly int lastX;
         readonly int lastY;
-        int[] oldXs;
-        int[] oldYs;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
                 SkipTiming = true,
@@ -240,9 +275,7 @@ namespace OpenUtau.Core {
                 SkipPhonemizer = true,
                 SkipPhoneme = true,
             };
-        public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) : base(part) {
-            this.project = project;
-            this.abbr = abbr;
+        public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) : base(project, part, abbr) {
             this.x = x;
             this.y = y;
             this.lastX = lastX;
@@ -264,34 +297,36 @@ namespace OpenUtau.Core {
                 curve.Set(x, y1, lastX, lastY1);
             }
         }
-        public override void Unexecute() {
-            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
-            if (curve == null) {
-                return;
-            }
-            curve.xs.Clear();
-            curve.ys.Clear();
-            if (oldXs != null && oldYs != null) {
-                curve.xs.AddRange(oldXs);
-                curve.ys.AddRange(oldYs);
-            }
-        }
-        public override bool CanMerge(IList<UCommand> commands) {
-            return commands.All(c => c is SetCurveCommand);
-        }
-        public override UCommand Merge(IList<UCommand> commands) {
-            var first = commands.First() as SetCurveCommand;
-            var last = commands.Last() as SetCurveCommand;
-            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
-            curve.Simplify();
-            int[] newXs = curve?.xs.ToArray();
-            int[] newYs = curve?.ys.ToArray();
-            return new MergedSetCurveCommand(
-                last.project, last.Part, last.abbr,
-                first.oldXs, first.oldYs, newXs, newYs);
-        }
     }
 
+    /// <summary>
+    /// Editing command for writing multiple points in a time range into the curve, used by batch operations.
+    /// </summary>
+    public class SetRangeCurveCommand : CurveCommand {
+        readonly int[] x;
+        readonly int[] y;
+        public SetRangeCurveCommand(UProject project, UVoicePart part, string abbr, IEnumerable<int> x, IEnumerable<int> y) : base(project, part, abbr) {
+            this.x = x.ToArray();
+            this.y = y.ToArray();
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            oldXs = curve?.xs.ToArray();
+            oldYs = curve?.ys.ToArray();
+        }
+
+        public override string ToString() => "Range Edit Curve";
+        public override void Execute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (project.expressions.TryGetValue(abbr, out var descriptor)) {
+                if (curve == null) {
+                    curve = new UCurve(descriptor);
+                    Part.curves.Add(curve);
+                }
+                int[] y1 = y.Select(v => (int)Math.Clamp(v, descriptor.min, descriptor.max)).ToArray();
+                curve.SetRange(x, y1);
+            }
+        }
+    }
+    
     public class MergedSetCurveCommand : ExpCommand {
         readonly UProject project;
         readonly string abbr;

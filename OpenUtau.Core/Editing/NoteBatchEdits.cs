@@ -423,6 +423,8 @@ namespace OpenUtau.Core.Editing {
                 int? lastX = null;
                 int? lastY = null;
                 // TODO: Optimize interpolation and command.
+                List<int> xs = new List<int>();
+                List<int> ys = new List<int>();
                 for (int i = 0; i < result.tones.Length; i++) {
                     if (result.tones[i] < 0) {
                         continue;
@@ -434,11 +436,14 @@ namespace OpenUtau.Core.Editing {
                     lastX ??= x;
                     lastY ??= y;
                     if (y > minPitD) {
-                        docManager.ExecuteCmd(new SetCurveCommand(
-                            project, part, Format.Ustx.PITD, x, y, lastX.Value, lastY.Value));
+                        xs.Add(x);
+                        ys.Add(y);
                     }
                     lastX = x;
                     lastY = y;
+                }
+                if (xs.Count > 0) {
+                    docManager.ExecuteCmd(new SetRangeCurveCommand(project, part, Format.Ustx.PITD, xs, ys));
                 }
             }
             docManager.EndUndoGroup();
