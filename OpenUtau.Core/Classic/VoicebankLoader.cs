@@ -341,6 +341,15 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
+                    if (line.StartsWith("#Charaset:")) {
+                        try {
+                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
+                            if (encoding != charaset) {
+                                stream.Position = 0;
+                                return ParseOtoSet(stream, filePath, charaset);
+                            }
+                        } catch { }
+                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
