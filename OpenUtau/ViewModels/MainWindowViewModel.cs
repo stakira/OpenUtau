@@ -137,12 +137,19 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
             this.RaisePropertyChanged(nameof(Title));
         }
+        
+        public void ImportTracks(UProject[] loadedProjects, bool importTempo){
+            if (loadedProjects == null || loadedProjects.Length < 1) {
+                return;
+            }
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, loadedProjects, importTempo);
+        }
 
-        public void ImportTracks(string[] files) {
+        public void ImportTracks(string[] files, bool importTempo) {
             if (files == null) {
                 return;
             }
-            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files);
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files, importTempo);
         }
 
         public void ImportAudio(string file) {

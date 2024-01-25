@@ -90,6 +90,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid{ get; set; }
         [Reactive] public bool RememberUst{ get; set; }
         [Reactive] public bool RememberVsqx{ get; set; }
+        [Reactive] public int ImportTempo{ get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -150,6 +151,7 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
+            ImportTempo = Preferences.Default.ImportTempo;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -296,6 +298,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.RememberVsqx)
                 .Subscribe(index => {
                     Preferences.Default.RememberVsqx = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ImportTempo)
+                .Subscribe(index => {
+                    Preferences.Default.ImportTempo = index;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.ClearCacheOnQuit)
