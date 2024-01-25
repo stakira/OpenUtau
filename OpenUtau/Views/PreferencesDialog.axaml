@@ -88,6 +88,10 @@
               <TextBlock Text="{DynamicResource prefs.paths.addlsinger.install}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding InstallToAdditionalSingersPath}"/>
             </Grid>
+            <Grid>
+              <TextBlock Text="{DynamicResource prefs.paths.loaddeepfolders}" HorizontalAlignment="Left"/>
+              <ToggleSwitch IsChecked="{Binding LoadDeepFolders}"/>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.cache}">
