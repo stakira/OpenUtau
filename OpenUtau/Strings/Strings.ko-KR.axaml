@@ -51,8 +51,6 @@
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">렌더러</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">기본값으로 사용</system:String>
-  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
-  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <system:String x:Key="dialogs.voicecolorremapping">보이스 컬러 재맵핑</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">▼ 재맵핑된 컬러가 이 트랙의 모든 노트에 적용되요 </system:String>
 
@@ -74,20 +72,6 @@
   <system:String x:Key="exps.type.curve">커브형 표현</system:String>
   <system:String x:Key="exps.type.numerical">숫자형 표현</system:String>
   <system:String x:Key="exps.type.options">선택지형 표현</system:String>
-
-  <system:String x:Key="languages.de">독일어</system:String>
-  <system:String x:Key="languages.en">영어</system:String>
-  <system:String x:Key="languages.es">스페인어</system:String>
-  <system:String x:Key="languages.fr">프랑스어</system:String>
-  <system:String x:Key="languages.it">이탈리아어</system:String>
-  <system:String x:Key="languages.ja">일본어</system:String>
-  <system:String x:Key="languages.ko">한국어</system:String>
-  <system:String x:Key="languages.pl">폴란드어</system:String>
-  <system:String x:Key="languages.pt">포르투갈어</system:String>
-  <system:String x:Key="languages.ru">러시아어</system:String>
-  <system:String x:Key="languages.vi">베트남어</system:String>
-  <system:String x:Key="languages.zh">중국어</system:String>
-  <system:String x:Key="languages.zh-yue">광둥어</system:String>
 
   <system:String x:Key="lyrics.apply">적용하기</system:String>
   <system:String x:Key="lyrics.cancel">취소</system:String>
@@ -155,7 +139,6 @@
   <system:String x:Key="menu.tools">도구</system:String>
   <system:String x:Key="menu.tools.clearcache">캐시 비우기</system:String>
   <system:String x:Key="menu.tools.debugwindow">디버그 창</system:String>
-  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">레이아웃</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 수평 배치</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 수평 배치</system:String>
@@ -330,7 +313,6 @@
   <system:String x:Key="prefs.appearance.degree.solfege">계이름 도우미 (도 레 미 파 솔 라 시)</system:String>
   <system:String x:Key="prefs.appearance.lang">인터페이스 언어</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">피아노 롤에 다른 트랙의 노트 표시(유령 노트)</system:String>
-  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">피아노 롤에 가수의 스탠딩 표시</system:String>
   <system:String x:Key="prefs.appearance.sortorder">가수 이름 표시 언어</system:String>
   <system:String x:Key="prefs.appearance.theme">테마 설정</system:String>
@@ -437,7 +419,6 @@
   <system:String x:Key="singers.subbanks.set">설정</system:String>
   <system:String x:Key="singers.subbanks.tone">음계</system:String>
   <system:String x:Key="singers.subbanks.toneranges">음역대</system:String>
-  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <system:String x:Key="singers.visitwebsite">가수 공식 사이트 방문</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">압축 파일의 인코딩</system:String>
