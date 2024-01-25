@@ -25,6 +25,15 @@ namespace OpenUtau.Api {
             return false;
         }
 
+        public bool IsGlide(string symbol) {
+            foreach (var dict in dictionaries) {
+                if (dict.IsValidSymbol(symbol)) {
+                    return dict.IsGlide(symbol);
+                }
+            }
+            return false;
+        }
+
         public string[] Query(string grapheme) {
             foreach (var dict in dictionaries) {
                 var result = dict.Query(grapheme);
