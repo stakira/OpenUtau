@@ -372,7 +372,36 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                viewModel.ImportTracks(files);
+                var loadedProjects = Formats.ReadProjects(files);
+                if(loadedProjects == null || loadedProjects.Length == 0){
+                    return;
+                } 
+                bool importTempo = true;
+                switch(Preferences.Default.ImportTempo){
+                    case 1:
+                        importTempo = false;
+                        break;
+                    case 2:
+                        if(loadedProjects[0].tempos.Count == 0){
+                            importTempo = false;
+                            break;
+                        }
+                        var tempoString = String.Join("\n", 
+                            loadedProjects[0].tempos
+                                .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                            );
+                        //ask the user
+                        var result = await MessageBox.Show(
+                            this,
+                            ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                            ThemeManager.GetString("dialogs.importtracks.caption"),
+                            MessageBox.MessageBoxButtons.YesNo);
+                        if(result == MessageBox.MessageBoxResult.No){
+                            importTempo = false;
+                        }
+                        break;
+                }
+                viewModel.ImportTracks(loadedProjects, importTempo);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
                 _ = await MessageBox.ShowError(this, e);
@@ -579,8 +608,8 @@ namespace OpenUtau.App.Views {
             }
 
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {
-                var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
                 if (dialog == null) {
                     USinger? singer = null;
                     if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
@@ -596,7 +625,6 @@ namespace OpenUtau.App.Views {
                     dialog = new SingersDialog() { DataContext = vm };
                     dialog.Show();
                 }
-                dialog.Activate();
                 if (dialog.Position.Y < 0) {
                     dialog.Position = dialog.Position.WithY(0);
                 }
@@ -604,6 +632,9 @@ namespace OpenUtau.App.Views {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
+            }
+            if (dialog != null) {
+                dialog.Activate();
             }
         }
 
