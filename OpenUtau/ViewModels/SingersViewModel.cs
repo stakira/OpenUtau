@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -447,10 +447,10 @@ namespace OpenUtau.App.ViewModels {
             RefreshSinger();
         }
 
-        public void GotoOto(USinger singer, UOto oto) {
+        public void GotoOto(USinger singer, UOto? oto) {
             if (Singers.Contains(singer)) {
                 Singer = singer;
-                if (Singer.Otos.Contains(oto)) {
+                if (oto != null && Singer.Otos.Contains(oto)) {
                     SelectedOto = oto;
                 }
             }

@@ -81,7 +81,8 @@ namespace OpenUtau.Plugin.Builtin
                 return MakeSimpleResult(note.lyric);
             }
             // Find phone types of symbols.
-            var isVowel = symbols.Select(s => g2p.IsVowel(s)).ToArray();
+            var isVowel = symbols.Select(g2p.IsVowel).ToArray();
+            var isGlide = symbols.Select(g2p.IsGlide).ToArray();
             // Arpasing aligns the first vowel at 0 and shifts leading consonants to negative positions,
             // so we need to find the first vowel.
             var phonemes = new Phoneme[symbols.Length];
@@ -94,7 +95,13 @@ namespace OpenUtau.Plugin.Builtin
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
             for (int i = 0; i < symbols.Length; i++) {
                 if (isVowel[i] && alignments.Count < nonExtensionNotes.Length) {
-                    alignments.Add(Tuple.Create(i, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
+                    //Handle glide phonemes
+                    //For "Consonant-Glide-Vowel" syllable, the glide phoneme is placed after the start position of the note.
+                    if(i>=2 && isGlide[i-1] && !isVowel[i-2]){
+                        alignments.Add(Tuple.Create(i-1, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
+                    } else{
+                        alignments.Add(Tuple.Create(i, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
+                    }
                 }
             }
             int position = notes[0].duration;

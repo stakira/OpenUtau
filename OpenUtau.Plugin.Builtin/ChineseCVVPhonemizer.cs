@@ -84,6 +84,10 @@ namespace OpenUtau.Plugin.Builtin
             return !phoneme.StartsWith("_");
         }
 
+        public bool IsGlide(string phoneme){
+            return false;
+        }
+
         public string[] Query(string lyric){
             // The overall logic is:
             // 1. Remove consonant: "duang" -> "uang".

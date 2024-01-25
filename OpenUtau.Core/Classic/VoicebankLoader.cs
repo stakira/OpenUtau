@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -45,7 +46,15 @@ namespace OpenUtau.Classic {
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            result.AddRange(Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+            IEnumerable<string> files;
+            if (Preferences.Default.LoadDeepFolderSinger) {
+                files = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories);
+            } else {
+                // TopDirectoryOnly
+                files = Directory.GetDirectories(basePath)
+                    .SelectMany(path => Directory.EnumerateFiles(path, kCharTxt));
+            }
+            result.AddRange(files
                 .Select(filePath => {
                     try {
                         var voicebank = new Voicebank();
@@ -341,6 +350,15 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
+                    if (line.StartsWith("#Charaset:")) {
+                        try {
+                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
+                            if (encoding != charaset) {
+                                stream.Position = 0;
+                                return ParseOtoSet(stream, filePath, charaset);
+                            }
+                        } catch { }
+                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
