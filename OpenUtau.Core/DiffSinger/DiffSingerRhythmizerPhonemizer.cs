@@ -220,5 +220,9 @@ namespace OpenUtau.Core.DiffSinger {
             result.RemoveAt(result.Count - 1);
             return result;
         }
+
+        protected override string[] Romanize(IEnumerable<string> lyrics) {
+            return BaseChinesePhonemizer.Romanize(lyrics);
+        }
     }
 }

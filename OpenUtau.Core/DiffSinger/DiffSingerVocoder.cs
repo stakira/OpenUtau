@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
-    public class DsVocoder {
+    public class DsVocoder : IDisposable {
         public string Location;
         public DsVocoderConfig config;
         public InferenceSession session;
@@ -27,6 +27,23 @@ namespace OpenUtau.Core.DiffSinger {
         public float frameMs() {
             return 1000f * config.hop_size / config.sample_rate;
         }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    session?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
     }
 
     [Serializable]

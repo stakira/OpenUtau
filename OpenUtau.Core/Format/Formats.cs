@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
@@ -40,12 +41,16 @@ namespace OpenUtau.Core.Format {
             }
         }
 
-        public static void LoadProject(string[] files) {
+        /// <summary>
+        /// Read project from files to a new UProject object, used by LoadProject and ImportTracks.
+        /// </summary>
+        /// <param name="files">Names of the files to be loaded</param>
+        public static UProject? ReadProject(string[] files){
             if (files.Length < 1) {
-                return;
+                return null;
             }
             ProjectFormats format = DetectProjectFormat(files[0]);
-            UProject project;
+            UProject? project = null;
             switch (format) {
                 case ProjectFormats.Ustx:
                     project = Ustx.Load(files[0]);
@@ -66,37 +71,51 @@ namespace OpenUtau.Core.Format {
                 default:
                     throw new FileFormatException("Unknown file format");
             }
+            return project;
+        }
+
+        /// <summary>
+        /// Load project from files.
+        /// </summary>
+        /// <param name="files">Names of the files to be loaded</param>
+        public static void LoadProject(string[] files) {
+            UProject project = ReadProject(files);
             if (project != null) {
                 DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             }
         }
 
-        public static void ImportTracks(UProject project, string[] files) {
-            if (files.Length < 1) {
+
+        /// <summary>
+        /// Read multiple projects for importing tracks
+        /// </summary>
+        /// <param name="files">Names of the files to be loaded</param>
+        /// <returns></returns>
+        public static UProject[] ReadProjects(string[] files){
+            if (files == null || files.Length < 1) {
+                return new UProject[0];
+            }
+            return files
+                .Select(file => ReadProject(new string[] { file }))
+                .Where(p => p != null)
+                .Cast<UProject>()
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Import tracks from files to the current existing editing project.
+        /// </summary>
+        /// <param name="project">The current existing editing project</param>
+        /// <param name="loadedProjects">loaded project objects to be imported</param>
+        /// <param name="importTempo">If set to true, the tempo of the imported project will be used</param>
+        /// <exception cref="FileFormatException"></exception>
+        public static void ImportTracks(UProject project, UProject[] loadedProjects, bool importTempo = true) {
+            if (loadedProjects == null || loadedProjects.Length < 1) {
                 return;
             }
             int initialTracks = project.tracks.Count;
             int initialParts = project.parts.Count;
-            foreach (string file in files) {
-                ProjectFormats format = DetectProjectFormat(file);
-                UProject loaded;
-                switch (format) {
-                    case ProjectFormats.Ustx:
-                        loaded = Ustx.Load(file);
-                        break;
-                    case ProjectFormats.Vsq3:
-                    case ProjectFormats.Vsq4:
-                        loaded = VSQx.Load(file);
-                        break;
-                    case ProjectFormats.Ust:
-                        loaded = Ust.Load(new[] { file });
-                        break;
-                    case ProjectFormats.Midi:
-                        loaded = MidiWriter.LoadProject(file);
-                        break;
-                    default:
-                        throw new FileFormatException("Unknown file format");
-                }
+            foreach (UProject loaded in loadedProjects) {
                 int trackCount = project.tracks.Count;
                 foreach (var (abbr, descriptor) in loaded.expressions) {
                     if (!project.expressions.ContainsKey(abbr)) {
@@ -111,6 +130,9 @@ namespace OpenUtau.Core.Format {
                     project.parts.Add(part);
                     part.trackNo += trackCount;
                 }
+            }
+            if (importTempo) {
+                var loaded = loadedProjects[0];
                 project.timeSignatures.Clear();
                 project.timeSignatures.AddRange(loaded.timeSignatures);
                 project.tempos.Clear();
@@ -125,6 +147,25 @@ namespace OpenUtau.Core.Format {
             }
             project.ValidateFull();
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+        }
+
+        /// <summary>
+        /// Import tracks from files to the current existing editing project.
+        /// </summary>
+        /// <param name="project">The current existing editing project</param>
+        /// <param name="files">Names of the files to be imported</param>
+        /// <param name="importTempo">If set to true, the tempo of the imported project will be used</param>
+        /// <exception cref="FileFormatException"></exception>
+        public static void ImportTracks(UProject project, string[] files, bool importTempo = true) {
+            if (files == null || files.Length < 1) {
+                return;
+            }
+            UProject[] loadedProjects = files
+                .Select(file => ReadProject(new string[] { file }))
+                .Where(p => p != null)
+                .Cast<UProject>()
+                .ToArray();
+            ImportTracks(project, loadedProjects, importTempo);
         }
     }
 }

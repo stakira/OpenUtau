@@ -450,7 +450,9 @@ namespace OpenUtau.App.Views {
                 if (viewModel == null) {
                     return;
                 }
-                viewModel.GotoOto(editOto.singer, editOto.oto);
+                if (editOto.singer != null) {
+                    viewModel.GotoOto(editOto.singer, editOto.oto);
+                }
                 OtoGrid?.ScrollIntoView(OtoGrid.SelectedItem, null);
                 Activate();
             }
