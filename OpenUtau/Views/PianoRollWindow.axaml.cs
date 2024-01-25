@@ -135,12 +135,17 @@ namespace OpenUtau.App.Views {
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {
             MainWindow?.OpenSingersWindow();
+            this.Activate();
             try {
-                if (ViewModel.NotesViewModel.Part != null && !ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
-                    USinger singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
-                    UOto oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
-                    DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, oto));
+                USinger? singer = null;
+                UOto? oto = null;
+                if (ViewModel.NotesViewModel.Part != null) {
+                    singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
+                    if(!ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
+                        oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
+                    }
                 }
+                DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, oto));
             } catch { }
         }
 
@@ -751,11 +756,12 @@ namespace OpenUtau.App.Views {
                     var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(control));
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
-                        if (Core.Util.Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Core.Util.Preferences.Default.VLabelerPath)) {
+                        if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
                             Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
                             MainWindow?.OpenSingersWindow();
-                            Core.DocManager.Inst.ExecuteCmd(new Core.GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
+                            this.Activate();
+                            DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
                         }
                         return;
                     }
