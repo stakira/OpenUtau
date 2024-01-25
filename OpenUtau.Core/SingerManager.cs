@@ -19,6 +19,8 @@ namespace OpenUtau.Core {
 
         private readonly ConcurrentQueue<USinger> reloadQueue = new ConcurrentQueue<USinger>();
         private CancellationTokenSource reloadCancellation;
+        
+        private HashSet<USinger> singersUsed = new HashSet<USinger>();
 
         public void Initialize() {
             InitializationTask = Task.Run(() => {
@@ -108,6 +110,27 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification(external: true));
                 }).Start(DocManager.Inst.MainScheduler);
             }
+        }
+
+        //Check which singers are in use and free memory for those that are not
+        public void ReleaseSingersNotInUse(UProject project) {
+            //Check which singers are in use
+            var singersInUse = new HashSet<USinger>();
+            foreach(var track in project.tracks){
+                var singer = track.Singer;
+                if(singer != null){
+                    singersInUse.Add(singer);
+                }
+            }
+            //Release singers that are no longer in use
+            foreach(var singer in singersUsed){
+                if(!singersInUse.Contains(singer)){
+                    singer.FreeMemory();
+                    singersUsed.Remove(singer);
+                }
+            }
+            //Update singers used
+            singersUsed.UnionWith(singersInUse);
         }
     }
 }

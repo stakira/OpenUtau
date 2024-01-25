@@ -280,5 +280,14 @@ namespace OpenUtau.Core.Ustx {
         private void NotifyPropertyChanged(string propertyName = "") {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        /// <summary>
+        /// Some types of singers store their data in memory when rendering.
+        /// This method is called when the singer is no longer used.
+        /// Note:
+        /// - the voicebank may be used again even after this method is called.
+        /// - this method may be called even when the singer has not been used
+        /// </summary>
+        public virtual void FreeMemory(){ }
     }
 }
