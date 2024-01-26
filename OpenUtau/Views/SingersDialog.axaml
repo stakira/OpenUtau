@@ -75,27 +75,56 @@
         </Path>
         <Button.ContextMenu>
           <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+            <ContextMenu.Styles>
+              <Style Selector="CheckBox">
+                <Setter Property="IsHitTestVisible" Value="False" />
+                <Style Selector="^:unchecked /template/ Border#NormalRectangle">
+                  <Setter Property="BorderThickness" Value="0" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="^:checked /template/ Path#CheckGlyph">
+                  <Setter Property="Fill" Value="{DynamicResource SelectedTrackAccentBrush}" />
+                  <Setter Property="Width" Value="12" />
+                </Style>
+                <Style Selector="^:checked /template/ Border#NormalRectangle">
+                  <Setter Property="BorderThickness" Value="0" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+              </Style>
+            </ContextMenu.Styles>
             <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
             <MenuItem Header="{DynamicResource singers.setimage}" Click="OnSetImage"/>
             <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
             <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
+                    <MenuItem.Icon>
+                      <CheckBox IsChecked="{Binding IsChecked}" />
+                    </MenuItem.Icon>
+                  </MenuItem>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
             <MenuItem Header="{DynamicResource singers.setsingertype}" ItemsSource="{Binding SetSingerTypeMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
+                    <MenuItem.Icon>
+                      <CheckBox IsChecked="{Binding IsChecked}" />
+                    </MenuItem.Icon>
+                  </MenuItem>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
             <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
+                    <MenuItem.Icon>
+                      <CheckBox IsChecked="{Binding IsChecked}" />
+                    </MenuItem.Icon>
+                  </MenuItem>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
