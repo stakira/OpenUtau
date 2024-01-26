@@ -149,6 +149,7 @@ namespace OpenUtau.Core.Util {
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
             public bool InstallToAdditionalSingersPath = true;
+            public bool LoadDeepFolderSinger = true;
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
             public List<string> RecentSingers = new List<string>();
@@ -179,6 +180,7 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
+            public int ImportTempo = 0;
             public string PhoneticAssistant = string.Empty;
         }
     }

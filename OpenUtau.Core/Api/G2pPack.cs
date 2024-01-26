@@ -59,6 +59,10 @@ namespace OpenUtau.Api {
             return Dict.IsVowel(symbol);
         }
 
+        public bool IsGlide(string symbol) {
+            return Dict.IsGlide(symbol);
+        }
+
         public string[] Query(string grapheme) {
             if (grapheme.Length == 0 || kAllPunct.IsMatch(grapheme)) {
                 return null;
