@@ -254,7 +254,7 @@ namespace OpenUtau.App.ViewModels {
                     CommandParameter = singer,
                 }));
             items.Add(new SingerMenuItemViewModel() {
-                Header = "Favs ...",
+                Header = "Favourites ...",
                 Items = Preferences.Default.FavoriteSingers
                     .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                     .OfType<USinger>()

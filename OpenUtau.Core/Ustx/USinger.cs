@@ -222,7 +222,7 @@ namespace OpenUtau.Core.Ustx {
                 NotifyPropertyChanged(nameof(OtoDirty));
             }
         }
-        public bool Favored {
+        public bool IsFavourite {
             get => Preferences.Default.FavoriteSingers.Contains(Id);
             set {
                 if (value) {

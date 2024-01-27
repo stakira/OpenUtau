@@ -14,16 +14,16 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class SingerMenuItemViewModel : MenuItemViewModel {
-        public bool IsFav {
+        public bool IsFavourite {
             get {
                 if(CommandParameter is USinger singer) {
-                    return singer.Favored;
+                    return singer.IsFavourite;
                 }
                 return false;
             }
             set {
                 if (CommandParameter is USinger singer) {
-                    singer.Favored = value;
+                    singer.IsFavourite = value;
                 }
             }
         }
@@ -33,7 +33,7 @@ namespace OpenUtau.App.ViewModels {
                 if(_icon == null) {
                     if (CommandParameter is USinger) {
                         _icon = new ToggleButton() {
-                            [!ToggleButton.IsCheckedProperty] = new Binding("IsFav")
+                            [!ToggleButton.IsCheckedProperty] = new Binding("IsFavourite")
                         };
                     }
                 }
