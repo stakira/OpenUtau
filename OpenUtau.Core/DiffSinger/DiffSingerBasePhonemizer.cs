@@ -133,11 +133,25 @@ namespace OpenUtau.Core.DiffSinger
             };
             var dsPhonemes = GetDsPhonemes(notes[0]);
             var isVowel = dsPhonemes.Select(s => g2p.IsVowel(s.Symbol)).ToArray();
+            var isGlide = dsPhonemes.Select(s => g2p.IsGlide(s.Symbol)).ToArray();
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
+            var isStart = new bool[dsPhonemes.Length];
+            if(!isStart.Any()){
+                isStart[0] = true;
+            }
+            for(int i=0; i<dsPhonemes.Length; i++){
+                if(isVowel[i]){
+                    if(i>=2 && isGlide[i-1] && !isVowel[i-2]){
+                        isStart[i-1] = true;
+                    }else{
+                        isStart[i] = true;
+                    }
+                }
+            }
             //distribute phonemes to notes
             var noteIndex = 0;
             for (int i = 0; i < dsPhonemes.Length; i++) {
-                if (isVowel[i] && noteIndex < nonExtensionNotes.Length) {
+                if (isStart[i] && noteIndex < nonExtensionNotes.Length) {
                     var note = nonExtensionNotes[noteIndex];
                     wordPhonemes.Add(new phonemesPerNote(note.position, note.tone));
                     noteIndex++;
