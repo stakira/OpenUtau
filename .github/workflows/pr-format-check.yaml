@@ -1,0 +1,17 @@
+name: Format Check
+
+on: push
+
+jobs:
+  pr-format-check:
+    name: Code formatting check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository contents
+        uses: actions/checkout@v1
+
+      - name: Use action to check for CRLF endings
+        uses: erclu/check-crlf@v1
+        with: 
+          path: ./
