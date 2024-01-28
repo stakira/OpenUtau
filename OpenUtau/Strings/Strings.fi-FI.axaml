@@ -51,6 +51,8 @@
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
@@ -72,6 +74,20 @@
   <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <system:String x:Key="exps.type.numerical">Numeraalinen</system:String>
   <system:String x:Key="exps.type.options">Kustomoi</system:String>
+
+  <system:String x:Key="languages.de">saksa</system:String>
+  <system:String x:Key="languages.en">englanti</system:String>
+  <system:String x:Key="languages.es">espanja</system:String>
+  <system:String x:Key="languages.fr">ranska</system:String>
+  <system:String x:Key="languages.it">italia</system:String>
+  <system:String x:Key="languages.ja">japani</system:String>
+  <system:String x:Key="languages.ko">korea</system:String>
+  <system:String x:Key="languages.pl">puola</system:String>
+  <system:String x:Key="languages.pt">portugali</system:String>
+  <system:String x:Key="languages.ru">venäjä</system:String>
+  <system:String x:Key="languages.vi">vietnam</system:String>
+  <system:String x:Key="languages.zh">kiina</system:String>
+  <system:String x:Key="languages.zh-yue">kantoninkiina</system:String>
 
   <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
   <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">Työkalut</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">Asettelu</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Vaakasuora 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Vaakasuora 1:2</system:String>
@@ -296,6 +313,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Teema</system:String>
@@ -399,6 +417,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
   <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Ääniala</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->

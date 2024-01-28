@@ -51,6 +51,8 @@
   <system:String x:Key="dialogs.tracksettings.location">Расположение</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Рендерер</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Установить по умолчанию</system:String>
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <system:String x:Key="dialogs.voicecolorremapping">Изменение цвета голоса</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Применится ко всем нотам в этом треке:</system:String>
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">Кривая</system:String>
   <system:String x:Key="exps.type.numerical">Числовой</system:String>
   <system:String x:Key="exps.type.options">Параметры</system:String>
+
+  <system:String x:Key="languages.de">немецкий</system:String>
+  <system:String x:Key="languages.en">английский</system:String>
+  <system:String x:Key="languages.es">испанский</system:String>
+  <system:String x:Key="languages.fr">французский</system:String>
+  <system:String x:Key="languages.it">итальянский</system:String>
+  <system:String x:Key="languages.ja">японский</system:String>
+  <system:String x:Key="languages.ko">корейский</system:String>
+  <system:String x:Key="languages.pl">польский</system:String>
+  <system:String x:Key="languages.pt">португальский</system:String>
+  <system:String x:Key="languages.ru">русский</system:String>
+  <system:String x:Key="languages.vi">вьетнамский</system:String>
+  <system:String x:Key="languages.zh">китайский</system:String>
+  <system:String x:Key="languages.zh-yue">кантонский</system:String>
 
   <system:String x:Key="lyrics.apply">Применить</system:String>
   <system:String x:Key="lyrics.cancel">Отмена</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
   <system:String x:Key="menu.tools.debugwindow">Окно отладки</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">Расположение</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Горизонтально 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Горизонтально 1:2</system:String>
@@ -292,6 +309,7 @@
   <system:String x:Key="prefs.appearance.degree.solfege">Сольфеджио (do re mi fa sol la ti)</system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Отображать ноты других треков на пианоролле</system:String>
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">Отображать портрет на пианоролле</system:String>
   <system:String x:Key="prefs.appearance.sortorder">Порядок сортировки вокалистов</system:String>
   <system:String x:Key="prefs.appearance.theme">Тема</system:String>
@@ -395,6 +413,7 @@
   <system:String x:Key="singers.subbanks.set">Установить</system:String>
   <system:String x:Key="singers.subbanks.tone">Тон</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Диапазон тональности</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <system:String x:Key="singers.visitwebsite">Посетить сайт</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Кодировка архива</system:String>

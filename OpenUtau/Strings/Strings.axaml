@@ -48,13 +48,13 @@
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>
 
@@ -76,6 +76,20 @@
   <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
   <system:String x:Key="exps.type.options">Options</system:String>
+
+  <system:String x:Key="languages.de">German</system:String>
+  <system:String x:Key="languages.en">English</system:String>
+  <system:String x:Key="languages.es">Spanish</system:String>
+  <system:String x:Key="languages.fr">French</system:String>
+  <system:String x:Key="languages.it">Italian</system:String>
+  <system:String x:Key="languages.ja">Japanese</system:String>
+  <system:String x:Key="languages.ko">Korean</system:String>
+  <system:String x:Key="languages.pl">Polish</system:String>
+  <system:String x:Key="languages.pt">Portuguese</system:String>
+  <system:String x:Key="languages.ru">Russian</system:String>
+  <system:String x:Key="languages.vi">Vietnamese</system:String>
+  <system:String x:Key="languages.zh">Chinese</system:String>
+  <system:String x:Key="languages.zh-yue">Cantonese</system:String>
 
   <system:String x:Key="lyrics.apply">Apply</system:String>
   <system:String x:Key="lyrics.cancel">Cancel</system:String>

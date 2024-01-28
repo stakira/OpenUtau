@@ -51,6 +51,8 @@
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">曲線</system:String>
   <system:String x:Key="exps.type.numerical">數值</system:String>
   <system:String x:Key="exps.type.options">選項</system:String>
+
+  <system:String x:Key="languages.de">德文</system:String>
+  <system:String x:Key="languages.en">英文</system:String>
+  <system:String x:Key="languages.es">西班牙文</system:String>
+  <system:String x:Key="languages.fr">法文</system:String>
+  <system:String x:Key="languages.it">義大利文</system:String>
+  <system:String x:Key="languages.ja">日文</system:String>
+  <system:String x:Key="languages.ko">韓文</system:String>
+  <system:String x:Key="languages.pl">波蘭文</system:String>
+  <system:String x:Key="languages.pt">葡萄牙文</system:String>
+  <system:String x:Key="languages.ru">俄文</system:String>
+  <system:String x:Key="languages.vi">越南文</system:String>
+  <system:String x:Key="languages.zh">中文</system:String>
+  <system:String x:Key="languages.zh-yue">粵語</system:String>
 
   <system:String x:Key="lyrics.apply">套用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">工具</system:String>
   <system:String x:Key="menu.tools.clearcache">清除快取</system:String>
   <system:String x:Key="menu.tools.debugwindow">除錯視窗</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">版面配置</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">橫向 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">橫向 1:2</system:String>
@@ -292,6 +309,7 @@
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <system:String x:Key="prefs.appearance.lang">語言</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">在鋼琴卷軸上顯示角色背景圖</system:String>
   <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">主題</system:String>
@@ -395,6 +413,7 @@
   <system:String x:Key="singers.subbanks.set">設定</system:String>
   <system:String x:Key="singers.subbanks.tone">音調</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音調範圍</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
