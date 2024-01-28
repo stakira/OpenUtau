@@ -17,7 +17,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void SelectAddlSingersPath(object sender, RoutedEventArgs e) {
-            var path = await FilePicker.OpenFolder(this, "prefs.paths.addlsinger");
+            var path = await FilePicker.OpenFolderAboutSinger(this, "prefs.paths.addlsinger");
             if (string.IsNullOrEmpty(path)) {
                 return;
             }
