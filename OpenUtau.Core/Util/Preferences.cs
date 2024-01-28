@@ -153,6 +153,7 @@ namespace OpenUtau.Core.Util {
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
             public List<string> RecentSingers = new List<string>();
+            public List<string> FavoriteSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
@@ -182,6 +183,8 @@ namespace OpenUtau.Core.Util {
             public bool RememberVsqx = true;
             public int ImportTempo = 0;
             public string PhoneticAssistant = string.Empty;
+            public string RecentOpenSingerDirectory = string.Empty;
+            public string RecentOpenProjectDirectory = string.Empty;
         }
     }
 }
