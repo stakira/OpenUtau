@@ -2,7 +2,7 @@
 
 namespace OpenUtau.Core.DiffSinger
 {
-    [Phonemizer("DiffSinger Phonemizer", "Japanese")]
+    [Phonemizer("DiffSinger Phonemizer", "Default")]
     public class DiffSingerPhonemizer : DiffSingerBasePhonemizer
     {
     }
