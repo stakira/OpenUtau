@@ -51,6 +51,8 @@
   <system:String x:Key="dialogs.tracksettings.location">Lokasi</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Perender</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Tetapkan Sebagai Bawaan</system:String>
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <system:String x:Key="dialogs.voicecolorremapping">Pemetaan ulang warna suara</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Terapkan ke semua nada di trek ini:</system:String>
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">Kurva</system:String>
   <system:String x:Key="exps.type.numerical">Numerik</system:String>
   <system:String x:Key="exps.type.options">Opsi</system:String>
+
+  <system:String x:Key="languages.de">Jerman</system:String>
+  <system:String x:Key="languages.en">Inggris</system:String>
+  <system:String x:Key="languages.es">Spanyol</system:String>
+  <system:String x:Key="languages.fr">Prancis</system:String>
+  <system:String x:Key="languages.it">Italia</system:String>
+  <system:String x:Key="languages.ja">Jepang</system:String>
+  <system:String x:Key="languages.ko">Korea</system:String>
+  <system:String x:Key="languages.pl">Polski</system:String>
+  <system:String x:Key="languages.pt">Portugis</system:String>
+  <system:String x:Key="languages.ru">Rusia</system:String>
+  <system:String x:Key="languages.vi">Vietnam</system:String>
+  <system:String x:Key="languages.zh">Tionghoa</system:String>
+  <system:String x:Key="languages.zh-yue">Kanton</system:String>
 
   <system:String x:Key="lyrics.apply">Terapkan</system:String>
   <system:String x:Key="lyrics.cancel">Batalkan</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">Peralatan</system:String>
   <system:String x:Key="menu.tools.clearcache">Hapus Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Jendela Debug</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horisontal 1:2</system:String>
@@ -298,6 +315,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la si)</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Tampilkan not trek lain di piano roll</system:String>
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">Tampilkan foto potret di piano roll</system:String>
   <system:String x:Key="prefs.appearance.sortorder">Bahasa tampilan nama penyanyi</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
@@ -401,6 +419,7 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="singers.subbanks.set">Setel</system:String>
   <system:String x:Key="singers.subbanks.tone">Nada</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <system:String x:Key="singers.visitwebsite">Visit Situs Web</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Pengkodean Berkas Arsip</system:String>

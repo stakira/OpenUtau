@@ -214,7 +214,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.open",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -283,7 +283,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuSaveAs(object sender, RoutedEventArgs args) => await SaveAs();
         async Task SaveAs() {
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.saveas", FilePicker.USTX);
             if (!string.IsNullOrEmpty(file)) {
                 viewModel.SaveProject(file);
@@ -308,7 +308,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportTracks(object sender, RoutedEventArgs args) {
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.importtracks",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -357,7 +357,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportAudio(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;
@@ -371,7 +371,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportMidi(bool UseDrywetmidi = false) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importmidi", FilePicker.MIDI);
             if (file == null) {
                 return;
@@ -394,7 +394,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmixdown", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderMixdown(project, file);
@@ -413,7 +413,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportWavTo(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportwavto", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderToFiles(project, file);
@@ -422,7 +422,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -438,7 +438,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -454,7 +454,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2withoutpitch", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -487,7 +487,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportUstTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportustto", FilePicker.UST);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -503,7 +503,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMidi(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmidi", FilePicker.MIDI);
             if (!string.IsNullOrEmpty(file)) {
                 MidiWriter.Save(file, project);
@@ -586,7 +586,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutSinger(
                 this, "menu.tools.singer.install", FilePicker.ArchiveFiles);
             if (file == null) {
                 return;
@@ -1156,7 +1156,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void ReplaceAudio(UPart part) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "context.part.replaceaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;

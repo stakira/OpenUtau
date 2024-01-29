@@ -11,10 +11,10 @@
   <system:String x:Key="context.part.replaceaudio">오디오 파일 교체</system:String>
   <system:String x:Key="context.part.transcribe">새 노트 파트로 오디오 전사</system:String>
   <system:String x:Key="context.part.transcribing">전사 중</system:String>
-  <system:String x:Key="context.pitch.easein">Ease in</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
-  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
-  <system:String x:Key="context.pitch.linear">Linear</system:String>
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
   <system:String x:Key="context.pitch.pointadd">피치 점 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">피치 점 삭제</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트에 물리기</system:String>
@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">프로젝트가 저장되지 않았습니다. 저장할까요?</system:String>
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
   <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해 주세요</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <system:String x:Key="dialogs.installdependency.caption">의존 요소 설치 중</system:String>
   <system:String x:Key="dialogs.installdependency.message">설치 중</system:String>
   <system:String x:Key="dialogs.installdll.caption">음소화기 설치 중</system:String>
@@ -46,13 +48,13 @@
   <system:String x:Key="dialogs.messagebox.yes">네</system:String>
   <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없어요</system:String>
   <system:String x:Key="dialogs.noresampler.message">리샘플러가 없어요! 'Resamplers' 폴더에 좋아하는 리샘플러의 exe나 dll을 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요!</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">이 파일 유형은 지원하지 않아요</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.message">이 파일 유형은 지원하지 않아요: </system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">렌더러</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">기본값으로 설정</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">이 파일 유형은 지원하지 않아요</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">이 파일 유형은 지원하지 않아요: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">음색 재배치</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">다음 트랙의 모든 노트에 적용됩니다.</system:String>
 
@@ -74,6 +76,20 @@
   <system:String x:Key="exps.type.curve">커브형</system:String>
   <system:String x:Key="exps.type.numerical">숫자형</system:String>
   <system:String x:Key="exps.type.options">선택지형</system:String>
+
+  <system:String x:Key="languages.de">독일어</system:String>
+  <system:String x:Key="languages.en">영어</system:String>
+  <system:String x:Key="languages.es">스페인어</system:String>
+  <system:String x:Key="languages.fr">프랑스어</system:String>
+  <system:String x:Key="languages.it">이탈리아어</system:String>
+  <system:String x:Key="languages.ja">일본어</system:String>
+  <system:String x:Key="languages.ko">한국어</system:String>
+  <system:String x:Key="languages.pl">폴란드어</system:String>
+  <system:String x:Key="languages.pt">포르투갈어</system:String>
+  <system:String x:Key="languages.ru">러시아어</system:String>
+  <system:String x:Key="languages.vi">베트남어</system:String>
+  <system:String x:Key="languages.zh">중국어</system:String>
+  <system:String x:Key="languages.zh-yue">광둥어</system:String>
 
   <system:String x:Key="lyrics.apply">적용</system:String>
   <system:String x:Key="lyrics.cancel">취소</system:String>
@@ -164,7 +180,7 @@
   <system:String x:Key="notedefaults.preset">프리셋</system:String>
   <system:String x:Key="notedefaults.preset.namenew">새 프리셋 이름</system:String>
   <system:String x:Key="notedefaults.preset.remove">삭제</system:String>
-<system:String x:Key="notedefaults.preset.remove.tooltip">마지막으로 적용된 프리셋을 삭제합니다.</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">마지막으로 적용된 프리셋을 삭제합니다.</system:String>
   <system:String x:Key="notedefaults.preset.save">프리셋 저장</system:String>
   <system:String x:Key="notedefaults.preset.save.tooltip">현재 세팅으로 새 프리셋 추가</system:String>
   <system:String x:Key="notedefaults.reset">사용자 설정 초기화</system:String>
@@ -285,6 +301,10 @@
 
   <system:String x:Key="prefs.advanced">고급</system:String>
   <system:String x:Key="prefs.advanced.beta">베타 버전 사용</system:String>
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <system:String x:Key="prefs.advanced.lyricshelper">가사 입력 도우미</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">가사 입력 도우미의 대괄호 자동 추가</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">'최근 파일'에 표시할 파일 유형</system:String>
@@ -317,6 +337,7 @@
   <system:String x:Key="prefs.paths">경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger">확장 가수 폴더</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">가수 설치 시 '확장 가수 폴더'에 설치</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">재설정</system:String>
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
@@ -326,7 +347,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">커서 스크롤</system:String>
   <system:String x:Key="prefs.playback.backend">오디오 백엔드</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">자동 스크롤 여백</system:String>
   <system:String x:Key="prefs.playback.device">오디오 재생 장치</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">일시정지할 때</system:String>
@@ -355,7 +376,7 @@
     경고: 렌더링 스레드가 너무 많으면 OpenUtau가 느리게 작동할 수 있습니다.
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">최대 렌더링 스레드 수</system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.loadingsingers">가수를 불러오는 중...</system:String>
   <system:String x:Key="progress.saved">{0} 프로젝트를 저장했습니다.</system:String>
@@ -465,7 +486,7 @@
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
   <system:String x:Key="updater.description">오픈소스 음성 합성 플랫폼</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">v{0} 버전 업데이트가 있어요!</system:String>
   <system:String x:Key="updater.status.checking">업데이트 확인 중...</system:String>
   <system:String x:Key="updater.status.notavailable">최신 버전</system:String>
