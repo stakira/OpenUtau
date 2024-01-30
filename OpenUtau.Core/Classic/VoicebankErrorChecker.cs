@@ -101,22 +101,15 @@ namespace OpenUtau.Classic {
                     message = $"There are duplicate aliases.{message}"
                 });
             }
-            //Cross platform check
-            //On case-insensitive systems, check if the wave filename in oto.ini is the same as the filename in the file system.
-            //If not matched, the VB may not work when copied to case-sensitive systems.
             foreach(var otoSet in voicebank.OtoSets) {
-                CaseCheckOnInsensitiveSystem(otoSet);
+                CheckCaseMatchForFileReference(otoSet);
+                CheckDuplicatedNameIgnoringCase(otoSet);
             }
-            CaseCheckOnInsensitiveSystem(voicebank.BasePath, new string[]{
+            CheckCaseMatchForFileReference(voicebank.BasePath, new string[]{
                 "chatacter.txt", 
                 "character.yaml", 
                 "prefix.map",
                 });
-            //On case-sensitive systems, check if there are files with names that only differ in cases.
-            //If such files exist, the VB may not work when copied to case-insensitive systems.
-            foreach (var otoSet in voicebank.OtoSets) {
-                CaseCheckOnSensitiveSystem(otoSet);
-            }
         }
 
         bool TryGetFileDuration(string filePath, Oto oto, out double fileDuration) {
@@ -262,8 +255,8 @@ namespace OpenUtau.Classic {
         /// </summary>
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
-        bool CaseCheckOnInsensitiveSystem(OtoSet otoSet) {
-            return CaseCheckOnInsensitiveSystem(
+        bool CheckCaseMatchForFileReference(OtoSet otoSet) {
+            return CheckCaseMatchForFileReference(
                 Directory.GetParent(otoSet.File).FullName, 
                 otoSet.Otos
                     .Select(oto => oto.Wav)
@@ -271,7 +264,7 @@ namespace OpenUtau.Classic {
                     .ToHashSet());
         }
 
-        bool CaseCheckOnInsensitiveSystem(string folder, IEnumerable<string> correctFileNames){
+        bool CheckCaseMatchForFileReference(string folder, IEnumerable<string> correctFileNames){
             bool valid = true;
             Dictionary<string, string> fileNamesLowerToActual = Directory.GetFiles(folder)
                 .Select(Path.GetFileName)
@@ -282,7 +275,7 @@ namespace OpenUtau.Classic {
                 }
                 if (fileNamesLowerToActual[fileName.ToLower()] != fileName) {
                     valid = false;
-                    Infos.Add(new VoicebankError() {
+                    Errors.Add(new VoicebankError() {
                         message = $"Wrong case in file name: \n"
                             + $"expected: {Path.Join(folder,fileName)}\n"
                             + $"Actual: {Path.Join(folder,fileNamesLowerToActual[fileName.ToLower()])}\n"
@@ -298,13 +291,13 @@ namespace OpenUtau.Classic {
         /// </summary>
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
-        bool CaseCheckOnSensitiveSystem(OtoSet otoSet) {
+        bool CheckDuplicatedNameIgnoringCase(OtoSet otoSet) {
             var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
             var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
                 .Where(group => group.Count() > 1)
                 .ToList();
             foreach (var group in duplicatedGroups) {
-                Infos.Add(new VoicebankError() {
+                Errors.Add(new VoicebankError() {
                     message = $"Duplicated file names found when ignoreing case in oto set \"{otoSet.Name}\":"
                     + string.Join(", ", group.Select(x => $"\"{x}\""))
                     + ".\n"
