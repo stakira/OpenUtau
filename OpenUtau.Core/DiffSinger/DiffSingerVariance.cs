@@ -17,7 +17,7 @@ namespace OpenUtau.Core.DiffSinger{
         public float[] energy;
         public float[] breathiness;
     }
-    public class DsVariance{
+    public class DsVariance : IDisposable{
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
@@ -115,7 +115,8 @@ namespace OpenUtau.Core.DiffSinger{
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
-            
+
+            Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
             var linguisticOutputs = linguisticModel.Run(linguisticInputs);
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -156,6 +157,7 @@ namespace OpenUtau.Core.DiffSinger{
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
+            Onnx.VerifyInputNames(varianceModel, varianceInputs);
             var varianceOutputs = varianceModel.Run(varianceInputs);
             Tensor<float> energy_pred = varianceOutputs
                 .Where(o => o.Name == "energy_pred")
@@ -169,6 +171,23 @@ namespace OpenUtau.Core.DiffSinger{
                 energy = energy_pred.ToArray(),
                 breathiness = breathiness_pred.ToArray()
             };
+        }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    linguisticModel?.Dispose();
+                    varianceModel?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

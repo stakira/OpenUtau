@@ -51,6 +51,8 @@
   <system:String x:Key="dialogs.tracksettings.location">Thư mục</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Trình render</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Đặt thành mặc định</system:String>
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">Vẽ tự do</system:String>
   <system:String x:Key="exps.type.numerical">Giá trị số</system:String>
   <system:String x:Key="exps.type.options">Lựa chọn các giá trị</system:String>
+
+  <system:String x:Key="languages.de">Tiếng Đức</system:String>
+  <system:String x:Key="languages.en">Tiếng Anh</system:String>
+  <system:String x:Key="languages.es">Tiếng Tây Ban Nha</system:String>
+  <system:String x:Key="languages.fr">Tiếng Pháp</system:String>
+  <system:String x:Key="languages.it">Tiếng Italy</system:String>
+  <system:String x:Key="languages.ja">Tiếng Nhật</system:String>
+  <system:String x:Key="languages.ko">Tiếng Hàn</system:String>
+  <system:String x:Key="languages.pl">Tiếng Ba Lan</system:String>
+  <system:String x:Key="languages.pt">Tiếng Bồ Đào Nha</system:String>
+  <system:String x:Key="languages.ru">Tiếng Nga</system:String>
+  <system:String x:Key="languages.vi">Tiếng Việt</system:String>
+  <system:String x:Key="languages.zh">Tiếng Trung</system:String>
+  <system:String x:Key="languages.zh-yue">Tiếng Quảng Đông</system:String>
 
   <system:String x:Key="lyrics.apply">Áp dụng</system:String>
   <system:String x:Key="lyrics.cancel">Huỷ bỏ</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
   <system:String x:Key="menu.tools.debugwindow">Mở cửa sổ Debug</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -292,6 +309,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <system:String x:Key="prefs.appearance.lang">Ngôn ngữ</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Hiện nốt của các track khác trong Piano Roll</system:String>
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">Hiện avatar trong Piano Roll</system:String>
   <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Chủ đề</system:String>
@@ -395,6 +413,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <system:String x:Key="singers.visitwebsite">Mở trang web</system:String>
 
   <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->

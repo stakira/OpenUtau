@@ -211,9 +211,9 @@ namespace OpenUtau.Core {
     }
 
     public class GotoOtoNotification : UNotification {
-        public readonly USinger singer;
-        public readonly UOto oto;
-        public GotoOtoNotification(USinger singer, UOto oto) {
+        public readonly USinger? singer;
+        public readonly UOto? oto;
+        public GotoOtoNotification(USinger? singer, UOto? oto) {
             this.singer = singer;
             this.oto = oto;
         }

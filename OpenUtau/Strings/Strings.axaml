@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>
   <system:String x:Key="dialogs.export.caption">Export</system:String>
   <system:String x:Key="dialogs.export.savefirst">Save project file first</system:String>
+  <system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>
+  <system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>
   <system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>
   <system:String x:Key="dialogs.installdependency.message">Installing </system:String>
   <system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>
@@ -51,6 +53,8 @@
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>
 
@@ -72,6 +76,20 @@
   <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
   <system:String x:Key="exps.type.options">Options</system:String>
+
+  <system:String x:Key="languages.de">German</system:String>
+  <system:String x:Key="languages.en">English</system:String>
+  <system:String x:Key="languages.es">Spanish</system:String>
+  <system:String x:Key="languages.fr">French</system:String>
+  <system:String x:Key="languages.it">Italian</system:String>
+  <system:String x:Key="languages.ja">Japanese</system:String>
+  <system:String x:Key="languages.ko">Korean</system:String>
+  <system:String x:Key="languages.pl">Polish</system:String>
+  <system:String x:Key="languages.pt">Portuguese</system:String>
+  <system:String x:Key="languages.ru">Russian</system:String>
+  <system:String x:Key="languages.vi">Vietnamese</system:String>
+  <system:String x:Key="languages.zh">Chinese</system:String>
+  <system:String x:Key="languages.zh-yue">Cantonese</system:String>
 
   <system:String x:Key="lyrics.apply">Apply</system:String>
   <system:String x:Key="lyrics.cancel">Cancel</system:String>
@@ -139,6 +157,7 @@
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
+  <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
@@ -282,6 +301,10 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
@@ -296,6 +319,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>
+  <system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>
   <system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
@@ -313,6 +337,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
+  <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
@@ -399,6 +424,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.subbanks.set">Set</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
+  <system:String x:Key="singers.usefilename">Use filename as alias</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>

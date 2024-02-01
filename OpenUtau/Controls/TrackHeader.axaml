@@ -54,13 +54,37 @@
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
+          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
                 <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                <Setter Property="Icon" Value="{Binding Icon}"/>
+                <Setter Property="ToolTip.Tip" Value="{Binding Location}"/>
+              </Style>
+              
+              <Style Selector="ToggleButton">
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Content" Value="♡"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Width" Value="20"/>
+                <Setter Property="Height" Value="20"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Style Selector="^:checked">
+                  <Setter Property="Content" Value="♥"/>
+                </Style>
+                <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
+                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
+                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
+                  <Setter Property="Background" Value="Transparent"/>
+                </Style>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -71,7 +95,7 @@
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
+          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
@@ -88,7 +112,7 @@
               Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
               ToolTip.Tip="{DynamicResource tracks.selectrenderer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
+          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>

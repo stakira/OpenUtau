@@ -36,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
+        [Reactive] public bool UseFilenameAsAlias { get; set; } = false;
 
         [Reactive] public string SearchAlias { get; set; } = "";
 
@@ -44,16 +45,19 @@ namespace OpenUtau.App.ViewModels {
         private readonly ObservableCollectionExtended<UOto> otos
             = new ObservableCollectionExtended<UOto>();
         private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
-        private readonly List<MenuItemViewModel> setEncodingMenuItems;
+        private List<MenuItemViewModel> setEncodingMenuItems;
         private readonly ReactiveCommand<string, Unit> setSingerTypeCommand;
-        private readonly List<MenuItemViewModel> setSingerTypeMenuItems;
+        private List<MenuItemViewModel> setSingerTypeMenuItems;
         private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
-        private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
+        private List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
         public SingersViewModel() {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
+            setEncodingMenuItems = new List<MenuItemViewModel>();
+            setSingerTypeMenuItems = new List<MenuItemViewModel>();
+            setDefaultPhonemizerMenuItems = new List<MenuItemViewModel>();
             if (Singers.Count() > 0) {
                 Singer = Singers.FirstOrDefault();
             }
@@ -85,60 +89,66 @@ namespace OpenUtau.App.ViewModels {
                         DisplayedOtos.AddRange(singer.Otos);
                         Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                         HasWebsite = !string.IsNullOrEmpty(singer.Web);
+                        if (Singer is ClassicSinger cSinger) {
+                            UseFilenameAsAlias = cSinger.UseFilenameAsAlias ?? false;
+                        }
                         LoadSubbanks();
                         DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                         this.RaisePropertyChanged(nameof(IsClassic));
                         this.RaisePropertyChanged(nameof(UseSearchAlias));
+                        var encodings = new Encoding[] {
+                            Encoding.GetEncoding("shift_jis"),
+                            Encoding.ASCII,
+                            Encoding.UTF8,
+                            Encoding.GetEncoding("gb2312"),
+                            Encoding.GetEncoding("big5"),
+                            Encoding.GetEncoding("ks_c_5601-1987"),
+                            Encoding.GetEncoding("Windows-1252"),
+                            Encoding.GetEncoding("macintosh"),
+                        };
+                        setEncodingMenuItems = encodings.Select(encoding =>
+                            new MenuItemViewModel() {
+                                Header = encoding.EncodingName,
+                                Command = setEncodingCommand,
+                                CommandParameter = encoding,
+                                IsChecked = singer.TextFileEncoding == encoding,
+                            }
+                        ).ToList();
+                        var singerTypes = new string[] {
+                            "utau", "enunu", "diffsinger"
+                        };
+                        setSingerTypeMenuItems = singerTypes.Select(singerType =>
+                            new MenuItemViewModel() {
+                                Header = singerType,
+                                Command = setSingerTypeCommand,
+                                CommandParameter = singerType,
+                                IsChecked = (SingerTypeUtils.SingerTypeNames.TryGetValue(singer.SingerType, out var name) ? name : "") == singerType,
+                            }
+                        ).ToList();
+                        setDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+                            Header = factory.ToString(),
+                            Command = setDefaultPhonemizerCommand,
+                            CommandParameter = factory,
+                            IsChecked = singer.DefaultPhonemizer == factory.type.FullName,
+                        }).ToList();
+                        this.RaisePropertyChanged(nameof(SetEncodingMenuItems));
+                        this.RaisePropertyChanged(nameof(SetSingerTypeMenuItems));
+                        this.RaisePropertyChanged(nameof(SetDefaultPhonemizerMenuItems));
                     }
                 });
             this.WhenAnyValue(vm => vm.SearchAlias)
                 .Subscribe(alias => {
                     Search();
                 });
-
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
                 SetEncoding(encoding);
             });
-            var encodings = new Encoding[] {
-                Encoding.GetEncoding("shift_jis"),
-                Encoding.ASCII,
-                Encoding.UTF8,
-                Encoding.GetEncoding("gb2312"),
-                Encoding.GetEncoding("big5"),
-                Encoding.GetEncoding("ks_c_5601-1987"),
-                Encoding.GetEncoding("Windows-1252"),
-                Encoding.GetEncoding("macintosh"),
-            };
-            setEncodingMenuItems = encodings.Select(encoding =>
-                new MenuItemViewModel() {
-                    Header = encoding.EncodingName,
-                    Command = setEncodingCommand,
-                    CommandParameter = encoding,
-                }
-            ).ToList();
-
             setSingerTypeCommand = ReactiveCommand.Create<string>(singerType => {
                 SetSingerType(singerType);
             });
-            var singerTypes = new string[] {
-                "utau", "enunu", "diffsinger"
-            };
-            setSingerTypeMenuItems = singerTypes.Select(singerType =>
-                new MenuItemViewModel() {
-                    Header = singerType,
-                    Command = setSingerTypeCommand,
-                    CommandParameter = singerType,
-                }
-            ).ToList();
-
             setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
                 SetDefaultPhonemizer(factory);
             });
-            setDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
-                Header = factory.ToString(),
-                Command = setDefaultPhonemizerCommand,
-                CommandParameter = factory,
-            }).ToList();
         }
 
         private void SetEncoding(Encoding encoding) {
@@ -201,6 +211,18 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        public void SetUseFilenameAsAlias() {
+            if (Singer == null || !IsClassic) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set use filename", e));
+            }
+            Refresh();
+        }
+
         private static void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             VoicebankConfig? config = null;
@@ -222,7 +244,8 @@ namespace OpenUtau.App.ViewModels {
             if (Singer == null || Singer.SingerType != USingerType.Classic) {
                 return;
             }
-            Task.Run(() => {
+            Task task = Task.Run(() => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer error report"));
                 var checker = new VoicebankErrorChecker(Singer.Location, Singer.BasePath);
                 checker.Check();
                 string outFile = Path.Combine(Singer.Location, "errors.txt");
@@ -246,18 +269,24 @@ namespace OpenUtau.App.ViewModels {
                 }
                 OS.GotoFile(outFile);
             });
+            task.ContinueWith(task => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer error report"));
+                if (task.IsFaulted && task.Exception != null) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(task.Exception));
+                }
+            });
         }
 
         public void Refresh() {
-            if (Singer == null) {
-                return;
+            string singerId = string.Empty;
+            if (Singer != null) {
+                singerId = Singer.Id;
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
             try {
-                var singerId = Singer.Id;
                 SingerManager.Inst.SearchAllSingers();
                 this.RaisePropertyChanged(nameof(Singers));
-                if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                if (!string.IsNullOrEmpty(singerId) && SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
                     Singer = singer;
                 } else {
                     Singer = Singers.FirstOrDefault();
@@ -288,7 +317,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 if (Singer != null) {
                     var location = Singer.Location;
-                    if(File.Exists(location)) {
+                    if (File.Exists(location)) {
                         //Vogen voicebank is a singlefile
                         OS.GotoFile(location);
                     } else {
@@ -424,10 +453,10 @@ namespace OpenUtau.App.ViewModels {
             RefreshSinger();
         }
 
-        public void GotoOto(USinger singer, UOto oto) {
+        public void GotoOto(USinger singer, UOto? oto) {
             if (Singers.Contains(singer)) {
                 Singer = singer;
-                if (Singer.Otos.Contains(oto)) {
+                if (oto != null && Singer.Otos.Contains(oto)) {
                     SelectedOto = oto;
                 }
             }

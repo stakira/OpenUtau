@@ -106,6 +106,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            viewModel.SetUseFilenameAsAlias();
+        }
+
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {
@@ -445,7 +450,9 @@ namespace OpenUtau.App.Views {
                 if (viewModel == null) {
                     return;
                 }
-                viewModel.GotoOto(editOto.singer, editOto.oto);
+                if (editOto.singer != null) {
+                    viewModel.GotoOto(editOto.singer, editOto.oto);
+                }
                 OtoGrid?.ScrollIntoView(OtoGrid.SelectedItem, null);
                 Activate();
             }
