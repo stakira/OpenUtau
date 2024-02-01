@@ -54,7 +54,6 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
                 {"o","w"},
-                {"0","w"},
                 {"O","w"},
                 {"8","w"},
                 {"A","y"},
@@ -144,7 +143,7 @@ namespace OpenUtau.Plugin.Builtin {
                             vc = $"{prevV}{vvExceptions[prevV]}";
                         }
                         phonemes.Add(vc);
-                        basePhoneme = $"{vvExceptions[prevV]}{v}";
+                        basePhoneme = $"_{vvExceptions[prevV]}{v}";
                     }
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         basePhoneme = $"{v}";
@@ -221,17 +220,13 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         if ($"{cc.Last()}" == "ng") {
 
-                            basePhoneme = $"g{v}";
-                        } else basePhoneme = $"_{v}";
+                            basePhoneme = $"_{v}";
+                        } else basePhoneme = $"g{v}";
                     }
 
                     var vc = $"{prevV} {cc.Last()}";
 
                     vc = CheckVCExceptions(vc);
-                    if ($"{cc.Last()}" == "ng") {
-
-                        vc += "-";
-                    }
 
                     phonemes.Add(vc);
 
