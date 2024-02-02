@@ -28,23 +28,24 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
-                {"i ng","1ng"},
+                {"i ng","1ng-"},
                 {"ing","1ng"},
-                {"0 r","0r"},
-                {"9 r","0r"},
+                {"0 r","0r-"},
+                {"9 r","0r-"},
                 {"9r","0r"},
+                {"er-","Ar-" },
                 //{"e r","Ar"},
                 {"er","Ar"},
                 //{"@ m","&m"},
                 {"@m","&m"},
                 {"@n","&n"},
-                {"1 ng","1ng"},
-                {"@ ng","Ang"},
+                {"1 ng","1ng-"},
+                {"@ ng","Ang-"},
                 {"@ng","Ang"},
                 {"ang","9ng"},
-                {"a ng","9ng"},
+                {"a ng","9ng-"},
                 //{"O l","0l"},
-                {"0 l","0l"},
+                {"0 l","0l-"},
                 {"Ol","0l"},
                 //{"6 l","6l"},
                 //{"i r","Er"},
@@ -116,6 +117,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
+            string[] PreviousWordCc = syllable.PreviousWordCc;
             string v = syllable.v;
             var lastC = cc.Length - 1;
             var lastCPrevWord = syllable.prevWordConsonantsCount;
@@ -217,6 +219,8 @@ namespace OpenUtau.Plugin.Builtin {
                 // if only one Consonant [V C] + [CV]
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
+                    
+                    
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         if ($"{cc.Last()}" == "ng") {
 
@@ -226,6 +230,18 @@ namespace OpenUtau.Plugin.Builtin {
 
                     var vc = $"{prevV} {cc.Last()}";
 
+                        if ($"{PreviousWordCc.Last()}" == "r") {
+                            vc = $"{prevV}r-";
+                            }
+                    
+                        if ($"{PreviousWordCc.Last()}" == "l") {
+                            vc = $"{prevV}l-";
+                            }
+
+                    if (!HasOto(vc, syllable.vowelTone)) ;
+                            if ($"{cc.Last()}" == "ng") {
+                                vc = $"{prevV}ng";
+                                }
                     vc = CheckVCExceptions(vc);
 
                     phonemes.Add(vc);
