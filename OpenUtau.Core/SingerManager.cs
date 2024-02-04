@@ -119,7 +119,7 @@ namespace OpenUtau.Core {
             var singersInUse = new HashSet<USinger>();
             foreach(var track in project.tracks){
                 var singer = track.Singer;
-                if(singer != null){
+                if(singer != null && singer.Found && !singersInUse.Contains(singer)) {
                     singersInUse.Add(singer);
                 }
             }
@@ -127,11 +127,10 @@ namespace OpenUtau.Core {
             foreach(var singer in singersUsed){
                 if(!singersInUse.Contains(singer)){
                     singer.FreeMemory();
-                    singersUsed.Remove(singer);
                 }
             }
             //Update singers used
-            singersUsed.UnionWith(singersInUse);
+            singersUsed = singersInUse;
         }
     }
 }
