@@ -8,6 +8,10 @@ namespace OpenUtau.Core.DiffSinger {
         public DsVocoderConfig config;
         public InferenceSession session;
 
+        public int num_mel_bins => config.num_mel_bins;
+        public int hop_size => config.hop_size;
+        public int sample_rate => config.sample_rate;
+
         //Get vocoder by package name
         public DsVocoder(string name) {
             byte[] model;
