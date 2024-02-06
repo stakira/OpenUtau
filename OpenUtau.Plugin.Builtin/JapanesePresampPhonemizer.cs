@@ -51,6 +51,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var result = new List<Phoneme>();
+            bool preCFlag = false;
 
             var note = notes[0];
             var currentLyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
@@ -80,6 +81,7 @@ namespace OpenUtau.Plugin.Builtin {
                     currentLyric = oto.Alias;
                 }
             } else if (prevNeighbour == null) { // beginning of phrase
+                preCFlag = true;
                 if (currentLyric.Contains("・")) {
                     if (checkOtoUntilHit(glottalCVtests, note, out var oto1)) {
                         currentLyric = oto1.Alias;
@@ -187,25 +189,28 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 } else {
                     // try "- CV" (prev is R, breath, etc.)
+                    preCFlag = true;
                     var tests = new List<string> { initial, currentLyric };
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
                 }
             }
-            result.Add(new Phoneme() { phoneme = currentLyric, index = 1 });
+            result.Add(new Phoneme() { phoneme = currentLyric, index = 0 });
 
             // Insert "- C"
-            if (string.IsNullOrEmpty(note.phoneticHint) && !currentLyric.Contains(vcvpad) && presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme phoneme)) {
-                if (phoneme.HasConsonant) {
-                    if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var coto)
-                        && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
-                        result.Insert(0, new Phoneme() {
-                            phoneme = coto.Alias,
-                            position = - MsToTick(oto.Preutter),
-                            index = 0
-                        });
-                    }
+            if (string.IsNullOrEmpty(note.phoneticHint)
+                && preCFlag
+                && !currentLyric.Contains(vcvpad)
+                && presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme phoneme)
+                && phoneme.HasConsonant) {
+                if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var coto)
+                    && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
+                    result.Insert(0, new Phoneme() {
+                        phoneme = coto.Alias,
+                        position = - MsToTick(oto.Preutter),
+                        index = 2
+                    });
                 }
             }
 
@@ -307,7 +312,7 @@ namespace OpenUtau.Plugin.Builtin {
                     result.Add(new Phoneme() {
                         phoneme = vcPhoneme,
                         position = totalDuration - vcLength,
-                        index = 2
+                        index = 1
                     });
                 }
             }
