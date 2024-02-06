@@ -217,7 +217,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var parsingVCC = $"{prevV}{cc[0]}-";
                 var parsingCC = "";
 
-                // if only one Consonant [V C] + [CV]
+                // if only one Consonant [V C] + [CV], [VC-][CV], or [VC][_V] if certain rules are met
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
                     
@@ -243,7 +243,13 @@ namespace OpenUtau.Plugin.Builtin {
                             if ($"{cc.Last()}" == "ng") {
                                 vc = $"{prevV}ng";
                                 }
+
                     vc = CheckVCExceptions(vc);
+                    
+                    if (HasOto($"{prevV} ng", syllable.vowelTone)) ;
+                            if ($"{cc.Last()}" == "ng") {
+                                vc = $"{prevV} ng";
+                                }
 
                     phonemes.Add(vc);
 
