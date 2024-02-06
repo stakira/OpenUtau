@@ -198,7 +198,7 @@ namespace OpenUtau.Plugin.Builtin {
             // Insert "- C"
             if (string.IsNullOrEmpty(note.phoneticHint) && !currentLyric.Contains(vcvpad) && presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme phoneme)) {
                 if (phoneme.HasConsonant) {
-                    if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 0, out var coto)
+                    if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var coto)
                         && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
                         result.Insert(0, new Phoneme() {
                             phoneme = coto.Alias,
@@ -250,7 +250,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             // next is CV (VC is needed)
                             tests = new List<string> { $"{vowel}{vcpad}・" };
-                            if (checkOtoUntilHit(tests, note, 2, out oto1)) {
+                            if (checkOtoUntilHit(tests, note, 1, out oto1)) {
                                 vcPhoneme = oto1.Alias;
                             } else {
                                 return new Result { phonemes = result.ToArray() };
@@ -283,7 +283,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (substituteLookup.TryGetValue(consonant ?? string.Empty, out var con)) {
                             vcPhonemes.Add($"{vowel}{vcpad}{con}");
                         }
-                        if (checkOtoUntilHit(vcPhonemes, note, 2, out var oto)) {
+                        if (checkOtoUntilHit(vcPhonemes, note, 1, out var oto)) {
                             vcPhoneme = oto.Alias;
                         } else {
                             return new Result { phonemes = result.ToArray() };
@@ -317,7 +317,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         // make it quicker to check multiple oto occurrences at once rather than spamming if else if
         private bool checkOtoUntilHit(List<string> input, Note note, out UOto oto) {
-            return checkOtoUntilHit(input, note, 1, out oto);
+            return checkOtoUntilHit(input, note, 0, out oto);
         }
 
         private bool checkOtoUntilHit(List<string> input, Note note, int index, out UOto oto) {
