@@ -51,8 +51,7 @@ namespace OpenUtau.Core.Vogen {
                 files = Directory.EnumerateFiles(basePath, "*.vogeon", SearchOption.AllDirectories);
             } else {
                 // TopDirectoryOnly
-                files = Directory.GetDirectories(basePath)
-                    .SelectMany(path => Directory.EnumerateFiles(path, "*.vogeon"));
+                files = Directory.EnumerateFiles(basePath, "*.vogeon");
             }
             result.AddRange(files
                 .Select(filePath => {
