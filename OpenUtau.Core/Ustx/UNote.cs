@@ -156,23 +156,23 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out var descriptor);
+            track.TryGetExpression(project, abbr, out UExpression trackExp);
             var list = new List<Tuple<float, bool>>();
             int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
 
             for (int i = 0; i < indexes; i++) {
-                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
-                if (expression != null) {
-                    list.Add(Tuple.Create(expression.value, true));
+                var phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                if (phonemeExp != null) {
+                    list.Add(Tuple.Create(phonemeExp.value, true));
                 } else {
-                    list.Add(Tuple.Create(descriptor.defaultValue, false));
+                    list.Add(Tuple.Create(trackExp.value, false));
                 }
             }
             return list;
         }
 
         public void SetExpression(UProject project, UTrack track, string abbr, float[] values) {
-            if (!track.TryGetExpression(project, abbr, out var descriptor)) {
+            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
                 return;
             }
             int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
@@ -185,17 +185,16 @@ namespace OpenUtau.Core.Ustx {
                     value = values.Last();
                 }
 
-                if (descriptor.defaultValue == value) {
-                    phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
+                if (trackExp.value == value) {
+                    phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == i);
                     continue;
                 }
-                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
-                if (expression != null) {
-                    expression.descriptor = descriptor;
-                    expression.value = value;
+                var phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                if (phonemeExp != null) {
+                    phonemeExp.descriptor = trackExp.descriptor;
+                    phonemeExp.value = value;
                 } else {
-                    phonemeExpressions.Add(new UExpression(descriptor) {
-                        descriptor = descriptor,
+                    phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
                         index = i,
                         value = value,
                     });
