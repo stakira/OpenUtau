@@ -149,6 +149,38 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
+        
+        
+        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e){
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog {
+                Title = ThemeManager.GetString("menu.project.remaptimeaxis")
+            };
+            dialog.Height = 200;
+            dialog.SetPrompt(ThemeManager.GetString("dialogs.remaptimeaxis.message"));
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                try{
+                    if (double.TryParse(s, out double bpm)) {
+                        DocManager.Inst.StartUndoGroup();
+                        var oldTimeAxis = project.timeAxis.Clone();
+                        DocManager.Inst.ExecuteCmd(new BpmCommand(
+                            project, bpm));
+                        foreach(var tempo in project.tempos.Skip(1)){
+                            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
+                                project, tempo.position));
+                        }
+                        viewModel.RemapTimeAxis(oldTimeAxis, project.timeAxis.Clone());
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to open project location.");
+                    MessageBox.ShowError(this, e);
+                }
+            };
+            dialog.ShowDialog(this);
+        }
+
         private void AddTimeSigChange(int bar) {
             var project = DocManager.Inst.Project;
             var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
