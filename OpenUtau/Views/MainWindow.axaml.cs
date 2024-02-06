@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -148,6 +149,38 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
+        
+        
+        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e){
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog {
+                Title = ThemeManager.GetString("menu.project.remaptimeaxis")
+            };
+            dialog.Height = 200;
+            dialog.SetPrompt(ThemeManager.GetString("dialogs.remaptimeaxis.message"));
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                try{
+                    if (double.TryParse(s, out double bpm)) {
+                        DocManager.Inst.StartUndoGroup();
+                        var oldTimeAxis = project.timeAxis.Clone();
+                        DocManager.Inst.ExecuteCmd(new BpmCommand(
+                            project, bpm));
+                        foreach(var tempo in project.tempos.Skip(1)){
+                            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
+                                project, tempo.position));
+                        }
+                        viewModel.RemapTimeAxis(oldTimeAxis, project.timeAxis.Clone());
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to open project location.");
+                    MessageBox.ShowError(this, e);
+                }
+            };
+            dialog.ShowDialog(this);
+        }
+
         private void AddTimeSigChange(int bar) {
             var project = DocManager.Inst.Project;
             var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
@@ -181,7 +214,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.open",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -250,7 +283,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuSaveAs(object sender, RoutedEventArgs args) => await SaveAs();
         async Task SaveAs() {
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.saveas", FilePicker.USTX);
             if (!string.IsNullOrEmpty(file)) {
                 viewModel.SaveProject(file);
@@ -275,7 +308,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportTracks(object sender, RoutedEventArgs args) {
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.importtracks",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -286,7 +319,36 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                viewModel.ImportTracks(files);
+                var loadedProjects = Formats.ReadProjects(files);
+                if(loadedProjects == null || loadedProjects.Length == 0){
+                    return;
+                } 
+                bool importTempo = true;
+                switch(Preferences.Default.ImportTempo){
+                    case 1:
+                        importTempo = false;
+                        break;
+                    case 2:
+                        if(loadedProjects[0].tempos.Count == 0){
+                            importTempo = false;
+                            break;
+                        }
+                        var tempoString = String.Join("\n", 
+                            loadedProjects[0].tempos
+                                .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                            );
+                        //ask the user
+                        var result = await MessageBox.Show(
+                            this,
+                            ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                            ThemeManager.GetString("dialogs.importtracks.caption"),
+                            MessageBox.MessageBoxButtons.YesNo);
+                        if(result == MessageBox.MessageBoxResult.No){
+                            importTempo = false;
+                        }
+                        break;
+                }
+                viewModel.ImportTracks(loadedProjects, importTempo);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
                 _ = await MessageBox.ShowError(this, e);
@@ -295,7 +357,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportAudio(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;
@@ -309,7 +371,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportMidi(bool UseDrywetmidi = false) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importmidi", FilePicker.MIDI);
             if (file == null) {
                 return;
@@ -332,7 +394,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmixdown", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderMixdown(project, file);
@@ -351,7 +413,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportWavTo(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportwavto", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderToFiles(project, file);
@@ -360,7 +422,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -376,7 +438,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -392,7 +454,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2withoutpitch", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -425,7 +487,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportUstTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportustto", FilePicker.UST);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -441,7 +503,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMidi(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmidi", FilePicker.MIDI);
             if (!string.IsNullOrEmpty(file)) {
                 MidiWriter.Save(file, project);
@@ -493,8 +555,8 @@ namespace OpenUtau.App.Views {
             }
 
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {
-                var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
                 if (dialog == null) {
                     USinger? singer = null;
                     if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
@@ -510,7 +572,6 @@ namespace OpenUtau.App.Views {
                     dialog = new SingersDialog() { DataContext = vm };
                     dialog.Show();
                 }
-                dialog.Activate();
                 if (dialog.Position.Y < 0) {
                     dialog.Position = dialog.Position.WithY(0);
                 }
@@ -519,10 +580,13 @@ namespace OpenUtau.App.Views {
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
             }
+            if (dialog != null) {
+                dialog.Activate();
+            }
         }
 
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutSinger(
                 this, "menu.tools.singer.install", FilePicker.ArchiveFiles);
             if (file == null) {
                 return;
@@ -1092,7 +1156,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void ReplaceAudio(UPart part) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "context.part.replaceaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;

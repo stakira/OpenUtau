@@ -17,7 +17,7 @@ namespace OpenUtau.Core.DiffSinger{
         public float[] energy;
         public float[] breathiness;
     }
-    public class DsVariance{
+    public class DsVariance : IDisposable{
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
@@ -110,7 +110,7 @@ namespace OpenUtau.Core.DiffSinger{
                     new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                     .Reshape(new int[] { 1, word_dur.Length })));
             }else{
-                //if predict_dur is true, use phoneme encode mode
+                //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
@@ -171,6 +171,23 @@ namespace OpenUtau.Core.DiffSinger{
                 energy = energy_pred.ToArray(),
                 breathiness = breathiness_pred.ToArray()
             };
+        }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    linguisticModel?.Dispose();
+                    varianceModel?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

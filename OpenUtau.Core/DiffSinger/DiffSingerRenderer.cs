@@ -101,10 +101,12 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples == null) {
-                        result.samples = InvokeDiffsinger(phrase, depth, speedup);
-                        var source = new WaveSource(0, 0, 0, 1);
-                        source.SetSamples(result.samples);
-                        WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                        result.samples = InvokeDiffsinger(phrase, depth, speedup, cancellation);
+                        if (result.samples != null) {
+                            var source = new WaveSource(0, 0, 0, 1);
+                            source.SetSamples(result.samples);
+                            WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                        }
                     }
                     if (result.samples != null) {
                         Renderers.ApplyDynamics(phrase, result);
@@ -120,7 +122,7 @@ namespace OpenUtau.Core.DiffSinger {
         leadingMs、positionMs、estimatedLengthMs: timeaxis layout in Ms, double
          */
 
-        float[] InvokeDiffsinger(RenderPhrase phrase, int depth, int speedup) {
+        float[] InvokeDiffsinger(RenderPhrase phrase, int depth, int speedup, CancellationTokenSource cancellation) {
             var singer = phrase.singer as DiffSingerSinger;
             //Check if dsconfig.yaml is correct
             if(String.IsNullOrEmpty(singer.dsConfig.vocoder) ||
@@ -130,6 +132,15 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             var vocoder = singer.getVocoder();
+            //Vocoder and singer should have the same hop sizes and sample rates.
+            if(vocoder.hop_size != singer.dsConfig.hop_size){
+                throw new Exception($"Vocoder's hop size is {vocoder.hop_size}, but acoustic's hop size is {singer.dsConfig.hop_size}.");
+            }
+            if(vocoder.sample_rate != singer.dsConfig.sample_rate){
+                throw new Exception($"Vocoder's sample rate is {vocoder.sample_rate}, but acoustic's sample rate is {singer.dsConfig.sample_rate}.");
+            }
+
+            var acousticModel = singer.getAcousticSession();
             var frameMs = vocoder.frameMs();
             var frameSec = frameMs / 1000;
             int headFrames = (int)Math.Round(headMs / frameMs);
@@ -218,8 +229,16 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //Variance: Energy and Breathiness
+            
             if(singer.dsConfig.useBreathinessEmbed || singer.dsConfig.useEnergyEmbed){
-                var varianceResult = singer.getVariancePredictor().Process(phrase);
+                var variancePredictor = singer.getVariancePredictor();
+                VarianceResult varianceResult;
+                lock(variancePredictor){
+                    if(cancellation.IsCancellationRequested) {
+                        return null;
+                    }
+                    varianceResult = singer.getVariancePredictor().Process(phrase);
+                }
                 //TODO: let user edit variance curves
                 if(singer.dsConfig.useEnergyEmbed){
                     var energyCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == ENE);
@@ -231,7 +250,8 @@ namespace OpenUtau.Core.DiffSinger {
                     } else{
                         userEnergy = Enumerable.Repeat(0d, totalFrames);
                     }
-                    var energy = varianceResult.energy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    var predictedEnergy = DiffSingerUtils.ResampleCurve(varianceResult.energy, totalFrames);
+                    var energy = predictedEnergy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
                         new DenseTensor<float>(energy, new int[] { energy.Length })
                         .Reshape(new int[] { 1, energy.Length })));
@@ -240,32 +260,49 @@ namespace OpenUtau.Core.DiffSinger {
                     var userBreathiness = DiffSingerUtils.SampleCurve(phrase, phrase.breathiness,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
-                    var breathiness = varianceResult.breathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    var predictedBreathiness = DiffSingerUtils.ResampleCurve(varianceResult.breathiness, totalFrames);
+                    var breathiness = predictedBreathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
                         new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
                         .Reshape(new int[] { 1, breathiness.Length })));
                 }
             }
-
-            var acousticModel = singer.getAcousticSession();
-            Onnx.VerifyInputNames(acousticModel, acousticInputs);
             Tensor<float> mel;
-            var acousticOutputs = acousticModel.Run(acousticInputs);
-            mel = acousticOutputs.First().AsTensor<float>().Clone();
-            
+            lock(acousticModel){
+                if(cancellation.IsCancellationRequested) {
+                    return null;
+                }
+                Onnx.VerifyInputNames(acousticModel, acousticInputs);
+                var acousticOutputs = acousticModel.Run(acousticInputs);
+                mel = acousticOutputs.First().AsTensor<float>().Clone();
+            }
             //vocoder
             //waveform = session.run(['waveform'], {'mel': mel, 'f0': f0})[0]
             var vocoderInputs = new List<NamedOnnxValue>();
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
-            float[] samples;
-            var vocoderOutputs = vocoder.session.Run(vocoderInputs);
-            samples = vocoderOutputs.First().AsTensor<float>().ToArray();
+            Tensor<float> samplesTensor;
+            lock(vocoder){
+                if(cancellation.IsCancellationRequested) {
+                    return null;
+                }
+                var vocoderOutputs = vocoder.session.Run(vocoderInputs);
+                samplesTensor = vocoderOutputs.First().AsTensor<float>();
+            }
+            //Check the size of samplesTensor
+            int[] expectedShape = new int[] { 1, -1 };
+            if(!DiffSingerUtils.ValidateShape(samplesTensor, expectedShape)){
+                throw new Exception($"The shape of vocoder output should be (1, length), but the actual shape is {DiffSingerUtils.ShapeString(samplesTensor)}");
+            }
+            var samples = samplesTensor.ToArray();
             return samples;
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            return (phrase.singer as DiffSingerSinger).getPitchPredictor().Process(phrase);
+            var pitchPredictor = (phrase.singer as DiffSingerSinger).getPitchPredictor();
+            lock(pitchPredictor){
+                return pitchPredictor.Process(phrase);
+            }
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {

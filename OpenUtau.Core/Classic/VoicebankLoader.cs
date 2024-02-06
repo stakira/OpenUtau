@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -45,7 +46,15 @@ namespace OpenUtau.Classic {
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            result.AddRange(Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+            IEnumerable<string> files;
+            if (Preferences.Default.LoadDeepFolderSinger) {
+                files = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories);
+            } else {
+                // TopDirectoryOnly
+                files = Directory.GetDirectories(basePath)
+                    .SelectMany(path => Directory.EnumerateFiles(path, kCharTxt));
+            }
+            result.AddRange(files
                 .Select(filePath => {
                     try {
                         var voicebank = new Voicebank();
@@ -79,28 +88,20 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            switch (bankConfig?.SingerType) {
-                case "utau":
-                    voicebank.SingerType = USingerType.Classic;
-                    break;
-                case "enunu":
+            string singerType = bankConfig?.SingerType ?? string.Empty;
+            if(SingerTypeUtils.SingerTypeFromName.ContainsKey(singerType)){
+                voicebank.SingerType = SingerTypeUtils.SingerTypeFromName[singerType];
+            }else{
+                // Legacy detection code. Do not add more here.
+                var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+                var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
+                if (File.Exists(enuconfigFile)) {
                     voicebank.SingerType = USingerType.Enunu;
-                    break;
-                case "diffsinger":
+                } else if (File.Exists(dsconfigFile)) {
                     voicebank.SingerType = USingerType.DiffSinger;
-                    break;
-                default:
-                    // Legacy detection code. Do not add more here.
-                    var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-                    var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
-                    if (File.Exists(enuconfigFile)) {
-                        voicebank.SingerType = USingerType.Enunu;
-                    } else if (File.Exists(dsconfigFile)) {
-                        voicebank.SingerType = USingerType.DiffSinger;
-                    } else if (voicebank.SingerType != USingerType.Enunu) {
-                        voicebank.SingerType = USingerType.Classic;
-                    }
-                    break;
+                } else if (voicebank.SingerType != USingerType.Enunu) {
+                    voicebank.SingerType = USingerType.Classic;
+                }
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
@@ -341,6 +342,15 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
+                    if (line.StartsWith("#Charaset:")) {
+                        try {
+                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
+                            if (encoding != charaset) {
+                                stream.Position = 0;
+                                return ParseOtoSet(stream, filePath, charaset);
+                            }
+                        } catch { }
+                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);

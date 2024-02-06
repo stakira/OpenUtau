@@ -51,6 +51,8 @@
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">カーブ</system:String>
   <system:String x:Key="exps.type.numerical">数値</system:String>
   <system:String x:Key="exps.type.options">カスタム</system:String>
+
+  <system:String x:Key="languages.de">ドイツ語</system:String>
+  <system:String x:Key="languages.en">英語</system:String>
+  <system:String x:Key="languages.es">スペイン語</system:String>
+  <system:String x:Key="languages.fr">フランス語</system:String>
+  <system:String x:Key="languages.it">イタリア語</system:String>
+  <system:String x:Key="languages.ja">日本語</system:String>
+  <system:String x:Key="languages.ko">韓国語</system:String>
+  <system:String x:Key="languages.pl">ポーランド語</system:String>
+  <system:String x:Key="languages.pt">ポルトガル語</system:String>
+  <system:String x:Key="languages.ru">ロシア語</system:String>
+  <system:String x:Key="languages.vi">ベトナム語</system:String>
+  <system:String x:Key="languages.zh">中国語</system:String>
+  <system:String x:Key="languages.zh-yue">広東語</system:String>
 
   <system:String x:Key="lyrics.apply">適用</system:String>
   <system:String x:Key="lyrics.cancel">キャンセル</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">ツール</system:String>
   <system:String x:Key="menu.tools.clearcache">キャッシュクリア</system:String>
   <system:String x:Key="menu.tools.debugwindow">デバッグウインドウ</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">レイアウト</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">横並び 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">横並び 1:2</system:String>
@@ -223,6 +240,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addbreath">ブレスを追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">音符の隙間を埋める</system:String>
@@ -296,6 +314,7 @@
   <system:String x:Key="prefs.appearance.degree.solfege">Solfège (ドレミファソラシ)</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">ピアノロール上に他トラックの音符を表示</system:String>
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">ピアノロール上に背景イラストを表示</system:String>
   <system:String x:Key="prefs.appearance.sortorder">シンガー名の表示言語</system:String>
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
@@ -313,6 +332,7 @@
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
+  <system:String x:Key="prefs.paths.loaddeepfolders">深い階層のフォルダも読み込む</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>

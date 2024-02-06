@@ -12,6 +12,11 @@ namespace OpenUtau.App.Views {
             OkButton.Click += OkButtonClick;
         }
 
+        public void SetPrompt(string prompt) {
+            Prompt.IsVisible = true;
+            Prompt.Text = prompt;
+        }
+
         public void SetText(string text) {
             TextBox.Text = text;
         }

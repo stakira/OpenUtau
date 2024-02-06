@@ -30,11 +30,7 @@ namespace OpenUtau.Core.Vogen {
 
         public static IEnumerable<USinger> FindAllSingers() {
             List<USinger> singers = new List<USinger>();
-            foreach (var path in new string[] {
-                PathManager.Inst.SingersPathOld,
-                PathManager.Inst.SingersPath,
-                PathManager.Inst.AdditionalSingersPath,
-            }) {
+            foreach (var path in PathManager.Inst.SingersPaths) {
                 var loader = new VogenSingerLoader(path);
                 singers.AddRange(loader.SearchAll());
             }
@@ -50,7 +46,14 @@ namespace OpenUtau.Core.Vogen {
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            result.AddRange(Directory.EnumerateFiles(basePath, "*.vogeon", SearchOption.AllDirectories)
+            IEnumerable<string> files;
+            if (Preferences.Default.LoadDeepFolderSinger) {
+                files = Directory.EnumerateFiles(basePath, "*.vogeon", SearchOption.AllDirectories);
+            } else {
+                // TopDirectoryOnly
+                files = Directory.EnumerateFiles(basePath, "*.vogeon");
+            }
+            result.AddRange(files
                 .Select(filePath => {
                     try {
                         return LoadSinger(filePath);

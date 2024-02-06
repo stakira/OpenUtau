@@ -7,10 +7,15 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core;
 
 namespace OpenUtau.Plugin.Builtin {
-    /// Phonemizer for 'KOR CBNN' ///
-    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3", language: "KO")]
+    /// Phonemizer for 'KOR CV' ///
+    [Phonemizer("Korean CV Phonemizer", "KO CV", "EX3", language: "KO")]
 
-    public class KoreanCBNNPhonemizer : BaseKoreanPhonemizer {
+    public class KoreanCVPhonemizer : BaseKoreanPhonemizer {
+
+        // 1. Load Singer and Settings
+        private KoreanCVIniSetting koreanCVIniSetting; // Manages Setting
+
+        public bool isUsingShi, isUsing_aX, isUsing_i, isRentan;
 
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {return;}
@@ -18,9 +23,47 @@ namespace OpenUtau.Plugin.Builtin {
             if (this.singer == null) {return;}
 
             if (this.singer.SingerType != USingerType.Classic){return;}
+
+            koreanCVIniSetting = new KoreanCVIniSetting();
+            koreanCVIniSetting.Initialize(singer, "ko-CV.ini", new Hashtable(){
+                {"CV", new Hashtable(){
+                    {"Use rentan", false},
+                    {"Use 'shi' for '시'(otherwise 'si')", false},
+                    {"Use 'i' for '의'(otherwise 'eui')", false},
+                }},
+                {"BATCHIM", new Hashtable(){
+                    {"Use 'aX' instead of 'a X'", false}
+                }}
+            });
+
+            isUsingShi = koreanCVIniSetting.isUsingShi;
+            isUsing_aX = koreanCVIniSetting.isUsing_aX;
+            isUsing_i = koreanCVIniSetting.isUsing_i;
+            isRentan = koreanCVIniSetting.isRentan;
         }
 
+        private class KoreanCVIniSetting : BaseIniManager{
+            public bool isRentan;
+            public bool isUsingShi;
+            public bool isUsing_aX;
+            public bool isUsing_i;
 
+            protected override void IniSetUp(Hashtable iniSetting) {
+                // ko-CV.ini
+                SetOrReadThisValue("CV", "Use rentan", false, out var resultValue); // 연단음 사용 유무 - 기본값 false
+                isRentan = resultValue;
+                
+                SetOrReadThisValue("CV", "Use 'shi' for '시'(otherwise 'si')", false, out resultValue); // 시를 [shi]로 표기할 지 유무 - 기본값 false
+                isUsingShi = resultValue;
+
+                SetOrReadThisValue("CV", "Use 'i' for '의'(otherwise 'eui')", false, out resultValue); // 의를 [i]로 표기할 지 유무 - 기본값 false
+                isUsing_i = resultValue;
+
+                SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false, out resultValue); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
+                isUsing_aX = resultValue;
+            }
+        }
+        
         static readonly Dictionary<string, string> FIRST_CONSONANTS = new Dictionary<string, string>(){
             {"ㄱ", "g"},
             {"ㄲ", "gg"},
@@ -64,7 +107,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"ㅟ", new string[3]{"wi", "w", "i"}},
             {"ㅠ", new string[3]{"yu", "y", "u"}},
             {"ㅡ", new string[3]{"eu", "", "eu"}},
-            {"ㅢ", new string[3]{"i", "", "i"}}, // ㅢ는 ㅣ로 발음
+            {"ㅢ", new string[3]{"eui", "eu", "i"}}, // ㅢ는 ㅣ로 발음
             {"ㅣ", new string[3]{"i", "", "i"}},
             {"null", new string[3]{"", "", ""}} // 뒤 글자가 없을 때를 대비
             };
@@ -97,104 +140,79 @@ namespace OpenUtau.Plugin.Builtin {
             {"ㅌ", new string[]{"t", "1"}},
             {"ㅍ", new string[]{"p", "1"}},
             {"ㅎ", new string[]{"t", "1"}},
-            {" ", new string[]{"", ""}}, // no batchim
+            {" ", new string[]{""}}, // no batchim
             {"null", new string[]{"", ""}} // 뒤 글자가 없을 때를 대비
             };
         
-        private Result ConvertForCBNN(Note[] notes, string[] prevLyric, string[] thisLyric, string[] nextLyric, Note? nextNeighbour) {
+        private Result ConvertForCV(Note[] notes, string[] prevLyric, string[] thisLyric, string[] nextLyric) {
             string thisMidVowelHead;
             string thisMidVowelTail;
 
-            
             int totalDuration = notes.Sum(n => n.duration);
             Note note = notes[0];
-
-            string soundBeforeEndSound = thisLyric[2] == " " ? thisLyric[1] : thisLyric[2];
-            string thisMidVowelForEnd;
-
-            thisMidVowelForEnd = MIDDLE_VOWELS.ContainsKey(soundBeforeEndSound) ? MIDDLE_VOWELS[soundBeforeEndSound][2] : LAST_CONSONANTS[soundBeforeEndSound][0];
-            string endSound = $"{thisMidVowelForEnd} -";
-
             bool isItNeedsFrontCV;
             bool isRelaxedVC;
-            bool isItNeedsVC;
-            bool isItNeedsVV;
-            bool isItNeedsVSv; // V + Semivowel, example) a y, a w 
-            bool isItNeedsEndSound;
-
-            isItNeedsVV = prevLyric[2] == " " && thisLyric[0] == "ㅇ" && PLAIN_VOWELS.Contains(thisLyric[1]);
-            
             isItNeedsFrontCV = prevLyric[0] == "null" || prevLyric[1] == "null" || (prevLyric[2] != "null" && HARD_BATCHIMS.Contains(prevLyric[2]) && prevLyric[2] != "ㅁ");
             isRelaxedVC = nextLyric[0] == "null" || nextLyric[1] == "null" || ((thisLyric[2] == nextLyric[0]) && (KoreanPhonemizerUtil.nasalSounds.ContainsKey(thisLyric[2]) || thisLyric[2] == "ㄹ"));
-            isItNeedsEndSound = (nextLyric[0] == "null" || nextLyric[1] == "null") && nextNeighbour == null;
+
             if (thisLyric.All(part => part == null)) {
                 return GenerateResult(FindInOto(note.lyric, note));
+            }
+            else if (thisLyric[1] == "ㅢ") {
+                if (isUsing_i) {
+                    thisMidVowelHead = $"{MIDDLE_VOWELS["ㅣ"][1]}";
+                    thisMidVowelTail = $"{MIDDLE_VOWELS["ㅣ"][2]}";
+                }
+                else {
+                    thisMidVowelHead = $"{MIDDLE_VOWELS["ㅢ"][1]}";
+                    thisMidVowelTail = $"{MIDDLE_VOWELS["ㅢ"][2]}";
+                }
             }
             else {
                 thisMidVowelHead = $"{MIDDLE_VOWELS[thisLyric[1]][1]}";
                 thisMidVowelTail = $"{MIDDLE_VOWELS[thisLyric[1]][2]}";
             }
             
-            string CV = $"{FIRST_CONSONANTS[thisLyric[0]]}{thisMidVowelHead}{thisMidVowelTail}{LAST_CONSONANTS[thisLyric[2]][1]}"; 
-            if (FindInOto(CV, note, true) == null) {
-                CV = CV.Substring(0, CV.Length - 1);
-            }
+            string CV = $"{FIRST_CONSONANTS[thisLyric[0]]}{thisMidVowelHead}{thisMidVowelTail}"; 
             string frontCV;
             string batchim;
-            string VC = $"{thisMidVowelTail} {FIRST_CONSONANTS[nextLyric[0]]}";
-            string VV = $"{MIDDLE_VOWELS[prevLyric[1]][2]} {thisMidVowelTail}";
-            string VSv = $"{thisMidVowelTail} {MIDDLE_VOWELS[nextLyric[1]][1]}";
-            isItNeedsVSv = thisLyric[2] == " " && nextLyric[0] == "ㅇ" && !PLAIN_VOWELS.Contains(nextLyric[1]) && FindInOto(VSv, note, true) != null;
-            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null" && FindInOto(VC, note, true) != null;
-
-            frontCV = $"- {CV}";
-            if (FindInOto(frontCV, note, true) == null) {
-                frontCV = $"-{CV}";
+            
+            if (isRentan) {
+                frontCV = $"- {CV}";
                 if (FindInOto(frontCV, note, true) == null) {
-                    frontCV = CV;
+                    frontCV = $"-{CV}";
+                    if (FindInOto(frontCV, note, true) == null) {
+                        frontCV = CV;
+                    }
                 }
             }
-
-            if (isItNeedsVV) {CV = VV;}
+            else {
+                frontCV = CV;
+            }
         
-
-            if (thisLyric[2] == " " && isItNeedsVC) { // no batchim, needs VC
+            if (thisLyric[2] == " ") { // no batchim
                 if (isItNeedsFrontCV){
-                    return GenerateResult(FindInOto(frontCV, note), FindInOto(VC, note), totalDuration, 120, 3);
+                    return GenerateResult(FindInOto(frontCV, note));
                 }
-                return GenerateResult(FindInOto(CV, note), FindInOto(VC, note), totalDuration, 120, 3);
-            }
-
-            if (thisLyric[2] == " " && isItNeedsVSv) { // no batchim, needs VSv
-                if (isItNeedsFrontCV){
-                    return GenerateResult(FindInOto(frontCV, note), FindInOto(VSv, note), totalDuration, 120, 3);
-                }
-                return GenerateResult(FindInOto(CV, note), FindInOto(VSv, note), totalDuration, 120, 3);
-            }
-
-            if (thisLyric[2] == " ") { // no batchim, doesn't need VC
-                if (isItNeedsFrontCV){
-                    return isItNeedsEndSound ? 
-                    GenerateResult(FindInOto(frontCV, note), FindInOto(endSound, note), totalDuration, 8)
-                    : GenerateResult(FindInOto(frontCV, note));
-                }
-                return isItNeedsEndSound ? 
-                    GenerateResult(FindInOto(CV, note), FindInOto(endSound, note), totalDuration, 8)
-                    : GenerateResult(FindInOto(CV, note));
+                return GenerateResult(FindInOto(CV, note));
             }
             
-            batchim = $"{thisMidVowelTail}{LAST_CONSONANTS[thisLyric[2]][0]}";
-            
+            if (isUsing_aX) {
+                batchim = $"{thisMidVowelTail}{LAST_CONSONANTS[thisLyric[2]][0]}";
+            }
+            else {
+                batchim = $"{thisMidVowelTail} {LAST_CONSONANTS[thisLyric[2]][0]}";
+            }
             
             if (thisLyric[2] == "ㅁ" || ! HARD_BATCHIMS.Contains(thisLyric[2])) { // batchim ㅁ + ㄴ ㄹ ㅇ
                 if (isItNeedsFrontCV){
                     return isRelaxedVC ? 
                     GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), FindInOto(endSound, note), totalDuration, 120, 2, 3);
+                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
                 }
                 return isRelaxedVC ? 
                 GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), FindInOto(endSound, note), totalDuration, 120, 2, 3);
+                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
             }
             else {
                 if (isItNeedsFrontCV){
@@ -242,7 +260,7 @@ namespace OpenUtau.Plugin.Builtin {
                 return GenerateResult(FindInOto(notes[0].lyric, notes[0]));
             }
             
-            return ConvertForCBNN(notes, prevLyric, thisLyric, nextLyric, nextNeighbour);
+            return ConvertForCV(notes, prevLyric, thisLyric, nextLyric);
 
         }
         
@@ -266,7 +284,19 @@ namespace OpenUtau.Plugin.Builtin {
             string endSound = note.lyric;
             string prevMidVowel;
 
-            prevMidVowel = MIDDLE_VOWELS.ContainsKey(soundBeforeEndSound) ? MIDDLE_VOWELS[soundBeforeEndSound][2] : LAST_CONSONANTS[soundBeforeEndSound][0];
+            
+
+            if (prevLyric[1] == "ㅢ") {
+                if (isUsing_i) {
+                    prevMidVowel = $"{MIDDLE_VOWELS["ㅣ"][0]}";
+                }
+                else {
+                    prevMidVowel = $"{MIDDLE_VOWELS["ㅢ"][0]}";
+                }
+            }
+            else{
+                prevMidVowel = MIDDLE_VOWELS.ContainsKey(soundBeforeEndSound) ? MIDDLE_VOWELS[soundBeforeEndSound][2] : LAST_CONSONANTS[soundBeforeEndSound][0];
+            }
             
             if (FindInOto($"{prevMidVowel} {endSound}", note, true) == null) {
                 if (FindInOto($"{prevMidVowel}{endSound}", note, true) == null) {

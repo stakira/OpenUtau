@@ -14,7 +14,7 @@ using Serilog;
 
 namespace OpenUtau.Core.DiffSinger
 {
-    public class DsPitch
+    public class DsPitch : IDisposable
     {
         string rootPath;
         DsConfig dsConfig;
@@ -73,6 +73,7 @@ namespace OpenUtau.Core.DiffSinger
                 list[i] = value;
             }
         }
+        
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
             var endMs = phrase.notes[^1].endMs + tailMs;
@@ -115,7 +116,7 @@ namespace OpenUtau.Core.DiffSinger
                     new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                     .Reshape(new int[] { 1, word_dur.Length })));
             }else{
-                //if predict_dur is true, use phoneme encode mode
+                //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
@@ -279,6 +280,23 @@ namespace OpenUtau.Core.DiffSinger
                     tones = pitch_out
                 };
             }
+        }
+
+        private bool disposedValue;
+        
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    linguisticModel?.Dispose();
+                    pitchModel?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

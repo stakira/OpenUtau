@@ -27,6 +27,8 @@ namespace OpenUtau.Core.DiffSinger {
         public override byte[] AvatarData => avatarData;
         public override string Portrait => voicebank.Portrait == null ? null : Path.Combine(Location, voicebank.Portrait);
         public override float PortraitOpacity => voicebank.PortraitOpacity;
+        public override int PortraitHeight => voicebank.PortraitHeight;
+        public override string Sample => voicebank.Sample == null ? null : Path.Combine(Location, voicebank.Sample);
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
@@ -167,6 +169,34 @@ namespace OpenUtau.Core.DiffSinger {
                 variancePredictor = new DsVariance(Location);
             }
             return variancePredictor;
+        }
+
+        public override void FreeMemory(){
+            Log.Information($"Freeing memory for singer {Id}");
+            if(acousticSession != null) {
+                lock(acousticSession) {
+                    acousticSession?.Dispose();
+                }
+                acousticSession = null;
+            }
+            if(vocoder != null) {
+                lock(vocoder) {
+                    vocoder?.Dispose();
+                }
+                vocoder = null;
+            }
+            if(pitchPredictor != null) {
+                lock(pitchPredictor) {
+                    pitchPredictor?.Dispose();
+                }
+                pitchPredictor = null;
+            }
+            if(variancePredictor != null){
+                lock(variancePredictor) {
+                    variancePredictor?.Dispose();
+                }
+                variancePredictor = null;
+            }
         }
     }
 }

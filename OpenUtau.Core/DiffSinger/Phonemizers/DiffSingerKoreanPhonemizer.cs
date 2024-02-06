@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Serilog;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
-namespace OpenUtau.Core.DiffSinger
-{
-    public abstract class DiffSingerBasePhonemizer : MachineLearningPhonemizer
-    {
+namespace OpenUtau.Core.DiffSinger{
+    [Phonemizer("DiffSinger Korean Phonemizer", "DIFFS KO", language: "KO", author: "EX3")]
+    public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer{
         USinger singer;
         DsConfig dsConfig;
         string rootPath;
@@ -24,7 +22,6 @@ namespace OpenUtau.Core.DiffSinger
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
         string defaultPause = "SP";
-        protected virtual string GetDictionaryName()=>"dsdict.yaml";
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
@@ -65,24 +62,6 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
 
-        protected virtual IG2p LoadG2p(string rootPath) {
-            var g2ps = new List<IG2p>();
-            var dictionaryNames = new string[] {GetDictionaryName(), "dsdict.yaml"};
-            // Load dictionary from singer folder.
-            foreach(var dictionaryName in dictionaryNames){
-                string dictionaryPath = Path.Combine(rootPath, dictionaryName);
-                if (File.Exists(dictionaryPath)) {
-                    try {
-                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(dictionaryPath)).Build());
-                    } catch (Exception e) {
-                        Log.Error(e, $"Failed to load {dictionaryPath}");
-                    }
-                    break;
-                }
-            }
-            return new G2pFallbacks(g2ps.ToArray());
-        }
-
         string[] GetSymbols(Note note) {
             //priority:
             //1. phonetic hint
@@ -110,7 +89,24 @@ namespace OpenUtau.Core.DiffSinger
             }
             return new string[] { defaultPause };
         }
-
+        
+        // public List<double> stretch(IList<double> source, double ratio, double endPos, bool isVowelWithSemiPhoneme) {
+        //     // 이중모음(y, w) 뒤의 모음일 경우, 이 함수를 호출해서 모음의 startPos를 자신의 8분의 1 길이만큼 추가한다. (타이밍을 뒤로 민다)
+        //     //source：音素时长序列，单位ms
+        //     //ratio：缩放比例
+        //     //endPos：目标终点时刻，单位ms
+        //     //输出：缩放后的音素位置，单位ms
+        //     if (isVowelWithSemiPhoneme){
+        //         double startPos = endPos - source.Sum() * ratio;
+        //         startPos /= 2;
+        //         var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0), startPos).ToList();
+        //         result.RemoveAt(result.Count - 1);
+        //         return result;
+        //     }
+        //     else{
+        //         return stretch(source, ratio, endPos);
+        //     }
+        // }
         string GetSpeakerAtIndex(Note note, int index){
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
             var speaker = singer.Subbanks
@@ -128,42 +124,45 @@ namespace OpenUtau.Core.DiffSinger
                 .ToArray();            
         }
 
-        protected bool IsSyllableVowelExtensionNote(Note note) {
-            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
-        }
-
-        List<phonemesPerNote> ProcessWord(Note[] notes){
+        List<phonemesPerNote> ProcessWord(Note[] notes, bool isLastNote){
             var wordPhonemes = new List<phonemesPerNote>{
                 new phonemesPerNote(-1, notes[0].tone)
             };
             var dsPhonemes = GetDsPhonemes(notes[0]);
-            var isVowel = dsPhonemes.Select(s => g2p.IsVowel(s.Symbol)).ToArray();
-            var isGlide = dsPhonemes.Select(s => g2p.IsGlide(s.Symbol)).ToArray();
+            var isVowel = dsPhonemes.Select(s => isPlainVowel(s.Symbol)).ToArray();
+            var symbols = dsPhonemes.Select(s => s.Symbol).ToArray();
+            var isThisSemiVowel = dsPhonemes.Select(s => isSemiVowel(s.Symbol)).ToArray();
+
+            
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
-            var isStart = new bool[dsPhonemes.Length];
-            if(!isStart.Any()){
-                isStart[0] = true;
-            }
-            for(int i=0; i<dsPhonemes.Length; i++){
-                if(isVowel[i]){
-                    if(i>=2 && isGlide[i-1] && !isVowel[i-2]){
-                        isStart[i-1] = true;
-                    }else{
-                        isStart[i] = true;
-                    }
-                }
-            }
             //distribute phonemes to notes
             var noteIndex = 0;
             for (int i = 0; i < dsPhonemes.Length; i++) {
-                if (isStart[i] && noteIndex < nonExtensionNotes.Length) {
+                if (isVowel[i] && noteIndex < nonExtensionNotes.Length && i == dsPhonemes.Length - 1) {
+                    // 받침 없는 노트
                     var note = nonExtensionNotes[noteIndex];
                     wordPhonemes.Add(new phonemesPerNote(note.position, note.tone));
                     noteIndex++;
                 }
+                else if (isVowel[i] && noteIndex < nonExtensionNotes.Length && i == dsPhonemes.Length - 2) {
+                    // 받침 있는 노트
+                    var note = nonExtensionNotes[noteIndex];
+                    wordPhonemes.Add(new phonemesPerNote(note.position, note.tone));
+                }
+                else if (isThisSemiVowel[i] && noteIndex < nonExtensionNotes.Length){
+                    // 반모음이 너무 짧으면 부자연스러우니 24분의 1만큼 늘려줌 
+                    var note = nonExtensionNotes[noteIndex];
+                    wordPhonemes.Add(new phonemesPerNote(note.position - note.duration / 24, note.tone));
+                }
+                
+
                 wordPhonemes[^1].Phonemes.Add(dsPhonemes[i]);
             }
             return wordPhonemes;
+        }
+
+        int makePos(int duration, int divider, int targetPos){
+            return duration - Math.Min(duration / divider, targetPos);
         }
 
         int framesBetweenTickPos(double tickPos1, double tickPos2) {
@@ -171,42 +170,12 @@ namespace OpenUtau.Core.DiffSinger
                 - (int)(timeAxis.TickPosToMsPos(tickPos1)/frameMs);
         }
 
-        public static IEnumerable<double> CumulativeSum(IEnumerable<double> sequence, double start = 0) {
-            double sum = start;
-            foreach (var item in sequence) {
-                sum += item;
-                yield return sum;
-            }
-        }
 
-        public static IEnumerable<int> CumulativeSum(IEnumerable<int> sequence, int start = 0) {
-            int sum = start;
-            foreach (var item in sequence) {
-                sum += item;
-                yield return sum;
-            }
-        }
-
-        public List<double> stretch(IList<double> source, double ratio, double endPos) {
-            //source：音素时长序列，单位ms
-            //ratio：缩放比例
-            //endPos：目标终点时刻，单位ms
-            //输出：缩放后的音素位置，单位ms
-            double startPos = endPos - source.Sum() * ratio;
-            var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0), startPos).ToList();
-            result.RemoveAt(result.Count - 1);
-            return result;
-        }
-        
-        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
-            if(speakerEmbedManager is null) {
-                speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
-            }
-            return speakerEmbedManager;
-        }
         
         protected override void ProcessPart(Note[][] phrase) {
-            float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
+            
+            float padding = 1000f; //Padding time for consonants at the beginning of a sentence, ms
+            
             float frameMs = dsConfig.frameMs();
             var startMs = timeAxis.TickPosToMsPos(phrase[0][0].position) - padding;
             var lastNote = phrase[^1][^1];
@@ -217,13 +186,54 @@ namespace OpenUtau.Core.DiffSinger
                 new phonemesPerNote(-1,phrase[0][0].tone, new List<dsPhoneme>{new dsPhoneme("SP", GetSpeakerAtIndex(phrase[0][0], 0))})
             };
             var notePhIndex = new List<int> { 1 };
-            foreach (var word in phrase) {
-                var wordPhonemes = ProcessWord(word);
+            String? next;
+            String? prev = null;
+            try{
+                next = phrase[1][0].lyric;
+            }
+            catch{
+                next = null;
+            }
+            int i = 0;
+            bool isLastNote = false;
+            foreach (var note in phrase) {
+                next = null;
+                if (i != phrase.Length - 1){
+                    next = phrase[i + 1][0].lyric;
+                }
+
+                String? prevTemp = note[0].lyric;
+
+                // Phoneme variation
+                if (KoreanPhonemizerUtil.IsHangeul(prevTemp)){
+                    // Debug.Print("prev: " + prev + "curr: " + character[0].lyric + "next: " + next);
+                    note[0].lyric = KoreanPhonemizerUtil.Variate(prev, prevTemp, next);
+                    // Debug.Print(character[0].lyric);
+                }
+                
+                prev = prevTemp;
+
+                
+                if (i == phrase.Length - 1){
+                    isLastNote = true;
+                }
+                else{
+                    isLastNote = false;
+                }
+
+                // Pass isLastNote to handle Last Consonant(Batchim)'s length.
+                var wordPhonemes = ProcessWord(note, isLastNote);
+                
                 phrasePhonemes[^1].Phonemes.AddRange(wordPhonemes[0].Phonemes);
                 phrasePhonemes.AddRange(wordPhonemes.Skip(1));
                 notePhIndex.Add(notePhIndex[^1]+wordPhonemes.SelectMany(n=>n.Phonemes).Count());
+
+                i += 1;
             }
             
+            
+            
+
             phrasePhonemes.Add(new phonemesPerNote(endTick,lastNote.tone));
             phrasePhonemes[0].Position = timeAxis.MsPosToTickPos(
                 timeAxis.TickPosToMsPos(phrasePhonemes[1].Position)-padding
@@ -251,7 +261,6 @@ namespace OpenUtau.Core.DiffSinger
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("word_dur",
                 new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                 .Reshape(new int[] { 1, word_dur.Length })));
-            Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
             var linguisticOutputs = linguisticModel.Run(linguisticInputs);
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -282,7 +291,6 @@ namespace OpenUtau.Core.DiffSinger
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByPhone(speakersByPhone);
                 durationInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
-            Onnx.VerifyInputNames(durationModel, durationInputs);
             var durationOutputs = durationModel.Run(durationInputs);
             List<double> durationFrames = durationOutputs.First().AsTensor<float>().Select(x=>(double)x).ToList();
             
@@ -290,7 +298,7 @@ namespace OpenUtau.Core.DiffSinger
             //(the index of the phoneme to be aligned, the Ms position of the phoneme)
             var phAlignPoints = new List<Tuple<int, double>>();
             phAlignPoints = CumulativeSum(phrasePhonemes.Select(n => n.Phonemes.Count).ToList(), 0)
-                .Zip(phrasePhonemes.Skip(1), 
+                .Zip(phrasePhonemes.Skip(1), // 
                     (a, b) => new Tuple<int, double>(a, timeAxis.TickPosToMsPos(b.Position)))
                 .ToList();
             var positions = new List<double>();
@@ -299,13 +307,25 @@ namespace OpenUtau.Core.DiffSinger
             var phs = phrasePhonemes.SelectMany(n => n.Phonemes).ToList();
             //The starting consonant's duration keeps unchanged
             positions.AddRange(stretch(alignGroup, frameMs, phAlignPoints[0].Item2));
+
+
+            
+            int j = 0;
+            double prevRatio = 0;
             //Stretch the duration of the rest phonemes
-            foreach (var pair in phAlignPoints.Zip(phAlignPoints.Skip(1), (a, b) => Tuple.Create(a, b))) {
+            var prevAlignPoint = phAlignPoints[0];
+            var zipped = phAlignPoints.Zip(phAlignPoints.Skip(1), (a, b) => Tuple.Create(a, b));
+            foreach (var pair in zipped) {
                 var currAlignPoint = pair.Item1;
                 var nextAlignPoint = pair.Item2;
                 alignGroup = durationFrames.GetRange(currAlignPoint.Item1, nextAlignPoint.Item1 - currAlignPoint.Item1);
                 double ratio = (nextAlignPoint.Item2 - currAlignPoint.Item2) / alignGroup.Sum();
+               
                 positions.AddRange(stretch(alignGroup, ratio, nextAlignPoint.Item2));
+
+                prevAlignPoint = phAlignPoints[j];
+                prevRatio = ratio;
+                j += 1;
             }
 
             //Convert the position sequence to tick and fill into the result list
@@ -326,35 +346,35 @@ namespace OpenUtau.Core.DiffSinger
                 partResult[group[0].position] = noteResult;
             }
         }
-    }
 
-    struct dsPhoneme{
-        public string Symbol;
-        public string Speaker;
-
-        public dsPhoneme(string symbol, string speaker){
-            Symbol = symbol;
-            Speaker = speaker;
-        }
-    }
-
-    class phonemesPerNote{
-        public int Position;
-        public int Tone;
-        public List<dsPhoneme> Phonemes;
-
-        public phonemesPerNote(int position, int tone, List<dsPhoneme> phonemes)
-        {
-            Position = position;
-            Tone = tone;
-            Phonemes = phonemes;
+        private bool isPlainVowel(string symbol){
+            if (isSemiVowel(symbol)){
+                return false;
+            }
+            else if (isBatchim(symbol)){
+                return false;
+            }
+            else{
+                return g2p.IsVowel(symbol);
+            }
         }
 
-        public phonemesPerNote(int position, int tone)
-        {
-            Position = position;
-            Tone = tone;
-            Phonemes = new List<dsPhoneme>();
+        private bool isSemiVowel(string symbol){
+            if (symbol.Equals("w") || symbol.Equals("y")){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
+        private bool isBatchim(string symbol){
+            if (symbol.Equals("K") || symbol.Equals("N") || symbol.Equals("T") || symbol.Equals("L") || symbol.Equals("M") || symbol.Equals("P")|| symbol.Equals("NG")){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
     }
 }
