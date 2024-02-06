@@ -120,6 +120,8 @@ namespace OpenUtau.Api {
             /// </summary>
             public PhonemeAttributes attributes;
 
+            public int? index;
+
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
 
