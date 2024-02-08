@@ -615,8 +615,7 @@ namespace OpenUtau.App.Views {
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
             if (project == null || part == null ||
-                !track.TryGetExpression(
-                    project, notesVm.PrimaryKey, out descriptor)) {
+                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
                 descriptor = null;
             }
         }
@@ -727,8 +726,7 @@ namespace OpenUtau.App.Views {
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
             if (project == null || part == null ||
-                !track.TryGetExpression(
-                    project, notesVm.PrimaryKey, out descriptor)) {
+                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
                 descriptor = null;
             }
         }
