@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Serilog;
+using SharpCompress.Common;
 
 namespace OpenUtau.Core.Util
 {
@@ -58,6 +62,18 @@ namespace OpenUtau.Core.Util
             base64[0] = intToBase64[(data >> 6) & 0x003F];
             base64[1] = intToBase64[data & 0x003F];
             return new string(base64);
+        }
+
+        public static void Base64ToFile(string base64str,string filePath) {
+            try {
+                byte[] bytes = Convert.FromBase64String(base64str);
+
+                // ファイルに書き込み
+                File.WriteAllBytes(filePath, bytes);
+
+            } catch (Exception ex) {
+                Log.Error(@"{ex}");
+            }
         }
     }
 }
