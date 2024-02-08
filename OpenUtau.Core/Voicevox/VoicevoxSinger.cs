@@ -23,9 +23,9 @@ namespace OpenUtau.Core.Voicevox {
         public override string Version => voicebank.Version;
         public override string OtherInfo => voicebank.OtherInfo;
         public override IList<string> Errors => errors;
-        public override string Avatar => voicebank.Image == null ? null : Path.Combine(Location, voicebank.Image);
+        public override string Avatar => voicebank.Image == null ? voicevoxConfig.style_infos[0].icon == null ? null : voicevoxConfig.style_infos[0].icon : Path.Combine(Location, voicebank.Image);
         public override byte[] AvatarData => avatarData;
-        public override string Portrait => voicebank.Portrait == null ? null : Path.Combine(Location, voicebank.Portrait);
+        public override string Portrait => voicebank.Portrait == null ? voicevoxConfig.portraitPath == null ? null : voicevoxConfig.style_infos[0].portrait : Path.Combine(Location, voicebank.Portrait);
         public override float PortraitOpacity => voicebank.PortraitOpacity;
         public override int PortraitHeight => voicebank.PortraitHeight;
         public override string Sample => voicebank.Sample == null ? null : Path.Combine(Location, voicebank.Sample);
@@ -35,7 +35,7 @@ namespace OpenUtau.Core.Voicevox {
         public override IList<UOto> Otos => otos;
 
         Voicebank voicebank;
-        VoicevoxConfig voicevoxConfig;
+        public VoicevoxConfig voicevoxConfig;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
         List<UOto> otos = new List<UOto>();
@@ -63,6 +63,7 @@ namespace OpenUtau.Core.Voicevox {
                 return;
             }
             try {
+                voicevoxConfig = VoicevoxConfig.Load(this);
                 voicebank.Reload();
                 Load();
                 loaded = true;
@@ -72,9 +73,11 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         void Load() {
-            voicevoxConfig = VoicevoxConfig.Load(this);
-            if (!voicevoxConfig.version.Equals("1.15.0")) {
+            if (voicevoxConfig.version.Equals("1.15.0")) {
                 Log.Error("It differs from the supported version.");
+            }
+            if(voicevoxConfig.style_infos == null) {
+                voicevoxConfig.LoadInfo(voicevoxConfig);
             }
             phonemes.Clear();
             table.Clear();
@@ -93,9 +96,10 @@ namespace OpenUtau.Core.Voicevox {
             foreach(Styles style in voicevoxConfig.styles) {
                 subbanks.Add(new USubbank(new Subbank() {
                     Prefix = string.Empty,
-                    Suffix = style.name,
+                    Suffix = string.Empty,
                     ToneRanges = new[] { "C1-B7" },
-                }));
+                    Color = style.name
+                })); ;
             }
 
             var dummyOtoSet = new UOtoSet(new OtoSet(), Location);
