@@ -194,15 +194,25 @@ namespace OpenUtau.App.ViewModels {
                 });
 
             CursorTool = false;
-            PenTool = true;
-            PenPlusTool = false;
+            if (Preferences.Default.PenPlusDefault) {
+                PenPlusTool = true;
+                PenTool = false;
+            } else {
+                PenTool = true;
+                PenPlusTool = false;
+            }
             EraserTool = false;
             DrawPitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
-                PenTool = index == "2";
-                PenPlusTool = index == "2+";
+                if (Preferences.Default.PenPlusDefault) {
+                    PenPlusTool = index == "2";
+                    PenTool = index == "2+";
+                } else {
+                    PenTool = index == "2";
+                    PenPlusTool = index == "2+";
+                }
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 KnifeTool = index == "5";
