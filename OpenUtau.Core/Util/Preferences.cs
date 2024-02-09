@@ -131,7 +131,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public int Theme = 1;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
@@ -166,7 +166,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowGhostNotes = true;
             public bool PlayTone = false;
             public bool ShowVibrato = true;
-            public bool ShowPitch = true;
+            public bool ShowPitch = false;
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;

@@ -203,11 +203,13 @@ namespace OpenUtau.App.Controls {
             context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
         }
 
+        public bool IsDarkMode => ThemeManager.IsDarkMode;
+
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
             Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
-            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
+            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y));
             Size size = viewModel.TickToneToSize(note.duration, 1);
-            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height));
             Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
             var brush = selectedNotes.Contains(note)
                 ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
@@ -217,18 +219,34 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             string displayLyric = note.lyric;
-            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
-            if (textLayout.Width + 5 > size.Width) {
-                displayLyric = displayLyric[0] + "..";
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
+            if (IsDarkMode) {
+                var textLayout = TextLayoutCache.Get(displayLyric, Brushes.Black, 14);
                 if (textLayout.Width + 5 > size.Width) {
-                    return;
+                    displayLyric = displayLyric[0] + "..";
+                    textLayout = TextLayoutCache.Get(displayLyric, Brushes.Black, 14);
+                    if (textLayout.Width + 5 > size.Width) {
+                        return;
+                    }
                 }
-            }
-            Point textPosition = leftTop.WithX(leftTop.X + 5)
-                .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Height) / 2));
-            using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
-                textLayout.Draw(context, new Point());
+                Point textPosition = leftTop.WithX(leftTop.X + 4)
+                    .WithY(Math.Round((leftTop.Y + (size.Height - textLayout.Height) / 2) - 1));
+                using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
+                    textLayout.Draw(context, new Point());
+                }
+            } else {
+                var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 14);
+                if (textLayout.Width + 5 > size.Width) {
+                    displayLyric = displayLyric[0] + "..";
+                    textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 14);
+                    if (textLayout.Width + 5 > size.Width) {
+                        return;
+                    }
+                }
+                Point textPosition = leftTop.WithX(leftTop.X + 4)
+                    .WithY(Math.Round((leftTop.Y + (size.Height - textLayout.Height) / 2) - 1));
+                using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
+                    textLayout.Draw(context, new Point());
+                }
             }
         }
 
