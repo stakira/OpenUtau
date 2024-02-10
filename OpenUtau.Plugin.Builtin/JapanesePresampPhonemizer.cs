@@ -206,9 +206,19 @@ namespace OpenUtau.Plugin.Builtin {
                 && phoneme.HasConsonant) {
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var coto)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
+
+                    var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                    var cLength = Math.Max(30, MsToTick(oto.Preutter) * (attr.consonantStretchRatio ?? 1));
+
+                    if (prevNeighbour != null) {
+                        cLength = Math.Min(prevNeighbour.Value.duration / 2, cLength);
+                    } else if(prev != null) {
+                        cLength = Math.Min(note.position - prev.Value.position - prev.Value.duration, cLength);
+                    }
+
                     result.Insert(0, new Phoneme() {
                         phoneme = coto.Alias,
-                        position = - MsToTick(oto.Preutter),
+                        position = Convert.ToInt32(- cLength),
                         index = 2
                     });
                 }
