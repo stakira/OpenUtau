@@ -202,7 +202,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (string.IsNullOrEmpty(note.phoneticHint)
                 && preCFlag
                 && !currentLyric.Contains(vcvpad)
-                && presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme phoneme)
+                && presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme phoneme)
                 && phoneme.HasConsonant) {
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var coto)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
