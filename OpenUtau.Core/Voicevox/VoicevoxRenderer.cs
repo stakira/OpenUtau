@@ -5,19 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
-using NumSharp;
-using NWaves.Features;
-using OpenUtau.Core.Enunu;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using SharpCompress.Common;
-using static OpenUtau.Api.Phonemizer;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using SharpCompress;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
@@ -73,7 +68,7 @@ namespace OpenUtau.Core.Voicevox {
                                 };
                             }
 
-                            var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis);
+                            var qNotes = NoteGroupsToVoicevox(notes, phrase.timeAxis);
                             vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, "6000");
 
                         } else if (config.PhonemizerType.Equals("VOICEVOX")) {
@@ -86,20 +81,18 @@ namespace OpenUtau.Core.Voicevox {
                         config.styles.ForEach(style => {
                             if (style.name.Equals(phrase.singer.Subbanks[0].Color)) {
                                 speaker = style.id;
-                            } else
+                            }
                             if (style.name.Equals(phrase.phones.FirstOrDefault().suffix)) {
                                 speaker = style.id;
                             }
                         });
-                        byte[] audioData;
                         try {
                             var ins = VoicevoxClient.Inst;
-                            var queryurl = new VoicevoxURL() { method = "POST", path = "/frame_synthesis", query = new Dictionary<string, string> { { "speaker", speaker.ToString() } }, body = JsonConvert.SerializeObject(vvNotes) };
+                            var queryurl = new VoicevoxURL() { method = "POST", path = "/frame_synthesis", query = new Dictionary<string, string> { { "speaker", speaker.ToString() } }, body = JsonConvert.SerializeObject(vvNotes),accept= "audio/wav" };
                             ins.SendRequest(queryurl);
-                            audioData = ins.bytes;
                             int channel = vvNotes.outputStereo ? 2 : 1;
                             using (var waveFileWriter = new WaveFileWriter(wavPath, new WaveFormat(vvNotes.outputSamplingRate, 16, channel))) {
-                                waveFileWriter.Write(audioData, 0, audioData.Length);
+                                waveFileWriter.Write(ins.bytes, 0, ins.bytes.Length);
                             }
                         } catch (Exception e) {
                             Log.Error($"Failed to create a voice base.");
@@ -125,6 +118,41 @@ namespace OpenUtau.Core.Voicevox {
             return task;
         }
 
+
+        public VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
+            BaseChinesePhonemizer.RomanizeNotes(notes);
+            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
+            int index = 0;
+            int position = 0;
+            qnotes.notes.Add(new VoicevoxQueryNotes {
+                lyric = "",
+                frame_length = 1,
+                key = null,
+                vqnindex = index
+            });
+            while (index < notes.Length) {
+                if (position < notes[index][0].position) {
+                    qnotes.notes.Add(new VoicevoxQueryNotes() {
+                        lyric = notes[index][0].lyric,
+                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index][0].position - position) / 10,
+                        key = notes[index][0].tone,
+                        vqnindex = index
+                    });
+                    position = notes[index][0].position;
+                } else {
+                    qnotes.notes.Add(new VoicevoxQueryNotes {
+                        lyric = notes[index][0].lyric,
+                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 10,
+                        key = notes[index][0].tone,
+                        vqnindex = index
+                    });
+                    position += (int)timeAxis.MsPosToTickPos(qnotes.notes.Last().frame_length * 10);
+                    index++;
+                }
+            }
+            return qnotes;
+        }
+
         static VoicevoxNote PhraseToVoicevoxNotes(RenderPhrase phrase) {
             VoicevoxNote notes = new VoicevoxNote {
                 f0 = new List<float>(),
@@ -140,7 +168,7 @@ namespace OpenUtau.Core.Voicevox {
             });
             foreach (var phone in phrase.phones) {
                 notes.volume = vol.ToList();
-                notes.f0 = phrase.pitches;
+                notes.f0 = phrase.pitches.ToList();
                 notes.phonemes.Add(new Phonemes {
                     phoneme = phone.phoneme,
                     frame_length = phone.duration

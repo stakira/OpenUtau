@@ -65,6 +65,8 @@ namespace OpenUtau.Core.Render {
                 return new Vogen.VogenRenderer();
             } else if (renderer == DIFFSINGER) {
                 return new DiffSinger.DiffSingerRenderer();
+            } else if (renderer == VOICEVOX) {
+                return new Voicevox.VoicevoxRenderer();
             }
             return null;
         }

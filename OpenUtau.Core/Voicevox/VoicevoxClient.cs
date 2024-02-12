@@ -11,11 +11,11 @@ namespace OpenUtau.Core.Voicevox {
         public JObject jObj;
         public byte[] bytes;
 
-        internal async void SendRequest(VoicevoxURL voicevoxURL,string accept = "application/json") {
+        internal async void SendRequest(VoicevoxURL voicevoxURL) {
             try {
                 using (var client = new HttpClient()) {
                     using (var request = new HttpRequestMessage(new HttpMethod(voicevoxURL.method.ToUpper()), this.RequestURL(voicevoxURL))) {
-                        request.Headers.TryAddWithoutValidation("accept", accept);
+                        request.Headers.TryAddWithoutValidation("accept", voicevoxURL.accept);
 
                         request.Content = new StringContent(voicevoxURL.body);
                         request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
@@ -59,5 +59,6 @@ namespace OpenUtau.Core.Voicevox {
         public string path = string.Empty;
         public Dictionary<string, string> query = new Dictionary<string, string>();
         public string body = string.Empty;
+        public string accept = "application/json";
     }
 }

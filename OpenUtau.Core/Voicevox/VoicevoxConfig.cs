@@ -82,9 +82,9 @@ namespace OpenUtau.Core.Voicevox {
         public void SetInfo(VoicevoxConfig voicevoxConfig) {
             Log.Information($"Begin setup of Voicevox SingerInfo.");
             try {
-                if (string.IsNullOrEmpty(this.policy)) {
+                if (!string.IsNullOrEmpty(this.policy)) {
                     voicevoxConfig.policy = this.policy;
-                    var readmepath = Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_readme.txt");
+                    var readmepath = Path.Join(voicevoxConfig.singerlocation, "readme.txt");
                     File.AppendAllText(readmepath, this.policy);
                 }
                 voicevoxConfig.portraitPath = Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_portrait.png");

@@ -93,7 +93,13 @@ namespace OpenUtau.Core.Voicevox {
             }
 
             subbanks.Clear();
-            foreach(Styles style in voicevoxConfig.styles) {
+            subbanks.Add(new USubbank(new Subbank() {
+                Prefix = string.Empty,
+                Suffix = string.Empty,
+                ToneRanges = new[] { "C1-B7" },
+                Color = ""
+            })); ;
+            foreach (Styles style in voicevoxConfig.styles) {
                 subbanks.Add(new USubbank(new Subbank() {
                     Prefix = string.Empty,
                     Suffix = string.Empty,
