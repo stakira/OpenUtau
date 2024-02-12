@@ -15,9 +15,9 @@ namespace OpenUtau.Core.Voicevox {
 
     }
     public class VoicevoxNote {
-        public IList<float> f0;
-        public IList<float> volume;
-        public IList<Phonemes> phonemes;
+        public List<float> f0;
+        public List<float> volume;
+        public List<Phonemes> phonemes;
         public int volumeScale;
         public int outputSamplingRate;
         public bool outputStereo;
@@ -38,33 +38,6 @@ namespace OpenUtau.Core.Voicevox {
 
 
     internal static class VoicevoxUtils {
-        public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
-            BaseChinesePhonemizer.RomanizeNotes(notes);
-            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
-            int index = 0;
-            int position = 0;
-            while (index < notes.Length) {
-                if (position < notes[index][0].position) {
-                    qnotes.notes.Add(new VoicevoxQueryNotes() {
-                        lyric = "",
-                        frame_length = notes[index][0].position - position/10,
-                        key = null,
-                        vqnindex = -1
-                    });
-                    position = notes[index][0].position;
-                } else {
-                    qnotes.notes.Add(new VoicevoxQueryNotes {
-                        lyric = notes[index][0].lyric,
-                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration))/60,
-                        key = notes[index][0].tone,
-                        vqnindex = index
-                    });
-                    position += qnotes.notes.Last().frame_length;
-                    index++;
-                }
-            }
-            return qnotes;
-        }
 
         public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var ins = VoicevoxClient.Inst;

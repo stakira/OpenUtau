@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Melanchall.DryWetMidi.MusicTheory;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
-using Serilog;
 
 namespace OpenUtau.Core.Voicevox {
     [Phonemizer("Voicevox Phonemizer", "VOICEVOX")]
@@ -27,9 +24,9 @@ namespace OpenUtau.Core.Voicevox {
             }
         }
 
-        public override void SetUp(Note[][] notes) {
+        public override void SetUp(Note[][] notes)  {
             partResult.Clear();
-            var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, timeAxis);
+            var qNotes = NoteGroupsToVoicevox(notes, timeAxis);
             var vvNote = new VoicevoxNote();
             if (this.singer.voicevoxConfig.base_style != null) {
                 foreach (var s in this.singer.voicevoxConfig.base_style) {
@@ -47,42 +44,76 @@ namespace OpenUtau.Core.Voicevox {
                 vvNote = VoicevoxUtils.VoicevoxVoiceBase(qNotes, "6000");
             }
 
-            var phoneme = new List<Phoneme>();
-            foreach (var ph in qNotes.notes) {
-                
-            }
-            foreach (var ph in vvNote.phonemes) {
-                phoneme.Add(new Phoneme() { phoneme = ph.phoneme,position = ph.frame_length });
-            }
-            var noteIndexes = new List<int>();
-            foreach (var ph in qNotes.notes) {
-                noteIndexes.Add(ph.vqnindex);
-            }
+            //phoneme.ToArray().Zip(noteIndexes.ToArray(), (phoneme, noteIndex) => Tuple.Create(phoneme, noteIndex))
+            //.GroupBy(tuple => tuple.Item2)
+            //.ToList()
+            //.ForEach(g => {
+            //    if (g.Key >= 0) {
+            //        var noteGroup = notes[g.Key];
+            //        partResult[noteGroup] = g.Select(tu => tu.Item1).ToArray();
+            //    }
+            //});
 
-            phoneme.Zip(noteIndexes, (phoneme, noteIndex) => Tuple.Create(phoneme, noteIndex))
-            .GroupBy(tuple => tuple.Item2)
-            .ToList()
-            .ForEach(g => {
-                if (g.Key >= 0) {
-                    var noteGroup = notes[g.Key];
-                    partResult[noteGroup] = g.Select(tu => tu.Item1).ToArray();
+            foreach (var note in qNotes.notes) {
+                if (note.vqnindex <= 0) {
+                    continue;
                 }
-            });
+                var noteGroup = notes[note.vqnindex];
+                var phoneme = new List<Phoneme>();
+                int duration = 0;
+                int i = 0;
+                var list = new List<Phonemes>(vvNote.phonemes);
+                while (0 < list.Count) {
+                    if (noteGroup[0].duration > duration) {
+                        phoneme.Add(new Phoneme() { phoneme = list[i].phoneme, position = list[i].frame_length });
+                        duration += (int)timeAxis.MsPosToTickPos(list[i].frame_length) * 10;
+                        list.Remove(list[i]);
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+                partResult[noteGroup] = phoneme.ToArray();
+            }
 
+        }
+
+        public VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
+            BaseChinesePhonemizer.RomanizeNotes(notes);
+            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
+            int index = 0;
+            int duration = 0;
+            while (index < notes.Length) {
+                if (duration < notes[index][0].duration) {
+                    qnotes.notes.Add(new VoicevoxQueryNotes() {
+                        lyric = "",
+                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index][0].duration - duration) / 10,
+                        key = null,
+                        vqnindex = -1
+                    });
+                    duration = notes[index][0].position + notes[index][0].duration;
+                } else {
+                    qnotes.notes.Add(new VoicevoxQueryNotes {
+                        lyric = notes[index][0].lyric,
+                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 10,
+                        key = notes[index][0].tone,
+                        vqnindex = index
+                    });
+                    duration += (int)timeAxis.MsPosToTickPos(qnotes.notes.Last().frame_length) * 10;
+                    index++;
+                }
+            }
+            return qnotes;
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             var ps = new List<Phoneme>();
             if (partResult.TryGetValue(notes, out var phonemes)) {
-                if(prev != null) {
-                    if (partResult.TryGetValue(new Note[] { (Note)prev }, out var phonemes2)) {
-                        for (int i = 0; i < phonemes.Length; i++) {
-                            phonemes[i].position = phonemes2[i].position - phonemes[i].position;
-                        }
-                    }
-                }
                 return new Result {
-                    phonemes = phonemes,
+                    phonemes = phonemes.Select(p => {
+                        p.position = p.position - notes[0].position;
+                        return p;
+                    }).ToArray(),
                 };
             }
             return new Result {
