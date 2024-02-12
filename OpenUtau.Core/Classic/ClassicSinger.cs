@@ -13,6 +13,7 @@ namespace OpenUtau.Classic {
     public class ClassicSinger : USinger {
         public override string Id => voicebank.Id;
         public override string Name => voicebank.Name;
+        public override Dictionary<string, string> LocalizedNames => voicebank.LocalizedNames;
         public override USingerType SingerType => voicebank.SingerType;
         public override string BasePath => voicebank.BasePath;
         public override string Author => voicebank.Author;
@@ -41,6 +42,8 @@ namespace OpenUtau.Classic {
         List<UOto> otos = new List<UOto>();
         Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
         OtoWatcher otoWatcher;
+
+        public bool? UseFilenameAsAlias { get => voicebank.UseFilenameAsAlias; set => voicebank.UseFilenameAsAlias = value; }
 
         public ClassicSinger(Voicebank voicebank) {
             this.voicebank = voicebank;

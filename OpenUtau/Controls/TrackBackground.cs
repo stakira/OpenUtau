@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -65,12 +67,29 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        int mod(int a, int b){
+            return (a % b + b) % b;
+        }
+
         public override void Render(DrawingContext context) {
             if (TrackHeight == 0) {
                 return;
             }
             int track = (int)TrackOffset;
             double top = TrackHeight * (track - TrackOffset);
+            int key = DocManager.Inst.Project == null ? 0 : DocManager.Inst.Project.key;
+            string[] degreeNames;
+            switch(Preferences.Default.DegreeStyle){
+                case 1:
+                    degreeNames = MusicMath.Solfeges;
+                    break;
+                case 2:
+                    degreeNames = MusicMath.NumberedNotations;
+                    break;
+                default:
+                    degreeNames = Enumerable.Repeat("", 12).ToArray();
+                    break;
+            }
             while (top < Bounds.Height) {
                 bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
@@ -85,11 +104,20 @@ namespace OpenUtau.App.Controls {
                     brush = isCenterKey ? ThemeManager.CenterKeyNameBrush
                         : isAltTrack ? ThemeManager.BlackKeyNameBrush
                             : ThemeManager.WhiteKeyNameBrush;
-                    string toneName = MusicMath.GetToneName(ViewConstants.MaxTone - 1 - track);
-                    var textLayout = TextLayoutCache.Get(toneName, brush, 12);
-                    var textPosition = new Point(Bounds.Width - 4 - (int)textLayout.Width, (int)(top + (TrackHeight - textLayout.Height) / 2));
-                    using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition))) {
-                        textLayout.Draw(context, new Point());
+                    int tone = ViewConstants.MaxTone - 1 - track;
+                    string toneName = MusicMath.GetToneName(tone);
+                    var toneTextLayout = TextLayoutCache.Get(toneName, brush, 12);
+                    var toneTextPosition = new Point(Bounds.Width - 4 - (int)toneTextLayout.Width, (int)(top + (TrackHeight - toneTextLayout.Height) / 2));
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(toneTextPosition))) {
+                        toneTextLayout.Draw(context, new Point());
+                    }
+                    //scale degree display
+                    int degree = mod(tone - key, 12);
+                    string degreeName = degreeNames[degree];
+                    var degreeTextLayout = TextLayoutCache.Get(degreeName, brush, 12);
+                    var degreeTextPosition = new Point(4, (int)(top + (TrackHeight - degreeTextLayout.Height) / 2));
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(degreeTextPosition))) {
+                        degreeTextLayout.Draw(context, new Point());
                     }
                 }
                 track++;

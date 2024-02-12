@@ -13,22 +13,23 @@ namespace OpenUtau {
             if (Directory.Exists(path)) {
                 Process.Start(new ProcessStartInfo {
                     FileName = GetOpener(),
-                    Arguments = path,
+                    Arguments = GetWrappedPath(path),
                 });
             }
         }
 
         public static void GotoFile(string path) {
             if (File.Exists(path)) {
+                var wrappedPath = GetWrappedPath(path);
                 if (IsWindows()) {
                     Process.Start(new ProcessStartInfo {
                         FileName = GetOpener(),
-                        Arguments = $"/select, {path}",
+                        Arguments = $"/select, {wrappedPath}",
                     });
                 } else if (IsMacOS()) {
                     Process.Start(new ProcessStartInfo {
                         FileName = GetOpener(),
-                        Arguments = $" -R {path}",
+                        Arguments = $" -R {wrappedPath}",
                     });
                 } else {
                     OpenFolder(Path.GetDirectoryName(path));
@@ -94,6 +95,13 @@ namespace OpenUtau {
                 }
             }
             throw new IOException($"None of {string.Join(", ", linuxOpeners)} found.");
+        }
+        private static string GetWrappedPath(string path) {
+            if (IsWindows()) {
+                return path;
+            } else {
+                return $"\"{path}\"";
+            }
         }
     }
 }

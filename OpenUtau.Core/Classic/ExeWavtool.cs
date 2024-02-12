@@ -26,6 +26,15 @@ namespace OpenUtau.Classic {
             if (cancellation.IsCancellationRequested) {
                 return null;
             }
+            //The builtin worldline resampler can't be called from bat script,
+            //so we need to call it directly from C#
+            foreach(var item in resamplerItems){
+                if(!(item.resampler is ExeResampler) && !cancellation.IsCancellationRequested && !File.Exists(item.outputFile)){
+                    lock (Renderers.GetCacheLock(item.outputFile)) {
+                        item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                    }
+                }
+            }
             PrepareHelper();
             string batPath = Path.Combine(PathManager.Inst.CachePath, "temp.bat");
             lock (tempBatLock) {
@@ -93,7 +102,7 @@ namespace OpenUtau.Classic {
 
         void WriteItem(StreamWriter writer, ResamplerItem item, int index, int total) {
             writer.WriteLine($"@set resamp={item.resampler.FilePath}");
-            writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo.ToString("G999")} {Base64.Base64EncodeInt12(item.pitches)}");
+            writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo:G999} {Base64.Base64EncodeInt12(item.pitches)}");
             writer.WriteLine($"@set flag=\"{item.GetFlagsString()}\"");
             writer.WriteLine($"@set env={GetEnvelope(item)}");
             writer.WriteLine($"@set stp={item.skipOver}");
@@ -101,7 +110,7 @@ namespace OpenUtau.Classic {
             string relOutputFile = Path.GetRelativePath(PathManager.Inst.CachePath, item.outputFile);
             writer.WriteLine($"@set temp=\"%cachedir%\\{relOutputFile}\"");
             string toneName = MusicMath.GetToneName(item.tone);
-            string dur = $"{item.phone.duration.ToString("G999")}@{item.phone.adjustedTempo.ToString("G999")}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
+            string dur = $"{item.phone.duration:G999}@{item.phone.adjustedTempo:G999}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
             string relInputTemp = Path.GetRelativePath(PathManager.Inst.CachePath, item.inputTemp);
             writer.WriteLine($"@echo {MakeProgressBar(index + 1, total)}");
             writer.WriteLine($"@call %helper% \"%oto%\\{relInputTemp}\" {toneName} {dur} {item.preutter} {item.offset} {item.durRequired} {item.consonant} {item.cutoff} {index}");

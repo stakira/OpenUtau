@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using OpenUtau.Core.Render;
 using Serilog;
 
 namespace OpenUtau.Core.Util {
@@ -87,12 +89,30 @@ namespace OpenUtau.Core.Util {
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {
                     Default = JsonConvert.DeserializeObject<SerializablePreferences>(
                         File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
+                    if(Default == null) {
+                        Reset();
+                        return;
+                    }
+
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
+                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
+                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
                 } else {
                     Reset();
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to load prefs.");
                 Default = new SerializablePreferences();
+            }
+        }
+
+        private static bool ValidString(Action action) {
+            try {
+                action();
+                return true;
+            } catch {
+                return false;
             }
         }
 
@@ -112,6 +132,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
+            public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
@@ -120,15 +141,19 @@ namespace OpenUtau.Core.Util {
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
+            public int DiffsingerSpeedup = 50;
+            public int DiffSingerDepth = 1000;
             public string Language = string.Empty;
             public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
             public bool InstallToAdditionalSingersPath = true;
+            public bool LoadDeepFolderSinger = true;
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
             public List<string> RecentSingers = new List<string>();
+            public List<string> FavoriteSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
@@ -137,6 +162,7 @@ namespace OpenUtau.Core.Util {
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
+            public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
             public bool PlayTone = true;
             public bool ShowVibrato = true;
@@ -155,6 +181,10 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
+            public int ImportTempo = 0;
+            public string PhoneticAssistant = string.Empty;
+            public string RecentOpenSingerDirectory = string.Empty;
+            public string RecentOpenProjectDirectory = string.Empty;
         }
     }
 }

@@ -26,12 +26,13 @@ namespace OpenUtau.Core.Format {
         public const string LPF = "lpf";
         public const string MOD = "mod";
         public const string ALT = "alt";
+        public const string DIR = "dir";
         public const string SHFT = "shft";
         public const string SHFC = "shfc";
         public const string TENC = "tenc";
         public const string VOIC = "voic";
 
-        public static readonly string[] required = { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC, };
+        public static readonly string[] required = { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC };
 
         public static void AddDefaultExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("dynamics (curve)", DYN, -240, 120, 0) { type = UExpressionType.Curve });
@@ -49,6 +50,7 @@ namespace OpenUtau.Core.Format {
             project.RegisterExpression(new UExpressionDescriptor("lowpass", LPF, 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", MOD, 0, 100, 0));
             project.RegisterExpression(new UExpressionDescriptor("alternate", ALT, 0, 16, 0));
+            project.RegisterExpression(new UExpressionDescriptor("direct", DIR, false, new string[] { "off", "on" }));
             project.RegisterExpression(new UExpressionDescriptor("tone shift", SHFT, -36, 36, 0));
             project.RegisterExpression(new UExpressionDescriptor("tone shift (curve)", SHFC, -1200, 1200, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("tension (curve)", TENC, -100, 100, 0) { type = UExpressionType.Curve });

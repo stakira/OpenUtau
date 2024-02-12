@@ -58,7 +58,12 @@ Tool1=
 Length=15
 Lyric=A==B[C=D],EFG
 NoteNum=60
-PreUtterance=";
+PreUtterance=
+VBR=80,200,20,20,20,0,-50,0
+PBW=292,183
+PBS=-222;-19
+PBY=-20.7,
+";
             using (var stream = new MemoryStream()) {
                 using (var writer = new StreamWriter(stream, leaveOpen: true)) {
                     writer.Write(ust);
@@ -73,6 +78,12 @@ PreUtterance=";
                     Assert.Single(part.notes);
                     Assert.Equal("A==B[C=D],EFG", part.notes.First().lyric);
                     Assert.Equal(60, part.notes.First().tone);
+                    Assert.Equivalent(new UPitch {data = new List<PitchPoint> {
+                            new PitchPoint { X = -222, Y = -19, shape = PitchPointShape.io},
+                            new PitchPoint { X = 70, Y = -20.7f, shape = PitchPointShape.io}, // X = -222 + 292 = 70
+                            new PitchPoint { X = 253, Y = 0, shape = PitchPointShape.io} // X = 70 + 183 = 253
+                        }, snapFirst = false } , part.notes.First().pitch);
+                    Assert.Equivalent(new UVibrato { length = 80, period = 200, depth = 20, @in = 20, @out = 20, shift = 0, drift = -50, volLink = 0 }, part.notes.First().vibrato);
                 }
             }
         }
@@ -94,27 +105,37 @@ PreUtterance=";
 
             var before = UNote.Create();
             before.lyric = "a";
-            before.duration = 10;
+            before.duration = 100;
             
             var first = UNote.Create();
             first.lyric = "ka";
-            first.duration = 20;
+            first.duration = 200;
+            first.pitch.data = new List<PitchPoint> {
+                            new PitchPoint { X = -50, Y = 0, shape = PitchPointShape.io},
+                            new PitchPoint { X = 0, Y = 10, shape = PitchPointShape.io},
+                            new PitchPoint { X = 93.75f, Y = -12.2f, shape = PitchPointShape.io},
+                            new PitchPoint { X = 194.7f, Y = 0, shape = PitchPointShape.io}
+            };
             
             var second = UNote.Create();
             second.lyric = "r";
-            second.duration = 30;
+            second.duration = 300;
             
             var third = UNote.Create();
             third.lyric = "ta";
-            third.duration = 40;
+            third.duration = 400;
+            third.pitch.data = new List<PitchPoint> {
+                            new PitchPoint { X = -100, Y = 0, shape = PitchPointShape.io},
+                            new PitchPoint { X = 130, Y = 0, shape = PitchPointShape.io}
+            };
 
             var last = UNote.Create();
             last.lyric = "na";
-            last.duration = 50;
+            last.duration = 500;
             
             var after = UNote.Create();
             after.lyric = "ha";
-            after.duration = 60;
+            after.duration = 600;
             
             part.notes.Add(before);
             part.notes.Add(first);
@@ -141,12 +162,16 @@ PreUtterance=";
                     writer.WriteLine("[#0000]");
                     writer.WriteLine("Length=480");
                     writer.WriteLine("Lyric=A");
+                    writer.WriteLine("PBY=10,-10,0"); // Change only height of the third point
                     writer.WriteLine("[#0001]");
                     writer.WriteLine("Length=480");
                     writer.WriteLine("Lyric=R");
                     // duration is null (change)
                     writer.WriteLine("[#0002]");
                     writer.WriteLine("Lyric=zo");
+                    writer.WriteLine("PBS=-50"); // Reset points
+                    writer.WriteLine("PBW=100");
+                    writer.WriteLine("PBY=0");
                     // duration is zero (delete)
                     writer.WriteLine("[#0003]");
                     writer.WriteLine("Length=");
@@ -164,8 +189,22 @@ PreUtterance=";
                 Assert.Equal(3, toAdd.Count);
                 Assert.Equal(480, toAdd[0].duration);
                 Assert.Equal("A", toAdd[0].lyric);
-                Assert.Equal(40, toAdd[1].duration);
+                Assert.Equivalent(new UPitch {
+                    data = new List<PitchPoint> {
+                            new PitchPoint { X = -50, Y = 0, shape = PitchPointShape.io},
+                            new PitchPoint { X = 0, Y = 10, shape = PitchPointShape.io},
+                            new PitchPoint { X = 93.75f, Y = -10, shape = PitchPointShape.io},
+                            new PitchPoint { X = 194.7f, Y = 0, shape = PitchPointShape.io}
+                        }, snapFirst = true
+                }, toAdd[0].pitch);
+                Assert.Equal(400, toAdd[1].duration);
                 Assert.Equal("zo", toAdd[1].lyric);
+                Assert.Equivalent(new UPitch {
+                    data = new List<PitchPoint> {
+                            new PitchPoint { X = -50, Y = 0, shape = PitchPointShape.io},
+                            new PitchPoint { X = 50, Y = 0, shape = PitchPointShape.io}
+                        }, snapFirst = true
+                }, toAdd[1].pitch);
                 Assert.Equal(240, toAdd[2].duration);
                 Assert.Equal("me", toAdd[2].lyric);
             } finally {

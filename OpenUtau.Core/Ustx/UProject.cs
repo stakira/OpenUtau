@@ -48,6 +48,7 @@ namespace OpenUtau.Core.Ustx {
         public string[] expSelectors = new string[] { Format.Ustx.DYN, Format.Ustx.PITD, Format.Ustx.CLR, Format.Ustx.ENG, Format.Ustx.VEL };
         public int expPrimary = 0;
         public int expSecondary = 1;
+        public int key = 0;//Music key of the project, 0 = C, 1 = C#, 2 = D, ..., 11 = B
         public List<UTimeSignature> timeSignatures;
         public List<UTempo> tempos;
         public List<UTrack> tracks;

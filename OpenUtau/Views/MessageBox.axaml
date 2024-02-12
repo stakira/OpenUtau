@@ -14,6 +14,33 @@
       <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
     <TextBlock Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="Text" TextWrapping="Wrap" MaxWidth="560"/>
+    <StackPanel Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="TextPanel" MaxWidth="560">
+      <StackPanel.Styles>
+        <Style Selector="TextBlock">
+          <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style Selector="Button">
+          <Setter Property="Foreground" Value="Blue" />
+          <Setter Property="Padding" Value="0" />
+          <Setter Property="Cursor" Value="Hand" />
+          <Setter Property="BorderThickness" Value="0" />
+          <Setter Property="Background" Value="Transparent" />
+          <Setter Property="Template">
+            <ControlTemplate>
+              <ContentPresenter Content="{TemplateBinding Content}">
+                <ContentPresenter.Styles>
+                  <Style Selector="TextBlock">
+                    <Setter Property="Foreground" Value="{TemplateBinding Foreground}"/>
+                    <Setter Property="FontSize" Value="{TemplateBinding FontSize}"/>
+                    <Setter Property="TextDecorations" Value="Underline"/>
+                  </Style>
+                </ContentPresenter.Styles>
+              </ContentPresenter>
+            </ControlTemplate>
+          </Setter>
+        </Style>
+      </StackPanel.Styles> 
+    </StackPanel>
     <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
       <StackPanel.Styles>
         <Style Selector="Button">

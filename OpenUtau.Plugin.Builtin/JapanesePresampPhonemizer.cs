@@ -195,7 +195,7 @@ namespace OpenUtau.Plugin.Builtin {
             // Insert 2nd phoneme (when next doesn't have hint)
             if (nextNeighbour != null && string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
                 int totalDuration = notes.Sum(n => n.duration);
-                if (TickToMs(totalDuration) < 100) {
+                if (TickToMs(totalDuration) < 100 && presamp.MustVC == false) {
                     return MakeSimpleResult(currentLyric);
                 }
 
@@ -334,10 +334,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         // checking VCs
         // when VC does not exist, it will not be inserted
-        // TODO: fix duplicate voice color fallback bug (for now, this is better than nothing)
         private bool checkOtoUntilHitVc(List<string> input, Note note, out UOto oto) {
             oto = default;
-            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             var otos = new List<UOto>();
             foreach (string test in input) {
