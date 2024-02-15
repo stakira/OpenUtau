@@ -1557,13 +1557,13 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 // CC (w C)
                 foreach (var c2 in consonants) {
-                    if (!(alias.Contains($"aw {c2}") || alias.Contains($"ew {c2}") || alias.Contains($"iw {c2}") || alias.Contains($"ow {c2}"))) {
+                    if (!(alias.Contains($"aw {c2}") || alias.Contains($"ew {c2}") || alias.Contains($"iw {c2}") || alias.Contains($"ow {c2}") || alias.Contains($"uw {c2}"))) {
                         alias = alias.Replace($"w {c2}", $"uw {c2}");
                     }
                 }
                 // CC (C w)
                 foreach (var c2 in consonants) {
-                    if (!(alias.Contains($"aw {c2}") || alias.Contains($"ew {c2}") || alias.Contains($"iw {c2}") || alias.Contains($"ow {c2}"))) {
+                    if (!(alias.Contains($"aw {c2}") || alias.Contains($"ew {c2}") || alias.Contains($"iw {c2}") || alias.Contains($"ow {c2}") || alias.Contains($"uw {c2}"))) {
                         alias = alias.Replace($"{c2} w", $"{c2} uw");
                     }
                 }
@@ -1678,7 +1678,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c1 in new[] { "d", "dh", "g", "p", "jh", "b", "s", "ch", "t", "r", "n", "l", "ng", "sh", "zh", "th", "z", "f", "k", "s", "hh" }) {
                 foreach (var s in new[] { "-" }) {
                     var str = c1 + " " + s;
-                    if (alias.Contains(str)) {
+                    if (alias.Contains(str) && !alias.Contains($"{c1} -")) {
                         switch (c1) {
                             case "b" when c1 == "b":
                                 alias = alias.Replace(str, "d" + " " + s);
