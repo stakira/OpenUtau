@@ -1321,7 +1321,7 @@ namespace OpenUtau.App.Views {
                     }
                     // to view end
                     if (isShift) {
-                        playVm.MovePlayPos(notesVm.Part.position + (int)(notesVm.TickOffset));
+                        playVm.MovePlayPos(notesVm.Part.position + (int)(notesVm.TickOffset + notesVm.Bounds.Width / notesVm.TickWidth));
                         return true;
                     }
                     break;
@@ -1349,7 +1349,7 @@ namespace OpenUtau.App.Views {
                     }
                     // select none
                     if (isCtrl) {
-                        notesVm.SelectAllNotes();
+                        notesVm.DeselectNotes();
                         return true;
                     }
                     break;
