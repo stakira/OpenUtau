@@ -51,7 +51,7 @@ namespace OpenUtau.Plugin.Builtin {
         private bool isMissingVPhonemes = false;
 
         // For banks with missing custom consonants
-        private readonly Dictionary<string, string> missingCphonemes = "nx=n,cl=q,vf=q,wh=w,dx=d,zh=sh,z=s,ng=n".Split(',')
+        private readonly Dictionary<string, string> missingCphonemes = "nx=n,wh=w,dx=d,zh=sh,z=s,ng=n,cl=q,vf=q".Split(',')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -191,7 +191,7 @@ namespace OpenUtau.Plugin.Builtin {
                 File.WriteAllBytes(path, Data.Resources.arpasing_template);
             }
             g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
-            g2ps.Add(new ArpabetG2p());
+            g2ps.Add(new ArpabetPlusG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
         protected override List<string> ProcessSyllable(Syllable syllable) {
@@ -1647,21 +1647,52 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
+            foreach (var v1 in vowels) {
+                foreach (var c1 in new[] {"cl", "vf"}) {
+                    if (vcSpecific) {
+                        alias = alias.Replace(v1 + " " + c1, v1 + " " + "");
+                    }
+                }
+            }
 
             // glottal
-            foreach (var v1 in vowels) {
-                if (!alias.Contains("cl " + v1) || !alias.Contains("q " + v1)) {
-                    alias = alias.Replace("q " + v1, "- " + v1);
+            foreach (var cl in new[] { "q" }) {
+                foreach (var v in vowels) {
+                    // C V
+                    var str = cl + " " + v;
+                    if (!alias.Contains(str) || !alias.Contains("q") || !alias.Contains($"q {v}")) {
+                        switch (cl) {
+                            case "cl" when cl == "q":
+                                alias = alias.Replace(str, $"- {v}");
+                                break;
+                        }
+                    }
                 }
             }
-            foreach (var c2 in consonants) {
-                if (!alias.Contains(c2 + " cl") || !alias.Contains(c2 + " q")) {
-                    alias = alias.Replace(c2 + " q", $"{c2} -");
+            foreach (var cl in new[] { "q" }) {
+                foreach (var c2 in consonants) {
+                    // C q
+                    var str = c2 + " " + cl;
+                    if (!alias.Contains(str) || !alias.Contains("q") || !alias.Contains($"{c2} q")) {
+                        switch (cl) {
+                            case "cl" when cl == "q":
+                                alias = alias.Replace(str, $"{c2} -");
+                                break;
+                        }
+                    }
                 }
             }
-            foreach (var c2 in consonants) {
-                if (!alias.Contains("cl " + c2) || !alias.Contains("q " + c2)) {
-                    alias = alias.Replace("q " + c2, "- " + c2);
+            foreach (var cl in new[] { "q" }) {
+                foreach (var c2 in consonants) {
+                    // q C
+                    var str = cl + " " + c2;
+                    if (!alias.Contains(str) || !alias.Contains("q") || !alias.Contains($"q {c2}")) {
+                        switch (cl) {
+                            case "cl" when cl == "q":
+                                alias = alias.Replace(str, $"- {c2}");
+                                break;
+                        }
+                    }
                 }
             }
 
