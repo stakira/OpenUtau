@@ -18,7 +18,7 @@ namespace OpenUtau.Core.DiffSinger{
         public float[]? breathiness;
         public float[]? tension;
     }
-    public class DsVariance{
+    public class DsVariance : IDisposable{
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
@@ -111,12 +111,13 @@ namespace OpenUtau.Core.DiffSinger{
                     new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                     .Reshape(new int[] { 1, word_dur.Length })));
             }else{
-                //if predict_dur is true, use phoneme encode mode
+                //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
 
+            Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
             var linguisticOutputs = linguisticModel.Run(linguisticInputs);
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -173,6 +174,7 @@ namespace OpenUtau.Core.DiffSinger{
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
+            Onnx.VerifyInputNames(varianceModel, varianceInputs);
             var varianceOutputs = varianceModel.Run(varianceInputs);
             Tensor<float>? energy_pred = dsConfig.predict_energy
                 ? varianceOutputs
@@ -197,6 +199,23 @@ namespace OpenUtau.Core.DiffSinger{
                 breathiness = breathiness_pred?.ToArray(),
                 tension = tension_pred?.ToArray(),
             };
+        }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    linguisticModel?.Dispose();
+                    varianceModel?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

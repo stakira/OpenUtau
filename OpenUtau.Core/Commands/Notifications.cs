@@ -26,6 +26,24 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Error message: {message} {e}";
     }
 
+    public class LoadingNotification : UNotification {
+        public readonly Type window;
+        public readonly bool startLoading;
+        public readonly string loadObject;
+        public LoadingNotification(Type window, bool startLoading, string loadObject) {
+            this.window = window;
+            this.startLoading = startLoading;
+            this.loadObject = loadObject;
+        }
+        public override string ToString() {
+            if (startLoading) {
+                return $"Start loading {loadObject}";
+            } else {
+                return $"Finish loading {loadObject}";
+            }
+        }
+    }
+
     public class LoadPartNotification : UNotification {
         public readonly int tick;
         public LoadPartNotification(UPart part, UProject project, int tick) {
@@ -193,12 +211,19 @@ namespace OpenUtau.Core {
     }
 
     public class GotoOtoNotification : UNotification {
-        public readonly USinger singer;
-        public readonly UOto oto;
-        public GotoOtoNotification(USinger singer, UOto oto) {
+        public readonly USinger? singer;
+        public readonly UOto? oto;
+        public GotoOtoNotification(USinger? singer, UOto? oto) {
             this.singer = singer;
             this.oto = oto;
         }
         public override string ToString() => "Goto oto.";
+    }
+
+    public class NotePresetChangedNotification : UNotification {
+        public NotePresetChangedNotification() {
+
+        }
+        public override string ToString() => "Note preset changed.";
     }
 }

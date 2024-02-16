@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using OpenUtau.Classic;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Ustx {
     public class UOto : INotifyPropertyChanged {
@@ -186,11 +187,27 @@ namespace OpenUtau.Core.Ustx {
 
     [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
 
-    public class USinger : INotifyPropertyChanged {
+    public static class SingerTypeUtils{
+        public static Dictionary<USingerType?, string> SingerTypeNames = new Dictionary<USingerType?, string>(){
+            {USingerType.Classic, "utau"},
+            {USingerType.Enunu, "enunu"},
+            {USingerType.DiffSinger, "diffsinger"},
+        };
+
+        public static Dictionary<string, USingerType> SingerTypeFromName = new Dictionary<string, USingerType>(){
+            {"utau", USingerType.Classic},
+            {"enunu", USingerType.Enunu},
+            {"diffsinger", USingerType.DiffSinger},
+        };
+
+    }
+
+    public class USinger : INotifyPropertyChanged, IEquatable<USinger> {
         protected static readonly List<UOto> emptyOtos = new List<UOto>();
 
         public virtual string Id { get; }
         public virtual string Name => name;
+        public virtual Dictionary<string, string> LocalizedNames { get; }
         public virtual USingerType SingerType { get; }
         public virtual string BasePath { get; }
         public virtual string Author { get; }
@@ -220,6 +237,19 @@ namespace OpenUtau.Core.Ustx {
                 NotifyPropertyChanged(nameof(OtoDirty));
             }
         }
+        public bool IsFavourite {
+            get => Preferences.Default.FavoriteSingers.Contains(Id);
+            set {
+                if (value) {
+                    if (!Preferences.Default.FavoriteSingers.Contains(Id)) {
+                        Preferences.Default.FavoriteSingers.Add(Id);
+                    }
+                } else {
+                    Preferences.Default.FavoriteSingers.Remove(Id);
+                }
+                Preferences.Save();
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -230,6 +260,23 @@ namespace OpenUtau.Core.Ustx {
         private string name;
 
         public string DisplayName { get { return Found ? name : $"[Missing] {name}"; } }
+
+        public string LocalizedName { 
+            get {
+                if(LocalizedNames == null) {
+                    return Name;
+                }
+                string language = Preferences.Default.SortingOrder;
+                if(String.IsNullOrEmpty(language)){
+                    language = Preferences.Default.Language;
+                }
+                if(LocalizedNames.TryGetValue(language, out var localizedName)){
+                    return localizedName;
+                } else {
+                    return Name;
+                }
+            }
+        }
 
         public virtual void EnsureLoaded() { }
         public virtual void Reload() { }
@@ -249,6 +296,16 @@ namespace OpenUtau.Core.Ustx {
         public virtual byte[] LoadPortrait() => null;
         public virtual byte[] LoadSample() => null;
         public override string ToString() => Name;
+        public bool Equals(USinger other) {
+            // Tentative: Since only the singer's Id is recorded in ustx and preferences, singers with the same Id are considered identical.
+            // Singer with the same directory name in different locations may be identical.
+            if (other != null && other.Id == this.Id) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        public override int GetHashCode() => Id.GetHashCode();
 
         public static USinger CreateMissing(string name) {
             return new USinger() {
@@ -261,5 +318,14 @@ namespace OpenUtau.Core.Ustx {
         private void NotifyPropertyChanged(string propertyName = "") {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        /// <summary>
+        /// Some types of singers store their data in memory when rendering.
+        /// This method is called when the singer is no longer used.
+        /// Note:
+        /// - the voicebank may be used again even after this method is called.
+        /// - this method may be called even when the singer has not been used
+        /// </summary>
+        public virtual void FreeMemory(){ }
     }
 }

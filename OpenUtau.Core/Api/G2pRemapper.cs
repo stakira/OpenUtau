@@ -5,14 +5,17 @@ namespace OpenUtau.Api {
     public class G2pRemapper : IG2p {
         private IG2p mapped;
         private Dictionary<string, bool> phonemeSymbols; // (phoneme, isVowel)
+        private HashSet<string> glideSymbols;
         private Dictionary<string, string> replacements;
 
         public G2pRemapper(IG2p mapped,
             Dictionary<string, bool> phonemeSymbols,
-            Dictionary<string, string> replacements) {
+            Dictionary<string, string> replacements,
+            HashSet<string> glideSymbols = null) {
             this.mapped = mapped;
             this.phonemeSymbols = phonemeSymbols;
             this.replacements = replacements;
+            this.glideSymbols = glideSymbols ?? new HashSet<string>();
         }
 
         public bool IsValidSymbol(string symbol) {
@@ -21,6 +24,10 @@ namespace OpenUtau.Api {
 
         public bool IsVowel(string symbol) {
             return phonemeSymbols.TryGetValue(symbol, out var isVowel) && isVowel;
+        }
+
+        public bool IsGlide(string symbol) {
+            return glideSymbols.Contains(symbol);
         }
 
         public string[] Query(string grapheme) {

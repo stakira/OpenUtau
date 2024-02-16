@@ -74,7 +74,7 @@ namespace OpenUtau.Core.Enunu {
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
-                    string progressInfo = $"Track {trackNo}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
+                    string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";

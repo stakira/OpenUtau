@@ -118,7 +118,7 @@ namespace OpenUtau.Core {
 
         public bool ChangesSaved {
             get {
-                return (Project.Saved || Project.tracks.Count == 0) &&
+                return (Project.Saved || (Project.tracks.Count <= 1 && Project.parts.Count == 0)) &&
                     (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
             }
         }

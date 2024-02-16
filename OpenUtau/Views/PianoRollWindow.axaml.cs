@@ -11,6 +11,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 
@@ -21,7 +22,7 @@ namespace OpenUtau.App.Views {
         void UpdateValueTip(string text);
     }
 
-    public partial class PianoRollWindow : Window, IValueTip {
+    public partial class PianoRollWindow : Window, IValueTip, ICmdSubscriber {
         public MainWindow? MainWindow { get; set; }
         public readonly PianoRollViewModel ViewModel;
 
@@ -58,6 +59,8 @@ namespace OpenUtau.App.Views {
             noteDefaultsCommand = ReactiveCommand.Create(() => {
                 EditNoteDefaults();
             });
+
+            DocManager.Inst.AddSubscriber(this);
         }
 
         public void WindowDeactivated(object sender, EventArgs args) {
@@ -77,14 +80,72 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        // View menu
+        void OnMenuShowPortrait(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowPortrait = !Preferences.Default.ShowPortrait;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowPortrait));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
+        }
+        void OnMenuShowIcon(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowIcon = !Preferences.Default.ShowIcon;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowIcon));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
+        }
+        void OnMenuShowGhostNotes(object sender, RoutedEventArgs args) {
+            Preferences.Default.ShowGhostNotes = !Preferences.Default.ShowGhostNotes;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.ShowGhostNotes));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+            
+        }
+        void OnMenuUseTrackColor(object sender, RoutedEventArgs args) {
+            Preferences.Default.UseTrackColor = !Preferences.Default.UseTrackColor;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.UseTrackColor));
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
+        }
+        void OnMenuDegreeStyle(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.DegreeStyle = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle0));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle1));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.DegreeStyle2));
+                MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+            }
+        }
+        void OnMenuLockStartTime(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.LockStartTime = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime));
+            }
+        }
+        void OnMenuPlaybackAutoScroll(object sender, RoutedEventArgs args) {
+            if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
+                Preferences.Default.PlaybackAutoScroll = tag;
+                Preferences.Save();
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll0));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll1));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.PlaybackAutoScroll2));
+            }
+        }
+
         void OnMenuSingers(object sender, RoutedEventArgs args) {
             MainWindow?.OpenSingersWindow();
+            this.Activate();
             try {
-                if (ViewModel.NotesViewModel.Part != null && !ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
-                    USinger singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
-                    UOto oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
-                    DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, oto));
+                USinger? singer = null;
+                UOto? oto = null;
+                if (ViewModel.NotesViewModel.Part != null) {
+                    singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
+                    if(!ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
+                        oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
+                    }
                 }
+                DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, oto));
             } catch { }
         }
 
@@ -103,14 +164,6 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
-                _ = MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("lyrics.selectnotes"),
-                    ThemeManager.GetString("lyrics.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
-                return;
-            }
             var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
             var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
             var dialog = new LyricsReplaceDialog() {
@@ -125,14 +178,6 @@ namespace OpenUtau.App.Views {
 
         void EditLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
-                return;
-            }
-            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
-                _ = MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("lyrics.selectnotes"),
-                    ThemeManager.GetString("lyrics.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
                 return;
             }
             var vm = new LyricsViewModel();
@@ -364,7 +409,8 @@ namespace OpenUtau.App.Views {
                 if (noteHitInfo.hitResizeArea) {
                     editState = new NoteResizeEditState(
                         control, ViewModel, this, noteHitInfo.note,
-                        args.KeyModifiers == KeyModifiers.Alt);
+                        args.KeyModifiers == KeyModifiers.Alt,
+                        fromStart: noteHitInfo.hitResizeAreaFromStart);
                     Cursor = ViewConstants.cursorSizeWE;
                 } else if (args.KeyModifiers == cmdKey) {
                     ViewModel.NotesViewModel.ToggleSelectNote(noteHitInfo.note);
@@ -710,11 +756,12 @@ namespace OpenUtau.App.Views {
                     var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(control));
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
-                        if (Core.Util.Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Core.Util.Preferences.Default.VLabelerPath)) {
+                        if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
                             Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
                             MainWindow?.OpenSingersWindow();
-                            Core.DocManager.Inst.ExecuteCmd(new Core.GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
+                            this.Activate();
+                            DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
                         }
                         return;
                     }
@@ -802,6 +849,19 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnKeyMenuButton(object sender, RoutedEventArgs args) {
+            KeyMenu.PlacementTarget = sender as Button;
+            KeyMenu.Open();
+        }
+
+        void OnKeyKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None) {
+                if (sender is ContextMenu menu && menu.SelectedItem is MenuItemViewModel item) {
+                    item.Command?.Execute(item.CommandParameter);
+                }
+            }
+        }
+
         #region value tip
 
         void IValueTip.ShowValueTip() {
@@ -882,11 +942,7 @@ namespace OpenUtau.App.Views {
                 #region document keys
                 case Key.Space:
                     if (isNone) {
-                        try {
-                            playVm.PlayOrPause();
-                        } catch (Exception e) {
-                            MessageBox.ShowError(this, e);
-                        }
+                        playVm.PlayOrPause();
                         return true;
                     }
                     break;
@@ -1361,6 +1417,16 @@ namespace OpenUtau.App.Views {
             var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
             exps[DocManager.Inst.Project.expSecondary].SelectExp();
             exps[DocManager.Inst.Project.expPrimary].SelectExp();
+        }
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(PianoRollWindow)) {
+                if (loadingNotif.startLoading) {
+                    MessageBox.ShowLoading(this);
+                } else {
+                    MessageBox.CloseLoading();
+                }
+            }
         }
     }
 }

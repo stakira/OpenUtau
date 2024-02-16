@@ -3,10 +3,14 @@ using System.IO;
 using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
-    public class DsVocoder {
+    public class DsVocoder : IDisposable {
         public string Location;
         public DsVocoderConfig config;
         public InferenceSession session;
+
+        public int num_mel_bins => config.num_mel_bins;
+        public int hop_size => config.hop_size;
+        public int sample_rate => config.sample_rate;
 
         //Get vocoder by package name
         public DsVocoder(string name) {
@@ -27,6 +31,23 @@ namespace OpenUtau.Core.DiffSinger {
         public float frameMs() {
             return 1000f * config.hop_size / config.sample_rate;
         }
+
+        private bool disposedValue;
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    session?.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
     }
 
     [Serializable]

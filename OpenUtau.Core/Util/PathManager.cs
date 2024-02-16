@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -84,6 +85,19 @@ namespace OpenUtau.Core {
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
+
+        public List<string> SingersPaths {
+            get {
+                var list = new List<string> { SingersPath };
+                if (Directory.Exists(SingersPathOld)) {
+                    list.Add(SingersPathOld);
+                }
+                if (Directory.Exists(AdditionalSingersPath)) {
+                    list.Add(AdditionalSingersPath);
+                }
+                return list.Distinct().ToList();
+            }
+        }
 
         Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
 

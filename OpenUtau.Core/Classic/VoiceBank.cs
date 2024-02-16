@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 using OpenUtau.Core.Ustx;
 
@@ -8,6 +7,7 @@ namespace OpenUtau.Classic {
         public string BasePath;
         public string File;
         public string Name;
+        public Dictionary<string, string> LocalizedNames = new Dictionary<string, string>();
         public string Image;
         public string Portrait;
         public float PortraitOpacity;
@@ -24,9 +24,11 @@ namespace OpenUtau.Classic {
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
+        public bool? UseFilenameAsAlias = null;
 
         public void Reload() {
             Name = null;
+            LocalizedNames.Clear();
             Image = null;
             Portrait = null;
             PortraitOpacity = 0;
@@ -42,6 +44,7 @@ namespace OpenUtau.Classic {
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;
+            UseFilenameAsAlias = null;
             VoicebankLoader.LoadVoicebank(this);
         }
 
