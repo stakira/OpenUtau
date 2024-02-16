@@ -406,6 +406,9 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!HasOto(cc1, syllable.tone)) {
                     cc1 = ValidateAlias(cc1);
                 }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
                 // CC V on multiple consonants ex [s tr ao] (only if the word starts with a CC)
                 if (syllable.CurrentWordCc.Length >= 2) {
                     if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
@@ -578,8 +581,6 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
                 for (var i = firstC; i < lastC; i++) {
-                    // all CCs except the first one are /C1C2/, the last one is /C1 C2-/
-                    // but if there is no /C1C2/, we try /C1 C2-/, vise versa for the last one
                     var cc1 = $"{cc[i]} {cc[i + 1]}";
                     if (i < cc.Length - 2) {
                         var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
@@ -589,10 +590,10 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc2, ending.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
-                        if (!HasOto(cc1, ending.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", ending.tone)) {
+                        if (!HasOto(cc2, ending.tone) && !HasOto($"{cc[i + 1]} {cc[i + 2]}", ending.tone)) {
                             // [C1 -] [- C2]
-                            cc1 = $"- {cc[i + 1]}";
-                            phonemes.Add($"{cc[i]} -");
+                            cc2 = $"- {cc[i + 2]}";
+                            phonemes.Add($"{cc[i + 1]} -");
                         }
                         if (!HasOto(cc1, ending.tone)) {
                             cc1 = ValidateAlias(cc1);
@@ -606,14 +607,15 @@ namespace OpenUtau.Plugin.Builtin {
                         } else if ((HasOto(cc[i], ending.tone) || HasOto(ValidateAlias(cc[i]), ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone)))) {
                             // like [C1 C2-][C3 ...]
                             phonemes.Add(cc[i]);
-                        } else if (!HasOto(cc1, ending.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", ending.tone)) {
-                            // [C1 -] [- C2]
-                            cc1 = $"- {cc[i + 1]}";
-                            phonemes.Add($"{cc[i]} -");
                         } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-", ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"))) {
                             // like [C1 C2-][C3 ...]
                             i++;
                         } else if (TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1))) {
+                            i++;
+                        } else if (!HasOto(cc1, ending.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", ending.tone)) {
+                            // [C1 -] [- C2]
+                            TryAddPhoneme(phonemes, ending.tone, $"- {cc[i + 1]}", ValidateAlias($"- {cc[i + 1]}"));
+                            phonemes.Add($"{cc[i]} -");
                             i++;
                         } else {
                             // like [C1][C2 ...]
@@ -650,11 +652,6 @@ namespace OpenUtau.Plugin.Builtin {
                             // [C1 -] [- C2]
                             TryAddPhoneme(phonemes, ending.tone, $"- {cc[i + 1]}", ValidateAlias($"- {cc[i + 1]}"), cc[i + 1], ValidateAlias(cc[i + 1]));
                             phonemes.Add($"{cc[i]} -");
-                            i++;
-                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}", ValidateAlias($"{cc[i]}{cc[i + 1]}"))) {
-                            // like [C1C2][C2 -]
-                            TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", ValidateAlias($"{cc[i + 1]} -"), cc[i + 1], ValidateAlias(cc[i + 1]));
-                            i++;
                             i++;
                         }
                     }
@@ -1280,7 +1277,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return alias.Replace("hh", "f");
                 }
                 if (alias == "hh -") {
-                    return alias.Replace("hh -", null);
+                    return alias.Replace("hh -", "- hh");
                 }
 
                 //CC (jh specific)
@@ -1546,12 +1543,6 @@ namespace OpenUtau.Plugin.Builtin {
                 if (alias == "v sh") {
                     return alias.Replace("v sh", "s s");
                 }
-                if (alias == "v w") {
-                    return alias.Replace("v", "s");
-                }
-                if (alias == "v y") {
-                    return alias.Replace("v", "s");
-                }
                 if (alias == "v z") {
                     return alias.Replace("v z", "s s");
                 }
@@ -1720,7 +1711,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 alias = alias.Replace(str, "z" + " " + s);
                                 break;
                             case "hh" when c1 == "hh":
-                                alias = alias.Replace(str, null);
+                                alias = alias.Replace(str, str);
                                 break;
                         }
                     }
