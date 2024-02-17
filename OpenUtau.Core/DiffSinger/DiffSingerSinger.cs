@@ -55,7 +55,7 @@ namespace OpenUtau.Core.DiffSinger {
             //Load Avatar
             if (Avatar != null && File.Exists(Avatar)) {
                 try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                    using (var stream = new FileStream(Avatar, FileMode.Open, FileAccess.Read)) {
                         using (var memoryStream = new MemoryStream()) {
                             stream.CopyTo(memoryStream);
                             avatarData = memoryStream.ToArray();
