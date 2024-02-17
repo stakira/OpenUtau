@@ -42,7 +42,7 @@ symbols:
   - {symbol: d, type: stop}
   - {symbol: dh, type: fricative}
   - {symbol: dr, type: fricative}
-  - {symbol: dx, type: fricative}
+  - {symbol: dx, type: tap}
   - {symbol: eh, type: vowel}
   - {symbol: er, type: vowel}
   - {symbol: ey, type: vowel}
@@ -60,7 +60,7 @@ symbols:
   - {symbol: ow, type: vowel}
   - {symbol: oy, type: vowel}
   - {symbol: p, type: stop}
-  - {symbol: q, type: fricative}
+  - {symbol: q, type: stop}
   - {symbol: r, type: liquid}
   - {symbol: s, type: fricative}
   - {symbol: sh, type: fricative}
