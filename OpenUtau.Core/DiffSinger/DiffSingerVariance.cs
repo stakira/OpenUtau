@@ -16,6 +16,7 @@ namespace OpenUtau.Core.DiffSinger{
     public struct VarianceResult{
         public float[]? energy;
         public float[]? breathiness;
+        public float[]? voicing;
         public float[]? tension;
     }
     public class DsVariance : IDisposable{
@@ -150,6 +151,12 @@ namespace OpenUtau.Core.DiffSinger{
                     new DenseTensor<float>(breathiness, new int[] { breathiness.Length }, false)
                         .Reshape(new int[] { 1, totalFrames })));
             }
+            if (dsConfig.predict_voicing) {
+                var voicing = Enumerable.Repeat(0f, totalFrames).ToArray();
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
+                    new DenseTensor<float>(voicing, new int[] { voicing.Length }, false)
+                        .Reshape(new int[] { 1, totalFrames })));
+            }
             if (dsConfig.predict_tension) {
                 var tension = Enumerable.Repeat(0f, totalFrames).ToArray();
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
@@ -160,6 +167,7 @@ namespace OpenUtau.Core.DiffSinger{
             var numVariances = new[] {
                 dsConfig.predict_energy,
                 dsConfig.predict_breathiness,
+                dsConfig.predict_voicing,
                 dsConfig.predict_tension,
             }.Sum(Convert.ToInt32);
             var retake = Enumerable.Repeat(true, totalFrames * numVariances).ToArray();
@@ -188,6 +196,12 @@ namespace OpenUtau.Core.DiffSinger{
                     .First()
                     .AsTensor<float>()
                 : null;
+            Tensor<float>? voicing_pred = dsConfig.predict_voicing
+                ? varianceOutputs
+                    .Where(o => o.Name == "voicing_pred")
+                    .First()
+                    .AsTensor<float>()
+                : null;
             Tensor<float>? tension_pred = dsConfig.predict_tension
                 ? varianceOutputs
                     .Where(o => o.Name == "tension_pred")
@@ -197,6 +211,7 @@ namespace OpenUtau.Core.DiffSinger{
             return new VarianceResult{
                 energy = energy_pred?.ToArray(),
                 breathiness = breathiness_pred?.ToArray(),
+                voicing = voicing_pred?.ToArray(),
                 tension = tension_pred?.ToArray(),
             };
         }
