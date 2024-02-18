@@ -229,8 +229,7 @@ namespace OpenUtau.Core.DiffSinger {
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("velocity", velocityTensor));
             }
 
-            //Variance: Energy and Breathiness
-
+            //Variance: Energy, Breathiness and Tension
             if(singer.dsConfig.useBreathinessEmbed || singer.dsConfig.useEnergyEmbed || singer.dsConfig.useTensionEmbed){
                 var variancePredictor = singer.getVariancePredictor();
                 VarianceResult varianceResult;
@@ -271,7 +270,8 @@ namespace OpenUtau.Core.DiffSinger {
                     var userTension = DiffSingerUtils.SampleCurve(phrase, phrase.tension,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
-                    var tension = varianceResult.tension!.Zip(userTension, (x,y)=>(float)(x + y * 5 / 100)).ToArray();
+                    var predictedTension = DiffSingerUtils.ResampleCurve(varianceResult.tension, totalFrames);
+                    var tension = predictedTension.Zip(userTension, (x,y)=>(float)(x + y * 5 / 100)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
                         new DenseTensor<float>(tension, new int[] { tension.Length })
                         .Reshape(new int[] { 1, tension.Length })));
