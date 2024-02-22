@@ -15,7 +15,7 @@ namespace OpenUtau.Core.G2p {
         private static readonly string[] phonemes = new string[] {
             "", "", "", "", "aa", "ae", "ah", "ao", "aw", "ax", "ay", "b", "ch",
             "d", "dh", "dr", "dx", "eh", "er", "ey", "f", "g", "hh", "ih", "iy", "jh",
-            "k", "l", "m", "n", "ng", "ow", "oy", "p", "r", "s", "sh", "t",
+            "k", "l", "m", "n", "ng", "ow", "oy", "p", "q", "r", "s", "sh", "t",
             "th", "tr", "uh", "uw", "v", "w", "y", "z", "zh",
         };
 
