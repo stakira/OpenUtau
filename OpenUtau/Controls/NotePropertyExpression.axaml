@@ -8,7 +8,7 @@
     <Label Content="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
     <TextBox Text="{Binding Value, Mode=OneWay}" Grid.Column="2" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
              GotFocus="OnTextBoxGotFocus" LostFocus="OnTextBoxLostFocus"/>
-    <Slider Grid.Column="4" Classes="fader" Value="{Binding Value, Mode=OneWay}" Minimum="{Binding Min}" Maximum="{Binding Max}"
+    <Slider Grid.Column="4" Classes="fader" Value="{Binding Value}" Minimum="{Binding Min}" Maximum="{Binding Max}"
             TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
             Name="slider"/>
     <ComboBox Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"

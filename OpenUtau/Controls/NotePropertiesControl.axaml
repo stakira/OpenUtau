@@ -51,14 +51,14 @@
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.portamento.length}"/>
-              <TextBox Grid.Column="2" Text="{Binding PortamentoLength}" Tag="PortamentoLength"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoLength, Mode=OneWay}" Tag="PortamentoLength"/>
               <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoLength}" Minimum="2" Maximum="320"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
                       Tag="PortamentoLength"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.portamento.start}"/>
-              <TextBox Grid.Column="2" Text="{Binding PortamentoStart}" Tag="PortamentoStart" Margin="0"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoStart, Mode=OneWay}" Tag="PortamentoStart" Margin="0"/>
               <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoStart}" Minimum="-200" Maximum="200"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
                       Tag="PortamentoStart"/>
@@ -86,56 +86,56 @@
             <Grid ColumnDefinitions="130,20,50,20,*" >
               <Label Content="{DynamicResource notedefaults.vibrato.length}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoLength, Mode=OneWay}" Tag="VibratoLength"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoLength, Mode=OneWay}" Minimum="0" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoLength}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoLength" IsDirectionReversed="True" />
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.period}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoPeriod, Mode=OneWay}" Tag="VibratoPeriod"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoPeriod, Mode=OneWay}" Minimum="5" Maximum="500"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoPeriod}" Minimum="5" Maximum="500"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoPeriod"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.depth}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoDepth, Mode=OneWay}" Tag="VibratoDepth"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoDepth, Mode=OneWay}" Minimum="5" Maximum="200"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoDepth}" Minimum="5" Maximum="200"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoDepth"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.in}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoIn, Mode=OneWay}" Tag="VibratoIn"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoIn, Mode=OneWay}" Minimum="0" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoIn}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoIn"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.out}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoOut, Mode=OneWay}" Tag="VibratoOut"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoOut, Mode=OneWay}" Minimum="0" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoOut}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoOut"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.shift}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoShift, Mode=OneWay}" Tag="VibratoShift"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoShift, Mode=OneWay}" Minimum="0" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoShift}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoShift"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.drift}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoDrift, Mode=OneWay}" Tag="VibratoDrift"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoDrift, Mode=OneWay}" Minimum="-100" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoDrift}" Minimum="-100" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoDrift"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.vibrato.vollink}"/>
               <TextBox Grid.Column="2" Text="{Binding VibratoVolLink, Mode=OneWay}" Tag="VibratoVolLink"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoVolLink, Mode=OneWay}" Minimum="-100" Maximum="100"
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoVolLink}" Minimum="-100" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoVolLink"/>
             </Grid>
