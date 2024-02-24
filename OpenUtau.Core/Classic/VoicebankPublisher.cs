@@ -2,9 +2,7 @@ using Ignore;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Common;
-using SharpCompress.Writers;
+using System.IO.Compression;
 using System.Linq;
 
 using OpenUtau.Core.Ustx;
@@ -46,17 +44,17 @@ namespace OpenUtau.Classic {
         private List<string> GetFilesToPack(string singerPath)
         {
             List<string> fileList = Directory.EnumerateFiles(singerPath, "*.*", SearchOption.AllDirectories).ToList();
-            List<string> packList = fileList.FindAll(x => !(IsIgnored(System.IO.Path.GetRelativePath(singerPath, x))));
+            List<string> packList = fileList.FindAll(x => !IsIgnored(System.IO.Path.GetRelativePath(singerPath, x)));
             return packList;
         }
 
-        public void Publish(USinger singer, string outputPath){
-            ///<summary>
-            ///Compress a voicebank into an optimized zip archive for distribution.
-            ///This function only supports voicebanks that follow the classic packaging model,
-            ///including utau, enunu and diffsinger.
-            ///Vogen voicebanks aren't supported.
-            ///</summary>
+        ///<summary>
+        ///Compress a voicebank into an optimized zip archive for distribution.
+        ///This function only supports voicebanks that follow the classic packaging model,
+        ///including utau, enunu and diffsinger.
+        ///Vogen voicebanks aren't supported.
+        ///</summary>
+        public void Publish(USinger singer, string outputFile){
             var location = singer.Location;
             if(!Directory.Exists(location)){
                 return;
@@ -69,26 +67,17 @@ namespace OpenUtau.Classic {
             var packList = GetFilesToPack(location);
             int index = 0;
             int fileCount = packList.Count();
-            var options = new WriterOptions(compressionType: CompressionType.Deflate);
-            options.ArchiveEncoding = new ArchiveEncoding{
-                Forced = System.Text.Encoding.UTF8
-            };
-            using(var archive = ZipArchive.Create())
+            using(ZipArchive archive = new ZipArchive(File.Create(outputFile), ZipArchiveMode.Create))
             {
                 foreach (var absFilePath in packList)
                 {
                     index++;
                     progress.Invoke(100.0 * index / fileCount, $"Compressing {absFilePath}");
                     string reFilePath = Path.GetRelativePath(location, absFilePath);
-                    using(var inputStream = File.OpenRead(absFilePath)){
-                        archive.AddEntry(reFilePath, inputStream);
-                    }
-                }
-                using(var outputStream = File.OpenWrite(outputPath)){
-                    archive.SaveTo(outputStream, options);
+                    archive.CreateEntryFromFile(absFilePath, reFilePath);
                 }
             }
-            progress.Invoke(0, $"Published {singer.Name} to {outputPath}");
+            progress.Invoke(0, $"Published {singer.Name} to {outputFile}");
         }
     }
 }

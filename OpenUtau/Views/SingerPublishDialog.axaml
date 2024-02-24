@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="OpenUtau.App.Views.SingerPublishDialog"
+        Icon="/Assets/open-utau.ico"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="500" MinHeight="500" Width="500" Height="500"
+        ExtendClientAreaToDecorationsHint="False"
+        Title="{DynamicResource singers.publish}">
+  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+      <StackPanel Margin="5">
+        <TextBlock Text="{DynamicResource singers.publish.description}"/>
+        <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25" VerticalAlignment="Center" Margin="4">
+          <CheckBox IsChecked="{Binding UseIgnore}" VerticalAlignment="Center" Content="Use file type ignoring"/>
+          <TextBlock Text="{DynamicResource singers.publish.useignore}" Grid.Column="1" VerticalAlignment="Center"/>
+        </Grid>
+        <TextBlock Text="{DynamicResource singers.publish.ignoretypes}"/>
+        <TextBox Text="{Binding IgnoreTypes}" Height="300" VerticalAlignment="Center" IsEnabled="{Binding UseIgnore}" AcceptsReturn="True"/>
+        <Button Content="{DynamicResource singers.publish.publish}" Click="PublishClicked" VerticalAlignment="Center" Margin="0,10,0,0"/>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>
