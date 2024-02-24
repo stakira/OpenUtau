@@ -38,7 +38,7 @@ namespace OpenUtau.Classic {
         }
 
         private bool IsIgnored(string relativePath){
-            return ignore?.IsIgnored(relativePath) ?? false;
+            return ignore?.IsIgnored(relativePath.Replace('\\', '/')) ?? false;
         }
 
         private List<string> GetFilesToPack(string singerPath)
