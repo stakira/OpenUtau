@@ -23,7 +23,7 @@ namespace OpenUtau.Core.Editing {
                 if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
                     var addNote = project.CreateNote(note.tone, note.End, 120);
                     foreach(var exp in note.phonemeExpressions.OrderBy(exp => exp.index)) {
-                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float?[] { exp.value });
                     }
                     toAdd.Add(addNote);
                 }
@@ -99,7 +99,7 @@ namespace OpenUtau.Core.Editing {
                     }
                     var addNote = project.CreateNote(note.tone, note.position - duration, duration);
                     foreach (var exp in note.phonemeExpressions.Where(exp => exp.index == 0)) {
-                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float?[] { exp.value });
                     }
                     toAdd.Add(addNote);
                 }

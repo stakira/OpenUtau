@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 
@@ -24,15 +23,15 @@ namespace OpenUtau.Core {
     public class SetNoteExpressionCommand : ExpCommand {
         public readonly UProject project;
         public readonly UTrack track;
-        public readonly float[] newValue;
-        public readonly float[] oldValue;
-        public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float[] values) : base(part) {
+        public readonly float?[] newValue;
+        public readonly float?[] oldValue;
+        public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float?[] values) : base(part) {
             this.project = project;
             this.track = track;
             this.Note = note;
             Key = abbr;
             newValue = values;
-            oldValue = note.GetExpression(project, track, abbr).Select(t => t.Item1).ToArray();
+            oldValue = note.GetExpressionNoteHas(project, track, abbr);
         }
         public override string ToString() => $"Set note expression {Key}";
         public override void Execute() => Note.SetExpression(project, track, Key, newValue);
@@ -47,21 +46,26 @@ namespace OpenUtau.Core {
         public readonly UProject project;
         public readonly UTrack track;
         public readonly UPhoneme phoneme;
-        public readonly float newValue;
-        public readonly float oldValue;
+        public readonly float? newValue;
+        public readonly float? oldValue;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
                 SkipTiming = true,
                 Part = Part,
                 SkipPhonemizer = !needsPhonemizer.Contains(Key),
             };
-        public SetPhonemeExpressionCommand(UProject project, UTrack track, UVoicePart part, UPhoneme phoneme, string abbr, float value) : base(part) {
+        public SetPhonemeExpressionCommand(UProject project, UTrack track, UVoicePart part, UPhoneme phoneme, string abbr, float? value) : base(part) {
             this.project = project;
             this.track = track;
             this.phoneme = phoneme;
             Key = abbr;
             newValue = value;
-            oldValue = phoneme.GetExpression(project, track, abbr).Item1;
+            var oldExp = phoneme.GetExpression(project, track, abbr);
+            if (oldExp.Item2) {
+                oldValue = oldExp.Item1;
+            } else {
+                oldValue = null;
+            }
         }
         public override string ToString() => $"Set phoneme expression {Key}";
         public override void Execute() {

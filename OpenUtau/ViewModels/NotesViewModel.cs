@@ -868,7 +868,7 @@ namespace OpenUtau.App.ViewModels {
                                     break;
                                 default:
                                     if (vm.Params[i].IsSelected) {
-                                        float[] values = copyNote.GetExpression(Project, track, vm.Params[i].Abbr).Select(t => t.Item1).ToArray();
+                                        float?[] values = copyNote.GetExpressionNoteHas(Project, track, vm.Params[i].Abbr);
                                         DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(Project, track, Part, note, vm.Params[i].Abbr, values));
                                     }
                                     break;
