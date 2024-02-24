@@ -1,7 +1,9 @@
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Serilog;
 using OpenUtau.App.ViewModels;
 
@@ -12,9 +14,23 @@ namespace OpenUtau.App.Views {
         }
 
         async void PublishClicked(object sender, RoutedEventArgs arg){
-            //var outputFile = "C:/users/lin/desktop/1.zip";
+            var viewModel = DataContext as SingerPublishViewModel;
+            if (viewModel == null) {
+                return;
+            }
+            var singer = viewModel.singer;
+            if(singer == null){
+                return;
+            }
+            var types = FilePicker.ZIP;
+            if(File.Exists(singer.Location)){
+                var suffix = Path.GetExtension(singer.Location);
+                types = new FilePickerFileType(suffix.ToUpper()) {
+                    Patterns = new[] { "*" + suffix },
+                };
+            }
             var outputFile = await FilePicker.SaveFile(
-                this, "singers.publish", FilePicker.ZIP);
+                this, "singers.publish", types);
             if (outputFile == null) {
                 return;
             }
