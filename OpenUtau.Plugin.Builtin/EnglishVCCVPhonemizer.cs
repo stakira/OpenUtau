@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
-                {"i ng","1ng-"},
+                {"i ng","1 ng"},
                 {"ing","1ng"},
                 {"0 r","0r-"},
                 {"9 r","0r-"},
@@ -40,7 +40,8 @@ namespace OpenUtau.Plugin.Builtin {
                 //{"@ m","&m"},
                 {"@m","&m"},
                 {"@n","&n"},
-                {"1 ng","1ng-"},
+                {"@m-","&m-"},
+                {"@n-","&n-"},
                 {"@ ng","Ang-"},
                 {"@ng","Ang"},
                 {"ang","9ng"},
@@ -51,6 +52,7 @@ namespace OpenUtau.Plugin.Builtin {
                 //{"6 l","6l"},
                 //{"i r","Er"},
                 {"ir","Er"},
+                {"ir-","Er-"},
             };
 
         private readonly Dictionary<string, string> vvExceptions =
@@ -64,6 +66,18 @@ namespace OpenUtau.Plugin.Builtin {
                 {"Q","y"},
                 {"i","y"},
                 {"3","r"},
+            };
+
+        private readonly Dictionary<string, string> ccFallback =
+            new Dictionary<string, string>() {
+                {"z","s"},
+                {"g","k"},
+                {"zh","sh"},
+                {"j","ch"},
+                {"b","p"},
+                {"v","f"},
+                {"d","t"},
+                {"dh","th"},
             };
 
         private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
@@ -119,9 +133,11 @@ namespace OpenUtau.Plugin.Builtin {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string[] PreviousWordCc = syllable.PreviousWordCc;
+            string[] CurrentWordCc = syllable.CurrentWordCc;
             string v = syllable.v;
             var lastC = cc.Length - 1;
             var lastCPrevWord = syllable.prevWordConsonantsCount;
+
 
             string basePhoneme = null;
             var phonemes = new List<string>();
@@ -220,37 +236,29 @@ namespace OpenUtau.Plugin.Builtin {
                 // if only one Consonant [V C] + [CV], [VC-][CV], or [VC][_V] if certain rules are met
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
-                    
-                    
-                    if (!HasOto(basePhoneme, syllable.vowelTone)) {
-                        if ($"{cc.Last()}" == "ng") {
-
-                            basePhoneme = $"_{v}";
-                        } else basePhoneme = $"g{v}";
-                    }
-
                     var vc = $"{prevV} {cc.Last()}";
 
-                        if ($"{PreviousWordCc.Last()}" == "r") {
-                            vc = $"{prevV}r-";
-                            }
-                    
-                        if ($"{PreviousWordCc.Last()}" == "l") {
-                            vc = $"{prevV}l-";
-                            }
+                    if (!HasOto(basePhoneme, syllable.vowelTone)) {
+                        if ($"{cc.Last()}" == "ng")
+                            basePhoneme = $"_{v}";
+                        }
 
-                    if (!HasOto(vc, syllable.vowelTone)) ;
-                            if ($"{cc.Last()}" == "ng") {
-                                vc = $"{prevV}ng";
-                                }
+                
+                    if (lastCPrevWord == 1 && CurrentWordCc.Length == 0)
+                        if (($"{PreviousWordCc.Last()}" == "r") || ($"{PreviousWordCc.Last()}" == "l") || ($"{PreviousWordCc.Last()}" == "ng")) {
+                            if (HasOto($"{prevV}{PreviousWordCc.Last()}-", syllable.vowelTone) && HasOto($"{PreviousWordCc.Last()} {v}", syllable.vowelTone)) {
+                            basePhoneme = $"{PreviousWordCc.Last()} {v}";
+                            vc = $"{prevV}{PreviousWordCc.Last()}-"; 
+                            } else 
+                            vc = $"{prevV}{PreviousWordCc.Last()}-";
+                        }
+
+                    if (!HasOto(vc, syllable.vowelTone)) {
+                        if ($"{cc.Last()}" == "ng")
+                            vc = $"{prevV}ng";
+                        }
 
                     vc = CheckVCExceptions(vc);
-                    
-                    if (HasOto($"{prevV} ng", syllable.vowelTone)) ;
-                            if ($"{cc.Last()}" == "ng") {
-                                vc = $"{prevV} ng";
-                                }
-
                     phonemes.Add(vc);
 
                 } else if (syllable.IsVCVWithMoreThanOneConsonant) {
@@ -285,7 +293,7 @@ namespace OpenUtau.Plugin.Builtin {
                             if ($"{ccNoParse}" == "hhy") {
                                 vc = $"{prevV} hh";
                             }
-
+   
                             phonemes.Add(vc);
 
                         }
@@ -307,22 +315,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                         if (phonemes.Count == 0) {
-                            // bonehead [On-] + [n h] + [he]
-                            parsingCC = $"{cc[0]} {cc[1]}";
-                            if (HasOto(parsingCC, syllable.vowelTone)){
-                            //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
-                                if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                    parsingVCC = $"{prevV} {cc[0]}";
-                                    parsingVCC = CheckVCExceptions(parsingVCC);
-                                }
-                                // sp fix
-                                if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
-                                    parsingVCC = $"{prevV} sp";
-                                }
-                                phonemes.Add(parsingVCC);
-                                phonemes.Add(parsingCC);
-                            } else {
-                                // opera [9 p] + [pr] + [_ru]
+                            // opera [9 p] + [pr] + [_ru]
                                 parsingCC = $"{cc[0]}{cc[1]}";
                                 if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && !stopCs.Contains($"{cc[1]}")) {
                                     parsingVCC = $"{prevV} {cc[0]}";
@@ -335,6 +328,25 @@ namespace OpenUtau.Plugin.Builtin {
 
                                         }
                                     }
+                                // sp fix
+                                if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                    parsingVCC = $"{prevV} sp";
+                                }
+                                phonemes.Add(parsingVCC);
+                                phonemes.Add(parsingCC);
+                            } else {
+                                // bonehead [On-] + [n h] + [he]
+                                parsingCC = $"{cc[0]} {cc[1]}";
+                                if (!HasOto(parsingCC, syllable.vowelTone)){
+                                    if (ccFallback.ContainsKey(cc[1]))
+                                    parsingCC = $"{cc[0]} {ccFallback[cc[1]]}";
+                            }
+                                if (HasOto(parsingCC, syllable.vowelTone)){
+                                //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
+                                    if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                    parsingVCC = $"{prevV} {cc[0]}";
+                                    parsingVCC = CheckVCExceptions(parsingVCC);
+                                }
 
                                     // sp fix
                                     if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
@@ -523,8 +535,6 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
                 }
-
-
             }
 
             if (!HasOto(basePhoneme, syllable.vowelTone)) { basePhoneme = $"{cc.Last()}{v}"; }
@@ -644,7 +654,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
 
-
+                
                 }
             }
 
@@ -666,11 +676,9 @@ namespace OpenUtau.Plugin.Builtin {
             //}
             foreach (var consonant in new[] { "6r" }) {
                 alias = alias.Replace(consonant, "3");
-            }
+                }
 
             return alias;
         }
-
-
     }
 }
