@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,6 +96,8 @@ namespace OpenUtau.Plugin.Builtin {
         //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
+        private readonly string[] _cvCs = { "r", "l", "w", "y" };
+
 
 
         protected override string[] GetVowels() => vowels;
@@ -317,7 +319,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (phonemes.Count == 0) {
                             // opera [9 p] + [pr] + [_ru]
                                 parsingCC = $"{cc[0]}{cc[1]}";
-                                if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && !stopCs.Contains($"{cc[1]}")) {
+                                if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ($"{cc[1]}" == $"_cvCs")) {
                                     parsingVCC = $"{prevV} {cc[0]}";
 
                                     basePhoneme = $"_{cc.Last()}{v}";
