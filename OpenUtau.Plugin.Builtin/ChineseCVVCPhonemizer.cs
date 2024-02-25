@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -244,7 +244,7 @@ namespace OpenUtau.Plugin.Builtin {
             Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
         }
 
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             RomanizeNotes(groups);
         }
     }

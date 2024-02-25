@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using YamlDotNet.Serialization;
-using Serilog;
-using OpenUtau.Core.Render;
-using OpenUtau.Api;
-using OpenUtau.Core.SignalChain;
-using NWaves.Signals;
 using NWaves.Operations;
-using System.Diagnostics;
+using NWaves.Signals;
+using OpenUtau.Api;
+using OpenUtau.Core.Render;
+using OpenUtau.Core.SignalChain;
+using Serilog;
+using SharpCompress;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -141,14 +142,37 @@ namespace OpenUtau.Core.Ustx {
                     var resp = phonemizerResponse;
                     if (resp.timestamp == notesTimestamp) {
                         phonemes.Clear();
+                        notes.ForEach(note => note.phonemizerExpressions.Clear());
+
                         for (int i = 0; i < resp.phonemes.Length; ++i) {
                             for (int j = 0; j < resp.phonemes[i].Length; ++j) {
-                                phonemes.Add(new UPhoneme() {
+                                var phoneme = new UPhoneme() {
                                     rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = resp.phonemes[i][j].index ?? j,
                                     Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
-                                });
+                                };
+                                if (phonemes.Any(p => p.Parent == phoneme.Parent && p.index == phoneme.index)) {
+                                    try {
+                                        throw new ArgumentException("Duplicate phoneme index.");
+                                    } catch (Exception e) {
+                                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                                        continue;
+                                    }
+                                }
+                                phonemes.Add(phoneme);
+                                if (resp.phonemes[i][j].expressions != null && resp.phonemes[i][j].expressions.Any()) {
+                                    resp.phonemes[i][j].expressions.ForEach(exp => {
+                                        if (track.TryGetExpDescriptor(project, exp.abbr, out var descriptor)) {
+                                            if (descriptor.type != UExpressionType.Curve && descriptor.min <= exp.value && exp.value <= descriptor.max) {
+                                                phoneme.Parent.phonemizerExpressions.Add(new UExpression(descriptor) {
+                                                    index = phoneme.index,
+                                                    value = exp.value
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
                             }
                         }
                         phonemesTimestamp = resp.timestamp;
