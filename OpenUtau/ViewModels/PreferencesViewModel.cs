@@ -44,6 +44,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int DiffsingerSpeedup { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
+        [Reactive] public bool PenPlusDefault { get; set; }
         [Reactive] public int DegreeStyle { get; set; }
         [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
@@ -141,6 +142,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerDepth = Preferences.Default.DiffSingerDepth;
             DiffsingerSpeedup = Preferences.Default.DiffsingerSpeedup;
             Theme = Preferences.Default.Theme;
+            PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
             UseTrackColor = Preferences.Default.UseTrackColor;
             ShowPortrait = Preferences.Default.ShowPortrait;
@@ -201,6 +203,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PreRender)
                 .Subscribe(preRender => {
                     Preferences.Default.PreRender = preRender;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PenPlusDefault)
+                .Subscribe(penPlusDefault => {
+                    Preferences.Default.PenPlusDefault = penPlusDefault;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Language)
