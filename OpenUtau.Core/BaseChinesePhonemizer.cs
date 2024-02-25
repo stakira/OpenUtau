@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using OpenUtau.Core.G2p;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class BaseChinesePhonemizer : Phonemizer {
@@ -43,7 +43,7 @@ namespace OpenUtau.Core {
             Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
         }
 
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             RomanizeNotes(groups);
         }
     }

@@ -394,7 +394,7 @@ namespace OpenUtau.Core.Enunu {
             
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
 
-        public override void SetUp(Note[][] notes) {
+        public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
             if (notes.Length == 0 || singer == null || !singer.Found) {
                 return;

@@ -99,7 +99,7 @@ namespace OpenUtau.Api {
             phonemizer.SetSinger(request.singer);
             phonemizer.SetTiming(request.timeAxis);
             try {
-                phonemizer.SetUp(notes);
+                phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
             } catch (Exception e) {
                 Log.Error(e, $"phonemizer failed to setup.");
             }

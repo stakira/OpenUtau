@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Enunu {
             this.singer = singer as EnunuSinger;
         }
 
-        public override void SetUp(Note[][] notes) {
+        public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
             if (notes.Length == 0 || singer == null || !singer.Found) {
                 return;
