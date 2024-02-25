@@ -12,12 +12,12 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("en_arpa",
+        [InlineData("en_arpa-plus",
             new string[] { "good", "morning" },
             new string[] { "C4", "C4" },
             new string[] { "", "" },
             new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao_3", "ao r_3", "r n_3", "n ih_3", "ih ng_3", "ng -_3" })]
-        [InlineData("en_arpa",
+        [InlineData("en_arpa-plus",
             new string[] { "good", "morning", "-" },
             new string[] { "A3", "F4", "C4" },
             new string[] { "", "", "" },
@@ -28,7 +28,7 @@ namespace OpenUtau.Plugins {
 
         [Fact]
         public void ColorTest() {
-            RunPhonemizeTest("en_arpa+", new NoteParams[] {
+            RunPhonemizeTest("en_arpa-plus", new NoteParams[] {
                 new NoteParams {
                     lyric = "hi",
                     hint = "",
@@ -61,7 +61,7 @@ namespace OpenUtau.Plugins {
         [InlineData("asdfjkl", "r iy d", new string[] { "- r_3", "r iy_3", "iy d_3", "d -_3" })]
         [InlineData("", "r iy d", new string[] { "- r_3", "r iy_3", "iy d_3", "d -_3" })]
         public void HintTest(string lyric, string hint, string[] aliases) {
-            RunPhonemizeTest("en_arpa+", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "")} }, aliases);
+            RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "")} }, aliases);
         }
     }
 }
