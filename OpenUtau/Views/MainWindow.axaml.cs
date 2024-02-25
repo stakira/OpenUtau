@@ -1226,59 +1226,57 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
         async Task VoiceColorRemappingAsync(UTrack track, string[] oldColors, string[] newColors) {
-            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
-            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
+                .Cast<UVoicePart>()
+                .Where(vpart => vpart.notes.Count > 0);
+            if (parts.Any()) {
                 var dialog = new VoiceColorMappingDialog();
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 await dialog.ShowDialog(this);
 
                 if (dialog.Apply) {
-                    foreach (var part in parts) {
-                        if (part is UVoicePart voicePart) {
-                            foreach (var phoneme in voicePart.phonemes) {
-                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
-                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
-                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
-                                    if (mapping.OldIndex != mapping.SelectedIndex) {
-                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
-                                    }
-                                } else {
-                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
-                                }
-                            }
-                        }
-                    }
+                    SetVoiceColorRemapping(track, parts, vm);
                 }
             }
         }
         void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors) {
-            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
-            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
+                .Cast<UVoicePart>()
+                .Where(vpart => vpart.notes.Count > 0);
+            if (parts.Any()) {
                 var dialog = new VoiceColorMappingDialog();
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 dialog.onFinish = () => {
                     DocManager.Inst.StartUndoGroup();
-                    foreach (var part in parts) {
-                        if (part is UVoicePart voicePart) {
-                            foreach (var phoneme in voicePart.phonemes) {
-                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
-                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
-                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
-                                    if (mapping.OldIndex != mapping.SelectedIndex) {
-                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
-                                    }
-                                } else {
-                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
-                                }
-                            }
-                        }
-                    }
+                    SetVoiceColorRemapping(track, parts, vm);
                     DocManager.Inst.EndUndoGroup();
                 };
                 dialog.ShowDialog(this);
             }
+        }
+        void SetVoiceColorRemapping(UTrack track, IEnumerable<UVoicePart> parts, VoiceColorMappingViewModel vm) {
+            foreach (var part in parts) {
+                foreach (var phoneme in part.phonemes) {
+                    var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
+                    if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
+                        var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
+                        if (mapping.OldIndex != mapping.SelectedIndex) {
+                            if (mapping.SelectedIndex == 0) {
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, null));
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, mapping.SelectedIndex));
+                            }
+                        }
+                    } else {
+                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, null));
+                    }
+                }
+            }
+
         }
 
         public async void WindowClosing(object? sender, WindowClosingEventArgs e) {

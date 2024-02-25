@@ -165,20 +165,22 @@ namespace OpenUtau.Core.Ustx {
             envelope.data[4] = p4;
         }
 
-        /**  
-            <summary>
-                If the phoneme does not have the corresponding expression, return the track's expression and false
-            </summary>
-        */
+        /// <summary>
+        /// If the phoneme does not have the corresponding expression, return the track's expression and false
+        /// <summary>
         public Tuple<float, bool> GetExpression(UProject project, UTrack track, string abbr) {
             track.TryGetExpression(project, abbr, out UExpression trackExp);
             var note = Parent.Extends ?? Parent;
-            var phonemeExp = note.phonemeExpressions.FirstOrDefault(
-                exp => exp.descriptor?.abbr == abbr && exp.index == index);
+            var phonemeExp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
             if (phonemeExp != null) {
                 return Tuple.Create(phonemeExp.value, true);
             } else {
-                return Tuple.Create(trackExp.value, false);
+                var phonemizerExp = note.phonemizerExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
+                if (phonemizerExp != null) {
+                    return Tuple.Create(phonemizerExp.value, false);
+                } else {
+                    return Tuple.Create(trackExp.value, false);
+                }
             }
         }
 
@@ -187,7 +189,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             var note = Parent.Extends ?? Parent;
-            if (value == null || trackExp.value == value) {
+            if (value == null) {
                 note.phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == index);
             } else {
                 var phonemeExp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
