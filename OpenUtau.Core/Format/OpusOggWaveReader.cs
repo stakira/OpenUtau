@@ -14,7 +14,7 @@ namespace OpenUtau.Core.Format {
         byte[] wavData;
 
         public OpusOggWaveReader(string oggFile) {
-            using (FileStream fileStream = new FileStream(oggFile, FileMode.Open)) {
+            using (FileStream fileStream = new FileStream(oggFile, FileMode.Open, FileAccess.Read)) {
                 oggStream = new MemoryStream();
                 fileStream.CopyTo(oggStream);
             }
