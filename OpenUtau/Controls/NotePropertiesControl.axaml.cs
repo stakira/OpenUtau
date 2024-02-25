@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -96,13 +96,16 @@ namespace OpenUtau.App.Controls {
         void SliderPointerReleased(object? sender, PointerReleasedEventArgs args) {
             Log.Debug("Slider released");
             if (NotePropertiesViewModel.PanelControlPressed) {
+                if (sender is Slider slider && slider.Tag is string tag && !string.IsNullOrEmpty(tag)) {
+                    ViewModel.SetNoteParams(tag, (float)slider.Value);
+                }
                 NotePropertiesViewModel.PanelControlPressed = false;
                 DocManager.Inst.EndUndoGroup();
             }
         }
         void SliderPointerMoved(object? sender, PointerEventArgs args) {
             if (sender is Slider slider && slider.Tag is string tag && !string.IsNullOrEmpty(tag)) {
-                ViewModel.SetNoteParams(tag, slider.Value);
+                ViewModel.SetNoteParams(tag, (float)slider.Value);
             }
         }
 
