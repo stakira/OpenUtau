@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -193,17 +194,25 @@ namespace OpenUtau.App.ViewModels {
                             } else if (exp.IsOptions) {
                                 exp.SelectedOption = (int)phonemeExpression.value;
                             }
+                            exp.HasValue = true;
                         } else {
                             if (exp.IsNumerical) {
                                 exp.Value = exp.defaultValue;
                             } else if (exp.IsOptions) {
                                 exp.SelectedOption = (int)exp.defaultValue;
                             }
+
+                            if (selectedNotes.Any(note => note.phonemeExpressions.FirstOrDefault(e => e.abbr == exp.abbr) != null)) {
+                                exp.HasValue = true;
+                            } else {
+                                exp.HasValue = false;
+                            }
                         }
                     }
                 } else {
                     foreach (NotePropertyExpViewModel exp in Expressions) {
                         exp.IsNoteSelected = false;
+                        exp.HasValue = false;
                         if (exp.IsNumerical) {
                             exp.Value = exp.defaultValue;
                         } else if (exp.IsOptions) {
@@ -456,7 +465,7 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             }
         }
-        public void SetNumericalExpressionsChanges(string abbr, float value) {
+        public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
 
@@ -469,7 +478,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
         }
-        public void SetOptionalExpressionsChanges(string abbr, int value) {
+        public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
                 DocManager.Inst.StartUndoGroup();
@@ -534,6 +543,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float Value { get; set; }
         [Reactive] public int SelectedOption { get; set; }
         [Reactive] public bool DropDownOpen { get; set; }
+        [Reactive] public bool HasValue { get; set; } = false;
+        [Reactive] public FontWeight NameFontWeight { get; set; }
 
         private NotePropertiesViewModel parentViewmodel;
 
@@ -562,14 +573,24 @@ namespace OpenUtau.App.ViewModels {
                         }
                     });
             }
+
+            this.WhenAnyValue(vm => vm.HasValue)
+                .Subscribe(value => {
+                    if (value) {
+                        NameFontWeight = FontWeight.Bold;
+                    } else {
+                        NameFontWeight = FontWeight.Normal;
+                    }
+                });
         }
 
         public void SetNumericalExpressions(object? obj) {
-            float value;
-            if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= Min && f <= Max) {
+            float? value = null;
+            if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f))) {
+                if (f < Min && f > Max) {
+                    return;
+                }
                 value = f;
-            } else {
-                value = defaultValue;
             }
             parentViewmodel.SetNumericalExpressionsChanges(abbr, value);
             this.RaisePropertyChanged(nameof(Value));
