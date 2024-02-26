@@ -145,13 +145,16 @@ namespace OpenUtau.Core.Ustx {
                         notes.ForEach(note => note.phonemizerExpressions.Clear());
 
                         for (int i = 0; i < resp.phonemes.Length; ++i) {
+                            var indexes = new List<int>();
+                            var note = notes.ElementAtOrDefault(resp.noteIndexes[i]);
                             for (int j = 0; j < resp.phonemes[i].Length; ++j) {
                                 var phoneme = new UPhoneme() {
                                     rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = resp.phonemes[i][j].index ?? j,
-                                    Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
+                                    Parent = note
                                 };
+                                // Check for duplicate indexes
                                 if (phonemes.Any(p => p.Parent == phoneme.Parent && p.index == phoneme.index)) {
                                     try {
                                         throw new ArgumentException("Duplicate phoneme index.");
@@ -161,11 +164,12 @@ namespace OpenUtau.Core.Ustx {
                                     }
                                 }
                                 phonemes.Add(phoneme);
+                                indexes.Add(phoneme.index);
                                 if (resp.phonemes[i][j].expressions != null && resp.phonemes[i][j].expressions.Any()) {
                                     resp.phonemes[i][j].expressions.ForEach(exp => {
                                         if (track.TryGetExpDescriptor(project, exp.abbr, out var descriptor)) {
                                             if (descriptor.type != UExpressionType.Curve && descriptor.min <= exp.value && exp.value <= descriptor.max) {
-                                                phoneme.Parent.phonemizerExpressions.Add(new UExpression(descriptor) {
+                                                note.phonemizerExpressions.Add(new UExpression(descriptor) {
                                                     index = phoneme.index,
                                                     value = exp.value
                                                 });
@@ -174,6 +178,8 @@ namespace OpenUtau.Core.Ustx {
                                     });
                                 }
                             }
+                            indexes.Sort();
+                            note.phonemeIndexes = indexes.ToArray();
                         }
                         phonemesTimestamp = resp.timestamp;
                     }
