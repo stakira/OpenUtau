@@ -30,14 +30,14 @@ namespace OpenUtau.Plugin.Builtin {
             new Dictionary<string, string>() {
                 {"i ng","1 ng"},
                 {"ing","1ng"},
-                {"0 r","0r-"},
-                {"9 r","0r-"},
+                {"ing-","1ng-"},
                 {"9r","0r"},
                 {"9r-","0r-"},
                 {"er-","Ar-" },
-                //{"e r","Ar"},
+                //{"e r","Ar-"},
                 {"er","Ar"},
                 //{"@ m","&m"},
+                //{"@ n","&n"},
                 {"@m","&m"},
                 {"@n","&n"},
                 {"@m-","&m-"},
@@ -45,10 +45,11 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@ ng","Ang-"},
                 {"@ng","Ang"},
                 {"ang","9ng"},
-                {"a ng","9ng-"},
+                {"ang-","9ng-"},
                 //{"O l","0l"},
                 {"0 l","0l-"},
                 {"Ol","0l"},
+                {"Ol-","0l-"},
                 //{"6 l","6l"},
                 //{"i r","Er"},
                 {"ir","Er"},
@@ -346,8 +347,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 if (HasOto(parsingCC, syllable.vowelTone)){
                                 //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                    parsingVCC = $"{prevV} {cc[0]}";
                                     parsingVCC = CheckVCExceptions(parsingVCC);
+                                        if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                        parsingVCC = $"{prevV} {cc[0]}";
+                                    }
                                 }
 
                                     // sp fix
