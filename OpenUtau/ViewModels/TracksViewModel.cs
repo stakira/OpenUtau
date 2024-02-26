@@ -85,7 +85,7 @@ namespace OpenUtau.App.ViewModels {
         // kinds of values.
         //
         // These values could be better named so as to make the code more readable.
-        private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
+        private double playPosXToTickOffset => Bounds.Width != 0 ? ViewportTicks / Bounds.Width : 0;
 
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
