@@ -92,7 +92,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
 
         // See the comments on TracksViewModel.playPosXToTickOffset
-        private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
+        private double playPosXToTickOffset => Bounds.Width != 0 ? ViewportTicks / Bounds.Width : 0;
 
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
