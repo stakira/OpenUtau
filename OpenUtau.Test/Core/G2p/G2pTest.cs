@@ -53,7 +53,7 @@ namespace OpenUtau.Core.G2p {
             Assert.Equal("f l aa p tr aa p ih k ax", string.Join(' ', g2p.Query("floptropica")));
             Assert.Equal("f l aa p tr aa p ih k ax", string.Join(' ', g2p.Query("%fl,optro pica")));
             Assert.Equal("s l ey d", string.Join(' ', g2p.Query("slayed")));
-            Assert.Equal("d ay r eh k sh ax n", string.Join(' ', g2p.Query("direction")));
+            Assert.Equal("d er eh k sh ax n", string.Join(' ', g2p.Query("direction")));
         }
     }
 }

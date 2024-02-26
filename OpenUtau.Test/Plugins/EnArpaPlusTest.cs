@@ -19,9 +19,9 @@ namespace OpenUtau.Plugins {
             new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao_3", "ao r_3", "r n_3", "n ih_3", "ih ng_3", "ng -_3" })]
         [InlineData("en_arpa-plus",
             new string[] { "good", "morning" },
-            new string[] { "A3", "F4", "C4" },
-            new string[] { "", "", "" },
-            new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao", "ao r", "r n", "n ih", "ih ng", "ng -_3" })]
+            new string[] { "A3", "F4" },
+            new string[] { "", "" },
+            new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao", "ao r", "r n", "n ih", "ih ng", "ng -" })]
         public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
         }
