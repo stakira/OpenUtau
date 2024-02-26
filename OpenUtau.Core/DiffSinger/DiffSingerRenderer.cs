@@ -162,6 +162,14 @@ namespace OpenUtau.Core.DiffSinger {
                 throw new Exception(
                     $"Vocoder and acoustic model has mismatching hop size ({vocoder.hop_size} != {singer.dsConfig.hop_size})");
             }
+            if(vocoder.win_size != singer.dsConfig.win_size){
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching win size ({vocoder.win_size} != {singer.dsConfig.win_size})");
+            }
+            if(vocoder.fft_size != singer.dsConfig.fft_size){
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching FFT size ({vocoder.fft_size} != {singer.dsConfig.fft_size})");
+            }
             if (vocoder.num_mel_bins != singer.dsConfig.num_mel_bins) {
                 throw new Exception(
                     $"Vocoder and acoustic model has mismatching mel bins ({vocoder.num_mel_bins} != {singer.dsConfig.num_mel_bins})");

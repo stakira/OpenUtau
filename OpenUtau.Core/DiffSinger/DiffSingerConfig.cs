@@ -42,6 +42,8 @@ namespace OpenUtau.Core.DiffSinger {
         public bool use_note_rest = false;
         public int sample_rate = 44100;
         public int hop_size = 512;
+        public int win_size = 2048;
+        public int fft_size = 2048;
         public int num_mel_bins = 128;
         public double mel_fmin = 40;
         public double mel_fmax = 16000;
