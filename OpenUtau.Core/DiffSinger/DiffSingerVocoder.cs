@@ -11,6 +11,10 @@ namespace OpenUtau.Core.DiffSinger {
         public int num_mel_bins => config.num_mel_bins;
         public int hop_size => config.hop_size;
         public int sample_rate => config.sample_rate;
+        public double mel_fmin => config.mel_fmin;
+        public double mel_fmax => config.mel_fmax;
+        public string mel_base => config.mel_base;
+        public string mel_scale => config.mel_scale;
 
         //Get vocoder by package name
         public DsVocoder(string name) {
@@ -54,8 +58,12 @@ namespace OpenUtau.Core.DiffSinger {
     public class DsVocoderConfig {
         public string name = "vocoder";
         public string model = "model.onnx";
-        public int num_mel_bins = 128;
-        public int hop_size = 512;
         public int sample_rate = 44100;
+        public int hop_size = 512;
+        public int num_mel_bins = 128;
+        public double mel_fmin = 40;
+        public double mel_fmax = 16000;
+        public string mel_base = "10";  // or "e"
+        public string mel_scale = "slaney";  // or "htk"
     }
 }
