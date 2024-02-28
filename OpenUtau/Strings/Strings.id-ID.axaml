@@ -357,6 +357,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Penjalan Pembelajaran Mesin</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pra-render</system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:

@@ -351,6 +351,7 @@
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">การชดเชย Phase</system:String>
   <system:String x:Key="prefs.rendering.prerender">ประมวลผลล่วงหน้า</system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 คําเตือน: moresampler ไม่ได้รับการสนับสนุนอย่างเต็มที่ อาจทำให้ประมวลผลล่าช้า และทําให้การใช้งาน CPU สูงมากยิ่งขึ้น หากคุณยืนยัน โปรด:

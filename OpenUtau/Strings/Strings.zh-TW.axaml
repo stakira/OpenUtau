@@ -351,6 +351,7 @@
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">相位補償</system:String>
   <system:String x:Key="prefs.rendering.prerender">預先算繪</system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.resampler">引擎</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: Moresampler 尚未完整支援，可能導致使用速度緩慢並提高 CPU 使用率。若欲繼續，請遵循以下步驟:
