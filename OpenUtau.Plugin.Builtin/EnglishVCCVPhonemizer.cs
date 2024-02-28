@@ -31,8 +31,10 @@ namespace OpenUtau.Plugin.Builtin {
                 {"i ng","1 ng"},
                 {"ing","1ng"},
                 {"ing-","1ng-"},
+                {"0 r","0r-"},
                 {"9r","0r"},
                 {"9r-","0r-"},
+                {"9 r","0r-"},
                 {"er-","Ar-" },
                 //{"e r","Ar-"},
                 {"er","Ar"},
@@ -46,6 +48,9 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@ng","Ang"},
                 {"ang","9ng"},
                 {"ang-","9ng-"},
+                {"al","9l"},
+                {"al-","9l-"},
+                //{"a l","9l"},
                 //{"O l","0l"},
                 {"0 l","0l-"},
                 {"Ol","0l"},
@@ -332,8 +337,10 @@ namespace OpenUtau.Plugin.Builtin {
                                         }
                                     }
                                 // sp fix
-                                if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                if (!HasOto ($"sp", syllable.vowelTone)) {
+                                    if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                     parsingVCC = $"{prevV} sp";
+                                    }
                                 }
                                 phonemes.Add(parsingVCC);
                                 phonemes.Add(parsingCC);
@@ -354,8 +361,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 }
 
                                     // sp fix
-                                    if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                    if (!HasOto ($"sp", syllable.vowelTone)) {
+                                        if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                         parsingVCC = $"{prevV} sp";
+                                        }
                                     }
                                     phonemes.Add(parsingVCC);
                                     phonemes.Add(parsingCC);
@@ -363,8 +372,10 @@ namespace OpenUtau.Plugin.Builtin {
                                     // backpack [@k] + [p@]
 
                                     // sp fix
-                                    if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                    if (!HasOto ($"sp", syllable.vowelTone)) {
+                                        if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                         parsingVCC = $"{prevV} sp";
+                                        }
                                     } else
                                     parsingVCC = $"{prevV}{cc[0]}";
                                     phonemes.Add(parsingVCC);
