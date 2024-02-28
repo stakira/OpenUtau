@@ -351,6 +351,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Prerenderización</system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser lento y causar un alto uso de la CPU. Si quiere usarlo, por favor:

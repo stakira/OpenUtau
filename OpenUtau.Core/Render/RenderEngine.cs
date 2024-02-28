@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
@@ -173,6 +174,7 @@ namespace OpenUtau.Core.Render {
             lock (project) {
                 requests = project.parts
                     .Where(part => part is UVoicePart)
+                    .Where(part => !Preferences.Default.SkipRenderingMutedTracks || !project.tracks[part.trackNo].Muted)
                     .Select(part => part as UVoicePart)
                     .Select(part => part.GetRenderRequest())
                     .Where(request => request != null)

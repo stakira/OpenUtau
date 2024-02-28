@@ -351,6 +351,7 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Fase Compensatie</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en een hoog CPU-gebruik veroorzaken. Als u erop staat, alstublieft:
