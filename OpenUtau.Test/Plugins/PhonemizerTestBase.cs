@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Classic;
-using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -55,13 +54,23 @@ namespace OpenUtau.Plugins {
             var singer = new ClassicSinger(voicebank);
             singer.EnsureLoaded();
 
+            var project = new Core.Ustx.UProject();
+            Ustx.AddDefaultExpressions(project);
+            var track = project.tracks[0];
+            project.expressions.TryGetValue(Ustx.CLR, out var descriptor);
+            track.VoiceColorExp = descriptor.Clone();
+            var colors = singer.Subbanks.Select(subbank => subbank.Color).ToHashSet();
+            track.VoiceColorExp.options = colors.OrderBy(c => c).ToArray();
+            track.VoiceColorExp.max = track.VoiceColorExp.options.Length - 1;
+
             var timeAxis = new Core.TimeAxis();
-            timeAxis.BuildSegments(new Core.Ustx.UProject());
+            timeAxis.BuildSegments(project);
 
             var phonemizer = CreatePhonemizer();
             phonemizer.Testing = true;
             phonemizer.SetSinger(singer);
             phonemizer.SetTiming(timeAxis);
+            phonemizer.SetUp(groups.ToArray(), project, track);
 
             var results = new List<Phonemizer.Result>();
             for (var i = 0; i < groups.Count; i++) {
