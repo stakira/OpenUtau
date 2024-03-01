@@ -256,6 +256,11 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
+        public void Cut() => NotesViewModel.CutNotes();
+        public void Copy() => NotesViewModel.CopyNotes();
+        public void Paste() => NotesViewModel.PasteNotes();
+        public void Delete() => NotesViewModel.DeleteSelectedNotes();
+        public void SelectAll() => NotesViewModel.SelectAllNotes();
 
         public void MouseoverPhoneme(UPhoneme? phoneme) {
             MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));

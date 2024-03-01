@@ -522,6 +522,9 @@ namespace OpenUtau.App.Views {
             return true;
         }
 
+        void OnMenuUndo(object sender, RoutedEventArgs args) => viewModel.Undo();
+        void OnMenuRedo(object sender, RoutedEventArgs args) => viewModel.Redo();
+
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
             var dialog = new ExpressionsDialog() {
                 DataContext = new ExpressionsViewModel(),
