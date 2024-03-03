@@ -18,7 +18,7 @@ namespace OpenUtau.Classic {
             }
             var startInfo = new ProcessStartInfo() {
                 FileName = Executable,
-                Arguments = tempFile,
+                Arguments = $"\"{tempFile}\"",
                 WorkingDirectory = Path.GetDirectoryName(Executable),
                 UseShellExecute = UseShell,
             };
