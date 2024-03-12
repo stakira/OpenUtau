@@ -6,11 +6,11 @@ using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     [Phonemizer("Voicevox Phonemizer", "VOICEVOX")]
     public class VoicevoxPhonemizer : Phonemizer {
-        readonly string PhonemizerType = "VOICEVOX";
 
         protected VoicevoxSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
@@ -18,92 +18,56 @@ namespace OpenUtau.Core.Voicevox {
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
             if(this.singer != null) {
-                if (this.singer.voicevoxConfig.PhonemizerFlag) {
-                    this.singer.voicevoxConfig.PhonemizerType = this.PhonemizerType;
-                }
+                 this.singer.voicevoxConfig.Tag = this.Tag;
             }
         }
 
         public override void SetUp(Note[][] notes)  {
             partResult.Clear();
-            var qNotes = NoteGroupsToVoicevox(notes, timeAxis);
-            var vvNote = new VoicevoxNote();
-            if (this.singer.voicevoxConfig.base_style != null) {
-                foreach (var s in this.singer.voicevoxConfig.base_style) {
-                    if (s.name.Equals(this.singer.voicevoxConfig.base_name)) {
-                        vvNote = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
-                        if (s.styles.name.Equals(this.singer.voicevoxConfig.base_style_name)) {
+            var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, timeAxis,this.singer);
+            var vvNotes = new VoicevoxNote();
+            string singerID = VoicevoxUtils.defaultID;
+            if (this.singer.voicevoxConfig.base_singer_style != null) {
+                foreach (var s in this.singer.voicevoxConfig.base_singer_style) {
+                    if (s.name.Equals(this.singer.voicevoxConfig.base_singer_name)) {
+                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
+                        if (s.styles.name.Equals(this.singer.voicevoxConfig.base_singer_style_name)) {
                             break;
                         }
                     } else {
-                        vvNote = VoicevoxUtils.VoicevoxVoiceBase(qNotes, "6000");
+                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
                         break;
                     }
                 }
             } else {
-                vvNote = VoicevoxUtils.VoicevoxVoiceBase(qNotes, "6000");
+                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
             }
 
-            //phoneme.ToArray().Zip(noteIndexes.ToArray(), (phoneme, noteIndex) => Tuple.Create(phoneme, noteIndex))
-            //.GroupBy(tuple => tuple.Item2)
-            //.ToList()
-            //.ForEach(g => {
-            //    if (g.Key >= 0) {
-            //        var noteGroup = notes[g.Key];
-            //        partResult[noteGroup] = g.Select(tu => tu.Item1).ToArray();
-            //    }
-            //});
+            var parentDirectory = Directory.GetParent(singer.Location).ToString();
+            var yamlPath = Path.Join(parentDirectory, "phonemes.yaml");
+            var yamlTxt = File.ReadAllText(yamlPath);
+            var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
 
+            var list = new List<Phonemes>(vvNotes.phonemes);
             foreach (var note in qNotes.notes) {
-                if (note.vqnindex <= 0) {
+                if (note.vqnindex < 0) {
+                    list.Remove(list[0]);
                     continue;
                 }
                 var noteGroup = notes[note.vqnindex];
                 var phoneme = new List<Phoneme>();
-                int duration = 0;
-                int i = 0;
-                var list = new List<Phonemes>(vvNote.phonemes);
-                while (0 < list.Count) {
-                    if (noteGroup[0].duration > duration) {
-                        phoneme.Add(new Phoneme() { phoneme = list[i].phoneme, position = list[i].frame_length });
-                        duration += (int)timeAxis.MsPosToTickPos(list[i].frame_length) * 10;
-                        list.Remove(list[i]);
-                        i++;
-                    } else {
+                while (list.Count > 0) {
+                    if (phonemes_list.vowels.Contains(list[0].phoneme)) {
+                        phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position });
+                        list.Remove(list[0]);
                         break;
+                    }else if (phonemes_list.consonants.Contains(list[0].phoneme)) {
+                        phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position - (int)timeAxis.MsPosToTickPos((list[0].frame_length / VoicevoxUtils.fps) * 1000) });
                     }
+                    list.Remove(list[0]);
                 }
                 partResult[noteGroup] = phoneme.ToArray();
             }
-
-        }
-
-        public VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
-            BaseChinesePhonemizer.RomanizeNotes(notes);
-            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
-            int index = 0;
-            int duration = 0;
-            while (index < notes.Length) {
-                if (duration < notes[index][0].duration) {
-                    qnotes.notes.Add(new VoicevoxQueryNotes() {
-                        lyric = "",
-                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index][0].duration - duration) / 10,
-                        key = null,
-                        vqnindex = -1
-                    });
-                    duration = notes[index][0].position + notes[index][0].duration;
-                } else {
-                    qnotes.notes.Add(new VoicevoxQueryNotes {
-                        lyric = notes[index][0].lyric,
-                        frame_length = (int)timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 10,
-                        key = notes[index][0].tone,
-                        vqnindex = index
-                    });
-                    duration += (int)timeAxis.MsPosToTickPos(qnotes.notes.Last().frame_length) * 10;
-                    index++;
-                }
-            }
-            return qnotes;
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {

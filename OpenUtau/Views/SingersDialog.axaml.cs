@@ -239,7 +239,7 @@ namespace OpenUtau.App.Views {
             var sample = singer.Sample;
             if(sample!=null && File.Exists(sample)){
                 return sample;
-            } else if (singer.SingerType == USingerType.Classic) {
+            } else if (singer.SingerType == USingerType.Classic || singer.SingerType == USingerType.Voicevox) {
                 var path = singer.Location;
                 if(!Directory.Exists(path)){
                     return null;

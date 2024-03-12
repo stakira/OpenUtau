@@ -97,13 +97,10 @@ namespace OpenUtau.Classic {
                 var parentDirectory = Directory.GetParent(dir).ToString();
                 var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
                 var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
-                var vvconfigFile = Path.Join(parentDirectory, "vvconfig.json");
                 if (File.Exists(enuconfigFile)) {
                     voicebank.SingerType = USingerType.Enunu;
                 } else if (File.Exists(dsconfigFile)) {
                     voicebank.SingerType = USingerType.DiffSinger;
-                } else if (File.Exists(vvconfigFile)) {
-                    voicebank.SingerType = USingerType.Voicevox;
                 } else if (voicebank.SingerType != USingerType.Enunu) {
                     voicebank.SingerType = USingerType.Classic;
                 }
