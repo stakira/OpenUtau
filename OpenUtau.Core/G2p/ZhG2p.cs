@@ -107,6 +107,21 @@ namespace OpenUtau.Core.G2p {
             }
         }
 
+        public bool IsHanzi(string input){
+            ///<summary>
+            /// Whether the input string is a single hanzi.
+            ///</summary>
+            return WordDict.ContainsKey(input) || TransDict.ContainsKey(input);
+        }
+
+        public bool IsHanziOrNum(string input){
+            return IsHanzi(input) || NumMap.ContainsKey(input);
+        }
+
+        public bool IsHanzi(string input, bool convertNum){
+            return IsHanzi(input) || (convertNum && NumMap.ContainsKey(input));
+        }
+
         public string Convert(string input, bool tone, bool covertNum) {
             return Convert(SplitString(input), tone, covertNum);
         }

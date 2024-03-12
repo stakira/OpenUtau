@@ -51,6 +51,8 @@
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
@@ -72,6 +74,20 @@
   <system:String x:Key="exps.type.curve">Bocht</system:String>
   <system:String x:Key="exps.type.numerical">Numeriek</system:String>
   <system:String x:Key="exps.type.options">Opties</system:String>
+
+  <system:String x:Key="languages.de">Duits</system:String>
+  <system:String x:Key="languages.en">Engels</system:String>
+  <system:String x:Key="languages.es">Spaans</system:String>
+  <system:String x:Key="languages.fr">Frans</system:String>
+  <system:String x:Key="languages.it">Italiaans</system:String>
+  <system:String x:Key="languages.ja">Japans</system:String>
+  <system:String x:Key="languages.ko">Koreaans</system:String>
+  <system:String x:Key="languages.pl">Pools</system:String>
+  <system:String x:Key="languages.pt">Portugees</system:String>
+  <system:String x:Key="languages.ru">Russisch</system:String>
+  <system:String x:Key="languages.vi">Vietnamees</system:String>
+  <system:String x:Key="languages.zh">Chinees</system:String>
+  <system:String x:Key="languages.zh-yue">Kantonees</system:String>
 
   <system:String x:Key="lyrics.apply">Toepassen</system:String>
   <system:String x:Key="lyrics.cancel">Annuleer</system:String>
@@ -139,6 +155,7 @@
   <system:String x:Key="menu.tools">_Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Cache wissen</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug venster</system:String>
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <system:String x:Key="menu.tools.layout">Indeling</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontaal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontaal 1:2</system:String>
@@ -292,6 +309,7 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <system:String x:Key="prefs.appearance.lang">Taal</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">Toon portret op pianorol</system:String>
   <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Thema</system:String>
@@ -395,6 +413,7 @@ Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en
   <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
   <system:String x:Key="singers.subbanks.tone">Toon</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Toonbereiken</system:String>
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->

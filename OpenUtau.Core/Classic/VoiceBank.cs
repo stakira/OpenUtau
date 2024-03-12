@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 using OpenUtau.Core.Ustx;
 
@@ -25,6 +24,7 @@ namespace OpenUtau.Classic {
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
+        public bool? UseFilenameAsAlias = null;
 
         public void Reload() {
             Name = null;
@@ -44,6 +44,7 @@ namespace OpenUtau.Classic {
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;
+            UseFilenameAsAlias = null;
             VoicebankLoader.LoadVoicebank(this);
         }
 

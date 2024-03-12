@@ -57,13 +57,16 @@ namespace OpenUtau.App.Controls {
         void SliderPointerReleased(object? sender, PointerReleasedEventArgs args) {
             Log.Debug("Slider released");
             if (NotePropertiesViewModel.PanelControlPressed) {
+                if (sender is Slider slider && DataContext is NotePropertyExpViewModel ViewModel) {
+                    ViewModel.SetNumericalExpressions((float)slider.Value);
+                }
                 NotePropertiesViewModel.PanelControlPressed = false;
                 DocManager.Inst.EndUndoGroup();
             }
         }
         void SliderPointerMoved(object? sender, PointerEventArgs args) {
             if (sender is Slider slider && DataContext is NotePropertyExpViewModel ViewModel) {
-                ViewModel.SetNumericalExpressions(slider.Value);
+                ViewModel.SetNumericalExpressions((float)slider.Value);
             }
         }
     }

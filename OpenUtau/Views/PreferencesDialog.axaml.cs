@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
@@ -15,12 +17,24 @@ namespace OpenUtau.App.Views {
         }
 
         async void SelectAddlSingersPath(object sender, RoutedEventArgs e) {
-            var path = await FilePicker.OpenFolder(this, "prefs.paths.addlsinger");
+            var path = await FilePicker.OpenFolderAboutSinger(this, "prefs.paths.addlsinger");
             if (string.IsNullOrEmpty(path)) {
                 return;
             }
             if (Directory.Exists(path)) {
                 ((PreferencesViewModel)DataContext!).SetAddlSingersPath(path);
+            }
+        }
+
+        void ReloadSingers(object sender, RoutedEventArgs e) {
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PreferencesDialog), true, "singer"));
+            try {
+                SingerManager.Inst.SearchAllSingers();
+                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PreferencesDialog), false, "singer"));
             }
         }
 

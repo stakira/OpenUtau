@@ -261,6 +261,20 @@ namespace OpenUtau.App {
             return key;
         }
 
+        public static bool TryGetString(string key, out string value) {
+            if (Application.Current == null) {
+                value = key;
+                return false;
+            }
+            IResourceDictionary resDict = Application.Current.Resources;
+            if (resDict.TryGetResource(key, ThemeVariant.Default, out var outVar) && outVar is string s) {
+                value = s;
+                return true;
+            }
+            value = key;
+            return false;
+        }
+
         public static TrackColor GetTrackColor(string name) {
             if (TrackColors.Any(c => c.Name == name)) {
                 return TrackColors.First(c => c.Name == name);

@@ -194,15 +194,25 @@ namespace OpenUtau.App.ViewModels {
                 });
 
             CursorTool = false;
-            PenTool = true;
-            PenPlusTool = false;
+            if (Preferences.Default.PenPlusDefault) {
+                PenPlusTool = true;
+                PenTool = false;
+            } else {
+                PenTool = true;
+                PenPlusTool = false;
+            }
             EraserTool = false;
             DrawPitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
-                PenTool = index == "2";
-                PenPlusTool = index == "2+";
+                if (Preferences.Default.PenPlusDefault) {
+                    PenPlusTool = index == "2";
+                    PenTool = index == "2+";
+                } else {
+                    PenTool = index == "2";
+                    PenPlusTool = index == "2+";
+                }
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 KnifeTool = index == "5";
@@ -458,7 +468,7 @@ namespace OpenUtau.App.ViewModels {
             lock (portraitLock) {
                 Avatar?.Dispose();
                 Avatar = null;
-                if (singer != null && singer.AvatarData != null) {
+                if (singer != null && singer.AvatarData != null && Preferences.Default.ShowIcon) {
                     try {
                         using (var stream = new MemoryStream(singer.AvatarData)) {
                             Avatar = new Bitmap(stream);
@@ -868,7 +878,7 @@ namespace OpenUtau.App.ViewModels {
                                     break;
                                 default:
                                     if (vm.Params[i].IsSelected) {
-                                        float[] values = copyNote.GetExpression(Project, track, vm.Params[i].Abbr).Select(t => t.Item1).ToArray();
+                                        float?[] values = copyNote.GetExpressionNoteHas(Project, track, vm.Params[i].Abbr);
                                         DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(Project, track, Part, note, vm.Params[i].Abbr, values));
                                     }
                                     break;

@@ -19,6 +19,8 @@ namespace OpenUtau.Core {
 
         private readonly ConcurrentQueue<USinger> reloadQueue = new ConcurrentQueue<USinger>();
         private CancellationTokenSource reloadCancellation;
+        
+        private HashSet<USinger> singersUsed = new HashSet<USinger>();
 
         public void Initialize() {
             InitializationTask = Task.Run(() => {
@@ -32,7 +34,8 @@ namespace OpenUtau.Core {
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
                 var singers = ClassicSingerLoader.FindAllSingers()
-                    .Concat(Vogen.VogenSingerLoader.FindAllSingers());
+                    .Concat(Vogen.VogenSingerLoader.FindAllSingers())
+                    .Distinct();
                 Singers = singers
                     .ToLookup(s => s.Id)
                     .ToDictionary(g => g.Key, g => g.First());
@@ -108,6 +111,26 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification(external: true));
                 }).Start(DocManager.Inst.MainScheduler);
             }
+        }
+
+        //Check which singers are in use and free memory for those that are not
+        public void ReleaseSingersNotInUse(UProject project) {
+            //Check which singers are in use
+            var singersInUse = new HashSet<USinger>();
+            foreach(var track in project.tracks){
+                var singer = track.Singer;
+                if(singer != null && singer.Found && !singersInUse.Contains(singer)) {
+                    singersInUse.Add(singer);
+                }
+            }
+            //Release singers that are no longer in use
+            foreach(var singer in singersUsed){
+                if(!singersInUse.Contains(singer)){
+                    singer.FreeMemory();
+                }
+            }
+            //Update singers used
+            singersUsed = singersInUse;
         }
     }
 }

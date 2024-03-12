@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using K4os.Hash.xxHash;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
+using static NetMQ.NetMQSelector;
 using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Classic {
@@ -80,7 +82,7 @@ namespace OpenUtau.Classic {
             var pitchIntervalMs = MusicMath.TempoTickToMs(tempo, 5);
             var pitchSampleStartMs = phone.positionMs - pitchLeadingMs;
 
-            for (int i=0; i<pitches.Length; i++) {
+            for (int i = 0; i < pitches.Length; i++) {
                 var samplePosMs = pitchSampleStartMs + pitchIntervalMs * i;
                 var samplePosTick = (int)Math.Floor(phrase.timeAxis.MsPosToNonExactTickPos(samplePosMs));
 
@@ -143,6 +145,44 @@ namespace OpenUtau.Classic {
                     }
                     return XXH64.DigestOf(stream.ToArray());
                 }
+            }
+        }
+
+        public List<Vector2> EnvelopeMsToSamples() {
+            int skipOverSamples = (int)(skipOver * 44100 / 1000);
+            var envelope = phone.envelope.ToList();
+            double shift = -envelope[0].X;
+            for (int i = 0; i < envelope.Count; ++i) {
+                var point = envelope[i];
+                point.X = (float)((point.X + shift) * 44100 / 1000) + skipOverSamples;
+                point.Y /= 100;
+                envelope[i] = point;
+            }
+            return envelope;
+        }
+
+        public void ApplyEnvelope(float[] samples) {
+            var envelope = EnvelopeMsToSamples();
+            int nextPoint = 0;
+            for (int i = 0; i < samples.Length; ++i) {
+                while (nextPoint < envelope.Count && i > envelope[nextPoint].X) {
+                    nextPoint++;
+                }
+                float gain;
+                if (nextPoint == 0) {
+                    gain = envelope.First().Y;
+                } else if (nextPoint >= envelope.Count) {
+                    gain = envelope.Last().Y;
+                } else {
+                    var p0 = envelope[nextPoint - 1];
+                    var p1 = envelope[nextPoint];
+                    if (p0.X >= p1.X) {
+                        gain = p0.Y;
+                    } else {
+                        gain = p0.Y + (p1.Y - p0.Y) * (i - p0.X) / (p1.X - p0.X);
+                    }
+                }
+                samples[i] *= gain;
             }
         }
     }
