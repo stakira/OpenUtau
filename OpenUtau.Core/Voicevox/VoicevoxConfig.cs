@@ -1,69 +1,124 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text;
+using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
+using SharpCompress.Common;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxConfig {
         public Supported_features supported_features;
         public string name = string.Empty;
         public string speaker_uuid = string.Empty;
-        public IList<Styles> styles;
+        public List<Styles> styles;
         public string version = string.Empty;
-        public string dictxtPath = string.Empty;
 
         public string policy = string.Empty;
         public string portraitPath = string.Empty;
-        public IList<Style_infos> style_infos;
+        public List<Style_infos> style_infos;
 
-        public string singerlocation;
-        public List<(string name, Styles styles)> base_style;
-        public string base_name;
-        public string base_style_name;
-        public string PhonemizerType = string.Empty;
-        public bool PhonemizerFlag = true;
+        public List<(string name, Styles styles)> base_singer_style;
+        public string base_singer_name = string.Empty;
+        public string base_singer_style_name = string.Empty;
+        public string Tag = "DEFAULT";
 
         public static VoicevoxConfig Load(USinger singer) {
-            var parentDirectory = Directory.GetParent(singer.Location).ToString();
-            var configPath = Path.Join(parentDirectory, "vvconfig.json");
-            var configs = new List<RawVoicevoxConfig>();
+            VoicevoxConfig voicevoxConfig = new VoicevoxConfig();
             try {
-                if (File.Exists(configPath)) {
-                    var configTxt = File.ReadAllText(configPath);
-                    configs = JsonConvert.DeserializeObject<List<RawVoicevoxConfig>>(configTxt);
-                } else {
-                    var ins = VoicevoxClient.Inst;
-                    ins.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
-                    File.WriteAllText(configPath, JsonConvert.SerializeObject(ins.jObj));
-                    configs = ins.jObj.ToObject<List<RawVoicevoxConfig>>();
+                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
+                var jObj = JObject.Parse(response.Item1);
+                if (jObj.ContainsKey("detail")) {
+                    Log.Error($"Failed to create a voice base. : {jObj}");
                 }
+                var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
+                var parentDirectory = Directory.GetParent(singer.Location).ToString();
                 foreach (RawVoicevoxConfig rowVoicevoxConfig in configs) {
+                    var folderPath = Path.Join(parentDirectory, rowVoicevoxConfig.name);
+                    var filePath = Path.Join(folderPath, "character.yaml");
+                    if (!File.Exists(filePath)) {
+                        Directory.CreateDirectory(folderPath);
+                        string typename = string.Empty ;
+                        SingerTypeUtils.SingerTypeNames.TryGetValue(USingerType.Voicevox, out typename);
+                        var config = new VoicebankConfig() {
+                            Name = rowVoicevoxConfig.name,
+                            TextFileEncoding = Encoding.UTF8.WebName,
+                            SingerType = typename,
+                            PortraitHeight = 100,
+                        };
+                        using (var stream = File.Open(filePath, FileMode.Create)) {
+                            config.Save(stream);
+                        }
+                        using (var stream = File.Open(Path.Join(folderPath, "character.txt"), FileMode.Create)) {
+                            config.Save(stream);
+                        }
+                    }
                     if (rowVoicevoxConfig.name.Equals(singer.Name)) {
-                        VoicevoxConfig voicevoxConfig = rowVoicevoxConfig.Convert();
-                        voicevoxConfig.singerlocation = singer.Location;
-                        voicevoxConfig.dictxtPath = Path.Join(parentDirectory, "dic.txt");
-                        return voicevoxConfig;
+                        voicevoxConfig = rowVoicevoxConfig.Convert();
                     }
                 }
             } catch {
                 Log.Error("Failed to create a voice base.");
             }
-            return new VoicevoxConfig();
+            return voicevoxConfig;
         }
-        public void LoadInfo(VoicevoxConfig voicevoxConfig) {
+        public void LoadInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
             if(voicevoxConfig.style_infos == null) {
-                var ins = VoicevoxClient.Inst;
                 var queryurl = new VoicevoxURL() { method = "GET", path = "/singer_info", query = new Dictionary<string, string> { { "speaker_uuid", voicevoxConfig.speaker_uuid } } };
-                ins.SendRequest(queryurl);
-                var rawSinger_Info = ins.jObj.ToObject<RawSinger_info>();
-                if (rawSinger_Info != null) {
-                    rawSinger_Info.SetInfo(voicevoxConfig);
+                var response = VoicevoxClient.Inst.SendRequest(queryurl);
+                var jObj = JObject.Parse(response.Item1);
+                if (jObj.ContainsKey("detail")) {
+                    Log.Error($"Failed to create a voice base. : {jObj}");
+                } else {
+                    var rawSinger_Info = jObj.ToObject<RawSinger_info>();
+                    if (rawSinger_Info != null) {
+                        rawSinger_Info.SetInfo(voicevoxConfig, singer);
+                    }
                 }
             }
 
+        }
+    }
+
+    public class Phoneme_list {
+        public string[] vowels;
+        public string[] consonants;
+    }
+
+    public class Dictionary_list {
+        public Dictionary<string,string> dict = new Dictionary<string, string>();
+
+        public void Loaddic(string location) {
+            try {
+                var parentDirectory = Directory.GetParent(location).ToString();
+                var yamlPath = Path.Join(parentDirectory, "dictionary.yaml");
+                if (File.Exists(yamlPath)) {
+                    var yamlTxt = File.ReadAllText(yamlPath);
+                    var yamlObj = Yaml.DefaultDeserializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(yamlTxt);
+                    var list = yamlObj["list"];
+                    dict = new Dictionary<string, string>();
+
+                    foreach (var item in list) {
+                        foreach (var pair in item) {
+                            dict[pair.Key] = pair.Value;
+                        }
+                    }
+
+                }
+            }catch (Exception e) {
+                Log.Error($"Failed to read dictionary file. : {e}");
+            }
+        }
+
+        public string Lyrictodic(string lyric) {
+            if(dict.TryGetValue(lyric, out var lyric_)) {
+                return lyric_;
+            }
+            return lyric;
         }
     }
 
@@ -79,28 +134,28 @@ namespace OpenUtau.Core.Voicevox {
         public string portrait = string.Empty;
         public IList<Style_infos> style_infos = new List<Style_infos>();
 
-        public void SetInfo(VoicevoxConfig voicevoxConfig) {
+        public void SetInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
             Log.Information($"Begin setup of Voicevox SingerInfo.");
             try {
                 if (!string.IsNullOrEmpty(this.policy)) {
                     voicevoxConfig.policy = this.policy;
-                    var readmepath = Path.Join(voicevoxConfig.singerlocation, "readme.txt");
+                    var readmepath = Path.Join(singer.Location, "readme.txt");
                     File.AppendAllText(readmepath, this.policy);
                 }
-                voicevoxConfig.portraitPath = Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_portrait.png");
+                voicevoxConfig.portraitPath = Path.Join(singer.Location, $"{voicevoxConfig.name}_portrait.png");
                 Base64.Base64ToFile(this.portrait, voicevoxConfig.portraitPath);
                 if (this.style_infos != null) {
                     voicevoxConfig.style_infos = new List<Style_infos>();
                     for (int i = 0; i < this.style_infos.Count; i++) {
                         voicevoxConfig.style_infos.Add(new Style_infos());
                         for (int a = 0; a < style_infos[i].voice_samples.Count; a++) {
-                            voicevoxConfig.style_infos[i].voice_samples.Add(Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_{a}.wav"));
+                            voicevoxConfig.style_infos[i].voice_samples.Add(Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_{a}.wav"));
                             checkAndSetFiles(this.style_infos[i].voice_samples[a], voicevoxConfig.style_infos[i].voice_samples[a]);
                         }
-                        voicevoxConfig.style_infos[i].icon = Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_icon.png");
+                        voicevoxConfig.style_infos[i].icon = Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_icon.png");
                         checkAndSetFiles(this.style_infos[i].icon, voicevoxConfig.style_infos[i].icon);
 
-                        voicevoxConfig.style_infos[i].portrait = Path.Join(voicevoxConfig.singerlocation, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_portrait.png");
+                        voicevoxConfig.style_infos[i].portrait = Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_portrait.png");
                         checkAndSetFiles(this.portrait, voicevoxConfig.style_infos[i].portrait);
 
                         voicevoxConfig.style_infos[i].id = this.style_infos[i].id;
@@ -133,10 +188,10 @@ namespace OpenUtau.Core.Voicevox {
         public Supported_features supported_features;
         public string name;
         public string speaker_uuid;
-        public IList<Styles> styles;
+        public List<Styles> styles;
         public string version;
-        public string base_name;
-        public string base_style_name;
+        public string base_singer_name;
+        public string base_singer_style_name;
 
         public VoicevoxConfig Convert() {
             VoicevoxConfig voicevoxConfig = new VoicevoxConfig();
@@ -145,8 +200,8 @@ namespace OpenUtau.Core.Voicevox {
             voicevoxConfig.speaker_uuid = this.speaker_uuid;
             voicevoxConfig.styles = this.styles;
             voicevoxConfig.supported_features = this.supported_features;
-            voicevoxConfig.base_name = this.base_name;
-            voicevoxConfig.base_style_name = this.base_style_name;
+            voicevoxConfig.base_singer_name = this.base_singer_name;
+            voicevoxConfig.base_singer_style_name = this.base_singer_style_name;
             return voicevoxConfig;
         }
     }

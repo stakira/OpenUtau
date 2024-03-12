@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using Melanchall.DryWetMidi.Composing;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace OpenUtau.Core.Voicevox {
-    class VoicevoxClient: Util.SingletonBase<VoicevoxClient> {
-        public JObject jObj;
-        public byte[] bytes;
-
-        internal async void SendRequest(VoicevoxURL voicevoxURL) {
+    class VoicevoxClient : Util.SingletonBase<VoicevoxClient> {
+        internal Tuple<string, byte[]> SendRequest(VoicevoxURL voicevoxURL) {
             try {
                 using (var client = new HttpClient()) {
                     using (var request = new HttpRequestMessage(new HttpMethod(voicevoxURL.method.ToUpper()), this.RequestURL(voicevoxURL))) {
@@ -22,21 +21,18 @@ namespace OpenUtau.Core.Voicevox {
 
                         Log.Information($"VoicevoxProcess sending {request}");
                         var response = client.SendAsync(request);
-                        var message = response.Result.Content.ReadAsStringAsync().Result;
                         Log.Information($"VoicevoxProcess received");
-                        string contentType = response.Result.Content.Headers.ContentType.MediaType;
-                        if (contentType.Equals("application/json")) {
-                            jObj = JObject.Parse(message);
-                        } else if (contentType.Equals("audio/wav")) {
-                            bytes = response.Result.Content.ReadAsByteArrayAsync().Result;
-                        } else {
-                            jObj = JObject.Parse("{" + message + "}");
+                        string str = response.Result.Content.ReadAsStringAsync().Result;
+                        if (!str.StartsWith("{") || !str.EndsWith("}")) {
+                            str = "{ \"json\":" + str + "}";
                         }
+                        return new Tuple<string, byte[]>(str, response.Result.Content.ReadAsByteArrayAsync().Result);
                     }
                 }
             } catch (Exception ex) {
                 Log.Error(@"{ex}");
             }
+            return new Tuple<string, byte[]>("", new byte[0]);
         }
 
         public string RequestURL(VoicevoxURL voicevoxURL) {
@@ -45,11 +41,11 @@ namespace OpenUtau.Core.Voicevox {
                 queryStringBuilder.Append($"{parameter.Key}={parameter.Value}&");
             }
 
-            // 末尾の余分な "&" を削除
-            string queryString = "?"+queryStringBuilder.ToString().TrimEnd('&');
+            // Remove extra "&" at the end
+            string queryString = "?" + queryStringBuilder.ToString().TrimEnd('&');
 
             string str = $"{voicevoxURL.protocol}{voicevoxURL.host}{voicevoxURL.path}{queryString}";
-            return str ;
+            return str;
         }
     }
     public class VoicevoxURL {

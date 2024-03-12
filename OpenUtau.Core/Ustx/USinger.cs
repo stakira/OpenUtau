@@ -192,12 +192,14 @@ namespace OpenUtau.Core.Ustx {
             {USingerType.Classic, "utau"},
             {USingerType.Enunu, "enunu"},
             {USingerType.DiffSinger, "diffsinger"},
+            {USingerType.Voicevox, "voicevox"},
         };
 
         public static Dictionary<string, USingerType> SingerTypeFromName = new Dictionary<string, USingerType>(){
             {"utau", USingerType.Classic},
             {"enunu", USingerType.Enunu},
             {"diffsinger", USingerType.DiffSinger},
+            {"voicevox", USingerType.Voicevox},
         };
 
     }

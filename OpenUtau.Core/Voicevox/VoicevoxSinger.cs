@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Classic;
@@ -77,19 +78,24 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error("It differs from the supported version.");
             }
             if(voicevoxConfig.style_infos == null) {
-                voicevoxConfig.LoadInfo(voicevoxConfig);
+                voicevoxConfig.LoadInfo(voicevoxConfig,this);
             }
             phonemes.Clear();
             table.Clear();
             otos.Clear();
             try {
-                foreach (var line in File.ReadAllLines(voicevoxConfig.dictxtPath)) {
-                    foreach (var p in line.Split(' ')) {
-                            phonemes.Add(p);
-                    }
+                var parentDirectory = Directory.GetParent(this.Location).ToString();
+                var yamlPath = Path.Join(parentDirectory, "phonemes.yaml");
+                var yamlTxt = File.ReadAllText(yamlPath);
+                var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
+                foreach (var str in phonemes_list.vowels) {
+                   phonemes.Add(str);
+                }
+                foreach (var str in phonemes_list.consonants) {
+                    phonemes.Add(str);
                 }
             } catch (Exception e) {
-                Log.Error(e, $"Failed to load dic.txt for {Name}");
+                Log.Error(e, $"Failed to load phonemes.yaml for {Name}");
             }
 
             subbanks.Clear();
