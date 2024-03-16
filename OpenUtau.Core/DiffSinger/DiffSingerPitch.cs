@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using K4os.Hash.xxHash;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
@@ -19,6 +20,7 @@ namespace OpenUtau.Core.DiffSinger
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
+        ulong linguisticHash;
         InferenceSession linguisticModel;
         InferenceSession pitchModel;
         IG2p g2p;
@@ -39,7 +41,9 @@ namespace OpenUtau.Core.DiffSinger
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
             //Load models
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
-            linguisticModel = Onnx.getInferenceSession(linguisticModelPath);
+            var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
+            linguisticHash = XXH64.DigestOf(linguisticModelBytes);
+            linguisticModel = Onnx.getInferenceSession(linguisticModelBytes);
             var pitchModelPath = Path.Join(rootPath, dsConfig.pitch);
             pitchModel = Onnx.getInferenceSession(pitchModelPath);
             frameMs = 1000f * dsConfig.hop_size / dsConfig.sample_rate;
@@ -123,7 +127,14 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
-            var linguisticOutputs = linguisticModel.Run(linguisticInputs);
+            var linguisticCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(linguisticHash, linguisticInputs)
+                : null;
+            var linguisticOutputs = linguisticCache?.Load();
+            if (linguisticOutputs is null) {
+                linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
+                linguisticCache?.Save(linguisticOutputs);
+            }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
                 .First()

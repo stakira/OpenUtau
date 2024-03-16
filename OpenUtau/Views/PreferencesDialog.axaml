@@ -97,10 +97,16 @@
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.cache}">
-          <Grid>
-            <TextBlock Text="{DynamicResource prefs.cache.clearonquit}" HorizontalAlignment="Left"/>
-            <ToggleSwitch IsChecked="{Binding ClearCacheOnQuit}"/>
-          </Grid>
+            <StackPanel>
+                <Grid>
+                    <TextBlock Text="{DynamicResource prefs.cache.clearonquit}" HorizontalAlignment="Left" />
+                    <ToggleSwitch IsChecked="{Binding ClearCacheOnQuit}" />
+                </Grid>
+                <Grid>
+                    <TextBlock Text="{DynamicResource prefs.cache.diffsingertensorcache}" HorizontalAlignment="Left" />
+                    <ToggleSwitch IsChecked="{Binding DiffSingerTensorCache}" />
+                </Grid>
+            </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>

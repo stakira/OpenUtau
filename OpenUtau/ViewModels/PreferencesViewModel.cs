@@ -42,6 +42,7 @@ namespace OpenUtau.App.ViewModels {
         public List<int> DiffsingerSpeedupOptions { get; } = new List<int> { 1, 5, 10, 20, 50, 100 };
         [Reactive] public int DiffSingerDepth { get; set; }
         [Reactive] public int DiffsingerSpeedup { get; set; }
+        [Reactive] public bool DiffSingerTensorCache { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public bool PenPlusDefault { get; set; }
@@ -141,6 +142,7 @@ namespace OpenUtau.App.ViewModels {
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             DiffSingerDepth = Preferences.Default.DiffSingerDepth;
             DiffsingerSpeedup = Preferences.Default.DiffsingerSpeedup;
+            DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -332,6 +334,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerDepth)
                 .Subscribe(index => {
                     Preferences.Default.DiffSingerDepth = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerTensorCache)
+                .Subscribe(useCache => {
+                    Preferences.Default.DiffSingerTensorCache = useCache;
                     Preferences.Save();
                 });
         }
