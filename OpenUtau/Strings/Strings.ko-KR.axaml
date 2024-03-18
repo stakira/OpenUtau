@@ -5,7 +5,7 @@
   <system:String x:Key="context.note.copy">노트 복사</system:String>
   <system:String x:Key="context.note.delete">노트 삭제</system:String>
   <system:String x:Key="context.note.pasteparameters">선택한 곳에 파라미터 붙여넣기</system:String>
-  <system:String x:Key="context.part.delete">파트 제거</system:String>
+  <system:String x:Key="context.part.delete">파트 삭제</system:String>
   <system:String x:Key="context.part.gotofile">파일 위치 열기</system:String>
   <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
   <system:String x:Key="context.part.replaceaudio">오디오 파일 교체</system:String>
