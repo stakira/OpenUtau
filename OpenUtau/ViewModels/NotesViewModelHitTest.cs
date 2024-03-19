@@ -196,26 +196,21 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public double? SamplePitch(Point point) {
-            if (viewModel.Part == null) {
+            if (viewModel.Part == null || viewModel.Part.renderPhrases.Count == 0) {
                 return null;
             }
             double tick = viewModel.PointToTick(point);
-            var note = viewModel.Part.notes.FirstOrDefault(n => n.End >= tick);
-            if (note == null && viewModel.Part.notes.Count > 0) {
-                note = viewModel.Part.notes.Last();
+            var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.position - p.leading >= tick);
+            if (phrase == null && viewModel.Part.renderPhrases.Count > 0) {
+                phrase = viewModel.Part.renderPhrases.Last();
             }
-            if (note == null) {
+            if (phrase == null || phrase.pitchesBeforeDeviation.Length == 0) {
                 return null;
             }
-            double pitch = note.tone * 100;
-            pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
-            if (note.Next != null && note.Next.position == note.End) {
-                double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
-                if (delta != null) {
-                    pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
-                }
-            }
-            return pitch;
+            var curve = phrase.pitchesBeforeDeviation;
+            var pitchIndex = (int)Math.Round((tick - phrase.position + phrase.leading) / 5);
+            pitchIndex = Math.Clamp(pitchIndex, 0, curve.Length - 1);
+            return curve[pitchIndex];
         }
 
         public VibratoHitInfo HitTestVibrato(Point mousePos) {
