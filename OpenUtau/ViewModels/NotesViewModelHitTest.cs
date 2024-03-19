@@ -201,7 +201,7 @@ namespace OpenUtau.App.ViewModels {
             }
             double tick = viewModel.PointToTick(point);
             var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.position - p.leading >= tick);
-            if (phrase == null && viewModel.Part.renderPhrases.Count > 0) {
+            if (phrase == null) {
                 phrase = viewModel.Part.renderPhrases.Last();
             }
             if (phrase == null || phrase.pitchesBeforeDeviation.Length == 0) {
