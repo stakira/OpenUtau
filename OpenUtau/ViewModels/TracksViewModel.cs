@@ -372,7 +372,11 @@ namespace OpenUtau.App.ViewModels {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is NoteCommand noteCommand) {
-                MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+                if (noteCommand is ResizeNoteCommand) {
+                    MessageBus.Current.SendMessage(new PartRefreshEvent(noteCommand.Part));
+                } else {
+                    MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+                }
             } else if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
                     if (!isUndo) {
