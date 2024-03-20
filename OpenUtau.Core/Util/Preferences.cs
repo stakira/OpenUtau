@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Util {
             public int DiffSingerDepth = 1000;
             public bool SkipRenderingMutedTracks = false;
             public string Language = string.Empty;
-            public string SortingOrder = string.Empty;
+            public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
