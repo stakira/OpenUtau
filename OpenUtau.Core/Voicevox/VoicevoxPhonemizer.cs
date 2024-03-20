@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using OpenUtau.Api;
-using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
-    [Phonemizer("Voicevox Phonemizer", "VOICEVOX")]
+    [Phonemizer("Voicevox Japanese Phonemizer", "VOICEVOX JA", language: "JA")]
     public class VoicevoxPhonemizer : Phonemizer {
 
         protected VoicevoxSinger singer;
@@ -17,8 +14,8 @@ namespace OpenUtau.Core.Voicevox {
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
-            if(this.singer != null) {
-                 this.singer.voicevoxConfig.Tag = this.Tag;
+            if (this.singer != null) {
+                this.singer.voicevoxConfig.Tag = this.Tag;
             }
         }
 
@@ -56,9 +53,11 @@ namespace OpenUtau.Core.Voicevox {
                 }
                 var noteGroup = notes[note.vqnindex];
                 var phoneme = new List<Phoneme>();
+                int index = 0;
                 while (list.Count > 0) {
                     if (phonemes_list.vowels.Contains(list[0].phoneme)) {
                         phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position });
+                        index++;
                         list.Remove(list[0]);
                         break;
                     }else if (phonemes_list.consonants.Contains(list[0].phoneme)) {
