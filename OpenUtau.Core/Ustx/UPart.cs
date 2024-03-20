@@ -37,6 +37,8 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class UVoicePart : UPart {
+        public int duration;
+
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
         [YamlMember(Order = 101)]
@@ -56,14 +58,12 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public ISignalSource Mix => mix;
 
         public override string DisplayName => name;
+        public override int Duration { get => duration; set => duration = value; }
 
         public override int GetMinDurTick(UProject project) {
             int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
             project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
-            if (remainingTicks > 0) {
-                beat++;
-            }
-            return project.timeAxis.BarBeatToTickPos(bar, beat) - position;
+            return project.timeAxis.BarBeatToTickPos(bar, beat + 1) - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
