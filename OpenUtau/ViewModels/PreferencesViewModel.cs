@@ -121,12 +121,13 @@ namespace OpenUtau.App.ViewModels {
             Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
+            Languages.Remove(CultureInfo.GetCultureInfo("en-US"));
             Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             SortingOrders = Languages.ToList();
-            SortingOrders.Insert(1, CultureInfo.InvariantCulture);
+            SortingOrders.Insert(0, CultureInfo.InvariantCulture);
             SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
                 ? Language
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
