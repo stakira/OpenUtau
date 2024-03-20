@@ -5,7 +5,12 @@ using Avalonia.Data.Converters;
 
 namespace OpenUtau.App.ViewModels {
     public class CultureNameConverter : IValueConverter {
-        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => (value as CultureInfo)?.NativeName ?? string.Empty;
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
+            if (value is CultureInfo cultureInfo) {
+                return cultureInfo == CultureInfo.InvariantCulture ? ThemeManager.GetString("languages.invariant") : cultureInfo.NativeName;
+            }
+            return string.Empty;
+        }
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 

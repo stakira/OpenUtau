@@ -83,6 +83,7 @@
   <system:String x:Key="languages.en">English</system:String>
   <system:String x:Key="languages.es">Spanish</system:String>
   <system:String x:Key="languages.fr">French</system:String>
+  <system:String x:Key="languages.invariant">Not translating</system:String>
   <system:String x:Key="languages.it">Italian</system:String>
   <system:String x:Key="languages.ja">Japanese</system:String>
   <system:String x:Key="languages.ko">Korean</system:String>
