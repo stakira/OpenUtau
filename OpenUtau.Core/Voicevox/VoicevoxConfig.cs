@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
-using SharpCompress.Common;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxConfig {
@@ -17,18 +16,16 @@ namespace OpenUtau.Core.Voicevox {
         public string speaker_uuid = string.Empty;
         public List<Styles> styles;
         public string version = string.Empty;
-
         public string policy = string.Empty;
         public string portraitPath = string.Empty;
-        public List<Style_infos> style_infos;
+        public string Tag = "DEFAULT";
 
+        public List<Style_infos> style_infos;
         public List<(string name, Styles styles)> base_singer_style;
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
-        public string Tag = "DEFAULT";
 
         public static VoicevoxConfig Load(USinger singer) {
-            VoicevoxConfig voicevoxConfig = new VoicevoxConfig();
             try {
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
                 var jObj = JObject.Parse(response.Item1);
@@ -38,6 +35,7 @@ namespace OpenUtau.Core.Voicevox {
                 var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
                 var parentDirectory = Directory.GetParent(singer.Location).ToString();
                 foreach (RawVoicevoxConfig rowVoicevoxConfig in configs) {
+                    VoicevoxConfig voicevoxConfig = rowVoicevoxConfig.Convert();
                     var folderPath = Path.Join(parentDirectory, rowVoicevoxConfig.name);
                     var filePath = Path.Join(folderPath, "character.yaml");
                     if (!File.Exists(filePath)) {
@@ -45,10 +43,11 @@ namespace OpenUtau.Core.Voicevox {
                         string typename = string.Empty ;
                         SingerTypeUtils.SingerTypeNames.TryGetValue(USingerType.Voicevox, out typename);
                         var config = new VoicebankConfig() {
-                            Name = rowVoicevoxConfig.name,
+                            Name = voicevoxConfig.name,
                             TextFileEncoding = Encoding.UTF8.WebName,
                             SingerType = typename,
-                            PortraitHeight = 100,
+                            PortraitHeight = 600,
+                            Portrait = Path.GetFileNameWithoutExtension(voicevoxConfig.portraitPath)
                         };
                         using (var stream = File.Open(filePath, FileMode.Create)) {
                             config.Save(stream);
@@ -58,13 +57,13 @@ namespace OpenUtau.Core.Voicevox {
                         }
                     }
                     if (rowVoicevoxConfig.name.Equals(singer.Name)) {
-                        voicevoxConfig = rowVoicevoxConfig.Convert();
+                        return voicevoxConfig;
                     }
                 }
             } catch {
                 Log.Error("Failed to create a voice base.");
             }
-            return voicevoxConfig;
+            return new VoicevoxConfig();
         }
         public void LoadInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
             if(voicevoxConfig.style_infos == null) {
@@ -114,11 +113,14 @@ namespace OpenUtau.Core.Voicevox {
             }
         }
 
-        public string Lyrictodic(string lyric) {
-            if(dict.TryGetValue(lyric, out var lyric_)) {
+        public string Lyrictodic(Note[][] notes,int index) {
+            if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
+                if (string.IsNullOrEmpty(lyric_)) {
+                    return "";
+                }
                 return lyric_;
             }
-            return lyric;
+            return notes[index][0].lyric;
         }
     }
 

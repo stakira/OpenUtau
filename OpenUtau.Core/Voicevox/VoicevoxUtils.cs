@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using OpenUtau.Core.Ustx;
+using Newtonsoft.Json.Linq;
+using OpenUtau.Core.Render;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
-using System.ServiceModel.Channels;
-using System.Text.RegularExpressions;
-using System;
-using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.Voicevox {
     public class Phonemes {
@@ -74,39 +69,36 @@ namespace OpenUtau.Core.Voicevox {
                     if (duration < notes[index][0].duration) {
                         qnotes.notes.Add(new VoicevoxQueryNotes() {
                             lyric = "",
-                            frame_length = (int)(headS * fps),//(int)((timeAxis.TickPosToMsPos(notes[index][0].duration - duration) / 1000f) * VoicevoxUtils.fps),
+                            frame_length = (int)Math.Round((headS * fps), MidpointRounding.AwayFromZero),
                             key = null,
                             vqnindex = -1
                         });
                         duration = notes[index][0].position + notes[index][0].duration;
                     } else {
+                        string lyric = dic.Lyrictodic(notes,index);
+                        int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
+                        int? tone;
+                        if (notes[index][0].phonemeAttributes != null) {
+                            if (notes[index][0].phonemeAttributes.Length > 0) {
+                                tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
+                            } else {
+                                tone = notes[index][0].tone;
+                            }
+                        } else {
+                            tone = notes[index][0].tone;
+                        }
+                        if (string.IsNullOrEmpty(lyric)) {
+                            tone = null;
+                        }
                         qnotes.notes.Add(new VoicevoxQueryNotes {
-                            lyric = dic.Lyrictodic(notes[index][0].lyric) ,
-                            frame_length = (int)((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps),
-                            key = notes[index][0].phonemeAttributes.Length > 0 ? notes[index][0].tone + notes[index][0].phonemeAttributes[index].toneShift : notes[index][0].tone,
+                            lyric = lyric,
+                            frame_length = length,
+                            key = tone,
                             vqnindex = index
                         });
                         index++;
-                        duration += (int)timeAxis.MsPosToTickPos((qnotes.notes.Last().frame_length / VoicevoxUtils.fps) * 1000f);
+                        duration += timeAxis.MsPosToTickPos((qnotes.notes.Last().frame_length / VoicevoxUtils.fps) * 1000d);
                     }
-                    //if (duration < notes[index][0].duration) {
-                    //    qnotes.notes.Add(new VoicevoxQueryNotes() {
-                    //        lyric = "",
-                    //        frame_length = (int)timeAxis.TickPosToMsPos(notes[index][0].duration - duration) / 10,
-                    //        key = null,
-                    //        vqnindex = -1
-                    //    });
-                    //    duration = notes[index][0].position + notes[index][0].duration;
-                    //} else {
-                    //    qnotes.notes.Add(new VoicevoxQueryNotes {
-                    //        lyric = notes[index][0].lyric,
-                    //        frame_length = (int)timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 10,
-                    //        key = notes[index][0].tone,
-                    //        vqnindex = index
-                    //    });
-                    //    duration += (int)timeAxis.MsPosToTickPos(qnotes.notes.Last().frame_length) * 10;
-                    //    index++;
-                    //}
                 }
                 index++;
                 qnotes.notes.Add(new VoicevoxQueryNotes {

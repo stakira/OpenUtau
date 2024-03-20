@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxSinger : USinger {
@@ -24,9 +21,9 @@ namespace OpenUtau.Core.Voicevox {
         public override string Version => voicebank.Version;
         public override string OtherInfo => voicebank.OtherInfo;
         public override IList<string> Errors => errors;
-        public override string Avatar => voicebank.Image == null ? voicevoxConfig.style_infos[0].icon == null ? null : voicevoxConfig.style_infos[0].icon : Path.Combine(Location, voicebank.Image);
+        public override string Avatar => voicebank.Image == null ? voicevoxConfig == null ? null : voicevoxConfig.style_infos[0].icon == null ? null : voicevoxConfig.style_infos[0].icon : Path.Combine(Location, voicebank.Image);
         public override byte[] AvatarData => avatarData;
-        public override string Portrait => voicebank.Portrait == null ? voicevoxConfig.portraitPath == null ? null : voicevoxConfig.style_infos[0].portrait : Path.Combine(Location, voicebank.Portrait);
+        public override string Portrait => voicebank.Portrait == null ? voicevoxConfig == null ? null : voicevoxConfig.portraitPath == null ? null : voicevoxConfig.style_infos[0].portrait : Path.Combine(Location, voicebank.Portrait);
         public override float PortraitOpacity => voicebank.PortraitOpacity;
         public override int PortraitHeight => voicebank.PortraitHeight;
         public override string Sample => voicebank.Sample == null ? null : Path.Combine(Location, voicebank.Sample);
@@ -108,7 +105,7 @@ namespace OpenUtau.Core.Voicevox {
             foreach (Styles style in voicevoxConfig.styles) {
                 subbanks.Add(new USubbank(new Subbank() {
                     Prefix = string.Empty,
-                    Suffix = string.Empty,
+                    Suffix = style.name,
                     ToneRanges = new[] { "C1-B7" },
                     Color = style.name
                 })); ;

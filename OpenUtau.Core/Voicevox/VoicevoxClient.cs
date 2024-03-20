@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using Melanchall.DryWetMidi.Composing;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace OpenUtau.Core.Voicevox {
