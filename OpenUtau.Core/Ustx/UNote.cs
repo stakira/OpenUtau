@@ -109,8 +109,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var exp in phonemeExpressions) {
                 if (exp.abbr != Format.Ustx.VEL &&
                     exp.abbr != Format.Ustx.ALT &&
-                    exp.abbr != Format.Ustx.CLR &&
-                    exp.abbr != Format.Ustx.SHFT) {
+                    exp.abbr != Format.Ustx.CLR) {
                     continue;
                 }
                 var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);

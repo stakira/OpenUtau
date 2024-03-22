@@ -16,10 +16,6 @@ namespace Voicevox {
             }
         }
 
-        private bool IsHiraKana(char c) {
-            return ('\u3041' <= c && c <= '\u309F') || ('\u30A0' <= c && c <= '\u30FF') || c == '\u30FC' || c == '\u30A0';
-        }
-
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentLyric = note.lyric.Normalize(); //measures for Unicode
@@ -40,23 +36,29 @@ namespace Voicevox {
             if (lyricList.Length > 1) {
                 notes[0].lyric = lyricList[1];
             }
-            if (IsHiraKana(notes[0].lyric.ToCharArray()[0])) {
-                simplenotes[0] = new Note[1];
-                simplenotes[0][0] = notes[0];
+            if (VoicevoxUtils.IsHiraKana(notes[0].lyric.ToCharArray()[0])) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme {
-                            phoneme = dic.Lyrictodic(simplenotes,0),
-            }
+                            phoneme = notes[0].lyric,
+                        }
+                    },
+                };
+            } else if(notes[0].lyric.Equals("R")) {
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = "",
+                        }
                     },
                 };
             } else {
                 return new Result {
                     phonemes = new Phoneme[] {
-                    new Phoneme {
-                        phoneme = "error",
-                    }
-                },
+                        new Phoneme {
+                            phoneme = "error",
+                        }
+                    },
                 };
             }
         }
