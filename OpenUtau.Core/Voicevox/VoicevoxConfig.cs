@@ -86,6 +86,7 @@ namespace OpenUtau.Core.Voicevox {
     public class Phoneme_list {
         public string[] vowels;
         public string[] consonants;
+        public string[] kana;
     }
 
     public class Dictionary_list {
@@ -142,7 +143,7 @@ namespace OpenUtau.Core.Voicevox {
                 if (!string.IsNullOrEmpty(this.policy)) {
                     voicevoxConfig.policy = this.policy;
                     var readmepath = Path.Join(singer.Location, "readme.txt");
-                    File.AppendAllText(readmepath, this.policy);
+                    File.WriteAllText(readmepath, this.policy);
                 }
                 voicevoxConfig.portraitPath = Path.Join(singer.Location, $"{voicevoxConfig.name}_portrait.png");
                 Base64.Base64ToFile(this.portrait, voicevoxConfig.portraitPath);

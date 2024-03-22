@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using K4os.Hash.xxHash;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,6 @@ using static OpenUtau.Api.Phonemizer;
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
         const string VOLC = VoicevoxUtils.VOLC;
-        const string KEYS = VoicevoxUtils.KEYS;
         const string PITD = Format.Ustx.PITD;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -24,7 +24,6 @@ namespace OpenUtau.Core.Voicevox {
             PITD,
             Format.Ustx.CLR,
             VOLC,
-            KEYS,
             Format.Ustx.SHFC,
             Format.Ustx.SHFT
         };
@@ -42,7 +41,7 @@ namespace OpenUtau.Core.Voicevox {
         public RenderResult Layout(RenderPhrase phrase) {
             return new RenderResult() {
                 leadingMs = phrase.leadingMs,
-                positionMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos((VoicevoxUtils.headS * 1000d)),
+                positionMs = phrase.positionMs - ((VoicevoxUtils.headS * 1000)+10),
                 estimatedLengthMs = phrase.durationMs + phrase.leadingMs,
             };
         }
@@ -55,7 +54,8 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
-                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{phrase.preEffectHash:x8}.wav");
+                    ulong hash = HashPhraseGroups(phrase);
+                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var singer = phrase.singer as VoicevoxSinger;
@@ -66,13 +66,13 @@ namespace OpenUtau.Core.Voicevox {
                             if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
                                 Note[][] notes = new Note[phrase.notes.Length][];
 
-                                for (int i = 0; i < phrase.notes.Length; i++) {
+                                for (int i = 0; i < phrase.phones.Length; i++) {
                                     notes[i] = new Note[1];
                                     notes[i][0] = new Note() {
-                                        lyric = phrase.notes[i].lyric,
-                                        position = phrase.notes[i].position,
-                                        duration = phrase.notes[i].duration,
-                                        tone = (int)(phrase.notes[i].tone + phrase.phones[0].toneShift)
+                                        lyric = phrase.phones[i].phoneme,
+                                        position = phrase.phones[i].position,
+                                        duration = phrase.phones[i].duration,
+                                        tone = (int)(phrase.phones[i].tone + phrase.phones[0].toneShift)
                                     };
                                 }
 
@@ -91,6 +91,8 @@ namespace OpenUtau.Core.Voicevox {
                                 if(vvNotes.phonemes.Count() == 0) {
                                     vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
                                 }
+
+                                vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
                             } else {
                                 vvNotes = PhraseToVoicevoxNotes(phrase);
                             }
@@ -222,15 +224,6 @@ namespace OpenUtau.Core.Voicevox {
                     defaultValue=0,
                     isFlag=false,
                 },
-                //new UExpressionDescriptor{
-                //    name="key shift (curve)",
-                //    abbr=KEYS,
-                //    type=UExpressionType.Curve,
-                //    min=-36,
-                //    max=36,
-                //    defaultValue=0,
-                //    isFlag=false,
-                //},
             };
 
             return result.ToArray();
@@ -253,7 +246,7 @@ namespace OpenUtau.Core.Voicevox {
                                 lyric = phrase.notes[i].lyric,
                                 position = phrase.notes[i].position,
                                 duration = phrase.notes[i].duration,
-                                tone = phrase.notes[i].tone
+                                tone = phrase.notes[i].tone + phrase.phones[0].toneShift
                             };
                         }
 
@@ -280,6 +273,25 @@ namespace OpenUtau.Core.Voicevox {
                 return new RenderPitchResult { tones = f0,ticks = new float[f0.Length] };
             }catch {
                 return null;
+            }
+        }
+
+
+        ulong HashPhraseGroups(RenderPhrase phrase) {
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(this.SingerType.ToString());
+                    writer.Write(phrase.preEffectHash);
+                    foreach (var ns in phrase.phones) {
+                            writer.Write(ns.phoneme);
+                            writer.Write(ns.position);
+                            writer.Write(ns.duration);
+                            writer.Write(ns.tone);
+                        writer.Write(ns.toneShift);
+                        writer.Write(ns.volume);
+                    }
+                    return XXH64.DigestOf(stream.ToArray());
+                }
             }
         }
     }

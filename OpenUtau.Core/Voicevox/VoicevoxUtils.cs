@@ -38,7 +38,6 @@ namespace OpenUtau.Core.Voicevox {
 
     internal static class VoicevoxUtils {
         public const string VOLC = "volc";
-        public const string KEYS = "keys";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
@@ -58,24 +57,29 @@ namespace OpenUtau.Core.Voicevox {
             return new VoicevoxNote();
         }
         public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis, VoicevoxSinger singer) {
-            BaseChinesePhonemizer.RomanizeNotes(notes);
+            if (!VoicevoxUtils.IsHiraKana(notes[0][0].lyric.ToCharArray()[0])) {
+                BaseChinesePhonemizer.RomanizeNotes(notes);
+            }
             VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
             Dictionary_list dic = new Dictionary_list();
             dic.Loaddic(singer.Location);
             int index = 0;
             int duration = 0;
             try {
+                qnotes.notes.Add(new VoicevoxQueryNotes() {
+                    lyric = "",
+                    frame_length = (int)Math.Round((headS * fps), MidpointRounding.AwayFromZero),
+                    key = null,
+                    vqnindex = -1
+                });
+                duration = notes[index][0].position + notes[index][0].duration;
                 while (index < notes.Length) {
-                    if (duration < notes[index][0].duration) {
-                        qnotes.notes.Add(new VoicevoxQueryNotes() {
-                            lyric = "",
-                            frame_length = (int)Math.Round((headS * fps), MidpointRounding.AwayFromZero),
-                            key = null,
-                            vqnindex = -1
-                        });
-                        duration = notes[index][0].position + notes[index][0].duration;
-                    } else {
-                        string lyric = dic.Lyrictodic(notes,index);
+                    //if (duration < notes[index][0].duration) {
+                    //} else {
+                        string lyric = notes[index][0].lyric;
+                        if (singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
+                            lyric = dic.Lyrictodic(notes, index);
+                        }
                         int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
                         int? tone;
                         if (notes[index][0].phonemeAttributes != null) {
@@ -96,11 +100,10 @@ namespace OpenUtau.Core.Voicevox {
                             key = tone,
                             vqnindex = index
                         });
+                        duration += notes[index][0].duration;//timeAxis.MsPosToTickPos((qnotes.notes.Last().frame_length / VoicevoxUtils.fps) * 1000d);
                         index++;
-                        duration += timeAxis.MsPosToTickPos((qnotes.notes.Last().frame_length / VoicevoxUtils.fps) * 1000d);
-                    }
+                    //}
                 }
-                index++;
                 qnotes.notes.Add(new VoicevoxQueryNotes {
                     lyric = "",
                     frame_length = (int)(tailS * fps),
@@ -134,6 +137,11 @@ namespace OpenUtau.Core.Voicevox {
             Array.Fill(result, convert(curve[0]), 0, headFrames);
             Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
             return result;
+        }
+
+
+        public static bool IsHiraKana(char c) {
+            return ('\u3041' <= c && c <= '\u309F') || ('\u30A0' <= c && c <= '\u30FF') || c == '\u30FC' || c == '\u30A0';
         }
     }
 }
