@@ -85,6 +85,7 @@ namespace OpenUtau.Core.Voicevox {
                 var yamlPath = Path.Join(parentDirectory, "phonemes.yaml");
                 var yamlTxt = File.ReadAllText(yamlPath);
                 var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
+                //Prepared for planned changes or additions to phonemizers.
                 foreach (var str in phonemes_list.vowels) {
                    phonemes.Add(str);
                 }

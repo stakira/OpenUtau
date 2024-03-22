@@ -44,15 +44,7 @@ namespace Voicevox {
                         }
                     },
                 };
-            } else if(notes[0].lyric.Equals("R")) {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {
-                            phoneme = "",
-                        }
-                    },
-                };
-            } else {
+            }  else {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme {

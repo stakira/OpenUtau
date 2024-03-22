@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Serilog;
-using SharpCompress.Common;
 
-namespace OpenUtau.Core.Util
-{
+namespace OpenUtau.Core.Util {
     public static class Base64
     {
         public static string Base64EncodeInt12(int[] data)
@@ -68,7 +66,7 @@ namespace OpenUtau.Core.Util
             try {
                 byte[] bytes = Convert.FromBase64String(base64str);
 
-                // ファイルに書き込み
+                // Write to file
                 File.WriteAllBytes(filePath, bytes);
 
             } catch (Exception ex) {
