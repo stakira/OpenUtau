@@ -106,6 +106,16 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnPublish(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var dialog = new SingerPublishDialog();
+            dialog.DataContext = new SingerPublishViewModel(viewModel.Singer);
+            await dialog.ShowDialog(this);
+        }
+
         void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             viewModel.SetUseFilenameAsAlias();

@@ -131,17 +131,18 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme = 1;
+            public int Theme;
+            public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
-            public bool PreRender = false;
+            public bool PreRender = true;
             public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
-            public int DiffsingerSpeedup = 100;
+            public int DiffsingerSpeedup = 50;
             public int DiffSingerDepth = 1000;
             public string Language = string.Empty;
             public string SortingOrder = string.Empty;
@@ -164,9 +165,9 @@ namespace OpenUtau.Core.Util {
             public bool ShowPortrait = true;
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
-            public bool PlayTone = false;
+            public bool PlayTone = true;
             public bool ShowVibrato = true;
-            public bool ShowPitch = false;
+            public bool ShowPitch = true;
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
@@ -177,7 +178,7 @@ namespace OpenUtau.Core.Util {
             public bool LyricsHelperBrackets = false;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
-            public bool Beta = true;
+            public bool Beta = false;
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
@@ -185,6 +186,9 @@ namespace OpenUtau.Core.Util {
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
+
+            public bool VoicebankPublishUseIgnore = true;
+            public string VoicebankPublishIgnores = "#Adobe Audition\n*.pkf\n\n#UTAU Engines\n*.ctspec\n*.d4c\n*.dio\n*.frc\n*.frt\n*.frq\n*.harvest\n*.lessaudio\n*.llsm\n*.mrq\n*.pitchtier\n*.pkf\n*.platinum\n*.pmk\n*.star\n*.uspec\n*.vs4ufrq\n\n#UTAU related tools\n$read\n*.setParam-Scache\n*.lbp\n*.lbp.caches/*\n\n#OpenUtau\nerrors.txt";
         }
     }
 }

@@ -88,7 +88,7 @@ namespace OpenUtau.Core.DiffSinger
             //1. phonetic hint
             //2. query from g2p dictionary
             //3. treat lyric as phonetic hint, including single phoneme
-            //4. default pause
+            //4. empty
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // Split space-separated symbols into an array.
                 return note.phoneticHint.Split()
@@ -108,7 +108,7 @@ namespace OpenUtau.Core.DiffSinger
             if (lyricSplited.Length > 0) {
                 return lyricSplited;
             }
-            return new string[] { defaultPause };
+            return new string[] { };
         }
 
         string GetSpeakerAtIndex(Note note, int index){
@@ -122,21 +122,20 @@ namespace OpenUtau.Core.DiffSinger
             return speaker.Suffix;
         }
 
-        dsPhoneme[] GetDsPhonemes(Note note){
-            return GetSymbols(note)
-                .Select((symbol, index) => new dsPhoneme(symbol, GetSpeakerAtIndex(note, index)))
-                .ToArray();            
-        }
-
         protected bool IsSyllableVowelExtensionNote(Note note) {
             return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
         }
 
-        List<phonemesPerNote> ProcessWord(Note[] notes){
+        /// <summary>
+        /// distribute phonemes to each note inside the group
+        /// </summary>
+        List<phonemesPerNote> ProcessWord(Note[] notes, string[] symbols){
             var wordPhonemes = new List<phonemesPerNote>{
                 new phonemesPerNote(-1, notes[0].tone)
             };
-            var dsPhonemes = GetDsPhonemes(notes[0]);
+            var dsPhonemes = symbols
+                .Select((symbol, index) => new dsPhoneme(symbol, GetSpeakerAtIndex(notes[0], index)))
+                .ToArray(); 
             var isVowel = dsPhonemes.Select(s => g2p.IsVowel(s.Symbol)).ToArray();
             var isGlide = dsPhonemes.Select(s => g2p.IsGlide(s.Symbol)).ToArray();
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
@@ -217,8 +216,17 @@ namespace OpenUtau.Core.DiffSinger
                 new phonemesPerNote(-1,phrase[0][0].tone, new List<dsPhoneme>{new dsPhoneme("SP", GetSpeakerAtIndex(phrase[0][0], 0))})
             };
             var notePhIndex = new List<int> { 1 };
-            foreach (var word in phrase) {
-                var wordPhonemes = ProcessWord(word);
+            var wordFound = new bool[phrase.Length];
+            foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
+                Note[] word = phrase[wordIndex];
+                var symbols = GetSymbols(word[0]);
+                if (symbols == null || symbols.Length == 0) {
+                    symbols = new string[] { defaultPause };
+                    wordFound[wordIndex] = false;
+                } else {
+                    wordFound[wordIndex] = true;
+                }
+                var wordPhonemes = ProcessWord(word, symbols);
                 phrasePhonemes[^1].Phonemes.AddRange(wordPhonemes[0].Phonemes);
                 phrasePhonemes.AddRange(wordPhonemes.Skip(1));
                 notePhIndex.Add(notePhIndex[^1]+wordPhonemes.SelectMany(n=>n.Phonemes).Count());
@@ -310,20 +318,24 @@ namespace OpenUtau.Core.DiffSinger
 
             //Convert the position sequence to tick and fill into the result list
             int index = 1;
-            foreach (int groupIndex in Enumerable.Range(0, phrase.Length)) {
-                Note[] group = phrase[groupIndex];
+            foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
+                Note[] word = phrase[wordIndex];
                 var noteResult = new List<Tuple<string, int>>();
-                if (group[0].lyric.StartsWith("+")) {
+                if (!wordFound[wordIndex]){
+                    //partResult[word[0].position] = noteResult;
                     continue;
                 }
-                double notePos = timeAxis.TickPosToMsPos(group[0].position);//start position of the note, ms
-                for (int phIndex = notePhIndex[groupIndex]; phIndex < notePhIndex[groupIndex + 1]; ++phIndex) {
+                if (word[0].lyric.StartsWith("+")) {
+                    continue;
+                }
+                double notePos = timeAxis.TickPosToMsPos(word[0].position);//start position of the note, ms
+                for (int phIndex = notePhIndex[wordIndex]; phIndex < notePhIndex[wordIndex + 1]; ++phIndex) {
                     if (!String.IsNullOrEmpty(phs[phIndex].Symbol)) {
                         noteResult.Add(Tuple.Create(phs[phIndex].Symbol, timeAxis.TicksBetweenMsPos(
                            notePos, positions[phIndex - 1])));
                     }
                 }
-                partResult[group[0].position] = noteResult;
+                partResult[word[0].position] = noteResult;
             }
         }
     }

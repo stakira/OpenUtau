@@ -345,6 +345,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
+  <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>
@@ -406,6 +407,11 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
   <system:String x:Key="singers.playsample">Play sample</system:String>
+  <system:String x:Key="singers.publish">Publish Singer</system:String>
+  <system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>
+  <system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>
+  <system:String x:Key="singers.publish.publish">Publish</system:String>
+  <system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>
   <system:String x:Key="singers.readme">Open readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>

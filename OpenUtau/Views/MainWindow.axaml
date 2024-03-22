@@ -9,6 +9,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{Binding Title}" MinWidth="300" MinHeight="200"
         KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
+        Focusable="True"
         TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
   <Window.Styles>
