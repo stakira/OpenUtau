@@ -21,6 +21,9 @@ namespace OpenUtau.Core.Voicevox {
 
         public override void SetUp(Note[][] notes)  {
             partResult.Clear();
+            foreach(var lyric in notes) {
+                lyric[0].lyric = lyric[0].lyric.Normalize();
+            }
             var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, timeAxis,this.singer);
             var vvNotes = new VoicevoxNote();
             string singerID = VoicevoxUtils.defaultID;

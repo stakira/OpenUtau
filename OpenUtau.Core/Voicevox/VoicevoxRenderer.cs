@@ -41,7 +41,7 @@ namespace OpenUtau.Core.Voicevox {
         public RenderResult Layout(RenderPhrase phrase) {
             return new RenderResult() {
                 leadingMs = phrase.leadingMs,
-                positionMs = phrase.positionMs - ((VoicevoxUtils.headS * 1000)+10),
+                positionMs = phrase.positionMs - ((VoicevoxUtils.headS * 1000) + 10),
                 estimatedLengthMs = phrase.durationMs + phrase.leadingMs,
             };
         }
@@ -55,7 +55,7 @@ namespace OpenUtau.Core.Voicevox {
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     ulong hash = HashPhraseGroups(phrase);
-                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var singer = phrase.singer as VoicevoxSinger;
@@ -78,6 +78,7 @@ namespace OpenUtau.Core.Voicevox {
 
                                 var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
 
+                                //Prepare for future additions of Teacher Singer.
                                 if (singer.voicevoxConfig.base_singer_style != null) {
                                     foreach (var s in singer.voicevoxConfig.base_singer_style) {
                                         if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
@@ -88,11 +89,12 @@ namespace OpenUtau.Core.Voicevox {
                                         }
                                     }
                                 }
-                                if(vvNotes.phonemes.Count() == 0) {
+                                if (vvNotes.phonemes.Count() == 0) {
                                     vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
                                 }
 
-                                vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
+                                 vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
                             } else {
                                 vvNotes = PhraseToVoicevoxNotes(phrase);
                             }
@@ -143,7 +145,7 @@ namespace OpenUtau.Core.Voicevox {
                                 Renderers.ApplyDynamics(phrase, result);
                             }
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         Log.Error(e.Message);
                         result.samples = new float[0];
                     }
@@ -270,8 +272,8 @@ namespace OpenUtau.Core.Voicevox {
                     }
                 }
                 float[] f0 = Array.ConvertAll(vvNotes.f0.ToArray(), item => (float)item);
-                return new RenderPitchResult { tones = f0,ticks = new float[f0.Length] };
-            }catch {
+                return new RenderPitchResult { tones = f0, ticks = new float[f0.Length] };
+            } catch {
                 return null;
             }
         }
@@ -283,10 +285,10 @@ namespace OpenUtau.Core.Voicevox {
                     writer.Write(this.SingerType.ToString());
                     writer.Write(phrase.preEffectHash);
                     foreach (var ns in phrase.phones) {
-                            writer.Write(ns.phoneme);
-                            writer.Write(ns.position);
-                            writer.Write(ns.duration);
-                            writer.Write(ns.tone);
+                        writer.Write(ns.phoneme);
+                        writer.Write(ns.position);
+                        writer.Write(ns.duration);
+                        writer.Write(ns.tone);
                         writer.Write(ns.toneShift);
                         writer.Write(ns.volume);
                     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Classic;
@@ -11,6 +12,7 @@ using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxConfig {
+        //Information that each Singer has
         public Supported_features supported_features;
         public string name = string.Empty;
         public string speaker_uuid = string.Empty;
@@ -18,9 +20,11 @@ namespace OpenUtau.Core.Voicevox {
         public string version = string.Empty;
         public string policy = string.Empty;
         public string portraitPath = string.Empty;
+        //So that the renderer can distinguish between phonemizers.
         public string Tag = "DEFAULT";
 
         public List<Style_infos> style_infos;
+        //Prepare for future additions of Teacher Singer.
         public List<(string name, Styles styles)> base_singer_style;
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
@@ -30,13 +34,14 @@ namespace OpenUtau.Core.Voicevox {
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Failed to create a voice base. : {jObj}");
+                    Log.Error($"Response was incorrect. : {jObj}");
                 }
                 var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
                 var parentDirectory = Directory.GetParent(singer.Location).ToString();
+                List<VoicevoxConfig> vvList = new List<VoicevoxConfig>();
                 foreach (RawVoicevoxConfig rowVoicevoxConfig in configs) {
                     VoicevoxConfig voicevoxConfig = rowVoicevoxConfig.Convert();
-                    var folderPath = Path.Join(parentDirectory, rowVoicevoxConfig.name);
+                    var folderPath = Path.Join(parentDirectory, voicevoxConfig.name);
                     var filePath = Path.Join(folderPath, "character.yaml");
                     if (!File.Exists(filePath)) {
                         Directory.CreateDirectory(folderPath);
@@ -52,16 +57,14 @@ namespace OpenUtau.Core.Voicevox {
                         using (var stream = File.Open(filePath, FileMode.Create)) {
                             config.Save(stream);
                         }
-                        using (var stream = File.Open(Path.Join(folderPath, "character.txt"), FileMode.Create)) {
-                            config.Save(stream);
-                        }
+                        //Create an empty file to read. May write information in the future?
+                        File.WriteAllText(Path.Join(folderPath, "character.txt"), string.Empty);
                     }
-                    if (rowVoicevoxConfig.name.Equals(singer.Name)) {
-                        return voicevoxConfig;
-                    }
+                    vvList.Add(voicevoxConfig);
                 }
+                return vvList.Where(vv => vv.name.Equals(singer.Name)).ToList()[0];
             } catch {
-                Log.Error("Failed to create a voice base.");
+                Log.Error("Could not load VOICEVOX singer.");
             }
             return new VoicevoxConfig();
         }
@@ -71,7 +74,7 @@ namespace OpenUtau.Core.Voicevox {
                 var response = VoicevoxClient.Inst.SendRequest(queryurl);
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Failed to create a voice base. : {jObj}");
+                    Log.Error($"Response was incorrect. : {jObj}");
                 } else {
                     var rawSinger_Info = jObj.ToObject<RawSinger_info>();
                     if (rawSinger_Info != null) {
@@ -140,10 +143,10 @@ namespace OpenUtau.Core.Voicevox {
         public void SetInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
             Log.Information($"Begin setup of Voicevox SingerInfo.");
             try {
-                if (!string.IsNullOrEmpty(this.policy)) {
+                var readmePath = Path.Join(singer.Location, "readme.txt");
+                if (!string.IsNullOrEmpty(this.policy) && !File.Exists(readmePath)) {
                     voicevoxConfig.policy = this.policy;
-                    var readmepath = Path.Join(singer.Location, "readme.txt");
-                    File.WriteAllText(readmepath, this.policy);
+                    File.WriteAllText(readmePath, this.policy);
                 }
                 voicevoxConfig.portraitPath = Path.Join(singer.Location, $"{voicevoxConfig.name}_portrait.png");
                 Base64.Base64ToFile(this.portrait, voicevoxConfig.portraitPath);

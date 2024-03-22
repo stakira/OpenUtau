@@ -20,6 +20,7 @@ namespace OpenUtau.Core.Voicevox {
                         var response = client.SendAsync(request);
                         Log.Information($"VoicevoxProcess received");
                         string str = response.Result.Content.ReadAsStringAsync().Result;
+                        //May not fit json format
                         if (!str.StartsWith("{") || !str.EndsWith("}")) {
                             str = "{ \"json\":" + str + "}";
                         }
@@ -48,6 +49,7 @@ namespace OpenUtau.Core.Voicevox {
     public class VoicevoxURL {
         public string method = string.Empty;
         public string protocol = "http://";
+        //Currently fixed port 50021 to connect to
         public string host = "127.0.0.1:50021";
         public string path = string.Empty;
         public Dictionary<string, string> query = new Dictionary<string, string>();
