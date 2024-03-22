@@ -41,6 +41,12 @@ namespace OpenUtau.App.Views {
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
 
+            ViewModel.NoteBatchEdits.Insert(5, new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
+                Command = ReactiveCommand.Create(() => {
+                    AddBreathNote();
+                })
+            });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
                 Command = ReactiveCommand.Create(() => {
@@ -199,6 +205,36 @@ namespace OpenUtau.App.Views {
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }
+        }
+
+        void AddBreathNote() {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
+            if (notesVM.Selection.IsEmpty) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.selectnotes"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            var dialog = new TypeInDialog() {
+                Title = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
+                onFinish = value => {
+                    if (!string.IsNullOrWhiteSpace(value)) {
+                        var edit = new Core.Editing.AddBreathNote(value);
+                        try {
+                            edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+                        }
+                    }
+                }
+            };
+            dialog.SetText("br");
+            dialog.ShowDialog(this);
         }
 
         void LengthenCrossfade() {
@@ -1285,7 +1321,7 @@ namespace OpenUtau.App.Views {
                     }
                     // to view end
                     if (isShift) {
-                        playVm.MovePlayPos(notesVm.Part.position + (int)(notesVm.TickOffset));
+                        playVm.MovePlayPos(notesVm.Part.position + (int)(notesVm.TickOffset + notesVm.Bounds.Width / notesVm.TickWidth));
                         return true;
                     }
                     break;
@@ -1313,7 +1349,7 @@ namespace OpenUtau.App.Views {
                     }
                     // select none
                     if (isCtrl) {
-                        notesVm.SelectAllNotes();
+                        notesVm.DeselectNotes();
                         return true;
                     }
                     break;

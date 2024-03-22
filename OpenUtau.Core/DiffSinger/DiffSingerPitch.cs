@@ -116,7 +116,7 @@ namespace OpenUtau.Core.DiffSinger
                     new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                     .Reshape(new int[] { 1, word_dur.Length })));
             }else{
-                //if predict_dur is true, use phoneme encode mode
+                //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));

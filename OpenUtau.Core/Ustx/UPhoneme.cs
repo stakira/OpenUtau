@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using YamlDotNet.Serialization;
-using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.Ustx {
     public class UPhoneme {
@@ -166,39 +165,43 @@ namespace OpenUtau.Core.Ustx {
             envelope.data[4] = p4;
         }
 
+        /// <summary>
+        /// If the phoneme does not have the corresponding expression, return the track's expression and false
+        /// <summary>
         public Tuple<float, bool> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out var descriptor);
+            track.TryGetExpression(project, abbr, out UExpression trackExp);
             var note = Parent.Extends ?? Parent;
-            var expression = note.phonemeExpressions.FirstOrDefault(
-                exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
-            if (expression != null) {
-                return Tuple.Create(expression.value, true);
+            var phonemeExp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
+            if (phonemeExp != null) {
+                return Tuple.Create(phonemeExp.value, true);
             } else {
-                return Tuple.Create(descriptor.defaultValue, false);
+                var phonemizerExp = note.phonemizerExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
+                if (phonemizerExp != null) {
+                    return Tuple.Create(phonemizerExp.value, false);
+                } else {
+                    return Tuple.Create(trackExp.value, false);
+                }
             }
         }
 
-        public void SetExpression(UProject project, UTrack track, string abbr, float value) {
-            if (!track.TryGetExpression(project, abbr, out var descriptor)) {
+        public void SetExpression(UProject project, UTrack track, string abbr, float? value) {
+            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
                 return;
             }
             var note = Parent.Extends ?? Parent;
-            if (descriptor.defaultValue == value) {
-                note.phonemeExpressions.RemoveAll(
-                    exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
-                return;
-            }
-            var expression = note.phonemeExpressions.FirstOrDefault(
-                exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
-            if (expression != null) {
-                expression.descriptor = descriptor;
-                expression.value = value;
+            if (value == null) {
+                note.phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == index);
             } else {
-                note.phonemeExpressions.Add(new UExpression(descriptor) {
-                    descriptor = descriptor,
-                    index = index,
-                    value = value,
-                });
+                var phonemeExp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
+                if (phonemeExp != null) {
+                    phonemeExp.descriptor = trackExp.descriptor;
+                    phonemeExp.value = (float)value;
+                } else {
+                    note.phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                        index = index,
+                        value = (float)value,
+                    });
+                }
             }
         }
 

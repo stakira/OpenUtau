@@ -430,7 +430,7 @@ namespace OpenUtau.App.ViewModels {
                 RendererSettings = track.RendererSettings,
                 Mute = track.Mute,
                 Muted = track.Muted,
-                Solo = track.Solo,
+                Solo = false,
                 Volume = track.Volume,
                 Pan = track.Pan,
                 TrackColor = track.TrackColor
@@ -456,7 +456,7 @@ namespace OpenUtau.App.ViewModels {
                 RendererSettings = track.RendererSettings,
                 Mute = track.Mute,
                 Muted = track.Muted,
-                Solo = track.Solo,
+                Solo = false,
                 Volume = track.Volume,
                 Pan = track.Pan,
                 TrackColor = track.TrackColor

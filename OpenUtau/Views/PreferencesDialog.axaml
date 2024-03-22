@@ -228,6 +228,10 @@
               <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding LyricsHelperBrackets}"/>
             </Grid>
+            <Grid>
+              <TextBlock Text="{DynamicResource prefs.penplus}" HorizontalAlignment="Left"/>
+              <ToggleSwitch IsChecked="{Binding PenPlusDefault}"/>
+            </Grid>
             <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" Margin="0,5,0,0"/>
             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center" Margin="4">
               <CheckBox IsChecked="{Binding RememberMid}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
