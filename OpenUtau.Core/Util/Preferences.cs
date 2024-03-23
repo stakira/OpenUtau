@@ -131,7 +131,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public int Theme = 1;
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
@@ -167,7 +167,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowGhostNotes = true;
             public bool PlayTone = true;
             public bool ShowVibrato = true;
-            public bool ShowPitch = true;
+            public bool ShowPitch = false;
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
@@ -178,7 +178,7 @@ namespace OpenUtau.Core.Util {
             public bool LyricsHelperBrackets = false;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
-            public bool Beta = false;
+            public bool Beta = true;
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
