@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">保存されていない変更があります。保存しますか？</system:String>
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
+  <system:String x:Key="dialogs.importtracks.caption">トラックのインポート</system:String>
+  <system:String x:Key="dialogs.importtracks.importtempo">インポートされたプロジェクトには、以下のテンポマーカーが含まれています。使用しますか？</system:String>
   <system:String x:Key="dialogs.installdependency.caption">依存関係のインストール</system:String>
   <system:String x:Key="dialogs.installdependency.message">インストールします : </system:String>
   <system:String x:Key="dialogs.installdll.caption">Phonemizerのインストール</system:String>
@@ -46,13 +48,15 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
+  <system:String x:Key="dialogs.remaptimeaxis.message">このツールでは、音符の実際の位置と長さ（秒単位）を変えずに、プロジェクトのテンポを変更します。
+新しいBPM：</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">使用不可能なフォーマット</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">サポートされていないファイルフォーマットです：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">トラック設定</system:String>
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
-  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
-  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
@@ -152,10 +156,13 @@
   <system:String x:Key="menu.help.logslocation">ログの場所を開く</system:String>
   <system:String x:Key="menu.help.reportissue">問題を報告</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.project">プロジェクト</system:String>
+  <system:String x:Key="menu.project.expressions">表情...</system:String>
+  <system:String x:Key="menu.project.remaptimeaxis">音符の位置を維持したままテンポを再設定</system:String>
   <system:String x:Key="menu.tools">ツール</system:String>
   <system:String x:Key="menu.tools.clearcache">キャッシュクリア</system:String>
   <system:String x:Key="menu.tools.debugwindow">デバッグウインドウ</system:String>
-  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
+  <system:String x:Key="menu.tools.dependency.install">依存関係ファイルをインストール(.oudep)...</system:String>
   <system:String x:Key="menu.tools.layout">レイアウト</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">横並び 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">横並び 1:2</system:String>
@@ -164,7 +171,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">縦並び 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">縦並び 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">設定...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
   <system:String x:Key="menu.tools.singer.install">シンガーをインストール...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">シンガーをインストール(高度)...</system:String>
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
@@ -240,6 +246,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addbreath">ブレスを追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">音符の隙間を埋める</system:String>
@@ -299,6 +306,10 @@
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
+  <system:String x:Key="prefs.advanced.importtempo">トラックのインポート時、テンポもインポートする</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.always">常にインポートする</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.ask">毎回確認する</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.never">インポートしない</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.rememberfiletypes">以下のタイプのファイルを「最近開いたファイル」として記憶する</system:String>

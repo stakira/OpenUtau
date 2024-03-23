@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Ustx {
                                 phonemes.Add(new UPhoneme() {
                                     rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
-                                    index = j,
+                                    index = resp.phonemes[i][j].index ?? j,
                                     Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
                                 });
                             }

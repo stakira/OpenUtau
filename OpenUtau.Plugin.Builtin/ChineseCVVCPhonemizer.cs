@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
-    public class ChineseCVVCPhonemizer : BaseChinesePhonemizer {
+    public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
         private USinger singer;
@@ -46,7 +46,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                                 new Phoneme() {
                                     phoneme = oto1.Alias,
-                                    position = totalDuration - (totalDuration / 6),
+                                    position = totalDuration - Math.Min(totalDuration / 6, 60),
                                 },
                             },
                     };
@@ -96,7 +96,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                                 new Phoneme() {
                                     phoneme = otoEnd.Alias,
-                                    position = totalDuration - (totalDuration / 6),
+                                    position = totalDuration - Math.Min(totalDuration / 6, 60),
                                 },
                             },
                         };
@@ -118,7 +118,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                                     new Phoneme() {
                                         phoneme = otoEnd.Alias,
-                                        position = totalDuration - (totalDuration / 6),
+                                        position = totalDuration - Math.Min(totalDuration / 6, 60),
                                 },
                             },
                             };
@@ -138,7 +138,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                                     new Phoneme() {
                                         phoneme = otoEnd.Alias,
-                                        position = totalDuration - (totalDuration / 6),
+                                        position = totalDuration - Math.Min(totalDuration / 6, 60),
                                 },
                             },
                             };
@@ -152,7 +152,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                                 new Phoneme() {
                                     phoneme = otoEnd1.Alias,
-                                    position = totalDuration - (totalDuration / 6),
+                                    position = totalDuration - Math.Min(totalDuration / 6, 60),
                                 },
                             },
                         };
@@ -220,6 +220,32 @@ namespace OpenUtau.Plugin.Builtin {
             } catch (Exception e) {
                 Log.Error(e, "failed to load presamp.ini");
             }
+        }
+    
+        public static Note[] ChangeLyric(Note[] group, string lyric) {
+            var oldNote = group[0];
+            group[0] = new Note {
+                lyric = lyric,
+                phoneticHint = oldNote.phoneticHint,
+                tone = oldNote.tone,
+                position = oldNote.position,
+                duration = oldNote.duration,
+                phonemeAttributes = oldNote.phonemeAttributes,
+            };
+            return group;
+        }
+
+        protected virtual string[] Romanize(IEnumerable<string> lyrics) {
+            return BaseChinesePhonemizer.Romanize(lyrics);
+        }
+
+        protected void RomanizeNotes(Note[][] groups) {
+            var ResultLyrics = Romanize(groups.Select(group => group[0].lyric));
+            Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
+        }
+
+        public override void SetUp(Note[][] groups) {
+            RomanizeNotes(groups);
         }
     }
 }

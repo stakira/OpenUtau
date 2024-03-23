@@ -23,7 +23,7 @@ namespace OpenUtau.Core.Editing {
                 if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
                     var addNote = project.CreateNote(note.tone, note.End, 120);
                     foreach(var exp in note.phonemeExpressions.OrderBy(exp => exp.index)) {
-                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float?[] { exp.value });
                     }
                     toAdd.Add(addNote);
                 }
@@ -66,6 +66,51 @@ namespace OpenUtau.Core.Editing {
             foreach (var note in toRemove) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class AddBreathNote : BatchEdit {
+        public string Name => name;
+
+        private string lyric;
+        private string name;
+
+        public AddBreathNote(string lyric) {
+            this.lyric = lyric;
+            this.name = "pianoroll.menu.notes.addbreath";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            List<UNote> toAdd = new List<UNote>();
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            foreach (var note in notes) {
+                if (note.lyric != lyric) {
+                    int duration;
+                    if (note.Prev == null) {
+                        duration = 480;
+                    } else if (note.Prev.lyric == lyric || note.position - 120 <= note.Prev.End) {
+                        continue;
+                    } else if (note.Prev.End < note.position - 960) {
+                        duration = 480;
+                    } else {
+                        duration = note.position - note.Prev.End;
+                    }
+                    var addNote = project.CreateNote(note.tone, note.position - duration, duration);
+                    foreach (var exp in note.phonemeExpressions.Where(exp => exp.index == 0)) {
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float?[] { exp.value });
+                    }
+                    toAdd.Add(addNote);
+                }
+            }
+            if (toAdd.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            foreach (var note in toAdd) {
+                note.lyric = lyric;
+                docManager.ExecuteCmd(new AddNoteCommand(part, note));
             }
             docManager.EndUndoGroup();
         }
