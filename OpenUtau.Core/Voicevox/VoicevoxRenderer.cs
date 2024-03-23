@@ -21,10 +21,11 @@ namespace OpenUtau.Core.Voicevox {
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
-            PITD,
+            //PITD,
             Format.Ustx.CLR,
-            VOLC,
-            Format.Ustx.SHFC,
+            Format.Ustx.VOL,
+            //VOLC,
+            //Format.Ustx.SHFC,
             Format.Ustx.SHFT
         };
 
@@ -94,7 +95,9 @@ namespace OpenUtau.Core.Voicevox {
                                 }
 
                                 //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
-                                 vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                //Volume parameter for synthesis. Scheduled to be revised
+                                vvNotes.volume = vvNotes.volume.Select(vol => vol = vol * phrase.phones[0].volume).ToList();
                             } else {
                                 vvNotes = PhraseToVoicevoxNotes(phrase);
                             }
@@ -155,6 +158,7 @@ namespace OpenUtau.Core.Voicevox {
             return task;
         }
 
+        //Synthesize with parameters of phoneme, F0, and volume. Under development
         static VoicevoxNote PhraseToVoicevoxNotes(RenderPhrase phrase) {
             VoicevoxNote notes = new VoicevoxNote();
 
@@ -216,19 +220,21 @@ namespace OpenUtau.Core.Voicevox {
 
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            var result = new List<UExpressionDescriptor> {
-                new UExpressionDescriptor{
-                    name="volume (curve)",
-                    abbr=VOLC,
-                    type=UExpressionType.Curve,
-                    min=-20,
-                    max=20,
-                    defaultValue=0,
-                    isFlag=false,
-                },
-            };
+            return new UExpressionDescriptor[] { };
+            //under development
+            //var result = new List<UExpressionDescriptor> {
+            //    new UExpressionDescriptor{
+            //        name="volume (curve)",
+            //        abbr=VOLC,
+            //        type=UExpressionType.Curve,
+            //        min=-20,
+            //        max=20,
+            //        defaultValue=0,
+            //        isFlag=false,
+            //    },
+            //};
 
-            return result.ToArray();
+            //return result.ToArray();
         }
 
         public override string ToString() => Renderers.VOICEVOX;
@@ -239,40 +245,43 @@ namespace OpenUtau.Core.Voicevox {
                 VoicevoxNote vvNotes = new VoicevoxNote();
                 if (singer != null) {
                     string singerID = VoicevoxUtils.defaultID;
-                    if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX")) {
-                        Note[][] notes = new Note[phrase.notes.Length][];
+                    Note[][] notes = new Note[phrase.notes.Length][];
 
-                        for (int i = 0; i < phrase.notes.Length; i++) {
-                            notes[i] = new Note[1];
-                            notes[i][0] = new Note() {
-                                lyric = phrase.notes[i].lyric,
-                                position = phrase.notes[i].position,
-                                duration = phrase.notes[i].duration,
-                                tone = phrase.notes[i].tone + phrase.phones[0].toneShift
-                            };
-                        }
+                    for (int i = 0; i < phrase.notes.Length; i++) {
+                        notes[i] = new Note[1];
+                        notes[i][0] = new Note() {
+                            lyric = phrase.notes[i].lyric,
+                            position = phrase.notes[i].position,
+                            duration = phrase.notes[i].duration,
+                            tone = phrase.notes[i].tone + phrase.phones[0].toneShift
+                        };
+                    }
 
-                        var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
+                    var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
 
-                        if (singer.voicevoxConfig.base_singer_style != null) {
-                            foreach (var s in singer.voicevoxConfig.base_singer_style) {
-                                if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
-                                    if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
-                                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
-                                        break;
-                                    }
+                    if (singer.voicevoxConfig.base_singer_style != null) {
+                        foreach (var s in singer.voicevoxConfig.base_singer_style) {
+                            if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
+                                if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
+                                    vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
+                                    break;
                                 }
                             }
                         }
-                        if (vvNotes.phonemes.Count() <= 0) {
-                            vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
-                        }
-                    } else {
-                        vvNotes = PhraseToVoicevoxNotes(phrase);
+                    }
+                    if (vvNotes.phonemes.Count() <= 0) {
+                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
                     }
                 }
-                float[] f0 = Array.ConvertAll(vvNotes.f0.ToArray(), item => (float)item);
-                return new RenderPitchResult { tones = f0, ticks = new float[f0.Length] };
+                var result = new RenderPitchResult { tones = vvNotes.f0.Select(f => (float)MusicMath.FreqToTone(f)).ToArray() };
+                result.ticks = new float[result.tones.Length];
+                var layout = Layout(phrase);
+                var t = phrase.positionMs * 2 - phrase.timeAxis.TickPosToMsPos((result.tones.Length / VoicevoxUtils.fps) * 1000d);
+                for (int i = 0; i < result.tones.Length; i++) {
+                    t += (5);
+                    result.ticks[i] = phrase.timeAxis.MsPosToTickPos(t) - phrase.position;
+                }
+                return result;
             } catch {
                 return null;
             }
@@ -282,16 +291,10 @@ namespace OpenUtau.Core.Voicevox {
         ulong HashPhraseGroups(RenderPhrase phrase) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(this.SingerType.ToString());
                     writer.Write(phrase.preEffectHash);
-                    foreach (var ns in phrase.phones) {
-                        writer.Write(ns.phoneme);
-                        writer.Write(ns.position);
-                        writer.Write(ns.duration);
-                        writer.Write(ns.tone);
-                        writer.Write(ns.toneShift);
-                        writer.Write(ns.volume);
-                    }
+                    writer.Write(phrase.phones[0].tone);
+                    writer.Write(phrase.phones[0].toneShift);
+                    writer.Write(phrase.phones[0].volume);
                     return XXH64.DigestOf(stream.ToArray());
                 }
             }
