@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -94,7 +93,6 @@ namespace OpenUtau.Classic {
                 voicebank.SingerType = SingerTypeUtils.SingerTypeFromName[singerType];
             }else{
                 // Legacy detection code. Do not add more here.
-                var parentDirectory = Directory.GetParent(dir).ToString();
                 var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
                 var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
                 if (File.Exists(enuconfigFile)) {
