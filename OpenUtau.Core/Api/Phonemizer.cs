@@ -127,7 +127,7 @@ namespace OpenUtau.Api {
             public int position;
 
             /// <summary>
-            /// Suggested attributes. May or may not be used eventually.
+            /// Suggested attributes. It may later be overwritten with a user-specified value.
             /// </summary>
             public List<PhonemeExpression> expressions;
 
