@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <system:Boolean x:Key="IsDarkMode">true</system:Boolean>
 
-  <Color x:Key="BackgroundColor">#2A2A2A</Color>
+  <Color x:Key="BackgroundColor">#282828</Color>
   <Color x:Key="BackgroundColorPointerOver">#343434</Color>
   <Color x:Key="BackgroundColorPressed">#343434</Color>
   <Color x:Key="BackgroundColorDisabled">#303030</Color>
@@ -24,19 +24,19 @@
 
   <Color x:Key="NeutralAccentColor">#FCFCFC</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#FCFCFC</Color>
-  <Color x:Key="AccentColor1">#B0B0B0</Color>
-  <Color x:Key="AccentColor2">#6F66CD</Color>
+  <Color x:Key="AccentColor1">#AAAAAA</Color>
+  <Color x:Key="AccentColor2">#6F6F9F</Color>
   <Color x:Key="AccentColor3">#FCFCFC</Color>
 
   <Color x:Key="TickLineColor">#111111</Color>
   <Color x:Key="BarNumberColor">#E0E0E0</Color>
   <Color x:Key="FinalPitchColor">#FFFFFF</Color>
-  <Color x:Key="TrackBackgroundAltColor">#343434</Color>
+  <Color x:Key="TrackBackgroundAltColor">#333333</Color>
 
   <!--Keyboard Background-->
   <Color x:Key="WhiteKeyColorLeft">#CACACA</Color>
   <Color x:Key="WhiteKeyColorRight">#E0E0E0</Color>
-  <Color x:Key="WhiteKeyNameColor">#343434</Color>
+  <Color x:Key="WhiteKeyNameColor">#333333</Color>
 
   <Color x:Key="CenterKeyColorLeft">#A9A6CD</Color>
   <Color x:Key="CenterKeyColorRight">#D3CFFF</Color>
