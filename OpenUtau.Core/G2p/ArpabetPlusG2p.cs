@@ -20,8 +20,8 @@ namespace OpenUtau.Core.G2p {
         };
 
         private static object lockObj = new object();
-        private static Dictionary<string, int> graphemeIndexes;
         private static IG2p dict;
+        private static Dictionary<string, int> graphemeIndexes;
         private static InferenceSession session;
         private static Dictionary<string, string[]> predCache = new Dictionary<string, string[]>();
 
@@ -40,11 +40,11 @@ namespace OpenUtau.Core.G2p {
                     session = tuple.Item2;
                 }
             }
+            Dict = dict;
+            PredCache = predCache;
             GraphemeIndexes = graphemeIndexes;
             Phonemes = phonemes;
-            Dict = dict;
             Session = session;
-            PredCache = predCache;
         }
     }
 }
