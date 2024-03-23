@@ -399,7 +399,7 @@ namespace OpenUtau.Plugin.Builtin {
                         colorIndex = Array.IndexOf(track.VoiceColorExp.options, color);
                     }
                     return true;
-                } else {
+                } else if (index != 1) {
                     oto = otos.First();
                     return true;
                 }
