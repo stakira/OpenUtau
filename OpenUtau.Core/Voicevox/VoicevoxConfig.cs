@@ -20,14 +20,16 @@ namespace OpenUtau.Core.Voicevox {
         public string version = string.Empty;
         public string policy = string.Empty;
         public string portraitPath = string.Empty;
-        //So that the renderer can distinguish between phonemizers.
-        public string Tag = "DEFAULT";
 
         public List<Style_infos> style_infos;
         //Prepare for future additions of Teacher Singer.
         public List<(string name, Styles styles)> base_singer_style;
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
+
+        //So that the renderer can distinguish between phonemizers.
+        public string Tag = "DEFAULT";
+        public Phoneme_list phonemes_list;
 
         public static VoicevoxConfig Load(USinger singer) {
             try {
@@ -66,6 +68,7 @@ namespace OpenUtau.Core.Voicevox {
             } catch {
                 Log.Error("Could not load VOICEVOX singer.");
             }
+
             return new VoicevoxConfig();
         }
         public void LoadInfo(VoicevoxConfig voicevoxConfig, string location) {
@@ -89,7 +92,7 @@ namespace OpenUtau.Core.Voicevox {
     public class Phoneme_list {
         public string[] vowels;
         public string[] consonants;
-        public string[] kana;
+        public Dictionary<string,string> kanas;
     }
 
     public class Dictionary_list {

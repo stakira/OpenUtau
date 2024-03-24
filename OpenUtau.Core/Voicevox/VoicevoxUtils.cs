@@ -42,6 +42,7 @@ namespace OpenUtau.Core.Voicevox {
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
+        static Dictionary_list dic = new Dictionary_list();
 
         public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
@@ -62,7 +63,6 @@ namespace OpenUtau.Core.Voicevox {
                 BaseChinesePhonemizer.RomanizeNotes(notes);
             }
             VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
-            Dictionary_list dic = new Dictionary_list();
             dic.Loaddic(singer.Location);
             int index = 0;
             int duration = 0;
