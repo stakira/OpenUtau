@@ -835,7 +835,7 @@ namespace OpenUtau.App.ViewModels {
 
                     var note = notes.First();
                     if (left < TickOffset || TickOffset + ViewportTicks < note.position + note.duration + Part.position) {
-                        TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+                        TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
                     }
                 }
             }
@@ -921,7 +921,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void FocusNote(UNote note) {
-            TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+            TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
