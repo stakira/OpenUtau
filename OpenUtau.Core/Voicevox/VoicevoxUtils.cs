@@ -58,7 +58,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis, VoicevoxSinger singer) {
-            if (!VoicevoxUtils.IsHiraKana(notes[0][0].lyric.ToCharArray()[0])) {
+            if (!VoicevoxUtils.IsHiraKana(notes[0][0].lyric) || !VoicevoxUtils.IsPau(notes[0][0].lyric)) {
                 BaseChinesePhonemizer.RomanizeNotes(notes);
             }
             VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
@@ -75,21 +75,19 @@ namespace OpenUtau.Core.Voicevox {
                 });
                 duration = notes[index][0].position + notes[index][0].duration;
                 while (index < notes.Length) {
-                    string lyric = notes[index][0].lyric;
-                    lyric = dic.Lyrictodic(notes, index);
+                    string lyric = dic.Lyrictodic(notes, index);
                     int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
-                    int? tone;
-                    if (notes[index][0].phonemeAttributes != null) {
-                        if (notes[index][0].phonemeAttributes.Length > 0) {
-                            tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
+                    int? tone = null;
+                    if (!string.IsNullOrEmpty(lyric) || VoicevoxUtils.IsPau(lyric)) {
+                        if (notes[index][0].phonemeAttributes != null) {
+                            if (notes[index][0].phonemeAttributes.Length > 0) {
+                                tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
+                            } else {
+                                tone = notes[index][0].tone;
+                            }
                         } else {
                             tone = notes[index][0].tone;
                         }
-                    } else {
-                        tone = notes[index][0].tone;
-                    }
-                    if (string.IsNullOrEmpty(lyric)) {
-                        tone = null;
                     }
                     qnotes.notes.Add(new VoicevoxQueryNotes {
                         lyric = lyric,
@@ -136,8 +134,20 @@ namespace OpenUtau.Core.Voicevox {
         }
 
 
-        public static bool IsHiraKana(char c) {
-            return ('\u3041' <= c && c <= '\u309F') || ('\u30A0' <= c && c <= '\u30FF') || c == '\u30FC' || c == '\u30A0';
+        public static bool IsHiraKana(string s) {
+            foreach(char c in s.ToCharArray()) {
+                if (!('\u3041' <= c && c <= '\u309F') || ('\u30A0' <= c && c <= '\u30FF') || c == '\u30FC' || c == '\u30A0') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool IsPau(string s) {
+            if (s.EndsWith("R") || s.ToLower().EndsWith("pau") || s.EndsWith("AP") || s.EndsWith("SP")) {
+                return true;
+            }
+            return false;
         }
     }
 }

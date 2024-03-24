@@ -52,7 +52,7 @@ namespace OpenUtau.Core.Voicevox {
                             TextFileEncoding = Encoding.UTF8.WebName,
                             SingerType = typename,
                             PortraitHeight = 600,
-                            Portrait = Path.GetFileNameWithoutExtension(voicevoxConfig.portraitPath)
+                            Portrait = $"{voicevoxConfig.name}_portrait.png"
                         };
                         using (var stream = File.Open(filePath, FileMode.Create)) {
                             config.Save(stream);
@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Voicevox {
             }
             return new VoicevoxConfig();
         }
-        public void LoadInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
+        public void LoadInfo(VoicevoxConfig voicevoxConfig, string location) {
             if(voicevoxConfig.style_infos == null) {
                 var queryurl = new VoicevoxURL() { method = "GET", path = "/singer_info", query = new Dictionary<string, string> { { "speaker_uuid", voicevoxConfig.speaker_uuid } } };
                 var response = VoicevoxClient.Inst.SendRequest(queryurl);
@@ -78,7 +78,7 @@ namespace OpenUtau.Core.Voicevox {
                 } else {
                     var rawSinger_Info = jObj.ToObject<RawSinger_info>();
                     if (rawSinger_Info != null) {
-                        rawSinger_Info.SetInfo(voicevoxConfig, singer);
+                        rawSinger_Info.SetInfo(voicevoxConfig, location);
                     }
                 }
             }
@@ -140,28 +140,28 @@ namespace OpenUtau.Core.Voicevox {
         public string portrait = string.Empty;
         public IList<Style_infos> style_infos = new List<Style_infos>();
 
-        public void SetInfo(VoicevoxConfig voicevoxConfig, VoicevoxSinger singer) {
+        public void SetInfo(VoicevoxConfig voicevoxConfig, string location) {
             Log.Information($"Begin setup of Voicevox SingerInfo.");
             try {
-                var readmePath = Path.Join(singer.Location, "readme.txt");
+                var readmePath = Path.Join(location, "readme.txt");
                 if (!string.IsNullOrEmpty(this.policy) && !File.Exists(readmePath)) {
                     voicevoxConfig.policy = this.policy;
                     File.WriteAllText(readmePath, this.policy);
                 }
-                voicevoxConfig.portraitPath = Path.Join(singer.Location, $"{voicevoxConfig.name}_portrait.png");
+                voicevoxConfig.portraitPath = Path.Join(location, $"{voicevoxConfig.name}_portrait.png");
                 Base64.Base64ToFile(this.portrait, voicevoxConfig.portraitPath);
                 if (this.style_infos != null) {
                     voicevoxConfig.style_infos = new List<Style_infos>();
                     for (int i = 0; i < this.style_infos.Count; i++) {
                         voicevoxConfig.style_infos.Add(new Style_infos());
                         for (int a = 0; a < style_infos[i].voice_samples.Count; a++) {
-                            voicevoxConfig.style_infos[i].voice_samples.Add(Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_{a}.wav"));
+                            voicevoxConfig.style_infos[i].voice_samples.Add(Path.Join(location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_{a}.wav"));
                             checkAndSetFiles(this.style_infos[i].voice_samples[a], voicevoxConfig.style_infos[i].voice_samples[a]);
                         }
-                        voicevoxConfig.style_infos[i].icon = Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_icon.png");
+                        voicevoxConfig.style_infos[i].icon = Path.Join(location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_icon.png");
                         checkAndSetFiles(this.style_infos[i].icon, voicevoxConfig.style_infos[i].icon);
 
-                        voicevoxConfig.style_infos[i].portrait = Path.Join(singer.Location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_portrait.png");
+                        voicevoxConfig.style_infos[i].portrait = Path.Join(location, $"{voicevoxConfig.name}_{voicevoxConfig.styles[i].name}_portrait.png");
                         checkAndSetFiles(this.portrait, voicevoxConfig.style_infos[i].portrait);
 
                         voicevoxConfig.style_infos[i].id = this.style_infos[i].id;
@@ -201,7 +201,7 @@ namespace OpenUtau.Core.Voicevox {
 
         public VoicevoxConfig Convert() {
             VoicevoxConfig voicevoxConfig = new VoicevoxConfig();
-            voicevoxConfig.name = this.name;
+            voicevoxConfig.name = this.name.Replace("/", "_");
             voicevoxConfig.version = this.version;
             voicevoxConfig.speaker_uuid = this.speaker_uuid;
             voicevoxConfig.styles = this.styles;
