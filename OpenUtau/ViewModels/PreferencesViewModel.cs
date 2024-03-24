@@ -121,8 +121,6 @@ namespace OpenUtau.App.ViewModels {
             Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
-            Languages.Remove(CultureInfo.GetCultureInfo("en-US"));
-            Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
