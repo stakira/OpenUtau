@@ -36,7 +36,7 @@ namespace Voicevox {
             if (lyricList.Length > 1) {
                 notes[0].lyric = lyricList[1];
             }
-            if (VoicevoxUtils.IsHiraKana(notes[0].lyric.ToCharArray()[0])) {
+            if (VoicevoxUtils.IsHiraKana(notes[0].lyric)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme {
@@ -44,7 +44,17 @@ namespace Voicevox {
                         }
                     },
                 };
-            }  else {
+            } else if (VoicevoxUtils.IsPau(notes[0].lyric)) {
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = "R",
+                        }
+                    },
+                };
+            }
+            else
+            {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme {

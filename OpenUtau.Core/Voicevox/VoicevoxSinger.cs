@@ -75,7 +75,7 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error("It differs from the supported version.");
             }
             if(voicevoxConfig.style_infos == null) {
-                voicevoxConfig.LoadInfo(voicevoxConfig,this);
+                voicevoxConfig.LoadInfo(voicevoxConfig,this.Location);
             }
             phonemes.Clear();
             table.Clear();
@@ -106,14 +106,23 @@ namespace OpenUtau.Core.Voicevox {
                 ToneRanges = new[] { "C1-B7" },
                 Color = ""
             })); ;
-            foreach (Styles style in voicevoxConfig.styles) {
-                subbanks.Add(new USubbank(new Subbank() {
-                    Prefix = string.Empty,
-                    Suffix = style.name,
-                    ToneRanges = new[] { "C1-B7" },
-                    Color = style.name
-                })); ;
-            }
+            voicevoxConfig.styles.ForEach(style => {
+                if (style.type.Equals("frame_decode")) {
+                    subbanks.Add(new USubbank(new Subbank() {
+                        Prefix = string.Empty,
+                        Suffix = style.name,
+                        ToneRanges = new[] { "C1-B7" },
+                        Color = style.name
+                    }));
+                } else {
+                    subbanks.Add(new USubbank(new Subbank() {
+                        Prefix = string.Empty,
+                        Suffix = style.name + "_" + style.type,
+                        ToneRanges = new[] { "C1-B7" },
+                        Color = style.name + "_" + style.type
+                    }));
+                }
+            });
 
             var dummyOtoSet = new UOtoSet(new OtoSet(), Location);
             foreach (var phone in phonemes) {

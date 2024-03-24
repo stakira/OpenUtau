@@ -65,8 +65,7 @@ namespace OpenUtau.Core.Voicevox {
                             VoicevoxNote vvNotes = new VoicevoxNote();
                             string singerID = VoicevoxUtils.defaultID;
                             if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
-                                Note[][] notes = new Note[phrase.notes.Length][];
-
+                                Note[][] notes = new Note[phrase.phones.Length][];
                                 for (int i = 0; i < phrase.phones.Length; i++) {
                                     notes[i] = new Note[1];
                                     notes[i][0] = new Note() {
@@ -107,10 +106,12 @@ namespace OpenUtau.Core.Voicevox {
 
                             int speaker = 0;
                             singer.voicevoxConfig.styles.ForEach(style => {
-                                if (style.name.Equals(phrase.singer.Subbanks[1].Color)) {
+                                if (style.name.Equals(phrase.singer.Subbanks[1].Suffix) && style.type.Equals("frame_decode")) {
                                     speaker = style.id;
                                 }
-                                if (style.name.Equals(phrase.phones.FirstOrDefault().suffix)) {
+                                if (style.name.Equals(phrase.phones[0].suffix) && style.type.Equals("frame_decode")) {
+                                    speaker = style.id;
+                                } else if((style.name + "_" + style.type).Equals(phrase.phones[0].suffix)){
                                     speaker = style.id;
                                 }
                             });
