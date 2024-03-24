@@ -833,7 +833,10 @@ namespace OpenUtau.App.ViewModels {
                     Selection.Select(notes);
                     MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
 
-                    TickOffset = left - Part.position;
+                    var note = notes.First();
+                    if (left < TickOffset || TickOffset + ViewportTicks < note.position + note.duration + Part.position) {
+                        TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+                    }
                 }
             }
         }
