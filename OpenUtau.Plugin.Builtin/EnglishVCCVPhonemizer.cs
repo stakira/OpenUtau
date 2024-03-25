@@ -190,7 +190,8 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         phonemes.Add(vc);
                     }
-
+                    if (!HasOto(basePhoneme, syllable.vowelTone))
+                        basePhoneme = $"{v}";
                 }
                 // --------------------------- STARTING CV ------------------------------- //
             } else if (syllable.IsStartingCVWithOneConsonant) {
