@@ -121,8 +121,13 @@ namespace OpenUtau.Plugin.Builtin {
                     if (checkOtoUntilHit(glottalCVtests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
+                } else if (prevLyric.Contains("っ")) {
+                    // try CV
+                    var tests = new List<string> { currentLyric, initial };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
                 } else if (presamp.PhonemeList.TryGetValue(prevAlias, out PresampPhoneme prevPhoneme)) {
-
                     if (currentLyric.Contains("・")) {
                         // Glottal stop
                         var tests = new List<string>();
