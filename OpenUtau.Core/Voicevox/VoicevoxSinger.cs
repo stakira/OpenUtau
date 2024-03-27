@@ -156,6 +156,10 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public override bool TryGetOto(string phoneme, out UOto oto) {
+            if(phoneme == null) {
+                oto = null;
+                return false;
+            }
             var parts = phoneme.Split();
             if (parts.All(p => phonemes.Contains(p))) {
                 oto = UOto.OfDummy(phoneme);
