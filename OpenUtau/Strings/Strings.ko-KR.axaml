@@ -49,7 +49,7 @@
   <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없어요</system:String>
   <system:String x:Key="dialogs.noresampler.message">리샘플러가 없어요! 'Resamplers' 폴더에 좋아하는 리샘플러의 exe나 dll을 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요!</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message"> 노트들의 위치와 길이를 그대로 유지하면서, 프로젝트 전체의 템포를 변경해요 (초 단위 기준).
-  새 BPM 입력: </system:String>  
+  새 BPM 입력: </system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
@@ -83,6 +83,7 @@
   <system:String x:Key="languages.en">영어</system:String>
   <system:String x:Key="languages.es">스페인어</system:String>
   <system:String x:Key="languages.fr">프랑스어</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">이탈리아어</system:String>
   <system:String x:Key="languages.ja">일본어</system:String>
   <system:String x:Key="languages.ko">한국어</system:String>
@@ -171,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">1:2 수직 배치</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">1:3 수직 배치</system:String>
   <system:String x:Key="menu.tools.prefs">환경 설정...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">[표현] 목록...</system:String>
   <system:String x:Key="menu.tools.singer.install">[가수] 설치</system:String>
   <system:String x:Key="menu.tools.singer.installadv">[가수] 설치(고급)</system:String>
   <system:String x:Key="menu.tools.singers">[가수] 목록...</system:String>
@@ -369,7 +369,6 @@
   <system:String x:Key="prefs.rendering.onnxrunner">머신러닝 실행 장치</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
   <system:String x:Key="prefs.rendering.prerender">미리보기용 렌더</system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     경고: moresampler 지원은 아직 불완전합니다. 느릴 수 있고, CPU 점유율이 높을 수 있습니다. 사용하시려면 다음을 따라 주세요.
@@ -380,6 +379,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     참고: 외부 리샘플러를 사용하려면, OpenUtau 설치 경로 속 Resamplers 폴더에 리샘플러의 DLL 또는 EXE 파일을 넣어 주세요. 그리고 환경 설정에서 리샘플러를 선택합시다.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     경고: 렌더링 스레드가 너무 많아요. OpenUtau가 느려질 수 있습니다.
   </system:String>
