@@ -63,6 +63,44 @@ namespace OpenUtau.Core.Ustx {
             return (int)descriptor.defaultValue;
         }
 
+        /// <summary>
+        /// Samples the curve at xstart, xstart + interval, xstart + 2 * interval, ..., xstart + (count - 1) * interval.
+        /// This will improve performance if the sample interval isn't 
+        /// much greater than the intervals between xs in the curve, 
+        /// by calling BinarySearch less often.
+        /// </summary>
+        /// <param name="xstart">The x value of the first sample.</param>
+        /// <param name="count">The number of samples needed.</param>
+        /// <param name="interval">The interval between samples.</param>
+        public IEnumerable<int> Samples(int xstart, int count, int interval) {
+            int[] samples = new int[count];
+            if(count == 0) {
+                yield break;
+            }
+            int idx = xs.BinarySearch(xstart);
+            if (idx < 0) {
+                idx = ~idx;
+            }
+            int x = xstart;
+            for (int i = 0; i < count; i++) {
+                while(idx < xs.Count && xs[idx] < x) {
+                    idx++;
+                }
+                if(idx <xs.Count && xs[idx] == x) {
+                    yield return ys[idx];
+                    idx++;
+                    x += interval;
+                    continue;
+                }
+                if (idx > 0 && idx < xs.Count) {
+                    yield return (int)Math.Round(MusicMath.Linear(xs[idx - 1], xs[idx], ys[idx - 1], ys[idx], x));
+                } else {
+                    yield return (int)descriptor.defaultValue;
+                }
+                x += interval;
+            }
+        }
+
         private void Insert(int x, int y) {
             int idx = xs.BinarySearch(x);
             if (idx >= 0) {
@@ -94,6 +132,37 @@ namespace OpenUtau.Core.Ustx {
                 Insert(x, y);
                 Insert(x + interval, rightY);
             }
+        }
+
+        /// <summary>
+        /// Write multiple points in a time range into the curve, used by batch operations.
+        /// </summary>
+        public void SetRange(int[] x, int[] y) {
+            if (x.Length != y.Length) {
+                throw new ArgumentException("x and y must have the same length.");
+            }
+            x = x.Select(v => (int)Math.Round((float)v / interval) * interval).ToArray();
+            int[] toKeep = Enumerable.Range(0, x.Length - 1)
+                .Where(i => x[i + 1] > x[i])
+                .Append(x.Length - 1)
+                .ToArray();
+            x = toKeep.Select(i => x[i]).ToArray();
+            y = toKeep.Select(i => y[i]).ToArray();
+            if (x.Length == 0) {
+                return;
+            }
+
+            int leftY = Sample(x[0] - interval);
+            int rightY = Sample(x[x.Length - 1] + interval);
+            DeleteBetweenExclusive(x[0] - 1, x[x.Length - 1] + 1);
+            Insert(x[0] - interval, leftY);
+            var idx = xs.BinarySearch(x[0]);
+            if (idx < 0) {
+                idx = ~idx;
+            }
+            xs.InsertRange(idx, x);
+            ys.InsertRange(idx, y);
+            Insert(x[^1] + interval, rightY);
         }
 
         private void DeleteBetweenExclusive(int x1, int x2) {
@@ -138,8 +207,8 @@ namespace OpenUtau.Core.Ustx {
             double maxHeight = 0;
             int maxHeightIdx = 0;
             for (int index = first; index < last; index++) {
-                double height = PerpendicularDistance(
-                    xs[first], ys[first], xs[last], ys[last], xs[index], ys[index]);
+                double height = Math.Abs(DeltaY(
+                    xs[index], ys[index], xs[first], ys[first], xs[last], ys[last]));
                 if (height > maxHeight) {
                     maxHeight = height;
                     maxHeightIdx = index;
@@ -152,10 +221,8 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        private double PerpendicularDistance(int x, int y, int x1, int y1, int x2, int y2) {
-            double area = 0.5 * Math.Abs(x1 * (y2 - y) + x2 * (y - y1) + x * (y1 - y2));
-            double bottom = Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
-            return area / bottom * 2;
+        private double DeltaY(int x, int y, int x1, int y1, int x2, int y2){
+            return y - MusicMath.Linear(x1, x2, y1, y2, x);
         }
     }
 }
