@@ -83,6 +83,7 @@
   <system:String x:Key="languages.en">英语</system:String>
   <system:String x:Key="languages.es">西班牙语</system:String>
   <system:String x:Key="languages.fr">法语</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">意大利语</system:String>
   <system:String x:Key="languages.ja">日语</system:String>
   <system:String x:Key="languages.ko">韩语</system:String>
@@ -171,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">垂直分布 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">垂直分布 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">使用偏好...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
@@ -365,7 +365,6 @@
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
@@ -376,6 +375,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     警告：渲染线程过多可能会导致OpenUtau运行缓慢
   </system:String>
