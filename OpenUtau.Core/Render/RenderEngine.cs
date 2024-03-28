@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
@@ -43,14 +44,18 @@ namespace OpenUtau.Core.Render {
     class RenderEngine {
         readonly UProject project;
         readonly int startTick;
+        readonly int endTick;
+        readonly int trackNo;
 
-        public RenderEngine(UProject project, int startTick = 0) {
+        public RenderEngine(UProject project, int startTick = 0, int endTick = -1, int trackNo = -1) {
             this.project = project;
             this.startTick = startTick;
+            this.endTick = endTick;
+            this.trackNo = trackNo;
         }
 
         // for playback or export
-        public Tuple<WaveMix, List<Fader>> RenderMixdown(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
+        public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -58,11 +63,15 @@ namespace OpenUtau.Core.Render {
                 oldCancellation.Dispose();
             }
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
+            double endMs = endTick == -1 ? double.PositiveInfinity : project.timeAxis.TickPosToMsPos(endTick);
             var faders = new List<Fader>();
             var requests = PrepareRequests()
-                .Where(request => request.sources.Length > 0 && request.sources.Max(s => s.EndMs) > startMs)
+                .Where(request => request.sources.Length > 0 && request.sources.Max(s => s.EndMs) > startMs && (double.IsPositiveInfinity(endMs) || request.sources.Min(s => s.offsetMs) < endMs))
                 .ToArray();
             for (int i = 0; i < project.tracks.Count; ++i) {
+                if (trackNo != -1 && trackNo != i) {
+                    continue;
+                }
                 var track = project.tracks[i];
                 var trackRequests = requests
                     .Where(req => req.trackNo == i)
@@ -108,9 +117,9 @@ namespace OpenUtau.Core.Render {
         }
 
         // for playback
-        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+        public Tuple<MasterAdapter, List<Fader>> RenderProject(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
-            var renderMixdownResult = RenderMixdown(startTick, uiScheduler, ref cancellation, wait: false);
+            var renderMixdownResult = RenderMixdown(uiScheduler, ref cancellation, wait: false);
             var master = new MasterAdapter(renderMixdownResult.Item1);
             master.SetPosition((int)(startMs * 44100 / 1000) * 2);
             return Tuple.Create(master, renderMixdownResult.Item2);
@@ -172,13 +181,19 @@ namespace OpenUtau.Core.Render {
             SingerManager.Inst.ReleaseSingersNotInUse(project);
             lock (project) {
                 requests = project.parts
-                    .Where(part => part is UVoicePart)
+                    .Where(part => part is UVoicePart && (trackNo == -1 || part.trackNo == trackNo))
+                    .Where(part => !Preferences.Default.SkipRenderingMutedTracks || !project.tracks[part.trackNo].Muted)
                     .Select(part => part as UVoicePart)
                     .Select(part => part.GetRenderRequest())
                     .Where(request => request != null)
                     .ToArray();
             }
             foreach (var request in requests) {
+                if (endTick != -1) {
+                    request.phrases = request.phrases
+                        .Where(phrase => phrase.end > startTick && (endTick == -1 || phrase.position < endTick))
+                        .ToArray();
+                }
                 request.sources = new WaveSource[request.phrases.Length];
                 for (var i = 0; i < request.phrases.Length; i++) {
                     var phrase = request.phrases[i];

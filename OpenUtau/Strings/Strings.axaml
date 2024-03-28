@@ -50,13 +50,13 @@
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
   New BPM:</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>
 
@@ -83,6 +83,7 @@
   <system:String x:Key="languages.en">English</system:String>
   <system:String x:Key="languages.es">Spanish</system:String>
   <system:String x:Key="languages.fr">French</system:String>
+  <system:String x:Key="languages.invariant">Not translating</system:String>
   <system:String x:Key="languages.it">Italian</system:String>
   <system:String x:Key="languages.ja">Japanese</system:String>
   <system:String x:Key="languages.ko">Korean</system:String>
@@ -382,6 +383,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
+  <system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>

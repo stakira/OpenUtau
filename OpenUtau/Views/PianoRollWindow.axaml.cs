@@ -1002,6 +1002,15 @@ namespace OpenUtau.App.Views {
                         playVm.PlayOrPause();
                         return true;
                     }
+                    if (isAlt) {
+                        if (!notesVm.Selection.IsEmpty) {
+                            playVm.PlayOrPause(
+                                tick: notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position,
+                                endTick: notesVm.Part.position + notesVm.Selection.LastOrDefault()!.RightBound
+                            );
+                        }
+                        return true;
+                    }
                     break;
                 case Key.Escape:
                     if (isNone) {

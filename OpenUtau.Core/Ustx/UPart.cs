@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using YamlDotNet.Serialization;
-using Serilog;
-using OpenUtau.Core.Render;
-using OpenUtau.Api;
-using OpenUtau.Core.SignalChain;
-using NWaves.Signals;
 using NWaves.Operations;
-using System.Diagnostics;
+using NWaves.Signals;
+using OpenUtau.Api;
+using OpenUtau.Core.Render;
+using OpenUtau.Core.SignalChain;
+using Serilog;
+using SharpCompress;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -36,6 +37,8 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class UVoicePart : UPart {
+        public int duration;
+
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
         [YamlMember(Order = 101)]
@@ -55,14 +58,12 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public ISignalSource Mix => mix;
 
         public override string DisplayName => name;
+        public override int Duration { get => duration; set => duration = value; }
 
         public override int GetMinDurTick(UProject project) {
             int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
             project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
-            if (remainingTicks > 0) {
-                beat++;
-            }
-            return project.timeAxis.BarBeatToTickPos(bar, beat) - position;
+            return project.timeAxis.BarBeatToTickPos(bar, beat + 1) - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -141,15 +142,44 @@ namespace OpenUtau.Core.Ustx {
                     var resp = phonemizerResponse;
                     if (resp.timestamp == notesTimestamp) {
                         phonemes.Clear();
+                        notes.ForEach(note => note.phonemizerExpressions.Clear());
+
                         for (int i = 0; i < resp.phonemes.Length; ++i) {
+                            var indexes = new List<int>();
+                            var note = notes.ElementAtOrDefault(resp.noteIndexes[i]);
                             for (int j = 0; j < resp.phonemes[i].Length; ++j) {
-                                phonemes.Add(new UPhoneme() {
+                                var phoneme = new UPhoneme() {
                                     rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = resp.phonemes[i][j].index ?? j,
-                                    Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
-                                });
+                                    Parent = note
+                                };
+                                // Check for duplicate indexes
+                                if (phonemes.Any(p => p.Parent == phoneme.Parent && p.index == phoneme.index)) {
+                                    try {
+                                        throw new ArgumentException("Duplicate phoneme index.");
+                                    } catch (Exception e) {
+                                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                                        continue;
+                                    }
+                                }
+                                phonemes.Add(phoneme);
+                                indexes.Add(phoneme.index);
+                                if (resp.phonemes[i][j].expressions != null && resp.phonemes[i][j].expressions.Any()) {
+                                    resp.phonemes[i][j].expressions.ForEach(exp => {
+                                        if (track.TryGetExpDescriptor(project, exp.abbr, out var descriptor)) {
+                                            if (descriptor.type != UExpressionType.Curve && descriptor.min <= exp.value && exp.value <= descriptor.max) {
+                                                note.phonemizerExpressions.Add(new UExpression(descriptor) {
+                                                    index = phoneme.index,
+                                                    value = exp.value
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
                             }
+                            indexes.Sort();
+                            note.phonemeIndexes = indexes.ToArray();
                         }
                         phonemesTimestamp = resp.timestamp;
                     }
@@ -185,7 +215,7 @@ namespace OpenUtau.Core.Ustx {
                     var o = note.phonemeOverrides.FirstOrDefault(o => o.index == phoneme.index);
                     if (o != null) {
                         phoneme.position += o.offset ?? 0;
-                        phoneme.phoneme = o.phoneme ?? phoneme.rawPhoneme;
+                        phoneme.phoneme = !string.IsNullOrWhiteSpace(o.phoneme) ? o.phoneme : phoneme.rawPhoneme;
                         phoneme.preutterDelta = o.preutterDelta;
                         phoneme.overlapDelta = o.overlapDelta;
                     }

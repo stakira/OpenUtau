@@ -144,6 +144,10 @@
                 <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerDepth}" Minimum="0" Maximum="1000"
                         TickPlacement="BottomRight" TickFrequency="20" IsSnapToTickEnabled="true"/>
             </Grid>
+            <Grid>
+              <TextBlock Text="{DynamicResource prefs.rendering.skipmuted}" HorizontalAlignment="Left"/>
+              <ToggleSwitch IsChecked="{Binding SkipRenderingMutedTracks}"/>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">

@@ -226,7 +226,7 @@
                 </MenuItem>
               </MenuItem>
             </MenuItem>
-            
+          
             <MenuItem Header="{DynamicResource menu.view}">
               <MenuItem Header="{DynamicResource prefs.appearance.showportrait}" Click="OnMenuShowPortrait">
                 <MenuItem.Icon>

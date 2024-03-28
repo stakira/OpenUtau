@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -99,6 +99,42 @@ namespace OpenUtau.Plugin.Builtin {
 
         private bool isVelarNasalFallback = false;
 
+        private readonly Dictionary<string, string> vvExceptions =
+            new Dictionary<string, string>() {
+                {"aI","j"},
+                {"eI","j"},
+                {"OI","j"},
+                {"aU","w"},
+                {"oU","w"},
+                {"VI","j"},
+                {"VU","w"},
+                {"@U","w"},
+                {"ai","j"},
+                {"Oi","j"},
+                {"au","w"},
+                {"ou","w"},
+                {"Ou","w"},
+                {"@u","w"},
+                {"3", "r"}
+            };
+        private readonly Dictionary<string, string> Delta5vvExceptions =
+            new Dictionary<string, string>() {
+                {"aI","I"},
+                {"eI","I"},
+                {"OI","I"},
+                {"aU","U"},
+                {"oU","U"},
+                {"VI","I"},
+                {"VU","U"},
+                {"@U","U"},
+                {"ai","i"},
+                {"Oi","i"},
+                {"au","u"},
+                {"ou","u"},
+                {"Ou","u"},
+                {"@u","u"},
+                {"3", "r"}
+            };
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
@@ -209,15 +245,35 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = v;
                 }
             } else if (syllable.IsVV) {
-                var vv = $"{prevV} {v}";
-                if (!CanMakeAliasExtension(syllable)) {
-                    if (HasOto(vv, syllable.vowelTone) || HasOto(ValidateAlias(vv), syllable.vowelTone)) {
-                        basePhoneme = vv;
-                    } else {
+                if (!CanMakeAliasExtension(syllable) || !AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone)) {
+                    basePhoneme = $"{prevV} {v}";
+                    if (!HasOto(basePhoneme, syllable.vowelTone) && vvExceptions.ContainsKey(prevV) && prevV != v || Delta5vvExceptions.ContainsKey(prevV) && prevV != v) {
+                        // VV splits to [V C][CV] or [V][V]
+                        var delta5vc = $"{Delta5vvExceptions[prevV]}";
+                        bool CV = false;
+                        if (!HasOto(delta5vc, syllable.vowelTone)) {
+                            delta5vc = $"{prevV} {vvExceptions[prevV]}";
+                            CV = true;
+                        }
+                        phonemes.Add(delta5vc);
+                        // if delta5 vc is not available, turn v to cv
+                        var cv = $"{vvExceptions[prevV]}{v}";
                         basePhoneme = v;
+                        if (CV && HasOto(cv, syllable.vowelTone)) {
+                            basePhoneme = cv;
+                        }
+                    } else {
+                        {
+                            // VV to V
+                            if (HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
+                                basePhoneme = $"{prevV} {v}";
+                            } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
+                                basePhoneme = v;
+                            }
+                        }
                     }
                 } else {
-                    // the previous alias will be extended
+                    // Previous alias will extend
                     basePhoneme = null;
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
