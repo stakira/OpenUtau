@@ -208,7 +208,25 @@
               <MenuItem Header="{DynamicResource menu.edit.selectall}" InputGesture="Ctrl+A" Command="{Binding SelectAll}"/>
               <MenuItem Header="-" Height="1"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
+              <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes}">
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.pitchpoints}" Click="OnMenuLockPitchPoints">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockPitchPoints}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.vibrato}" Click="OnMenuLockVibrato">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockVibrato}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.expressions}" Click="OnMenuLockExpressions">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockExpressions}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
             </MenuItem>
+          
             <MenuItem Header="{DynamicResource menu.view}">
               <MenuItem Header="{DynamicResource prefs.appearance.showportrait}" Click="OnMenuShowPortrait">
                 <MenuItem.Icon>
