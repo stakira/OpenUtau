@@ -1276,7 +1276,6 @@ namespace OpenUtau.App.Views {
                     }
                 }
             }
-
         }
 
         public async void WindowClosing(object? sender, WindowClosingEventArgs e) {

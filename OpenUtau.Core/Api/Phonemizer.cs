@@ -97,10 +97,21 @@ namespace OpenUtau.Api {
             public string voiceColor;
         }
 
+        public struct PhonemeExpression {
+            public string abbr;
+            public float value;
+        }
+
         /// <summary>
         /// The output struct that represents a phoneme.
         /// </summary>
         public struct Phoneme {
+            /// <summary>
+            /// Number to manage phonemes in note.
+            /// Optional. Whether to specify an index or not should be consistent within Phonemizer (All phonemes should be indexed, or all should be unindexed).
+            /// </summary>
+            public int? index;
+
             /// <summary>
             /// Phoneme name. Should match one of oto alias.
             /// Note that you don't have to return tone-mapped phonemes. OpenUtau will do it afterwards.
@@ -111,16 +122,14 @@ namespace OpenUtau.Api {
 
             /// <summary>
             /// Position of phoneme in note. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds.
             /// </summary>
             public int position;
 
             /// <summary>
-            /// Suggested attributes. May or may not be used eventually.
+            /// Suggested attributes. It may later be overwritten with a user-specified value.
             /// </summary>
-            public PhonemeAttributes attributes;
-
-            public int? index;
+            public List<PhonemeExpression> expressions;
 
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
@@ -161,7 +170,7 @@ namespace OpenUtau.Api {
         /// </summary>
         public virtual bool LegacyMapping => false;
 
-        public virtual void SetUp(Note[][] notes) { }
+        public virtual void SetUp(Note[][] notes, UProject project, UTrack track) { }
 
         /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
