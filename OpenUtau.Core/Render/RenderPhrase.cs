@@ -67,6 +67,9 @@ namespace OpenUtau.Core.Render {
         public readonly bool direct;
         public readonly Vector2[] envelope;
 
+        // voicevox args
+        public readonly int toneShift;
+
         public readonly UOto oto;
         public readonly ulong hash;
 
@@ -118,6 +121,7 @@ namespace OpenUtau.Core.Render {
             leadingMs = phoneme.preutter;
             envelope = phoneme.envelope.data.ToArray();
             direct = phoneme.GetExpression(project, track, Format.Ustx.DIR).Item1 == 1;
+            toneShift = (int)phoneme.GetExpression(project, track, Format.Ustx.SHFT).Item1;
 
             oto = phoneme.oto;
             hash = Hash();

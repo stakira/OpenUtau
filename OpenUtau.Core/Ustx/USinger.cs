@@ -185,19 +185,21 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
+    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5, Voicevox=0x6 }
 
     public static class SingerTypeUtils{
         public static Dictionary<USingerType?, string> SingerTypeNames = new Dictionary<USingerType?, string>(){
             {USingerType.Classic, "utau"},
             {USingerType.Enunu, "enunu"},
             {USingerType.DiffSinger, "diffsinger"},
+            {USingerType.Voicevox, "voicevox"},
         };
 
         public static Dictionary<string, USingerType> SingerTypeFromName = new Dictionary<string, USingerType>(){
             {"utau", USingerType.Classic},
             {"enunu", USingerType.Enunu},
             {"diffsinger", USingerType.DiffSinger},
+            {"voicevox", USingerType.Voicevox},
         };
 
     }
