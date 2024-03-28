@@ -134,12 +134,62 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             var vocoder = singer.getVocoder();
-            //Vocoder and singer should have the same hop sizes and sample rates.
-            if(vocoder.hop_size != singer.dsConfig.hop_size){
-                throw new Exception($"Vocoder's hop size is {vocoder.hop_size}, but acoustic's hop size is {singer.dsConfig.hop_size}.");
+            //mel specification validity checks
+            //mel base must be 10 or e
+            if (vocoder.mel_base != "10" && vocoder.mel_base != "e") {
+                throw new Exception(
+                    $"Mel base must be \"10\" or \"e\", but got \"{vocoder.mel_base}\" from vocoder");
             }
-            if(vocoder.sample_rate != singer.dsConfig.sample_rate){
-                throw new Exception($"Vocoder's sample rate is {vocoder.sample_rate}, but acoustic's sample rate is {singer.dsConfig.sample_rate}.");
+            if (singer.dsConfig.mel_base != "10" && singer.dsConfig.mel_base != "e") {
+                throw new Exception(
+                    $"Mel base must be \"10\" or \"e\", but got \"{singer.dsConfig.mel_base}\" from acoustic model");
+            }
+            //mel scale must be slaney or htk
+            if (vocoder.mel_scale != "slaney" && vocoder.mel_scale != "htk") {
+                throw new Exception(
+                    $"Mel scale must be \"slaney\" or \"htk\", but got \"{vocoder.mel_scale}\" from vocoder");
+            }
+            if (singer.dsConfig.mel_scale != "slaney" && singer.dsConfig.mel_scale != "htk") {
+                throw new Exception(
+                    $"Mel scale must be \"slaney\" or \"htk\", but got \"{vocoder.mel_scale}\" from acoustic model");
+            }
+            //mel specification matching checks
+            if(vocoder.sample_rate != singer.dsConfig.sample_rate) {
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching sample rate ({vocoder.sample_rate} != {singer.dsConfig.sample_rate})");
+            }
+            if(vocoder.hop_size != singer.dsConfig.hop_size){
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching hop size ({vocoder.hop_size} != {singer.dsConfig.hop_size})");
+            }
+            if(vocoder.win_size != singer.dsConfig.win_size){
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching win size ({vocoder.win_size} != {singer.dsConfig.win_size})");
+            }
+            if(vocoder.fft_size != singer.dsConfig.fft_size){
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching FFT size ({vocoder.fft_size} != {singer.dsConfig.fft_size})");
+            }
+            if (vocoder.num_mel_bins != singer.dsConfig.num_mel_bins) {
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching mel bins ({vocoder.num_mel_bins} != {singer.dsConfig.num_mel_bins})");
+            }
+            if (Math.Abs(vocoder.mel_fmin - singer.dsConfig.mel_fmin) > 1e-5) {
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching fmin ({vocoder.mel_fmin} != {singer.dsConfig.mel_fmin})");
+            }
+            if (Math.Abs(vocoder.mel_fmax - singer.dsConfig.mel_fmax) > 1e-5) {
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching fmax ({vocoder.mel_fmax} != {singer.dsConfig.mel_fmax})");
+            }
+            // mismatching mel base can be transformed
+            // if (vocoder.mel_base != singer.dsConfig.mel_base) {
+            //     throw new Exception(
+            //         $"Vocoder and acoustic model has mismatching mel base ({vocoder.mel_base} != {singer.dsConfig.mel_base})");
+            // }
+            if (vocoder.mel_scale != singer.dsConfig.mel_scale) {
+                throw new Exception(
+                    $"Vocoder and acoustic model has mismatching mel scale ({vocoder.mel_scale} != {singer.dsConfig.mel_scale})");
             }
 
             var acousticModel = singer.getAcousticSession();
@@ -300,6 +350,26 @@ namespace OpenUtau.Core.DiffSinger {
                 Onnx.VerifyInputNames(acousticModel, acousticInputs);
                 var acousticOutputs = acousticModel.Run(acousticInputs);
                 mel = acousticOutputs.First().AsTensor<float>().Clone();
+            }
+            //mel transforms for different mel base
+            if (vocoder.mel_base != singer.dsConfig.mel_base) {
+                float k;
+                if (vocoder.mel_base == "e" && singer.dsConfig.mel_base == "10") {
+                    k = 2.30259f;
+                }
+                else if (vocoder.mel_base == "10" && singer.dsConfig.mel_base == "e") {
+                    k = 0.434294f;
+                } else {
+                    // this should never happen
+                    throw new Exception("This should never happen");
+                }
+                for (int b = 0; b < mel.Dimensions[0]; ++b) {
+                    for (int t = 0; t < mel.Dimensions[1]; ++t) {
+                        for (int c = 0; c < mel.Dimensions[2]; ++c) {
+                            mel[b, t, c] *= k;
+                        }
+                    }
+                }
             }
             //vocoder
             //waveform = session.run(['waveform'], {'mel': mel, 'f0': f0})[0]
