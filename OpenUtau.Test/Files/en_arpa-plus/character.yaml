@@ -9,12 +9,12 @@ subbanks:
   - F6-B7
 - color: ''
   prefix: ''
-  suffix: _1
+  suffix: _A#3
   tone_ranges:
   - D#5-E6
 - color: ''
   prefix: ''
-  suffix: _3
+  suffix: _C3
   tone_ranges:
   - B2-C#4
 - color: Whisper

@@ -46,8 +46,9 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
+
         // For banks with missing vowels
-        private readonly Dictionary<string, string> missingVphonemes = "ax=ah,aa=ah,ae=ah,iy=ih,uh=uw,ix=ih,ux=uh,oh=ao,eu=uh,oe=ax,uy=uw,yw=uw,yx=iy,wx=uw,ea=eh,ia=iy,oa=ao,ua=uw".Split(',')
+        private readonly Dictionary<string, string> missingVphonemes = "ax=ah,aa=ah,ae=ah,iy=ih,uh=uw,ix=ih,ux=uh,oh=ao,eu=uh,oe=ax,uy=uw,yw=uw,yx=iy,wx=uw,ea=eh,ia=iy,oa=ao,ua=uw,R=-".Split(',')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -97,9 +98,13 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] vc_cAcception = { "r", "l" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
+        private string[] tails = "-,R,RB".Split(',');
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
+            if (tails.Contains(note.lyric)) {
+                return new string[] { note.lyric };
+            }
             if (original == null) {
                 return null;
             }
@@ -198,9 +203,10 @@ namespace OpenUtau.Plugin.Builtin {
             g2ps.Add(new ArpabetPlusG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
-        
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            string prevV = syllable.prevV;
+            syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
+            var prevV = syllable.prevV == "" ? "" : $"{syllable.prevV}";
+            //string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
             string basePhoneme;
@@ -354,7 +360,7 @@ namespace OpenUtau.Plugin.Builtin {
                 for (var i = firstC; i < cc.Length - 1; i++) {
                     var ccv = $"{string.Join("", cc)} {v}";
                     var ccv1 = string.Join("", cc.Skip(i)) + " " + v;
-                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[0])) {
+                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[i] + cc[i + 1])) {
                         if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
                             basePhoneme = ccv;
                             lastC = i;
@@ -375,7 +381,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var vc = $"{prevV} {cc[0]}";
                     // CCV will trigger VCC
                     bool CCV = false;
-                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[0])) {
+                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[1])) {
                         if (HasOto($"{string.Join("", cc)} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{string.Join("", cc)} {v}"), syllable.vowelTone)) {
                             CCV = true;
                         }
@@ -516,6 +522,9 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+            if (tails.Contains(ending.prevV)) {
+                return new List<string>();
+            }
             if (ending.IsEndingV) {
                 var vR = $"{v} -";
                 var vR1 = $"{v} R";
