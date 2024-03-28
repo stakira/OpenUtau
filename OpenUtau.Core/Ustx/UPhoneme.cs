@@ -250,13 +250,13 @@ namespace OpenUtau.Core.Ustx {
 
     public class UPhonemeOverride {
         public int index;
-        public string phoneme;
+        public string? phoneme;
         public int? offset;
         public float? preutterDelta;
         public float? overlapDelta;
 
         [YamlIgnore]
-        public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue
+        public bool IsEmpty => string.IsNullOrWhiteSpace(phoneme) && !offset.HasValue
             && !preutterDelta.HasValue && !overlapDelta.HasValue;
 
         public UPhonemeOverride Clone() {

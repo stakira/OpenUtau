@@ -502,11 +502,11 @@ namespace OpenUtau.Core {
 
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? string.Empty : newAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? string.Empty : oldAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
         }
         public override string ToString() => "Change phoneme alias";
     }

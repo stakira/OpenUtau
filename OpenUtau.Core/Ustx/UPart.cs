@@ -215,7 +215,7 @@ namespace OpenUtau.Core.Ustx {
                     var o = note.phonemeOverrides.FirstOrDefault(o => o.index == phoneme.index);
                     if (o != null) {
                         phoneme.position += o.offset ?? 0;
-                        phoneme.phoneme = o.phoneme ?? phoneme.rawPhoneme;
+                        phoneme.phoneme = !string.IsNullOrWhiteSpace(o.phoneme) ? o.phoneme : phoneme.rawPhoneme;
                         phoneme.preutterDelta = o.preutterDelta;
                         phoneme.overlapDelta = o.overlapDelta;
                     }
