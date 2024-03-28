@@ -121,14 +121,13 @@ namespace OpenUtau.App.ViewModels {
             Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
-            Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             SortingOrders = Languages.ToList();
-            SortingOrders.Insert(1, CultureInfo.InvariantCulture);
-            SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
-                ? Language
+            SortingOrders.Insert(0, CultureInfo.InvariantCulture);
+            SortingOrder = Preferences.Default.SortingOrder == null ? Language
+                : Preferences.Default.SortingOrder == string.Empty ? CultureInfo.InvariantCulture
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender;
             DefaultRendererOptions = Renderers.getRendererOptions();
@@ -220,7 +219,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(vm => vm.SortingOrder)
                 .Subscribe(so => {
-                    Preferences.Default.SortingOrder = so?.Name ?? string.Empty;
+                    Preferences.Default.SortingOrder = so?.Name ?? null;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Theme)
