@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>com.github.stakira.OpenUtau</id>
+
+  <name>OpenUtau</name>
+  <summary>OpenUtau is an open source editing environment for the UTAU community with a modern user experience.</summary>
+
+  <metadata_license>CC BY-SA</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      Scope
+      OpenUtau includes:
+
+        A modern user experience.
+        Selected compatibility with UTAU technologies.
+        OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU features.
+        Extensible realtime phonetics (VCV, CVVC, Arpasing) intellegence.
+        English, Japanese, Chinese, Korean, Russian and more.
+        Internationalization, including UI translation and file system encoding support.
+        Smooth preview/rendering experience.
+        A easy to use plugin system.
+        An efficient resampling engine interface.
+        Compatible with most UTAU resamplers.
+
+      OpenUtau does not include:
+
+        Full feature digital music workstation.
+        OpenUtau does not strike for Vocaloid compatibility, other than limited features.
+    </p>
+  </description>
+
+  <categories>
+    <category>Utility</category>
+    <category>Utau</category>
+  </categories>
+
+  <url type="homepage">https://github.com/stakira/OpenUtau</url>
+  <url type="bugtracker">https://github.com/stakira/OpenUtau/issues</url>
+  <url type="help">https://github.com/stakira/OpenUtau/issues</url>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="Latest">
+      <description>
+        <p>
+          OpenUtau is rebuilt often (~daily). Thus, changelogs are not provided, aside from the git commits.
+        </p>
+      </description>
+    </release>
+  </releases>
+
+</component>
