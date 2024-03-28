@@ -351,6 +351,7 @@ Segure Ctrl para selecionar</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Aviso: ainda não há suporte completo para moresampler. Ele poderá estar devegar e causar alto uso da CPU. Se deseja usar, por favor:

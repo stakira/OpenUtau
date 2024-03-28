@@ -355,6 +355,7 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
   <system:String x:Key="prefs.rendering.onnxrunner">Machinelles Lernen Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phasenkompensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Prä-render</system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Warnung: moresampler wird nicht vollständig unterstützt. Es kann das Programm verlangsamen und eine hohe CPU Auslastung bewirken. Wenn Sie dennoch darauf bestehen, bitte folgen Sie den nachfolgenden Schritten:
