@@ -70,7 +70,7 @@ namespace OpenUtau.Core.Util {
                 File.WriteAllBytes(filePath, bytes);
 
             } catch (Exception ex) {
-                Log.Error(@"{ex}");
+                Log.Error($"{ex}");
             }
         }
     }

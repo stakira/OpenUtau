@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -24,11 +25,12 @@ namespace OpenUtau.Core.Voicevox {
                         if (!str.StartsWith("{") || !str.EndsWith("}")) {
                             str = "{ \"json\":" + str + "}";
                         }
+                        Log.Information($"VoicevoxResponse StatusCode :{response.Result.StatusCode}");
                         return new Tuple<string, byte[]>(str, response.Result.Content.ReadAsByteArrayAsync().Result);
                     }
                 }
             } catch (Exception ex) {
-                Log.Error(@"{ex}");
+                Log.Error($"{ex}");
             }
             return new Tuple<string, byte[]>("", new byte[0]);
         }
