@@ -157,10 +157,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         public void SetImage(string filepath) {
@@ -169,10 +169,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.Image = filepath);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         public void SetPortrait(string filepath) {
@@ -181,10 +181,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         private void SetSingerType(string singerType) {
@@ -193,10 +193,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.SingerType = singerType);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         private void SetDefaultPhonemizer(Api.PhonemizerFactory factory) {
@@ -205,10 +205,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         public void SetUseFilenameAsAlias() {
@@ -217,10 +217,10 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
+                Refresh();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
-            Refresh();
         }
 
         private static void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
