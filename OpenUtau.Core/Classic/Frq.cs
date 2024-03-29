@@ -45,7 +45,7 @@ namespace OpenUtau.Classic {
                 }
                 return true;
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to load frq file", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.load", ": frq file", e));
                 return false;
             }
         }

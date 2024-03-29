@@ -158,7 +158,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set encoding", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -170,7 +170,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.Image = filepath);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set image", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -182,7 +182,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -194,7 +194,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.SingerType = singerType);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set singer type", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -206,7 +206,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -218,7 +218,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set use filename", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
             }
             Refresh();
         }
@@ -338,7 +338,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 Subbanks.AddRange(Singer.Subbanks);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to load subbanks", e));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.load", ": subbanks", e));
             }
         }
 

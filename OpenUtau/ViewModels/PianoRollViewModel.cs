@@ -168,7 +168,7 @@ namespace OpenUtau.App.ViewModels {
                     try{
                         edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
                     } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.runeditingmacro", e));
                     }
                 }
             });
