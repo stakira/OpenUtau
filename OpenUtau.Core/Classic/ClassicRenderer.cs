@@ -25,6 +25,7 @@ namespace OpenUtau.Classic {
             Ustx.ATK,
             Ustx.DEC,
             Ustx.MOD,
+            Ustx.MODP,
             Ustx.ALT,
         };
 

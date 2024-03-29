@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">El projecto tiene cambios sin guardar. ¿Quieres guardar el archivo?</system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Por favor, guarda el archivo antes de exportarlo.</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Sí</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Resampler no encontrado</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un Resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Medida del compás</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Ajustes de la pista</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Ubicación</system:String>
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">inglés</system:String>
   <system:String x:Key="languages.es">español</system:String>
   <system:String x:Key="languages.fr">francés</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">italiano</system:String>
   <system:String x:Key="languages.ja">japonés</system:String>
   <system:String x:Key="languages.ko">coreano</system:String>
@@ -152,6 +157,9 @@
   <system:String x:Key="menu.help.logslocation">Abrir la ubicación de los registros</system:String>
   <system:String x:Key="menu.help.reportissue">Reportar problema</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">_Herramientas</system:String>
   <system:String x:Key="menu.tools.clearcache">Limpiar caché</system:String>
   <system:String x:Key="menu.tools.debugwindow">Ventana de depuración</system:String>
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">1:2 Vertical</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">1:3 Vertical</system:String>
   <system:String x:Key="menu.tools.prefs">Ajustes</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Expresiones</system:String>
   <system:String x:Key="menu.tools.singer.install">Instalar voz</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Instalar voz (Avanzado)</system:String>
   <system:String x:Key="menu.tools.singers">Voces</system:String>
@@ -240,6 +247,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji a Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Ajustes de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir "R"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -295,6 +303,10 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <system:String x:Key="prefs.advanced.lyricshelper">Ayudante de letra</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">El ayudante añade en brackets</system:String>
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -327,8 +339,10 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.paths">Rutas</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Ruta de voces adicional</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Instalar a la ruta adicional</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Restablecer</system:String>
   <system:String x:Key="prefs.paths.select">Seleccionar</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Reproducción</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Desplazamiento automático</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Modo de desplazamiento</system:String>
@@ -361,6 +375,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="prefs.rendering.resampler.note">
     Nota: Para usar un Resampler externo, pon su archivo (sea .exe o .dll) en la carpeta Resamplers, en la ruta de instalación de OpenUTAU.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -390,6 +405,11 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.otoview.zoomin">Acercar</system:String>
   <system:String x:Key="singers.otoview.zoomout">Alejar</system:String>
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">Refrescar</system:String>

@@ -111,6 +111,8 @@ namespace OpenUtau.App.ViewModels {
         // note -> panel
         private void OnSelectNotes() {
             this.RaisePropertyChanged(nameof(Title));
+            ApplyPortamentoPreset = null;
+            ApplyVibratoPreset = null;
 
             if (selectedNotes.Count > 0) {
                 IsNoteSelected = true;

@@ -42,6 +42,7 @@ namespace OpenUtau.App.ViewModels {
         public List<int> DiffsingerSpeedupOptions { get; } = new List<int> { 1, 5, 10, 20, 50, 100 };
         [Reactive] public int DiffSingerDepth { get; set; }
         [Reactive] public int DiffsingerSpeedup { get; set; }
+        [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public bool PenPlusDefault { get; set; }
@@ -120,14 +121,13 @@ namespace OpenUtau.App.ViewModels {
             Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
-            Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             SortingOrders = Languages.ToList();
-            SortingOrders.Insert(1, CultureInfo.InvariantCulture);
-            SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
-                ? Language
+            SortingOrders.Insert(0, CultureInfo.InvariantCulture);
+            SortingOrder = Preferences.Default.SortingOrder == null ? Language
+                : Preferences.Default.SortingOrder == string.Empty ? CultureInfo.InvariantCulture
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender;
             DefaultRendererOptions = Renderers.getRendererOptions();
@@ -141,6 +141,7 @@ namespace OpenUtau.App.ViewModels {
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             DiffSingerDepth = Preferences.Default.DiffSingerDepth;
             DiffsingerSpeedup = Preferences.Default.DiffsingerSpeedup;
+            SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -218,7 +219,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(vm => vm.SortingOrder)
                 .Subscribe(so => {
-                    Preferences.Default.SortingOrder = so?.Name ?? string.Empty;
+                    Preferences.Default.SortingOrder = so?.Name ?? null;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Theme)
@@ -332,6 +333,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerDepth)
                 .Subscribe(index => {
                     Preferences.Default.DiffSingerDepth = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
+                .Subscribe(skipRenderingMutedTracks => {
+                    Preferences.Default.SkipRenderingMutedTracks = skipRenderingMutedTracks;
                     Preferences.Save();
                 });
         }

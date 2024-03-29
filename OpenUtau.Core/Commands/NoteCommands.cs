@@ -95,18 +95,35 @@ namespace OpenUtau.Core {
     }
 
     public class ResizeNoteCommand : NoteCommand {
+        readonly int NewPartDuration;
+        readonly int OldPartDuration;
         readonly int DeltaDur;
         public ResizeNoteCommand(UVoicePart part, UNote note, int deltaDur) : base(part, note) {
             DeltaDur = deltaDur;
+            OldPartDuration = part.Duration;
+            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(note.End + deltaDur, out int bar, out int beat, out int remainingTicks);
+            int minDurTick = DocManager.Inst.Project.timeAxis.BarBeatToTickPos(bar + 2, 0) - part.position;
+            if (part.Duration < minDurTick) {
+                NewPartDuration = minDurTick;
+            }
         }
         public ResizeNoteCommand(UVoicePart part, List<UNote> notes, int deltaDur) : base(part, notes) {
             DeltaDur = deltaDur;
+            OldPartDuration = part.Duration;
+            DocManager.Inst.Project.timeAxis.TickPosToBarBeat((Notes.LastOrDefault()?.End ?? 1) + deltaDur, out int bar, out int beat, out int remainingTicks);
+            int minDurTick = DocManager.Inst.Project.timeAxis.BarBeatToTickPos(bar + 2, 0) - part.position;
+            if (part.Duration < minDurTick) {
+                NewPartDuration = minDurTick;
+            }
         }
         public override string ToString() { return $"Change {Notes.Count()} notes duration"; }
         public override void Execute() {
             lock (Part) {
                 foreach (var note in Notes) {
                     note.duration += DeltaDur;
+                }
+                if (NewPartDuration > 0) {
+                    Part.Duration = NewPartDuration;
                 }
             }
         }
@@ -115,6 +132,7 @@ namespace OpenUtau.Core {
                 foreach (var note in Notes) {
                     note.duration -= DeltaDur;
                 }
+                Part.Duration = OldPartDuration;
             }
         }
     }
@@ -502,11 +520,11 @@ namespace OpenUtau.Core {
 
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? string.Empty : newAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? string.Empty : oldAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
         }
         public override string ToString() => "Change phoneme alias";
     }

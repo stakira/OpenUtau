@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">Het huidige project bevat niet-opgeslagen wijzigingen. Wilt u het opslaan?</system:String>
   <system:String x:Key="dialogs.export.caption">Exporteren</system:String>
   <system:String x:Key="dialogs.export.savefirst">sla  projectbestand eerst op</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Ja</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Geen resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Geen resampler! Zet je favoriete resampler exe of dll in de Resamplers map en kies het in Voorkeuren!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Tijd Signatuur</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">Engels</system:String>
   <system:String x:Key="languages.es">Spaans</system:String>
   <system:String x:Key="languages.fr">Frans</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">Italiaans</system:String>
   <system:String x:Key="languages.ja">Japans</system:String>
   <system:String x:Key="languages.ko">Koreaans</system:String>
@@ -152,6 +157,9 @@
   <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
   <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">_Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Cache wissen</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug venster</system:String>
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">Verticaal 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Verticaal 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Voorkeuren...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Uitdrukkingen...</system:String>
   <system:String x:Key="menu.tools.singer.install">installeer Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">installeer Singer (Geavanceerd)...</system:String>
   <system:String x:Key="menu.tools.singers">Singer...</system:String>
@@ -240,6 +247,7 @@ Waarschuwing: deze optie verwijdert aangepaste voorinstellingen.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji naar Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Noot Standaard</system:String>
   <system:String x:Key="pianoroll.menu.notes">Noten</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Voeg staart "-" toe</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Voeg staart "R" toe</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -295,6 +303,10 @@ Ctrl ingedrukt houden om te selecteren</system:String>
 
   <system:String x:Key="prefs.advanced">Geavanceerd</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -327,8 +339,10 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="prefs.paths">Paden</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Extra Zangerspad</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Installeren naar extra Singer-pad</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Reseiten</system:String>
   <system:String x:Key="prefs.paths.select">Selecteer</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Afspelen</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-scroll modus</system:String>
@@ -361,6 +375,7 @@ Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: Om externe resamplers te gebruiken, voeg de resampler DLL of EXE bestand toe in de Resamplers map in het OpenUtau installatie pad en kies het in Voorkeuren.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -390,6 +405,11 @@ Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en
   <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
   <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">Vernieuwen</system:String>
