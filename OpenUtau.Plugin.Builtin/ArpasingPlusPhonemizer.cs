@@ -9,7 +9,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
 using Serilog;
-
+using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Arpasing+ Phonemizer", "EN ARPA+", "Cadlaxa", language: "EN")]
@@ -95,6 +95,16 @@ namespace OpenUtau.Plugin.Builtin {
                 {"awng","ng"},
                 {"el","l"},
             };
+        private readonly Dictionary<string, string> vvDiphthongExceptions =
+            new Dictionary<string, string>() {
+                {"aw","ah"},
+                {"ow","ao"},
+                {"uw","uh"},
+                {"ay","ah"},
+                {"ey","eh"},
+                {"oy","ao"},
+            };
+
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] vc_cAcception = { "r", "l" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
@@ -216,7 +226,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Check for missing vowel phonemes
             foreach (var entry in missingVphonemes) {
-                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Value, syllable.tone)) {
+                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
                     isMissingVPhonemes = true;
                     break;
                 }
@@ -250,7 +260,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             // [V V] or [V C][C V]/[V]
             else if (syllable.IsVV) {
-                if (!CanMakeAliasExtension(syllable) || !AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone)) {
+                if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = $"{prevV} {v}";
                     if (!HasOto(basePhoneme, syllable.vowelTone) && vvExceptions.ContainsKey(prevV) && prevV != v) {
                         // VV IS NOT PRESENT, CHECKS VVEXCEPTIONS LOGIC
@@ -278,9 +288,11 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
-                    // EXTEND AS [V]
-                } else if (HasOto($"{v}", syllable.vowelTone) || vowels.Contains(v)) {
+                // EXTEND AS [V]
+                } else if (HasOto($"{v}", syllable.vowelTone) || missingVphonemes.ContainsKey(prevV)) {
                     basePhoneme = v;
+                } else if (!HasOto(v, syllable.vowelTone) && vvDiphthongExceptions.ContainsKey(prevV)) {
+                    basePhoneme = $"{vvDiphthongExceptions[prevV]} {vvDiphthongExceptions[prevV]}";
                 } else {
                     // PREVIOUS ALIAS WILL EXTEND as [V V]
                     basePhoneme = null;
