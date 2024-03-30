@@ -37,7 +37,8 @@ namespace OpenUtau.Core.Voicevox {
 
 
     internal static class VoicevoxUtils {
-        public const string VOLC = "volc";
+        public const string VOLSC = "volsc";
+        public const string IVOLC = "ivolc";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
@@ -148,6 +149,19 @@ namespace OpenUtau.Core.Voicevox {
                 return true;
             }
             return false;
+        }
+
+        public static string getBaseSingerID(VoicevoxSinger singer) {
+            if (singer.voicevoxConfig.base_singer_style != null) {
+                foreach (var s in singer.voicevoxConfig.base_singer_style) {
+                    if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
+                        if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
+                            return s.styles.id.ToString();
+                        }
+                    }
+                }
+            }
+            return defaultID;
         }
     }
 }

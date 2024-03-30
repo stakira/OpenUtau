@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
@@ -16,15 +17,17 @@ using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
-        const string VOLC = VoicevoxUtils.VOLC;
+        const string VOLSC = VoicevoxUtils.VOLSC;
+        const string IVOLC = VoicevoxUtils.IVOLC;
         const string PITD = Format.Ustx.PITD;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
-            //PITD,
+            PITD,
             Format.Ustx.CLR,
             Format.Ustx.VOL,
-            //VOLC,
+            VOLSC,
+            IVOLC,
             //Format.Ustx.SHFC,
             Format.Ustx.SHFT
         };
@@ -63,7 +66,6 @@ namespace OpenUtau.Core.Voicevox {
                         if (singer != null) {
                             Log.Information($"Starting Voicevox synthesis");
                             VoicevoxNote vvNotes = new VoicevoxNote();
-                            string singerID = VoicevoxUtils.defaultID;
                             if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
                                 Note[][] notes = new Note[phrase.phones.Length][];
                                 for (int i = 0; i < phrase.phones.Length; i++) {
@@ -79,19 +81,8 @@ namespace OpenUtau.Core.Voicevox {
                                 var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
 
                                 //Prepare for future additions of Teacher Singer.
-                                if (singer.voicevoxConfig.base_singer_style != null) {
-                                    foreach (var s in singer.voicevoxConfig.base_singer_style) {
-                                        if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
-                                            if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
-                                                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (vvNotes.phonemes.Count() == 0) {
-                                    vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
-                                }
+                                string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
+                                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, baseSingerID);
 
                                 //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
                                 vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
@@ -111,7 +102,7 @@ namespace OpenUtau.Core.Voicevox {
                                 }
                                 if (style.name.Equals(phrase.phones[0].suffix) && style.type.Equals("frame_decode")) {
                                     speaker = style.id;
-                                } else if((style.name + "_" + style.type).Equals(phrase.phones[0].suffix)){
+                                } else if ((style.name + "_" + style.type).Equals(phrase.phones[0].suffix)) {
                                     speaker = style.id;
                                 }
                             });
@@ -161,79 +152,112 @@ namespace OpenUtau.Core.Voicevox {
 
         //Synthesize with parameters of phoneme, F0, and volume. Under development
         static VoicevoxNote PhraseToVoicevoxNotes(RenderPhrase phrase) {
-            VoicevoxNote notes = new VoicevoxNote();
+            Note[][] notes = new Note[phrase.notes.Length][];
+            for (int i = 0; i < phrase.phones.Length; i++) {
+                int noteindex = phrase.phones[i].noteIndex;
+                if (notes[noteindex] == null) {
+                    notes[noteindex] = new Note[1];
+                    notes[noteindex][0] = new Note() {
+                        lyric = phrase.notes[noteindex].lyric,
+                        position = phrase.notes[noteindex].position,
+                        duration = phrase.notes[noteindex].duration,
+                        tone = (int)(phrase.notes[noteindex].tone + phrase.phones[i].toneShift)
+                    };
+                }
+            }
+
+            foreach (var note in notes) {
+                note[0].lyric = note[0].lyric.Normalize();
+                var lyricList = note[0].lyric.Split(" ");
+                if (lyricList.Length > 1) {
+                    note[0].lyric = lyricList[1];
+                }
+            }
+            VoicevoxNote vnotes = new VoicevoxNote();
+            var singer = phrase.singer as VoicevoxSinger;
+            var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
+
+            //Prepare for future additions of Teacher Singer.
+            string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
+            VoicevoxNote vnotestemp = VoicevoxUtils.VoicevoxVoiceBase(qNotes, baseSingerID);
 
             int headFrames = (int)(VoicevoxUtils.headS * VoicevoxUtils.fps);
             int tailFrames = (int)(VoicevoxUtils.tailS * VoicevoxUtils.fps);
 
-            notes.phonemes.Add(new Phonemes {
+            vnotes.phonemes.Add(new Phonemes {
                 phoneme = "pau",
                 frame_length = headFrames
             });
             foreach (var phone in phrase.phones) {
-                notes.phonemes.Add(new Phonemes {
+                vnotes.phonemes.Add(new Phonemes {
                     phoneme = phone.phoneme,
                     frame_length = (int)(phone.durationMs / 1000d * VoicevoxUtils.fps),
                 });
             }
-            notes.phonemes.Add(new Phonemes {
+            vnotes.phonemes.Add(new Phonemes {
                 phoneme = "pau",
                 frame_length = tailFrames
             });
 
             int vvTotalFrames = -(headFrames + tailFrames);
-            notes.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
+            vnotes.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
             double frameMs = 1 / 1000d * VoicevoxUtils.fps;
             int totalFrames = (int)(vvTotalFrames / VoicevoxUtils.fps * 1000d);
             int frameRatio = vvTotalFrames / totalFrames;
             const int pitchInterval = 5;
 
 
-            //var curve = phrase.pitches.SelectMany(item => Enumerable.Repeat(item, 5)).ToArray();
-            notes.f0 = VoicevoxUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, vvTotalFrames, 0, 0, x => MusicMath.ToneToFreq(x * 0.01)).ToList();
-            //notes.f0 = f0.Where((x, i) => i % frameRatio == 0).ToList();
-            float[] f0Shifted = notes.f0.Select(f => (float)f).ToArray();
+            vnotes.f0 = VoicevoxUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, vvTotalFrames, 0, 0, x => MusicMath.ToneToFreq(x * 0.01)).ToList();
+            float[] f0Shifted = vnotes.f0.Select(f => (float)f).ToArray();
             if (phrase.toneShift != null) {
-                for (int i = 0; i < notes.f0.Count; i++) {
+                for (int i = 0; i < vnotes.f0.Count; i++) {
                     double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
                     int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
                     int index = Math.Max(0, (int)((double)ticks / pitchInterval));
                     if (index < phrase.pitches.Length) {
-                        f0Shifted[i] = (float)MusicMath.ToneToFreq((phrase.pitches[index] + phrase.toneShift[index]) * 0.01);
+                        f0Shifted[i] = (float)(phrase.pitches[index] * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d)));
                     }
                 }
             }
 
 
-            var volumeCurve = phrase.curves.FirstOrDefault(c => c.Item1 == VOLC);
+            var volumeCurve = phrase.curves.FirstOrDefault(c => c.Item1 == IVOLC);
             if (volumeCurve != null) {
-                notes.volume = VoicevoxUtils.SampleCurve(phrase, volumeCurve.Item2, 0, frameMs, vvTotalFrames, 0, 0, x => MusicMath.DecibelToLinear(x)).ToList();
-                //notes.volume = volume.Where((x, i) => i % frameRatio == 0).ToList();
+                vnotes.volume = VoicevoxUtils.SampleCurve(phrase, volumeCurve.Item2, 0, frameMs, vvTotalFrames, 0, 0, x => MusicMath.DecibelToLinear(x)).ToList();
             } else {
-                notes.volume = Enumerable.Repeat(1d, vvTotalFrames).ToList();
+                vnotes.volume = Enumerable.Repeat(1d, vvTotalFrames).ToList();
             }
 
-            notes.outputStereo = false;
-            notes.outputSamplingRate = 44100;
-            notes.volumeScale = 1;
-            return notes;
+            vnotes.outputStereo = false;
+            vnotes.outputSamplingRate = 44100;
+            vnotes.volumeScale = 1;
+            return vnotes;
         }
 
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
             return new UExpressionDescriptor[] { };
             //under development
-            //var result = new List<UExpressionDescriptor> {
-            //    new UExpressionDescriptor{
-            //        name="volume (curve)",
-            //        abbr=VOLC,
-            //        type=UExpressionType.Curve,
-            //        min=-20,
-            //        max=20,
-            //        defaultValue=0,
-            //        isFlag=false,
-            //    },
-            //};
+            var result = new List<UExpressionDescriptor> {
+                new UExpressionDescriptor{
+                    name="volume scale (curve)",
+                    abbr=VOLSC,
+                    type=UExpressionType.Curve,
+                    min=-20,
+                    max=20,
+                    defaultValue=0,
+                    isFlag=false,
+                },
+                new UExpressionDescriptor{
+                    name="input volume (curve)",
+                    abbr=IVOLC,
+                    type=UExpressionType.Curve,
+                    min=-20,
+                    max=20,
+                    defaultValue=0,
+                    isFlag=false,
+                },
+            };
 
             //return result.ToArray();
         }

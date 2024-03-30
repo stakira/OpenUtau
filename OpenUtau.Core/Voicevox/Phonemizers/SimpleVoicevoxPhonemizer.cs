@@ -21,6 +21,9 @@ namespace Voicevox {
             Phoneme[] phonemes = new Phoneme[notes.Length];
             for (int i = 0; i < notes.Length; i++) {
                 var currentLyric = notes[i].lyric.Normalize(); //measures for Unicode
+                if (currentLyric.StartsWith("+")) {
+                    continue;
+                }
                 int toneShift = 0;
                 int? alt = null;
                 if (notes[i].phonemeAttributes != null) {
@@ -29,7 +32,6 @@ namespace Voicevox {
                     alt = attr.alternate;
                 }
 
-                //currentLyric = note.phoneticHint.Normalize();
                 Note[][] simplenotes = new Note[1][];
                 var lyricList = notes[i].lyric.Split(" ");
                 if (lyricList.Length > 1) {

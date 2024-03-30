@@ -28,7 +28,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
                 }
             } catch (Exception ex) {
-                Log.Error(@"{ex}");
+                Log.Error($"{ex}");
             }
             return new Tuple<string, byte[]>("", new byte[0]);
         }
