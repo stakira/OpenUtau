@@ -399,7 +399,7 @@ namespace OpenUtau.Core.Render {
                 var curveSampled = SampleCurve(curve, pitchStart, pitches.Length, convert);
                 switch (curve.abbr) {
                     case Format.Ustx.PITD: break;
-                    case Format.Ustx.DYN : dynamics = curveSampled; break;
+                    case Format.Ustx.DYN: dynamics = curveSampled; break;
                     case Format.Ustx.SHFC: toneShift = curveSampled; break;
                     case Format.Ustx.GENC: gender = curveSampled; break;
                     case Format.Ustx.TENC: tension = curveSampled; break;
