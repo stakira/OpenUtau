@@ -411,7 +411,7 @@
   <system:String x:Key="singers.playsample">サンプルボイスを再生</system:String>
   <system:String x:Key="singers.publish">シンガーの配布パッケージを作成</system:String>
   <system:String x:Key="singers.publish.description">自作音源の配布用zipファイルを作成します。</system:String>
-  <system:String x:Key="singers.publish.ignoretypes">以下のファイルは配布パッケージに含まれません（gitignore形式で記述）：</system:String>-->
+  <system:String x:Key="singers.publish.ignoretypes">以下のファイルは配布パッケージに含まれません（gitignore形式で記述）：</system:String>
   <system:String x:Key="singers.publish.publish">作成</system:String>
   <system:String x:Key="singers.publish.useignore"> 指定したタイプのファイルを配布パッケージに含めないようにする</system:String>
   <system:String x:Key="singers.readme">readme.txtを開く</system:String>
