@@ -75,19 +75,9 @@ jobs:
         
     - name: extract vocoder
       run: 7z x -o"./bin/${{ matrix.os.arch }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
-        
-    - name: download rhythmizer
-      uses: carlosperate/download-file-action@v1.0.3
-      with:
-        file-url: https://github.com/xunmengshe/OpenUtau/releases/download/0.0.0.0/rhythmizer_zh_opencpop_strict.oudep
-        file-name: rhythmizer_zh_opencpop_strict.oudep
-        location: ./
-    
-    - name: extract rhythmizer
-      run: 7z x -o"./bin/${{ matrix.os.arch }}/Dependencies/rhythmizer_zh_opencpop_strict" ./rhythmizer_zh_opencpop_strict.oudep
      
-    - name: compress DiffsingerPack
-      if: ${{ matrix.os.runs-on == 'windows-latest' }}
+    - name: compress vocoder
+      if: ${{ matrix.os.runs-on == 'windows-latest' }} or ${{ matrix.os.runs-on == 'macos-latest' }} or ${{ matrix.os.runs-on == 'ubuntu-latest' }}
       run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
      
     - name: Upload artifact
