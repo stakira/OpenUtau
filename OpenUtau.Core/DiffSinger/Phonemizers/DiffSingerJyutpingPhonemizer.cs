@@ -4,7 +4,7 @@ using OpenUtau.Core.G2p;
 using System.Linq;
 
 namespace OpenUtau.Core.DiffSinger {
-    [Phonemizer("DiffSinger Phonemizer", "Cantonese")]
+    [Phonemizer("DiffSinger Phonemizer", "Cantonese", language: "DiffSinger")]
     public class DiffSingerJyutpingPhonemizer : DiffSingerBasePhonemizer {
         protected override string GetDictionaryName() => "dsdict-zh-yue.yaml";
         protected override string[] Romanize(IEnumerable<string> lyrics) {

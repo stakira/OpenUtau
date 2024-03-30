@@ -9,7 +9,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.DiffSinger{
-    [Phonemizer("DiffSinger Phonemizer", "Korean", author: "EX3")]
+    [Phonemizer("DiffSinger Phonemizer", "Korean", author: "EX3", language: "DiffSinger")]
     public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer{
         USinger singer;
         DsConfig dsConfig;
