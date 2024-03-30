@@ -51,6 +51,7 @@ namespace OpenUtau.App.ViewModels {
         public bool LockPitchPoints { get => Preferences.Default.LockUnselectedNotesPitch; }
         public bool LockVibrato { get => Preferences.Default.LockUnselectedNotesVibrato; }
         public bool LockExpressions { get => Preferences.Default.LockUnselectedNotesExpressions; }
+        public bool OverwritePitchDrawTool { get => Preferences.Default.OverwritePitchDrawTool; }
         public bool ShowPortrait { get => Preferences.Default.ShowPortrait; }
         public bool ShowIcon { get => Preferences.Default.ShowIcon; }
         public bool ShowGhostNotes { get => Preferences.Default.ShowGhostNotes; }

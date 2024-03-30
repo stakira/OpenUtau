@@ -133,6 +133,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowTips = true;
             public int Theme;
             public bool PenPlusDefault = false;
+            public bool OverwritePitchDrawTool = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;

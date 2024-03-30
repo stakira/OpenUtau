@@ -5,6 +5,7 @@ using Avalonia;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.App.ViewModels {
     public struct NoteHitInfo {
@@ -200,22 +201,40 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             double tick = viewModel.PointToTick(point);
-            var note = viewModel.Part.notes.FirstOrDefault(n => n.End >= tick);
-            if (note == null && viewModel.Part.notes.Count > 0) {
-                note = viewModel.Part.notes.Last();
-            }
-            if (note == null) {
-                return null;
-            }
-            double pitch = note.tone * 100;
-            pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
-            if (note.Next != null && note.Next.position == note.End) {
-                double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
-                if (delta != null) {
-                    pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
+
+            if (Preferences.Default.OverwritePitchDrawTool) {
+                if (viewModel.Part.renderPhrases.Count == 0) {
+                    return null;
                 }
+                var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.position - p.leading >= tick);
+                if (phrase == null) {
+                    phrase = viewModel.Part.renderPhrases.Last();
+                }
+                if (phrase == null || phrase.pitchesBeforeDeviation.Length == 0) {
+                    return null;
+                }
+                var curve = phrase.pitchesBeforeDeviation;
+                var pitchIndex = (int)Math.Round((tick - phrase.position + phrase.leading) / 5);
+                pitchIndex = Math.Clamp(pitchIndex, 0, curve.Length - 1);
+                return curve[pitchIndex];
+            } else {
+                var note = viewModel.Part.notes.FirstOrDefault(n => n.End >= tick);
+                if (note == null && viewModel.Part.notes.Count > 0) {
+                    note = viewModel.Part.notes.Last();
+                }
+                if (note == null) {
+                    return null;
+                }
+                double pitch = note.tone * 100;
+                pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
+                if (note.Next != null && note.Next.position == note.End) {
+                    double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
+                    if (delta != null) {
+                        pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
+                    }
+                }
+                return pitch;
             }
-            return pitch;
         }
 
         public VibratoHitInfo HitTestVibrato(Point mousePos) {

@@ -102,6 +102,11 @@ namespace OpenUtau.App.Views {
             Preferences.Save();
             ViewModel.RaisePropertyChanged(nameof(ViewModel.LockExpressions));
         }
+        void OnMenuOverwritePitchDrawTool(object sender, RoutedEventArgs args) {
+            Preferences.Default.OverwritePitchDrawTool = !Preferences.Default.OverwritePitchDrawTool;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.OverwritePitchDrawTool));
+        }
 
         // View menu
         void OnMenuShowPortrait(object sender, RoutedEventArgs args) {

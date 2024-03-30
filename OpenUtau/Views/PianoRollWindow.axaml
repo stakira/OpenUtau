@@ -225,6 +225,13 @@
                   </MenuItem.Icon>
                 </MenuItem>
               </MenuItem>
+              <MenuItem Header="{DynamicResource menu.edit.tooloptions}">
+                <MenuItem Header="{DynamicResource menu.edit.overwritepitchdrawtool}" Click="OnMenuOverwritePitchDrawTool">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding OverwritePitchDrawTool}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
             </MenuItem>
           
             <MenuItem Header="{DynamicResource menu.view}">

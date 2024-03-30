@@ -123,9 +123,11 @@
   <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.expressions">Expressions</system:String>
+  <system:String x:Key="menu.edit.overwritepitchdrawtool">Draw Pitch Tool to overwrite vibrato or MOD+</system:String>
   <system:String x:Key="menu.edit.paste">Paste</system:String>
   <system:String x:Key="menu.edit.redo">Redo</system:String>
   <system:String x:Key="menu.edit.selectall">Select All</system:String>
+  <system:String x:Key="menu.edit.tooloptions">Tool Options</system:String>
   <system:String x:Key="menu.edit.undo">Undo</system:String>
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
