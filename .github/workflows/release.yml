@@ -64,7 +64,7 @@ jobs:
       run: copy OpenUtau.Plugin.Builtin\bin\Release\netstandard2.1\OpenUtau.Plugin.Builtin.dll -Destination bin\${{ matrix.os.arch }}
     
     - name: compress
-      run: 7z a OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}.zip ./bin/${{ matrix.os.arch }}/*
+      run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
 
     - name: download vocoder
       uses: carlosperate/download-file-action@v1.0.3
@@ -88,20 +88,13 @@ jobs:
      
     - name: compress DiffsingerPack
       if: ${{ matrix.os.runs-on == 'windows-latest' }}
-      run: 7z a OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}-DiffsingerPack.zip ./bin/${{ matrix.os.arch }}/*
+      run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
      
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
-        name: OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}.zip
-        path: OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}.zip
-        
-    - name: Upload artifact DiffsingerPack
-      if: ${{ matrix.os.runs-on == 'windows-latest' }}
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}-DiffsingerPack.zip
-        path: OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}-DiffsingerPack.zip
+        name: ou-lunai-${{ matrix.os.arch }}.zip
+        path: ou-lunai-${{ matrix.os.arch }}.zip
 
     - name: Create release and upload artifact
       if: ${{ inputs.create-release }}
@@ -109,12 +102,4 @@ jobs:
       with:
         tag_name: ${{ inputs.version }}
         files: |
-          OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}.zip
-    
-    - name: Create release and upload artifact DiffsingerPack
-      if: ${{ inputs.create-release && matrix.os.runs-on == 'windows-latest' }}
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ inputs.version }}
-        files: |
-          OpenUtau-${{ matrix.os.arch }}-${{ inputs.version }}-DiffsingerPack.zip
+          OpenUtau-${{ matrix.os.arch }}.zip
