@@ -363,19 +363,12 @@ namespace OpenUtau.App.Views {
         }
 
         Tuple<int, double[]>? LoadF0(string wavPath) {
-            if(String.IsNullOrEmpty(wavPath)){
-                //If the wav path is null (machine learning voicebank), return null.
-                return null;
-            }
-            string frqFile = Classic.VoicebankFiles.GetFrqFile(wavPath);
-            if (!File.Exists(frqFile)) {
-                return null;
-            }
             var frq = new Classic.Frq();
-            using (var fileStream = File.OpenRead(frqFile)) {
-                frq.Load(fileStream);
+            if (frq.Load(wavPath)) {
+                return Tuple.Create(frq.hopSize, frq.f0);
+            } else {
+                return null;
             }
-            return Tuple.Create(frq.hopSize, frq.f0);
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {

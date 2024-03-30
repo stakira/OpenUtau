@@ -25,6 +25,7 @@ namespace OpenUtau.Classic {
             Ustx.VEL,
             Ustx.VOL,
             Ustx.MOD,
+            Ustx.MODP,
             Ustx.ALT,
             Ustx.GENC,
             Ustx.BREC,

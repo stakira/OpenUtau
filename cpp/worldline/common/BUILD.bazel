@@ -1,0 +1,18 @@
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "timer",
+    srcs = ["timer.cpp"],
+    hdrs = ["timer.h"],
+)
+
+cc_library(
+    name = "vec_utils",
+    srcs = ["vec_utils.cpp"],
+    hdrs = ["vec_utils.h"],
+    deps = [
+        "@libnpy",
+    ],
+)

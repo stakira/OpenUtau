@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">Tämänhetkinen projekti sisältää tallentamattomia muutoksia. Haluatko tallentaa muutokset?</system:String>
   <system:String x:Key="dialogs.export.caption">Vie</system:String>
   <system:String x:Key="dialogs.export.savefirst">Muistathan tallentaa</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Kyllä</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Ei valittua resampleria</system:String>
   <system:String x:Key="dialogs.noresampler.message">Resampleria ei löydetty! Laita resampler.exe tai dll- tiedosto Resamplers -kansioon ja valitse se sitten asetuksista.</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">englanti</system:String>
   <system:String x:Key="languages.es">espanja</system:String>
   <system:String x:Key="languages.fr">ranska</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">italia</system:String>
   <system:String x:Key="languages.ja">japani</system:String>
   <system:String x:Key="languages.ko">korea</system:String>
@@ -152,6 +157,9 @@
   <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
   <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Työkalut</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">Pystysuora 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Pystysuora 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Asetukset...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Äänen sävy...</system:String>
   <system:String x:Key="menu.tools.singer.install">Asenna laulaja...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Asenna laulaja (lisäasetukset)...</system:String>
   <system:String x:Key="menu.tools.singers">Laulajat...</system:String>
@@ -240,6 +247,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Nuotit</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">lisää loppuun "-"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -299,6 +307,10 @@ Warning: this option removes custom presets.</system:String>-->
 
   <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -331,8 +343,10 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Äänentoisto</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
@@ -365,6 +379,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -394,6 +409,11 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
   <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">Päivitä</system:String>
