@@ -136,7 +136,7 @@ namespace OpenUtau.Core.Util {
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
-            public bool PreRender = true;
+            public bool PreRender = false;
             public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
