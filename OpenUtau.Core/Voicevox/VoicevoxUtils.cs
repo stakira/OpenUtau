@@ -77,6 +77,10 @@ namespace OpenUtau.Core.Voicevox {
                 while (index < notes.Length) {
                     string lyric = dic.Lyrictodic(notes, index);
                     int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
+                    //Avoid synthesis without at least two frames.
+                    if (length < 2 ) {
+                        length = 2;
+                    }
                     int? tone = null;
                     if (!string.IsNullOrEmpty(lyric) || VoicevoxUtils.IsPau(lyric)) {
                         if (notes[index][0].phonemeAttributes != null) {
