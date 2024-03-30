@@ -92,4 +92,4 @@ jobs:
       with:
         tag_name: ${{ inputs.version }}
         files: |
-          OpenUtau-${{ matrix.os.arch }}.zip
+          ou-lunai-${{ matrix.os.arch }}.zip
