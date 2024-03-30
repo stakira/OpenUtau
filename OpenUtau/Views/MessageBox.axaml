@@ -46,7 +46,6 @@
         <Style Selector="Expander">
           <Setter Property="Margin" Value="0, 20, 0, 0" />
           <Setter Property="Width" Value="560" />
-          <Setter Property="IsExpanded" Value="False" />
           <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
       </StackPanel.Styles> 
