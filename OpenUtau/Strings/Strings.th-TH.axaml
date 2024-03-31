@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">โปรเจกต์ปัจจุบันยังไม่มีการบันทึกการเปลี่ยนแปลง คุณต้องการบันทึกหรือไม่?</system:String>
   <system:String x:Key="dialogs.export.caption">ส่งออก</system:String>
   <system:String x:Key="dialogs.export.savefirst">บันทึกไฟล์โปรเจกต์ก่อน</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">ใช่</system:String>
   <system:String x:Key="dialogs.noresampler.caption">ไม่มี resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">ไม่มี resampler! โปรดใส่ไฟล์ resampler exe หรือ dll ใน resampler folder ที่ชอบ และตั้งค่าเลือก resampler นั้น!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">เครื่องหมายกำหนดจังหวะ</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">อังกฤษ</system:String>
   <system:String x:Key="languages.es">สเปน</system:String>
   <system:String x:Key="languages.fr">ฝรั่งเศส</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">อิตาลี</system:String>
   <system:String x:Key="languages.ja">ญี่ปุ่น</system:String>
   <system:String x:Key="languages.ko">เกาหลี</system:String>
@@ -152,6 +157,9 @@
   <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
   <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">เครื่องมือ</system:String>
   <system:String x:Key="menu.tools.clearcache">ล้างแคช</system:String>
   <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">แนวตั้ง 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">แนวตั้ง 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">กำหนดค่า...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">เครื่องหมาย...</system:String>
   <system:String x:Key="menu.tools.singer.install">ติดตั้งคลังเสียง</system:String>
   <system:String x:Key="menu.tools.singer.installadv">ติดตั้งคลังเสียง (ขั้นสูง)...</system:String>
   <system:String x:Key="menu.tools.singers">นักร้อง...</system:String>
@@ -240,6 +247,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">เปลี่ยนโรมันจิเป็นฮิระงะนะ</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">โน้ตค่าเริ่มต้น</system:String>
   <system:String x:Key="pianoroll.menu.notes">โน้ต</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">เพิ่มหาง "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">เพิ่มหาง "R"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -295,6 +303,10 @@
 
   <system:String x:Key="prefs.advanced">ขั้นสูง</system:String>
   <system:String x:Key="prefs.advanced.beta">เบต้า</system:String>
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -327,8 +339,10 @@
   <system:String x:Key="prefs.paths">เส้นทาง</system:String>
   <system:String x:Key="prefs.paths.addlsinger">เส้นทางคลังเสียงเสริม</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">ติดตั้งไปยังเส้นทางคลังเสียงเสริม</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">คืนค่า</system:String>
   <system:String x:Key="prefs.paths.select">เลือก</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">เล่นซ้ำ</system:String>
   <system:String x:Key="prefs.playback.autoscroll">เลื่อนอัตโนมัติ</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">โหมดเลื่อนอัตโนมัติ</system:String>
@@ -361,6 +375,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     หมายเหตุ: หากต้องการใช้  resampler นอกเหนือจากโปรแกรมโปรดเพิ่มไฟล์ DLL หรือ EXE ใน Resamplers folder ในเส้นทางการติดตั้ง OpenUtau และเลือก resampler  ได้ในการตั้งค่า
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -390,6 +405,11 @@
   <system:String x:Key="singers.otoview.zoomin">ซูมเข้า</system:String>
   <system:String x:Key="singers.otoview.zoomout">ซูมออก</system:String>
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">รีเฟรช</system:String>

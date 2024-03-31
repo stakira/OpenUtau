@@ -86,6 +86,23 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        // Edit menu
+        void OnMenuLockPitchPoints(object sender, RoutedEventArgs args) {
+            Preferences.Default.LockUnselectedNotesPitch = !Preferences.Default.LockUnselectedNotesPitch;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.LockPitchPoints));
+        }
+        void OnMenuLockVibrato(object sender, RoutedEventArgs args) {
+            Preferences.Default.LockUnselectedNotesVibrato = !Preferences.Default.LockUnselectedNotesVibrato;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.LockVibrato));
+        }
+        void OnMenuLockExpressions(object sender, RoutedEventArgs args) {
+            Preferences.Default.LockUnselectedNotesExpressions = !Preferences.Default.LockUnselectedNotesExpressions;
+            Preferences.Save();
+            ViewModel.RaisePropertyChanged(nameof(ViewModel.LockExpressions));
+        }
+
         // View menu
         void OnMenuShowPortrait(object sender, RoutedEventArgs args) {
             Preferences.Default.ShowPortrait = !Preferences.Default.ShowPortrait;
@@ -396,13 +413,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-            if (pitHitInfo.Note != null) {
+            if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
                 editState = new PitchPointEditState(control, ViewModel, this,
                     pitHitInfo.Note, pitHitInfo.Index, pitHitInfo.OnPoint, pitHitInfo.X, pitHitInfo.Y);
                 return;
             }
             var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
-            if (vbrHitInfo.hit) {
+            if (vbrHitInfo.hit && !IsLockedEdit(ViewModel.LockVibrato, vbrHitInfo.note)) {
                 if (vbrHitInfo.hitToggle) {
                     ViewModel.NotesViewModel.ToggleVibrato(vbrHitInfo.note);
                     return;
@@ -491,7 +508,7 @@ namespace OpenUtau.App.Views {
             }
             if (ViewModel.NotesViewModel.ShowPitch) {
                 var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-                if (pitHitInfo.Note != null) {
+                if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
                     ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                         Header = ThemeManager.GetString("context.pitch.easeinout"),
                         Command = ViewModel.PitEaseInOutCommand,
@@ -608,12 +625,12 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-            if (pitHitInfo.Note != null) {
+            if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
                 Cursor = ViewConstants.cursorHand;
                 return;
             }
             var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
-            if (vbrHitInfo.hit) {
+            if (vbrHitInfo.hit && !IsLockedEdit(ViewModel.LockVibrato, vbrHitInfo.note)) {
                 if (vbrHitInfo.hitDepth) {
                     Cursor = ViewConstants.cursorSizeNS;
                 } else if (vbrHitInfo.hitPeriod) {
@@ -872,6 +889,10 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
+        private bool IsLockedEdit(bool locked, UNote note) {
+            return locked && ViewModel.NotesViewModel.Selection.Count > 0 && !ViewModel.NotesViewModel.Selection.Contains(note);
+        }
+
         public void OnSnapDivMenuButton(object sender, RoutedEventArgs args) {
             SnapDivMenu.PlacementTarget = sender as Button;
             SnapDivMenu.Open();
@@ -979,6 +1000,15 @@ namespace OpenUtau.App.Views {
                 case Key.Space:
                     if (isNone) {
                         playVm.PlayOrPause();
+                        return true;
+                    }
+                    if (isAlt) {
+                        if (!notesVm.Selection.IsEmpty) {
+                            playVm.PlayOrPause(
+                                tick: notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position,
+                                endTick: notesVm.Part.position + notesVm.Selection.LastOrDefault()!.RightBound
+                            );
+                        }
                         return true;
                     }
                     break;

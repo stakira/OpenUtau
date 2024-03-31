@@ -1,13 +1,13 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
-namespace OpenUtau.Plugin.Builtin
-{
+namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// Chinese 十月式整音扩张 CVV Phonemizer.
     /// <para>It works by spliting "duang" to "duang" + "_ang", to produce the proper tail sound.</para>
@@ -55,7 +55,7 @@ namespace OpenUtau.Plugin.Builtin
                 .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
         }
 
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             BaseChinesePhonemizer.RomanizeNotes(groups);
         }
     }

@@ -4,15 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using OpenUtau.Core.Ustx;
-using OpenUtau.Api;
-using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.io.hts;
 using Microsoft.ML.OnnxRuntime;
-using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using Serilog;
-using OpenUtau.Plugin.Builtin.EnunuOnnx;
+using OpenUtau.Api;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
+using OpenUtau.Plugin.Builtin.EnunuOnnx;
+using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend;
+using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.io.hts;
+using Serilog;
 
 //This phonemizer is a pure C# implemention of the ENUNU phonemizer,
 //which aims at providing all ML-based synthesizer developers with a useable phonemizer,
@@ -209,7 +209,7 @@ namespace OpenUtau.Plugin.Builtin {
             pitchIndices = Enumerable.Range(binaryDict.Count, 3).ToArray();
         }
 
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             if (groups.Length == 0) {
                 return;
             }

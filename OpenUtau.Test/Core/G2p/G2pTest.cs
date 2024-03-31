@@ -43,5 +43,17 @@ namespace OpenUtau.Core.G2p {
             Assert.Equal("i~ v e R n e s", string.Join(' ', g2p.Query("inve  rn,.ess")));
             Assert.Equal("p i r i m i tS i", string.Join(' ', g2p.Query("pírímítí")));
         }
+
+        [Fact]
+        public void ArpabetPlusG2pTest() {
+            var g2p = new ArpabetPlusG2p();
+            Assert.Null(g2p.Query(""));
+            Assert.Null(g2p.Query(","));
+            Assert.Null(g2p.Query("-"));
+            Assert.Equal("f l aa p tr aa p ih k ax", string.Join(' ', g2p.Query("floptropica")));
+            Assert.Equal("f l aa p tr aa p ih k ax", string.Join(' ', g2p.Query("%fl,optro pica")));
+            Assert.Equal("s l ey d", string.Join(' ', g2p.Query("slayed")));
+            Assert.Equal("d er eh k sh ax n", string.Join(' ', g2p.Query("direction")));
+        }
     }
 }

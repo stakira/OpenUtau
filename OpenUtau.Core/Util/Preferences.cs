@@ -144,8 +144,9 @@ namespace OpenUtau.Core.Util {
             public int OnnxGpu = 0;
             public int DiffsingerSpeedup = 50;
             public int DiffSingerDepth = 1000;
+            public bool SkipRenderingMutedTracks = false;
             public string Language = string.Empty;
-            public string SortingOrder = string.Empty;
+            public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
@@ -186,6 +187,9 @@ namespace OpenUtau.Core.Util {
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
+            public bool LockUnselectedNotesPitch = true;
+            public bool LockUnselectedNotesVibrato = true;
+            public bool LockUnselectedNotesExpressions = true;
 
             public bool VoicebankPublishUseIgnore = true;
             public string VoicebankPublishIgnores = "#Adobe Audition\n*.pkf\n\n#UTAU Engines\n*.ctspec\n*.d4c\n*.dio\n*.frc\n*.frt\n*.frq\n*.harvest\n*.lessaudio\n*.llsm\n*.mrq\n*.pitchtier\n*.pkf\n*.platinum\n*.pmk\n*.star\n*.uspec\n*.vs4ufrq\n\n#UTAU related tools\n$read\n*.setParam-Scache\n*.lbp\n*.lbp.caches/*\n\n#OpenUtau\nerrors.txt";

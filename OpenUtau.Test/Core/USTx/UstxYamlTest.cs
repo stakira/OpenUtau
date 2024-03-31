@@ -84,6 +84,10 @@ phoneme_overrides: []
             yaml = Yaml.DefaultSerializer.Serialize(new UNote() { lyric = "-," });
             actual = Yaml.DefaultDeserializer.Deserialize<UNote>(yaml);
             Assert.Equal("-,", actual.lyric);
+
+            yaml = Yaml.DefaultSerializer.Serialize(new UNote() { lyric = "\t- asdf" });
+            actual = Yaml.DefaultDeserializer.Deserialize<UNote>(yaml);
+            Assert.Equal("\t- asdf", actual.lyric);
         }
     }
 }

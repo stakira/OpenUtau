@@ -48,6 +48,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
+        public bool LockPitchPoints { get => Preferences.Default.LockUnselectedNotesPitch; }
+        public bool LockVibrato { get => Preferences.Default.LockUnselectedNotesVibrato; }
+        public bool LockExpressions { get => Preferences.Default.LockUnselectedNotesExpressions; }
         public bool ShowPortrait { get => Preferences.Default.ShowPortrait; }
         public bool ShowIcon { get => Preferences.Default.ShowIcon; }
         public bool ShowGhostNotes { get => Preferences.Default.ShowGhostNotes; }
@@ -184,7 +187,6 @@ namespace OpenUtau.App.ViewModels {
                 new QuantizeNotes(30),
                 new AutoLegato(),
                 new FixOverlap(),
-                new HanziToPinyin(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
                 new ClearVibratos(),
@@ -201,6 +203,7 @@ namespace OpenUtau.App.ViewModels {
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
                 new JapaneseVCVtoCV(),
+                new HanziToPinyin(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
                 new MoveSuffixToVoiceColor(),
@@ -256,6 +259,11 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
+        public void Cut() => NotesViewModel.CutNotes();
+        public void Copy() => NotesViewModel.CopyNotes();
+        public void Paste() => NotesViewModel.PasteNotes();
+        public void Delete() => NotesViewModel.DeleteSelectedNotes();
+        public void SelectAll() => NotesViewModel.SelectAllNotes();
 
         public void MouseoverPhoneme(UPhoneme? phoneme) {
             MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));

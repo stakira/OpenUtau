@@ -185,19 +185,21 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
+    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5, Voicevox=0x6 }
 
     public static class SingerTypeUtils{
         public static Dictionary<USingerType?, string> SingerTypeNames = new Dictionary<USingerType?, string>(){
             {USingerType.Classic, "utau"},
             {USingerType.Enunu, "enunu"},
             {USingerType.DiffSinger, "diffsinger"},
+            {USingerType.Voicevox, "voicevox"},
         };
 
         public static Dictionary<string, USingerType> SingerTypeFromName = new Dictionary<string, USingerType>(){
             {"utau", USingerType.Classic},
             {"enunu", USingerType.Enunu},
             {"diffsinger", USingerType.DiffSinger},
+            {"voicevox", USingerType.Voicevox},
         };
 
     }
@@ -259,21 +261,22 @@ namespace OpenUtau.Core.Ustx {
 
         private string name;
 
-        public string DisplayName { get { return Found ? name : $"[Missing] {name}"; } }
-
         public string LocalizedName { 
             get {
                 if(LocalizedNames == null) {
-                    return Name;
+                    return Found ? Name : $"[Missing] {Name}";
                 }
                 string language = Preferences.Default.SortingOrder;
-                if(String.IsNullOrEmpty(language)){
+                if (language == null) {
                     language = Preferences.Default.Language;
                 }
-                if(LocalizedNames.TryGetValue(language, out var localizedName)){
-                    return localizedName;
+                if (language == string.Empty) { // InvariantCulture
+                    return Found ? Name : $"[Missing] {Name}";
+                }
+                if (LocalizedNames.TryGetValue(language, out var localizedName)) {
+                    return Found ? localizedName : $"[Missing] {localizedName}";
                 } else {
-                    return Name;
+                    return Found ? Name : $"[Missing] {Name}";
                 }
             }
         }
@@ -295,7 +298,7 @@ namespace OpenUtau.Core.Ustx {
         public virtual IEnumerable<UOto> GetSuggestions(string text) { return emptyOtos; }
         public virtual byte[] LoadPortrait() => null;
         public virtual byte[] LoadSample() => null;
-        public override string ToString() => Name;
+        public override string ToString() => LocalizedName;
         public bool Equals(USinger other) {
             // Tentative: Since only the singer's Id is recorded in ustx and preferences, singers with the same Id are considered identical.
             // Singer with the same directory name in different locations may be identical.

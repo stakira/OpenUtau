@@ -70,7 +70,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// Converts hanzi notes to jyutping phonemes.
         /// </summary>
         /// <param name="groups"></param>
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             JyutpingConversion.RomanizeNotes(groups);
         }
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
