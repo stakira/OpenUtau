@@ -43,8 +43,8 @@ namespace OpenUtau.Core.Voicevox {
                 }
                 var manifest = jObj.ToObject<Engine_manifest>();
                 manifest.SaveLicenses(singer.Location);
-            } catch {
-                Log.Error("Could not load Licenses.");
+            } catch(Exception e) {
+                Log.Error($"Could not load Licenses.:{e}");
             }
             try {
 
@@ -156,6 +156,7 @@ namespace OpenUtau.Core.Voicevox {
                 File.WriteAllText(filePath, terms_of_service);
             }
             foreach (var item in dependency_licenses) {
+                item.name = item.name.Replace("\"","");
                 filePath = Path.Join(licenseDirectory, $"{item.name}_License.txt");
                 if (!string.IsNullOrEmpty(item.text)) {
                     File.WriteAllText(filePath, $"license:{item.license}\nversion:{item.version}\n\n" + item.text);
