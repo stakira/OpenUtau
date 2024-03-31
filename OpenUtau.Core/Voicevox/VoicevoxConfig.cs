@@ -105,45 +105,45 @@ namespace OpenUtau.Core.Voicevox {
 
     public class Engine_manifest {
         public class Update_infos {
-            public string version { get; set; }
-            public IList<string> descriptions { get; set; }
-            public IList<string> contributors { get; set; }
+            public string version;
+            public IList<string> descriptions;
+            public IList<string> contributors;
 
         }
         public class Dependency_licenses {
-            public string name { get; set; }
-            public string version { get; set; }
-            public string license { get; set; }
-            public string text { get; set; }
+            public string name;
+            public string version;
+            public string license;
+            public string text;
 
         }
         public class Supported_features {
-            public bool adjust_mora_pitch { get; set; }
-            public bool adjust_phoneme_length { get; set; }
-            public bool adjust_speed_scale { get; set; }
-            public bool adjust_pitch_scale { get; set; }
-            public bool adjust_intonation_scale { get; set; }
-            public bool adjust_volume_scale { get; set; }
-            public bool interrogative_upspeak { get; set; }
-            public bool synthesis_morphing { get; set; }
-            public bool sing { get; set; }
-            public bool manage_library { get; set; }
+            public bool adjust_mora_pitch;
+            public bool adjust_phoneme_length;
+            public bool adjust_speed_scale;
+            public bool adjust_pitch_scale;
+            public bool adjust_intonation_scale;
+            public bool adjust_volume_scale;
+            public bool interrogative_upspeak;
+            public bool synthesis_morphing;
+            public bool sing;
+            public bool manage_library;
 
         }
 
-        public string manifest_version { get; set; }
-        public string name { get; set; }
-        public string brand_name { get; set; }
-        public string uuid { get; set; }
-        public string url { get; set; }
-        public string icon { get; set; }
-        public int default_sampling_rate { get; set; }
-        public int frame_rate { get; set; }
-        public string terms_of_service { get; set; }
-        public IList<Update_infos> update_infos { get; set; }
-        public IList<Dependency_licenses> dependency_licenses { get; set; }
-        public string supported_vvlib_manifest_version { get; set; }
-        public Supported_features supported_features { get; set; }
+        public string manifest_version;
+        public string name;
+        public string brand_name;
+        public string uuid;
+        public string url;
+        public string icon;
+        public int default_sampling_rate;
+        public int frame_rate;
+        public string terms_of_service;
+        public IList<Update_infos> update_infos;
+        public IList<Dependency_licenses> dependency_licenses;
+        public string supported_vvlib_manifest_version;
+        public Supported_features supported_features;
 
         public void SaveLicenses(string location) {
             var parentDirectory = Directory.GetParent(location).ToString();
@@ -158,7 +158,7 @@ namespace OpenUtau.Core.Voicevox {
             foreach (var item in dependency_licenses) {
                 filePath = Path.Join(licenseDirectory, $"{item.name}_License.txt");
                 if (!string.IsNullOrEmpty(item.text)) {
-                    File.WriteAllText(filePath, $"license:{item.license}\nversion:{item.version}\n\n" +item.text);
+                    File.WriteAllText(filePath, $"license:{item.license}\nversion:{item.version}\n\n" + item.text);
                 }
             }
         }
