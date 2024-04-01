@@ -32,3 +32,5 @@ phones.txt
 - The `G2pPack` class uses entries from `dict.txt` first.
 - If not found, it uses `g2p.onnx` to generate phonemes.
 - `phones.txt` allows phonemizers to know which phonemes are vowels and which phonemes to stretch.
+---
+*For compiling the G2p models read [Compiling-G2p-Mdels-Wiki](https://github.com/stakira/OpenUtau/wiki/Compiling-G2p-Models)*

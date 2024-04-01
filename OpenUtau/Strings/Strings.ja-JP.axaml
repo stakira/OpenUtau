@@ -50,13 +50,13 @@
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">このツールでは、音符の実際の位置と長さ（秒単位）を変えずに、プロジェクトのテンポを変更します。
 新しいBPM：</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">使用不可能なフォーマット</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.message">サポートされていないファイルフォーマットです：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">トラック設定</system:String>
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">使用不可能なフォーマット</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">サポートされていないファイルフォーマットです：</system:String>
   <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
@@ -83,6 +83,7 @@
   <system:String x:Key="languages.en">英語</system:String>
   <system:String x:Key="languages.es">スペイン語</system:String>
   <system:String x:Key="languages.fr">フランス語</system:String>
+  <system:String x:Key="languages.invariant">翻訳しない</system:String>
   <system:String x:Key="languages.it">イタリア語</system:String>
   <system:String x:Key="languages.ja">日本語</system:String>
   <system:String x:Key="languages.ko">韓国語</system:String>
@@ -118,10 +119,14 @@
   <system:String x:Key="menu.edit.copy">コピー</system:String>
   <system:String x:Key="menu.edit.cut">切り取り</system:String>
   <system:String x:Key="menu.edit.delete">削除</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes">選択されていないノートの編集をロック</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">ピッチ点</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">ビブラート</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">表情</system:String>
   <system:String x:Key="menu.edit.paste">貼り付け</system:String>
   <system:String x:Key="menu.edit.redo">やり直す</system:String>
   <system:String x:Key="menu.edit.selectall">全て選択</system:String>
-  <system:String x:Key="menu.edit.undo">元に戻る</system:String>
+  <system:String x:Key="menu.edit.undo">元に戻す</system:String>
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportaudio">音声をエクスポート</system:String>
@@ -345,6 +350,7 @@
   <system:String x:Key="prefs.paths.loaddeepfolders">深い階層のフォルダも読み込む</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">再生</system:String>
   <system:String x:Key="prefs.playback.autoscroll">自動スクロール</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">自動スクロールモード</system:String>
@@ -377,6 +383,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -406,6 +413,11 @@
   <system:String x:Key="singers.otoview.zoomin">ズームイン</system:String>
   <system:String x:Key="singers.otoview.zoomout">ズームアウト</system:String>
   <system:String x:Key="singers.playsample">サンプルボイスを再生</system:String>
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <system:String x:Key="singers.readme">readme.txtを開く</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txtが見つかりません</system:String>
   <system:String x:Key="singers.refresh">再読み込み</system:String>

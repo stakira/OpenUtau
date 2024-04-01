@@ -85,7 +85,7 @@ namespace OpenUtau.App.ViewModels {
         // kinds of values.
         //
         // These values could be better named so as to make the code more readable.
-        private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
+        private double playPosXToTickOffset => Bounds.Width != 0 ? ViewportTicks / Bounds.Width : 0;
 
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
@@ -372,7 +372,11 @@ namespace OpenUtau.App.ViewModels {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is NoteCommand noteCommand) {
-                MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+                if (noteCommand is ResizeNoteCommand) {
+                    MessageBus.Current.SendMessage(new PartRefreshEvent(noteCommand.Part));
+                } else {
+                    MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+                }
             } else if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
                     if (!isUndo) {

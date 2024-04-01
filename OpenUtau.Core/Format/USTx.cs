@@ -24,7 +24,9 @@ namespace OpenUtau.Core.Format {
         public const string BRE = "bre";
         public const string BREC = "brec";
         public const string LPF = "lpf";
+        public const string NORM = "norm";
         public const string MOD = "mod";
+        public const string MODP = "mod+";
         public const string ALT = "alt";
         public const string DIR = "dir";
         public const string SHFT = "shft";
@@ -48,7 +50,9 @@ namespace OpenUtau.Core.Format {
             project.RegisterExpression(new UExpressionDescriptor("breath", BRE, 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("breathiness (curve)", BREC, -100, 100, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("lowpass", LPF, 0, 100, 0, "H"));
+            project.RegisterExpression(new UExpressionDescriptor("normalize", NORM, 0, 100, 86, "P"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", MOD, 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("modulation plus", MODP, 0, 100, 0));
             project.RegisterExpression(new UExpressionDescriptor("alternate", ALT, 0, 16, 0));
             project.RegisterExpression(new UExpressionDescriptor("direct", DIR, false, new string[] { "off", "on" }));
             project.RegisterExpression(new UExpressionDescriptor("tone shift", SHFT, -36, 36, 0));

@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">Proyek saat ini berisi perubahan yang belum disimpan. Apakah Anda ingin menyimpannya?</system:String>
   <system:String x:Key="dialogs.export.caption">Ekspor</system:String>
   <system:String x:Key="dialogs.export.savefirst">Simpan berkas proyek terlebih dahulu</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <system:String x:Key="dialogs.installdependency.caption">Menginstal ketergantungan</system:String>
   <system:String x:Key="dialogs.installdependency.message">Menginstal </system:String>
   <system:String x:Key="dialogs.installdll.caption">Menginstal fonemizer</system:String>
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Ya</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Tidak ada resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Pengaturan Trek</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Lokasi</system:String>
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">Inggris</system:String>
   <system:String x:Key="languages.es">Spanyol</system:String>
   <system:String x:Key="languages.fr">Prancis</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">Italia</system:String>
   <system:String x:Key="languages.ja">Jepang</system:String>
   <system:String x:Key="languages.ko">Korea</system:String>
@@ -152,6 +157,9 @@
   <system:String x:Key="menu.help.logslocation">Buka Lokasi Logs</system:String>
   <system:String x:Key="menu.help.reportissue">Laporkan Masalah</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
   <system:String x:Key="menu.tools.clearcache">Hapus Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Jendela Debug</system:String>
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">Vertikal 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Vertikal 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Preferensi...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Ekspresi...</system:String>
   <system:String x:Key="menu.tools.singer.install">Instal Penyanyi...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Instal Penyanyi (Lanjutan)...</system:String>
   <system:String x:Key="menu.tools.singers">Penyanyi...</system:String>
@@ -240,6 +247,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Not Bawaan</system:String>
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Legato Otomatis</system:String>
@@ -301,6 +309,10 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
 
   <system:String x:Key="prefs.advanced">Lanjutan</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <system:String x:Key="prefs.advanced.lyricshelper">Pembantu Lirik</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Pembantu Lirik Menambahkan Tanda Kurung</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Ingatlah jenis file ini di "Buka Terbaru"</system:String>
@@ -333,8 +345,10 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Instal ke Jalur Penyanyi Tambahan</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Atur Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Gulir Otomatis</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Mode Gulir Otomatis</system:String>
@@ -367,6 +381,7 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     Peringatan: terlalu banyak thread render dapat menyebabkan OpenUtau berjalan lambat.
   </system:String>
@@ -396,6 +411,11 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="singers.otoview.zoomin">Perbesar</system:String>
   <system:String x:Key="singers.otoview.zoomout">Perkecil</system:String>
   <system:String x:Key="singers.playsample">Putar sampel</system:String>
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <system:String x:Key="singers.readme">Buka readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt tidak ditemukan.</system:String>
   <system:String x:Key="singers.refresh">Segarkan</system:String>

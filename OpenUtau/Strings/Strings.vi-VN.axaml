@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">Dự án có một vài thay đổi chưa được lưu. Bạn có muốn lưu không?</system:String>
   <system:String x:Key="dialogs.export.caption">Xuất ra</system:String>
   <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã!</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Có</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Chưa có resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Chưa có resampler nào cả! Thêm resampler yêu thích của bạn với định dạng exe hoặc dll vào trong thư mục Resamplers và chọn trong mục Tuỳ chọn!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Số chỉ nhịp</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Cài đặt Track</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Thư mục</system:String>
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">Tiếng Anh</system:String>
   <system:String x:Key="languages.es">Tiếng Tây Ban Nha</system:String>
   <system:String x:Key="languages.fr">Tiếng Pháp</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">Tiếng Italy</system:String>
   <system:String x:Key="languages.ja">Tiếng Nhật</system:String>
   <system:String x:Key="languages.ko">Tiếng Hàn</system:String>
@@ -152,6 +157,9 @@
   <system:String x:Key="menu.help.logslocation">Mở thư mục chứa log</system:String>
   <system:String x:Key="menu.help.reportissue">Báo cáo lỗi</system:String>
   <system:String x:Key="menu.help.wiki">Hướng dẫn sử dụng</system:String>
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
   <system:String x:Key="menu.tools.debugwindow">Mở cửa sổ Debug</system:String>
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">Dọc 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Dọc 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Tuỳ chỉnh...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Biểu cảm...</system:String>
   <system:String x:Key="menu.tools.singer.install">Cài đặt voicebank vào máy...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt voicebank vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách voicebank...</system:String>
@@ -240,6 +247,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji sang Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Đặc tính các nốt</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -295,6 +303,10 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
   <system:String x:Key="prefs.advanced.beta">Thử nghiệm</system:String>
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -327,8 +339,10 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các voicebank</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Phát lại</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Tự động cuốn con trỏ phát nhạc</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Chế độ tự động cuốn</system:String>
@@ -361,6 +375,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, hãy thêm resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers của OpenUTAU và lựa chọn trong Tuỳ chỉnh.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     Cảnh báo: quá nhiều luồng render có thể làm OpenUTAU chạy chậm.
   </system:String>
@@ -390,6 +405,11 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.otoview.zoomin">Phóng to</system:String>
   <system:String x:Key="singers.otoview.zoomout">Thu nhỏ</system:String>
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <system:String x:Key="singers.refresh">Làm mới</system:String>

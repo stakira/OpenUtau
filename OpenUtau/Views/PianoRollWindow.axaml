@@ -195,6 +195,38 @@
               </Style>
             </Menu.Styles>
             
+            <MenuItem Header="{DynamicResource menu.edit}">
+              <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
+              <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
+              <MenuItem Header="-" Height="1"/>
+              <MenuItem Header="{DynamicResource menu.edit.cut}" InputGesture="Ctrl+X" Command="{Binding Cut}"/>
+              <MenuItem Header="{DynamicResource menu.edit.copy}" InputGesture="Ctrl+C" Command="{Binding Copy}"/>
+              <MenuItem Header="{DynamicResource menu.edit.paste}" InputGesture="Ctrl+V" Command="{Binding Paste}"/>
+              <MenuItem Header="{DynamicResource menu.edit.delete}" InputGesture="Delete" Command="{Binding Delete}"/>
+              <MenuItem Header="-" Height="1"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" InputGesture="Ctrl+F" Click="OnMenuSearchNote"/>
+              <MenuItem Header="{DynamicResource menu.edit.selectall}" InputGesture="Ctrl+A" Command="{Binding SelectAll}"/>
+              <MenuItem Header="-" Height="1"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
+              <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes}">
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.pitchpoints}" Click="OnMenuLockPitchPoints">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockPitchPoints}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.vibrato}" Click="OnMenuLockVibrato">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockVibrato}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource menu.edit.lockunselectednotes.expressions}" Click="OnMenuLockExpressions">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockExpressions}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+              </MenuItem>
+            </MenuItem>
+          
             <MenuItem Header="{DynamicResource menu.view}">
               <MenuItem Header="{DynamicResource prefs.appearance.showportrait}" Click="OnMenuShowPortrait">
                 <MenuItem.Icon>
@@ -264,10 +296,6 @@
               </MenuItem>
             </MenuItem>
 
-            <MenuItem Header="{DynamicResource pianoroll.menu.part}">
-              <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
-              <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" Click="OnMenuSearchNote"/>
-            </MenuItem>
             <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
               <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>

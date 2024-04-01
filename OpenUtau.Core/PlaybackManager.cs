@@ -81,21 +81,25 @@ namespace OpenUtau.Core {
             return sineGen;
         }
 
-        public void PlayOrPause() {
+        public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
             if (Playing) {
                 PausePlayback();
             } else {
-                Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
+                Play(
+                    DocManager.Inst.Project,
+                    tick: tick == -1 ? DocManager.Inst.playPosTick : tick,
+                    endTick: endTick,
+                    trackNo: trackNo);
             }
         }
 
-        public void Play(UProject project, int tick) {
+        public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
                 return;
             }
             AudioOutput.Stop();
-            Render(project, tick);
+            Render(project, tick, endTick, trackNo);
             StartingToPlay = true;
         }
 
@@ -117,11 +121,11 @@ namespace OpenUtau.Core {
             AudioOutput.Play();
         }
 
-        private void Render(UProject project, int tick) {
+        private void Render(UProject project, int tick, int endTick, int trackNo) {
             Task.Run(() => {
                 try {
-                    RenderEngine engine = new RenderEngine(project, tick);
-                    var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
+                    RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
+                    var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
                     faders = result.Item2;
                     StartingToPlay = false;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
@@ -150,7 +154,7 @@ namespace OpenUtau.Core {
             await Task.Run(() => {
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var projectMix = engine.RenderMixdown(0, DocManager.Inst.MainScheduler, ref renderCancellation, wait: true).Item1;
+                    var projectMix = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: true).Item1;
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);

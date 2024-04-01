@@ -6,11 +6,14 @@ symbols:
   - {symbol: ah, type: vowel}
   - {symbol: ao, type: vowel}
   - {symbol: aw, type: vowel}
+  - {symbol: ax, type: vowel}
   - {symbol: ay, type: vowel}
   - {symbol: b, type: stop}
   - {symbol: ch, type: affricate}
   - {symbol: d, type: stop}
   - {symbol: dh, type: fricative}
+  - {symbol: dr, type: fricative}
+  - {symbol: dx, type: tap}
   - {symbol: eh, type: vowel}
   - {symbol: er, type: vowel}
   - {symbol: ey, type: vowel}
@@ -28,11 +31,13 @@ symbols:
   - {symbol: ow, type: vowel}
   - {symbol: oy, type: vowel}
   - {symbol: p, type: stop}
+  - {symbol: q, type: stop}
   - {symbol: r, type: liquid}
   - {symbol: s, type: fricative}
   - {symbol: sh, type: fricative}
   - {symbol: t, type: stop}
   - {symbol: th, type: fricative}
+  - {symbol: tr, type: fricative}
   - {symbol: uh, type: vowel}
   - {symbol: uw, type: vowel}
   - {symbol: v, type: fricative}

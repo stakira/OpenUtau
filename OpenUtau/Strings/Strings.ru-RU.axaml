@@ -35,6 +35,8 @@
   <system:String x:Key="dialogs.exitsave.message">Текущий проект содержит несохраненные изменения. Хотите сохранить изменения?</system:String>
   <system:String x:Key="dialogs.export.caption">Экспорт</system:String>
   <system:String x:Key="dialogs.export.savefirst">Сначала нужно сохранить проект</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <system:String x:Key="dialogs.installdependency.caption">Установка зависимостей</system:String>
   <system:String x:Key="dialogs.installdependency.message">Установка </system:String>
   <system:String x:Key="dialogs.installdll.caption">Установка фонемайзера</system:String>
@@ -46,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Да</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Нет ресамплеров</system:String>
   <system:String x:Key="dialogs.noresampler.message">Нет ресамплеров! Поместите ваш любимый ресамплер (.exe или .dll) в папку Resamplers и выберите его в параметрах!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Такт</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Параметры трека</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Расположение</system:String>
@@ -79,6 +83,7 @@
   <system:String x:Key="languages.en">английский</system:String>
   <system:String x:Key="languages.es">испанский</system:String>
   <system:String x:Key="languages.fr">французский</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
   <system:String x:Key="languages.it">итальянский</system:String>
   <system:String x:Key="languages.ja">японский</system:String>
   <system:String x:Key="languages.ko">корейский</system:String>
@@ -152,6 +157,9 @@
   <system:String x:Key="menu.help.logslocation">Открыть расположение логов</system:String>
   <system:String x:Key="menu.help.reportissue">Сообщить об ошибке</system:String>
   <system:String x:Key="menu.help.wiki">Вики OpenUtau</system:String>
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
   <system:String x:Key="menu.tools.debugwindow">Окно отладки</system:String>
@@ -164,7 +172,6 @@
   <system:String x:Key="menu.tools.layout.vsplit12">Вертикально 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Вертикально 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Параметры...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Выражения...</system:String>
   <system:String x:Key="menu.tools.singer.install">Установить вокалиста...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Установить вокалиста (расширенный)...</system:String>
   <system:String x:Key="menu.tools.singers">Вокалисты...</system:String>
@@ -240,6 +247,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Ромадзи в хирагану</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Нота по умолчанию</system:String>
   <system:String x:Key="pianoroll.menu.notes">Ноты</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Добавить "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Автоматическое легато</system:String>
@@ -295,6 +303,10 @@
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Запомнить эти типы файлов в "Открыть последние"</system:String>
@@ -327,8 +339,10 @@
   <system:String x:Key="prefs.paths">Пути</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Дополнительные пути к вокалисту</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Установить в дополнительный путь к вокалисту</system:String>
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Сбросить</system:String>
   <system:String x:Key="prefs.paths.select">Выбрать</system:String>
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Воспроизведение</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Автопрокрутка</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Режим автопрокрутки</system:String>
@@ -361,6 +375,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Примечание: для использования внешних ресамплеров, пожалуйста, добавьте DLL или EXE ресамплера в папку Resamplers в пути установки OpenUtau и выберите его в параметрах
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     Предупреждение: слишком большое количество потоков рендеринга может привести к медленной работе OpenUtau.
   </system:String>
@@ -390,6 +405,11 @@
   <system:String x:Key="singers.otoview.zoomin">Приблизить</system:String>
   <system:String x:Key="singers.otoview.zoomout">Отдалить</system:String>
   <system:String x:Key="singers.playsample">Проиграть пример</system:String>
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <system:String x:Key="singers.readme">Открыть readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt не найден.</system:String>
   <system:String x:Key="singers.refresh">Обновить</system:String>

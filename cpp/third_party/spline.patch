@@ -1,0 +1,33 @@
+--- a/src/spline.h	2021-04-18 07:08:12.000000000 -0700
++++ b/src/spline.h	2024-03-27 20:48:30.639622700 -0700
+@@ -41,8 +41,8 @@
+ // (we get them because we have implementations in the header file,
+ // and this is because we want to be able to quickly separate them
+ // into a cpp file if necessary)
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wunused-function"
++// #pragma GCC diagnostic push
++// #pragma GCC diagnostic ignored "-Wunused-function"
+ 
+ // unnamed namespace only because the implementation is in this
+ // header file and we don't want to export symbols to the obj files
+@@ -52,6 +52,8 @@
+ namespace tk
+ {
+ 
++constexpr double pi = 3.14159265358979323846;
++
+ // spline interpolation
+ class spline
+ {
+@@ -892,8 +894,8 @@
+         double ac = (1.0/3.0) * acos( q/(p*sqrt(p)) );
+         double sq = 2.0*sqrt(p);
+         z[0] = sq * cos(ac);
+-        z[1] = sq * cos(ac-2.0*M_PI/3.0);
+-        z[2] = sq * cos(ac-4.0*M_PI/3.0);
++        z[1] = sq * cos(ac-2.0*pi/3.0);
++        z[2] = sq * cos(ac-4.0*pi/3.0);
+     } else if (discr<0.0) {
+         // single real root: via Cardano's fromula
+         z.resize(1);
