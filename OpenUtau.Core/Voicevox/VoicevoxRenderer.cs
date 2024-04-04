@@ -84,8 +84,14 @@ namespace OpenUtau.Core.Voicevox {
                                 string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
                                 vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, baseSingerID);
 
-                                //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
-                                vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                if (!phrase.phones[0].direct) {
+                                    double frameMs = 1 / 10d * VoicevoxUtils.fps;
+                                    vvNotes.f0 = VoicevoxUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, vvNotes.volume.Count(), 0, 0, x => MusicMath.ToneToFreq(x * 0.01)).ToList();
+                                } else {
+                                    //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
+                                    vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                }
+
                                 //Volume parameter for synthesis. Scheduled to be revised
                                 vvNotes.volume = vvNotes.volume.Select(vol => vol = vol * phrase.phones[0].volume).ToList();
                             } else {
@@ -201,7 +207,7 @@ namespace OpenUtau.Core.Voicevox {
 
             int vvTotalFrames = -(headFrames + tailFrames);
             vnotes.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
-            double frameMs = 1 / 1000d * VoicevoxUtils.fps;
+            double frameMs = VoicevoxUtils.fps;//1 / 1000d * 
             int totalFrames = (int)(vvTotalFrames / VoicevoxUtils.fps * 1000d);
             int frameRatio = vvTotalFrames / totalFrames;
             const int pitchInterval = 5;

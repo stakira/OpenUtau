@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Voicevox {
             }
         }
 
-        public override void SetUp(Note[][] notes)  {
+        public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
             foreach(var lyric in notes) {
                 lyric[0].lyric = lyric[0].lyric.Normalize();
