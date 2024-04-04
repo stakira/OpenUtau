@@ -119,10 +119,14 @@
   <system:String x:Key="menu.edit.copy">コピー</system:String>
   <system:String x:Key="menu.edit.cut">切り取り</system:String>
   <system:String x:Key="menu.edit.delete">削除</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes">選択されていないノートの編集をロック</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">ピッチ点</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">ビブラート</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">表情</system:String>
   <system:String x:Key="menu.edit.paste">貼り付け</system:String>
   <system:String x:Key="menu.edit.redo">やり直す</system:String>
   <system:String x:Key="menu.edit.selectall">全て選択</system:String>
-  <system:String x:Key="menu.edit.undo">元に戻る</system:String>
+  <system:String x:Key="menu.edit.undo">元に戻す</system:String>
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportaudio">音声をエクスポート</system:String>
