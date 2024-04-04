@@ -37,11 +37,13 @@ namespace OpenUtau.Core.Voicevox {
 
 
     internal static class VoicevoxUtils {
-        public const string VOLC = "volc";
+        public const string VOLSC = "volsc";
+        public const string IVOLC = "ivolc";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
+        static Dictionary_list dic = new Dictionary_list();
 
         public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
@@ -62,7 +64,6 @@ namespace OpenUtau.Core.Voicevox {
                 BaseChinesePhonemizer.RomanizeNotes(notes);
             }
             VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
-            Dictionary_list dic = new Dictionary_list();
             dic.Loaddic(singer.Location);
             int index = 0;
             int duration = 0;
@@ -116,7 +117,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
-            const int interval = 5;
+            double interval = curve.Length / length;
             var result = new double[length];
             if (curve == null) {
                 Array.Fill(result, defaultValue);
@@ -124,9 +125,9 @@ namespace OpenUtau.Core.Voicevox {
             }
 
             for (int i = 0; i < length; i++) {
-                double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
+                double posMs = phrase.positionMs - phrase.leadingMs + (i * interval);
                 int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
-                int index = Math.Max(0, (int)((double)ticks / interval));
+                int index = Math.Max(0, (int)((double)ticks ));
                 if (index < curve.Length) {
                     result[i] = convert(curve[index]);
                 }
@@ -152,6 +153,19 @@ namespace OpenUtau.Core.Voicevox {
                 return true;
             }
             return false;
+        }
+
+        public static string getBaseSingerID(VoicevoxSinger singer) {
+            if (singer.voicevoxConfig.base_singer_style != null) {
+                foreach (var s in singer.voicevoxConfig.base_singer_style) {
+                    if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
+                        if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
+                            return s.styles.id.ToString();
+                        }
+                    }
+                }
+            }
+            return defaultID;
         }
     }
 }
