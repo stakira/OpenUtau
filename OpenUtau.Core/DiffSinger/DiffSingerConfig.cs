@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.DiffSinger {
-
     [Serializable]
     public class RandomPitchShifting {
         public float[] range;
@@ -27,8 +27,24 @@ namespace OpenUtau.Core.DiffSinger {
         public bool useVoicingEmbed = false;
         public bool useTensionEmbed = false;
         public AugmentationArgs augmentationArgs;
-        public bool useShallowDiffusion = false;
-        public int maxDepth = -1;
+        public bool useContinuousAcceleration = false;
+        [YamlMember(Alias = "use_shallow_diffusion")] public bool? _useShallowDiffusion;
+        [YamlMember(Alias = "use_variable_depth")] public bool? _useVariableDepth;
+        [YamlIgnore]
+        public bool useVariableDepth {
+            get {
+                // coalesce _useDepth and _useShallowDiffusion
+                if (_useVariableDepth.HasValue) {
+                    return _useVariableDepth.Value;
+                }
+                if (_useShallowDiffusion.HasValue) {
+                    return _useShallowDiffusion.Value;
+                }
+                return false;
+            }
+        }
+        [YamlMember(Alias = "max_depth")] public double _maxDepth;
+        [YamlIgnore] public double maxDepth => useContinuousAcceleration ? _maxDepth : _maxDepth / 1000.0;
         public string dur;
         public string linguistic;
         public string pitch;
@@ -49,7 +65,8 @@ namespace OpenUtau.Core.DiffSinger {
         public double mel_fmax = 16000;
         public string mel_base = "10";  // or "e"
         public string mel_scale = "slaney";  // or "htk"
-        public float frameMs(){
+
+        public float frameMs() {
             return 1000f * hop_size / sample_rate;
         }
     }
