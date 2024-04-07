@@ -71,6 +71,23 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isTimitPhonemes = false;
 
+        private bool vc_FallBack = false;
+
+        private readonly Dictionary<string, string> vcFallBacks =
+            new Dictionary<string, string>() {
+                {"aw","uw"},
+                {"ow","uw"},
+                {"uh","uw"},
+                {"ay","iy"},
+                {"ey","iy"},
+                {"oy","iy"},
+                {"aa","ah"},
+                {"ae","ah"},
+                {"ao","ah"},
+                {"eh","ah"},
+                {"er","ah"},
+            };
+
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
                 {"aw","w"},
@@ -248,6 +265,11 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            // For VC Fallback phonemes
+            if (!HasOto($"{vcFallBacks.Keys} {cc}", syllable.tone)) {
+                vc_FallBack = true;
+            }
+
             // STARTING V
             if (syllable.IsStartingV) {
                 // TRIES - V THEN V
@@ -327,7 +349,6 @@ namespace OpenUtau.Plugin.Builtin {
                 var rccv3 = $"-{string.Join("", cc)}{v}";
                 var crv = $"{cc.Last()} {v}";
                 var ccv = $"{string.Join("", cc)} {v}";
-                var cv = $"{cc[0]}{v}";
                 if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
                     basePhoneme = rccv;
                     lastC = 0;
@@ -407,8 +428,8 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add(vcc);
                         firstC = 1;
                         break;
-                    } else if ((HasOto(vc_c, syllable.tone) || HasOto(ValidateAlias(vc_c), syllable.tone))) {
-                        phonemes.Add(vcc);
+                    } else if (HasOto(vc_c, syllable.tone) || HasOto(ValidateAlias(vc_c), syllable.tone)) {
+                        phonemes.Add(vc_c);
                         firstC = 1;
                         break;
                     } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone) ) {
@@ -1548,28 +1569,14 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             //VC's
-            foreach (var v1 in new[] { "aw", "ow", "uh" }) {
+            foreach (var v1 in vcFallBacks) {
                 foreach (var c1 in consonants) {
-                    if (vcSpecific || !alias.Contains($"{v1} {c1}")) {
-                        alias = alias.Replace(v1 + " " + c1, "uw" + " " + c1);
+                    if (vcSpecific && vc_FallBack) {
+                        alias = alias.Replace(v1.Key + " " + c1, v1.Value + " " + c1);
                     }
                 }
             }
-            foreach (var v1 in new[] { "ay", "ey", "oy" }) {
-                foreach (var c1 in consonants) {
-                    if (vcSpecific || !alias.Contains($"{v1} {c1}")) {
-                        alias = alias.Replace(v1 + " " + c1, "iy" + " " + c1);
-                    }
-                }
-            }
-            foreach (var v1 in new[] { "aa", "ae", "ao", "eh", "er" }) {
-                foreach (var c1 in consonants) {
-                    if (vcSpecific || !alias.Contains($"{v1} {c1}")) {
-                        alias = alias.Replace(v1 + " " + c1, "ah" + " " + c1);
-                    }
-                }
-            }
-
+            
             // glottal
             foreach (var v1 in vowels) {
                 if (!alias.Contains("cl " + v1) || !alias.Contains("q " + v1)) {
