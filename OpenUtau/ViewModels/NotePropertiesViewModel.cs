@@ -162,12 +162,12 @@ namespace OpenUtau.App.ViewModels {
             Expressions.Clear();
             if (part != null && part is UVoicePart) {
                 this.Part = part as UVoicePart;
+                var track = DocManager.Inst.Project.tracks[part.trackNo];
 
                 foreach (KeyValuePair<string, UExpressionDescriptor> pair in DocManager.Inst.Project.expressions) {
-                    if (pair.Value.type != UExpressionType.Curve) {
-                        var viewModel = new NotePropertyExpViewModel(pair.Value, this);
-                        if (pair.Value.abbr == Ustx.CLR) {
-                            var track = DocManager.Inst.Project.tracks[part.trackNo];
+                    if (track.TryGetExpDescriptor(DocManager.Inst.Project, pair.Key, out var descriptor) && descriptor.type != UExpressionType.Curve) {
+                        var viewModel = new NotePropertyExpViewModel(descriptor, this);
+                        if (descriptor.abbr == Ustx.CLR) {
                             if (track.VoiceColorExp != null && track.VoiceColorExp.options.Length > 0) {
                                 viewModel.Options.Clear();
                                 track.VoiceColorExp.options.ForEach(opt => viewModel.Options.Add(opt));

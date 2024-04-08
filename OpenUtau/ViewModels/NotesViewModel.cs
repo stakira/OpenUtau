@@ -971,7 +971,7 @@ namespace OpenUtau.App.ViewModels {
             if (track.RendererSettings.Renderer == null) {
                 return true;
             }
-            if (Project.expressions.TryGetValue(expKey, out var descriptor)) {
+            if (track.TryGetExpDescriptor(Project, expKey, out var descriptor)) {
                 return track.RendererSettings.Renderer.SupportsExpression(descriptor);
             }
             if (expKey == track.VoiceColorExp.abbr) {
