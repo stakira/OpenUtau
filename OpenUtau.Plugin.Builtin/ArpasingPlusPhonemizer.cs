@@ -428,10 +428,12 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add(vcc);
                         firstC = 1;
                         break;
-                    } else if (HasOto(vc_c, syllable.tone) || HasOto(ValidateAlias(vc_c), syllable.tone)) {
+                        /// temporarily removed vc_c cuz of the arpabet [v] sustain confict on jp vc 😭
+                    /*} else if (HasOto(vc_c, syllable.tone) || HasOto(ValidateAlias(vc_c), syllable.tone)) {
                         phonemes.Add(vc_c);
                         firstC = 1;
                         break;
+                    */
                     } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone) ) {
                         phonemes.Add(vc);
                         break;
@@ -661,10 +663,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc1, ending.tone)) {
                             cc1 = ValidateAlias(cc1);
                         }
-                        if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}{cc[i + 2]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}{cc[i + 2]}-"))) {
-                            // like [C1 C2-][C3 ...]
-                            i++;
-                        } else if (HasOto(cc1, ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone))) {
+                        if (HasOto(cc1, ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone))) {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
                         } else if ((HasOto(cc[i], ending.tone) || HasOto(ValidateAlias(cc[i]), ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone)))) {
