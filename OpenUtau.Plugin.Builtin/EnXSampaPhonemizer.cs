@@ -252,7 +252,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // VV splits to [V C][CV] or [V][V]
                         var delta5vc = $"{Delta5vvExceptions[prevV]}";
                         bool CV = false;
-                        if (!HasOto(delta5vc, syllable.vowelTone)) {
+                        if ((!HasOto(delta5vc, syllable.vowelTone) && !HasOto(ValidateAlias(delta5vc), syllable.vowelTone))) {
                             delta5vc = $"{prevV} {vvExceptions[prevV]}";
                             CV = true;
                         }
@@ -260,7 +260,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // if delta5 vc is not available, turn v to cv
                         var cv = $"{vvExceptions[prevV]}{v}";
                         basePhoneme = v;
-                        if (CV && HasOto(cv, syllable.vowelTone)) {
+                        if (CV && (HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone))) {
                             basePhoneme = cv;
                         }
                     } else {
