@@ -214,7 +214,7 @@ namespace OpenUtau.Plugin.Builtin {
                 isVocaSampa = true;
             }
 
-            if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone)) {
+            if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone) || (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone))) {
                 isSimpleDelta = true;
             }
 
