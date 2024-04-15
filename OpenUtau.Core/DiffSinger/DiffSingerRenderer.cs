@@ -79,19 +79,18 @@ namespace OpenUtau.Core.DiffSinger {
 
                     // calculate real depth
                     var singer = (DiffSingerSinger) phrase.singer;
-                    double depth = Preferences.Default.DiffSingerDepth;
+                    double depth;
                     int steps = Preferences.Default.DiffSingerSteps;
                     if (singer.dsConfig.useVariableDepth) {
                         double maxDepth = singer.dsConfig.maxDepth;
                         if (maxDepth < 0) {
                             throw new InvalidDataException("Max depth is unset or is negative.");
                         }
-                        depth = Math.Min(depth, maxDepth);  // make sure depth <= K_step
+                        depth = Math.Min(Preferences.Default.DiffSingerDepth, maxDepth);
+                    } else {
+                        depth = 1.0;
                     }
-                    // format depth with 3 decimal places
-                    var wavName = singer.dsConfig.useVariableDepth
-                        ? $"ds-{phrase.hash:x16}-depth{depth:f2}-steps{steps}.wav"  // if the depth changes, phrase should be re-rendered
-                        : $"ds-{phrase.hash:x16}-steps{steps}.wav";  // preserve this for models without depth
+                    var wavName = $"ds-{phrase.hash:x16}-depth{depth:f2}-steps{steps}.wav";
                     var wavPath = Path.Join(PathManager.Inst.CachePath, wavName);
                     string progressInfo = $"Track {trackNo + 1}: {this} depth={depth:f2} steps={steps} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
