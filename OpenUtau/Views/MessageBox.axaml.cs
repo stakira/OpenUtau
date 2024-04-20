@@ -55,8 +55,18 @@ namespace OpenUtau.App.Views {
                     builder.AppendLine(ae.InnerExceptions.First().Message);
                     builder.AppendLine();
                     builder.Append(ae.ToString());
-                    if (string.IsNullOrEmpty(text)) {
-                        text = ae.InnerExceptions.First().Message;
+
+                    if (!string.IsNullOrWhiteSpace(text)) {
+                        text += "\n";
+                    }
+                    if (ae.InnerExceptions.First() is MessageCustomizableException innnerMce) {
+                        if (!string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
+                            var matches = Regex.Matches(innnerMce.TranslatableMessage, "<translate:(.*?)>");
+                            matches.ForEach(m => innnerMce.TranslatableMessage = innnerMce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
+                            text += innnerMce.TranslatableMessage;
+                        } else {
+                            text += ae.InnerExceptions.First().Message;
+                        }
                     }
                 } else {
                     builder.AppendLine(e.Message);

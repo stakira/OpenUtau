@@ -33,5 +33,9 @@ namespace OpenUtau.Core {
             SubstanceException = e;
             ShowStackTrace = showStackTrace;
         }
+
+        public override string ToString() {
+            return SubstanceException.ToString();
+        }
     }
 }
