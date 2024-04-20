@@ -364,7 +364,7 @@
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">기본 렌더러 (Classic 음원용)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 렌더링 깊이(Depth)</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 렌더링 가속</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">그래픽 카드(GPU)</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">머신러닝 실행 장치</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>

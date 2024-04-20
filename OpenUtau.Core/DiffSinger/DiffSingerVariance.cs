@@ -129,7 +129,6 @@ namespace OpenUtau.Core.DiffSinger{
             var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => x * 0.01)
                 .Select(f => (float)f).ToArray();
-            var speedup = Preferences.Default.DiffsingerSpeedup;
 
             var varianceInputs = new List<NamedOnnxValue>();
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
@@ -174,8 +173,19 @@ namespace OpenUtau.Core.DiffSinger{
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, totalFrames, numVariances })));
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+            var steps = Preferences.Default.DiffSingerSteps;
+            if (dsConfig.useContinuousAcceleration) {
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
+                    new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
+            } else {
+                // find a largest integer speedup that are less than 1000 / steps and is a factor of 1000
+                long speedup = Math.Max(1, 1000 / steps);
+                while (1000 % speedup != 0 && speedup > 1) {
+                    speedup--;
+                }
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
+                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+            }
             //Speaker
             if(dsConfig.speakers != null) {
                 var speakerEmbedManager = getSpeakerEmbedManager();
