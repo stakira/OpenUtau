@@ -360,7 +360,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
   <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de fase</system:String>

@@ -26,6 +26,20 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Error message: {message} {e}";
     }
 
+    public class ErrorMessageNotificationWithTranslation : ErrorMessageNotification {
+        public readonly string stringKey = string.Empty;
+        public ErrorMessageNotificationWithTranslation(string stringKey) : base(string.Empty) {
+            this.stringKey = stringKey;
+        }
+        public ErrorMessageNotificationWithTranslation(string stringKey, Exception e) : base(e) {
+            this.stringKey = stringKey;
+        }
+        public ErrorMessageNotificationWithTranslation(string stringKey, string additionalMessage, Exception e) : base(additionalMessage, e) {
+            this.stringKey = stringKey;
+        }
+        public override string ToString() => $"Error message: {stringKey}{message} {e}";
+    }
+
     public class LoadingNotification : UNotification {
         public readonly Type window;
         public readonly bool startLoading;

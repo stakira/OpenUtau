@@ -83,7 +83,7 @@ namespace OpenUtau.App.Views {
                         }
                     }
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to load prefix map", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.load", ": prefix map", e));
                 }
             }
         }
@@ -102,7 +102,7 @@ namespace OpenUtau.App.Views {
                             }
                         }
                     } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to save prefix map", e));
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.save", ": prefix map", e));
                     }
                 }
             }

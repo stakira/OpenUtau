@@ -10,6 +10,11 @@ using OpenUtau.Core.Util;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
 
+/*
+ * This source code is partially based on the VOICEVOX engine.
+ * https://github.com/VOICEVOX/voicevox_engine/blob/master/LGPL_LICENSE
+ */
+
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxConfig {
         //Information that each Singer has
@@ -31,6 +36,18 @@ namespace OpenUtau.Core.Voicevox {
 
         public static VoicevoxConfig Load(USinger singer) {
             try {
+                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" });
+                var jObj = JObject.Parse(response.Item1);
+                if (jObj.ContainsKey("detail")) {
+                    Log.Error($"Response was incorrect. : {jObj}");
+                }
+                var manifest = jObj.ToObject<Engine_manifest>();
+                manifest.SaveLicenses(singer.Location);
+            } catch(Exception e) {
+                Log.Error($"Could not load Licenses.:{e}");
+            }
+            try {
+
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
@@ -45,7 +62,7 @@ namespace OpenUtau.Core.Voicevox {
                     var filePath = Path.Join(folderPath, "character.yaml");
                     if (!File.Exists(filePath)) {
                         Directory.CreateDirectory(folderPath);
-                        string typename = string.Empty ;
+                        string typename = string.Empty;
                         SingerTypeUtils.SingerTypeNames.TryGetValue(USingerType.Voicevox, out typename);
                         var config = new VoicebankConfig() {
                             Name = voicevoxConfig.name,
@@ -69,7 +86,7 @@ namespace OpenUtau.Core.Voicevox {
             return new VoicevoxConfig();
         }
         public void LoadInfo(VoicevoxConfig voicevoxConfig, string location) {
-            if(voicevoxConfig.style_infos == null) {
+            if (voicevoxConfig.style_infos == null) {
                 var queryurl = new VoicevoxURL() { method = "GET", path = "/singer_info", query = new Dictionary<string, string> { { "speaker_uuid", voicevoxConfig.speaker_uuid } } };
                 var response = VoicevoxClient.Inst.SendRequest(queryurl);
                 var jObj = JObject.Parse(response.Item1);
@@ -86,6 +103,68 @@ namespace OpenUtau.Core.Voicevox {
         }
     }
 
+    public class Engine_manifest {
+        public class Update_infos {
+            public string version;
+            public IList<string> descriptions;
+            public IList<string> contributors;
+
+        }
+        public class Dependency_licenses {
+            public string name;
+            public string version;
+            public string license;
+            public string text;
+
+        }
+        public class Supported_features {
+            public bool adjust_mora_pitch;
+            public bool adjust_phoneme_length;
+            public bool adjust_speed_scale;
+            public bool adjust_pitch_scale;
+            public bool adjust_intonation_scale;
+            public bool adjust_volume_scale;
+            public bool interrogative_upspeak;
+            public bool synthesis_morphing;
+            public bool sing;
+            public bool manage_library;
+
+        }
+
+        public string manifest_version;
+        public string name;
+        public string brand_name;
+        public string uuid;
+        public string url;
+        public string icon;
+        public int default_sampling_rate;
+        public int frame_rate;
+        public string terms_of_service;
+        public IList<Update_infos> update_infos;
+        public IList<Dependency_licenses> dependency_licenses;
+        public string supported_vvlib_manifest_version;
+        public Supported_features supported_features;
+
+        public void SaveLicenses(string location) {
+            var parentDirectory = Directory.GetParent(location).ToString();
+            var licenseDirectory = Path.Join(parentDirectory, "Licenses");
+            if (!Directory.Exists(licenseDirectory)) {
+                Directory.CreateDirectory(licenseDirectory);
+            }
+            var filePath = Path.Join(licenseDirectory, "terms_of_service.txt");
+            if (!string.IsNullOrEmpty(terms_of_service)) {
+                File.WriteAllText(filePath, terms_of_service);
+            }
+            foreach (var item in dependency_licenses) {
+                item.name = item.name.Replace("\"","");
+                filePath = Path.Join(licenseDirectory, $"{item.name}_License.txt");
+                if (!string.IsNullOrEmpty(item.text)) {
+                    File.WriteAllText(filePath, $"license:{item.license}\nversion:{item.version}\n\n" + item.text);
+                }
+            }
+        }
+    }
+
     public class Phoneme_list {
         public string[] vowels;
         public string[] consonants;
@@ -93,7 +172,7 @@ namespace OpenUtau.Core.Voicevox {
     }
 
     public class Dictionary_list {
-        public Dictionary<string,string> dict = new Dictionary<string, string>();
+        public Dictionary<string, string> dict = new Dictionary<string, string>();
 
         public void Loaddic(string location) {
             try {
@@ -112,12 +191,12 @@ namespace OpenUtau.Core.Voicevox {
                     }
 
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
 
-        public string Lyrictodic(Note[][] notes,int index) {
+        public string Lyrictodic(Note[][] notes, int index) {
             if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
                     return "";
@@ -144,7 +223,7 @@ namespace OpenUtau.Core.Voicevox {
             Log.Information($"Begin setup of Voicevox SingerInfo.");
             try {
                 var readmePath = Path.Join(location, "readme.txt");
-                if (!string.IsNullOrEmpty(this.policy) && !File.Exists(readmePath)) {
+                if (!string.IsNullOrEmpty(this.policy)) {
                     voicevoxConfig.policy = this.policy;
                     File.WriteAllText(readmePath, this.policy);
                 }
@@ -167,15 +246,15 @@ namespace OpenUtau.Core.Voicevox {
                         voicevoxConfig.style_infos[i].id = this.style_infos[i].id;
                     }
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.Error($"Could not create character file. : {e}");
             }
             Log.Information($"Voicevox SingerInfo setup complete.");
         }
 
-        public void checkAndSetFiles(string base64str,string filePath) {
-            if (!String.IsNullOrEmpty(base64str) && !File.Exists(filePath)) {
-                    Base64.Base64ToFile(base64str, filePath);
+        public void checkAndSetFiles(string base64str, string filePath) {
+            if (!String.IsNullOrEmpty(base64str)) {
+                Base64.Base64ToFile(base64str, filePath);
             }
         }
     }
