@@ -29,7 +29,7 @@ namespace OpenUtau.Core.DiffSinger {
                 model = File.ReadAllBytes(Path.Combine(Location, config.model));
             }
             catch (Exception ex) {
-                throw new Exception($"Error loading vocoder {name}. Please download vocoder from https://github.com/xunmengshe/OpenUtau/wiki/Vocoders");
+                throw new MessageCustomizableException($"Error loading vocoder {name}", $"<translate:errors.diffsinger.downloadvocoder1>{name}<translate:errors.diffsinger.downloadvocoder2>https://github.com/xunmengshe/OpenUtau/wiki/Vocoders", new Exception($"Error loading vocoder {name}"));
             }
             session = Onnx.getInferenceSession(model);
         }

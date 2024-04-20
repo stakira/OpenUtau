@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using OpenUtau.Core;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.App.Views {
     public partial class MessageBox : Window {
@@ -31,6 +33,20 @@ namespace OpenUtau.App.Views {
 
         public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
             string text = message;
+            string title = ThemeManager.GetString("errors.caption");
+
+            if (e is MessageCustomizableException mce) {
+                if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
+                    var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
+                    matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
+                    text = mce.TranslatableMessage;
+                    e = mce.SubstanceException;
+                }
+
+                if (!mce.ShowStackTrace) {
+                    return Show(parent, text, null, title, MessageBoxButtons.Ok);
+                }
+            }
 
             var builder = new StringBuilder();
             if (e != null) {
@@ -54,7 +70,6 @@ namespace OpenUtau.App.Views {
             builder.AppendLine();
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
-            string title = ThemeManager.GetString("errors.caption");
 
             return Show(parent, text, builder.ToString(), title, MessageBoxButtons.OkCopy);
         }

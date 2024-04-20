@@ -159,7 +159,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -171,7 +172,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.Image = filepath);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -183,7 +185,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -195,7 +198,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.SingerType = singerType);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -207,7 +211,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -219,7 +224,8 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
                 Refresh();
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.savesingerconfig", e));
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
@@ -338,7 +344,8 @@ namespace OpenUtau.App.ViewModels {
             try {
                 Subbanks.AddRange(Singer.Subbanks);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotificationWithTranslation("errors.failed.load", ": subbanks", e));
+                var customEx = new MessageCustomizableException("Failed to load subbanks", "<translate:errors.failed.load>: subbanks", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
