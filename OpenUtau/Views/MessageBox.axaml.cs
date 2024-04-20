@@ -30,35 +30,50 @@ namespace OpenUtau.App.Views {
         }
 
         public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
+            string text = message;
+
             var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(message)) {
-                builder.AppendLine(message);
-            }
             if (e != null) {
                 if (e is AggregateException ae) {
                     ae = ae.Flatten();
                     builder.AppendLine(ae.InnerExceptions.First().Message);
                     builder.AppendLine();
                     builder.Append(ae.ToString());
+                    if (string.IsNullOrEmpty(text)) {
+                        text = ae.InnerExceptions.First().Message;
+                    }
                 } else {
                     builder.AppendLine(e.Message);
                     builder.AppendLine();
                     builder.Append(e.ToString());
+                    if (string.IsNullOrEmpty(text)) {
+                        text = e.Message;
+                    }
                 }
             }
             builder.AppendLine();
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
             string title = ThemeManager.GetString("errors.caption");
-            return Show(parent, builder.ToString(), title, MessageBoxButtons.OkCopy);
+
+            return Show(parent, text, builder.ToString(), title, MessageBoxButtons.OkCopy);
         }
 
         public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {
+            return Show(parent, text, null, title, buttons);
+        }
+        public static Task<MessageBoxResult> Show(Window parent, string text, string? stackTrace, string title, MessageBoxButtons buttons) {
             var msgbox = new MessageBox() {
                 Title = title
             };
             msgbox.Text.IsVisible = false;
             msgbox.SetTextWithLink(text, msgbox.TextPanel);
+            if (stackTrace != null) {
+                var stackTracePanel = new StackPanel();
+                var expander = new Expander() { Header = ThemeManager.GetString("errors.details"), Content = stackTracePanel };
+                msgbox.TextPanel.Children.Add(expander);
+                msgbox.SetTextWithLink(stackTrace, stackTracePanel);
+            }
 
             var res = MessageBoxResult.Ok;
 
@@ -86,7 +101,7 @@ namespace OpenUtau.App.Views {
                 var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.copy") };
                 btn.Click += (_, __) => {
                     try {
-                        GetTopLevel(parent)?.Clipboard?.SetTextAsync(text);
+                        GetTopLevel(parent)?.Clipboard?.SetTextAsync(text + "\n" + stackTrace);
                     } catch { }
                 };
                 msgbox.Buttons.Children.Add(btn);

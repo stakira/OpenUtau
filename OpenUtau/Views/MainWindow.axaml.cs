@@ -1328,7 +1328,11 @@ namespace OpenUtau.App.Views {
                            MessageBox.MessageBoxButtons.Ok);
                         break;
                     default:
-                        MessageBox.ShowError(this, notif.message, notif.e);
+                        if (notif is ErrorMessageNotificationWithTranslation translatedNotif) {
+                            MessageBox.ShowError(this, ThemeManager.GetString(translatedNotif.stringKey) + translatedNotif.message, translatedNotif.e);
+                        } else {
+                            MessageBox.ShowError(this, notif.message, notif.e);
+                        }
                         break;
                 }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {

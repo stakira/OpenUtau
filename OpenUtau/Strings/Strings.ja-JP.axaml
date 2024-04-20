@@ -61,6 +61,14 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
+  <system:String x:Key="errors.details">エラーの詳細</system:String>
+  <system:String x:Key="errors.failed.export">エクスポートに失敗しました</system:String>
+  <system:String x:Key="errors.failed.load">読み込みに失敗しました</system:String>
+  <system:String x:Key="errors.failed.open">読み込みに失敗しました</system:String>
+  <system:String x:Key="errors.failed.render">レンダリングに失敗しました。</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">一括処理に失敗しました。</system:String>
+  <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました。</system:String>
 
   <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>
