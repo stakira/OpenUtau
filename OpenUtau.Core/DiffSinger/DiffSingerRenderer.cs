@@ -361,15 +361,21 @@ namespace OpenUtau.Core.DiffSinger {
                         .Reshape(new int[] { 1, tension.Length })));
                 }
             }
-            Tensor<float> mel;
-            lock(acousticModel){
-                if(cancellation.IsCancellationRequested) {
-                    return null;
+            Onnx.VerifyInputNames(acousticModel, acousticInputs);
+            var acousticCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(singer.acousticHash, acousticInputs)
+                : null;
+            var acousticOutputs = acousticCache?.Load();
+            if (acousticOutputs is null) {
+                lock(acousticModel){
+                    if(cancellation.IsCancellationRequested) {
+                        return null;
+                    }
+                    acousticOutputs = acousticModel.Run(acousticInputs).Cast<NamedOnnxValue>().ToList();
                 }
-                Onnx.VerifyInputNames(acousticModel, acousticInputs);
-                var acousticOutputs = acousticModel.Run(acousticInputs);
-                mel = acousticOutputs.First().AsTensor<float>().Clone();
+                acousticCache?.Save(acousticOutputs);
             }
+            Tensor<float> mel = acousticOutputs.First().AsTensor<float>().Clone();
             //mel transforms for different mel base
             if (vocoder.mel_base != singer.dsConfig.mel_base) {
                 float k;
@@ -395,14 +401,20 @@ namespace OpenUtau.Core.DiffSinger {
             var vocoderInputs = new List<NamedOnnxValue>();
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
-            Tensor<float> samplesTensor;
-            lock(vocoder){
-                if(cancellation.IsCancellationRequested) {
-                    return null;
+            var vocoderCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(vocoder.hash, vocoderInputs)
+                : null;
+            var vocoderOutputs = vocoderCache?.Load();
+            if (vocoderOutputs is null) {
+                lock(vocoder){
+                    if(cancellation.IsCancellationRequested) {
+                        return null;
+                    }
+                    vocoderOutputs = vocoder.session.Run(vocoderInputs).Cast<NamedOnnxValue>().ToList();
                 }
-                var vocoderOutputs = vocoder.session.Run(vocoderInputs);
-                samplesTensor = vocoderOutputs.First().AsTensor<float>();
+                vocoderCache?.Save(vocoderOutputs);
             }
+            Tensor<float> samplesTensor = vocoderOutputs.First().AsTensor<float>();
             //Check the size of samplesTensor
             int[] expectedShape = new int[] { 1, -1 };
             if(!DiffSingerUtils.ValidateShape(samplesTensor, expectedShape)){

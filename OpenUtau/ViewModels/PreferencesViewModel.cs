@@ -42,6 +42,7 @@ namespace OpenUtau.App.ViewModels {
         public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
         [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public int DiffSingerSteps { get; set; }
+        [Reactive] public bool DiffSingerTensorCache { get; set; }
         [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
@@ -141,6 +142,7 @@ namespace OpenUtau.App.ViewModels {
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
             DiffSingerSteps = Preferences.Default.DiffSingerSteps;
+            DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
@@ -333,6 +335,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerDepth)
                 .Subscribe(index => {
                     Preferences.Default.DiffSingerDepth = index / 100;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerTensorCache)
+                .Subscribe(useCache => {
+                    Preferences.Default.DiffSingerTensorCache = useCache;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
