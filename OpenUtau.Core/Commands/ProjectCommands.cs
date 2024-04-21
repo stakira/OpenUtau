@@ -167,7 +167,8 @@ namespace OpenUtau.Core {
         public override string ToString() => "Configure expressions";
         public override void Execute() {
             project.expressions = newDescriptors.ToDictionary(descriptor => descriptor.abbr);
-            Format.Ustx.AddDefaultExpressions(project);
+            // TODO: Measures to be taken when a default expression is removed, and when adding it duplicates the flag.
+            // Format.Ustx.AddDefaultExpressions(project);
             project.parts
                 .Where(part => part is UVoicePart)
                 .ToList()
@@ -176,7 +177,7 @@ namespace OpenUtau.Core {
         }
         public override void Unexecute() {
             project.expressions = oldDescriptors.ToDictionary(descriptor => descriptor.abbr);
-            Format.Ustx.AddDefaultExpressions(project);
+            // Format.Ustx.AddDefaultExpressions(project);
             project.parts
                 .Where(part => part is UVoicePart)
                 .ToList()
