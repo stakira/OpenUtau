@@ -360,7 +360,7 @@
   <system:String x:Key="prefs.rendering">Рендеринг</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Рендерер по-умолчанию (для классических войсбанков)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Глубина рендеринга DiffSinger</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">Ускорение рендеринга DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">Графический процессор</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>

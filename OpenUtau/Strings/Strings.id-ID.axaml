@@ -366,7 +366,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Perender bawaan (untuk voicebank klasik)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Kedalaman Render DiffSinger</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">Kecepatan Render DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">Penjalan Pembelajaran Mesin</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>

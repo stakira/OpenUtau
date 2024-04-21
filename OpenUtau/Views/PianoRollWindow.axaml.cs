@@ -246,7 +246,8 @@ namespace OpenUtau.App.Views {
                         try {
                             edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                         } catch (Exception e) {
-                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+                            var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                         }
                     }
                 }
@@ -274,7 +275,8 @@ namespace OpenUtau.App.Views {
                 try {
                     edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+                    var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             };
             dialog.ShowDialog(this);

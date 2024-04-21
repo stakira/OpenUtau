@@ -23,7 +23,17 @@ namespace OpenUtau.Core {
             this.message = message;
             this.e = e;
         }
-        public override string ToString() => $"Error message: {message} {e}";
+        public override string ToString() {
+            if (e is MessageCustomizableException mce) {
+                if (string.IsNullOrWhiteSpace(mce.Message)) {
+                    return $"Error message: {mce.SubstanceException.Message} {mce.SubstanceException}";
+                } else {
+                    return $"Error message: {mce.Message} {mce.SubstanceException}";
+                }
+            } else {
+                return $"Error message: {message} {e}";
+            }
+        }
     }
 
     public class LoadingNotification : UNotification {

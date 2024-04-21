@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using K4os.Hash.xxHash;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.DiffSinger
 {
@@ -17,6 +19,8 @@ namespace OpenUtau.Core.DiffSinger
         DsConfig dsConfig;
         string rootPath;
         float frameMs;
+        ulong linguisticHash;
+        ulong durationHash;
         InferenceSession linguisticModel;
         InferenceSession durationModel;
         IG2p g2p;
@@ -51,14 +55,18 @@ namespace OpenUtau.Core.DiffSinger
             //Load models
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             try {
-                linguisticModel = new InferenceSession(linguisticModelPath);
+                var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
+                linguisticHash = XXH64.DigestOf(linguisticModelBytes);
+                linguisticModel = new InferenceSession(linguisticModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load linguistic model from {linguisticModelPath}");
                 return;
             }
             var durationModelPath = Path.Join(rootPath, dsConfig.dur);
             try {
-                durationModel = new InferenceSession(durationModelPath);
+                var durationModelBytes = File.ReadAllBytes(durationModelPath);
+                durationHash = XXH64.DigestOf(durationModelBytes);
+                durationModel = new InferenceSession(durationModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load duration model from {durationModelPath}");
                 return;
@@ -260,7 +268,14 @@ namespace OpenUtau.Core.DiffSinger
                 new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                 .Reshape(new int[] { 1, word_dur.Length })));
             Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
-            var linguisticOutputs = linguisticModel.Run(linguisticInputs);
+            var linguisticCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(linguisticHash, linguisticInputs)
+                : null;
+            var linguisticOutputs = linguisticCache?.Load();
+            if (linguisticOutputs is null) {
+                linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
+                linguisticCache?.Save(linguisticOutputs);
+            }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
                 .First()
@@ -291,7 +306,14 @@ namespace OpenUtau.Core.DiffSinger
                 durationInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
             Onnx.VerifyInputNames(durationModel, durationInputs);
-            var durationOutputs = durationModel.Run(durationInputs);
+            var durationCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(durationHash, durationInputs)
+                : null;
+            var durationOutputs = durationCache?.Load();
+            if (durationOutputs is null) {
+                durationOutputs = durationModel.Run(durationInputs).Cast<NamedOnnxValue>().ToList();
+                durationCache?.Save(durationOutputs);
+            }
             List<double> durationFrames = durationOutputs.First().AsTensor<float>().Select(x=>(double)x).ToList();
             
             //Alignment

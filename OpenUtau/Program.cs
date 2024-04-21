@@ -63,7 +63,8 @@ namespace OpenUtau.App {
 
                 string fontFamily = process.StandardOutput.ReadToEnd();
                 if (!string.IsNullOrEmpty(fontFamily)) {
-                    fontOptions.DefaultFamilyName = fontFamily;
+                    string [] fontFamilies = fontFamily.Split(',');
+                    fontOptions.DefaultFamilyName = fontFamilies[0];
                 }
             }
             return AppBuilder.Configure<App>()

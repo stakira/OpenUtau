@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.TimeSignatureDialog"
+        Icon="/Assets/open-utau.ico"
         Title="{DynamicResource dialogs.timesig.caption}"
         Height="100" Width="320" WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False">

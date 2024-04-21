@@ -132,7 +132,8 @@ namespace OpenUtau.Core {
                 } catch (Exception e) {
                     Log.Error(e, "Failed to render.");
                     StopPlayback();
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
+                    var customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
         }
@@ -161,10 +162,12 @@ namespace OpenUtau.Core {
                     WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to export {exportPath}.", ioe));
+                    var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {exportPath}."));
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
+                    var customEx = new MessageCustomizableException("Failed to render.", $"<translate:errors.failed.render>: {exportPath}", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
                 }
             });
@@ -189,10 +192,12 @@ namespace OpenUtau.Core {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 } catch (IOException ioe) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to export {file}.", ioe));
+                    var customEx = new MessageCustomizableException($"Failed to export {file}.", $"<translate:errors.failed.export>: {file}", ioe);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {file}."));
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", e));
+                    var customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
                 }
             });

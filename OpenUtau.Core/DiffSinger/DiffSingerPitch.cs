@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using K4os.Hash.xxHash;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
@@ -19,6 +20,7 @@ namespace OpenUtau.Core.DiffSinger
         string rootPath;
         DsConfig dsConfig;
         List<string> phonemes;
+        ulong linguisticHash;
         InferenceSession linguisticModel;
         InferenceSession pitchModel;
         IG2p g2p;
@@ -39,7 +41,9 @@ namespace OpenUtau.Core.DiffSinger
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
             //Load models
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
-            linguisticModel = Onnx.getInferenceSession(linguisticModelPath);
+            var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
+            linguisticHash = XXH64.DigestOf(linguisticModelBytes);
+            linguisticModel = Onnx.getInferenceSession(linguisticModelBytes);
             var pitchModelPath = Path.Join(rootPath, dsConfig.pitch);
             pitchModel = Onnx.getInferenceSession(pitchModelPath);
             frameMs = 1000f * dsConfig.hop_size / dsConfig.sample_rate;
@@ -123,7 +127,14 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
-            var linguisticOutputs = linguisticModel.Run(linguisticInputs);
+            var linguisticCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(linguisticHash, linguisticInputs)
+                : null;
+            var linguisticOutputs = linguisticCache?.Load();
+            if (linguisticOutputs is null) {
+                linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
+                linguisticCache?.Save(linguisticOutputs);
+            }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
                 .First()
@@ -209,7 +220,6 @@ namespace OpenUtau.Core.DiffSinger
             note_dur[^1]=totalFrames-note_dur.Sum();
             var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
             var retake = Enumerable.Repeat(true, totalFrames).ToArray();
-            var speedup = Preferences.Default.DiffsingerSpeedup;
             var pitchInputs = new List<NamedOnnxValue>();
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_midi",
@@ -227,8 +237,19 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, retake.Length })));
-            pitchInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+            var steps = Preferences.Default.DiffSingerSteps;
+            if (dsConfig.useContinuousAcceleration) {
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
+                    new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
+            } else {
+                // find a largest integer speedup that are less than 1000 / steps and is a factor of 1000
+                long speedup = Math.Max(1, 1000 / steps);
+                while (1000 % speedup != 0 && speedup > 1) {
+                    speedup--;
+                }
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
+                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+            }
 
             //expressiveness
             if (dsConfig.use_expr) {

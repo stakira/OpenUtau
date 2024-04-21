@@ -14,6 +14,11 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
 
+/*
+ * This source code is partially based on the VOICEVOX engine.
+ * https://github.com/VOICEVOX/voicevox_engine/blob/master/LGPL_LICENSE
+ */
+
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
         const string VOLC = VoicevoxUtils.VOLC;

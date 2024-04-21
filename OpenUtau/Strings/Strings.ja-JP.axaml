@@ -61,6 +61,28 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
+  <system:String x:Key="errors.details">エラーの詳細</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">ボコーダー </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2"> のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください: </system:String>
+  <system:String x:Key="errors.expression.abbrlong">パラメータの略称は1～4文字で入力してください</system:String>
+  <system:String x:Key="errors.expression.abbrset">パラメータの略称を入力してください</system:String>
+  <system:String x:Key="errors.expression.abbrunique">パラメータの略称が重複しています</system:String>
+  <system:String x:Key="errors.expression.default">デフォルト値は最小値以上、最大値以下にしてください</system:String>
+  <system:String x:Key="errors.expression.flagunique">フラグが重複しています</system:String>
+  <system:String x:Key="errors.expression.min">最小値は最大値より小さくしてください</system:String>
+  <system:String x:Key="errors.expression.name">表情名を入力してください</system:String>
+  <system:String x:Key="errors.failed.export">エクスポートに失敗しました</system:String>
+  <system:String x:Key="errors.failed.importfiles">ファイルのインポートに失敗しました</system:String>
+  <system:String x:Key="errors.failed.importaudio">オーディオのインポートに失敗しました</system:String>
+  <system:String x:Key="errors.failed.importmidi">MIDIのインポートに失敗しました</system:String>
+  <system:String x:Key="errors.failed.load">読み込みに失敗しました</system:String>
+  <system:String x:Key="errors.failed.loadprefs">環境設定の読み込みに失敗しました。設定を初期化します。</system:String>
+  <system:String x:Key="errors.failed.openfile">読み込みに失敗しました</system:String>
+  <system:String x:Key="errors.failed.openlocation">フォルダを開けませんでした</system:String>
+  <system:String x:Key="errors.failed.render">レンダリングに失敗しました</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">一括処理に失敗しました</system:String>
+  <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました</system:String>
 
   <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>
@@ -257,7 +279,7 @@
   <system:String x:Key="pianoroll.menu.notes.autolegato">音符の隙間を埋める</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">ピッチ曲線（PITD）をピッチ点に変換</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ビブラートを削除</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.fixoverlap">Fix overlapping notes</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.fixoverlap">音符の重複を修正</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">漢字をピンインへ</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">クロスフェードを長くする</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">レンダリング済みピッチの読み込み</system:String>
@@ -329,7 +351,7 @@
   <system:String x:Key="prefs.appearance.degree.solfege">Solfège (ドレミファソラシ)</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">ピアノロール上に他トラックの音符を表示</system:String>
-  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showicon">ピアノロールウィンドウにアイコンを表示</system:String>
   <system:String x:Key="prefs.appearance.showportrait">ピアノロール上に背景イラストを表示</system:String>
   <system:String x:Key="prefs.appearance.sortorder">シンガー名の表示言語</system:String>
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
@@ -350,7 +372,7 @@
   <system:String x:Key="prefs.paths.loaddeepfolders">深い階層のフォルダも読み込む</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
-  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
+  <system:String x:Key="prefs.penplus">ペン+ツールをデフォルトで使用する</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
   <system:String x:Key="prefs.playback.autoscroll">自動スクロール</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">自動スクロールモード</system:String>
@@ -368,7 +390,7 @@
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Classic UTAU音源のデフォルトレンダラー</system:String>
   <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">位相補正</system:String>
@@ -383,7 +405,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
   </system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
+  <system:String x:Key="prefs.rendering.skipmuted">ミュート中のトラックをレンダリングしない</system:String>
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -413,11 +435,11 @@
   <system:String x:Key="singers.otoview.zoomin">ズームイン</system:String>
   <system:String x:Key="singers.otoview.zoomout">ズームアウト</system:String>
   <system:String x:Key="singers.playsample">サンプルボイスを再生</system:String>
-  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
-  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
-  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
-  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
-  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
+  <system:String x:Key="singers.publish">シンガーの配布パッケージを作成</system:String>
+  <system:String x:Key="singers.publish.description">自作音源の配布用zipファイルを作成します。</system:String>
+  <system:String x:Key="singers.publish.ignoretypes">以下のファイルは配布パッケージに含まれません（gitignore形式で記述）：</system:String>
+  <system:String x:Key="singers.publish.publish">作成</system:String>
+  <system:String x:Key="singers.publish.useignore"> 指定したタイプのファイルを配布パッケージに含めないようにする</system:String>
   <system:String x:Key="singers.readme">readme.txtを開く</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txtが見つかりません</system:String>
   <system:String x:Key="singers.refresh">再読み込み</system:String>
@@ -454,7 +476,7 @@
   <system:String x:Key="singersetup.textfileencoding">テキストファイルのエンコード</system:String>
   <system:String x:Key="singersetup.textfileencoding.prompt">テキストが文字化けしないエンコードを選択してください。</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">エイリアスの手動指定</system:String>
   <system:String x:Key="tip.exps">左クリック: 表情を設定
 右クリック: 表情をリセット</system:String>
   <system:String x:Key="tip.exps.notsupported">このレンダラーでは表情をサポートしていません。</system:String>
@@ -491,7 +513,7 @@
   <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>
   <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
-  <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
+  <system:String x:Key="tracks.solo">ソロ</system:String>
   <system:String x:Key="tracks.solo.add">ソロ (他トラックのソロを解除しない)</system:String>
   <system:String x:Key="tracks.solo.only">ソロ (他トラックのソロを解除)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">全トラックのソロを解除</system:String>
