@@ -31,7 +31,6 @@ namespace OpenUtau.Plugin.Builtin {
                 {"i ng","1 ng"},
                 {"ing","1ng"},
                 {"0 r","0r-"},
-                {"9 r","0r-"},
                 {"9r","0r"},
                 {"9r-","0r-"},
                 {"er-","Ar-" },
@@ -46,6 +45,9 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@ng","Ang"},
                 {"ang","9ng"},
                 {"a ng","9ng-"},
+                //{"a l","9l-"},
+                {"al","9l"},
+                {"al-","9l-"},
                 //{"O l","0l"},
                 {"0 l","0l-"},
                 {"Ol","0l"},
@@ -164,7 +166,7 @@ namespace OpenUtau.Plugin.Builtin {
                             vc = $"{prevV}{vvExceptions[prevV]}";
                         }
                         phonemes.Add(vc);
-                        basePhoneme = $"_{vvExceptions[prevV]}{v}";
+                        basePhoneme = $"{vvExceptions[prevV]}{v}";
                     }
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         basePhoneme = $"{v}";
@@ -346,8 +348,9 @@ namespace OpenUtau.Plugin.Builtin {
                                 if (HasOto(parsingCC, syllable.vowelTone)){
                                 //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                    parsingVCC = $"{prevV} {cc[0]}";
                                     parsingVCC = CheckVCExceptions(parsingVCC);
+                                        if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                        parsingVCC = $"{prevV} {cc[0]}";
                                 }
 
                                     // sp fix
