@@ -36,7 +36,7 @@
   <system:String x:Key="dialogs.export.caption">Экспорт</system:String>
   <system:String x:Key="dialogs.export.savefirst">Сначала нужно сохранить проект</system:String>
   <system:String x:Key="dialogs.importtracks.caption">Импортировать треки</system:String>
-  <system:String x:Key="dialogs.importtracks.importtempo">Импортированный проект содержит следующие маркеры темпа. Хотите ли вы их использовать?</system:String>
+  <system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>
   <system:String x:Key="dialogs.installdependency.caption">Установка зависимостей</system:String>
   <system:String x:Key="dialogs.installdependency.message">Установка </system:String>
   <system:String x:Key="dialogs.installdll.caption">Установка фонемайзера</system:String>
@@ -61,6 +61,28 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">Применится ко всем нотам в этом треке:</system:String>
 
   <system:String x:Key="errors.caption">Ошибка</system:String>
+  <system:String x:Key="errors.details">Подробности ошибки</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">Ошибка загрузки вокодера </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. Пожалуйста, скачайте вокодер с </system:String>
+  <system:String x:Key="errors.expression.abbrlong">Аббревиатура должна содержать от 1 до 4 символов</system:String>
+  <system:String x:Key="errors.expression.abbrset">Аббревиатура должна быть установлена</system:String>
+  <system:String x:Key="errors.expression.abbrunique">Аббревиатуры должны быть уникальными</system:String>
+  <system:String x:Key="errors.expression.default">Значение по умолчанию должно находиться между минимальным и максимальным</system:String>
+  <system:String x:Key="errors.expression.flagunique">Флаги должны быть уникальными</system:String>
+  <system:String x:Key="errors.expression.min">Минимальное значение должно быть меньше максимального</system:String>
+  <system:String x:Key="errors.expression.name">Название должно быть установлено</system:String>
+  <system:String x:Key="errors.failed.export">Не удалось экспортировать</system:String>
+  <system:String x:Key="errors.failed.importaudio">Не удалось импортировать аудио</system:String>
+  <system:String x:Key="errors.failed.importfiles">Не удалось импортировать файлы</system:String>
+  <system:String x:Key="errors.failed.importmidi">Не удалось импортировать midi</system:String>
+  <system:String x:Key="errors.failed.load">Не удалось загрузить</system:String>
+  <system:String x:Key="errors.failed.loadprefs">Не удалось загрузить префы. Инициализируйте их.</system:String>
+  <system:String x:Key="errors.failed.openfile">Не удалось открыть</system:String>
+  <system:String x:Key="errors.failed.openlocation">Не удалось открыть расположение</system:String>
+  <system:String x:Key="errors.failed.render">Не удалось отрендерить</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">Не удалось запустить макрос редактирования</system:String>
+  <system:String x:Key="errors.failed.save">Не удалось сохранить</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">Не удалось сохранить файл конфигурации вокалиста</system:String>
 
   <system:String x:Key="exps.abbr">Сокращение</system:String>
   <system:String x:Key="exps.apply">Применить</system:String>
@@ -119,6 +141,10 @@
   <system:String x:Key="menu.edit.copy">Копировать</system:String>
   <system:String x:Key="menu.edit.cut">Вырезать</system:String>
   <system:String x:Key="menu.edit.delete">Удалить</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes">Блокировка редактирования невыбранных нот</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">Выражения</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Точки питча</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Вибрато</system:String>
   <system:String x:Key="menu.edit.paste">Вставить</system:String>
   <system:String x:Key="menu.edit.redo">Повторить</system:String>
   <system:String x:Key="menu.edit.selectall">Выбрать все</system:String>
@@ -305,7 +331,7 @@
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
   <system:String x:Key="prefs.advanced.importtempo">При импорте дорожек использовать темп импортируемого проекта</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Всегда</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">Спрашивать каждый раз</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.ask">Спрашивать всегда</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Никогда</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
@@ -330,6 +356,7 @@
   <system:String x:Key="prefs.appearance.trackcolor">Использовать цвет дорожки в интерфейсе</system:String>
   <system:String x:Key="prefs.cache">Кэш</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Очищать кэш при выходе</system:String>
+  <system:String x:Key="prefs.cache.diffsingertensorcache">Тензорный кэш DiffSinger</system:String>
   <system:String x:Key="prefs.caption">Параметры</system:String>
   <system:String x:Key="prefs.note.restart">Примечание: пожалуйста, перезапустите OpenUtau после изменения этого пункта.</system:String>
   <system:String x:Key="prefs.off">Выкл.</system:String>
@@ -360,7 +387,7 @@
   <system:String x:Key="prefs.rendering">Рендеринг</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Рендерер по-умолчанию (для классических войсбанков)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Глубина рендеринга DiffSinger</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">Ускорение рендеринга DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">Шаги рендера DiffSinger</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">Графический процессор</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
@@ -406,7 +433,7 @@
   <system:String x:Key="singers.otoview.zoomout">Отдалить</system:String>
   <system:String x:Key="singers.playsample">Проиграть пример</system:String>
   <system:String x:Key="singers.publish">Опубликовать вокалиста</system:String>
-  <system:String x:Key="singers.publish.description">Создайте оптимизированный zip-пакет вашего вокалиста для распространения.</system:String>
+  <system:String x:Key="singers.publish.description">Создает оптимизированный zip-пакет вашего вокалиста для распространения.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">Игнорировать эти типы файлов при упаковке (синтаксис gitignore):</system:String>
   <system:String x:Key="singers.publish.publish">Опубликовать</system:String>
   <system:String x:Key="singers.publish.useignore"> Использовать игнорирование типа файла</system:String>
@@ -433,7 +460,7 @@
   <system:String x:Key="singers.subbanks.set">Установить</system:String>
   <system:String x:Key="singers.subbanks.tone">Тон</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Диапазон тональности</system:String>
-  <system:String x:Key="singers.usefilename">Использовать имя файла в качестве псевдонима</system:String>
+  <system:String x:Key="singers.usefilename">Использовать название файла как алиас</system:String>
   <system:String x:Key="singers.visitwebsite">Посетить сайт</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Кодировка архива</system:String>
