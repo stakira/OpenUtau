@@ -77,6 +77,9 @@ namespace OpenUtau.Core {
                     File.Delete(oldBuiltin);
                 }
                 files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+                // Load plugins from singer folders; useful for custom phonemizers and/or other custom supported plugins
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.SingersPath, "*.dll", SearchOption.AllDirectories));
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.AdditionalSingersPath, "*.dll", SearchOption.AllDirectories));
             } catch (Exception e) {
                 Log.Error(e, "Failed to search plugins.");
             }
