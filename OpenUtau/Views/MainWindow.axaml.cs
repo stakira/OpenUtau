@@ -852,14 +852,19 @@ namespace OpenUtau.App.Views {
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
-                var setup = new SingerSetupDialog() {
-                    DataContext = new SingerSetupViewModel() {
-                        ArchiveFilePath = file,
-                    },
-                };
-                _ = setup.ShowDialog(this);
-                if (setup.Position.Y < 0) {
-                    setup.Position = setup.Position.WithY(0);
+                try{
+                    var setup = new SingerSetupDialog() {
+                        DataContext = new SingerSetupViewModel() {
+                            ArchiveFilePath = file,
+                        },
+                    };
+                    _ = setup.ShowDialog(this);
+                    if (setup.Position.Y < 0) {
+                        setup.Position = setup.Position.WithY(0);
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to install singer {file}");
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to install singer", "<translate:errors.failed.installsinger>", e));
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
