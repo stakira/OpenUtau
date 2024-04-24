@@ -997,6 +997,9 @@ namespace OpenUtau.App.Views {
                 return true;
             }
 
+            string mainPenIdx = Preferences.Default.PenPlusDefault ? "2+" : "2";
+            string altPenIdx = Preferences.Default.PenPlusDefault ? "2" : "2+";
+
             switch (args.Key) {
                 #region document keys
                 case Key.Space:
@@ -1060,7 +1063,7 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.D2:
                     if (isNone) {
-                        notesVm.SelectToolCommand?.Execute("2").Subscribe();
+                        notesVm.SelectToolCommand?.Execute(mainPenIdx).Subscribe();
                         return true;
                     }
                     if (isAlt) {
@@ -1068,7 +1071,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
-                        notesVm.SelectToolCommand?.Execute("2+").Subscribe();
+                        notesVm.SelectToolCommand?.Execute(altPenIdx).Subscribe();
                         return true;
                     }
                     break;
