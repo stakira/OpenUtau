@@ -45,7 +45,8 @@ namespace OpenUtau.Core {
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {
-                Log.Error(e, "Failed to search singers.");
+                var customEx = new MessageCustomizableException("Failed to search singers", "<translate:errors.failed.searchsinger>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 Singers = new Dictionary<string, USinger>();
             }
         }
