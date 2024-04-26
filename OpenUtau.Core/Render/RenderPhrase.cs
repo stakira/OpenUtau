@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using K4os.Hash.xxHash;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -299,69 +300,72 @@ namespace OpenUtau.Core.Render {
                 }
             }
             // Mod plus
-            if (track.TryGetExpDescriptor(project, Format.Ustx.MODP, out var modp) && renderer.SupportsExpression(modp)) {
+            if (track.TryGetExpDescriptor(project, Format.Ustx.MODP, out var modp) && renderer.SupportsExpression(modp) && singer is ClassicSinger cSinger) {
                 foreach (var phoneme in phonemes) {
-                    var mod = phoneme.GetExpression(project, track, Format.Ustx.MODP).Item1;
-                    if (mod == 0) {
+                    var phonemeModp = phoneme.GetExpression(project, track, Format.Ustx.MODP).Item1;
+                    if (phonemeModp == 0) {
                         continue;
                     }
 
                     try {
-                        if (phoneme.TryGetFrq(out var frqFix, out var frqStretch, out double average, out int hopSize)) {
-                            UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
-                            var tempo = noteTempos[0].bpm; // compromise 妥協！
-                            var frqIntervalTick = MusicMath.TempoMsToTick(tempo, (double)1 * 1000 / 44100 * hopSize);
-                            double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
+                        if (phoneme.oto.Frq == null) {
+                            phoneme.oto.Frq = new OtoFrq(phoneme.oto, cSinger.Frqs);
+                        }
+                        if (phoneme.oto.Frq.loaded == false) {
+                            continue;
+                        }
+                        var frq = phoneme.oto.Frq;
+                        UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
+                        var tempo = noteTempos[0].bpm; // compromise 妥協！
+                        var frqIntervalTick = MusicMath.TempoMsToTick(tempo, (double)1 * 1000 / 44100 * frq.hopSize);
+                        double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
 
-                            var preutter = MusicMath.TempoMsToTick(tempo, Math.Min(phoneme.preutter, phoneme.oto.Preutter * consonantStretch));
-                            int startIndex = Math.Max(0, (int)Math.Floor((phoneme.position - pitchStart - preutter) / pitchInterval));
-                            int position = (int)Math.Round((double)((phoneme.position - pitchStart) / pitchInterval));
-                            int startStretch = position + (int)Math.Round(MusicMath.TempoMsToTick(tempo, (phoneme.oto.Consonant - phoneme.oto.Preutter) * consonantStretch) / pitchInterval);
-                            int endIndex = Math.Min(pitches.Length, (int)Math.Ceiling(phoneme.End - pitchStart - MusicMath.TempoMsToTick(tempo, phoneme.tailIntrude - phoneme.tailOverlap)) / pitchInterval);
+                        var preutter = MusicMath.TempoMsToTick(tempo, Math.Min(phoneme.preutter, phoneme.oto.Preutter * consonantStretch));
+                        int startIndex = Math.Max(0, (int)Math.Floor((phoneme.position - pitchStart - preutter) / pitchInterval));
+                        int position = (int)Math.Round((double)((phoneme.position - pitchStart) / pitchInterval));
+                        int startStretch = position + (int)Math.Round(MusicMath.TempoMsToTick(tempo, (phoneme.oto.Consonant - phoneme.oto.Preutter) * consonantStretch) / pitchInterval);
+                        int endIndex = Math.Min(pitches.Length, (int)Math.Ceiling(phoneme.End - pitchStart - MusicMath.TempoMsToTick(tempo, phoneme.tailIntrude - phoneme.tailOverlap)) / pitchInterval);
 
-                            frqFix = frqFix.Select(f => f - average).ToArray();
-                            frqStretch = frqStretch.Select(f => f - average).ToArray();
-                            double stretch = 1;
-                            if (frqStretch.Length * frqIntervalTick < ((double)endIndex - startStretch) * pitchInterval) {
-                                stretch = ((double)endIndex - startStretch) * pitchInterval / (frqStretch.Length * frqIntervalTick);
-                            }
-                            var env0 = new Vector2(0, 0);
-                            var env1 = new Vector2((phoneme.envelope.data[1].X - phoneme.envelope.data[0].X) / (phoneme.envelope.data[4].X - phoneme.envelope.data[0].X), 100);
-                            var env3 = new Vector2((phoneme.envelope.data[3].X - phoneme.envelope.data[0].X) / (phoneme.envelope.data[4].X - phoneme.envelope.data[0].X), 100);
-                            var env4 = new Vector2(1, 0);
+                        double stretch = 1;
+                        if (frq.toneDiffStretch.Length * frqIntervalTick < ((double)endIndex - startStretch) * pitchInterval) {
+                            stretch = ((double)endIndex - startStretch) * pitchInterval / (frq.toneDiffStretch.Length * frqIntervalTick);
+                        }
+                        var env0 = new Vector2(0, 0);
+                        var env1 = new Vector2((phoneme.envelope.data[1].X - phoneme.envelope.data[0].X) / (phoneme.envelope.data[4].X - phoneme.envelope.data[0].X), 100);
+                        var env3 = new Vector2((phoneme.envelope.data[3].X - phoneme.envelope.data[0].X) / (phoneme.envelope.data[4].X - phoneme.envelope.data[0].X), 100);
+                        var env4 = new Vector2(1, 0);
 
-                            for (int i = 0; startStretch + i <= endIndex; i++) {
-                                var pit = startStretch + i;
-                                if (pit >= pitches.Length) break;
-                                var frq = i * (pitchInterval / frqIntervalTick) / stretch;
-                                var frqMin = Math.Clamp((int)Math.Floor(frq), 0, frqStretch.Length - 1);
-                                var frqMax = Math.Clamp((int)Math.Ceiling(frq), 0, frqStretch.Length - 1);
-                                var diff = MusicMath.Linear(frqMin, frqMax, frqStretch[frqMin], frqStretch[frqMax], frq);
-                                diff = diff * mod / 100;
-                                diff = Fade(diff, pit);
-                                pitches[pit] = pitches[pit] + (float)(diff * 100);
+                        for (int i = 0; startStretch + i <= endIndex; i++) {
+                            var pit = startStretch + i;
+                            if (pit >= pitches.Length) break;
+                            var frqPoint = i * (pitchInterval / frqIntervalTick) / stretch;
+                            var frqPointMin = Math.Clamp((int)Math.Floor(frqPoint), 0, frq.toneDiffStretch.Length - 1);
+                            var frqPointMax = Math.Clamp((int)Math.Ceiling(frqPoint), 0, frq.toneDiffStretch.Length - 1);
+                            var diff = MusicMath.Linear(frqPointMin, frqPointMax, frq.toneDiffStretch[frqPointMin], frq.toneDiffStretch[frqPointMax], frqPoint);
+                            diff = diff * phonemeModp / 100;
+                            diff = Fade(diff, pit);
+                            pitches[pit] = pitches[pit] + (float)(diff * 100);
+                        }
+                        for (int i = 0; startStretch + i - 1 >= startIndex; i--) {
+                            var pit = startStretch + i - 1;
+                            if (pit > endIndex || pit >= pitches.Length) continue;
+                            var frqPoint = frq.toneDiffFix.Length + (i * (pitchInterval / frqIntervalTick) / consonantStretch);
+                            var frqPointMin = Math.Clamp((int)Math.Floor(frqPoint), 0, frq.toneDiffFix.Length - 1);
+                            var frqPointMax = Math.Clamp((int)Math.Ceiling(frqPoint), 0, frq.toneDiffFix.Length - 1);
+                            var diff = MusicMath.Linear(frqPointMin, frqPointMax, frq.toneDiffFix[frqPointMin], frq.toneDiffFix[frqPointMax], frqPoint);
+                            diff = diff * phonemeModp / 100;
+                            diff = Fade(diff, pit);
+                            pitches[pit] = pitches[pit] + (float)(diff * 100);
+                        }
+                        double Fade(double diff, int pit) {
+                            var percentage = (double)(pit - startIndex) / (endIndex - startIndex);
+                            if (phoneme.Next != null && phoneme.End == phoneme.Next.position && percentage > env3.X) {
+                                diff = diff * Math.Clamp(MusicMath.Linear(env3.X, env4.X, env3.Y, env4.Y, percentage), 0, 100) / 100;
                             }
-                            for (int i = 0; startStretch + i - 1 >= startIndex; i--) {
-                                var pit = startStretch + i - 1;
-                                if (pit > endIndex || pit >= pitches.Length) continue;
-                                var frq = frqFix.Length + (i * (pitchInterval / frqIntervalTick) / consonantStretch);
-                                var frqMin = Math.Clamp((int)Math.Floor(frq), 0, frqFix.Length - 1);
-                                var frqMax = Math.Clamp((int)Math.Ceiling(frq), 0, frqFix.Length - 1);
-                                var diff = MusicMath.Linear(frqMin, frqMax, frqFix[frqMin], frqFix[frqMax], frq);
-                                diff = diff * mod / 100;
-                                diff = Fade(diff, pit);
-                                pitches[pit] = pitches[pit] + (float)(diff * 100);
+                            if (phoneme.Prev != null && phoneme.Prev.End == phoneme.position && percentage < env1.X) {
+                                diff = diff * Math.Clamp(MusicMath.Linear(env0.X, env1.X, env0.Y, env1.Y, percentage), 0, 100) / 100;
                             }
-                            double Fade(double diff, int pit) {
-                                var percentage = (double)(pit - startIndex) / (endIndex - startIndex);
-                                if (phoneme.Next != null && phoneme.End == phoneme.Next.position && percentage > env3.X) {
-                                    diff = diff * Math.Clamp(MusicMath.Linear(env3.X, env4.X, env3.Y, env4.Y, percentage), 0, 100) / 100;
-                                }
-                                if (phoneme.Prev != null && phoneme.Prev.End == phoneme.position && percentage < env1.X) {
-                                    diff = diff * Math.Clamp(MusicMath.Linear(env0.X, env1.X, env0.Y, env1.Y, percentage), 0, 100) / 100;
-                                }
-                                return diff;
-                            }
+                            return diff;
                         }
                     } catch(Exception e) {
                         Log.Error(e, "Failed to compute mod plus.");

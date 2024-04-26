@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using NAudio.Wave;
-using OpenUtau.Classic;
-using SharpCompress;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -236,77 +233,6 @@ namespace OpenUtau.Core.Ustx {
                 return null;
             }
             return track.VoiceColorExp.options[index];
-        }
-
-        public bool TryGetFrq(out double[] frqFix, out double[] frqStretch, out double average, out int hopSize) {
-            frqFix = new double[0];
-            frqStretch = new double[0];
-            average = 0;
-            hopSize = 0;
-
-            var frq = new Frq();
-            if (frq.Load(oto.File)) {
-                average = MusicMath.FreqToTone(frq.averageF0); // 1 = 1tone
-                hopSize = frq.hopSize;
-
-                int wavLength;
-                using (var waveStream = Format.Wave.OpenFile(oto.File)) {
-                    var sampleProvider = waveStream.ToSampleProvider();
-                    if (sampleProvider.WaveFormat.SampleRate != 44100) {
-                        return false;
-                    }
-                    wavLength = Format.Wave.GetSamples(sampleProvider).Length;
-                }
-
-                int offset = (int)Math.Floor(oto.Offset * 44100 / 1000 / frq.hopSize); // frq samples
-                int consonant = (int)Math.Floor((oto.Offset + oto.Consonant) * 44100 / 1000 / frq.hopSize);
-                int cutoff = oto.Cutoff < 0 ?
-                    (int)Math.Floor((oto.Offset - oto.Cutoff) * 44100 / 1000 / frq.hopSize)
-                    : wavLength - (int)Math.Floor(oto.Cutoff * 44100 / 1000 / frq.hopSize);
-                var avr = average;
-                var f0 = Completion(frq.f0);
-                frqFix = f0.Skip(offset).Take(consonant - offset).Select(f => MusicMath.FreqToTone(f)).ToArray();
-                frqStretch = f0.Skip(consonant).Take(cutoff - consonant).Select(f => MusicMath.FreqToTone(f)).ToArray();
-
-                double[] Completion(double[] frqs) {
-                    var list = new List<double>();
-                    for (int i = 0; i < frqs.Length; i++) {
-                        if (frqs[i] <= 0) {
-                            int min = i - 1;
-                            double minFrq = 0;
-                            while (min >= 0) {
-                                if (frqs[min] > 0) {
-                                    minFrq = frqs[min];
-                                    break;
-                                }
-                                min--;
-                            }
-                            int max = i + 1;
-                            double maxFrq = 0;
-                            while (max < frqs.Length) {
-                                if (frqs[max] > 0) {
-                                    maxFrq = frqs[max];
-                                    break;
-                                }
-                                max++;
-                            }
-                            if(minFrq <= 0) {
-                                list.Add(maxFrq);
-                            } else if (maxFrq <= 0) {
-                                list.Add(minFrq);
-                            } else {
-                                list.Add(MusicMath.Linear(min, max, minFrq, maxFrq, i));
-                            }
-                        } else {
-                            list.Add(frqs[i]);
-                        }
-                    }
-                    return list.ToArray();
-                }
-                return true;
-            } else {
-                return false;
-            }
         }
     }
 

@@ -63,7 +63,8 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open recent.", e));
+                    var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
@@ -72,7 +73,8 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open template.", e));
+                    var customEx = new MessageCustomizableException("Failed to open template", "<translate:errors.failed.openfile>: project template", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
@@ -111,7 +113,8 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to load default template.", e));
+                    var customEx = new MessageCustomizableException("Failed to load default template", "<translate:errors.failed.load>: default template", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));

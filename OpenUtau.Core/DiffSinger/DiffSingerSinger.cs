@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using K4os.Hash.xxHash;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -44,6 +45,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public List<string> phonemes = new List<string>();
         public DsConfig dsConfig;
+        public ulong acousticHash;
         public InferenceSession acousticSession = null;
         public DsVocoder vocoder = null;
         public DsPitch pitchPredictor = null;
@@ -144,7 +146,10 @@ namespace OpenUtau.Core.DiffSinger {
 
         public InferenceSession getAcousticSession() {
             if (acousticSession is null) {
-                acousticSession = Onnx.getInferenceSession(Path.Combine(Location, dsConfig.acoustic));
+                var acousticPath = Path.Combine(Location, dsConfig.acoustic);
+                var acousticBytes = File.ReadAllBytes(acousticPath);
+                acousticHash = XXH64.DigestOf(acousticBytes);
+                acousticSession = Onnx.getInferenceSession(acousticBytes);
             }
             return acousticSession;
         }

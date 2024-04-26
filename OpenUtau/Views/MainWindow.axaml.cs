@@ -174,8 +174,8 @@ namespace OpenUtau.App.Views {
                         DocManager.Inst.EndUndoGroup();
                     }
                 } catch (Exception e) {
-                    Log.Error(e, "Failed to open project location.");
-                    MessageBox.ShowError(this, e);
+                    Log.Error(e, "Failed to open project location");
+                    MessageBox.ShowError(this, new MessageCustomizableException("Failed to open project location", "<translate:errors.failed.openlocation>: project location", e));
                 }
             };
             dialog.ShowDialog(this);
@@ -229,7 +229,7 @@ namespace OpenUtau.App.Views {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open files {string.Join("\n", files)}", $"<translate:errors.failed.openfile>:\n{string.Join("\n", files)}", e));
             }
         }
 
@@ -265,7 +265,7 @@ namespace OpenUtau.App.Views {
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to open project location.");
-                MessageBox.ShowError(this, e);
+                MessageBox.ShowError(this, new MessageCustomizableException("Failed to open project location.", "<translate:errors.failed.openlocation>: project location", e));
             }
         }
 
@@ -351,7 +351,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportTracks(loadedProjects, importTempo);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import files", "<translate:errors.failed.importfiles>", e));
             }
             ValidateTracksVoiceColor();
         }
@@ -366,7 +366,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportAudio(file);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import audio");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
             }
         }
 
@@ -380,7 +380,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportMidi(file, UseDrywetmidi);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
             }
         }
 
@@ -594,15 +594,16 @@ namespace OpenUtau.App.Views {
             if (file == null) {
                 return;
             }
-            if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
-                Core.Vogen.VogenSingerInstaller.Install(file);
-                return;
-            }
-            if (file.EndsWith(DependencyInstaller.FileExt)) {
-                DependencyInstaller.Install(file);
-                return;
-            }
             try {
+                if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                    Core.Vogen.VogenSingerInstaller.Install(file);
+                    return;
+                }
+                if (file.EndsWith(DependencyInstaller.FileExt)) {
+                    DependencyInstaller.Install(file);
+                    return;
+                }
+
                 var setup = new SingerSetupDialog() {
                     DataContext = new SingerSetupViewModel() {
                         ArchiveFilePath = file,
@@ -635,7 +636,7 @@ namespace OpenUtau.App.Views {
                 dataContext = new PreferencesViewModel();
             } catch (Exception e) {
                 Log.Error(e, "Failed to load prefs. Initialize it.");
-                MessageBox.ShowError(this, e);
+                MessageBox.ShowError(this, new MessageCustomizableException("Failed to load prefs. Initialize it.", "<translate:errors.failed.loadprefs>", e));
                 Preferences.Reset();
                 dataContext = new PreferencesViewModel();
             }
@@ -841,14 +842,14 @@ namespace OpenUtau.App.Views {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file {file}");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import midi");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
                 var setup = new SingerSetupDialog() {
@@ -893,7 +894,7 @@ namespace OpenUtau.App.Views {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import audio");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
                 }
             } else {
                 _ = await MessageBox.Show(

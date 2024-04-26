@@ -7,6 +7,11 @@ using OpenUtau.Core.Render;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
 
+/*
+ * This source code is partially based on the VOICEVOX engine.
+ * https://github.com/VOICEVOX/voicevox_engine/blob/master/LGPL_LICENSE
+ */
+
 namespace OpenUtau.Core.Voicevox {
     public class Phonemes {
         public string phoneme;

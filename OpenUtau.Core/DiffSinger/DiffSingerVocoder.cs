@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
+using K4os.Hash.xxHash;
 using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DsVocoder : IDisposable {
         public string Location;
         public DsVocoderConfig config;
+        public ulong hash;
         public InferenceSession session;
 
         public int num_mel_bins => config.num_mel_bins;
@@ -29,8 +31,9 @@ namespace OpenUtau.Core.DiffSinger {
                 model = File.ReadAllBytes(Path.Combine(Location, config.model));
             }
             catch (Exception ex) {
-                throw new Exception($"Error loading vocoder {name}. Please download vocoder from https://github.com/xunmengshe/OpenUtau/wiki/Vocoders");
+                throw new MessageCustomizableException($"Error loading vocoder {name}", $"<translate:errors.diffsinger.downloadvocoder1>{name}<translate:errors.diffsinger.downloadvocoder2>https://github.com/xunmengshe/OpenUtau/wiki/Vocoders", new Exception($"Error loading vocoder {name}"));
             }
+            hash = XXH64.DigestOf(model);
             session = Onnx.getInferenceSession(model);
         }
 
