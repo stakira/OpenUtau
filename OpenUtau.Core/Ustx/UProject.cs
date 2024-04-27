@@ -86,23 +86,29 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void MargeExpression(string oldAbbr, string newAbbr) {
-            parts.Where(p => p is UVoicePart)
-                .OfType<UVoicePart>()
-                .ForEach(p => p.notes.ForEach(n => {
-                if (n.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
-                    n.phonemeExpressions.ForEach(oldExp => {
-                        if (!n.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
+            if (parts != null && parts.Count > 0) {
+                parts.Where(p => p is UVoicePart)
+                    .OfType<UVoicePart>()
+                    .ForEach(p => p.notes.ForEach(n => ConvertNoteExp(n, tracks[p.trackNo])));
+            } else if (voiceParts != null &&voiceParts.Count > 0) {
+                voiceParts.ForEach(p => p.notes.ForEach(n => ConvertNoteExp(n, tracks[p.trackNo])));
+            }
+            expressions.Remove(oldAbbr);
+
+            void ConvertNoteExp(UNote note, UTrack track) {
+                if (note.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
+                    note.phonemeExpressions.ForEach(oldExp => {
+                        if (!note.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
                             oldExp.abbr = newAbbr;
-                            if (tracks[p.trackNo].TryGetExpDescriptor(this, newAbbr, out var descriptor)) {
+                            if (track.TryGetExpDescriptor(this, newAbbr, out var descriptor)) {
                                 oldExp.descriptor = descriptor;
                             }
                         } else {
-                            n.phonemeExpressions.Remove(oldExp);
+                            note.phonemeExpressions.Remove(oldExp);
                         }
                     });
                 }
-            }));
-            expressions.Remove(oldAbbr);
+            }
         }
 
         public UNote CreateNote() {
