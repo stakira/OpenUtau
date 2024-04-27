@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Core.Util;
+using SharpCompress;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -82,6 +83,26 @@ namespace OpenUtau.Core.Ustx {
             if (!expressions.ContainsKey(descriptor.abbr)) {
                 expressions.Add(descriptor.abbr, descriptor);
             }
+        }
+
+        public void MargeExpression(string oldAbbr, string newAbbr) {
+            parts.Where(p => p is UVoicePart)
+                .OfType<UVoicePart>()
+                .ForEach(p => p.notes.ForEach(n => {
+                if (n.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
+                    n.phonemeExpressions.ForEach(oldExp => {
+                        if (!n.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
+                            oldExp.abbr = newAbbr;
+                            if (tracks[p.trackNo].TryGetExpDescriptor(this, newAbbr, out var descriptor)) {
+                                oldExp.descriptor = descriptor;
+                            }
+                        } else {
+                            n.phonemeExpressions.Remove(oldExp);
+                        }
+                    });
+                }
+            }));
+            expressions.Remove(oldAbbr);
         }
 
         public UNote CreateNote() {
