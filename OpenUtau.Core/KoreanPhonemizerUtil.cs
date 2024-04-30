@@ -371,7 +371,7 @@ namespace OpenUtau.Core {
                 nextFirstConsonant = "ㅇ";
             }
 
-            if ((!firstLastConsonant.Equals("")) && nextFirstConsonant.Equals("ㅇ") && (!firstLastConsonant.Equals("ㅇ"))) {
+            if ((!firstLastConsonant.Equals(" ")) && nextFirstConsonant.Equals("ㅇ") && (!firstLastConsonant.Equals("ㅇ"))) {
                 // 연음 2
                 nextFirstConsonant = firstLastConsonant == " " ? "ㅇ" : firstLastConsonant;
                 firstLastConsonant = " ";
