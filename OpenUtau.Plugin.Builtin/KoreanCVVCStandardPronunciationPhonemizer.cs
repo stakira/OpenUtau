@@ -199,6 +199,15 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            if (FindInOto(VC, note, true) == null) {
+                if (VC.EndsWith("w") || VC.EndsWith("y")) {
+                    VC = VC.Substring(0, VC.Length - 1);
+                }
+                if (FindInOto(VC, note, true) == null) {
+                    isItNeedsVC = false;
+                }
+            }
+
             if (isItNeedsVV && FindInOto(VV, note, true) != null) {
                 CV = VV;
                 if (isItNeedsVSv) { // if use a wa, don't use a w wa
@@ -246,7 +255,12 @@ namespace OpenUtau.Plugin.Builtin {
             }
             CC = $"{LAST_CONSONANTS[thisLyric[2]][0]} {FIRST_CONSONANTS[nextLyric[0]]}{MIDDLE_VOWELS[nextLyric[1]][1]}";
             
-            
+            if (FindInOto(CC, note, true) == null) {
+                if (CC.EndsWith("w") || CC.EndsWith("y")) {
+                    CC = CC.Substring(0, CC.Length - 1);
+                }
+            }
+
             if (FindInOto(CC, note, true) != null) { // batchim + CC
                 if (isItNeedsFrontCV){
                     return GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), FindInOto(CC, note), totalDuration, 120, 2, 3);
