@@ -145,13 +145,22 @@ namespace OpenUtau.Plugin.Builtin {
             string VV = $"{MIDDLE_VOWELS[prevLyric[1]][2]} {thisMidVowelTail}";
             string VSv = $"{thisMidVowelTail} {MIDDLE_VOWELS[nextLyric[1]][1]}";
             isItNeedsVSv = thisLyric[2] == " " && nextLyric[0] == "ㅇ" && !PLAIN_VOWELS.Contains(nextLyric[1]) && FindInOto(VSv, note, true) != null;
-            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null" && FindInOto(VC, note, true) != null;
+            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null";
 
             frontCV = $"- {CV}";
             if (FindInOto(frontCV, note, true) == null) {
                 frontCV = $"-{CV}";
                 if (FindInOto(frontCV, note, true) == null) {
                     frontCV = CV;
+                }
+            }
+
+            if (FindInOto(VC, note, true) == null) {
+                if (VC.EndsWith("w") || VC.EndsWith("y")) {
+                    VC = VC.Substring(0, VC.Length - 1);
+                }
+                if (FindInOto(VC, note, true) == null) {
+                    isItNeedsVC = false;
                 }
             }
 
