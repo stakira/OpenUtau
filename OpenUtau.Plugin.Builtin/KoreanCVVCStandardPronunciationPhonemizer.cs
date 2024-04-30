@@ -189,7 +189,7 @@ namespace OpenUtau.Plugin.Builtin {
                 VV = $"{LAST_CONSONANTS["ㅇ"][0]} {thisMidVowelHead}{thisMidVowelTail}";
             }
             isItNeedsVSv = thisLyric[2] == " " && nextLyric[0] == "ㅇ" && !PLAIN_VOWELS.Contains(nextLyric[1]) && FindInOto(VSv, note, true) != null;
-            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null" && FindInOto(VC, note, true) != null;
+            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null";
             
             frontCV = $"- {CV}";
             if (FindInOto(frontCV, note, true) == null) {
