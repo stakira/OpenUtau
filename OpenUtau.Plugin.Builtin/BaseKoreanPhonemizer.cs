@@ -26,7 +26,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         // this phonemizer will call ConvertPhonemes() when lyric is hanguel or additionalTest is true . (override to use)
         protected virtual bool additionalTest(string lyric) {
-            return true;
+            return false;
         } 
         public override void SetSinger(USinger singer) => this.singer = singer;
         public static string? FindInOto(USinger singer, string phoneme, Note note, bool nullIfNotFound = false) {
