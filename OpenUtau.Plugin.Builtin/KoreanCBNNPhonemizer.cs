@@ -141,7 +141,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             string frontCV;
             string batchim;
-            string VC = $"{thisMidVowelTail} {FIRST_CONSONANTS[nextLyric[0]]}";
+            string VC = $"{thisMidVowelTail} {FIRST_CONSONANTS[nextLyric[0]]}{MIDDLE_VOWELS[nextLyric[1]][1]}";
             string VV = $"{MIDDLE_VOWELS[prevLyric[1]][2]} {thisMidVowelTail}";
             string VSv = $"{thisMidVowelTail} {MIDDLE_VOWELS[nextLyric[1]][1]}";
             isItNeedsVSv = thisLyric[2] == " " && nextLyric[0] == "ㅇ" && !PLAIN_VOWELS.Contains(nextLyric[1]) && FindInOto(VSv, note, true) != null;
