@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using OpenUtau.Core;
@@ -27,13 +30,16 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e) {
-            return ShowError(parent, string.Empty, e);
-        }
-
-        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e, string message = "") {
             string text = message;
             string title = ThemeManager.GetString("errors.caption");
+            IReadOnlyList<Window> dialogs = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).Windows;
+            foreach (var dialog in dialogs) {
+                if (dialog.IsActive) {
+                    parent = dialog;
+                    break;
+                }
+            }
 
             if (e is MessageCustomizableException mce) {
                 if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
@@ -44,7 +50,7 @@ namespace OpenUtau.App.Views {
                 }
 
                 if (!mce.ShowStackTrace) {
-                    return Show(parent, text, null, title, MessageBoxButtons.Ok);
+                    return Show(parent, text, title, MessageBoxButtons.Ok);
                 }
             }
 
@@ -81,13 +87,10 @@ namespace OpenUtau.App.Views {
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
 
-            return Show(parent, text, builder.ToString(), title, MessageBoxButtons.OkCopy);
+            return Show(parent, text, title, MessageBoxButtons.OkCopy, builder.ToString());
         }
 
-        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {
-            return Show(parent, text, null, title, buttons);
-        }
-        public static Task<MessageBoxResult> Show(Window parent, string text, string? stackTrace, string title, MessageBoxButtons buttons) {
+        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons, string? stackTrace = null) {
             var msgbox = new MessageBox() {
                 Title = title
             };
