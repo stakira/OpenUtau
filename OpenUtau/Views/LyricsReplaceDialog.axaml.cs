@@ -14,8 +14,9 @@ namespace OpenUtau.App.Views {
         }
 
         void OnFinish(object? sender, RoutedEventArgs e) {
-            (DataContext as LyricsReplaceViewModel)!.Finish();
-            Close();
+            if((DataContext as LyricsReplaceViewModel)!.Finish()) {
+                Close();
+            }
         }
 
         private void OnKeyDown(object? sender, KeyEventArgs e) {
