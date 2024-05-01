@@ -424,7 +424,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var ccv = $"{string.Join("", cc)} {v}";
                     var ccv1 = string.Join("", cc.Skip(i)) + " " + v;
                     /// CCV
-                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[i] + cc[i + 1])) {
+                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[i])) {
                         if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
                             basePhoneme = ccv;
                             lastC = i;
@@ -446,7 +446,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var vc = $"{prevV} {cc[0]}";
                     // Boolean Triggers
                     bool CCV = false;
-                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[1])) {
+                    if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[0])) {
                         if (HasOto($"{string.Join("", cc)} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{string.Join("", cc)} {v}"), syllable.vowelTone)) {
                             CCV = true;
                         }
