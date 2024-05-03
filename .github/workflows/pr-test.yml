@@ -19,6 +19,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.0'
+
     - name: restore
       run: dotnet restore OpenUtau -r ${{ matrix.os.arch }}
 
