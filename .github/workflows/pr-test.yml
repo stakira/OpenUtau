@@ -11,7 +11,7 @@ jobs:
         os: 
           - runs-on: windows-latest
             arch: win-x64
-          - runs-on: macos-latest
+          - runs-on: macos-13
             arch: osx-x64
           - runs-on: ubuntu-latest
             arch: linux-x64
