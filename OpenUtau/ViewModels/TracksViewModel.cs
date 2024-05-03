@@ -428,7 +428,9 @@ namespace OpenUtau.App.ViewModels {
                     MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
-                    MaybeAutoScroll();
+                    if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
+                        MaybeAutoScroll();
+                    }
                 }
                 Notify();
             }

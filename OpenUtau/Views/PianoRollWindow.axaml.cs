@@ -143,7 +143,9 @@ namespace OpenUtau.App.Views {
             if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
                 Preferences.Default.LockStartTime = tag;
                 Preferences.Save();
-                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime0));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime1));
+                ViewModel.RaisePropertyChanged(nameof(ViewModel.LockStartTime2));
             }
         }
         void OnMenuPlaybackAutoScroll(object sender, RoutedEventArgs args) {
