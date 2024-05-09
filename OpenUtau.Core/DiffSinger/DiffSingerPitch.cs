@@ -36,6 +36,9 @@ namespace OpenUtau.Core.DiffSinger
             dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     System.Text.Encoding.UTF8));
+            if(dsConfig.pitch == null){
+                throw new Exception("This voicebank doesn't contain a pitch model");
+            }
             //Load phonemes list
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
@@ -77,6 +80,14 @@ namespace OpenUtau.Core.DiffSinger
                 list[i] = value;
             }
         }
+
+        int PhonemeTokenize(string phoneme){
+            int result = phonemes.IndexOf(phoneme);
+            if(result < 0){
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by pitch model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
+            }
+            return result;
+        }
         
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
@@ -86,9 +97,10 @@ namespace OpenUtau.Core.DiffSinger
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
             var tokens = phrase.phones
-                .Select(p => (Int64)phonemes.IndexOf(p.phoneme))
-                .Prepend((Int64)phonemes.IndexOf("SP"))
-                .Append((Int64)phonemes.IndexOf("SP"))
+                .Select(p => p.phoneme)
+                .Prepend("SP")
+                .Append("SP")
+                .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
             var ph_dur = phrase.phones
                 .Select(p=>(int)Math.Round(p.endMs/frameMs) - (int)Math.Round(p.positionMs/frameMs))

@@ -211,6 +211,14 @@ namespace OpenUtau.Core.DiffSinger
             }
             return speakerEmbedManager;
         }
+
+        int PhonemeTokenize(string phoneme){
+            int result = phonemes.IndexOf(phoneme);
+            if(result < 0){
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by timing model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
+            }
+            return result;
+        }
         
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
@@ -247,7 +255,7 @@ namespace OpenUtau.Core.DiffSinger
             //Linguistic Encoder
             var tokens = phrasePhonemes
                 .SelectMany(n => n.Phonemes)
-                .Select(p => (Int64)phonemes.IndexOf(p.Symbol))
+                .Select(p => (Int64)PhonemeTokenize(p.Symbol))
                 .ToArray();
             var word_div = phrasePhonemes.Take(phrasePhonemes.Count-1)
                 .Select(n => (Int64)n.Phonemes.Count)

@@ -78,15 +78,22 @@ namespace OpenUtau.Core.DiffSinger{
             return speakerEmbedManager;
         }
 
+        int PhonemeTokenize(string phoneme){
+            int result = phonemes.IndexOf(phoneme);
+            if(result < 0){
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by variance model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
+            }
+            return result;
+        }
         public VarianceResult Process(RenderPhrase phrase){
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
-            var tokens = phrase.phones
-                .Select(p => (Int64)phonemes.IndexOf(p.phoneme))
-                .Prepend((Int64)phonemes.IndexOf("SP"))
-                .Append((Int64)phonemes.IndexOf("SP"))
+            var tokens = phrase.phones.Select(p => p.phoneme)
+                .Prepend("SP")
+                .Append("SP")
+                .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
             var ph_dur = phrase.phones
                 .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error

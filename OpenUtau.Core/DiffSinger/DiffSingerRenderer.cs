@@ -202,13 +202,13 @@ namespace OpenUtau.Core.DiffSinger {
             //mel = session.run(['mel'], {'tokens': tokens, 'durations': durations, 'f0': f0, 'speedup': speedup})[0]
             //tokens: phoneme index in the phoneme set
             //durations: phoneme duration in frames
-            //f0: pitch curve in Hz by frame
+            //f0: pitch curve in Hz by frame 
             //speedup: Diffusion render speedup, int
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
                 .Prepend("SP")
                 .Append("SP")
-                .Select(x => (long)(singer.phonemes.IndexOf(x)))
+                .Select(phoneme => (Int64)singer.PhonemeTokenize(phoneme))
                 .ToList();
             var durations = phrase.phones
                 .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error
