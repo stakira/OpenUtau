@@ -58,13 +58,10 @@ namespace OpenUtau.Core.DiffSinger
             var g2ps = new List<IG2p>();
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
-            if (File.Exists(file)) {
-                try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {file}");
-                }
+            if(!File.Exists(file)){
+                throw new Exception($"File not found: {file}");
             }
+            g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
             return new G2pFallbacks(g2ps.ToArray());
         }
 
@@ -116,6 +113,9 @@ namespace OpenUtau.Core.DiffSinger
                 var vowelIds = Enumerable.Range(0,phrase.phones.Length)
                     .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
                     .ToArray();
+                if(vowelIds.Length == 0){
+                    vowelIds = new int[]{1,phrase.phones.Length-1};
+                }
                 var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
                     .Prepend(vowelIds[0] + 1)
                     .Append(phrase.phones.Length - vowelIds[^1] + 1)
