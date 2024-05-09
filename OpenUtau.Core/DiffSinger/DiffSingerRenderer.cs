@@ -202,7 +202,7 @@ namespace OpenUtau.Core.DiffSinger {
             //mel = session.run(['mel'], {'tokens': tokens, 'durations': durations, 'f0': f0, 'speedup': speedup})[0]
             //tokens: phoneme index in the phoneme set
             //durations: phoneme duration in frames
-            //f0: pitch curve in Hz by frame 
+            //f0: pitch curve in Hz by frame
             //speedup: Diffusion render speedup, int
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
