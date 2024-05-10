@@ -222,9 +222,10 @@ namespace OpenUtau.Core {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is SeekPlayPosTickNotification) {
+                var _cmd = cmd as SeekPlayPosTickNotification;
                 StopPlayback();
-                int tick = ((SeekPlayPosTickNotification)cmd).playPosTick;
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
+                int tick = _cmd!.playPosTick;
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, false, _cmd.pause));
             } else if (cmd is VolumeChangeNotification) {
                 var _cmd = cmd as VolumeChangeNotification;
                 if (faders != null && faders.Count > _cmd.TrackNo) {
@@ -232,7 +233,7 @@ namespace OpenUtau.Core {
                 }
             } else if (cmd is PanChangeNotification) {
                 var _cmd = cmd as PanChangeNotification;
-                if (faders != null && faders.Count > _cmd.TrackNo) {
+                if (faders != null && faders.Count > _cmd!.TrackNo) {
                     faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
                 }
             } else if (cmd is LoadProjectNotification) {
