@@ -53,6 +53,15 @@ namespace OpenUtau.Plugin.Builtin {
 
         private bool isSimpleDelta = false;
 
+        // For banks with slightly fewer vowels
+        private readonly Dictionary<string, string> CanadianRaising = "VI=aI;VU=aU".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool isMissingCanadianRaising = false;
+
         // For banks with only minimal vowels
         private readonly Dictionary<string, string> miniDelta = "I=i;U=u".Split(';')
                 .Select(entry => entry.Split('='))
@@ -212,6 +221,10 @@ namespace OpenUtau.Plugin.Builtin {
             // Switch between phonetic systems, depending on certain aliases in the bank
             if (HasOto($"- i:", syllable.tone) || HasOto($"i:", syllable.tone) || (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone))) {
                 isVocaSampa = true;
+            }
+
+            if (!HasOto($"- VI", syllable.tone) || HasOto($"VI", syllable.tone) || (!HasOto($"- VU", syllable.tone) && !HasOto($"VU", syllable.tone))) {
+                isMissingCanadianRaising = true;
             }
 
             if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone) || (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone))) {

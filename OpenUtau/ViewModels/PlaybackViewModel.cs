@@ -33,7 +33,7 @@ namespace OpenUtau.App.ViewModels {
             PlaybackManager.Inst.PlayOrPause(tick: tick, endTick: endTick, trackNo: trackNo);
             var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
             if (!PlaybackManager.Inst.Playing && !PlaybackManager.Inst.StartingToPlay && lockStartTime) {
-                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick, true));
             }
         }
         public void Pause() {

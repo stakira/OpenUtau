@@ -8,6 +8,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Classic;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
+using OpenUtau.Api;
 
 namespace OpenUtau.Core {
     /// <summary>
@@ -177,20 +178,20 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// merges separated hangeul into complete hangeul. (Example: {[0]: "ㄱ", [1]: "ㅏ", [2]: " "} => "가"})
+        /// merges separated hangeul into complete hangeul. (Example: {[offset + 0]: "ㄱ", [offset + 1]: "ㅏ", [offset + 2]: " "} => "가"})
         /// <para>자모로 쪼개진 한글을 합쳐진 한글로 반환합니다.</para>
         /// </summary>
         /// <param name="separated">separated Hangeul. </param>
         /// <returns>Returns complete Hangeul Character.</returns>
-        public static string Merge(Hashtable separatedHangeul){
+        public static string Merge(Hashtable separatedHangeul, int offset = 0){
             
             int firstConsonantIndex; // (ex) 2
             int middleVowelIndex; // (ex) 2
             int lastConsonantIndex; // (ex) 21
 
-            char firstConsonant = ((string)separatedHangeul[0])[0]; // (ex) "ㄴ"
-            char middleVowel = ((string)separatedHangeul[1])[0]; // (ex) "ㅑ"
-            char lastConsonant = ((string)separatedHangeul[2])[0]; // (ex) "ㅇ"
+            char firstConsonant = ((string)separatedHangeul[offset + 0])[0]; // (ex) "ㄴ"
+            char middleVowel = ((string)separatedHangeul[offset + 1])[0]; // (ex) "ㅑ"
+            char lastConsonant = ((string)separatedHangeul[offset + 2])[0]; // (ex) "ㅇ"
 
             if (firstConsonant == ' ') {firstConsonant = 'ㅇ';}
 
@@ -919,10 +920,7 @@ namespace OpenUtau.Core {
                     result.Add(7, thisNoteSeparated[4]);
                     result.Add(8, thisNoteSeparated[5]);
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 }
             } 
             else if ((lyrics[0] != null) && (lyrics[2] == null)) {
@@ -941,10 +939,7 @@ namespace OpenUtau.Core {
                     result.Add(7, "null");
                     result.Add(8, "null");
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 } 
                 else if (whereYeonEum == 0) {
                     // 앞 노트에서 단어가 끝났다고 가정 
@@ -959,10 +954,7 @@ namespace OpenUtau.Core {
                     result.Add(7, "null");
                     result.Add(8, "null");
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 } 
                 else {
                     Hashtable result = Variate(lyrics[0], lyrics[1], 0); // 첫 글자
@@ -976,10 +968,7 @@ namespace OpenUtau.Core {
                     result.Add(7, "null");
                     result.Add(8, "null");
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 }
             } 
             else if ((lyrics[0] != null) && (lyrics[2] != null)) {
@@ -998,10 +987,7 @@ namespace OpenUtau.Core {
                     result.Add(7, thisNoteSeparated[4]);
                     result.Add(8, thisNoteSeparated[5]);
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 } 
                 else if (whereYeonEum == 0) {
                     // 앞 노트에서 단어가 끝났다고 가정 / 릎. [위] 놓
@@ -1016,10 +1002,7 @@ namespace OpenUtau.Core {
                     result.Add(7, thisNoteSeparated[4]);
                     result.Add(8, thisNoteSeparated[5]);
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 } 
                 else {
                     Hashtable result = Variate(lyrics[0], lyrics[1], 0);
@@ -1033,10 +1016,7 @@ namespace OpenUtau.Core {
                     result.Add(7, thisNoteSeparated[4]);
                     result.Add(8, thisNoteSeparated[5]);
 
-                    return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]});
+                    return Merge(result, 3);
                 }
             } 
             else {
@@ -1060,11 +1040,7 @@ namespace OpenUtau.Core {
                 result.Add(7, "null");
                 result.Add(8, "null");
 
-                return Merge(new Hashtable{
-                    [0] = (string)result[3],
-                    [1] = (string)result[4],
-                    [2] = (string)result[5]
-                });
+                return Merge(result, 3);
             }
         }
         
@@ -1081,10 +1057,27 @@ namespace OpenUtau.Core {
             };
             return group;
         }
-        public static void RomanizeNotes(Note[][] groups, Dictionary<string, string[]> firstConsonants, Dictionary<string, string[]> vowels, Dictionary<string, string[]> lastConsonants, string semivowelSeparator=" ") {
-            // for ENUNU Phonemizer
-            
+
+        public static void ModifyLyrics(Hashtable lyricSeparated,string lyric, Dictionary<string, string[]> firstConsonants, Dictionary<string, string[]> vowels, Dictionary<string, string[]> lastConsonants, string semivowelSeparator){
+            lyric += firstConsonants[(string)lyricSeparated[3]][0];
+                if (vowels[(string)lyricSeparated[4]][1] != "") {
+                    // this vowel contains semivowel
+                    lyric += semivowelSeparator + vowels[(string)lyricSeparated[4]][1] + vowels[(string)lyricSeparated[4]][2];
+                }
+                else{
+                    lyric += " " + vowels[(string)lyricSeparated[4]][2];
+                }
+                
+                lyric += lastConsonants[(string)lyricSeparated[5]][0];
+        }
+        
+        public static void RomanizeNotes(Note[][] groups, bool _modifyLyrics = false, Dictionary<string, string[]> firstConsonants = null, Dictionary<string, string[]> vowels = null, Dictionary<string, string[]> lastConsonants = null, string semivowelSeparator = " ") {
+            // for ENUNU & DIFFS Phonemizer
+
             int noteIdx = 0;
+            string lyric;
+            bool modifyLyrics = (!_modifyLyrics || firstConsonants == null || vowels == null || lastConsonants == null) ? false : true;
+            
             Note[] currentNote;
             Note[]? prevNote = null;
             Note[]? nextNote;
@@ -1092,10 +1085,13 @@ namespace OpenUtau.Core {
             Note? prevNote_;
             Note? nextNote_;
 
-
             List<string> ResultLyrics = new List<string>();
+
             foreach (Note[] group in groups){    
                 currentNote = groups[noteIdx];
+                string originalLyric; // uses this when no variation needed
+                originalLyric = currentNote[0].lyric;
+
                 if (groups.Length > noteIdx + 1 && IsHangeul(groups[noteIdx + 1][0].lyric)) {
                     nextNote = groups[noteIdx + 1];
                 }
@@ -1120,7 +1116,7 @@ namespace OpenUtau.Core {
                 }
                 else{nextNote_ = null;}
             
-                string lyric = "";
+                lyric = originalLyric;
 
                 if (! IsHangeul(currentNote[0].lyric)){
                     ResultLyrics.Add(currentNote[0].lyric);
@@ -1129,26 +1125,26 @@ namespace OpenUtau.Core {
                     continue;
                 }
 
-                Hashtable lyricSeparated = Variate(prevNote_, currentNote[0], nextNote_);
-                lyric += firstConsonants[(string)lyricSeparated[3]][0];
-                if (vowels[(string)lyricSeparated[4]][1] != "") {
-                    // this vowel contains semivowel
-                    lyric += semivowelSeparator + vowels[(string)lyricSeparated[4]][1] + vowels[(string)lyricSeparated[4]][2];
-                }
-                else{
-                    lyric += " " + vowels[(string)lyricSeparated[4]][2];
-                }
-                
-                lyric += lastConsonants[(string)lyricSeparated[5]][0];
+            
+            Hashtable lyricSeparated = Variate(prevNote_, currentNote[0], nextNote_);
 
-                ResultLyrics.Add(lyric.Trim());
-
-                prevNote = currentNote;
+            if (modifyLyrics) {
+                ModifyLyrics(lyricSeparated, lyric, firstConsonants, vowels, lastConsonants, semivowelSeparator);    
+            }
+            else {
+                lyric = Merge(lyricSeparated, 3);
+            }
                 
-                noteIdx++;
+            ResultLyrics.Add(lyric.Trim());
+
+            prevNote = currentNote;
+                
+            noteIdx++;
+
             }
             Enumerable.Zip(groups, ResultLyrics.ToArray(), ChangeLyric).Last();
         }
+
 
     /// <summary>
     /// abstract class for Ini Management

@@ -167,6 +167,7 @@ namespace OpenUtau.Core {
         public override string ToString() => "Configure expressions";
         public override void Execute() {
             project.expressions = newDescriptors.ToDictionary(descriptor => descriptor.abbr);
+            Format.Ustx.AddDefaultExpressions(project);
             project.parts
                 .Where(part => part is UVoicePart)
                 .ToList()
@@ -175,6 +176,7 @@ namespace OpenUtau.Core {
         }
         public override void Unexecute() {
             project.expressions = oldDescriptors.ToDictionary(descriptor => descriptor.abbr);
+            Format.Ustx.AddDefaultExpressions(project);
             project.parts
                 .Where(part => part is UVoicePart)
                 .ToList()

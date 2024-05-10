@@ -206,13 +206,8 @@ namespace OpenUtau.App.ViewModels {
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
-                if (Preferences.Default.PenPlusDefault) {
-                    PenPlusTool = index == "2";
-                    PenTool = index == "2+";
-                } else {
-                    PenTool = index == "2";
-                    PenPlusTool = index == "2+";
-                }
+                PenTool = index == "2";
+                PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 KnifeTool = index == "5";
@@ -971,7 +966,7 @@ namespace OpenUtau.App.ViewModels {
             if (track.RendererSettings.Renderer == null) {
                 return true;
             }
-            if (Project.expressions.TryGetValue(expKey, out var descriptor)) {
+            if (track.TryGetExpDescriptor(Project, expKey, out var descriptor)) {
                 return track.RendererSettings.Renderer.SupportsExpression(descriptor);
             }
             if (expKey == track.VoiceColorExp.abbr) {
@@ -997,7 +992,9 @@ namespace OpenUtau.App.ViewModels {
                     PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
-                    MaybeAutoScroll(PlayPosX);
+                    if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
+                        MaybeAutoScroll(PlayPosX);
+                    }
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);

@@ -103,10 +103,12 @@ namespace OpenUtau.Core {
     public class SetPlayPosTickNotification : UNotification {
         public readonly int playPosTick;
         public readonly bool waitingRendering;
+        public readonly bool pause;
         public override bool Silent => true;
-        public SetPlayPosTickNotification(int tick, bool waitingRendering = false) {
+        public SetPlayPosTickNotification(int tick, bool waitingRendering = false, bool pause = false) {
             playPosTick = tick;
             this.waitingRendering = waitingRendering;
+            this.pause = pause;
         }
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }
@@ -114,9 +116,11 @@ namespace OpenUtau.Core {
     // Notification for playback manager to change play position
     public class SeekPlayPosTickNotification : UNotification {
         public int playPosTick;
+        public readonly bool pause;
         public override bool Silent => true;
-        public SeekPlayPosTickNotification(int tick) {
+        public SeekPlayPosTickNotification(int tick, bool pause = false) {
             playPosTick = tick;
+            this.pause = pause;
         }
         public override string ToString() => $"Seek play position to tick {playPosTick}";
     }
