@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Util {
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
-            public bool ShowTips = true;
+            public bool ShowTips = false;
             public int Theme = 1;
             public bool PenPlusDefault = false;
             public int DegreeStyle;
