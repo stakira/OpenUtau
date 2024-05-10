@@ -206,13 +206,8 @@ namespace OpenUtau.App.ViewModels {
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
-                if (Preferences.Default.PenPlusDefault) {
-                    PenPlusTool = index == "2";
-                    PenTool = index == "2+";
-                } else {
-                    PenTool = index == "2";
-                    PenPlusTool = index == "2+";
-                }
+                PenTool = index == "2";
+                PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 KnifeTool = index == "5";
