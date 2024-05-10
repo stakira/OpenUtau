@@ -393,7 +393,7 @@ namespace OpenUtau.Core.Enunu {
             }
             
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
-
+        
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
             if (notes.Length == 0 || singer == null || !singer.Found) {
@@ -484,7 +484,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         protected override EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
-            KoreanPhonemizerUtil.RomanizeNotes(notes, FirstConsonants, MiddleVowels, LastConsonants, semivowelSep);
+            KoreanPhonemizerUtil.RomanizeNotes(notes, true, FirstConsonants, MiddleVowels, LastConsonants, semivowelSep);
             var result = new List<EnunuNote>();
             int position = 0;
             int index = 0;
@@ -513,69 +513,6 @@ namespace OpenUtau.Core.Enunu {
             return result.ToArray();
         }
 
-        // public void AdjustPos(Phoneme[] phonemes, Note[] prevNote){
-        //     //TODO
-        //     Phoneme? prevPhone = null;
-        //     Phoneme? nextPhone = null;
-        //     Phoneme currPhone;
-
-        //     int length = phonemes.Last().position;
-        //     int prevLength;
-        //     if (prevNote == null){
-        //         prevLength = length;
-        //     }
-        //     else{
-        //         prevLength = MsToTick(prevNote.Sum(n => n.duration));
-        //     }
-
-        //     for (int i=0; i < phonemes.Length; i++) {
-        //         currPhone = phonemes[i];
-        //         if (i < phonemes.Length - 1){
-        //             nextPhone = phonemes[i+1];
-        //         }
-        //         else{
-        //             nextPhone = null;
-        //         }
-
-        //         if (i == 0){
-        //             // TODO 받침 + 자음 오면 받침길이 + 자음길이 / 2의 위치에 자음이 오도록 하기
-        //             if (isPlainVowel(phonemes[i].phoneme)) {
-        //                 phonemes[i].position = 0;
-        //             }
-        //             else if (nextPhone != null && ! isPlainVowel(((Phoneme)nextPhone).phoneme) && ! isSemivowel(((Phoneme)nextPhone).phoneme) && isPlainVowel(((Phoneme)nextPhone).phoneme) && isSemivowel(currPhone.phoneme)) {
-        //                 phonemes[i + 1].position = length / 10;
-        //             }
-        //             else if (nextPhone != null && isSemivowel(((Phoneme)nextPhone).phoneme)){
-        //                 if (i + 2 < phonemes.Length){
-        //                     phonemes[i + 2].position = length / 10;
-        //                 }
-                        
-        //             }
-        //         }
-        //         prevPhone = currPhone;
-        //     }
-        // }
-
-        // private bool isPlainVowel(string phoneme){
-        //     if (phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅏ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅣ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅜ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅔ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅗ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅡ") || phoneme == koreanENUNUSetting.GetPlainVowelPhoneme("ㅓ")){
-        //         return true;
-        //     }
-        //     return false;
-        // }
-
-        // private bool isBatchim(string phoneme){
-        //     if (phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㄱ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㄴ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㄷ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㄹ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㅁ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㅂ") || phoneme == koreanENUNUSetting.GetFinalConsonantPhoneme("ㅇ")){
-        //         return true;
-        //     }
-        //     return false;
-        // }
-
-        // private bool isSemivowel(string phoneme) {
-        //     if (phoneme == koreanENUNUSetting.GetSemiVowelPhoneme("w") || phoneme == koreanENUNUSetting.GetSemiVowelPhoneme("y")){
-        //         return true;
-        //     }
-        //     return false;
-        // }
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             if (partResult.TryGetValue(notes, out var phonemes)) {
                 var phonemes_ = phonemes.Select(p => {
@@ -584,7 +521,6 @@ namespace OpenUtau.Core.Enunu {
                         return p;
                     }).ToArray();
 
-                //AdjustPos(phonemes_, prevs);
                 return new Result {
                     phonemes = phonemes_,
                 };
