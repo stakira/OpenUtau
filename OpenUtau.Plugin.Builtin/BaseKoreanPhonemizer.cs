@@ -23,11 +23,6 @@ namespace OpenUtau.Plugin.Builtin {
         protected static readonly string[] PLAIN_VOWELS = new string[]{"ㅏ", "ㅣ", "ㅜ", "ㅔ", "ㅗ", "ㅡ", "ㅓ", "ㅢ"};
         protected static readonly string[] SOFT_BATCHIMS = new string[]{"ㄴ", "ㄹ", "ㅇ"};
         protected static readonly string[] HARD_BATCHIMS = new string[]{"ㄱ", "ㄷ", "ㅂ", "ㅁ"};
-
-        // this phonemizer will call ConvertPhonemes() when lyric is hanguel or additionalTest is true . (override to use)
-        protected virtual bool additionalTest(string lyric) {
-            return false;
-        } 
         public override void SetSinger(USinger singer) => this.singer = singer;
         public static string? FindInOto(USinger singer, string phoneme, Note note, bool nullIfNotFound = false) {
             // 음소와 노트를 입력받고, 다음계 및 보이스컬러 에일리어스를 적용한다. 
@@ -130,7 +125,6 @@ namespace OpenUtau.Plugin.Builtin {
                     position = totalDuration - totalDuration / totalDurationDivider},
                 }
             };
-            
         }
 
         /// <summary>
@@ -298,7 +292,7 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes = phonemes
                 };
             } 
-            else if (KoreanPhonemizerUtil.IsHangeul(lyric) || !KoreanPhonemizerUtil.IsHangeul(lyric) && additionalTest(lyric)) {
+            else if (KoreanPhonemizerUtil.IsHangeul(lyric)) {
                 return ConvertPhonemes(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             } 
             else {
@@ -306,7 +300,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
 
-        
         /// <summary>
         /// abstract class for Ini Management
         /// To use, child phonemizer should implement this class(BaseIniManager) with its own setting values!
