@@ -107,7 +107,7 @@ namespace OpenUtau.Core.Render {
 
             resampler = track.RendererSettings.resampler;
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
-            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)
+            if (track.TryGetExpDescriptor(project, Format.Ustx.ENG, out var descriptor)
                 && eng >= 0 && eng < descriptor.options.Length
                 && !string.IsNullOrEmpty(descriptor.options[eng])) {
                 resampler = descriptor.options[eng];

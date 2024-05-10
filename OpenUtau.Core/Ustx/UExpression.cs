@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -9,7 +10,7 @@ namespace OpenUtau.Core.Ustx {
         Curve = 2,
     }
 
-    public class UExpressionDescriptor {
+    public class UExpressionDescriptor : IEquatable<UExpressionDescriptor> {
         public string name;
         public string abbr;
         public UExpressionType type;
@@ -66,6 +67,18 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override string ToString() => $"{abbr.ToUpper()}: {name}";
+
+        public bool Equals(UExpressionDescriptor other) {
+            return this.name == other.name &&
+                this.abbr == other.abbr &&
+                this.type == other.type &&
+                this.min == other.min &&
+                this.max == other.max &&
+                this.defaultValue == other.defaultValue &&
+                this.isFlag == other.isFlag &&
+                this.flag == other.flag &&
+                ((this.options == null && other.options == null) || this.options.SequenceEqual(other.options));
+        }
     }
 
     public class UExpression {
