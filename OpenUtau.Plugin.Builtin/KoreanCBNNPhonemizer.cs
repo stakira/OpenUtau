@@ -141,17 +141,26 @@ namespace OpenUtau.Plugin.Builtin {
             }
             string frontCV;
             string batchim;
-            string VC = $"{thisMidVowelTail} {FIRST_CONSONANTS[nextLyric[0]]}";
+            string VC = $"{thisMidVowelTail} {FIRST_CONSONANTS[nextLyric[0]]}{MIDDLE_VOWELS[nextLyric[1]][1]}";
             string VV = $"{MIDDLE_VOWELS[prevLyric[1]][2]} {thisMidVowelTail}";
             string VSv = $"{thisMidVowelTail} {MIDDLE_VOWELS[nextLyric[1]][1]}";
             isItNeedsVSv = thisLyric[2] == " " && nextLyric[0] == "ㅇ" && !PLAIN_VOWELS.Contains(nextLyric[1]) && FindInOto(VSv, note, true) != null;
-            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null" && FindInOto(VC, note, true) != null;
+            isItNeedsVC = thisLyric[2] == " " && nextLyric[0] != "ㅇ" && nextLyric[0] != "null";
 
             frontCV = $"- {CV}";
             if (FindInOto(frontCV, note, true) == null) {
                 frontCV = $"-{CV}";
                 if (FindInOto(frontCV, note, true) == null) {
                     frontCV = CV;
+                }
+            }
+
+            if (FindInOto(VC, note, true) == null) {
+                if (VC.EndsWith("w") || VC.EndsWith("y")) {
+                    VC = VC.Substring(0, VC.Length - 1);
+                }
+                if (FindInOto(VC, note, true) == null) {
+                    isItNeedsVC = false;
                 }
             }
 
@@ -214,26 +223,22 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
 
-        private string HandleEmptyFirstConsonant(string lyric) {
-            return lyric == " " ? "ㅇ" : lyric;
-        }
-
         public override Result ConvertPhonemes(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             Note note = notes[0];
 
             Hashtable lyrics = KoreanPhonemizerUtil.Variate(prevNeighbour, note, nextNeighbour);
             string[] prevLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[0]), 
+                (string)lyrics[0], 
                 (string)lyrics[1], 
                 (string)lyrics[2]
                 };
             string[] thisLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[3]), 
+                (string)lyrics[3], 
                 (string)lyrics[4], 
                 (string)lyrics[5]
                 };
             string[] nextLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[6]), 
+                (string)lyrics[6], 
                 (string)lyrics[7], 
                 (string)lyrics[8]
                 };
@@ -257,7 +262,7 @@ namespace OpenUtau.Plugin.Builtin {
             Hashtable lyrics = KoreanPhonemizerUtil.Separate(prevNeighbour_.lyric);
 
             string[] prevLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[0]), 
+                (string)lyrics[0], 
                 (string)lyrics[1], 
                 (string)lyrics[2]
                 };

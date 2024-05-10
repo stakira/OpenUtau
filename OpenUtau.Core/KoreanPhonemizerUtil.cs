@@ -8,7 +8,6 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Classic;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
-using OpenUtau.Api;
 
 namespace OpenUtau.Core {
     /// <summary>
@@ -372,7 +371,7 @@ namespace OpenUtau.Core {
                 nextFirstConsonant = "ㅇ";
             }
 
-            if ((!firstLastConsonant.Equals("")) && nextFirstConsonant.Equals("ㅇ") && (!firstLastConsonant.Equals("ㅇ"))) {
+            if ((!firstLastConsonant.Equals(" ")) && nextFirstConsonant.Equals("ㅇ") && (!firstLastConsonant.Equals("ㅇ"))) {
                 // 연음 2
                 nextFirstConsonant = firstLastConsonant;
                 firstLastConsonant = " ";
