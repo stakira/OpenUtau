@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.ML.OnnxRuntime;
@@ -82,7 +83,7 @@ namespace OpenUtau.Api {
             return Dict.UnpackHint(hint, separator);
         }
 
-        protected string[] Predict(string grapheme) {
+        protected virtual string[] Predict(string grapheme) {
             Tensor<int> src = EncodeWord(grapheme);
             if (src.Length == 0 || Session == null) {
                 return new string[0];

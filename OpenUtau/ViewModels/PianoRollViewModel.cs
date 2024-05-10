@@ -58,7 +58,9 @@ namespace OpenUtau.App.ViewModels {
         public bool DegreeStyle0 { get => Preferences.Default.DegreeStyle == 0 ? true : false; }
         public bool DegreeStyle1 { get => Preferences.Default.DegreeStyle == 1 ? true : false; }
         public bool DegreeStyle2 { get => Preferences.Default.DegreeStyle == 2 ? true : false; }
-        public bool LockStartTime { get => Preferences.Default.LockStartTime == 1 ? true : false; }
+        public bool LockStartTime0 { get => Preferences.Default.LockStartTime == 0 ? true : false; }
+        public bool LockStartTime1 { get => Preferences.Default.LockStartTime == 1 ? true : false; }
+        public bool LockStartTime2 { get => Preferences.Default.LockStartTime == 2 ? true : false; }
         public bool PlaybackAutoScroll0 { get => Preferences.Default.PlaybackAutoScroll == 0 ? true : false; }
         public bool PlaybackAutoScroll1 { get => Preferences.Default.PlaybackAutoScroll == 1 ? true : false; }
         public bool PlaybackAutoScroll2 { get => Preferences.Default.PlaybackAutoScroll == 2 ? true : false; }
