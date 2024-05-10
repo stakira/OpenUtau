@@ -83,6 +83,7 @@
   <system:String x:Key="errors.failed.runeditingmacro">一括処理に失敗しました</system:String>
   <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました</system:String>
+  <system:String x:Key="errors.failed.searchsinger">シンガーの取得に失敗しました</system:String>
 
   <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>

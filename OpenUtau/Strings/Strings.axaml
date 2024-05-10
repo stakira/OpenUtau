@@ -84,6 +84,7 @@
   <system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>
   <system:String x:Key="errors.failed.save">Failed to save</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>
+  <system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>
 
   <system:String x:Key="exps.abbr">Abbreviation</system:String>
   <system:String x:Key="exps.apply">Apply</system:String>

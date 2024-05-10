@@ -557,7 +557,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
-            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            MessageBox.ShowLoading(this);
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {
                 if (dialog == null) {
@@ -581,7 +581,7 @@ namespace OpenUtau.App.Views {
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             } finally {
-                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
+                MessageBox.CloseLoading();
             }
             if (dialog != null) {
                 dialog.Activate();
@@ -1083,12 +1083,12 @@ namespace OpenUtau.App.Views {
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
-                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "pianoroll window"));
+                    MessageBox.ShowLoading(this);
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
                     };
                     pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
-                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "pianoroll window"));
+                    MessageBox.CloseLoading();
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
