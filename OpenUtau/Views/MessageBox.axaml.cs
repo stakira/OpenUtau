@@ -30,14 +30,16 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e, string message = "") {
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e, string message = "", bool fromNotif = false) {
             string text = message;
             string title = ThemeManager.GetString("errors.caption");
-            IReadOnlyList<Window> dialogs = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).Windows;
-            foreach (var dialog in dialogs) {
-                if (dialog.IsActive) {
-                    parent = dialog;
-                    break;
+            if (fromNotif) {
+                IReadOnlyList<Window> dialogs = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).Windows;
+                foreach (var dialog in dialogs) {
+                    if (dialog.IsActive) {
+                        parent = dialog;
+                        break;
+                    }
                 }
             }
 

@@ -1329,7 +1329,7 @@ namespace OpenUtau.App.Views {
                            MessageBox.MessageBoxButtons.Ok);
                         break;
                     default:
-                        MessageBox.ShowError(this, notif.e, notif.message);
+                        MessageBox.ShowError(this, notif.e, notif.message, true);
                         break;
                 }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
