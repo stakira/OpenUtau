@@ -71,6 +71,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> LyricBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> ResetBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
@@ -190,12 +192,6 @@ namespace OpenUtau.App.ViewModels {
                 new QuantizeNotes(30),
                 new AutoLegato(),
                 new FixOverlap(),
-                new ResetPitchBends(),
-                new ResetAllExpressions(),
-                new ClearVibratos(),
-                new ResetVibratos(),
-                new ClearTimings(),
-                new ResetAliases(),
                 new BakePitch(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
@@ -213,6 +209,19 @@ namespace OpenUtau.App.ViewModels {
                 new RemovePhoneticHint(),
                 new DashToPlus(),
                 new InsertSlur(),
+            }.Select(edit => new MenuItemViewModel() {
+                Header = ThemeManager.GetString(edit.Name),
+                Command = noteBatchEditCommand,
+                CommandParameter = edit,
+            }));
+            ResetBatchEdits.AddRange(new List<BatchEdit>() {
+                new ResetAllParameters(),
+                new ResetPitchBends(),
+                new ResetAllExpressions(),
+                new ClearVibratos(),
+                new ResetVibratos(),
+                new ClearTimings(),
+                new ResetAliases(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
