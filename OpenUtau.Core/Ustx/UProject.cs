@@ -97,7 +97,7 @@ namespace OpenUtau.Core.Ustx {
 
             void ConvertNoteExp(UNote note, UTrack track) {
                 if (note.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
-                    note.phonemeExpressions.ForEach(oldExp => {
+                    note.phonemeExpressions.Where(e => e.abbr == oldAbbr).ForEach(oldExp => {
                         if (!note.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
                             oldExp.abbr = newAbbr;
                             if (track.TryGetExpDescriptor(this, newAbbr, out var descriptor)) {
