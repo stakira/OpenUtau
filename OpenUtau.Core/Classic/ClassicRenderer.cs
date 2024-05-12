@@ -72,7 +72,7 @@ namespace OpenUtau.Classic {
                             item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                         }
                         if (!File.Exists(item.outputFile)) {
-                            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phone.position, out int bar, out int beat, out int tick);
+                            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
                             throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                         }
                         if (!(item.resampler is WorldlineResampler)) {
