@@ -58,14 +58,16 @@ namespace OpenUtau.Core.DiffSinger{
         }
 
         protected IG2p LoadG2p(string rootPath) {
-            var g2ps = new List<IG2p>();
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
             if(!File.Exists(file)){
                 throw new Exception($"File not found: {file}");
             }
-            g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());    
-            return new G2pFallbacks(g2ps.ToArray());
+            var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
+            //SP and AP should always be vowel
+            g2pBuilder.AddSymbol("SP", true);
+            g2pBuilder.AddSymbol("AP", true);
+            return g2pBuilder.Build(); 
         }
 
         public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
@@ -107,7 +109,7 @@ namespace OpenUtau.Core.DiffSinger{
                     .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
                     .ToArray();
                 if(vowelIds.Length == 0){
-                    vowelIds = new int[]{1,phrase.phones.Length-1};
+                    vowelIds = new int[]{phrase.phones.Length-1};
                 }
                 var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
                     .Prepend(vowelIds[0] + 1)
