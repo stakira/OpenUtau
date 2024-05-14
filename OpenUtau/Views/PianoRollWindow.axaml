@@ -268,12 +268,17 @@
               <MenuItem Header="{DynamicResource prefs.playback.lockstarttime}">
                 <MenuItem Header="{DynamicResource prefs.playback.lockstarttime.off}" Click="OnMenuLockStartTime" Tag="0">
                   <MenuItem.Icon>
-                    <CheckBox IsChecked="{Binding !LockStartTime}" />
+                    <CheckBox IsChecked="{Binding LockStartTime0}" />
                   </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{DynamicResource prefs.playback.lockstarttime.on}" Click="OnMenuLockStartTime" Tag="1">
                   <MenuItem.Icon>
-                    <CheckBox IsChecked="{Binding LockStartTime}" />
+                    <CheckBox IsChecked="{Binding LockStartTime1}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource prefs.playback.lockstarttime.onlycursor}" Click="OnMenuLockStartTime" Tag="2">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding LockStartTime2}" />
                   </MenuItem.Icon>
                 </MenuItem>
               </MenuItem>

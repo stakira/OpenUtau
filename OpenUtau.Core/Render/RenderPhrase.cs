@@ -88,7 +88,7 @@ namespace OpenUtau.Core.Render {
             tone = note.tone;
             tempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position - leading, part.position + phoneme.End);
             UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
-            tempo = noteTempos[0].bpm;
+            tempo = noteTempos.Length > 0 ? noteTempos[0].bpm : project.tempos[0].bpm;
 
             double actualTickDuration = 0;
             for (int i = 0; i < noteTempos.Length; i++) {
@@ -107,7 +107,7 @@ namespace OpenUtau.Core.Render {
 
             resampler = track.RendererSettings.resampler;
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
-            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)
+            if (track.TryGetExpDescriptor(project, Format.Ustx.ENG, out var descriptor)
                 && eng >= 0 && eng < descriptor.options.Length
                 && !string.IsNullOrEmpty(descriptor.options[eng])) {
                 resampler = descriptor.options[eng];
@@ -316,7 +316,7 @@ namespace OpenUtau.Core.Render {
                         }
                         var frq = phoneme.oto.Frq;
                         UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
-                        var tempo = noteTempos[0].bpm; // compromise 妥協！
+                        var tempo = noteTempos.Length > 0 ? noteTempos[0].bpm : project.tempos[0].bpm; // compromise 妥協！
                         var frqIntervalTick = MusicMath.TempoMsToTick(tempo, (double)1 * 1000 / 44100 * frq.hopSize);
                         double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
 

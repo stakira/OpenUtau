@@ -69,6 +69,7 @@
   <system:String x:Key="errors.expression.abbrunique">パラメータの略称が重複しています</system:String>
   <system:String x:Key="errors.expression.default">デフォルト値は最小値以上、最大値以下にしてください</system:String>
   <system:String x:Key="errors.expression.flagunique">フラグが重複しています</system:String>
+  <system:String x:Key="errors.expression.marge">フラグが重複しているため、以下の表情は統合されました</system:String>
   <system:String x:Key="errors.expression.min">最小値は最大値より小さくしてください</system:String>
   <system:String x:Key="errors.expression.name">表情名を入力してください</system:String>
   <system:String x:Key="errors.failed.export">エクスポートに失敗しました</system:String>
@@ -83,6 +84,7 @@
   <system:String x:Key="errors.failed.runeditingmacro">一括処理に失敗しました</system:String>
   <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました</system:String>
+  <system:String x:Key="errors.failed.searchsinger">シンガーの取得に失敗しました</system:String>
 
   <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>
@@ -386,7 +388,8 @@
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">一時停止した時のカーソル</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">何もしない</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime.on">再生を開始した場所へカーソルを戻す</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">再生を開始した場所へカーソルと表示位置を戻す</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.onlycursor">再生を開始した場所へカーソルだけを戻す</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Classic UTAU音源のデフォルトレンダラー</system:String>

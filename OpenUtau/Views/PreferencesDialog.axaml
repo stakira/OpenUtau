@@ -52,6 +52,7 @@
             <ComboBox SelectedIndex="{Binding LockStartTime}">
               <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.onlycursor}"/>
             </ComboBox>
             <TextBlock Text="{DynamicResource prefs.playback.autoscroll}" Margin="0,10,0,0"/>
             <ComboBox  SelectedIndex="{Binding PlaybackAutoScroll}">
