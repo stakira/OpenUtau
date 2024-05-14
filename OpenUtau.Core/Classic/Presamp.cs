@@ -73,7 +73,9 @@ namespace Classic {
 
                     if (Ini.TryGetLines(blocks, "[PRIORITY]", out List<IniLine> priority)) {
                         Priorities.Clear();
-                        Priorities.AddRange(priority[0].line.Split(','));
+                        if (priority.Count > 0) {
+                            Priorities.AddRange(priority[0].line.Split(','));
+                        }
                     }
 
                     if (Ini.TryGetLines(blocks, "[REPLACE]", out List<IniLine> replace)) {
