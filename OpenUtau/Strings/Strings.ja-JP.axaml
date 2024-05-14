@@ -324,6 +324,12 @@
     Alt長押しで線をなめらかにする</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
+  <system:String x:Key="pianoroll.tool.overwritepitch">ピッチ上書きツール (Ctrl + 4)
+    左クリックで描画（ビブラートやMOD+を上書き）
+    右クリックでリセット
+    Ctrl長押しで選択
+    Alt長押しで線をなめらかにする
+  </system:String>
   <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
     左クリックで描画
     右クリックで削除

@@ -196,6 +196,29 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public double? SamplePitch(Point point) {
+            if (viewModel.Part == null) {
+                return null;
+            }
+            double tick = viewModel.PointToTick(point);
+            var note = viewModel.Part.notes.FirstOrDefault(n => n.End >= tick);
+            if (note == null && viewModel.Part.notes.Count > 0) {
+                note = viewModel.Part.notes.Last();
+            }
+            if (note == null) {
+                return null;
+            }
+            double pitch = note.tone * 100;
+            pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
+            if (note.Next != null && note.Next.position == note.End) {
+                double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
+                if (delta != null) {
+                    pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
+                }
+            }
+            return pitch;
+        }
+
+        public double? SampleOverwritePitch(Point point) {
             if (viewModel.Part == null || viewModel.Part.renderPhrases.Count == 0) {
                 return null;
             }
