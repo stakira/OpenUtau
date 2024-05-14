@@ -90,7 +90,8 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (prevNeighbour == null) { // beginning of phrase
                 preCFlag = true;
                 if (currentLyric.Contains("・")) {
-                    if (checkOtoUntilHit(glottalCVtests, note, out var oto1)) {
+                    var tests = new List<string> { $"-{vcvpad}{vowelUpper}・", $"・{vcpad}{vowelUpper}", $"{vowelUpper}・", $"・{vowelUpper}", $"-{vcvpad}{vowelUpper}", initial, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto1)) {
                         currentLyric = oto1.Alias;
                     }
                 } else {
