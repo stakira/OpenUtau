@@ -20,12 +20,17 @@ namespace OpenUtau.Classic {
     }
 
     public static class Ini {
-        public static List<IniBlock> ReadBlocks(StreamReader reader, string file, string headerPattern) {
+        public static List<IniBlock> ReadBlocks(StreamReader reader, string file, string headerPattern, bool trim = true) {
             var headerRegex = new Regex(headerPattern);
             var blocks = new List<IniBlock>();
             var lineNumber = -1;
             while (!reader.EndOfStream) {
-                var line = reader.ReadLine().Trim();
+                string line;
+                if (trim) {
+                    line = reader.ReadLine().Trim();
+                } else {
+                    line = reader.ReadLine();
+                }
                 lineNumber++;
                 if (string.IsNullOrEmpty(line)) {
                     continue;
