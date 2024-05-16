@@ -614,7 +614,14 @@ namespace OpenUtau.App.Views {
                     setup.Position = setup.Position.WithY(0);
                 }
             } catch (Exception e) {
-                _ = MessageBox.ShowError(this, e);
+                Log.Error(e, $"Failed to install singer {file}");
+                MessageCustomizableException mce;
+                if(e is MessageCustomizableException){
+                    mce = (MessageCustomizableException)e;
+                } else {
+                    mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                }
+                _ = await MessageBox.ShowError(this, mce);
             }
         }
 
@@ -864,7 +871,13 @@ namespace OpenUtau.App.Views {
                     }
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to install singer {file}");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to install singer", "<translate:errors.failed.installsinger>", e));
+                    MessageCustomizableException mce;
+                    if(e is MessageCustomizableException){
+                        mce = (MessageCustomizableException)e;
+                    } else {
+                        mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                    }
+                    _ = await MessageBox.ShowError(this, mce);
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);

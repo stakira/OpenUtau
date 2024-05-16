@@ -43,10 +43,16 @@ namespace OpenUtau.App.ViewModels {
             ArchiveEncoding = Encodings[0];
             TextEncoding = Encodings[0];
             textItems = new ObservableCollectionExtended<string>();
-
             this.WhenAnyValue(vm => vm.ArchiveFilePath)
                 .Subscribe(_ => {
                     if (!string.IsNullOrEmpty(ArchiveFilePath)) {
+                        if(IsEncrypted(ArchiveFilePath)) {
+                            throw new MessageCustomizableException(
+                                "Encrypted archive file isn't supported",
+                                "<translate:errors.encryptedarchive>", 
+                                new Exception("Encrypted archive file: " + ArchiveFilePath)
+                            );
+                        }                        
                         var config = LoadCharacterYaml(ArchiveFilePath);
                         MissingInfo = string.IsNullOrEmpty(config?.SingerType);
                         if (!string.IsNullOrEmpty(config?.TextFileEncoding)) {
@@ -86,6 +92,12 @@ namespace OpenUtau.App.ViewModels {
                 textItems.AddRange(archive.Entries
                     .Select(entry => entry.Key)
                     .ToArray());
+            }
+        }
+
+        private bool IsEncrypted(string archiveFilePath) {
+            using (var archive = ArchiveFactory.Open(archiveFilePath)) {
+                return archive.Entries.Any(e => e.IsEncrypted);
             }
         }
 
