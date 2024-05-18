@@ -180,6 +180,7 @@ namespace OpenUtau.Core.Util {
             public bool LyricsHelperBrackets = false;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
+            public string SetParamPath = string.Empty;
             public bool Beta = false;
             public bool RememberMid = false;
             public bool RememberUst = true;
