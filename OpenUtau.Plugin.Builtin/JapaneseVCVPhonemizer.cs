@@ -40,21 +40,40 @@ namespace OpenUtau.Plugin.Builtin {
             var note = notes[0];
             var currentLyric = note.lyric.Normalize(); //measures for Unicode
 
+            // Get color
+            string color = string.Empty;
+            int toneShift = 0;
+            int? alt = null;
+            if (note.phonemeAttributes != null) {
+                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
+                color = attr.voiceColor;
+                toneShift = attr.toneShift;
+                alt = attr.alternate;
+            }
+
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // If a hint is present, returns the hint.
-                if (CheckOtoUntilHit(new string[] { note.phoneticHint.Normalize() }, note, out var ph)) {
+                currentLyric = note.phoneticHint.Normalize();
+                if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out var phAlt)) {
                     return new Result {
                         phonemes = new Phoneme[] {
-                            new Phoneme {
-                                phoneme = ph.Alias,
-                            }
-                        },
+                        new Phoneme {
+                            phoneme = phAlt.Alias,
+                        }
+                    },
+                    };
+                } else if(singer.TryGetMappedOto(currentLyric, note.tone + toneShift, color, out var ph)){
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = ph.Alias,
+                        }
+                    },
                     };
                 }
             }
-
             // The alias for no previous neighbour note. For example, "- な" for "な".
-            string[] tests = new string[] { $"- {currentLyric}" , currentLyric};
+            var phoneme = $"- {currentLyric}";
             if (prevNeighbour != null) {
                 // If there is a previous neighbour note, first get its hint or lyric.
                 var prevLyric = prevNeighbour.Value.lyric.Normalize();
@@ -66,51 +85,25 @@ namespace OpenUtau.Plugin.Builtin {
                 // Look up the trailing vowel. For example "a" for "ゃ".
                 if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     // Now replace "- な" initially set to "a な".
-                    tests = new string[] { $"{vow} {currentLyric}", $"* {currentLyric}", currentLyric, $"- {currentLyric}" };
+                    phoneme = $"{vow} {currentLyric}";
                 }
             }
-            if (CheckOtoUntilHit(tests, note, out var oto)) {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {
-                            phoneme = oto.Alias,
-                        }
-                    },
-                };
+            if (singer.TryGetMappedOto(phoneme + alt, note.tone + toneShift, color, out var otoAlt)) {
+                phoneme = otoAlt.Alias;
+            } else if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
+                phoneme = oto.Alias;
+            } else if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out oto)) {
+                phoneme = oto.Alias;
+            } else {
+                phoneme = currentLyric;
             }
             return new Result {
                 phonemes = new Phoneme[] {
                     new Phoneme {
-                        phoneme = currentLyric,
+                        phoneme = phoneme,
                     }
                 },
             };
-        }
-
-        private bool CheckOtoUntilHit(string[] input, Note note, out UOto oto) {
-            oto = default;
-            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-            string color = attr.voiceColor ?? "";
-
-            var otos = new List<UOto>();
-            foreach (string test in input) {
-                if (singer.TryGetMappedOto(test + attr.alternate, note.tone + attr.toneShift, color, out var otoAlt)) {
-                    otos.Add(otoAlt);
-                } else if (singer.TryGetMappedOto(test, note.tone + attr.toneShift, color, out var otoCandidacy)) {
-                    otos.Add(otoCandidacy);
-                }
-            }
-
-            if (otos.Count > 0) {
-                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
-                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
-                    return true;
-                } else {
-                    oto = otos.First();
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
