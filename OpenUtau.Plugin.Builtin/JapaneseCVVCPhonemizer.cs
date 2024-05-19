@@ -103,6 +103,7 @@ namespace OpenUtau.Plugin.Builtin {
         private bool checkOtoUntilHit(string[] input, Note note, out UOto oto) {
             oto = default;
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             var otos = new List<UOto>();
             foreach (string test in input) {
@@ -118,9 +119,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
                     oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
                     return true;
-                } else {
-                    oto = otos.First();
+                } else if (otos.Any(oto => (color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (color ?? string.Empty) == color);
                     return true;
+                } else {
+                    return false;
                 }
             }
             return false;
