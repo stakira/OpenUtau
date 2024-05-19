@@ -97,6 +97,7 @@ namespace OpenUtau.Core.Ustx {
 
             void ConvertNoteExp(UNote note, UTrack track) {
                 if (note.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
+                    var toRemove = new List<UExpression>();
                     note.phonemeExpressions.ForEach(oldExp => {
                         if (!note.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
                             oldExp.abbr = newAbbr;
@@ -104,9 +105,12 @@ namespace OpenUtau.Core.Ustx {
                                 oldExp.descriptor = descriptor;
                             }
                         } else {
-                            note.phonemeExpressions.Remove(oldExp);
+                            toRemove.Add(oldExp);
                         }
                     });
+                    foreach(var exp in toRemove){
+                        note.phonemeExpressions.Remove(exp);
+                    }
                 }
             }
         }
