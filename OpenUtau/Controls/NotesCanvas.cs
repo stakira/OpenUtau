@@ -225,6 +225,13 @@ namespace OpenUtau.App.Controls {
                     return;
                 }
             }
+            if(textLayout.Height + 5 < size.Height) {
+                int txtsize = (int)(12 * (size.Height / textLayout.Height));
+                if (size.Width < 79 && txtsize > 79) {
+                    return;
+                }
+                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+            }
             Point textPosition = leftTop.WithX(leftTop.X + 5)
                 .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Height) / 2));
             using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
