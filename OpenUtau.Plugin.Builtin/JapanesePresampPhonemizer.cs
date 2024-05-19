@@ -215,7 +215,9 @@ namespace OpenUtau.Plugin.Builtin {
                 && preCFlag
                 && !currentLyric.Contains(vcvpad)
                 && presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme phoneme)
-                && phoneme.HasConsonant) {
+                && phoneme.HasConsonant
+                && !presamp.Priorities.Contains(phoneme.Consonant)) {
+                var consonant = phoneme.Consonant;
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var cOto, out var color)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
 
@@ -404,7 +406,7 @@ namespace OpenUtau.Plugin.Builtin {
                         colorIndex = Array.IndexOf(track.VoiceColorExp.options, color);
                     }
                     return true;
-                } else if (index != 1) {
+                } else if (index != 1 && index != 2) {
                     oto = otos.First();
                     return true;
                 }
