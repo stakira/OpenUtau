@@ -217,7 +217,6 @@ namespace OpenUtau.Plugin.Builtin {
                 && presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme phoneme)
                 && phoneme.HasConsonant
                 && !presamp.Priorities.Contains(phoneme.Consonant)) {
-                var consonant = phoneme.Consonant;
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var cOto, out var color)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
 
