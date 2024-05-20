@@ -774,8 +774,13 @@ namespace OpenUtau.App.ViewModels {
             }
             var notes = Selection.ToList();
             notes.Sort((a, b) => a.position.CompareTo(b.position));
+            //Ignore slur lyrics
+            var mergedLyrics = String.Join("", notes.Select(x => x.lyric).Where(l => !l.StartsWith("+")));
+            if(mergedLyrics == ""){ //If all notes are slur, the merged note is single slur note
+                mergedLyrics = notes[0].lyric;
+            }
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], mergedLyrics));
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
             notes.RemoveAt(0);
             DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
