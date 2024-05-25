@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Util {
     public static class LocalizedSort {
         public static IEnumerable<T> LocalizedOrderBy<T>(this IEnumerable<T> source, Func<T, string> selector) {
             var sortingOrder = Preferences.Default.SortingOrder;
-            if(sortingOrder == String.Empty) {
+            if(String.IsNullOrEmpty(sortingOrder)) {
                 sortingOrder = Preferences.Default.Language;
             }
             var comparer = new LocalizedComparer(CultureInfo.GetCultureInfo(sortingOrder));
