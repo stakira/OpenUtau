@@ -217,20 +217,21 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             string displayLyric = note.lyric;
-            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
+            int txtsize = 12;
+            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+            if (txtsize > size.Height) {
+                return;
+            }
+            if (textLayout.Height + 5 < size.Height) {
+                txtsize = (int)(12 * (size.Height / textLayout.Height));
+                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+            }
             if (textLayout.Width + 5 > size.Width) {
                 displayLyric = displayLyric[0] + "..";
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
+                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
                 if (textLayout.Width + 5 > size.Width) {
                     return;
                 }
-            }
-            if(textLayout.Height + 5 < size.Height) {
-                int txtsize = (int)(12 * (size.Height / textLayout.Height));
-                if (size.Width < 79 && txtsize > 79) {
-                    return;
-                }
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
             }
             Point textPosition = leftTop.WithX(leftTop.X + 5)
                 .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Height) / 2));
