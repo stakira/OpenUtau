@@ -54,13 +54,14 @@ namespace OpenUtau.Plugin.Builtin {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
+            int endTick = notes[^1].position + notes[^1].duration;
             if (singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto)) {
-                vcLen = MsToTick(cvOto.Preutter);
+                vcLen = -MsToTickAt(-cvOto.Preutter, endTick);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
                 if (cvOto.Overlap < 0) {
-                    vcLen = MsToTick(cvOto.Preutter - cvOto.Overlap);
+                    vcLen = -MsToTickAt(-(cvOto.Preutter - cvOto.Overlap), endTick);
                 }
             }
 
@@ -175,6 +176,19 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return MakeSimpleResult(cvOtoSimple?.Alias ?? lyric);
         }
+                
+        /// <summary>
+        /// Convert ms to tick at a given reference tick position
+        /// </summary>
+        /// <param name="durationMs">Duration in ms</param>
+        /// <param name="refTick">Reference tick position</param>
+        /// <returns>Duration in ticks</returns>
+        public int MsToTickAt(double durationMs, int refTick) {
+            return timeAxis.TicksBetweenMsPos(
+                timeAxis.TickPosToMsPos(refTick), 
+                timeAxis.TickPosToMsPos(refTick)+ durationMs);
+        }
+
 
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {
