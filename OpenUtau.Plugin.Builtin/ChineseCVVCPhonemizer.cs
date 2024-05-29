@@ -183,10 +183,10 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="durationMs">Duration in ms</param>
         /// <param name="refTick">Reference tick position</param>
         /// <returns>Duration in ticks</returns>
-        public int MsToTickAt(double durationMs, int refTick) {
+        public int MsToTickAt(double offsetMs, int refTick) {
             return timeAxis.TicksBetweenMsPos(
                 timeAxis.TickPosToMsPos(refTick), 
-                timeAxis.TickPosToMsPos(refTick)+ durationMs);
+                timeAxis.TickPosToMsPos(refTick)+ offsetMs);
         }
 
 
