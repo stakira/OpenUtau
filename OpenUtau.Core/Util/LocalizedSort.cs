@@ -19,14 +19,17 @@ namespace OpenUtau.Core.Util {
     public static class LocalizedSort {
         public static IEnumerable<T> LocalizedOrderBy<T>(this IEnumerable<T> source, Func<T, string> selector) {
             var sortingOrder = Preferences.Default.SortingOrder;
+            CultureInfo culture;
             if(sortingOrder == null) {
                 //Follow the display language
-                sortingOrder = Preferences.Default.Language;
-            } else if(sortingOrder = String.Empty){
+                culture = CultureInfo.GetCultureInfo(Preferences.Default.Language);
+            } else if(sortingOrder == String.Empty){
                 //Don't translate
-                sortingOrder = CultureInfo.InvariantCulture;
+                culture = CultureInfo.InvariantCulture;
+            } else {
+                culture = CultureInfo.GetCultureInfo(sortingOrder);
             }
-            var comparer = new LocalizedComparer(CultureInfo.GetCultureInfo(sortingOrder));
+            var comparer = new LocalizedComparer(culture);
             return source.OrderBy(selector, comparer);
         }
     }
