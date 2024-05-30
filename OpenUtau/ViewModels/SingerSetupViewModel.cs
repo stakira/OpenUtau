@@ -113,23 +113,28 @@ namespace OpenUtau.App.ViewModels {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
-                textItems.Clear();
-                foreach (var entry in archive.Entries.Where(entry => entry.Key.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
-                    using (var stream = entry.OpenEntryStream()) {
-                        using var reader = new StreamReader(stream, TextEncoding);
-                        textItems.Add($"------ {entry.Key} ------");
-                        int count = 0;
-                        while (count < 256 && !reader.EndOfStream) {
-                            string? line = reader.ReadLine();
-                            if (!string.IsNullOrWhiteSpace(line)) {
-                                textItems.Add(line);
-                                count++;
+                try {
+                    textItems.Clear();
+                    foreach (var entry in archive.Entries.Where(entry => entry.Key.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
+                        using (var stream = entry.OpenEntryStream()) {
+                            using var reader = new StreamReader(stream, TextEncoding);
+                            textItems.Add($"------ {entry.Key} ------");
+                            int count = 0;
+                            while (count < 256 && !reader.EndOfStream) {
+                                string? line = reader.ReadLine();
+                                if (!string.IsNullOrWhiteSpace(line)) {
+                                    textItems.Add(line);
+                                    count++;
+                                }
+                            }
+                            if (!reader.EndOfStream) {
+                                textItems.Add($"...");
                             }
                         }
-                        if (!reader.EndOfStream) {
-                            textItems.Add($"...");
-                        }
                     }
+                } catch (Exception ex) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+                    Step--;
                 }
             }
         }
