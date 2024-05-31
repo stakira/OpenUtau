@@ -55,7 +55,7 @@ namespace OpenUtau.Core.DiffSinger
                     try {
                         string dictText = File.ReadAllText(dictionaryPath);
                         replacements = G2pReplacementsData.Load(dictText).toDict();
-                        g2pBuilder.Load(File.ReadAllText(dictText)).Build();
+                        g2pBuilder.Load(dictText);
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {dictionaryPath}");
                     }
