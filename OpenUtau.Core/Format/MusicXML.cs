@@ -36,7 +36,7 @@ namespace OpenUtau.Core.Format
                 uproject.parts.Add(upart);
 
                 int divisions = (int)part.Measure[0].Attributes[0].Divisions;
-                int currentPosition = 0;
+                int currPosTick = 0;
                 List<string> lyrics = new List<string>();
                 foreach (var measure in part.Measure)
                 {
@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Format
                             if (directionType.Metronome != null)
                             {
                                 int bpm = Int32.Parse(directionType.Metronome.PerMinute.Value);
-                                uproject.tempos.Add(new UTempo {position = currentPosition,
+                                uproject.tempos.Add(new UTempo {position = currPosTick,
                                                                 bpm = bpm});
                                 Log.Information($"Measure {measure.Number} BPM: {bpm.ToString()}");
                             }
@@ -64,7 +64,7 @@ namespace OpenUtau.Core.Format
                             {
                                 uproject.timeSignatures.Add(new UTimeSignature
                                 {
-                                    barPosition = currentPosition,
+                                    barPosition = currPosTick,
                                     beatPerBar = Int32.Parse(time.Beats[0]),
                                     beatUnit = Int32.Parse(time.BeatType[0])
                                 });
@@ -76,24 +76,24 @@ namespace OpenUtau.Core.Format
                     // Note
                     foreach(var note in measure.Note)
                     {
+                        int durTick = (int)note.Duration * uproject.resolution / divisions;
+
                         if (note.Rest != null)
                         {
-                            currentPosition += (int)note.Duration * uproject.resolution / divisions;
-                            continue;
+                            // pass
                         }
-                        if (note.Lyric.Count > 0)
+                        else
                         {
-                            var lyric = note.Lyric[0].Text[0].Value;
                             var pitch = note.Pitch.Step.ToString() + note.Pitch.Octave.ToString();
                             int tone = MusicMath.NameToTone(pitch) + (int)note.Pitch.Alter;
-                            UNote unote = uproject.CreateNote();
-                            unote.position = currentPosition;
-                            unote.duration = (int)note.Duration * uproject.resolution / divisions;
-                            unote.tone = tone;
-                            unote.lyric = lyric;
-                            currentPosition += unote.duration;
+                            UNote unote = uproject.CreateNote(tone, currPosTick, durTick);
+                            if (note.Lyric.Count > 0) {
+                                unote.lyric = note.Lyric[0].Text[0].Value;
+                            }
                             upart.notes.Add(unote);
                         }
+
+                        currPosTick += durTick;
                     }
                 }
                 upart.Duration = upart.GetMinDurTick(uproject);
