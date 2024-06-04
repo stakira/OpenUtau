@@ -100,7 +100,7 @@ namespace OpenUtau.App.ViewModels {
             if (!string.IsNullOrWhiteSpace(recPath) && File.Exists(recPath)) {
                 var result = await MessageBox.Show(
                     window,
-                    ThemeManager.GetString("dialogs.recovery"),
+                    $"{ThemeManager.GetString("dialogs.recovery")}\n{recPath}",
                     ThemeManager.GetString("dialogs.recovery.caption"),
                     MessageBox.MessageBoxButtons.YesNo);
                 if (result == MessageBox.MessageBoxResult.Yes) {
