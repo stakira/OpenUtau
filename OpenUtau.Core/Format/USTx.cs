@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Format {
@@ -100,6 +101,9 @@ namespace OpenUtau.Core.Format {
             File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
             project.Saved = true;
             project.AfterSave();
+            Preferences.Default.RecoveryPath = string.Empty;
+            Preferences.Save();
+            DocManager.Inst.Recovered = false;
         }
 
         public static void AutoSave(string filePath, UProject project) {
@@ -107,6 +111,8 @@ namespace OpenUtau.Core.Format {
             project.BeforeSave();
             File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
             project.AfterSave();
+            Preferences.Default.RecoveryPath = filePath;
+            Preferences.Save();
         }
 
         public static UProject Load(string filePath) {

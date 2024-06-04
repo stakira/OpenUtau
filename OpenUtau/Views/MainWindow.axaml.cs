@@ -56,7 +56,7 @@ namespace OpenUtau.App.Views {
             DataContext = viewModel = new MainWindowViewModel();
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             viewModel.GetInitSingerTask()!.ContinueWith(_ => {
-                viewModel.InitProject();
+                viewModel.InitProject(this);
                 viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
                 viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
                 viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -1294,6 +1294,8 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
                 return;
             }
             e.Cancel = true;

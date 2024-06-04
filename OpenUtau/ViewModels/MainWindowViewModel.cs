@@ -9,6 +9,7 @@ using DynamicData.Binding;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -94,7 +95,28 @@ namespace OpenUtau.App.ViewModels {
             return SingerManager.Inst.InitializationTask;
         }
 
-        public void InitProject() {
+        public async void InitProject(MainWindow window) {
+            var recPath = Preferences.Default.RecoveryPath;
+            if (!string.IsNullOrWhiteSpace(recPath) && File.Exists(recPath)) {
+                var result = await MessageBox.Show(
+                    window,
+                    ThemeManager.GetString("dialogs.recovery"),
+                    ThemeManager.GetString("dialogs.recovery.caption"),
+                    MessageBox.MessageBoxButtons.YesNo);
+                if (result == MessageBox.MessageBoxResult.Yes) {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
+                    try {
+                        Core.Format.Formats.RecoveryProject(new string[] { recPath });
+                        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                        DocManager.Inst.Recovered = true;
+                        this.RaisePropertyChanged(nameof(Title));
+                    } finally {
+                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
+                    }
+                    return;
+                }
+
+            }
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
                 Core.Format.Formats.LoadProject(new string[] { args[1] });
@@ -118,6 +140,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
+            DocManager.Inst.Recovered = false;
         }
 
         public void OpenProject(string[] files) {
@@ -132,6 +155,7 @@ namespace OpenUtau.App.ViewModels {
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
             }
+            DocManager.Inst.Recovered = false;
         }
 
         public void SaveProject(string file = "") {
@@ -141,7 +165,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
             this.RaisePropertyChanged(nameof(Title));
         }
-        
+
         public void ImportTracks(UProject[] loadedProjects, bool importTempo){
             if (loadedProjects == null || loadedProjects.Length < 1) {
                 return;
