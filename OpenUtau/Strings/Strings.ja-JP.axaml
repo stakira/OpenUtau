@@ -513,6 +513,8 @@
   <system:String x:Key="tracks.mute.allothers">このトラック以外をミュート</system:String>
   <system:String x:Key="tracks.mute.only">このトラックだけミュート</system:String>
   <system:String x:Key="tracks.mute.unmuteall">全トラックのミュートを解除</system:String>
+  <system:String x:Key="tracks.opensingers">Singersフォルダを開く</system:String>
+  <system:String x:Key="tracks.openaddsingers">シンガーの場所（追加）フォルダを開く</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
   <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>
