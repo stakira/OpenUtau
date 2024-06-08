@@ -572,15 +572,18 @@ namespace OpenUtau.App.Views {
                             Header = ThemeManager.GetString("context.note.copy"),
                             Command = ViewModel.NoteCopyCommand,
                             CommandParameter = hitInfo,
+                            InputGesture = new KeyGesture(Key.C, KeyModifiers.Control),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.delete"),
                             Command = ViewModel.NoteDeleteCommand,
                             CommandParameter = hitInfo,
+                            InputGesture = new KeyGesture(Key.Delete),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.pasteparameters"),
-                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(this))
+                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(this)),
+                            InputGesture = new KeyGesture(Key.V, KeyModifiers.Alt),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notes"),

@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Avalonia.Input;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.ViewModels {
@@ -12,6 +13,7 @@ namespace OpenUtau.App.ViewModels {
         public IList<MenuItemViewModel>? Items { get; set; }
         public double Height { get; set; } = 24;
         public bool IsChecked { get; set; } = false;
+        public KeyGesture? InputGesture { get; set; }
     }
 
     public class SingerMenuItemViewModel : MenuItemViewModel {
