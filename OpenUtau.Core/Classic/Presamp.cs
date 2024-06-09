@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Classic;
@@ -59,24 +60,22 @@ namespace Classic {
 
                     List<IniBlock> blocks;
                     using (var reader = new StreamReader(iniPath, textFileEncoding)) {
-                        blocks = Ini.ReadBlocks(reader, iniPath, @"\[\w+\]");
+                        blocks = Ini.ReadBlocks(reader, iniPath, @"\[\w+\]", false);
                     }
 
                     if (Ini.TryGetLines(blocks, "[VOWEL]", out List<IniLine> vowelLines)) {
-                        var list = new List<string>();
-                        vowelLines.ForEach(l => list.Add(l.line));
-                        SetVowels(list);
+                        SetVowels(vowelLines.Select(l => l.line).ToList());
                     }
 
                     if (Ini.TryGetLines(blocks, "[CONSONANT]", out List<IniLine> consonantLines)) {
-                        var list = new List<string>();
-                        consonantLines.ForEach(l => list.Add(l.line));
-                        SetConsonants(list);
+                        SetConsonants(consonantLines.Select(l => l.line).ToList());
                     }
 
                     if (Ini.TryGetLines(blocks, "[PRIORITY]", out List<IniLine> priority)) {
                         Priorities.Clear();
-                        Priorities.AddRange(priority[0].line.Split(','));
+                        if (priority.Count > 0) {
+                            Priorities.AddRange(priority[0].line.Split(','));
+                        }
                     }
 
                     if (Ini.TryGetLines(blocks, "[REPLACE]", out List<IniLine> replace)) {

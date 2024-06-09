@@ -63,6 +63,7 @@
                 <Setter Property="ItemsSource" Value="{Binding Items}"/>
                 <Setter Property="Icon" Value="{Binding Icon}"/>
                 <Setter Property="ToolTip.Tip" Value="{Binding Location}"/>
+                <Setter Property="Height" Value="{Binding Height}"/>
               </Style>
               
               <Style Selector="ToggleButton">

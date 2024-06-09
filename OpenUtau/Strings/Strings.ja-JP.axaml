@@ -85,6 +85,8 @@
   <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました</system:String>
   <system:String x:Key="errors.failed.searchsinger">シンガーの取得に失敗しました</system:String>
+  <system:String x:Key="errors.lyrics.regex">正規表現に使用できない文字が含まれています</system:String>
+  <system:String x:Key="errors.lyrics.regexpreview">- 正規表現エラー -</system:String>
 
   <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>
@@ -292,6 +294,7 @@
   <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の"R"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">編集したエイリアスをリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.allparameters">全てのパラメータをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">全ての表情をリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">音素のタイミングをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">ピッチベンドをリセット</system:String>
@@ -301,6 +304,7 @@
   <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
   <system:String x:Key="pianoroll.menu.plugin.openfolder">フォルダを開く</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">再読み込み</system:String>
+  <system:String x:Key="pianoroll.menu.reset">リセット</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">音符を検索</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">すべて選択</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">閉じる</system:String>
@@ -324,6 +328,12 @@
     Alt長押しで線をなめらかにする</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
+  <system:String x:Key="pianoroll.tool.overwritepitch">ピッチ上書きツール (Ctrl + 4)
+    左クリックで描画（ビブラートやMOD+を上書き）
+    右クリックでリセット
+    Ctrl長押しで選択
+    Alt長押しで線をなめらかにする
+  </system:String>
   <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
     左クリックで描画
     右クリックで削除
@@ -369,6 +379,7 @@
   <system:String x:Key="prefs.on">オン</system:String>
   <system:String x:Key="prefs.otoeditor">原音設定</system:String>
   <system:String x:Key="prefs.otoeditor.select">デフォルトの原音設定エディタ</system:String>
+  <system:String x:Key="prefs.otoeditor.setparampath">setParamの場所</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
@@ -421,6 +432,7 @@
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
+  <system:String x:Key="singers.editoto.editinsetparam">setParamで編集</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabelerで編集</system:String>
   <system:String x:Key="singers.editoto.gotosource">原音の場所を開く</system:String>
   <system:String x:Key="singers.editoto.regenfrq">周波数表を再生成</system:String>
@@ -428,7 +440,8 @@
   <system:String x:Key="singers.editoto.reset">原音設定をリセット</system:String>
   <system:String x:Key="singers.editoto.save">原音設定を保存</system:String>
   <system:String x:Key="singers.editoto.searchalias">エイリアス検索</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <system:String x:Key="singers.editoto.setsetparampath">先にsetParam（v4.0b以降）をダウンロードし、環境設定でパスを設定してください！ http://nwp8861.blog92.fc2.com/</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">先にvLabeler（1.0.0-beta1以降）をダウンロードし、環境設定でパスを設定してください！ https://github.com/sdercolin/vlabeler</system:String>
   <system:String x:Key="singers.errorreport">シンガーのError Reportを出力</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.otoview.moveleft">左へ移動</system:String>
@@ -513,6 +526,8 @@
   <system:String x:Key="tracks.mute.allothers">このトラック以外をミュート</system:String>
   <system:String x:Key="tracks.mute.only">このトラックだけミュート</system:String>
   <system:String x:Key="tracks.mute.unmuteall">全トラックのミュートを解除</system:String>
+  <system:String x:Key="tracks.opensingers">Singersフォルダを開く</system:String>
+  <system:String x:Key="tracks.openaddsingers">シンガーの場所（追加）フォルダを開く</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
   <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>

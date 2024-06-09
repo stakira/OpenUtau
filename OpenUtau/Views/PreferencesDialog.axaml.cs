@@ -49,5 +49,19 @@ namespace OpenUtau.App.Views {
                 ((PreferencesViewModel)DataContext!).SetVLabelerPath(path);
             }
         }
+
+        void ResetSetParamPath(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).SetSetParamPath(string.Empty);
+        }
+
+        async void SelectSetParamPath(object sender, RoutedEventArgs e) {
+            var path = await FilePicker.OpenFile(this, "prefs.otoeditor.setparampath", FilePicker.EXE);
+            if (string.IsNullOrEmpty(path)) {
+                return;
+            }
+            if (File.Exists(path)) {
+                ((PreferencesViewModel)DataContext!).SetSetParamPath(path);
+            }
+        }
     }
 }

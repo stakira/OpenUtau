@@ -1092,6 +1092,41 @@ namespace OpenUtau.App.Views {
         }
     }
 
+    class OverwritePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? lastPitch;
+        Point lastPoint;
+        public OverwritePitchState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SampleOverwritePitch(samplePoint);
+            if (pitch == null || vm.NotesViewModel.Part == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                (int)Math.Round(tone * 100 - pitch.Value),
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
     class SmoothenPitchState : NoteEditState {
         protected override bool ShowValueTip => false;
         int brushRadius = 10;
