@@ -54,13 +54,14 @@ namespace OpenUtau.Plugin.Builtin {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
+            int endTick = notes[^1].position + notes[^1].duration;
             if (singer.TryGetMappedOto(lyric, notes[0].tone + attr1.toneShift, attr1.voiceColor, out var cvOto)) {
-                vcLen = MsToTick(cvOto.Preutter);
+                vcLen = -timeAxis.MsToTickAt(-cvOto.Preutter, endTick);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
                 if (cvOto.Overlap < 0) {
-                    vcLen = MsToTick(cvOto.Preutter - cvOto.Overlap);
+                    vcLen = -timeAxis.MsToTickAt(-(cvOto.Preutter - cvOto.Overlap), endTick);
                 }
             }
 

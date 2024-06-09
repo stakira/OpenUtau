@@ -66,6 +66,7 @@
   <system:String x:Key="errors.details">Error Details</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
+  <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
@@ -88,6 +89,8 @@
   <system:String x:Key="errors.failed.save">Failed to save</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>
   <system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>
+  <system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>
+  <system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>
 
   <system:String x:Key="exps.abbr">Abbreviation</system:String>
   <system:String x:Key="exps.apply">Apply</system:String>
@@ -295,6 +298,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.allparameters">Reset all parameters</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
@@ -304,6 +308,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>
   <system:String x:Key="pianoroll.menu.plugin.openfolder">Open folder</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>
+  <system:String x:Key="pianoroll.menu.reset">Reset</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>
@@ -327,6 +332,12 @@ Warning: this option removes custom presets.</system:String>
     Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
+  <system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (Ctrl + 4)
+    Left click to draw (overwrites vibrato or mod+)
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen
+  </system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
@@ -372,6 +383,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.on">On</system:String>
   <system:String x:Key="prefs.otoeditor">Oto Editor</system:String>
   <system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>
+  <system:String x:Key="prefs.otoeditor.setparampath">setParam Path</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
@@ -424,6 +436,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
+  <system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
   <system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>
@@ -431,6 +444,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
   <system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>
+  <system:String x:Key="singers.editoto.setsetparampath">Download setParam (v4.0b or higher) from http://nwp8861.blog92.fc2.com/ and set setParam path in Preferences first!</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>
@@ -516,6 +530,8 @@ General
   <system:String x:Key="tracks.mute.allothers">Mute all others</system:String>
   <system:String x:Key="tracks.mute.only">Mute this only</system:String>
   <system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>
+  <system:String x:Key="tracks.opensingers">Open singers location</system:String>
+  <system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>

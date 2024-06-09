@@ -16,10 +16,12 @@ namespace OpenUtau.Classic {
         readonly StringBuilder sb = new StringBuilder();
         readonly string filePath;
         readonly string name;
+        private Encoding osEncoding;
 
         public ExeWavtool(string filePath, string basePath) {
             this.filePath = filePath;
             name = Path.GetRelativePath(basePath, filePath);
+            osEncoding = OS.IsWindows() ? Encoding.GetEncoding(0) : Encoding.UTF8;
         }
 
         public float[] Concatenate(List<ResamplerItem> resamplerItems, string tempPath, CancellationTokenSource cancellation) {
@@ -39,7 +41,7 @@ namespace OpenUtau.Classic {
             string batPath = Path.Combine(PathManager.Inst.CachePath, "temp.bat");
             lock (tempBatLock) {
                 using (var stream = File.Open(batPath, FileMode.Create)) {
-                    using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                    using (var writer = new StreamWriter(stream, osEncoding)) {
                         WriteSetUp(writer, resamplerItems, tempPath);
                         for (var i = 0; i < resamplerItems.Count; i++) {
                             WriteItem(writer, resamplerItems[i], i, resamplerItems.Count);
@@ -62,7 +64,7 @@ namespace OpenUtau.Classic {
             lock (Renderers.GetCacheLock(tempHelper)) {
                 if (!File.Exists(tempHelper)) {
                     using (var stream = File.Open(tempHelper, FileMode.Create)) {
-                        using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                        using (var writer = new StreamWriter(stream, osEncoding)) {
                             WriteHelper(writer);
                         }
                     }

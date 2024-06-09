@@ -232,26 +232,22 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
 
-        private string HandleEmptyFirstConsonant(string lyric) {
-            return lyric == " " ? "ㅇ" : lyric;
-        }
-
         public override Result ConvertPhonemes(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             Note note = notes[0];
 
             Hashtable lyrics = KoreanPhonemizerUtil.Variate(prevNeighbour, note, nextNeighbour);
             string[] prevLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[0]), 
+                (string)lyrics[0], 
                 (string)lyrics[1], 
                 (string)lyrics[2]
                 };
             string[] thisLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[3]), 
+                (string)lyrics[3], 
                 (string)lyrics[4], 
                 (string)lyrics[5]
                 };
             string[] nextLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[6]), 
+                (string)lyrics[6], 
                 (string)lyrics[7], 
                 (string)lyrics[8]
                 };
@@ -275,7 +271,7 @@ namespace OpenUtau.Plugin.Builtin {
             Hashtable lyrics = KoreanPhonemizerUtil.Separate(prevNeighbour_.lyric);
 
             string[] prevLyric = new string[]{ // "ㄴ", "ㅑ", "ㅇ"
-                HandleEmptyFirstConsonant((string)lyrics[0]), 
+                (string)lyrics[0], 
                 (string)lyrics[1], 
                 (string)lyrics[2]
                 };

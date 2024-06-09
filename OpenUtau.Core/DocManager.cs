@@ -152,7 +152,7 @@ namespace OpenUtau.Core {
         }
 
         public void AutoSave() {
-            if (Project == null || string.IsNullOrEmpty(Project.FilePath) || !Project.Saved) {
+            if (Project == null) {
                 return;
             }
             if (undoQueue.LastOrDefault() == autosavedPoint) {
@@ -160,8 +160,17 @@ namespace OpenUtau.Core {
                 return;
             }
             try {
-                string dir = Path.GetDirectoryName(Project.FilePath);
-                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                bool untitled = string.IsNullOrEmpty(Project.FilePath);
+                if (untitled) {
+                    Directory.CreateDirectory(PathManager.Inst.BackupsPath);
+                }
+                string dir = untitled
+                    ? PathManager.Inst.BackupsPath
+                    : Path.GetDirectoryName(Project.FilePath);
+                string filename = untitled
+                    ? "Untitled"
+                    : Path.GetFileNameWithoutExtension(Project.FilePath);
+
                 string backup = Path.Join(dir, filename + "-autosave.ustx");
                 Log.Information($"Autosave {backup}.");
                 Format.Ustx.AutoSave(backup, Project);

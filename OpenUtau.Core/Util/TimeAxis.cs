@@ -147,6 +147,18 @@ namespace OpenUtau.Core {
             return TickPosToMsPos(tickEnd) - TickPosToMsPos(tickPos);
         }
 
+        /// <summary>
+        /// Convert ms duration to tick at a given reference tick position
+        /// </summary>
+        /// <param name="durationMs">Duration in ms, positive value means starting from refTickPos, negative value means ending at refTickPos</param>
+        /// <param name="refTickPos">Reference tick position</param>
+        /// <returns>Duration in ticks</returns>
+        public int MsToTickAt(double offsetMs, int refTickPos) {
+            return TicksBetweenMsPos(
+                TickPosToMsPos(refTickPos), 
+                TickPosToMsPos(refTickPos) + offsetMs);
+        }
+
         public void TickPosToBarBeat(int tick, out int bar, out int beat, out int remainingTicks) {
             var segment = timeSigSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
             bar = segment.barPos + (tick - segment.tickPos) / segment.ticksPerBar;

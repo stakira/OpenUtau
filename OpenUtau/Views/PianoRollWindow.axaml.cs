@@ -400,13 +400,17 @@ namespace OpenUtau.App.Views {
         }
 
         private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
-            if (ViewModel.NotesViewModel.DrawPitchTool) {
+            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
                     return;
                 } else if (args.KeyModifiers != cmdKey) {
-                    editState = new DrawPitchState(control, ViewModel, this);
+                    if (ViewModel.NotesViewModel.DrawPitchTool) {
+                        editState = new DrawPitchState(control, ViewModel, this);
+                    } else {
+                        editState = new OverwritePitchState(control, ViewModel, this);
+                    }
                     return;
                 }
             }
@@ -482,7 +486,8 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.CursorTool ||
                 ViewModel.NotesViewModel.PenTool && args.KeyModifiers == cmdKey ||
                 ViewModel.NotesViewModel.PenPlusTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers == cmdKey) {
+                ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers == cmdKey ||
+                ViewModel.NotesViewModel.OverwritePitchTool && args.KeyModifiers == cmdKey) {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
@@ -506,7 +511,7 @@ namespace OpenUtau.App.Views {
 
         private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
-            if (ViewModel.NotesViewModel.DrawPitchTool) {
+            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
                 editState = new ResetPitchState(control, ViewModel, this);
                 return;
             }
@@ -572,15 +577,18 @@ namespace OpenUtau.App.Views {
                             Header = ThemeManager.GetString("context.note.copy"),
                             Command = ViewModel.NoteCopyCommand,
                             CommandParameter = hitInfo,
+                            InputGesture = new KeyGesture(Key.C, KeyModifiers.Control),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.delete"),
                             Command = ViewModel.NoteDeleteCommand,
                             CommandParameter = hitInfo,
+                            InputGesture = new KeyGesture(Key.Delete),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.pasteparameters"),
-                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(this))
+                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(this)),
+                            InputGesture = new KeyGesture(Key.V, KeyModifiers.Alt),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notes"),
@@ -624,7 +632,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if((ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
+            if(((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
                 Cursor = null;
                 return;
             }
@@ -1094,6 +1102,10 @@ namespace OpenUtau.App.Views {
                     }
                     if (isAlt) {
                         expSelector4?.SelectExp();
+                        return true;
+                    }
+                    if (isCtrl) {
+                        notesVm.SelectToolCommand?.Execute("4+").Subscribe();
                         return true;
                     }
                     break;

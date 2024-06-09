@@ -53,6 +53,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool PenPlusTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
         [Reactive] public bool DrawPitchTool { get; set; }
+        [Reactive] public bool OverwritePitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
@@ -203,6 +204,7 @@ namespace OpenUtau.App.ViewModels {
             }
             EraserTool = false;
             DrawPitchTool = false;
+            OverwritePitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
@@ -210,6 +212,7 @@ namespace OpenUtau.App.ViewModels {
                 PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
+                OverwritePitchTool = index == "4+";
                 KnifeTool = index == "5";
             });
 
@@ -774,8 +777,13 @@ namespace OpenUtau.App.ViewModels {
             }
             var notes = Selection.ToList();
             notes.Sort((a, b) => a.position.CompareTo(b.position));
+            //Ignore slur lyrics
+            var mergedLyrics = String.Join("", notes.Select(x => x.lyric).Where(l => !l.StartsWith("+")));
+            if(mergedLyrics == ""){ //If all notes are slur, the merged note is single slur note
+                mergedLyrics = notes[0].lyric;
+            }
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], mergedLyrics));
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
             notes.RemoveAt(0);
             DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
