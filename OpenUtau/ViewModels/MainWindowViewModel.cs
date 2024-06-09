@@ -97,9 +97,14 @@ namespace OpenUtau.App.ViewModels {
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                Core.Format.Formats.LoadProject(new string[] { args[1] });
-                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-                return;
+                try {
+                    Core.Format.Formats.LoadProject(new string[] { args[1] });
+                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                    return;
+                } catch (Exception e) {
+                    var customEx = new MessageCustomizableException($"Failed to open file {args[1]}", $"<translate:errors.failed.openfile>: {args[1]}", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                }
             }
             NewProject();
         }
