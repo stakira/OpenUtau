@@ -36,7 +36,11 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(x => x.OldValue, x => x.NewValue)
                 .Subscribe(t => {
-                    Preview = Replace();
+                    try {
+                        Preview = Replace();
+                    } catch {
+                        Preview = ThemeManager.GetString("errors.lyrics.regexpreview");
+                    }
                 });
             this.WhenValueChanged(x => SelectedPreset)
                 .Subscribe(p => {
@@ -55,16 +59,22 @@ namespace OpenUtau.App.ViewModels {
             return string.Join(", ", Lyrics);
         }
 
-        public void Finish() {
-            DocManager.Inst.StartUndoGroup();
+        public bool Finish() {
+            try {
+                Replace();
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(new MessageCustomizableException("Character not allowed in regular expression.", "<translate:errors.lyrics.regex>", ex)));
+                return false;
+            }
 
+            DocManager.Inst.StartUndoGroup();
             for (int i = 0; i < Lyrics.Length && i < notes.Length; ++i) {
                 if (notes[i].lyric != Lyrics[i]) {
                     DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, notes[i], Lyrics[i]));
                 }
             }
-
             DocManager.Inst.EndUndoGroup();
+            return true;
         }
     }
 
