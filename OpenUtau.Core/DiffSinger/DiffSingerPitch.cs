@@ -36,6 +36,9 @@ namespace OpenUtau.Core.DiffSinger
             dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     System.Text.Encoding.UTF8));
+            if(dsConfig.pitch == null){
+                throw new Exception("This voicebank doesn't contain a pitch model");
+            }
             //Load phonemes list
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
@@ -52,17 +55,16 @@ namespace OpenUtau.Core.DiffSinger
         }
 
         protected IG2p LoadG2p(string rootPath) {
-            var g2ps = new List<IG2p>();
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
-            if (File.Exists(file)) {
-                try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {file}");
-                }
+            if(!File.Exists(file)){
+                throw new Exception($"File not found: {file}");
             }
-            return new G2pFallbacks(g2ps.ToArray());
+            var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
+            //SP and AP should always be vowel
+            g2pBuilder.AddSymbol("SP", true);
+            g2pBuilder.AddSymbol("AP", true);
+            return g2pBuilder.Build();
         }
 
         public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
@@ -77,6 +79,14 @@ namespace OpenUtau.Core.DiffSinger
                 list[i] = value;
             }
         }
+
+        int PhonemeTokenize(string phoneme){
+            int result = phonemes.IndexOf(phoneme);
+            if(result < 0){
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by pitch model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
+            }
+            return result;
+        }
         
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
@@ -86,9 +96,10 @@ namespace OpenUtau.Core.DiffSinger
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
             var tokens = phrase.phones
-                .Select(p => (Int64)phonemes.IndexOf(p.phoneme))
-                .Prepend((Int64)phonemes.IndexOf("SP"))
-                .Append((Int64)phonemes.IndexOf("SP"))
+                .Select(p => p.phoneme)
+                .Prepend("SP")
+                .Append("SP")
+                .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
             var ph_dur = phrase.phones
                 .Select(p=>(int)Math.Round(p.endMs/frameMs) - (int)Math.Round(p.positionMs/frameMs))
@@ -104,6 +115,9 @@ namespace OpenUtau.Core.DiffSinger
                 var vowelIds = Enumerable.Range(0,phrase.phones.Length)
                     .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
                     .ToArray();
+                if(vowelIds.Length == 0){
+                    vowelIds = new int[]{phrase.phones.Length-1};
+                }
                 var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
                     .Prepend(vowelIds[0] + 1)
                     .Append(phrase.phones.Length - vowelIds[^1] + 1)
