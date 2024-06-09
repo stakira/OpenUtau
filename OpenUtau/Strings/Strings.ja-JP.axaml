@@ -294,6 +294,7 @@
   <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の"R"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">編集したエイリアスをリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.allparameters">全てのパラメータをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">全ての表情をリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">音素のタイミングをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">ピッチベンドをリセット</system:String>
@@ -303,6 +304,7 @@
   <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
   <system:String x:Key="pianoroll.menu.plugin.openfolder">フォルダを開く</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">再読み込み</system:String>
+  <system:String x:Key="pianoroll.menu.reset">リセット</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">音符を検索</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">すべて選択</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">閉じる</system:String>

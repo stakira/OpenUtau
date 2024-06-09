@@ -316,6 +316,13 @@
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
+              <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}">
+                <MenuItem.DataTemplates>
+                  <DataTemplate DataType="vm:MenuItemViewModel">
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                  </DataTemplate>
+                </MenuItem.DataTemplates>
+              </MenuItem>
               <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
