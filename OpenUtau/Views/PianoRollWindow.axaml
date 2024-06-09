@@ -148,6 +148,7 @@
                 <Setter Property="Command" Value="{Binding Command, FallbackValue={x:Null}}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
                 <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                <Setter Property="InputGesture" Value="{Binding InputGesture}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
