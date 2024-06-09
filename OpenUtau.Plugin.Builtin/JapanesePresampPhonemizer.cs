@@ -216,12 +216,13 @@ namespace OpenUtau.Plugin.Builtin {
                 && preCFlag
                 && !currentLyric.Contains(vcvpad)
                 && presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme phoneme)
-                && phoneme.HasConsonant) {
+                && phoneme.HasConsonant
+                && !presamp.Priorities.Contains(phoneme.Consonant)) {
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var cOto, out var color)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
-
+                    int endTick = notes[^1].position + notes[^1].duration;
                     var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-                    var cLength = Math.Max(30, MsToTick(oto.Preutter) * (attr.consonantStretchRatio ?? 1));
+                    var cLength = Math.Max(30, -MsToTickAt(-oto.Preutter, endTick) * (attr.consonantStretchRatio ?? 1));
 
                     if (prevNeighbour != null) {
                         cLength = Math.Min(prevNeighbour.Value.duration / 2, cLength);
@@ -327,13 +328,14 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 if (!string.IsNullOrEmpty(vcPhoneme)) {
                     int vcLength = 120;
+                    int endTick = notes[^1].position + notes[^1].duration;
                     var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                     if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var nextOto)) {
                         // If overlap is a negative value, vcLength is longer than Preutter
                         if (nextOto.Overlap < 0) {
-                            vcLength = MsToTick(nextOto.Preutter - nextOto.Overlap);
+                            vcLength = -MsToTickAt(-(nextOto.Preutter - nextOto.Overlap), endTick);
                         } else {
-                            vcLength = MsToTick(nextOto.Preutter);
+                            vcLength = -MsToTickAt(-nextOto.Preutter, endTick);
                         }
                     }
                     // Minimam is 30 tick, maximum is half of note
@@ -405,12 +407,24 @@ namespace OpenUtau.Plugin.Builtin {
                         colorIndex = Array.IndexOf(track.VoiceColorExp.options, color);
                     }
                     return true;
-                } else if (index != 1) {
+                } else if (index != 1 && index != 2) {
                     oto = otos.First();
                     return true;
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Convert ms to tick at a given reference tick position
+        /// </summary>
+        /// <param name="offsetMs">Duration in ms</param>
+        /// <param name="refTick">Reference tick position</param>
+        /// <returns>Duration in ticks</returns>
+        public int MsToTickAt(double offsetMs, int refTick) {
+            return timeAxis.TicksBetweenMsPos(
+                timeAxis.TickPosToMsPos(refTick),
+                timeAxis.TickPosToMsPos(refTick) + offsetMs);
         }
     }
 }
