@@ -116,5 +116,7 @@ namespace OpenUtau.Core.Ustx {
                 value = value,
             };
         }
+
+        public override string ToString() => $"{abbr.ToUpper()}: {value}";
     }
 }
