@@ -64,6 +64,7 @@
   <system:String x:Key="errors.details">Error Details</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
+  <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
