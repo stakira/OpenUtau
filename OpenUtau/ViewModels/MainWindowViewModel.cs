@@ -181,7 +181,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file, bool UseDrywetmidi = false) {
+        public void ImportMidi(string file, bool UseDrywetmidi = true) {
             if (file == null) {
                 return;
             }
@@ -192,6 +192,9 @@ namespace OpenUtau.App.ViewModels {
                 var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
+                if(part.name != "New Part"){
+                    track.TrackName = part.name;
+                }
                 part.AfterLoad(project, track);
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
