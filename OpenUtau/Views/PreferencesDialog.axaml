@@ -214,6 +214,7 @@
             <ComboBox SelectedIndex="{Binding OtoEditor}">
               <ComboBoxItem Content="OpenUtau"/>
               <ComboBoxItem Content="vLabeler"/>
+              <ComboBoxItem Content="setParam"/>
             </ComboBox>
             <TextBlock Text="{DynamicResource prefs.advanced.vlabelerpath}" Margin="0,10,0,0"/>
             <TextBlock HorizontalAlignment="Stretch" Margin="4"
@@ -223,6 +224,15 @@
                       HorizontalAlignment="Stretch" Click="ResetVLabelerPath"/>
               <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
                       HorizontalAlignment="Stretch" Click="SelectVLabelerPath"/>
+            </Grid>
+            <TextBlock Text="{DynamicResource prefs.otoeditor.setparampath}" Margin="0,10,0,0"/>
+            <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                       TextWrapping="Wrap" FontSize="11" Text="{Binding SetParamPath}"/>
+            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
+              <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                      HorizontalAlignment="Stretch" Click="ResetSetParamPath"/>
+              <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                      HorizontalAlignment="Stretch" Click="SelectSetParamPath"/>
             </Grid>
           </StackPanel>
         </HeaderedContentControl>

@@ -459,5 +459,27 @@ namespace OpenUtau.Classic {
                 .ToList();
             return (toRemove, toAdd);
         }
+        
+        public static void WriteForSetParam(UProject project, string filePath, List<UOto> otos) {
+            using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding("shift_jis"))) {
+                writer.WriteLine("[#SETTING]");
+                writer.WriteLine($"Tempo=120");
+                writer.WriteLine("Tracks=1");
+                if (project.Saved) {
+                    writer.WriteLine($"Project={project.FilePath.Replace(".ustx", ".ust")}");
+                }
+                writer.WriteLine($"VoiceDir={Path.GetDirectoryName(otos[0].File)}");
+                writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
+                writer.WriteLine("Mode2=True");
+
+                for (int i = 0; i < otos.Count; i++) {
+                    UOto oto = otos[i];
+                    writer.WriteLine($"[#{i:D4}]");
+                    writer.WriteLine($"Length=480");
+                    writer.WriteLine($"Lyric={oto.Alias}");
+                    writer.WriteLine($"NoteNum=60");
+                }
+            }
+        }
     }
 }

@@ -379,6 +379,7 @@
   <system:String x:Key="prefs.on">オン</system:String>
   <system:String x:Key="prefs.otoeditor">原音設定</system:String>
   <system:String x:Key="prefs.otoeditor.select">デフォルトの原音設定エディタ</system:String>
+  <system:String x:Key="prefs.otoeditor.setparampath">setParamの場所</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
@@ -431,6 +432,7 @@
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
+  <system:String x:Key="singers.editoto.editinsetparam">setParamで編集</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabelerで編集</system:String>
   <system:String x:Key="singers.editoto.gotosource">原音の場所を開く</system:String>
   <system:String x:Key="singers.editoto.regenfrq">周波数表を再生成</system:String>
@@ -438,7 +440,8 @@
   <system:String x:Key="singers.editoto.reset">原音設定をリセット</system:String>
   <system:String x:Key="singers.editoto.save">原音設定を保存</system:String>
   <system:String x:Key="singers.editoto.searchalias">エイリアス検索</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <system:String x:Key="singers.editoto.setsetparampath">先にsetParam（v4.0b以降）をダウンロードし、環境設定でパスを設定してください！ http://nwp8861.blog92.fc2.com/</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">先にvLabeler（1.0.0-beta1以降）をダウンロードし、環境設定でパスを設定してください！ https://github.com/sdercolin/vlabeler</system:String>
   <system:String x:Key="singers.errorreport">シンガーのError Reportを出力</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.otoview.moveleft">左へ移動</system:String>

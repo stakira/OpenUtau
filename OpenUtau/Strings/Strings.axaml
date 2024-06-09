@@ -381,6 +381,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.on">On</system:String>
   <system:String x:Key="prefs.otoeditor">Oto Editor</system:String>
   <system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>
+  <system:String x:Key="prefs.otoeditor.setparampath">setParam Path</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
@@ -433,6 +434,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
+  <system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
   <system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>
@@ -440,6 +442,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
   <system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>
+  <system:String x:Key="singers.editoto.setsetparampath">Download setParam (v4.0b or higher) from http://nwp8861.blog92.fc2.com/ and set setParam path in Preferences first!</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>
