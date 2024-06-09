@@ -278,6 +278,43 @@ namespace OpenUtau.App.ViewModels {
                         }).ToArray(),
                 });
             }
+
+            items.Add(new MenuItemViewModel() { // Separator
+                Header = "-",
+                Height = 1
+            });
+            items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("tracks.opensingers"),
+                Command = ReactiveCommand.Create(() => {
+                    try {
+                        OS.OpenFolder(PathManager.Inst.SingersPath);
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                    }
+                })
+            });
+            if (!string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath) && Directory.Exists(PathManager.Inst.AdditionalSingersPath)) {
+                items.Add(new MenuItemViewModel() {
+                    Header = ThemeManager.GetString("tracks.openaddsingers"),
+                    Command = ReactiveCommand.Create(() => {
+                        try {
+                            OS.OpenFolder(PathManager.Inst.AdditionalSingersPath);
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        }
+                    })
+                });
+            }
+            items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("singers.refresh"),
+                Command = ReactiveCommand.Create(() => {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singer"));
+                    SingerManager.Inst.SearchAllSingers();
+                    DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singer"));
+                })
+            });
+
             SingerMenuItems = items;
             this.RaisePropertyChanged(nameof(SingerMenuItems));
         }
