@@ -31847,34 +31847,6 @@ namespace OpenUtau.Core.Format.MusicXMLSchema
     public partial class ScorePartwisePartMeasure : IMusicData, IMeasureAttributes
     {
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private System.Collections.ObjectModel.Collection<Note> _note;
-
-        [System.Xml.Serialization.XmlElementAttribute("note")]
-        public System.Collections.ObjectModel.Collection<Note> Note
-        {
-            get
-            {
-                return _note;
-            }
-            private set
-            {
-                _note = value;
-            }
-        }
-
-        /// <summary>
-        /// <para xml:lang="en">Gets a value indicating whether the Note collection is empty.</para>
-        /// </summary>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool NoteSpecified
-        {
-            get
-            {
-                return (this.Note.Count != 0);
-            }
-        }
-
         /// <summary>
         /// <para xml:lang="en">Initializes a new instance of the <see cref="ScorePartwisePartMeasure" /> class.</para>
         /// </summary>
@@ -31952,22 +31924,6 @@ namespace OpenUtau.Core.Format.MusicXMLSchema
             }
         }
 
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        private System.Collections.ObjectModel.Collection<Direction> _direction;
-
-        [System.Xml.Serialization.XmlElementAttribute("direction")]
-        public System.Collections.ObjectModel.Collection<Direction> Direction
-        {
-            get
-            {
-                return _direction;
-            }
-            private set
-            {
-                _direction = value;
-            }
-        }
-
         /// <summary>
         /// <para xml:lang="en">Gets a value indicating whether the Direction collection is empty.</para>
         /// </summary>
@@ -32005,6 +31961,50 @@ namespace OpenUtau.Core.Format.MusicXMLSchema
             get
             {
                 return (this.Attributes.Count != 0);
+            }
+        }
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private System.Collections.ObjectModel.Collection<Direction> _direction;
+
+        [System.Xml.Serialization.XmlElementAttribute("direction")]
+        public System.Collections.ObjectModel.Collection<Direction> Direction
+        {
+            get
+            {
+                return _direction;
+            }
+            private set
+            {
+                _direction = value;
+            }
+        }
+
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        private System.Collections.ObjectModel.Collection<Note> _note;
+
+        [System.Xml.Serialization.XmlElementAttribute("note")]
+        public System.Collections.ObjectModel.Collection<Note> Note
+        {
+            get
+            {
+                return _note;
+            }
+            private set
+            {
+                _note = value;
+            }
+        }
+
+        /// <summary>
+        /// <para xml:lang="en">Gets a value indicating whether the Note collection is empty.</para>
+        /// </summary>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool NoteSpecified
+        {
+            get
+            {
+                return (this.Note.Count != 0);
             }
         }
 
