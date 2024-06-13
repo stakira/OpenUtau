@@ -37,33 +37,21 @@ namespace OpenUtau.Core.Format
 
                 int divisions = (int)part.Measure[0].Attributes[0].Divisions;
                 int currPosTick = 0;
-                List<string> lyrics = new List<string>();
+
                 foreach (var measure in part.Measure)
                 {
                     // BPM
-                    foreach (var direction in measure.Direction)
-                    {
-                        foreach (var directionType in direction.DirectionType)
-                        {
-                            if (directionType.Metronome != null)
-                            {
-                                int bpm = Int32.Parse(directionType.Metronome.PerMinute.Value);
-                                uproject.tempos.Add(new UTempo {position = currPosTick,
-                                                                bpm = bpm});
-                                Log.Information($"Measure {measure.Number} BPM: {bpm.ToString()}");
-                            }
-                        }
+                    double? bpm;
+                    if ((bpm = MeasureBPM(measure)).HasValue) {
+                        uproject.tempos.Add(new UTempo(currPosTick, bpm.Value));
+                        Log.Information($"Measure {measure.Number} BPM: {bpm.ToString()}");
                     }
 
                     // Time Signature
-                    foreach (var attributes in measure.Attributes)
-                    {
-                        foreach (var time in attributes.Time)
-                        {
-                            if (time.Beats.Count > 0 && time.BeatType.Count > 0)
-                            {
-                                uproject.timeSignatures.Add(new UTimeSignature
-                                {
+                    foreach (var attributes in measure.Attributes) {
+                        foreach (var time in attributes.Time) {
+                            if (time.Beats.Count > 0 && time.BeatType.Count > 0) {
+                                uproject.timeSignatures.Add(new UTimeSignature {
                                     barPosition = currPosTick,
                                     beatPerBar = Int32.Parse(time.Beats[0]),
                                     beatUnit = Int32.Parse(time.BeatType[0])
@@ -74,16 +62,13 @@ namespace OpenUtau.Core.Format
                     }
 
                     // Note
-                    foreach(var note in measure.Note)
-                    {
+                    foreach(var note in measure.Note) {
                         int durTick = (int)note.Duration * uproject.resolution / divisions;
 
-                        if (note.Rest != null)
-                        {
+                        if (note.Rest != null) {
                             // pass
                         }
-                        else
-                        {
+                        else {
                             var pitch = note.Pitch.Step.ToString() + note.Pitch.Octave.ToString();
                             int tone = MusicMath.NameToTone(pitch) + (int)note.Pitch.Alter;
                             UNote unote = uproject.CreateNote(tone, currPosTick, durTick);
@@ -113,6 +98,14 @@ namespace OpenUtau.Core.Format
                 xmlEncoding = detectionResult.Detected.Encoding;
             }
             return xmlEncoding;
+        }
+
+        static public double? MeasureBPM(MusicXMLSchema.ScorePartwisePartMeasure measure)
+        {
+            foreach (var direction in measure.Direction) {
+                if (direction.Sound != null) { return (double)direction.Sound.Tempo; }
+            }
+            return null;
         }
 
         static public MusicXMLSchema.ScorePartwise ReadXMLScore(string xmlFile)
