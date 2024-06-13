@@ -173,7 +173,13 @@ namespace OpenUtau.App.Views {
             return loadingDialog != null && loadingDialog.IsActive;
         }
 
-        public static Task<MessageBoxResult> ShowProcessing(Window parent, string text, string title, Action<MessageBox, CancellationToken> action) {
+        public static Task<MessageBoxResult> ShowProcessing(
+                Window parent, 
+                string text, 
+                string title, 
+                Action<MessageBox, 
+                CancellationToken> action,
+                Action<Exception>? exceptionHandler = null) {
             var msgbox = new MessageBox() {
                 Title = title
             };
@@ -188,6 +194,9 @@ namespace OpenUtau.App.Views {
             }, tokenSource.Token);
             task.ContinueWith(t => {
                 msgbox.Close();
+                if (task.IsFaulted && task.Exception != null && exceptionHandler != null) {
+                    exceptionHandler(task.Exception);
+                }
             }, scheduler);
 
             var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };

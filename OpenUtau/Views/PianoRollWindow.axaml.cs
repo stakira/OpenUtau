@@ -64,7 +64,16 @@ namespace OpenUtau.App.Views {
                                     (current, total) => {
                                         messageBox.SetText($"{name}: {current} / {total}");
                                     }, cancellationToken);
-                            });
+                            },
+                            (Exception e)=>{
+                                if(e!=null){
+                                    Log.Error(e, $"Failed to run Editing Macro");
+                                    var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
+                                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                                    }
+                                    return;
+                                }
+                            );
                     } else {
                         edit.Run(NotesVm.Project, NotesVm.Part, NotesVm.Selection.ToList(),
                             DocManager.Inst);
