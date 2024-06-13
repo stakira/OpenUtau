@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -148,6 +149,38 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
+        
+        
+        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e){
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog {
+                Title = ThemeManager.GetString("menu.project.remaptimeaxis")
+            };
+            dialog.Height = 200;
+            dialog.SetPrompt(ThemeManager.GetString("dialogs.remaptimeaxis.message"));
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                try{
+                    if (double.TryParse(s, out double bpm)) {
+                        DocManager.Inst.StartUndoGroup();
+                        var oldTimeAxis = project.timeAxis.Clone();
+                        DocManager.Inst.ExecuteCmd(new BpmCommand(
+                            project, bpm));
+                        foreach(var tempo in project.tempos.Skip(1)){
+                            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
+                                project, tempo.position));
+                        }
+                        viewModel.RemapTimeAxis(oldTimeAxis, project.timeAxis.Clone());
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to open project location");
+                    MessageBox.ShowError(this, new MessageCustomizableException("Failed to open project location", "<translate:errors.failed.openlocation>: project location", e));
+                }
+            };
+            dialog.ShowDialog(this);
+        }
+
         private void AddTimeSigChange(int bar) {
             var project = DocManager.Inst.Project;
             var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
@@ -181,7 +214,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.open",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -196,7 +229,7 @@ namespace OpenUtau.App.Views {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open files {string.Join("\n", files)}", $"<translate:errors.failed.openfile>:\n{string.Join("\n", files)}", e));
             }
         }
 
@@ -232,7 +265,7 @@ namespace OpenUtau.App.Views {
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to open project location.");
-                MessageBox.ShowError(this, e);
+                MessageBox.ShowError(this, new MessageCustomizableException("Failed to open project location.", "<translate:errors.failed.openlocation>: project location", e));
             }
         }
 
@@ -250,7 +283,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuSaveAs(object sender, RoutedEventArgs args) => await SaveAs();
         async Task SaveAs() {
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.saveas", FilePicker.USTX);
             if (!string.IsNullOrEmpty(file)) {
                 viewModel.SaveProject(file);
@@ -275,7 +308,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportTracks(object sender, RoutedEventArgs args) {
-            var files = await FilePicker.OpenFiles(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.importtracks",
                 FilePicker.ProjectFiles,
                 FilePicker.USTX,
@@ -286,16 +319,45 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                viewModel.ImportTracks(files);
+                var loadedProjects = Formats.ReadProjects(files);
+                if(loadedProjects == null || loadedProjects.Length == 0){
+                    return;
+                } 
+                bool importTempo = true;
+                switch(Preferences.Default.ImportTempo){
+                    case 1:
+                        importTempo = false;
+                        break;
+                    case 2:
+                        if(loadedProjects[0].tempos.Count == 0){
+                            importTempo = false;
+                            break;
+                        }
+                        var tempoString = String.Join("\n", 
+                            loadedProjects[0].tempos
+                                .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                            );
+                        //ask the user
+                        var result = await MessageBox.Show(
+                            this,
+                            ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                            ThemeManager.GetString("dialogs.importtracks.caption"),
+                            MessageBox.MessageBoxButtons.YesNo);
+                        if(result == MessageBox.MessageBoxResult.No){
+                            importTempo = false;
+                        }
+                        break;
+                }
+                viewModel.ImportTracks(loadedProjects, importTempo);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import files", "<translate:errors.failed.importfiles>", e));
             }
             ValidateTracksVoiceColor();
         }
 
         async void OnMenuImportAudio(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;
@@ -304,12 +366,12 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportAudio(file);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import audio");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
             }
         }
 
         async void OnMenuImportMidi(bool UseDrywetmidi = false) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importmidi", FilePicker.MIDI);
             if (file == null) {
                 return;
@@ -318,7 +380,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportMidi(file, UseDrywetmidi);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
-                _ = await MessageBox.ShowError(this, e);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
             }
         }
 
@@ -332,7 +394,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmixdown", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderMixdown(project, file);
@@ -351,7 +413,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportWavTo(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportwavto", FilePicker.WAV);
             if (!string.IsNullOrEmpty(file)) {
                 await PlaybackManager.Inst.RenderToFiles(project, file);
@@ -360,7 +422,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -376,7 +438,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -392,7 +454,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportds.v2withoutpitch", FilePicker.DS);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -425,7 +487,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportUstTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportustto", FilePicker.UST);
             if (!string.IsNullOrEmpty(file)) {
                 for (var i = 0; i < project.parts.Count; i++) {
@@ -441,7 +503,7 @@ namespace OpenUtau.App.Views {
 
         async void OnMenuExportMidi(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFile(
+            var file = await FilePicker.SaveFileAboutProject(
                 this, "menu.file.exportmidi", FilePicker.MIDI);
             if (!string.IsNullOrEmpty(file)) {
                 MidiWriter.Save(file, project);
@@ -460,6 +522,9 @@ namespace OpenUtau.App.Views {
             return true;
         }
 
+        void OnMenuUndo(object sender, RoutedEventArgs args) => viewModel.Undo();
+        void OnMenuRedo(object sender, RoutedEventArgs args) => viewModel.Redo();
+
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
             var dialog = new ExpressionsDialog() {
                 DataContext = new ExpressionsViewModel(),
@@ -474,22 +539,34 @@ namespace OpenUtau.App.Views {
             OpenSingersWindow();
         }
 
+        /// <summary>
+        /// Check if a track has a singer and if it exists.
+        /// If the user haven't selected a singer for the track, or the singer specified in ustx project doesn't exist, return null.
+        /// Otherwise, return the singer.
+        /// </summary>
+        public USinger? TrackSingerIfFound(UTrack track){
+            if(track.Singer?.Found ?? false){
+                return track.Singer;
+            }
+            return null;
+        }
+
         public void OpenSingersWindow() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;
             }
 
-            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singers window"));
+            MessageBox.ShowLoading(this);
+            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             try {
-                var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
                 if (dialog == null) {
                     USinger? singer = null;
                     if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
-                        singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                        singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo]);
                     }
                     if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
-                        singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                        singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks.First());
                     }
                     var vm = new SingersViewModel();
                     if (singer != null) {
@@ -498,32 +575,35 @@ namespace OpenUtau.App.Views {
                     dialog = new SingersDialog() { DataContext = vm };
                     dialog.Show();
                 }
-                dialog.Activate();
                 if (dialog.Position.Y < 0) {
                     dialog.Position = dialog.Position.WithY(0);
                 }
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             } finally {
-                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singers window"));
+                MessageBox.CloseLoading();
+            }
+            if (dialog != null) {
+                dialog.Activate();
             }
         }
 
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutSinger(
                 this, "menu.tools.singer.install", FilePicker.ArchiveFiles);
             if (file == null) {
                 return;
             }
-            if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
-                Core.Vogen.VogenSingerInstaller.Install(file);
-                return;
-            }
-            if (file.EndsWith(DependencyInstaller.FileExt)) {
-                DependencyInstaller.Install(file);
-                return;
-            }
             try {
+                if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                    Core.Vogen.VogenSingerInstaller.Install(file);
+                    return;
+                }
+                if (file.EndsWith(DependencyInstaller.FileExt)) {
+                    DependencyInstaller.Install(file);
+                    return;
+                }
+
                 var setup = new SingerSetupDialog() {
                     DataContext = new SingerSetupViewModel() {
                         ArchiveFilePath = file,
@@ -534,7 +614,14 @@ namespace OpenUtau.App.Views {
                     setup.Position = setup.Position.WithY(0);
                 }
             } catch (Exception e) {
-                _ = MessageBox.ShowError(this, e);
+                Log.Error(e, $"Failed to install singer {file}");
+                MessageCustomizableException mce;
+                if(e is MessageCustomizableException){
+                    mce = (MessageCustomizableException)e;
+                } else {
+                    mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                }
+                _ = await MessageBox.ShowError(this, mce);
             }
         }
 
@@ -556,7 +643,7 @@ namespace OpenUtau.App.Views {
                 dataContext = new PreferencesViewModel();
             } catch (Exception e) {
                 Log.Error(e, "Failed to load prefs. Initialize it.");
-                MessageBox.ShowError(this, e);
+                MessageBox.ShowError(this, new MessageCustomizableException("Failed to load prefs. Initialize it.", "<translate:errors.failed.loadprefs>", e));
                 Preferences.Reset();
                 dataContext = new PreferencesViewModel();
             }
@@ -762,24 +849,35 @@ namespace OpenUtau.App.Views {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file {file}");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import midi");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
-                var setup = new SingerSetupDialog() {
-                    DataContext = new SingerSetupViewModel() {
-                        ArchiveFilePath = file,
-                    },
-                };
-                _ = setup.ShowDialog(this);
-                if (setup.Position.Y < 0) {
-                    setup.Position = setup.Position.WithY(0);
+                try{
+                    var setup = new SingerSetupDialog() {
+                        DataContext = new SingerSetupViewModel() {
+                            ArchiveFilePath = file,
+                        },
+                    };
+                    _ = setup.ShowDialog(this);
+                    if (setup.Position.Y < 0) {
+                        setup.Position = setup.Position.WithY(0);
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to install singer {file}");
+                    MessageCustomizableException mce;
+                    if(e is MessageCustomizableException){
+                        mce = (MessageCustomizableException)e;
+                    } else {
+                        mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                    }
+                    _ = await MessageBox.ShowError(this, mce);
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
@@ -814,7 +912,7 @@ namespace OpenUtau.App.Views {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import audio");
-                    _ = await MessageBox.ShowError(this, e);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
                 }
             } else {
                 _ = await MessageBox.Show(
@@ -998,12 +1096,12 @@ namespace OpenUtau.App.Views {
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
-                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "pianoroll window"));
+                    MessageBox.ShowLoading(this);
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
                     };
                     pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
-                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "pianoroll window"));
+                    MessageBox.CloseLoading();
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
@@ -1080,7 +1178,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void ReplaceAudio(UPart part) {
-            var file = await FilePicker.OpenFile(
+            var file = await FilePicker.OpenFileAboutProject(
                 this, "context.part.replaceaudio", FilePicker.AudioFiles);
             if (file == null) {
                 return;
@@ -1150,58 +1248,55 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
         async Task VoiceColorRemappingAsync(UTrack track, string[] oldColors, string[] newColors) {
-            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
-            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
+                .Cast<UVoicePart>()
+                .Where(vpart => vpart.notes.Count > 0);
+            if (parts.Any()) {
                 var dialog = new VoiceColorMappingDialog();
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 await dialog.ShowDialog(this);
 
                 if (dialog.Apply) {
-                    foreach (var part in parts) {
-                        if (part is UVoicePart voicePart) {
-                            foreach (var phoneme in voicePart.phonemes) {
-                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
-                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
-                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
-                                    if (mapping.OldIndex != mapping.SelectedIndex) {
-                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
-                                    }
-                                } else {
-                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
-                                }
-                            }
-                        }
-                    }
+                    SetVoiceColorRemapping(track, parts, vm);
                 }
             }
         }
         void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors) {
-            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
-            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
+                .Cast<UVoicePart>()
+                .Where(vpart => vpart.notes.Count > 0);
+            if (parts.Any()) {
                 var dialog = new VoiceColorMappingDialog();
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 dialog.onFinish = () => {
                     DocManager.Inst.StartUndoGroup();
-                    foreach (var part in parts) {
-                        if (part is UVoicePart voicePart) {
-                            foreach (var phoneme in voicePart.phonemes) {
-                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
-                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
-                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
-                                    if (mapping.OldIndex != mapping.SelectedIndex) {
-                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
-                                    }
-                                } else {
-                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
-                                }
-                            }
-                        }
-                    }
+                    SetVoiceColorRemapping(track, parts, vm);
                     DocManager.Inst.EndUndoGroup();
                 };
                 dialog.ShowDialog(this);
+            }
+        }
+        void SetVoiceColorRemapping(UTrack track, IEnumerable<UVoicePart> parts, VoiceColorMappingViewModel vm) {
+            foreach (var part in parts) {
+                foreach (var phoneme in part.phonemes) {
+                    var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
+                    if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
+                        var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
+                        if (mapping.OldIndex != mapping.SelectedIndex) {
+                            if (mapping.SelectedIndex == 0) {
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, null));
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, mapping.SelectedIndex));
+                            }
+                        }
+                    } else {
+                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, part, phoneme, Ustx.CLR, null));
+                    }
+                }
             }
         }
 
@@ -1252,7 +1347,7 @@ namespace OpenUtau.App.Views {
                            MessageBox.MessageBoxButtons.Ok);
                         break;
                     default:
-                        MessageBox.ShowError(this, notif.message, notif.e);
+                        MessageBox.ShowError(this, notif.e, notif.message, true);
                         break;
                 }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {

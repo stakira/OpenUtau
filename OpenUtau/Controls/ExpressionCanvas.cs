@@ -90,14 +90,14 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             var project = DocManager.Inst.Project;
-            if (!project.tracks[Part.trackNo].TryGetExpression(project, key, out var descriptor)) {
+            var track = project.tracks[Part.trackNo];
+            if (!track.TryGetExpDescriptor(project, key, out var descriptor)) {
                 return;
             }
             if (descriptor.max <= descriptor.min) {
                 return;
             }
             DrawBackgroundForHitTest(context);
-            var track = project.tracks[Part.trackNo];
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             double optionHeight = descriptor.type == UExpressionType.Options
@@ -172,7 +172,9 @@ namespace OpenUtau.App.Controls {
                         double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
                         using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
                             if ((int)value == i) {
-                                context.DrawGeometry(brush, null, pointGeometry);
+                                if (overriden) {
+                                    context.DrawGeometry(brush, null, pointGeometry);
+                                }
                                 context.DrawGeometry(null, hPen, circleGeometry);
                             } else {
                                 context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);

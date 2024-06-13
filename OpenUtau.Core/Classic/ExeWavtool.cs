@@ -16,21 +16,32 @@ namespace OpenUtau.Classic {
         readonly StringBuilder sb = new StringBuilder();
         readonly string filePath;
         readonly string name;
+        private Encoding osEncoding;
 
         public ExeWavtool(string filePath, string basePath) {
             this.filePath = filePath;
             name = Path.GetRelativePath(basePath, filePath);
+            osEncoding = OS.IsWindows() ? Encoding.GetEncoding(0) : Encoding.UTF8;
         }
 
         public float[] Concatenate(List<ResamplerItem> resamplerItems, string tempPath, CancellationTokenSource cancellation) {
             if (cancellation.IsCancellationRequested) {
                 return null;
             }
+            //The builtin worldline resampler can't be called from bat script,
+            //so we need to call it directly from C#
+            foreach(var item in resamplerItems){
+                if(!(item.resampler is ExeResampler) && !cancellation.IsCancellationRequested && !File.Exists(item.outputFile)){
+                    lock (Renderers.GetCacheLock(item.outputFile)) {
+                        item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                    }
+                }
+            }
             PrepareHelper();
             string batPath = Path.Combine(PathManager.Inst.CachePath, "temp.bat");
             lock (tempBatLock) {
                 using (var stream = File.Open(batPath, FileMode.Create)) {
-                    using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                    using (var writer = new StreamWriter(stream, osEncoding)) {
                         WriteSetUp(writer, resamplerItems, tempPath);
                         for (var i = 0; i < resamplerItems.Count; i++) {
                             WriteItem(writer, resamplerItems[i], i, resamplerItems.Count);
@@ -53,7 +64,7 @@ namespace OpenUtau.Classic {
             lock (Renderers.GetCacheLock(tempHelper)) {
                 if (!File.Exists(tempHelper)) {
                     using (var stream = File.Open(tempHelper, FileMode.Create)) {
-                        using (var writer = new StreamWriter(stream, new UTF8Encoding(false))) {
+                        using (var writer = new StreamWriter(stream, osEncoding)) {
                             WriteHelper(writer);
                         }
                     }
@@ -93,7 +104,7 @@ namespace OpenUtau.Classic {
 
         void WriteItem(StreamWriter writer, ResamplerItem item, int index, int total) {
             writer.WriteLine($"@set resamp={item.resampler.FilePath}");
-            writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo.ToString("G999")} {Base64.Base64EncodeInt12(item.pitches)}");
+            writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo:G999} {Base64.Base64EncodeInt12(item.pitches)}");
             writer.WriteLine($"@set flag=\"{item.GetFlagsString()}\"");
             writer.WriteLine($"@set env={GetEnvelope(item)}");
             writer.WriteLine($"@set stp={item.skipOver}");
@@ -101,7 +112,7 @@ namespace OpenUtau.Classic {
             string relOutputFile = Path.GetRelativePath(PathManager.Inst.CachePath, item.outputFile);
             writer.WriteLine($"@set temp=\"%cachedir%\\{relOutputFile}\"");
             string toneName = MusicMath.GetToneName(item.tone);
-            string dur = $"{item.phone.duration.ToString("G999")}@{item.phone.adjustedTempo.ToString("G999")}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
+            string dur = $"{item.phone.duration:G999}@{item.phone.adjustedTempo:G999}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
             string relInputTemp = Path.GetRelativePath(PathManager.Inst.CachePath, item.inputTemp);
             writer.WriteLine($"@echo {MakeProgressBar(index + 1, total)}");
             writer.WriteLine($"@call %helper% \"%oto%\\{relInputTemp}\" {toneName} {dur} {item.preutter} {item.offset} {item.durRequired} {item.consonant} {item.cutoff} {index}");

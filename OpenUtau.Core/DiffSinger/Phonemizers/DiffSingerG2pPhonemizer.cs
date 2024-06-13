@@ -29,39 +29,43 @@ namespace OpenUtau.Core.DiffSinger
         }
     }
 
+    /// <summary>
+    /// Base class for DiffSinger phonemizers based on OpenUtau's builtin G2p.
+    /// </summary>
     public abstract class DiffSingerG2pPhonemizer : DiffSingerBasePhonemizer
     {
-        protected virtual string GetDictionaryName()=>"dsdict.yaml";
-
         protected virtual IG2p LoadBaseG2p()=>null;
         //vowels and consonants of BaseG2p
         protected virtual string[] GetBaseG2pVowels()=>new string[]{};
         protected virtual string[] GetBaseG2pConsonants()=>new string[]{};
         
         protected override IG2p LoadG2p(string rootPath) {
-            var dictionaryName = GetDictionaryName();
+            //Each phonemizer has a delicated dictionary name, such as dsdict-en.yaml, dsdict-ru.yaml.
+            //If this dictionary exists, load it.
+            //If not, load dsdict.yaml.
+            var dictionaryNames = new string[] {GetDictionaryName(), "dsdict.yaml"};
             var g2ps = new List<IG2p>();
-            // Load dictionary from plugin folder.
-            string path = Path.Combine(PluginDir, dictionaryName);
-            if (File.Exists(path)) {
-                try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {path}");
-                }
-            }
 
             // Load dictionary from singer folder.
+            G2pDictionary.Builder g2pBuilder = new G2pDictionary.Builder();
             var replacements = new Dictionary<string,string>();
-            string file = Path.Combine(rootPath, dictionaryName);
-            if (File.Exists(file)) {
-                try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
-                    replacements = G2pReplacementsData.Load(File.ReadAllText(file)).toDict();
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {file}");
+            foreach(var dictionaryName in dictionaryNames){
+                string dictionaryPath = Path.Combine(rootPath, dictionaryName);
+                if (File.Exists(dictionaryPath)) {
+                    try {
+                        string dictText = File.ReadAllText(dictionaryPath);
+                        replacements = G2pReplacementsData.Load(dictText).toDict();
+                        g2pBuilder.Load(dictText);
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {dictionaryPath}");
+                    }
+                    break;
                 }
             }
+            //SP and AP should always be vowel
+            g2pBuilder.AddSymbol("SP", true);
+            g2pBuilder.AddSymbol("AP", true);
+            g2ps.Add(g2pBuilder.Build());
 
             // Load base g2p.
             var baseG2p = LoadBaseG2p();
@@ -85,7 +89,7 @@ namespace OpenUtau.Core.DiffSinger
                     }
                 }
             }
-            g2ps.Add(new G2pRemapper(baseG2p,phonemeSymbols, replacements));
+            g2ps.Add(new G2pRemapper(baseG2p, phonemeSymbols, replacements));
             return new G2pFallbacks(g2ps.ToArray());
         }
     }

@@ -101,6 +101,15 @@ namespace OpenUtau.Classic {
                     message = $"There are duplicate aliases.{message}"
                 });
             }
+            foreach(var otoSet in voicebank.OtoSets) {
+                CheckCaseMatchForFileReference(otoSet);
+                CheckDuplicatedNameIgnoringCase(otoSet);
+            }
+            CheckCaseMatchForFileReference(voicebank.BasePath, new string[]{
+                "chatacter.txt", 
+                "character.yaml", 
+                "prefix.map",
+                });
         }
 
         bool TryGetFileDuration(string filePath, Oto oto, out double fileDuration) {
@@ -239,6 +248,63 @@ namespace OpenUtau.Classic {
                 .SelectMany(group => group).ToList();
 
             return duplicates.Count > 0;
+        }
+    
+        /// <summary>
+        /// Check if the file names in the oto.ini are the same as the file names in the file system.
+        /// </summary>
+        /// <param name="otoSet">otoSet to be checked</param>
+        /// <returns></returns>
+        bool CheckCaseMatchForFileReference(OtoSet otoSet) {
+            return CheckCaseMatchForFileReference(
+                Directory.GetParent(otoSet.File).FullName, 
+                otoSet.Otos
+                    .Select(oto => oto.Wav)
+                    .Append(otoSet.File)//oto.ini itself
+                    .ToHashSet());
+        }
+
+        bool CheckCaseMatchForFileReference(string folder, IEnumerable<string> correctFileNames){
+            bool valid = true;
+            Dictionary<string, string> fileNamesLowerToActual = Directory.GetFiles(folder)
+                .Select(Path.GetFileName)
+                .ToDictionary(x => x.ToLower(), x => x);
+            foreach(string fileName in correctFileNames) {
+                if(!fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
+                    continue;
+                }
+                if (fileNamesLowerToActual[fileName.ToLower()] != fileName) {
+                    valid = false;
+                    Errors.Add(new VoicebankError() {
+                        message = $"Wrong case in file name: \n"
+                            + $"expected: {Path.Join(folder,fileName)}\n"
+                            + $"Actual: {Path.Join(folder,fileNamesLowerToActual[fileName.ToLower()])}\n"
+                            + $"The voicebank may not work on another OS."
+                    });
+                }
+            }
+            return valid;
+        }
+
+        /// <summary>
+        /// Check if the file names are duplicated when converted to lower case.
+        /// </summary>
+        /// <param name="otoSet">otoSet to be checked</param>
+        /// <returns></returns>
+        bool CheckDuplicatedNameIgnoringCase(OtoSet otoSet) {
+            var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
+            var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
+                .Where(group => group.Count() > 1)
+                .ToList();
+            foreach (var group in duplicatedGroups) {
+                Errors.Add(new VoicebankError() {
+                    message = $"Duplicated file names found when ignoreing case in oto set \"{otoSet.Name}\":"
+                    + string.Join(", ", group.Select(x => $"\"{x}\""))
+                    + ".\n"
+                    + "The voicebank may not work on another OS with case-sensitivity."
+                });
+            }
+            return duplicatedGroups.Count == 0;
         }
     }
 }

@@ -11,6 +11,7 @@
   </Style>
   <Style Selector="Window">
     <Setter Property="FontFamily" Value="{DynamicResource ui.fontfamily}"/>
+    <Setter Property="Icon" Value="/Assets/open-utau.ico"/>
   </Style>
   <Style Selector="Menu">
     <Setter Property="Height" Value="24"/>
@@ -431,14 +432,22 @@
   </Style>
 
   <Style Selector="Expander" >
-    <Setter Property="CornerRadius" Value="5" />
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
-    <Setter Property="Padding" Value="10" />
+    <Setter Property="Margin" Value="4,2" />
+    <Setter Property="Padding" Value="4" />
     <Setter Property="IsExpanded" Value="True" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="Background" Value="Transparent" />
 
     <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
-      <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+      <Setter Property="Height" Value="32"/>
+      <Setter Property="MinHeight" Value="32"/>
+      <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
+      <Setter Property="Height" Value="20"/>
+    </Style>
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Margin" Value="7,0,0,0"/>
     </Style>
   </Style>
 </Styles>

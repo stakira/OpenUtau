@@ -218,6 +218,24 @@ namespace OpenUtau.App.ViewModels {
             return pitch;
         }
 
+        public double? SampleOverwritePitch(Point point) {
+            if (viewModel.Part == null || viewModel.Part.renderPhrases.Count == 0) {
+                return null;
+            }
+            double tick = viewModel.PointToTick(point);
+            var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.position - p.leading >= tick);
+            if (phrase == null) {
+                phrase = viewModel.Part.renderPhrases.Last();
+            }
+            if (phrase == null || phrase.pitchesBeforeDeviation.Length == 0) {
+                return null;
+            }
+            var curve = phrase.pitchesBeforeDeviation;
+            var pitchIndex = (int)Math.Round((tick - phrase.position + phrase.leading) / 5);
+            pitchIndex = Math.Clamp(pitchIndex, 0, curve.Length - 1);
+            return curve[pitchIndex];
+        }
+
         public VibratoHitInfo HitTestVibrato(Point mousePos) {
             if (viewModel.Part == null || !viewModel.ShowVibrato) {
                 return default;

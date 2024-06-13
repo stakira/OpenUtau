@@ -1,0 +1,65 @@
+on: workflow_dispatch
+
+jobs:
+  pr-test:
+    runs-on: ${{ matrix.os.runs-on }}
+
+    strategy:
+      matrix:
+        os:
+          - runs-on: windows-latest
+            arch: win-x64
+            rid: win-x64
+          - runs-on: ubuntu-latest
+            arch: linux-x64
+            rid: linux-x64
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "6.0.x"
+      - name: Restore
+        run: dotnet restore OpenUtau -r ${{ matrix.os.rid }}
+      - name: test
+        run: dotnet test OpenUtau.Test
+
+      - name: Download DirectML.dll
+        shell: powershell
+        run: Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0" -OutFile "Microsoft.AI.DirectML.nupkg"
+        if: matrix.os.arch == 'win-x64'
+      - name: Extract DirectML.dll
+        shell: cmd
+        run: |
+          mkdir Microsoft.AI.DirectML
+          tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
+        if: matrix.os.arch == 'win-x64'
+
+      - name: Build non-mac
+        run: dotnet publish OpenUtau -c Release -r ${{ matrix.os.rid }} --self-contained true -o bin/${{ matrix.os.arch }}/
+        if: matrix.os.arch != 'osx-x64'
+      - name: upload non-mac build
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.os.arch }}
+          path: bin/${{ matrix.os.arch }}
+        if: matrix.os.arch != 'osx-x64'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        if: matrix.os.arch == 'osx-x64'
+      - name: Build mac
+        run: |
+          dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.os.rid }} -p:UseAppHost=true -p:OutputPath=../bin/${{ matrix.os.arch }}/
+          cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.os.arch }}/publish/OpenUtau.app/Contents/Resources/
+          npm install -g create-dmg
+          create-dmg bin/osx-x64/publish/OpenUtau.app
+          mv *.dmg OpenUtau-osx-x64.dmg
+          codesign -fvs - OpenUtau-osx-x64.dmg
+        if: matrix.os.arch == 'osx-x64'
+      - name: Upload mac build
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.os.arch }}
+          path: OpenUtau-osx-x64.dmg
+        if: matrix.os.arch == 'osx-x64'

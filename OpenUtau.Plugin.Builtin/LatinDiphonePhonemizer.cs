@@ -30,5 +30,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return $"{prevSymbol} {symbol}{alt}";
         }
+
     }
 }

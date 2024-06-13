@@ -11,17 +11,15 @@ namespace OpenUtau.Classic {
                     return new Core.Enunu.EnunuSinger(v) as USinger;
                 case USingerType.DiffSinger:
                     return new Core.DiffSinger.DiffSingerSinger(v) as USinger;
+                case USingerType.Voicevox:
+                    return new Core.Voicevox.VoicevoxSinger(v) as USinger;
                 default:
                     return new ClassicSinger(v) as USinger;
             }
         }
         public static IEnumerable<USinger> FindAllSingers() {
             List<USinger> singers = new List<USinger>();
-            foreach (var path in new string[] {
-                PathManager.Inst.SingersPathOld,
-                PathManager.Inst.SingersPath,
-                PathManager.Inst.AdditionalSingersPath,
-            }) {
+            foreach (var path in PathManager.Inst.SingersPaths) {
                 var loader = new VoicebankLoader(path);
                 singers.AddRange(loader.SearchAll()
                     .Select(AdjustSingerType));

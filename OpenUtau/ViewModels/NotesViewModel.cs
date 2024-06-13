@@ -53,6 +53,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool PenPlusTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
         [Reactive] public bool DrawPitchTool { get; set; }
+        [Reactive] public bool OverwritePitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
@@ -92,7 +93,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
 
         // See the comments on TracksViewModel.playPosXToTickOffset
-        private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
+        private double playPosXToTickOffset => Bounds.Width != 0 ? ViewportTicks / Bounds.Width : 0;
 
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
@@ -194,10 +195,16 @@ namespace OpenUtau.App.ViewModels {
                 });
 
             CursorTool = false;
-            PenTool = true;
-            PenPlusTool = false;
+            if (Preferences.Default.PenPlusDefault) {
+                PenPlusTool = true;
+                PenTool = false;
+            } else {
+                PenTool = true;
+                PenPlusTool = false;
+            }
             EraserTool = false;
             DrawPitchTool = false;
+            OverwritePitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
@@ -205,6 +212,7 @@ namespace OpenUtau.App.ViewModels {
                 PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
+                OverwritePitchTool = index == "4+";
                 KnifeTool = index == "5";
             });
 
@@ -458,7 +466,7 @@ namespace OpenUtau.App.ViewModels {
             lock (portraitLock) {
                 Avatar?.Dispose();
                 Avatar = null;
-                if (singer != null && singer.AvatarData != null) {
+                if (singer != null && singer.AvatarData != null && Preferences.Default.ShowIcon) {
                     try {
                         using (var stream = new MemoryStream(singer.AvatarData)) {
                             Avatar = new Bitmap(stream);
@@ -769,8 +777,13 @@ namespace OpenUtau.App.ViewModels {
             }
             var notes = Selection.ToList();
             notes.Sort((a, b) => a.position.CompareTo(b.position));
+            //Ignore slur lyrics
+            var mergedLyrics = String.Join("", notes.Select(x => x.lyric).Where(l => !l.StartsWith("+")));
+            if(mergedLyrics == ""){ //If all notes are slur, the merged note is single slur note
+                mergedLyrics = notes[0].lyric;
+            }
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], mergedLyrics));
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
             notes.RemoveAt(0);
             DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
@@ -823,7 +836,10 @@ namespace OpenUtau.App.ViewModels {
                     Selection.Select(notes);
                     MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
 
-                    TickOffset = left - Part.position;
+                    var note = notes.First();
+                    if (left < TickOffset || TickOffset + ViewportTicks < note.position + note.duration + Part.position) {
+                        TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+                    }
                 }
             }
         }
@@ -868,7 +884,7 @@ namespace OpenUtau.App.ViewModels {
                                     break;
                                 default:
                                     if (vm.Params[i].IsSelected) {
-                                        float[] values = copyNote.GetExpression(Project, track, vm.Params[i].Abbr).Select(t => t.Item1).ToArray();
+                                        float?[] values = copyNote.GetExpressionNoteHas(Project, track, vm.Params[i].Abbr);
                                         DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(Project, track, Part, note, vm.Params[i].Abbr, values));
                                     }
                                     break;
@@ -908,7 +924,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void FocusNote(UNote note) {
-            TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+            TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
@@ -958,7 +974,7 @@ namespace OpenUtau.App.ViewModels {
             if (track.RendererSettings.Renderer == null) {
                 return true;
             }
-            if (Project.expressions.TryGetValue(expKey, out var descriptor)) {
+            if (track.TryGetExpDescriptor(Project, expKey, out var descriptor)) {
                 return track.RendererSettings.Renderer.SupportsExpression(descriptor);
             }
             if (expKey == track.VoiceColorExp.abbr) {
@@ -984,7 +1000,9 @@ namespace OpenUtau.App.ViewModels {
                     PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
-                    MaybeAutoScroll(PlayPosX);
+                    if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
+                        MaybeAutoScroll(PlayPosX);
+                    }
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);

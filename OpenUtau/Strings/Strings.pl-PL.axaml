@@ -35,6 +35,8 @@
   <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">Eksportuj</system:String>
   <system:String x:Key="dialogs.export.savefirst">Zapisz Najpierw Plik Projektu</system:String>
+  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
+  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
   <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
   <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
@@ -46,15 +48,41 @@
   <!--<system:String x:Key="dialogs.messagebox.yes">Yes</system:String>-->
   <system:String x:Key="dialogs.noresampler.caption">Brak resamplera</system:String>
   <system:String x:Key="dialogs.noresampler.message">Brak resamplera! Dodaj plik DLL lub EXE swojego ulubionego Resamplera do folderu Resamplers i wybierz go w ustawieniach!</system:String>
+  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
+  New BPM:</system:String>-->
   <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
+  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
   <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
 
   <system:String x:Key="errors.caption">Błąd</system:String>
+  <!--<system:String x:Key="errors.details">Error Details</system:String>-->
+  <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
+  <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
+  <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
+  <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
+  <!--<system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>-->
+  <!--<system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>-->
+  <!--<system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>-->
+  <!--<system:String x:Key="errors.expression.min">Min must be smaller than max</system:String>-->
+  <!--<system:String x:Key="errors.expression.name">Name must be set</system:String>-->
+  <!--<system:String x:Key="errors.failed.export">Failed to export</system:String>-->
+  <!--<system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>-->
+  <!--<system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>-->
+  <!--<system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>-->
+  <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
+  <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
+  <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
+  <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
+  <!--<system:String x:Key="errors.failed.render">Failed to render</system:String>-->
+  <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
+  <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
+  <!--<system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>-->
 
   <!--<system:String x:Key="exps.abbr">Abbreviation</system:String>-->
   <!--<system:String x:Key="exps.apply">Apply</system:String>-->
@@ -72,6 +100,21 @@
   <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <!--<system:String x:Key="exps.type.numerical">Numerical</system:String>-->
   <!--<system:String x:Key="exps.type.options">Options</system:String>-->
+
+  <system:String x:Key="languages.de">niemiecki</system:String>
+  <system:String x:Key="languages.en">angielski</system:String>
+  <system:String x:Key="languages.es">hiszpański</system:String>
+  <system:String x:Key="languages.fr">francuski</system:String>
+  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
+  <system:String x:Key="languages.it">włoski</system:String>
+  <system:String x:Key="languages.ja">japoński</system:String>
+  <system:String x:Key="languages.ko">koreański</system:String>
+  <system:String x:Key="languages.pl">polski</system:String>
+  <system:String x:Key="languages.pt">portugalski</system:String>
+  <system:String x:Key="languages.ru">rosyjski</system:String>
+  <system:String x:Key="languages.vi">wietnamski</system:String>
+  <system:String x:Key="languages.zh">chiński</system:String>
+  <system:String x:Key="languages.zh-yue">kantoński</system:String>
 
   <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
   <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
@@ -98,6 +141,10 @@
   <system:String x:Key="menu.edit.copy">Kopiuj</system:String>
   <system:String x:Key="menu.edit.cut">Wytnij</system:String>
   <system:String x:Key="menu.edit.delete">Usuń</system:String>
+  <!--<system:String x:Key="menu.edit.lockunselectednotes">Lock editing of unselected notes</system:String>-->
+  <!--<system:String x:Key="menu.edit.lockunselectednotes.expressions">Expressions</system:String>-->
+  <!--<system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>-->
+  <!--<system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>-->
   <system:String x:Key="menu.edit.paste">Wklej</system:String>
   <system:String x:Key="menu.edit.redo">Ponów</system:String>
   <system:String x:Key="menu.edit.selectall">Zaznacz Wszystko</system:String>
@@ -136,9 +183,13 @@
   <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
   <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <!--<system:String x:Key="menu.project">Project</system:String>-->
+  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
+  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Narzędzia</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
+  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -147,7 +198,6 @@
   <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
   <system:String x:Key="menu.tools.prefs">Ustawienia...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Parametry Ekspresyjne...</system:String>
   <system:String x:Key="menu.tools.singer.install">Zainstaluj Piosenkarza...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Zainstaluj Piosenkarza (Zaawansowane)...</system:String>
   <system:String x:Key="menu.tools.singers">Piosenkarze...</system:String>
@@ -223,6 +273,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
@@ -282,6 +333,10 @@ Warning: this option removes custom presets.</system:String>-->
 
   <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -296,6 +351,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
   <!--<system:String x:Key="prefs.appearance.lang">Language</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Motyw</system:String>
@@ -304,6 +360,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>-->
   <!--<system:String x:Key="prefs.cache">Cache</system:String>-->
   <!--<system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>-->
+  <!--<system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>-->
   <system:String x:Key="prefs.caption">Ustawienia</system:String>
   <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
   <!--<system:String x:Key="prefs.off">Off</system:String>-->
@@ -313,8 +370,10 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.paths">Ścieżki</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
+  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
   <system:String x:Key="prefs.playback">Odtwarzanie</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
@@ -332,7 +391,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.rendering">Renderowanie</system:String>
   <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger Render Speedup</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
@@ -347,6 +406,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Uwaga: Aby używać zewnętrznego resamplera, dodaj jego plik DLL lub EXE do folderu Resamplers w miejscu, gdzie OpenUtau jest zainstalowane i wybierz go w ustawieniach.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
@@ -376,6 +436,11 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
   <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
   <!--<system:String x:Key="singers.playsample">Play sample</system:String>-->
+  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
+  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
+  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
+  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
+  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
   <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
   <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
   <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
@@ -399,6 +464,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
   <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
+  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->

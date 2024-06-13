@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using OpenUtau.Core;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.App.Views {
     public partial class MessageBox : Window {
@@ -26,40 +31,80 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e) {
-            return ShowError(parent, string.Empty, e);
-        }
-
-        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
-            var builder = new StringBuilder();
-            if (!string.IsNullOrEmpty(message)) {
-                builder.AppendLine(message);
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e, string message = "", bool fromNotif = false) {
+            string text = message;
+            string title = ThemeManager.GetString("errors.caption");
+            if (fromNotif) {
+                IReadOnlyList<Window> dialogs = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).Windows;
+                foreach (var dialog in dialogs) {
+                    if (dialog.IsActive) {
+                        parent = dialog;
+                        break;
+                    }
+                }
             }
+
+            if (e is MessageCustomizableException mce) {
+                if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
+                    var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
+                    matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
+                    text = mce.TranslatableMessage;
+                    e = mce.SubstanceException;
+                }
+
+                if (!mce.ShowStackTrace) {
+                    return Show(parent, text, title, MessageBoxButtons.Ok);
+                }
+            }
+
+            var builder = new StringBuilder();
             if (e != null) {
                 if (e is AggregateException ae) {
                     ae = ae.Flatten();
                     builder.AppendLine(ae.InnerExceptions.First().Message);
                     builder.AppendLine();
                     builder.Append(ae.ToString());
+
+                    if (!string.IsNullOrWhiteSpace(text)) {
+                        text += "\n";
+                    }
+                    if (ae.InnerExceptions.First() is MessageCustomizableException innnerMce) {
+                        if (!string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
+                            var matches = Regex.Matches(innnerMce.TranslatableMessage, "<translate:(.*?)>");
+                            matches.ForEach(m => innnerMce.TranslatableMessage = innnerMce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
+                            text += innnerMce.TranslatableMessage;
+                        } else {
+                            text += ae.InnerExceptions.First().Message;
+                        }
+                    }
                 } else {
                     builder.AppendLine(e.Message);
                     builder.AppendLine();
                     builder.Append(e.ToString());
+                    if (string.IsNullOrEmpty(text)) {
+                        text = e.Message;
+                    }
                 }
             }
             builder.AppendLine();
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
-            string title = ThemeManager.GetString("errors.caption");
-            return Show(parent, builder.ToString(), title, MessageBoxButtons.OkCopy);
+
+            return Show(parent, text, title, MessageBoxButtons.OkCopy, builder.ToString());
         }
 
-        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {
+        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons, string? stackTrace = null) {
             var msgbox = new MessageBox() {
                 Title = title
             };
             msgbox.Text.IsVisible = false;
             msgbox.SetTextWithLink(text, msgbox.TextPanel);
+            if (stackTrace != null) {
+                var stackTracePanel = new StackPanel();
+                var expander = new Expander() { Header = ThemeManager.GetString("errors.details"), Content = stackTracePanel };
+                msgbox.TextPanel.Children.Add(expander);
+                msgbox.SetTextWithLink(stackTrace, stackTracePanel);
+            }
 
             var res = MessageBoxResult.Ok;
 
@@ -87,7 +132,7 @@ namespace OpenUtau.App.Views {
                 var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.copy") };
                 btn.Click += (_, __) => {
                     try {
-                        GetTopLevel(parent)?.Clipboard?.SetTextAsync(text);
+                        GetTopLevel(parent)?.Clipboard?.SetTextAsync(text + "\n" + stackTrace);
                     } catch { }
                 };
                 msgbox.Buttons.Children.Add(btn);

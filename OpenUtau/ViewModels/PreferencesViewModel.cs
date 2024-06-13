@@ -29,6 +29,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath)? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
+        [Reactive] public bool LoadDeepFolders { get; set; }
         [Reactive] public bool PreRender { get; set; }
         public List<string> DefaultRendererOptions { get; set; }
         [Reactive] public string DefaultRenderer { get; set; }
@@ -38,17 +39,22 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string OnnxRunner { get; set; }
         public List<GpuInfo> OnnxGpuOptions { get; set; }
         [Reactive] public GpuInfo OnnxGpu { get; set; }
-        public List<int> DiffsingerSpeedupOptions { get; } = new List<int> { 1, 5, 10, 20, 50, 100 };
-        [Reactive] public int DiffSingerDepth { get; set; }
-        [Reactive] public int DiffsingerSpeedup { get; set; }
+        public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+        [Reactive] public double DiffSingerDepth { get; set; }
+        [Reactive] public int DiffSingerSteps { get; set; }
+        [Reactive] public bool DiffSingerTensorCache { get; set; }
+        [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
+        [Reactive] public bool PenPlusDefault { get; set; }
         [Reactive] public int DegreeStyle { get; set; }
         [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
+        [Reactive] public bool ShowIcon { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
+        public string SetParamPath => Preferences.Default.SetParamPath;
         [Reactive] public bool ClearCacheOnQuit { get; set; }
         public int LogicalCoreCount {
             get => Environment.ProcessorCount;
@@ -89,6 +95,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid{ get; set; }
         [Reactive] public bool RememberUst{ get; set; }
         [Reactive] public bool RememberVsqx{ get; set; }
+        [Reactive] public int ImportTempo{ get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -110,19 +117,19 @@ namespace OpenUtau.App.ViewModels {
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
+            LoadDeepFolders = Preferences.Default.LoadDeepFolderSinger;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
-            Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             SortingOrders = Languages.ToList();
-            SortingOrders.Insert(1, CultureInfo.InvariantCulture);
-            SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
-                ? Language
+            SortingOrders.Insert(0, CultureInfo.InvariantCulture);
+            SortingOrder = Preferences.Default.SortingOrder == null ? Language
+                : Preferences.Default.SortingOrder == string.Empty ? CultureInfo.InvariantCulture
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender;
             DefaultRendererOptions = Renderers.getRendererOptions();
@@ -134,12 +141,16 @@ namespace OpenUtau.App.ViewModels {
                OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
             OnnxGpuOptions = Onnx.getGpuInfo();
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
-            DiffSingerDepth = Preferences.Default.DiffSingerDepth;
-            DiffsingerSpeedup = Preferences.Default.DiffsingerSpeedup;
+            DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
+            DiffSingerSteps = Preferences.Default.DiffSingerSteps;
+            DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
+            SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
+            PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
             UseTrackColor = Preferences.Default.UseTrackColor;
             ShowPortrait = Preferences.Default.ShowPortrait;
+            ShowIcon = Preferences.Default.ShowIcon;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes;
             Beta = Preferences.Default.Beta;
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
@@ -148,6 +159,7 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
+            ImportTempo = Preferences.Default.ImportTempo;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -187,9 +199,19 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.InstallToAdditionalSingersPath = additionalSingersPath;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.LoadDeepFolders)
+                .Subscribe(loadDeepFolders => {
+                    Preferences.Default.LoadDeepFolderSinger = loadDeepFolders;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.PreRender)
                 .Subscribe(preRender => {
                     Preferences.Default.PreRender = preRender;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PenPlusDefault)
+                .Subscribe(penPlusDefault => {
+                    Preferences.Default.PenPlusDefault = penPlusDefault;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Language)
@@ -200,7 +222,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(vm => vm.SortingOrder)
                 .Subscribe(so => {
-                    Preferences.Default.SortingOrder = so?.Name ?? string.Empty;
+                    Preferences.Default.SortingOrder = so?.Name ?? null;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Theme)
@@ -224,6 +246,12 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ShowPortrait)
                 .Subscribe(showPortrait => {
                     Preferences.Default.ShowPortrait = showPortrait;
+                    Preferences.Save();
+                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
+                });
+            this.WhenAnyValue(vm => vm.ShowIcon)
+                .Subscribe(showIcon => {
+                    Preferences.Default.ShowIcon = showIcon;
                     Preferences.Save();
                     MessageBus.Current.SendMessage(new PianorollRefreshEvent("Portrait"));
                 });
@@ -290,19 +318,34 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.RememberVsqx = index;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.ImportTempo)
+                .Subscribe(index => {
+                    Preferences.Default.ImportTempo = index;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.ClearCacheOnQuit)
                 .Subscribe(index => {
                     Preferences.Default.ClearCacheOnQuit = index;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.DiffsingerSpeedup)
+            this.WhenAnyValue(vm => vm.DiffSingerSteps)
                 .Subscribe(index => {
-                    Preferences.Default.DiffsingerSpeedup = index;
+                    Preferences.Default.DiffSingerSteps = index;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.DiffSingerDepth)
                 .Subscribe(index => {
-                    Preferences.Default.DiffSingerDepth = index;
+                    Preferences.Default.DiffSingerDepth = index / 100;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerTensorCache)
+                .Subscribe(useCache => {
+                    Preferences.Default.DiffSingerTensorCache = useCache;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
+                .Subscribe(skipRenderingMutedTracks => {
+                    Preferences.Default.SkipRenderingMutedTracks = skipRenderingMutedTracks;
                     Preferences.Save();
                 });
         }
@@ -331,6 +374,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.VLabelerPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(VLabelerPath));
+        }
+
+        public void SetSetParamPath(string path) {
+            Preferences.Default.SetParamPath = path;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(SetParamPath));
         }
     }
 }
