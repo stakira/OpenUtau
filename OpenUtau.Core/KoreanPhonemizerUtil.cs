@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Classic;
 using Serilog;
@@ -1171,7 +1172,7 @@ namespace OpenUtau.Core {
             iniSetting = defaultIniSetting;
             filePath = Path.Combine(singer.Location, iniFileName);
             try {
-                using (StreamReader reader = new StreamReader(filePath, singer.TextFileEncoding)){
+                using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8)){
                     List<IniBlock> blocks = Ini.ReadBlocks(reader, filePath, @"\[\w+\]");
                     if (blocks.Count == 0) {
                         throw new IOException($"[{iniFileName}] is empty.");
