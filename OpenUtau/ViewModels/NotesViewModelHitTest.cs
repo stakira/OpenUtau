@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Text;
 using Avalonia;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public struct NoteHitInfo {
@@ -15,6 +12,7 @@ namespace OpenUtau.App.ViewModels {
         public UPhoneme phoneme;
         public bool hitBody;
         public bool hitResizeArea;
+        public bool hitResizeAreaFromStart;
         public bool hitX;
     }
 
@@ -75,12 +73,17 @@ namespace OpenUtau.App.ViewModels {
                 result.note = note;
                 result.hitX = true;
                 var tone = viewModel.PointToTone(point);
-                if (tone == note.tone) {
-                    result.hitBody = true;
-                    double x = viewModel.TickToneToPoint(note.End, tone).X;
-                    result.hitResizeArea = point.X <= x && point.X > x - ViewConstants.ResizeMargin;
-                    break;
+                if (tone != note.tone) {
+                    continue;
                 }
+                result.hitBody = true;
+                double x1 = viewModel.TickToneToPoint(note.position, note.tone).X;
+                double x2 = viewModel.TickToneToPoint(note.End, tone).X;
+                var hitLeftResizeArea = point.X >= x1 && point.X < x1 + ViewConstants.ResizeMargin;
+                var hitRightResizeArea = point.X <= x2 && point.X > x2 - ViewConstants.ResizeMargin;
+                result.hitResizeAreaFromStart = hitLeftResizeArea && !hitRightResizeArea;  // prefer resizing from end
+                result.hitResizeArea = hitLeftResizeArea || hitRightResizeArea;  // hit either of the areas
+                break;
             }
             return result;
         }
@@ -354,7 +357,7 @@ namespace OpenUtau.App.ViewModels {
                     raiseText = false;
                 }
                 double textY = raiseText ? 2 : 18;
-                var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
+                var size = new Size(textLayout.Width + 4, textLayout.Height - 2);
                 var rect = new Rect(new Point(x - 2, textY + 1.5), size);
                 if (rect.Contains(mousePos)) {
                     result.phoneme = phoneme;

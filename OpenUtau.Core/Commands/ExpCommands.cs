@@ -21,24 +21,23 @@ namespace OpenUtau.Core {
         }
     }
 
-    /*
     public class SetNoteExpressionCommand : ExpCommand {
         public readonly UProject project;
-        public readonly UPhoneme phoneme;
-        public readonly float newValue;
-        public readonly float oldValue;
-        public SetNoteExpressionCommand(UProject project, UNote note, string abbr, float value) {
+        public readonly UTrack track;
+        public readonly float[] newValue;
+        public readonly float[] oldValue;
+        public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float[] values) : base(part) {
             this.project = project;
+            this.track = track;
             this.Note = note;
             Key = abbr;
-            newValue = value;
-            oldValue = phoneme.GetExpression(project, abbr).Item1;
+            newValue = values;
+            oldValue = note.GetExpression(project, track, abbr).Select(t => t.Item1).ToArray();
         }
         public override string ToString() => $"Set note expression {Key}";
-        public override void Execute() => Note.SetExpression(project, Key, newValue);
-        public override void Unexecute() => Note.SetExpression(project, Key, oldValue);
+        public override void Execute() => Note.SetExpression(project, track, Key, newValue);
+        public override void Unexecute() => Note.SetExpression(project, track, Key, oldValue);
     }
-    */
 
     public class SetPhonemeExpressionCommand : ExpCommand {
         static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
@@ -191,6 +190,38 @@ namespace OpenUtau.Core {
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;
         public override void Unexecute() => Note.pitch = oldPitch;
+    }
+
+    public class SetPitchPointsCommand : PitchExpCommand {
+        UPitch[] oldPitch;
+        UNote[] Notes;
+        UPitch newPitch;
+        public SetPitchPointsCommand(UVoicePart part, UNote note, UPitch pitch) : base(part) {
+            Notes = new UNote[] { note };
+            oldPitch = Notes.Select(note => note.pitch).ToArray();
+            newPitch = pitch;
+        }
+
+        public SetPitchPointsCommand(UVoicePart part, IEnumerable<UNote> notes, UPitch pitch) : base(part) {
+            Notes = notes.ToArray();
+            oldPitch = Notes.Select(note => note.pitch).ToArray();
+            newPitch = pitch;
+        }
+        public override string ToString() => "Set pitch points";
+        public override void Execute(){
+            lock (Part) {
+                for (var i=0; i<Notes.Length; i++) {
+                    Notes[i].pitch = newPitch.Clone();
+                }
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                for (var i = 0; i < Notes.Length; i++) {
+                    Notes[i].pitch = oldPitch[i];
+                }
+            }
+        }
     }
 
     public class SetCurveCommand : ExpCommand {

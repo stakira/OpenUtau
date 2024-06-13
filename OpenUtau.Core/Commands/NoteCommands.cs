@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -310,6 +309,55 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class VibratoDriftCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newDrift;
+        readonly float oldDrift;
+        public VibratoDriftCommand(UVoicePart part, UNote note, float drift) : base(part, note) {
+            this.note = note;
+            newDrift = drift;
+            oldDrift = note.vibrato.drift;
+        }
+        public override string ToString() {
+            return "Change vibrato drift";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.drift = newDrift;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.drift = oldDrift;
+            }
+        }
+    }
+
+    public class VibratoVolumeLinkCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newVolLink;
+        readonly float oldVolLink;
+        public VibratoVolumeLinkCommand(UVoicePart part, UNote note, float volLink) : base(part, note) {
+            this.note = note;
+            newVolLink = volLink;
+            oldVolLink = note.vibrato.volLink;
+        }
+        public override string ToString() {
+            return "Change vibrato volume link";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.volLink = newVolLink;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.volLink = oldVolLink;
+            }
+        }
+    }
+
+
     public class PhonemeOffsetCommand : NoteCommand {
         readonly UNote note;
         readonly int index;
@@ -439,12 +487,12 @@ namespace OpenUtau.Core {
         readonly UNote note;
         readonly int index;
         readonly string oldAlias;
-        readonly string newAlias;
+        readonly string? newAlias;
         public override ValidateOptions ValidateOptions => new ValidateOptions {
             SkipTiming = true,
             Part = Part,
         };
-        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string alias) : base(part, note) {
+        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string? alias) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
@@ -454,85 +502,12 @@ namespace OpenUtau.Core {
 
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? string.Empty : newAlias;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? string.Empty : oldAlias;
         }
         public override string ToString() => "Change phoneme alias";
-    }
-
-    public class ChangeVoiceColorCommand : NoteCommand {
-        readonly int[] NewColors;
-        readonly int[] OldColors;
-        readonly UTrack Track;
-        public ChangeVoiceColorCommand(UVoicePart part, UNote note, int newColor, UTrack track) : base(part, note) {
-            NewColors = new int[] { newColor };
-            if (note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)) {
-                OldColors = new int[] { (int)note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0).value };
-            } else {
-                OldColors = new int[] { 0 };
-            }
-            Track = track;
-        }
-        public ChangeVoiceColorCommand(UVoicePart part, UNote[] notes, int[] newColors, UTrack track) : base(part, notes) {
-            if (notes.Length != newColors.Length) {
-                throw new ArgumentException($"notes count {notes.Length} and colors count {newColors.Length} does not match.");
-            }
-            NewColors = newColors;
-            OldColors = notes.Select(note => {
-                if(note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)){
-                    return (int)note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0).value;
-                } else {
-                    return 0;
-                }
-            }).ToArray();
-            Track = track;
-        }
-        public override string ToString() => "Change notes color";
-
-        public override void Execute() {
-            lock (Part) {
-                if (Track.VoiceColorExp != null) {
-                    for (var i = 0; i < Notes.Length; i++) {
-                        var note = Notes[i];
-                        var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
-
-                        if (exp != null) {
-                            exp.descriptor = Track.VoiceColorExp;
-                            exp.value = NewColors[i];
-                        } else {
-                            note.phonemeExpressions.Add(new UExpression(Track.VoiceColorExp) {
-                                descriptor = Track.VoiceColorExp,
-                                index = 0,
-                                value = NewColors[i]
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        public override void Unexecute() {
-            lock (Part) {
-                if (Track.VoiceColorExp != null) {
-                    for (var i = 0; i < Notes.Length; i++) {
-                        var note = Notes[i];
-                        var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
-
-                        if (exp != null) {
-                            exp.descriptor = Track.VoiceColorExp;
-                            exp.value = OldColors[i];
-                        } else {
-                            note.phonemeExpressions.Add(new UExpression(Track.VoiceColorExp) {
-                                descriptor = Track.VoiceColorExp,
-                                index = 0,
-                                value = OldColors[i]
-                            });
-                        }
-                    }
-                }
-            }
-        }
     }
 }

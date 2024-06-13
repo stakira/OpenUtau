@@ -121,10 +121,16 @@
   <data name="arpasing_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>arpasing.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="de_vccv_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>de_vccv.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="envccv_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>envccv.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="xsampa_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>xsampa.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="en_xsampa_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\en-xsampa.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="german_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>german.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

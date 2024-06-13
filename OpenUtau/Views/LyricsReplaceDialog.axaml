@@ -6,6 +6,9 @@
         x:Class="OpenUtau.App.Views.LyricsReplaceDialog"  WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource lyricsreplace.replace}">
+  <Window.Styles>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+  </Window.Styles>
   <Grid Margin="10" RowDefinitions="auto,10,Auto,10,Auto,10,*,10,Auto">
     <StackPanel Orientation="Horizontal" Grid.Row="0">
       <TextBlock Text="{StaticResource lyricsreplace.before}" />
@@ -25,7 +28,7 @@
 
     <StackPanel Grid.Row="6">
       <TextBlock Text="{StaticResource lyricsreplace.presets}" />
-      <ListBox Items="{Binding PresetList}"
+      <ListBox ItemsSource="{Binding PresetList}"
                SelectedItem="{Binding SelectedPreset}"
                SelectionMode="Single" Margin="5" />
     </StackPanel>

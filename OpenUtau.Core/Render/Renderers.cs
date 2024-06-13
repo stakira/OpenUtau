@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Render {
     public static class Renderers {
@@ -11,10 +12,12 @@ namespace OpenUtau.Core.Render {
         public const string WORLDLINER = "WORLDLINE-R";
         public const string ENUNU = "ENUNU";
         public const string VOGEN = "VOGEN";
+        public const string DIFFSINGER = "DIFFSINGER";
 
         static readonly string[] classicRenderers = new[] { WORLDLINER, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
+        static readonly string[] diffSingerRenderers = new[] { DIFFSINGER };
         static readonly string[] noRenderers = new string[0];
 
         public static string[] GetSupportedRenderers(USingerType singerType) {
@@ -25,13 +28,26 @@ namespace OpenUtau.Core.Render {
                     return enunuRenderers;
                 case USingerType.Vogen:
                     return vogenRenderers;
+                case USingerType.DiffSinger:
+                    return diffSingerRenderers;
                 default:
                     return noRenderers;
             }
         }
 
+        public static List<string> getRendererOptions() {
+            return new List<string> {
+                "WORLDLINE-R",
+                "Classic"
+            };
+        }
+
         public static string GetDefaultRenderer(USingerType singerType) {
-            return GetSupportedRenderers(singerType)[0];
+            if (Preferences.Default.DefaultRenderer == "Classic" && singerType == USingerType.Classic) {
+                return CLASSIC;
+            } else {
+                return GetSupportedRenderers(singerType)[0];
+            }
         }
 
         public static IRenderer CreateRenderer(string renderer) {
@@ -43,6 +59,8 @@ namespace OpenUtau.Core.Render {
                 return new Enunu.EnunuRenderer();
             } else if (renderer == VOGEN) {
                 return new Vogen.VogenRenderer();
+            } else if (renderer == DIFFSINGER) {
+                return new DiffSinger.DiffSingerRenderer();
             }
             return null;
         }
@@ -76,7 +94,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        public static IReadOnlyList<IResampler> GetSupportedResamplers(IWavtool wavtool) {
+        public static IReadOnlyList<IResampler> GetSupportedResamplers(IWavtool? wavtool) {
             if (wavtool is SharpWavtool) {
                 return ToolsManager.Inst.Resamplers;
             } else {
@@ -86,7 +104,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        public static IReadOnlyList<IWavtool> GetSupportedWavtools(IResampler resampler) {
+        public static IReadOnlyList<IWavtool> GetSupportedWavtools(IResampler? resampler) {
             if (resampler is WorldlineResampler) {
                 return ToolsManager.Inst.Wavtools
                     .Where(r => r is SharpWavtool)

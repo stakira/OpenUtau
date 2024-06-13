@@ -14,7 +14,7 @@
     <vm:DebugViewModel/>
   </Design.DataContext>
   <Grid Margin="10" RowDefinitions="*,10,20">
-    <ListBox Grid.Row="0" Focusable="False" Items="{Binding LogEvents}" Background="#404040">
+    <ListBox Grid.Row="0" Focusable="False" ItemsSource="{Binding LogEvents}" Background="#404040">
       <ListBox.ItemTemplate>
         <DataTemplate>
           <TextBlock Text="{Binding Converter={StaticResource logEventConverter}}" Foreground="White"/>

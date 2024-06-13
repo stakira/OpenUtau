@@ -101,11 +101,8 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(e => InvalidateVisual());
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == ForegroundProperty) {
                 penBar = new Pen(Foreground, 1);
             }
@@ -150,8 +147,8 @@ namespace OpenUtau.App.Controls {
                 double x = Math.Round(barTick * TickWidth - pixelOffset) + 0.5;
                 double y = -0.5;
                 var textLayout = TextLayoutCache.Get((bar + 1).ToString(), ThemeManager.BarNumberBrush, 10);
-                using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 3, 10))) {
-                    textLayout.Draw(context);
+                using (var state = context.PushTransform(Matrix.CreateTranslation(x + 3, 10))) {
+                    textLayout.Draw(context, new Point());
                 }
                 context.DrawLine(penBar, new Point(x, y), new Point(x, Bounds.Height + 0.5f));
                 // Lines between bars.
@@ -187,18 +184,18 @@ namespace OpenUtau.App.Controls {
                 double x = Math.Round(tempo.position * TickWidth - pixelOffset) + 0.5;
                 context.DrawLine(penDanshed, new Point(x, 0), new Point(x, 24));
                 var textLayout = TextLayoutCache.Get(tempo.bpm.ToString("#0.00"), ThemeManager.BarNumberBrush, 10);
-                using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 3, 0))) {
-                    textLayout.Draw(context);
+                using (var state = context.PushTransform(Matrix.CreateTranslation(x + 3, 0))) {
+                    textLayout.Draw(context, new Point());
                 }
             }
 
             foreach (var timeSig in project.timeSignatures) {
                 int tick = project.timeAxis.BarBeatToTickPos(timeSig.barPosition, 0);
                 var barTextLayout = TextLayoutCache.Get((timeSig.barPosition + 1).ToString(), ThemeManager.BarNumberBrush, 10);
-                double x = Math.Round(tick * TickWidth - pixelOffset) + 0.5 + barTextLayout.Size.Width + 4;
+                double x = Math.Round(tick * TickWidth - pixelOffset) + 0.5 + barTextLayout.Width + 4;
                 var textLayout = TextLayoutCache.Get($"{timeSig.beatPerBar}/{timeSig.beatUnit}", ThemeManager.BarNumberBrush, 10);
-                using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 3, 10))) {
-                    textLayout.Draw(context);
+                using (var state = context.PushTransform(Matrix.CreateTranslation(x + 3, 10))) {
+                    textLayout.Draw(context, new Point());
                 }
             }
         }

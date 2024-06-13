@@ -37,6 +37,11 @@ if sys.platform == 'win32':
 
     os.system("del *.xml 2>&1")
 
+    import urllib.request
+    urllib.request.urlretrieve("https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0", "Microsoft.AI.DirectML.nupkg")
+    os.system("mkdir Microsoft.AI.DirectML")
+    os.system("tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML")
+
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
         "dotnet publish OpenUtau -c Release -r win-x86 --self-contained true -o bin/win-x86")
@@ -48,6 +53,9 @@ if sys.platform == 'win32':
         "dotnet publish OpenUtau -c Release -r win-x64 --self-contained true -o bin/win-x64")
     os.system("copy /y OpenUtau.Plugin.Builtin\\bin\\Release\\netstandard2.1\\OpenUtau.Plugin.Builtin.dll bin\\win-x64")
     write_appcast("windows", "win-x64", "OpenUtau-win-x64.zip")
+
+    os.system("makensis -DPRODUCT_VERSION=%s OpenUtau.nsi" % (appcast_ver))
+    write_appcast("windows", "win-x64-installer", "OpenUtau-win-x64.exe")
 
 elif sys.platform == 'darwin':
     os.system("rm *.dmg")

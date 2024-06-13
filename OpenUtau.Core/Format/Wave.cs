@@ -13,8 +13,6 @@ namespace OpenUtau.Core.Format {
     public static class Wave {
         public static Func<string, WaveStream> OverrideMp3Reader;
 
-        public readonly static List<string> FileExtensions = new List<string>() { "wav", "mp3", "ogg", "opus", "flac" };
-
         public static WaveStream OpenFile(string filepath) {
             var ext = Path.GetExtension(filepath);
             byte[] buffer = new byte[128];
@@ -45,6 +43,9 @@ namespace OpenUtau.Core.Format {
             }
             if (tag == "fLaC") {
                 return new FlacReader(filepath);
+            }
+            if (ext == ".aiff" || ext == ".aif" || ext == ".aifc") {
+                return new AiffFileReader(filepath);
             }
             throw new Exception("Unsupported audio file format.");
         }

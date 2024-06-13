@@ -23,12 +23,14 @@ namespace OpenUtau.App.ViewModels {
             public string browser_download_url = string.Empty;
         }
         class GithubRelease {
+#pragma warning disable 0649
             public string html_url = string.Empty;
             public long id = long.MaxValue;
             public bool draft;
             public bool prerelease;
             public string name = string.Empty;
             public GithubReleaseAsset[] assets = new GithubReleaseAsset[0];
+#pragma warning restore 0649
         }
         public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         public bool IsDarkMode => ThemeManager.IsDarkMode;
@@ -96,16 +98,22 @@ namespace OpenUtau.App.ViewModels {
         }
 
         static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
+            string suffix = PathManager.Inst.IsInstalled ? "-installer" : "";
             return release.assets
-                .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}.xml")
+                .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
                 .FirstOrDefault();
         }
 
         async void Init() {
             UpdaterStatus = ThemeManager.GetString("updater.status.checking");
             sparkle = await NewUpdaterAsync();
+            if (sparkle == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+                return;
+            }
             updateInfo = await sparkle.CheckForUpdatesQuietly();
             if (updateInfo == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
                 return;
             }
             switch (updateInfo.Status) {

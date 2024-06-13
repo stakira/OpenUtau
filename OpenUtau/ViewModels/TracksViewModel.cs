@@ -16,9 +16,19 @@ namespace OpenUtau.App.ViewModels {
     public class TracksSoloEvent {
         public readonly int trackNo;
         public readonly bool solo;
-        public TracksSoloEvent(int trackNo, bool solo) {
+        public readonly bool additionally;
+        public TracksSoloEvent(int trackNo, bool solo, bool additionally) {
             this.trackNo = trackNo;
             this.solo = solo;
+            this.additionally = additionally;
+        }
+    }
+    public class TracksMuteEvent {
+        public readonly int trackNo;
+        public readonly bool allmute; // use only when track number is -1
+        public TracksMuteEvent(int trackNo, bool allmute) {
+            this.trackNo = trackNo;
+            this.allmute = allmute;
         }
     }
     public class PartsSelectionEvent {
@@ -41,7 +51,7 @@ namespace OpenUtau.App.ViewModels {
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick);
+        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick + 23040);
         public int TrackCount => Math.Max(20, Project.tracks.Count + 1);
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.TrackHeightMin;
@@ -149,7 +159,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnYZoomed(Point position, double delta) {
-            double trackHeight = TrackHeight * (1.0 + delta * 2);
+            double trackHeight = TrackHeight + Math.Sign(delta) * ViewConstants.TrackHeightDelta;
             trackHeight = Math.Clamp(trackHeight, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax);
             trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
             TrackHeight = trackHeight;
@@ -211,7 +221,7 @@ namespace OpenUtau.App.ViewModels {
         public void AddTrack() {
             var project = DocManager.Inst.Project;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = project.tracks.Count() }));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = project.tracks.Count() }));
             DocManager.Inst.EndUndoGroup();
         }
 
@@ -333,7 +343,7 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             while (Project.tracks.Count <= newTrackNo) {
-                DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack() {
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack(Project) {
                     TrackNo = Project.tracks.Count,
                 }));
             }

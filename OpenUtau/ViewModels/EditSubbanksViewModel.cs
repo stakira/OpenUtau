@@ -69,7 +69,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string Prefix { get; set; }
         [Reactive] public string Suffix { get; set; }
 
-        private USinger? singer;
+        public USinger? Singer { get; private set; }
 
         public EditSubbanksViewModel() {
             Colors = new ObservableCollectionExtended<VoiceColor>();
@@ -83,18 +83,18 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SetSinger(USinger singer) {
-            this.singer = singer;
+            this.Singer = singer;
             LoadSubbanks();
         }
 
         public void LoadSubbanks() {
-            if (singer == null) {
+            if (Singer == null) {
                 return;
             }
             try {
                 Colors.Clear();
                 var colors = new Dictionary<string, List<Subbank>>();
-                foreach (var subbank in singer.Subbanks) {
+                foreach (var subbank in Singer.Subbanks) {
                     if (!colors.TryGetValue(subbank.Color ?? string.Empty, out var subbanks)) {
                         subbanks = new List<Subbank>();
                         colors[subbank.Color ?? string.Empty] = subbanks;
@@ -161,10 +161,10 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SaveSubbanks() {
-            if (singer == null) {
+            if (Singer == null) {
                 return;
             }
-            var yamlFile = Path.Combine(singer.Location, "character.yaml");
+            var yamlFile = Path.Combine(Singer.Location, "character.yaml");
             VoicebankConfig? bankConfig = null;
             try {
                 // Load from character.yaml

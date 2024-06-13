@@ -43,6 +43,7 @@ namespace OpenUtau.Core.Format {
         static public UProject LoadProject(string file) {
             UProject project = new UProject();
             Ustx.AddDefaultExpressions(project);
+            project.FilePath = file;
             // Detects lyric encoding
             Encoding lyricEncoding = Encoding.UTF8;
             var encodingDetector = new EncodingDetector();
@@ -67,7 +68,7 @@ namespace OpenUtau.Core.Format {
 
             var parts = ParseParts(midi, PPQ, project);
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(project, track);

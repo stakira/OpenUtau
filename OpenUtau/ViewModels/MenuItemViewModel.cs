@@ -7,6 +7,6 @@ namespace OpenUtau.App.ViewModels {
         public ICommand? Command { get; set; }
         public object? CommandParameter { get; set; }
         public IList<MenuItemViewModel>? Items { get; set; }
-        public int Height { get; set; } = 24;
+        public double Height { get; set; } = 24;
     }
 }

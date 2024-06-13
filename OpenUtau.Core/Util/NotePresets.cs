@@ -46,10 +46,10 @@ namespace OpenUtau.Core.Util {
                 new PortamentoPreset("Snap", 2, -1),
             });
             Default.VibratoPresets.AddRange(new List<VibratoPreset> {
-                new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0),
-                new VibratoPreset("UTAU Default", 65, 180, 35, 20, 20, 0),
-                new VibratoPreset("UTAU Strong", 65, 210, 55, 25, 25, 0),
-                new VibratoPreset("UTAU Weak", 65, 165, 20, 25, 25, 0)
+                new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0, 0, 0),
+                new VibratoPreset("UTAU Default", 65, 180, 35, 20, 20, 0, 0, 0),
+                new VibratoPreset("UTAU Strong", 65, 210, 55, 25, 25, 0, 0, 0),
+                new VibratoPreset("UTAU Weak", 65, 165, 20, 25, 25, 0, 0, 0)
             });
 
             Save();
@@ -60,7 +60,7 @@ namespace OpenUtau.Core.Util {
             public string DefaultLyric = "a";
             public PortamentoPreset DefaultPortamento = new PortamentoPreset("Standard", 80, -40);
             public List<PortamentoPreset> PortamentoPresets = new List<PortamentoPreset> { };
-            public VibratoPreset DefaultVibrato = new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0);
+            public VibratoPreset DefaultVibrato = new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0, 0, 0);
             public List<VibratoPreset> VibratoPresets = new List<VibratoPreset> { };
             public bool AutoVibratoToggle = false;
             public int AutoVibratoNoteDuration = 481;
@@ -88,8 +88,10 @@ namespace OpenUtau.Core.Util {
             public float VibratoIn = 10;
             public float VibratoOut = 10;
             public float VibratoShift = 0;
+            public float VibratoDrift = 0;
+            public float VibratoVolLink = 0;
 
-            public VibratoPreset(string name, float length, float period, float depth, float fadein, float fadeout, float shift) {
+            public VibratoPreset(string name, float length, float period, float depth, float fadein, float fadeout, float shift, float drift, float volLink) {
                 Name = name;
                 VibratoLength = length;
                 VibratoPeriod = period;
@@ -97,6 +99,8 @@ namespace OpenUtau.Core.Util {
                 VibratoIn = fadein;
                 VibratoOut = fadeout;
                 VibratoShift = shift;
+                VibratoDrift = drift;
+                VibratoVolLink = volLink;
             }
 
             public override string ToString() => Name;

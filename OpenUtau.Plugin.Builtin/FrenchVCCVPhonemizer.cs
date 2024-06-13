@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("French VCCV m2RUg Phonemizer", "FR VCCV", "Mim", language:"FR")]
-    // This is Phonemizer 
 
     public class FrenchVCCVPhonemizer : SyllableBasedPhonemizer {
 
@@ -24,7 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] shortConsonants = "R".Split(",");
         private string[] longConsonants = "t,k,g,p,s,S,Z".Split(",");
-        private string[] hardConsonants = "t,k,g,p,d".Split(",");
+        private string[] hardConsonants = "t,k,g,p,d,b".Split(",");
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -83,6 +82,9 @@ namespace OpenUtau.Plugin.Builtin {
                     for (int i = 0; i < cc.Length - 2; i++) {
                         var cci = $"{cc[i]} {cc[i + 1]}";
 
+                        if (i == 0) {
+                            cci = $"- {cc[i]}{cc[i + 1]}_";
+                        }
                         if (!HasOto(cci, syllable.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}_";
                             if (i+1 == cc.Length-2 && HasOto($"_{ccv}",syllable.tone)) {
@@ -96,6 +98,13 @@ namespace OpenUtau.Plugin.Builtin {
                     // CC + CV support
                     for (int i = 0; i < cc.Length - 1; i++) {
                         var cci = $"{cc[i]}{cc[i + 1]}_";
+
+                        if (i == 0) {
+                            cci = $"- {cc[i]}{cc[i + 1]}_";
+                            if (!HasOto(cci,syllable.tone)) {
+                                cci = $"{cc[i]}{cc[i + 1]}_";
+                            }
+                        }
 
                         if (HasOto(cci, syllable.tone)) {
                             phonemes.Add(cci);
@@ -209,21 +218,31 @@ namespace OpenUtau.Plugin.Builtin {
                     // --------------------------- ENDING VCC ------------------------------- //
                     var vc = $"{v} {cc[0]}";
                     phonemes.Add(vc);
+                    bool hasEnding = false;
 
                     for (int i = 0; i < cc.Length - 1; i++) {
                         var cci = $"{cc[i]} {cc[i + 1]}";
+
+                        if(i == cc.Length - 2) {
+                            cci = $"{cc[i]}{cc[i + 1]} -";
+                            hasEnding = true;
+                        }
                         if (!HasOto(cci,ending.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}_";
+                            hasEnding = false;
                         }
                         if (!HasOto(cci, ending.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}";
+                            hasEnding = false;
                         }
 
                         TryAddPhoneme(phonemes, ending.tone, cci);
                     }
 
-                    var cE = $"{cc.Last()} -";
-                    TryAddPhoneme(phonemes, ending.tone, cE);
+                    if (!hasEnding) {
+                        var cE = $"{cc.Last()} -";
+                        TryAddPhoneme(phonemes, ending.tone, cE);
+                    }
                 }
 
 

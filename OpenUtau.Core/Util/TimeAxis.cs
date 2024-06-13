@@ -123,6 +123,12 @@ namespace OpenUtau.Core {
             return segment.msPos + segment.msPerTick * (tick - segment.tickPos);
         }
 
+        public double MsPosToNonExactTickPos(double ms) {
+            var segment = tempoSegments.First(seg => seg.msPos == ms || seg.msEnd > ms); // TODO: optimize
+            double tickPos = segment.tickPos + (ms - segment.msPos) * segment.ticksPerMs;
+            return tickPos;
+        }
+
         public int MsPosToTickPos(double ms) {
             var segment = tempoSegments.First(seg => seg.msPos == ms || seg.msEnd > ms); // TODO: optimize
             double tickPos = segment.tickPos + (ms - segment.msPos) * segment.ticksPerMs;

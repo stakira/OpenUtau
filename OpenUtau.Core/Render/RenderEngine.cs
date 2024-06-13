@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -49,6 +49,7 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
+        // for playback or export
         public Tuple<WaveMix, List<Fader>> RenderMixdown(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
@@ -85,7 +86,7 @@ namespace OpenUtau.Core.Render {
                     }));
                 var trackMix = new WaveMix(trackSources);
                 var fader = new Fader(trackMix);
-                fader.Scale = PlaybackManager.DecibelToVolume(track.Mute ? -24 : track.Volume);
+                fader.Scale = PlaybackManager.DecibelToVolume(track.Muted ? -24 : track.Volume);
                 fader.Pan = (float)track.Pan;
                 fader.SetScaleToTarget();
                 faders.Add(fader);
@@ -94,10 +95,10 @@ namespace OpenUtau.Core.Render {
                 RenderRequests(requests, newCancellation, playing: !wait);
             });
             task.ContinueWith(task => {
-                if (task.IsFaulted) {
-                    Log.Error(task.Exception, "Failed to render.");
+                if (task.IsFaulted && !wait) {
+                    Log.Error(task.Exception.Flatten(), "Failed to render.");
+                    PlaybackManager.Inst.StopPlayback();
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
-                    throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
             if (wait) {
@@ -106,14 +107,16 @@ namespace OpenUtau.Core.Render {
             return Tuple.Create(new WaveMix(faders), faders);
         }
 
+        // for playback
         public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
-            var renderMixdownResult = RenderMixdown(startTick, uiScheduler, ref cancellation,wait:false);
+            var renderMixdownResult = RenderMixdown(startTick, uiScheduler, ref cancellation, wait: false);
             var master = new MasterAdapter(renderMixdownResult.Item1);
             master.SetPosition((int)(startMs * 44100 / 1000) * 2);
             return Tuple.Create(master, renderMixdownResult.Item2);
         }
 
+        // for export
         public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
@@ -141,6 +144,7 @@ namespace OpenUtau.Core.Render {
             return trackMixes;
         }
 
+        // for pre render
         public void PreRenderProject(ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
@@ -213,7 +217,7 @@ namespace OpenUtau.Core.Render {
                 var phrase = tuple.Item1;
                 var source = tuple.Item2;
                 var request = tuple.Item3;
-                var task = phrase.renderer.Render(phrase, progress, cancellation, true);
+                var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true);
                 task.Wait();
                 if (cancellation.IsCancellationRequested) {
                     break;
@@ -221,8 +225,7 @@ namespace OpenUtau.Core.Render {
                 source.SetSamples(task.Result.samples);
                 if (request.sources.All(s => s.HasSamples)) {
                     request.part.SetMix(request.mix);
-                    new Task(() => DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part)))
-                        .Start(DocManager.Inst.MainScheduler);
+                    DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part));
                 }
             }
             progress.Clear();

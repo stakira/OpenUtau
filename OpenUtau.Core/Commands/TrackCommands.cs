@@ -87,6 +87,32 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class RenameTrackCommand : TrackCommand {
+        readonly string newName, oldName;
+        public RenameTrackCommand(UProject project, UTrack track, string name) {
+            this.project = project;
+            this.track = track;
+            newName = name;
+            oldName = track.TrackName;
+        }
+        public override string ToString() => "Rename track";
+        public override void Execute() => track.TrackName = newName;
+        public override void Unexecute() => track.TrackName = oldName;
+    }
+
+    public class ChangeTrackColorCommand : TrackCommand {
+        readonly string newName, oldName;
+        public ChangeTrackColorCommand(UProject project, UTrack track, string colorName) {
+            this.project = project;
+            this.track = track;
+            newName = colorName;
+            oldName = track.TrackColor;
+        }
+        public override string ToString() => "Change track color";
+        public override void Execute() => track.TrackColor = newName;
+        public override void Unexecute() => track.TrackColor = oldName;
+    }
+
     public class TrackChangeSingerCommand : TrackCommand {
         readonly USinger newSinger, oldSinger;
         public TrackChangeSingerCommand(UProject project, UTrack track, USinger newSinger) {

@@ -11,7 +11,7 @@
         ExtendClientAreaToDecorationsHint="False">
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <StackPanel Margin="10">
-      <ComboBox HorizontalAlignment="Stretch" Margin="0,0,0,4" Items="{Binding G2ps}" SelectedItem="{Binding G2p}"/>
+      <ComboBox HorizontalAlignment="Stretch" Margin="0,0,0,4" ItemsSource="{Binding G2ps}" SelectedItem="{Binding G2p}"/>
       <TextBox HorizontalAlignment="Stretch" AcceptsReturn="False" AcceptsTab="False" Text="{Binding Grapheme}"/>
       <TextBox Name="PhonemesText" HorizontalAlignment="Stretch" TextWrapping="Wrap" Height="40" IsReadOnly="True" Text="{Binding Phonemes}"></TextBox>
       <Button HorizontalAlignment="Stretch" Content="{DynamicResource phoneticassistant.copy}" Click="OnCopy"/>

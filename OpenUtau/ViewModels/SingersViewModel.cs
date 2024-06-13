@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using NAudio.Wave;
-using NWaves.Audio;
 using NWaves.Signals;
+using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -26,6 +26,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string? Info { get; set; }
         [Reactive] public bool HasWebsite { get; set; }
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
+        public bool UseSearchAlias => Singer != null && (Singer.SingerType == USingerType.Classic || Singer.SingerType == USingerType.Enunu);
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         public ObservableCollectionExtended<UOto> DisplayedOtos { get; set; } = new ObservableCollectionExtended<UOto>();
@@ -33,7 +34,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
+        public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
+        [Reactive] public bool UseFilenameAsAlias { get; set; } = false;
 
         [Reactive] public string SearchAlias { get; set; } = "";
 
@@ -43,34 +46,54 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<UOto>();
         private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
         private readonly List<MenuItemViewModel> setEncodingMenuItems;
+        private readonly ReactiveCommand<string, Unit> setSingerTypeCommand;
+        private readonly List<MenuItemViewModel> setSingerTypeMenuItems;
         private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
         private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
-        public SingersViewModel(USinger? singer) {
+        public SingersViewModel() {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
             if (Singers.Count() > 0) {
-                if (singer != null && Singers.Contains(singer)) {
-                    Singer = singer;
-                } else {
-                    Singer = Singers.FirstOrDefault();
-                }
+                Singer = Singers.FirstOrDefault();
             }
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    singer.EnsureLoaded();
-                    Avatar = LoadAvatar(singer);
-                    Otos.Clear();
-                    Otos.AddRange(singer.Otos);
-                    DisplayedOtos.Clear();
-                    DisplayedOtos.AddRange(singer.Otos);
-                    Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
-                    HasWebsite = !string.IsNullOrEmpty(singer.Web);
-                    LoadSubbanks();
-                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
-                    this.RaisePropertyChanged(nameof(IsClassic));
+                    if (MessageBox.LoadingIsActive()) {
+                        try {
+                            AttachSinger();
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        }
+                    } else {
+                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
+                        try {
+                            AttachSinger();
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        } finally {
+                            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
+                        }
+                    }
+                    void AttachSinger() {
+                        singer.EnsureLoaded();
+                        Avatar = LoadAvatar(singer);
+                        Otos.Clear();
+                        Otos.AddRange(singer.Otos);
+                        DisplayedOtos.Clear();
+                        DisplayedOtos.AddRange(singer.Otos);
+                        Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                        HasWebsite = !string.IsNullOrEmpty(singer.Web);
+                        if (Singer is ClassicSinger cSinger) {
+                            UseFilenameAsAlias = cSinger.UseFilenameAsAlias ?? false;
+                        }
+                        LoadSubbanks();
+                        DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+                        this.RaisePropertyChanged(nameof(IsClassic));
+                        this.RaisePropertyChanged(nameof(UseSearchAlias));
+                    }
                 });
             this.WhenAnyValue(vm => vm.SearchAlias)
                 .Subscribe(alias => {
@@ -98,6 +121,20 @@ namespace OpenUtau.App.ViewModels {
                 }
             ).ToList();
 
+            setSingerTypeCommand = ReactiveCommand.Create<string>(singerType => {
+                SetSingerType(singerType);
+            });
+            var singerTypes = new string[] {
+                "utau", "enunu", "diffsinger"
+            };
+            setSingerTypeMenuItems = singerTypes.Select(singerType =>
+                new MenuItemViewModel() {
+                    Header = singerType,
+                    Command = setSingerTypeCommand,
+                    CommandParameter = singerType,
+                }
+            ).ToList();
+
             setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
                 SetDefaultPhonemizer(factory);
             });
@@ -120,6 +157,18 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        public void SetImage(string filepath) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.Image = filepath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set image", e));
+            }
+            Refresh();
+        }
+
         public void SetPortrait(string filepath) {
             if (Singer == null) {
                 return;
@@ -132,14 +181,38 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        private void SetSingerType(string singerType) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.SingerType = singerType);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set singer type", e));
+            }
+            Refresh();
+        }
+
         private void SetDefaultPhonemizer(Api.PhonemizerFactory factory) {
             if (Singer == null) {
                 return;
             }
             try {
-                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
+                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
+            }
+            Refresh();
+        }
+
+        public void SetUseFilenameAsAlias() {
+            if (Singer == null || !IsClassic) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set use filename", e));
             }
             Refresh();
         }
@@ -165,37 +238,59 @@ namespace OpenUtau.App.ViewModels {
             if (Singer == null || Singer.SingerType != USingerType.Classic) {
                 return;
             }
-            Task.Run(() => {
+            Task task = Task.Run(() => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer error report"));
                 var checker = new VoicebankErrorChecker(Singer.Location, Singer.BasePath);
                 checker.Check();
                 string outFile = Path.Combine(Singer.Location, "errors.txt");
                 using (var stream = File.Open(outFile, FileMode.Create)) {
                     using (var writer = new StreamWriter(stream)) {
+                        writer.WriteLine($"------ Informations ------");
+                        writer.WriteLine();
+                        for (var i = 0; i < checker.Infos.Count; i++) {
+                            writer.WriteLine($"--- Info {i + 1} ---");
+                            writer.WriteLine(checker.Infos[i].ToString());
+                        }
+                        writer.WriteLine();
+                        writer.WriteLine($"------ Errors ------");
                         writer.WriteLine($"Total errors: {checker.Errors.Count}");
                         writer.WriteLine();
                         for (var i = 0; i < checker.Errors.Count; i++) {
-                            writer.WriteLine($"------ Error {i + 1} ------");
+                            writer.WriteLine($"--- Error {i + 1} ---");
                             writer.WriteLine(checker.Errors[i].ToString());
                         }
                     }
                 }
                 OS.GotoFile(outFile);
             });
+            task.ContinueWith(task => {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer error report"));
+                if (task.IsFaulted && task.Exception != null) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(task.Exception));
+                }
+            });
         }
 
         public void Refresh() {
-            if (Singer == null) {
-                return;
+            string singerId = string.Empty;
+            if (Singer != null) {
+                singerId = Singer.Id;
             }
-            var singerId = Singer.Id;
-            SingerManager.Inst.SearchAllSingers();
-            this.RaisePropertyChanged(nameof(Singers));
-            if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
-                Singer = singer;
-            } else {
-                Singer = Singers.FirstOrDefault();
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
+            try {
+                SingerManager.Inst.SearchAllSingers();
+                this.RaisePropertyChanged(nameof(Singers));
+                if (!string.IsNullOrEmpty(singerId) && SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                    Singer = singer;
+                } else {
+                    Singer = Singers.FirstOrDefault();
+                }
+                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
             }
-            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
 
         Bitmap? LoadAvatar(USinger singer) {
@@ -215,7 +310,14 @@ namespace OpenUtau.App.ViewModels {
         public void OpenLocation() {
             try {
                 if (Singer != null) {
-                    OS.OpenFolder(Singer.Location);
+                    var location = Singer.Location;
+                    if (File.Exists(location)) {
+                        //Vogen voicebank is a singlefile
+                        OS.GotoFile(location);
+                    } else {
+                        //classic or ENUNU voicebank is a folder
+                        OS.OpenFolder(location);
+                    }
                 }
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
@@ -258,8 +360,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrWhiteSpace(SearchAlias)) {
                 DisplayedOtos.Clear();
                 DisplayedOtos.AddRange(Otos);
-            }
-            else {
+            } else {
                 DisplayedOtos.Clear();
                 DisplayedOtos.AddRange(Otos.Where(o => o.Alias.Contains(SearchAlias)));
             }

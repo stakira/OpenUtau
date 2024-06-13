@@ -7,8 +7,9 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
-        Title="{Binding Title}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
-        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
+        Title="{Binding Title}" MinWidth="300" MinHeight="200"
+        KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
+        TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
@@ -17,25 +18,25 @@
   </Window.Styles>
   <Grid>
     <Grid Name="MainGrid" DragDrop.AllowDrop="True" IsEnabled="False" IsVisible="False" Margin="{Binding $parent[1].WindowDecorationMargin}">
-      <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+      <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="300,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
-              MenuOpened="OnMainMenuOpened" MenuClosed="OnMainMenuClosed" PointerLeave="OnMainMenuPointerLeave">
+              Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave">
           <MenuItem Header="{DynamicResource menu.file}">
             <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
-            <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" Items="{Binding OpenTemplates}">
+            <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" ItemsSource="{Binding OpenTemplates}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate"/>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
-            <MenuItem Header="{DynamicResource menu.file.openrecent}" Items="{Binding OpenRecent}">
+            <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
@@ -52,14 +53,17 @@
             </MenuItem>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.exportaudio}">
-              <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
               <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
               <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.exportproject}">
               <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
               <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds}" Click="OnMenuExportDsTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2To"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
           </MenuItem>
@@ -78,6 +82,7 @@
             <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
             <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
             <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
+            <MenuItem Header="{DynamicResource menu.tools.dependency.install}" Click="OnMenuInstallDependency"/>
             <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.help}">
@@ -163,13 +168,13 @@
                 Fill="{DynamicResource NeutralAccentBrushSemi}"
                 Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
           <Canvas.ContextMenu>
-            <ContextMenu Name="TimelineContextMenu" Items="{Binding TimelineContextMenuItems}">
+            <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
               <ContextMenu.Styles>
                 <Style Selector="MenuItem">
                   <Setter Property="Header" Value="{Binding Header}"/>
                   <Setter Property="Command" Value="{Binding Command}"/>
                   <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                  <Setter Property="Items" Value="{Binding Items}"/>
+                  <Setter Property="ItemsSource" Value="{Binding Items}"/>
                 </Style>
               </ContextMenu.Styles>
             </ContextMenu>
@@ -214,12 +219,20 @@
                      Canvas.Top="0"
                      Fill="{DynamicResource NeutralAccentBrushSemi2}"
                      IsHitTestVisible="False"/>
+          <Rectangle Name="SelectionBox" StrokeThickness="2"
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                     Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                     IsHitTestVisible="False" IsVisible="False"/>
           <c:PartsCanvas.ContextMenu>
             <ContextMenu Name="PartsContextMenu"
-                         ContextMenuOpening="PartsContextMenuOpening"
-                         ContextMenuClosing="PartsContextMenuClosing">
+                         Opening="PartsContextMenuOpening"
+                         Closing="PartsContextMenuClosing">
               <MenuItem Header="{DynamicResource context.part.delete}"
                         Command="{Binding PartDeleteCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.gotofile}"
+                        IsVisible="{Binding IsWavePart}"
+                        Command="{Binding PartGotoFileCommand}"
                         CommandParameter="{Binding Part}"/>
               <MenuItem Header="{DynamicResource context.part.replaceaudio}"
                         IsVisible="{Binding IsWavePart}"
@@ -228,6 +241,10 @@
               <MenuItem Header="{DynamicResource context.part.rename}"
                         IsVisible="{Binding IsVoicePart}"
                         Command="{Binding PartRenameCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.transcribe}"
+                        IsVisible="{Binding IsWavePart}"
+                        Command="{Binding PartTranscribeCommand}"
                         CommandParameter="{Binding Part}"/>
             </ContextMenu>
           </c:PartsCanvas.ContextMenu>

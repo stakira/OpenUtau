@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -24,6 +24,24 @@ namespace OpenUtau.Core {
             this.e = e;
         }
         public override string ToString() => $"Error message: {message} {e}";
+    }
+
+    public class LoadingNotification : UNotification {
+        public readonly Type window;
+        public readonly bool startLoading;
+        public readonly string loadObject;
+        public LoadingNotification(Type window, bool startLoading, string loadObject) {
+            this.window = window;
+            this.startLoading = startLoading;
+            this.loadObject = loadObject;
+        }
+        public override string ToString() {
+            if (startLoading) {
+                return $"Start loading {loadObject}";
+            } else {
+                return $"Finish loading {loadObject}";
+            }
+        }
     }
 
     public class LoadPartNotification : UNotification {
@@ -118,6 +136,7 @@ namespace OpenUtau.Core {
     public class PanChangeNotification : UNotification {
         public double Pan;
         public int TrackNo;
+        public override bool Silent => true;
         public PanChangeNotification(int trackNo, double pan) {
             TrackNo = trackNo;
             Pan = pan;
@@ -143,6 +162,16 @@ namespace OpenUtau.Core {
     public class SingersRefreshedNotification : UNotification {
         public SingersRefreshedNotification() { }
         public override string ToString() => "Singers refreshed.";
+    }
+
+    public class VoiceColorRemappingNotification : UNotification {
+        public int TrackNo;
+        public bool Validate;
+        public VoiceColorRemappingNotification(int trackNo, bool validate) {
+            TrackNo = trackNo;
+            Validate = validate;
+        }
+        public override string ToString() => "Voice color remapping.";
     }
 
     public class OtoChangedNotification : UNotification {
@@ -189,5 +218,12 @@ namespace OpenUtau.Core {
             this.oto = oto;
         }
         public override string ToString() => "Goto oto.";
+    }
+
+    public class NotePresetChangedNotification : UNotification {
+        public NotePresetChangedNotification() {
+
+        }
+        public override string ToString() => "Note preset changed.";
     }
 }

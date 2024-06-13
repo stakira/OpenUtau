@@ -20,6 +20,7 @@ namespace OpenUtau.Core.Vogen {
         public string avatar;
         public string portrait;
         public float portraitOpacity = 0.67f;
+        public int portraitHeight = 0;
         public string web;
         public string misc;
     }

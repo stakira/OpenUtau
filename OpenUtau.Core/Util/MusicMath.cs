@@ -32,6 +32,36 @@ namespace OpenUtau.Core {
             { "B", 11 },
         };
 
+        public static readonly string[] Solfeges = { 
+            "do",
+            "",
+            "re",
+            "",
+            "mi",
+            "fa",
+            "",
+            "sol",
+            "",
+            "la",
+            "",
+            "ti",
+        };
+
+        public static readonly string[] NumberedNotations = {
+            "1",
+            "",
+            "2",
+            "",
+            "3",
+            "4",
+            "",
+            "5",
+            "",
+            "6",
+            "",
+            "7",
+        };
+
         public static string GetToneName(int noteNum) {
             return noteNum < 0 ? string.Empty : KeysInOctave[noteNum % 12].Item1 + (noteNum / 12 - 1).ToString();
         }
@@ -88,7 +118,12 @@ namespace OpenUtau.Core {
             }
         }
 
+        const double ep = 0.001;
+
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
 
@@ -97,6 +132,9 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingIn(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));
         }
 
@@ -105,6 +143,9 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingOut(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * Math.Sin((x - x0) / (x1 - x0) * Math.PI / 2);
         }
 
@@ -113,6 +154,9 @@ namespace OpenUtau.Core {
         }
 
         public static double Linear(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
         }
 

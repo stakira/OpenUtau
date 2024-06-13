@@ -7,13 +7,16 @@ namespace OpenUtau.Classic {
         public string BasePath;
         public string File;
         public string Name;
+        public Dictionary<string, string> LocalizedNames = new Dictionary<string, string>();
         public string Image;
         public string Portrait;
         public float PortraitOpacity;
+        public int PortraitHeight;
         public string Author;
         public string Voice;
         public string Web;
         public string Version;
+        public string Sample;
         public string OtherInfo;
         public string DefaultPhonemizer;
         public Encoding TextFileEncoding;
@@ -21,22 +24,27 @@ namespace OpenUtau.Classic {
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
+        public bool? UseFilenameAsAlias = null;
 
         public void Reload() {
             Name = null;
+            LocalizedNames.Clear();
             Image = null;
             Portrait = null;
             PortraitOpacity = 0;
+            PortraitHeight = 0;
             Author = null;
             Voice = null;
             Web = null;
             Version = null;
+            Sample = null;
             OtherInfo = null;
             TextFileEncoding = null;
             SingerType = USingerType.Classic;
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;
+            UseFilenameAsAlias = null;
             VoicebankLoader.LoadVoicebank(this);
         }
 

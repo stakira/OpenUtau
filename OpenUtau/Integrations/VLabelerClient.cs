@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
@@ -46,6 +47,7 @@ namespace OpenUtau.Integrations {
         }
 
         class NewProjectArgs {
+#pragma warning disable 0649
             public string labelerName = "utau-singer.default";
             public string? sampleDirectory;
             public string? cacheDirectory;
@@ -55,13 +57,13 @@ namespace OpenUtau.Integrations {
             public string? inputFile;
             public string encoding = Encoding.UTF8.WebName;
             public bool autoExport;
+#pragma warning restore 0649
         }
 
         class OpenOrCreateRequest {
             public string type = "OpenOrCreate";
             public string projectFile = string.Empty;
             public GotoEntryByName? gotoEntryByName;
-            public GotoEntryByIndex? gotoEntryByIndex;
             public NewProjectArgs newProjectArgs = new NewProjectArgs();
             public long sentAt = Epoch();
         }
@@ -87,8 +89,12 @@ namespace OpenUtau.Integrations {
         }
 
         private void OpenOrCreate(Core.Ustx.USinger singer, Core.Ustx.UOto? oto) {
+            var existingProjectName = Directory.GetFiles(singer.Location)
+                .Where(path => Path.GetExtension(path) == ".lbp")
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .FirstOrDefault();
             var request = new OpenOrCreateRequest() {
-                projectFile = Path.Combine(singer.Location, "_vlabeler.lbp"),
+                projectFile = Path.Combine(singer.Location, existingProjectName ?? "_vlabeler.lbp"),
                 newProjectArgs = new NewProjectArgs {
                     cacheDirectory = Path.Combine(PathManager.Inst.CachePath, $"vlabeler-{HashHex(singer.Id)}"),
                     labelerParams = new Dictionary<string, TypedValue> {
@@ -99,7 +105,7 @@ namespace OpenUtau.Integrations {
                 },
             };
             if (oto != null) {
-                request.gotoEntryByName = new GotoEntryByName(oto.Set.Replace("\\","/"), oto.Alias);
+                request.gotoEntryByName = new GotoEntryByName(oto.Set.Replace("\\", "/"), oto.Alias);
             }
             using (var client = new RequestSocket()) {
                 client.Connect("tcp://localhost:32342");

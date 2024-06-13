@@ -5,12 +5,11 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
-using OpenUtau.Classic;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PartsContextMenuArgs {
@@ -19,7 +18,9 @@ namespace OpenUtau.App.ViewModels {
         public bool IsWavePart => Part is UWavePart;
         public ReactiveCommand<UPart, Unit>? PartDeleteCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartRenameCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartGotoFileCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
@@ -61,18 +62,16 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to open recent.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open recent.", e));
                 }
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
                 try {
                     OpenProject(new[] { file });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to open template.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open template.", e));
                 }
             });
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
@@ -96,6 +95,7 @@ namespace OpenUtau.App.ViewModels {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
                 Core.Format.Formats.LoadProject(new string[] { args[1] });
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 return;
             }
             NewProject();
@@ -107,11 +107,10 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
-                        "failed to load default template.", e));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to load default template.", e));
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
@@ -121,8 +120,14 @@ namespace OpenUtau.App.ViewModels {
             if (files == null) {
                 return;
             }
-            Core.Format.Formats.LoadProject(files);
-            this.RaisePropertyChanged(nameof(Title));
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
+            try {
+                Core.Format.Formats.LoadProject(files);
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                this.RaisePropertyChanged(nameof(Title));
+            } finally {
+                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
+            }
         }
 
         public void SaveProject(string file = "") {
@@ -155,7 +160,7 @@ namespace OpenUtau.App.ViewModels {
             int trackNo = project.tracks.Count;
             part.trackNo = trackNo;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = trackNo }));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = trackNo }));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
         }
@@ -168,7 +173,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(project, track);
@@ -259,9 +264,9 @@ namespace OpenUtau.App.ViewModels {
                     ProgressText = progressBarNotification.Info;
                 });
             } else if (cmd is LoadProjectNotification loadProject) {
-                Core.Util.Preferences.AddRecentFile(loadProject.project.FilePath);
+                Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {
-                Core.Util.Preferences.AddRecentFile(saveProject.Path);
+                Core.Util.Preferences.AddRecentFileIfEnabled(saveProject.Path);
             }
             this.RaisePropertyChanged(nameof(Title));
         }

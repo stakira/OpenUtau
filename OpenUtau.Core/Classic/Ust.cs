@@ -69,7 +69,8 @@ namespace OpenUtau.Classic {
             var project = new UProject() { FilePath = file, Saved = false };
             Ustx.AddDefaultExpressions(project);
 
-            project.tracks.Add(new UTrack {
+            project.tracks.Clear();
+            project.tracks.Add(new UTrack(project) {
                 TrackNo = 0,
             });
             var part = new UVoicePart() {
@@ -89,7 +90,11 @@ namespace OpenUtau.Classic {
         private static void ParsePart(UProject project, UVoicePart part, List<IniBlock> blocks) {
             var lastNotePos = 0;
             var lastNoteEnd = 0;
-            bool shouldFixTempo = project.tempos[0].bpm >= 0 && project.tempos[0].bpm < 1000; // Need to fix tempo=500k error or not.
+            var settingsBlock = blocks.FirstOrDefault(b => b.header == "[#SETTING]");
+            if (settingsBlock != null) {
+                ParseSetting(project, settingsBlock.lines);
+            }
+            bool shouldFixTempo = project.tempos[0].bpm <= 0 || project.tempos[0].bpm > 1000; // Need to fix tempo=500k error or not.
             foreach (var block in blocks) {
                 var header = block.header;
                 try {
@@ -97,7 +102,7 @@ namespace OpenUtau.Classic {
                         case "[#VERSION]":
                             break;
                         case "[#SETTING]":
-                            ParseSetting(project, block.lines);
+                            // Already processed
                             break;
                         case "[#TRACKEND]":
                             break;
@@ -175,7 +180,8 @@ namespace OpenUtau.Classic {
                 lyric = note.lyric,
                 position = note.position,
                 duration = note.duration,
-                noteNum = note.tone
+                noteNum = note.tone,
+                pitch = note.pitch
             };
             ustNote.Parse(lastNotePos, lastNoteEnd, iniLines, out noteTempo);
             note.lyric = ustNote.lyric;
@@ -335,9 +341,12 @@ namespace OpenUtau.Classic {
                 var note = first;
                 while (note != last.Next) {
                     if (note.position < position) {
+                        //Ignore current note if it is overlapped with previous note
+                        note = note.Next;
                         continue;
                     }
                     if (note.position > position) {
+                        //Insert R note if there is space between two notes
                         writer.WriteLine($"[#{sequence.Count:D4}]");
                         var spacer = UNote.Create();
                         spacer.position = position;
