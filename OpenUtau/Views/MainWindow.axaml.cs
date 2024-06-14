@@ -314,7 +314,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.USTX,
                 FilePicker.VSQX,
                 FilePicker.UST,
-                FilePicker.MIDI);
+                FilePicker.MIDI,
+                FilePicker.UFDATA);
             if (files == null || files.Length == 0) {
                 return;
             }
