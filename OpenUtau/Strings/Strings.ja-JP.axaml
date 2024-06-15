@@ -6,10 +6,10 @@
   <system:String x:Key="context.note.delete">音符を削除</system:String>
   <system:String x:Key="context.note.pasteparameters">パラメータを選択して貼り付け</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
-  <system:String x:Key="context.part.gotofile">ファイルの場所を見る</system:String>
+  <system:String x:Key="context.part.gotofile">ファイルの場所を開く</system:String>
   <system:String x:Key="context.part.rename">パートの名前を変更</system:String>
   <system:String x:Key="context.part.replaceaudio">オーディオファイルを変更</system:String>
-  <system:String x:Key="context.part.transcribe">音声からノートパートを作成</system:String>
+  <system:String x:Key="context.part.transcribe">オーディオからノートを生成</system:String>
   <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
   <system:String x:Key="context.pitch.easein">イーズイン</system:String>
   <system:String x:Key="context.pitch.easeinout">イーズイン/アウト</system:String>
@@ -166,7 +166,7 @@
   <system:String x:Key="menu.file.exportustto">別名でUSTをエクスポート...</system:String>
   <system:String x:Key="menu.file.exportwav">Wavファイルを出力</system:String>
   <system:String x:Key="menu.file.exportwavto">別名でWavファイルを出力...</system:String>
-  <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
+  <system:String x:Key="menu.file.importaudio">オーディオをインポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
   <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
   <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
