@@ -87,7 +87,7 @@ namespace OpenUtau.Core.Voicevox {
                         length = 2;
                     }
                     int? tone = null;
-                    if (!string.IsNullOrEmpty(lyric) || VoicevoxUtils.IsPau(lyric)) {
+                    if (!string.IsNullOrEmpty(lyric) && !VoicevoxUtils.IsPau(lyric)) {
                         if (notes[index][0].phonemeAttributes != null) {
                             if (notes[index][0].phonemeAttributes.Length > 0) {
                                 tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
@@ -97,6 +97,8 @@ namespace OpenUtau.Core.Voicevox {
                         } else {
                             tone = notes[index][0].tone;
                         }
+                    }else if (VoicevoxUtils.IsPau(lyric)) {
+                        lyric = "";
                     }
                     qnotes.notes.Add(new VoicevoxQueryNotes {
                         lyric = lyric,
@@ -115,7 +117,7 @@ namespace OpenUtau.Core.Voicevox {
                 });
 
             } catch (Exception e) {
-                Log.Error($"VoicevoxQueryNotes setup error.");
+                Log.Error($"VoicevoxQueryNotes setup error. ");
             }
             return qnotes;
         }

@@ -36,7 +36,7 @@ namespace OpenUtau.Core.Voicevox {
 
         public static VoicevoxConfig Load(USinger singer) {
             try {
-                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" });
+                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" , timeoutMS = 50});
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
                     Log.Error($"Response was incorrect. : {jObj}");
@@ -45,10 +45,11 @@ namespace OpenUtau.Core.Voicevox {
                 manifest.SaveLicenses(singer.Location);
             } catch(Exception e) {
                 Log.Error($"Could not load Licenses.:{e}");
+                return new VoicevoxConfig();
             }
             try {
 
-                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
+                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers"});
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
                     Log.Error($"Response was incorrect. : {jObj}");
@@ -199,7 +200,7 @@ namespace OpenUtau.Core.Voicevox {
         public string Lyrictodic(Note[][] notes, int index) {
             if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
-                    return "";
+                    return "R";
                 }
                 return lyric_;
             }

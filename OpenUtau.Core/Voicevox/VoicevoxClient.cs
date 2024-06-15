@@ -10,6 +10,7 @@ namespace OpenUtau.Core.Voicevox {
         internal Tuple<string, byte[]> SendRequest(VoicevoxURL voicevoxURL) {
             try {
                 using (var client = new HttpClient()) {
+                    client.Timeout = TimeSpan.FromMilliseconds(voicevoxURL.timeoutMS);
                     using (var request = new HttpRequestMessage(new HttpMethod(voicevoxURL.method.ToUpper()), this.RequestURL(voicevoxURL))) {
                         request.Headers.TryAddWithoutValidation("accept", voicevoxURL.accept);
 
@@ -56,5 +57,6 @@ namespace OpenUtau.Core.Voicevox {
         public Dictionary<string, string> query = new Dictionary<string, string>();
         public string body = string.Empty;
         public string accept = "application/json";
+        public int timeoutMS = 100000;
     }
 }
