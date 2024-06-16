@@ -97,7 +97,7 @@ namespace OpenUtau.Core.Voicevox {
                         } else {
                             tone = notes[index][0].tone;
                         }
-                    }else if (VoicevoxUtils.IsPau(lyric)) {
+                    }else{
                         lyric = "";
                     }
                     qnotes.notes.Add(new VoicevoxQueryNotes {
