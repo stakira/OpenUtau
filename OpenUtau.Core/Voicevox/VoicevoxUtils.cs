@@ -117,7 +117,7 @@ namespace OpenUtau.Core.Voicevox {
                 });
 
             } catch (Exception e) {
-                Log.Error($"VoicevoxQueryNotes setup error. ");
+                Log.Error($"VoicevoxQueryNotes setup error.");
             }
             return qnotes;
         }

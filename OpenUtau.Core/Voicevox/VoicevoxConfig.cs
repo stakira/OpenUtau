@@ -36,7 +36,7 @@ namespace OpenUtau.Core.Voicevox {
 
         public static VoicevoxConfig Load(USinger singer) {
             try {
-                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" , timeoutMS = 50});
+                var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" , timeoutMs = 50});
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
                     Log.Error($"Response was incorrect. : {jObj}");

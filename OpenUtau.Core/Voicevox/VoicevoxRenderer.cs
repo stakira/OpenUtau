@@ -136,7 +136,7 @@ namespace OpenUtau.Core.Voicevox {
                                     File.WriteAllBytes(wavPath, bytes);
                                 }
                             } catch (Exception e) {
-                                Log.Error($"Failed to create a voice base. {e}");
+                                Log.Error($"Failed to create a voice base. : {e}");
                             }
                             if (cancellation.IsCancellationRequested) {
                                 return new RenderResult();
