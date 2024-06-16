@@ -200,7 +200,7 @@ namespace OpenUtau.Core.Voicevox {
         public string Lyrictodic(Note[][] notes, int index) {
             if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
-                    return "R";
+                    return string.Empty;
                 }
                 return lyric_;
             }
