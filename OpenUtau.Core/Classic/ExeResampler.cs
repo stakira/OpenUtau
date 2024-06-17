@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -34,6 +36,27 @@ namespace OpenUtau.Classic {
             }
         }
 
+        void FixMoreConfig(string moreConfigPath) {
+            var lines = new List<string> { };
+            if (File.Exists(moreConfigPath)) {
+                lines = File.ReadAllLines(moreConfigPath).ToList();
+            }
+            for (int i = 0; i < lines.Count; i++) {
+                if (lines[i].StartsWith("resampler-compatibility")) {
+                    if(lines[i] == "resampler-compatibility on"){
+                        //moreconfig.txt is correct
+                        return;
+                    } else {
+                        lines[i] = "resampler-compatibility on";
+                        File.WriteAllLines(moreConfigPath, lines);
+                        return;
+                    }
+                }
+            }
+            lines.Add("resampler-compatibility on");
+            File.WriteAllLines(moreConfigPath, lines);
+        }
+
         public ExeResampler(string filePath, string basePath) {
             if (File.Exists(filePath)) {
                 FilePath = filePath;
@@ -42,6 +65,16 @@ namespace OpenUtau.Classic {
             }
             //Load Resampler Manifest
             Manifest = LoadManifest();
+            //Make moresampler happy
+            try{
+                if(Path.GetFileNameWithoutExtension(filePath) == "moresampler"){
+                    //Load moreconfig.txt under the same folder with filePath
+                    var moreConfigPath = Path.Combine(Path.GetDirectoryName(filePath), "moreconfig.txt");
+                    FixMoreConfig(moreConfigPath);
+                }
+            } catch (Exception ex){
+                Log.Error($"Failed fixing moreconfig.txt for {filePath}: {ex}");
+            }
         }
 
         public float[] DoResampler(ResamplerItem args, ILogger logger) {
