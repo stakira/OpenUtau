@@ -235,7 +235,7 @@ namespace OpenUtau.Plugin.Builtin {
                 && !currentLyric.Contains(vcvpad)
                 && presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme phoneme)
                 && phoneme.HasConsonant
-                && !presamp.Priorities.Contains(phoneme.Consonant)) {
+                && (presamp.Priorities == null || !presamp.Priorities.Contains(phoneme.Consonant))) {
                 if (checkOtoUntilHit(new List<string> { $"-{vcvpad}{phoneme.Consonant}" }, note, 2, out var cOto, out var color)
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
                     int endTick = notes[^1].position + notes[^1].duration;
@@ -268,9 +268,11 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var nextLyric = nextNeighbour.Value.lyric.Normalize();
-                foreach (var pair in presamp.Replace) {
-                    if (pair.Key == nextLyric) {
-                        nextLyric = pair.Value;
+                if (presamp.Replace != null) {
+                    foreach (var pair in presamp.Replace) {
+                        if (pair.Key == nextLyric) {
+                            nextLyric = pair.Value;
+                        }
                     }
                 }
                 string nextAlias = presamp.ParseAlias(nextLyric)[1]; // exclude useless characters
