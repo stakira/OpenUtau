@@ -60,15 +60,29 @@ namespace OpenUtau.Plugin.Builtin {
             var result = new List<Phoneme>();
             bool preCFlag = false;
 
+            // If the [PRIORITY] section in the presamp.ini contains a blank newline, don't treat any consonant as priority.
+            // If there is no [PRIORITY] section in the presamp.ini, it will return the default values.
+            if (presamp.Priorities == null) {
+                presamp.Priorities?.Clear();
+            }
+
+            // If the [REPLACE] section in the presamp.ini contains a blank newline, don't treat any consonant as priority.
+            // If there is no [REPLACE] section in the presamp.ini, it will return the default values.
+            if (presamp.Replace == null) {
+                presamp.Replace?.Clear();
+            }
+
             var note = notes[0];
             var currentLyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 currentLyric = note.phoneticHint.Normalize();
             } else {
                 // replace (exact match)
-                foreach (var pair in presamp.Replace) {
-                    if (pair.Key == currentLyric) {
-                        currentLyric = pair.Value;
+                if (presamp.Replace != null) {
+                    foreach (var pair in presamp.Replace) {
+                        if (pair.Key == currentLyric) {
+                            currentLyric = pair.Value;
+                        }
                     }
                 }
             }
@@ -105,9 +119,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!string.IsNullOrEmpty(prevNeighbour.Value.phoneticHint)) { // current phoneme is converted even if prev has hint
                     prevLyric = prevNeighbour.Value.phoneticHint.Normalize();
                 } else {
-                    foreach (var pair in presamp.Replace) {
-                        if (pair.Key == prevLyric) {
-                            prevLyric = pair.Value;
+                    if (presamp.Replace != null) {
+                        foreach (var pair in presamp.Replace) {
+                            if (pair.Key == prevLyric) {
+                                prevLyric = pair.Value;
+                            }
                         }
                     }
                 }
@@ -168,9 +184,11 @@ namespace OpenUtau.Plugin.Builtin {
                             if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
                                 nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
                             } else {
-                                foreach (var pair in presamp.Replace) {
-                                    if (pair.Key == nextLyric) {
-                                        nextLyric = pair.Value;
+                                if (presamp.Replace != null) {
+                                    foreach (var pair in presamp.Replace) {
+                                        if (pair.Key == nextLyric) {
+                                            nextLyric = pair.Value;
+                                        }
                                     }
                                 }
                             }
@@ -222,7 +240,7 @@ namespace OpenUtau.Plugin.Builtin {
                     && checkOtoUntilHit(new List<string> { currentLyric }, note, out var oto)) {
                     int endTick = notes[^1].position + notes[^1].duration;
                     var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-                    var cLength = Math.Max(30, -MsToTickAt(-oto.Preutter, endTick) * (attr.consonantStretchRatio ?? 1));
+                    var cLength = Math.Max(30, -timeAxis.MsToTickAt(-oto.Preutter, endTick) * (attr.consonantStretchRatio ?? 1));
 
                     if (prevNeighbour != null) {
                         cLength = Math.Min(prevNeighbour.Value.duration / 2, cLength);
@@ -333,9 +351,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var nextOto)) {
                         // If overlap is a negative value, vcLength is longer than Preutter
                         if (nextOto.Overlap < 0) {
-                            vcLength = -MsToTickAt(-(nextOto.Preutter - nextOto.Overlap), endTick);
+                            vcLength = -timeAxis.MsToTickAt(-(nextOto.Preutter - nextOto.Overlap), endTick);
                         } else {
-                            vcLength = -MsToTickAt(-nextOto.Preutter, endTick);
+                            vcLength = -timeAxis.MsToTickAt(-nextOto.Preutter, endTick);
                         }
                     }
                     // Minimam is 30 tick, maximum is half of note
@@ -413,18 +431,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return false;
-        }
-
-        /// <summary>
-        /// Convert ms to tick at a given reference tick position
-        /// </summary>
-        /// <param name="offsetMs">Duration in ms</param>
-        /// <param name="refTick">Reference tick position</param>
-        /// <returns>Duration in ticks</returns>
-        public int MsToTickAt(double offsetMs, int refTick) {
-            return timeAxis.TicksBetweenMsPos(
-                timeAxis.TickPosToMsPos(refTick),
-                timeAxis.TickPosToMsPos(refTick) + offsetMs);
         }
     }
 }
