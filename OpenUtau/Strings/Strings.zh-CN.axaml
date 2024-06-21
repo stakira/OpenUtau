@@ -260,6 +260,7 @@
   <system:String x:Key="phoneticassistant.copy">复制</system:String>
 
   <system:String x:Key="pianoroll.menu.batch">批量编辑</system:String>
+  <system:String x:Key="pianoroll.menu.batch.running">正在运行批处理</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>

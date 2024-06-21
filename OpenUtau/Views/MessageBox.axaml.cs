@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -170,6 +171,61 @@ namespace OpenUtau.App.Views {
 
         public static bool LoadingIsActive() {
             return loadingDialog != null && loadingDialog.IsActive;
+        }
+
+        /// <summary>
+        /// Displays a processing message box with a specified text and title, and executes a given action asynchronously.
+        /// </summary>
+        /// <param name="parent">The parent window to which the message box belongs.</param>
+        /// <param name="text">The text to display in the message box.</param>
+        /// <param name="title">The title of the message box.</param>
+        /// <param name="action">The action to execute asynchronously. This action takes the message box instance and a cancellation token as parameters, so it can show progress on the message box.</param>
+        /// <param name="onFinished">An optional action to execute when the asynchronous operation is completed. Takes the task representing the operation as a parameter. Usually it should check if the task is faulted and handle the error thrown during the task, such as showing an error dialog.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="MessageBoxResult"/> indicating the user's response.</returns>
+        /// <remarks>
+        /// The method initializes a message box with the specified title and text, and runs the provided action in a separate task.
+        /// It supports cancellation through the provided cancellation token. The optional onFinished action allows for additional
+        /// operations to be performed once the asynchronous action completes.
+        /// </remarks>
+        public static Task<MessageBoxResult> ShowProcessing(
+                Window parent, 
+                string text, 
+                string title, 
+                Action<MessageBox, 
+                CancellationToken> action,
+                Action<Task>? onFinished= null) {
+            var msgbox = new MessageBox() {
+                Title = title
+            };
+            msgbox.Text.Text = text;
+            var res = MessageBoxResult.Ok;
+            var tokenSource = new CancellationTokenSource();
+
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            var task = Task.Run(() => {
+                action.Invoke(msgbox, tokenSource.Token);
+                return res;
+            }, tokenSource.Token);
+            task.ContinueWith(t => {
+                msgbox.Close();
+                if (onFinished != null) {
+                    onFinished(task);
+                }
+            }, scheduler);
+
+            var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };
+            btn.Click += (_, __) => {
+                msgbox.Close();
+            };
+            msgbox.Buttons.Children.Add(btn);
+            msgbox.Closed += delegate {
+                if (task.IsCompleted) return;
+                res = MessageBoxResult.Cancel;
+                tokenSource.Cancel();
+            };
+            msgbox.ShowDialog(parent);
+
+            return task;
         }
 
         private void SetTextWithLink(string text, StackPanel textPanel) {
