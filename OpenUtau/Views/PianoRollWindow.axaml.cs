@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -65,15 +66,18 @@ namespace OpenUtau.App.Views {
                                         messageBox.SetText($"{name}: {current} / {total}");
                                     }, cancellationToken);
                             },
-                            (Exception e)=>{
-                                if(e!=null){
-                                    Log.Error(e, $"Failed to run Editing Macro");
-                                    var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
-                                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                            (Task t)=>{
+                                var e=t.Exception;
+                                if(t.IsFaulted && e != null){
+                                    if(e!=null){
+                                        Log.Error(e, $"Failed to run Editing Macro");
+                                        var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
+                                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                                     }
                                     return;
                                 }
-                            );
+                            }
+                        );
                     } else {
                         edit.Run(NotesVm.Project, NotesVm.Part, NotesVm.Selection.ToList(),
                             DocManager.Inst);
