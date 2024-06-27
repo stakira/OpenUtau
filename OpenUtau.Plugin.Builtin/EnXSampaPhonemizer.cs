@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// </summary>
     [Phonemizer("English X-SAMPA phonemizer", "EN X-SAMPA", "Lotte V", language: "EN")]
     public class EnXSampaPhonemizer : SyllableBasedPhonemizer {
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,ai,ei,Oi,au,ou,Ou,@u,i:,u:,O:,e@0,E~,e~,3r,ar,or,{l,Al,al,El,Il,il,ol,ul,Ul,oUl,mm,nn,ll,NN".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,ai,ei,Oi,au,ou,Ou,@u,i:,u:,O:,e@0,E~,e~,3r,ar,or,{l,Al,al,El,Il,il,ol,ul,Ul,oUl,@5,u5,O5,A5,E5,I5,i5,mm,nn,ll,NN".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
@@ -116,6 +116,15 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
         private bool isTetoException = false;
+
+        // For dark L vowels
+        private readonly Dictionary<string, string> darkLVowel = "@l=@5,ul=u5,Ol=O5,Al=A5,El=E5,Il=I5,il=i5,".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool isDarkLVowel = false;
 
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
@@ -383,23 +392,26 @@ namespace OpenUtau.Plugin.Builtin {
                     lastC = 0;
                 } else {
                     var cv = cc.Last() + v;
-                    if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
+                    basePhoneme = cv;
+                    if ((!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)) && (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
                         basePhoneme = crv;
-                    } else {
-                        basePhoneme = cv;
                     }
                     // try CCV
                     if (cc.Length - firstC > 1) {
                         for (var i = firstC; i < cc.Length; i++) {
                             var ccv = $"{string.Join("", cc.Skip(i))}{v}";
                             var rccv = $"- {string.Join("", cc.Skip(i))}{v}";
-                            if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2) {
+                            var ucv = $"_{cc.Last()}{v}";
+                            if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && CurrentWordCc.Contains(string.Join("", cc.Skip(i)))) {
                                 lastC = i;
                                 basePhoneme = ccv;
                                 break;
-                            } else if ((HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) && (!HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2) {
+                            } else if ((HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) && (!HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && CurrentWordCc.Contains(string.Join("", cc.Skip(i)))) {
                                 lastC = i;
                                 basePhoneme = rccv;
+                                break;
+                            } else if ((!HasOto(rccv, syllable.vowelTone) || !HasOto(ValidateAlias(rccv), syllable.vowelTone)) && (!HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && CurrentWordCc.Contains(string.Join("", cc.Skip(i)))) {
+                                basePhoneme = ucv;
                                 break;
                             }
                         }
@@ -435,76 +447,95 @@ namespace OpenUtau.Plugin.Builtin {
             for (var i = firstC; i < lastC; i++) {
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
-                var cc1 = $"{string.Join("", cc.Skip(i))}";
-                var ccv = string.Join("", cc.Skip(i)) + v;
+                var cc1 = $"{cc[i]} {cc[i + 1]}";
+                var ccv = string.Join("", cc.Skip(i + 1)) + v;
+                var rccv = $"- {string.Join("", cc.Skip(i + 1)) + v}";
                 var ucv = $"_{cc.Last()}{v}";
                 var crv = $"{cc.Last()} {v}";
                 var cv = $"{cc.Last()}{v}";
                 // Use [C1C2...] when current word starts with 2 consonants or more
-                if (CurrentWordCc.Length >= 2) {
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
+                if (CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(cc1)) {
                     cc1 = $"{string.Join("", cc.Skip(i))}";
                 }
                 if (!HasOto(cc1, syllable.tone)) {
                     cc1 = ValidateAlias(cc1);
                 }
                 // Use [C1C2] when current word has 2 consonants or more and [C1C2C3...] does not exist
-                if (!HasOto(cc1, syllable.tone) && CurrentWordCc.Length >= 2) {
+                if (!HasOto(cc1, syllable.tone) && CurrentWordCc.Length >= 2 && CurrentWordCc.Contains(cc1)) {
                     cc1 = $"{cc[i]}{cc[i + 1]}";
                 }
                 if (!HasOto(cc1, syllable.tone)) {
                     cc1 = ValidateAlias(cc1);
                 }
                 // Use [C1 C2] when either [C1C2] does not exist, or current word has 1 consonant or less and previous word has 1 consonant or more
-                if (!HasOto(cc1, syllable.tone) || (prevWordConsonantsCount >= 1 && CurrentWordCc.Length <= 1)) {
+                if ((!HasOto(cc1, syllable.tone)) || (PreviousWordCc.Contains(cc1))) {
                     cc1 = $"{cc[i]} {cc[i + 1]}";
                 }
                 if (!HasOto(cc1, syllable.tone)) {
                     cc1 = ValidateAlias(cc1);
                 }
                 // Use CCV if it exists
-                if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2) {
-                    basePhoneme = ccv;
+                if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(string.Join("", cc.Skip(i)))) {
                     lastC = i;
+                    basePhoneme = ccv;
+                    // Use RCCV if it exists
+                } else if ((HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(string.Join("", cc.Skip(i)))) {
+                    lastC = i;
+                    basePhoneme = rccv;
                     // Use _CV if it exists
-                } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
+                } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}") && CurrentWordCc.Length >= 2) {
                     basePhoneme = ucv;
+                    // Use spaced CV if it exists
                 } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                     basePhoneme = crv;
+                    // Use normal CV
                 } else {
                     basePhoneme = cv;
                 }
                 if (i + 1 < lastC) {
-                    var cc2 = $"{string.Join("", cc.Skip(i))}";
+                    var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
+                    }
                     // Use [C2C3...] when current word starts with 2 consonants or more
-                    if (CurrentWordCc.Length >= 2) {
+                    if (CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(cc2)) {
                         cc2 = $"{string.Join("", cc.Skip(i))}";
                     }
                     if (!HasOto(cc2, syllable.tone)) {
                         cc2 = ValidateAlias(cc2);
                     }
                     // Use [C2C3] when current word has 2 consonants or more and [C2C3C4...] does not exist
-                    if (!HasOto(cc2, syllable.tone) && CurrentWordCc.Length >= 2) {
+                    if (!HasOto(cc2, syllable.tone) && CurrentWordCc.Length >= 2 && CurrentWordCc.Contains(cc2)) {
                         cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     }
                     if (!HasOto(cc2, syllable.tone)) {
                         cc2 = ValidateAlias(cc2);
                     }
                     // Use [C2 C3] when either [C2C3] does not exist, or current word has 1 consonant or less and previous word has 2 consonants or more
-                    if (!HasOto(cc2, syllable.tone) || (prevWordConsonantsCount >= 2 && CurrentWordCc.Length <= 1 && !CurrentWordCc.Contains(cc2))) {
+                    if ((!HasOto(cc2, syllable.tone)) || (PreviousWordCc.Contains(cc2))) {
                         cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                     }
                     if (!HasOto(cc2, syllable.tone)) {
                         cc2 = ValidateAlias(cc2);
                     }
-                    // Use CCV if it exists
-                    if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2) {
-                        basePhoneme = ccv;
+                    //Use CCV if it exists
+                    if ((HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(string.Join("", cc.Skip(i + 1)))) {
                         lastC = i;
+                        basePhoneme = ccv;
+                        // Use RCCV if it exists
+                    } else if ((HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) && CurrentWordCc.Length >= 2 && !PreviousWordCc.Contains(string.Join("", cc.Skip(i + 1)))) {
+                        lastC = i;
+                        basePhoneme = rccv;
                         // Use _CV if it exists
-                    } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && (HasOto(cc2, syllable.vowelTone) || HasOto(ValidateAlias(cc2), syllable.vowelTone)) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}") && !PreviousWordCc.Contains(ucv)) {
+                    } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && HasOto(cc2, syllable.vowelTone) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}") && CurrentWordCc.Length >= 2) {
                         basePhoneme = ucv;
+                        // Use spaced CV if it exists
                     } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                         basePhoneme = crv;
+                        // Use normal CV
                     } else {
                         basePhoneme = cv;
                     }
@@ -517,7 +548,7 @@ namespace OpenUtau.Plugin.Builtin {
                             i++;
                         }
                     } else {
-                        /// Add single consonant if no CC cluster
+                        // Add single consonant if no CC cluster
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], ValidateAlias(cc[i]));
                     }
@@ -739,6 +770,12 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (isMissingCanadianRaising) {
                 foreach (var syllable in CanadianRaising) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
+            if (isDarkLVowel) {
+                foreach (var syllable in darkLVowel) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
