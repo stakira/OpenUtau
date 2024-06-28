@@ -400,11 +400,20 @@ namespace OpenUtau.App.Views {
         public override void Begin(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             base.Begin(pointer, point);
+            var project = DocManager.Inst.Project;
             var part = notesVm.Part;
-            newNote = notesVm.MaybeAddNote(point, false);
-            if (part == null || newNote == null) {
+            if (project == null || part == null || note == null) {
                 return;
             }
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            if (note.duration <= snapUnit) {
+                return;
+            }
+            newNote = notesVm.MaybeAddNote(point, false);
+            if (newNote == null) {
+                return;
+            }
+            
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
         }
 
@@ -426,7 +435,13 @@ namespace OpenUtau.App.Views {
             if (notesVm.IsSnapOn && snapUnit > 0) {
                 maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
             }
-            deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
+
+            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0) 
+                ? (oldDur-1) / snapUnit * snapUnit 
+                : oldDur - 15;
+            int maxDelta = maxNoteTicks - note.duration;
+
+            deltaDuration = Math.Clamp(deltaDuration, -maxNegDelta, maxDelta);
 
             if (deltaDuration == 0) {
                 valueTip.UpdateValueTip(note.duration.ToString());
