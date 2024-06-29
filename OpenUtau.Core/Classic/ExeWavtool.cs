@@ -197,13 +197,19 @@ namespace OpenUtau.Classic {
         } 
 
         string ConvertToWindowsPath (string linuxPath) {
-            char[] path = linuxPath.ToCharArray();
+            List<char> path = new List<char>(linuxPath.ToCharArray());
             bool absolutePath = false;
             if (path[0] == '/') absolutePath = true;
-            for (int i = 0; i < path.Length; i++) {
+            for (int i = path.Count - 1; i > 0; i--) {
+                if (path[i] == ' ' && path[i-1] == '\\') {
+                    path.RemoveAt(i-1);
+                    i--;
+                }
+            }
+            for (int i = 0; i < path.Count; i++) {
                 if (path[i] == '/') path[i] = '\\';
             }
-            string windowsPath = new string(path);
+            string windowsPath = new string(path.ToArray());
             if (absolutePath) windowsPath = "Z:" + windowsPath;
             return windowsPath;
         }
