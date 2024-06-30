@@ -248,11 +248,8 @@ namespace OpenUtau.Classic {
                         throw new InvalidDataException("Shell script wrapper for exe resampler is empty");
                     else if (start == -1 || end == -1) 
                         throw new InvalidDataException("Could not find path to .exe resampler in shell script wrapper");
-                    else {
-                        string output = line.Substring(start, end - start);
-                        Console.WriteLine("Parsed shell wrapper for exe file, output is: " + output);
-                        return output;
-                    }
+                    else
+                        return line.Substring(start, end - start);
                 }
             }
         }
