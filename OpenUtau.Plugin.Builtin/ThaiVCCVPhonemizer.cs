@@ -133,13 +133,36 @@ namespace OpenUtau.Plugin.Builtin {
                     int position = 0;
                     int vcPosition = noteDuration - 120;
 
+                    if (nextNeighbour != null && tests[i].Contains(" "))
+                    {
+                        var nextLyric = nextNeighbour.Value.lyric.Normalize();
+                        if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
+                            nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
+                        }
+                        var nextTh = ParseInput(nextLyric);
+                        var nextCheck = nextTh.Vowel;
+                        if (nextTh.Consonant != null) {
+                            nextCheck = nextTh.Consonant + nextTh.Vowel;
+                        }
+                        if(nextTh.Dipthong != null) {
+                            nextCheck = nextTh.Consonant + nextTh.Dipthong + nextTh.Vowel;
+                        }
+                        var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                        if (singer.TryGetMappedOto(nextCheck, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var nextOto)) {
+                            if (oto.Overlap > 0) {
+                                vcPosition = noteDuration - MsToTick(nextOto.Overlap) - MsToTick(nextOto.Preutter);
+                            }
+                        }
+                    }
+                    
+
                     if (noteTh.Dipthong == null || tests.Count <= 2) {
                         if (i == 1) {
                             position = Math.Max((int)(noteDuration * 0.75), vcPosition);
                         }
                     } else {
                         if (i == 1) {
-                            position = Math.Min((int)(noteDuration * 0.1), 120);
+                            position = Math.Min((int)(noteDuration * 0.1), 60);
                         } else if (i == 2) {
                             position = Math.Max((int)(noteDuration * 0.75), vcPosition);
                         }
