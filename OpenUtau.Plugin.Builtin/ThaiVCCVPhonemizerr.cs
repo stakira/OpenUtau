@@ -113,7 +113,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 if (nextNeighbour == null && tests.Count >= 1) {
                     if(noteTh.EndingConsonant == null) {
-                        if (checkOtoUntilHit(new string[] { tests[tests.Count - 1] + "-" }, note, out var tempOto)) {
+                        if (checkOtoUntilHit(new string[] { noteTh.Vowel + "-" }, note, out var tempOto)) {
                             tests.Add(noteTh.Vowel + "-");
                         }
                     }
@@ -124,17 +124,22 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
 
+                if(tests.Count <= 0) {
+                    if (checkOtoUntilHit(new string[] { syllable }, note, out var tempOto)) {
+                        tests.Add(syllable);
+                    }
+                }
+
                 if (checkOtoUntilHit(tests.ToArray(), note, out var oto)) {
 
                     for (int i = 0; i < tests.ToArray().Length; i++) {
 
                         int position = 0;
-
-                        
+                        int vcPosition = note.duration - 120;
 
                         if (noteTh.Dipthong == null || tests.Count <= 2) {
                             if( i == 1 ) {
-                                position = Math.Max((int) (note.duration * 0.75), note.duration - 120);
+                                position = Math.Max((int) (note.duration * 0.75), vcPosition);
                             }
                         }
                         else {
@@ -142,7 +147,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 position = Math.Min((int)(note.duration * 0.1), 120);
                             }
                             else if (i == 2) {
-                                position = Math.Max((int)(note.duration * 0.75), note.duration - 120);
+                                position = Math.Max((int) (note.duration * 0.75), vcPosition);
                             }
                         }
 
