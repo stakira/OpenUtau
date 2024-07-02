@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">เวียดนาม</system:String>
   <system:String x:Key="languages.zh">จีน</system:String>
   <system:String x:Key="languages.zh-yue">กวางตุ้ง</system:String>
+  <system:String x:Key="languages.th">ไทย</system:String>
 
   <system:String x:Key="lyrics.apply">ใช้งาน</system:String>
   <system:String x:Key="lyrics.cancel">ยกเลิก</system:String>

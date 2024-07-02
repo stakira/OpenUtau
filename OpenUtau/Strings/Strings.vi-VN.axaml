@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">Tiếng Việt</system:String>
   <system:String x:Key="languages.zh">Tiếng Trung</system:String>
   <system:String x:Key="languages.zh-yue">Tiếng Quảng Đông</system:String>
+  <system:String x:Key="languages.th">Tiếng Thái</system:String>
 
   <system:String x:Key="lyrics.apply">Áp dụng</system:String>
   <system:String x:Key="lyrics.cancel">Huỷ bỏ</system:String>

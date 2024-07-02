@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">Vietnam</system:String>
   <system:String x:Key="languages.zh">Tionghoa</system:String>
   <system:String x:Key="languages.zh-yue">Kanton</system:String>
+  <system:String x:Key="languages.th">Thai</system:String>
 
   <system:String x:Key="lyrics.apply">Terapkan</system:String>
   <system:String x:Key="lyrics.cancel">Batalkan</system:String>

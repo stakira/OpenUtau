@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">베트남어</system:String>
   <system:String x:Key="languages.zh">중국어</system:String>
   <system:String x:Key="languages.zh-yue">광둥어</system:String>
+  <system:String x:Key="languages.th">태국어</system:String>
 
   <system:String x:Key="lyrics.apply">적용</system:String>
   <system:String x:Key="lyrics.cancel">취소</system:String>

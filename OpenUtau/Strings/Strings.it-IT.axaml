@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">vietnamita</system:String>
   <system:String x:Key="languages.zh">cinese</system:String>
   <system:String x:Key="languages.zh-yue">cantonese</system:String>
+  <system:String x:Key="languages.th">thailandese</system:String>
 
   <system:String x:Key="lyrics.apply">Applica</system:String>
   <system:String x:Key="lyrics.cancel">Cancella</system:String>
