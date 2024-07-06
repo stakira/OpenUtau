@@ -1,8 +1,8 @@
-﻿using OpenUtau.Api;
-using OpenUtau.Core.G2p;
-using OpenUtau.Core.Ustx;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using IKg2p;
+using OpenUtau.Api;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -288,7 +288,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var hanziLyrics = lyricsArray
                     .Where(ZhG2p.CantoneseInstance.IsHanzi)
                     .ToList();
-                var jyutpingResult = ZhG2p.CantoneseInstance.Convert(hanziLyrics, false, false).ToLower().Split();
+                List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, false);
+                var jyutpingResult = g2pResults.Select(res => res.syllable).ToArray();
                 if (jyutpingResult == null) {
                     return lyricsArray;
                 }
