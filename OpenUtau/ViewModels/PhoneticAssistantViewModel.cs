@@ -61,7 +61,7 @@ namespace OpenUtau.App.ViewModels {
                 Phonemes = string.Empty;
                 return;
             }
-            string[] phonemes = g2p.Query(Grapheme);
+            string[] phonemes = g2p.Query(Grapheme.ToLowerInvariant());
             if (phonemes == null) {
                 Phonemes = string.Empty;
                 return;
