@@ -31,7 +31,7 @@ namespace OpenUtau.Api {
         }
 
         public string[] Query(string grapheme) {
-            var phonemes = mapped.Query(grapheme.ToLowerInvariant());
+            var phonemes = mapped.Query(grapheme);
             if (phonemes == null) {
                 return null;
             }
