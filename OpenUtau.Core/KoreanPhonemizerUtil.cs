@@ -332,6 +332,11 @@ namespace OpenUtau.Core {
             if ((firstLastConsonant.Equals("ㄳ") || firstLastConsonant.Equals("ㄵ") || firstLastConsonant.Equals("ㄽ") || firstLastConsonant.Equals("ㄾ") || firstLastConsonant.Equals("ㅄ") || firstLastConsonant.Equals("ㄼ") || firstLastConsonant.Equals("ㄺ") || firstLastConsonant.Equals("ㄿ")) && basicSounds.Contains(nextFirstConsonant)) {
                 // [ㄻ, (ㄶ, ㅀ)<= 유기음화에 따라 예외] 제외한 겹받침으로 끝나고 다음 소리가 예사소리이면
                 nextFirstConsonant = (string)fortisSounds[basicSounds[nextFirstConsonant]];
+            // Merge current batchim ㄷ, ㅅ, ㅈ, ㅊ, ㅌ, ㅆ with next initial ㅅ or ㅆ
+            // Current batchim will be null, next initial will be ㅆ
+            } else if ((firstLastConsonant.Equals("ㄷ") || firstLastConsonant.Equals("ㅅ") || firstLastConsonant.Equals("ㅈ") || firstLastConsonant.Equals("ㅊ") || firstLastConsonant.Equals("ㅌ") || firstLastConsonant.Equals("ㅆ")) && (nextFirstConsonant.Equals("ㅅ") || nextFirstConsonant.Equals("ㅆ"))) {
+                firstLastConsonant = " ";
+                nextFirstConsonant = (string)fortisSounds[basicSounds[nextFirstConsonant]];
             }
 
             // 3. 첫 번째 글자의 자음군단순화 및 평파열음화(음절의 끝소리 규칙)
