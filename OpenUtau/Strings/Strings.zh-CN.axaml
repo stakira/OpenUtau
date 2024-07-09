@@ -61,28 +61,28 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">以下设置将应用于音轨中的所有音符：</system:String>
 
   <system:String x:Key="errors.caption">错误</system:String>
-  <!--<system:String x:Key="errors.details">Error Details</system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>-->
-  <!--<system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.min">Min must be smaller than max</system:String>-->
-  <!--<system:String x:Key="errors.expression.name">Name must be set</system:String>-->
-  <!--<system:String x:Key="errors.failed.export">Failed to export</system:String>-->
-  <!--<system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>-->
-  <!--<system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>-->
-  <!--<system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>-->
-  <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
-  <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
-  <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
-  <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
-  <!--<system:String x:Key="errors.failed.render">Failed to render</system:String>-->
-  <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
-  <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
-  <!--<system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>-->
+  <system:String x:Key="errors.details">错误明细</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">载入人声编码器时错误 </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. 请从以下位置下载人声编码器： </system:String>
+  <system:String x:Key="errors.expression.abbrlong">缩写长度必须在 1 到 4 字符之间</system:String>
+  <system:String x:Key="errors.expression.abbrset">必须设置缩写</system:String>
+  <system:String x:Key="errors.expression.abbrunique">缩写必须唯一</system:String>
+  <system:String x:Key="errors.expression.default">默认值必须在最小值和最大值之间</system:String>
+  <system:String x:Key="errors.expression.flagunique">flag必须唯一</system:String>
+  <system:String x:Key="errors.expression.min">最小值必须比最大值小</system:String>
+  <system:String x:Key="errors.expression.name">必须设置名称</system:String>
+  <system:String x:Key="errors.failed.export">导出失败</system:String>
+  <system:String x:Key="errors.failed.importaudio">导入音频失败</system:String>
+  <system:String x:Key="errors.failed.importfiles">导入文件失败</system:String>
+  <system:String x:Key="errors.failed.importmidi">导入 MIDI 文件失败</system:String>
+  <system:String x:Key="errors.failed.load">导入失败 </system:String>
+  <system:String x:Key="errors.failed.loadprefs">导入使用偏好失败。请初始化。</system:String>
+  <system:String x:Key="errors.failed.openfile">打开失败</system:String>
+  <system:String x:Key="errors.failed.openlocation">打开位置失败</system:String>
+  <system:String x:Key="errors.failed.render">渲染失败</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">编辑宏失败</system:String>
+  <system:String x:Key="errors.failed.save">保存失败</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">保存歌手配置文件失败</system:String>
 
   <system:String x:Key="exps.abbr">简称</system:String>
   <system:String x:Key="exps.apply">应用</system:String>
@@ -105,7 +105,7 @@
   <system:String x:Key="languages.en">英语</system:String>
   <system:String x:Key="languages.es">西班牙语</system:String>
   <system:String x:Key="languages.fr">法语</system:String>
-  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
+  <system:String x:Key="languages.invariant">不翻译</system:String>
   <system:String x:Key="languages.it">意大利语</system:String>
   <system:String x:Key="languages.ja">日语</system:String>
   <system:String x:Key="languages.ko">韩语</system:String>
@@ -114,7 +114,7 @@
   <system:String x:Key="languages.ru">俄语</system:String>
   <system:String x:Key="languages.vi">越南语</system:String>
   <system:String x:Key="languages.zh">中文</system:String>
-  <system:String x:Key="languages.zh-yue">粤语</system:String>
+  <system:String x:Key="languages.zh-yue">中文（粤语）</system:String>
 
   <system:String x:Key="lyrics.apply">应用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
@@ -129,7 +129,7 @@
   <system:String x:Key="lyricsreplace.before">查找内容：</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">去除英文字母</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">仅保留日文假名</system:String>
-  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">去除发音提示</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvspace">去除空格及空格前的内容</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvtone">去除音高后缀</system:String>
   <system:String x:Key="lyricsreplace.presets">预设</system:String>
@@ -141,10 +141,10 @@
   <system:String x:Key="menu.edit.copy">复制</system:String>
   <system:String x:Key="menu.edit.cut">剪切</system:String>
   <system:String x:Key="menu.edit.delete">删除</system:String>
-  <!--<system:String x:Key="menu.edit.lockunselectednotes">Lock editing of unselected notes</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.expressions">Expressions</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>-->
+  <system:String x:Key="menu.edit.lockunselectednotes">锁定未选中音符的编辑</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">表情</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">音高锚点</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">颤音</system:String>
   <system:String x:Key="menu.edit.paste">粘贴</system:String>
   <system:String x:Key="menu.edit.redo">重复</system:String>
   <system:String x:Key="menu.edit.selectall">选择全部</system:String>
@@ -164,8 +164,8 @@
   <system:String x:Key="menu.file.exportwavto">导出Wav文件至...</system:String>
   <system:String x:Key="menu.file.importaudio">导入音频...</system:String>
   <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
-  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
-  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
+  <system:String x:Key="menu.file.importmidi.drywetmidi">Drywet MIDI 导入器</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">Naudio 导入器</system:String>
   <system:String x:Key="menu.file.importtracks">导入轨道...</system:String>
   <system:String x:Key="menu.file.new">新建</system:String>
   <system:String x:Key="menu.file.newfromtemplate">从模板新建</system:String>
@@ -233,7 +233,7 @@
   <system:String x:Key="noteproperty.apply">应用</system:String>
   <system:String x:Key="noteproperty.basic">基本属性</system:String>
   <system:String x:Key="noteproperty.cancel">取消</system:String>
-  <!--<system:String x:Key="noteproperty.set">Set</system:String>-->
+  <system:String x:Key="noteproperty.set">设置</system:String>
   <system:String x:Key="noteproperty.setlongnote">仅应用于长音符</system:String>
   <system:String x:Key="noteproperty.tone">音高</system:String>
   <system:String x:Key="noteproperty.vibratoenable">启用</system:String>
@@ -268,12 +268,12 @@
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">将音符后缀解析为音色</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.removephonetichint">去除发音提示</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">去除音阶后缀</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.addbreath">添加呼吸</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">自动连奏</system:String>
@@ -281,7 +281,7 @@
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
   <system:String x:Key="pianoroll.menu.notes.fixoverlap">修复重叠音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">汉字转拼音</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">加长淡出</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
@@ -377,7 +377,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定播放标记</system:String>
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">自动滚动边界</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暂停时</system:String>
@@ -388,7 +388,7 @@
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
   <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger 渲染步数</system:String>
-  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
@@ -402,12 +402,12 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
   </system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
+  <system:String x:Key="prefs.rendering.skipmuted">跳过静音音轨</system:String>
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     警告：渲染线程过多可能会导致OpenUtau运行缓慢
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">最大渲染线程数</system:String>
-  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <system:String x:Key="prefs.rendering.wavtool">Wav 工具</system:String>
 
   <system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
@@ -467,7 +467,7 @@
   <system:String x:Key="singersetup.archivefileencoding.prompt">请选择一种编码，使文件名看起来是正确的。</system:String>
   <system:String x:Key="singersetup.back">上一步</system:String>
   <system:String x:Key="singersetup.install">安装</system:String>
-  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <system:String x:Key="singersetup.missinginfo">请将下列设置加入该声库的 character.yaml.</system:String>
   <system:String x:Key="singersetup.next">下一步</system:String>
   <system:String x:Key="singersetup.singertype">歌手类型</system:String>
   <system:String x:Key="singersetup.textfileencoding">文本文件编码</system:String>
@@ -525,7 +525,7 @@
 
   <system:String x:Key="updater.caption">检查更新</system:String>
   <system:String x:Key="updater.description">开放歌声合成平台</system:String>
-  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.github">GitHub</system:String>
   <system:String x:Key="updater.status.available">有新更新 v{0} !</system:String>
   <system:String x:Key="updater.status.checking">检查更新中...</system:String>
   <system:String x:Key="updater.status.notavailable">已更新至最新</system:String>
