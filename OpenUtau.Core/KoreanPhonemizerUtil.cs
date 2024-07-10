@@ -311,11 +311,15 @@ namespace OpenUtau.Core {
                 firstLastConsonant = " ";
                 nextFirstConsonant = (string)aspirateSounds[basicSounds[nextFirstConsonant]];
             } 
-            else if (firstLastConsonant.Equals("ㅎ") && (!nextFirstConsonant.Equals("ㅅ")) && nextFirstConsonant.Equals("ㅇ")) {
+            else if (firstLastConsonant.Equals("ㅎ") && (nextFirstConsonant.Equals("ㅁ") || nextFirstConsonant.Equals("ㅅ") || nextFirstConsonant.Equals("ㄹ")
+                || nextFirstConsonant.Equals("ㅊ") || nextFirstConsonant.Equals("ㅋ") || nextFirstConsonant.Equals("ㅌ") || nextFirstConsonant.Equals("ㅍ") || nextFirstConsonant.Equals("ㄲ") || nextFirstConsonant.Equals("ㄸ") || nextFirstConsonant.Equals("ㅃ") || nextFirstConsonant.Equals("ㅆ") || nextFirstConsonant.Equals("ㅉ"))
+                ) {
                 // ㅎ으로 끝나고 다음 소리가 없으면 / ex) 낳아 = 나아
                 firstLastConsonant = " ";
-            } 
-            else if (firstLastConsonant.Equals("ㄶ") && (! nextFirstConsonant.Equals("ㅅ")) && basicSounds.Contains(nextFirstConsonant)) {
+            } else if (firstLastConsonant.Equals("ㅎ") && nextFirstConsonant.Equals("ㄴ")) {
+                // Transform batchim ㅎ into ㄴ when next initial is ㄴ
+                firstLastConsonant = "ㄴ";
+            } else if (firstLastConsonant.Equals("ㄶ") && (! nextFirstConsonant.Equals("ㅅ")) && basicSounds.Contains(nextFirstConsonant)) {
                 // ㄶ으로 끝나고 다음 소리가 ㄱㄷㅂㅈ이면 / ex) 많다 = 만타
                 firstLastConsonant = "ㄴ";
                 nextFirstConsonant = (string)aspirateSounds[basicSounds[nextFirstConsonant]];
@@ -324,9 +328,10 @@ namespace OpenUtau.Core {
                 // ㅀ으로 끝나고 다음 소리가 ㄱㄷㅂㅈ이면 / ex) 끓다 = 끌타
                 firstLastConsonant = "ㄹ";
                 nextFirstConsonant = (string)aspirateSounds[basicSounds[nextFirstConsonant]];
+            } else if (firstLastConsonant.Equals("ㅎ") && (fortisSounds.Contains(nextFirstConsonant) || aspirateSounds.Contains(nextFirstConsonant))) {
+                // ㅎ으로 끝나고 다음 소리가 없으면 / ex) 낳아 = 나아
+                firstLastConsonant = " ";
             }
-
-
 
 
             // 2-1. 된소리되기 1
@@ -417,6 +422,11 @@ namespace OpenUtau.Core {
             if (firstLastConsonant.Equals("ㄴ") && nextFirstConsonant.Equals("ㄱ")) {
                 // ex) ~라는 감정 = ~라능 감정
                 firstLastConsonant = "ㅇ";
+            }
+
+            // If batchim isn't ㄹ, ㅎ or null, transform initial ㄹ into ㄴ
+            if ((basicSounds.Contains(firstLastConsonant) || nasalSounds.Contains(firstLastConsonant) || fortisSounds.Contains(firstLastConsonant) || aspirateSounds.Contains(firstLastConsonant)) && nextFirstConsonant.Equals("ㄹ")) {
+                nextFirstConsonant = "ㄴ";
             }
 
             // return results
