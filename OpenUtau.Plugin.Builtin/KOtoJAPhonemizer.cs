@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("KO to JA Phonemizer", "KO to JA", "Lotte V", language: "KO")]
-    public class KOtoJAPhonemizer : Phonemizer {
+    public class KOtoJAPhonemizer : BaseKoreanPhonemizer {
         /// <summary>
         /// Phonemizer for making Japanese banks sing in Korean.
         /// Supports Hangul and phonetic hint (based on Japanese romaji).
@@ -307,6 +308,14 @@ namespace OpenUtau.Plugin.Builtin {
             {"r", "ru" },
             {"m", "mu" },
         };
+
+        /// <summary>
+        /// Apply Korean sandhi rules to Hangeul lyrics.
+        /// </summary>
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+            // variate lyrics 
+            KoreanPhonemizerUtil.RomanizeNotes(groups, false);
+        }
 
         /// <summary>
         /// Gets the romanized initial, medial, and final components of the passed Hangul syllable.

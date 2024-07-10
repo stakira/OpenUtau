@@ -3,13 +3,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin
 {
 	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "KO")]
 
-	public class KoreanVCVPhonemizer : Phonemizer
+	public class KoreanVCVPhonemizer : BaseKoreanPhonemizer
 	{
 		/// <summary>
 		/// Initial jamo as ordered in Unicode
@@ -38,6 +39,14 @@ namespace OpenUtau.Plugin.Builtin
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
 		static readonly string[] extras = { "f", "v", "th", "dh", "z", "rr", "kk", "pp", "tt" };
+
+		/// <summary>
+		/// Apply Korean sandhi rules to Hangeul lyrics.
+		/// </summary>
+		public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+			// variate lyrics 
+			KoreanPhonemizerUtil.RomanizeNotes(groups, false);
+		}
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.

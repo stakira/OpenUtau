@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA", language:"KO")]
 
-    public class KoreanCVCPhonemizer : Phonemizer {
+    public class KoreanCVCPhonemizer : BaseKoreanPhonemizer {
 
         static readonly string[] naPlainVowels = new string[] { "a", "e", "a", "e", "eo", "e", "eo", "e", "o", "a", "e", "e", "o", "u", "eo", "e", "i", "u", "eu", "i", "i" };
 
@@ -89,6 +90,14 @@ namespace OpenUtau.Plugin.Builtin {
             str = str.Trim();
 
             return str;
+        }
+
+        /// <summary>
+        /// Apply Korean sandhi rules to Hangeul lyrics.
+        /// </summary>
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+            // variate lyrics 
+            KoreanPhonemizerUtil.RomanizeNotes(groups, false);
         }
 
         bool isAlphaCon(string str) {
