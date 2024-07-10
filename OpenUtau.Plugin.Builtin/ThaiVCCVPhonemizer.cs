@@ -223,7 +223,7 @@ namespace OpenUtau.Plugin.Builtin {
                 return (null, null, null, null);
             }
 
-            if (input.Length > 3) {
+            if (input.Length >= 3) {
                 foreach (var dip in diphthongs) {
                     if (input[1].ToString().Equals(dip) || input[2].ToString().Equals(dip)) {
                         dipthong = dip;
