@@ -46,8 +46,8 @@
   <system:String x:Key="dialogs.messagebox.no">否</system:String>
   <system:String x:Key="dialogs.messagebox.ok">好</system:String>
   <system:String x:Key="dialogs.messagebox.yes">是</system:String>
-  <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
-  <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">无Resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">无Resampler! 将你选择的resampler exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">此工具会改变工程的曲速及各音符的tick时值，而不改变各音符的位置与时长（以秒为单位）
   新曲速：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍号</system:String>
@@ -61,9 +61,9 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">以下设置将应用于音轨中的所有音符：</system:String>
 
   <system:String x:Key="errors.caption">错误</system:String>
-  <system:String x:Key="errors.details">错误明细</system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder1">载入人声编码器时错误 </system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder2">. 请从以下位置下载人声编码器： </system:String>
+  <system:String x:Key="errors.details">错误详情</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">载入声码器时错误 </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. 请从以下位置下载声码器： </system:String>
   <system:String x:Key="errors.expression.abbrlong">缩写长度必须在 1 到 4 字符之间</system:String>
   <system:String x:Key="errors.expression.abbrset">必须设置缩写</system:String>
   <system:String x:Key="errors.expression.abbrunique">缩写必须唯一</system:String>
@@ -88,9 +88,9 @@
   <system:String x:Key="exps.apply">应用</system:String>
   <system:String x:Key="exps.caption">表情</system:String>
   <system:String x:Key="exps.defaultvalue">默认值</system:String>
-  <system:String x:Key="exps.flag">重采样器flag</system:String>
+  <system:String x:Key="exps.flag">Resampler flag</system:String>
   <system:String x:Key="exps.getsuggestions">获取渲染器建议的表情</system:String>
-  <system:String x:Key="exps.isflag">是否重采样器flag</system:String>
+  <system:String x:Key="exps.isflag">是否resampler flag</system:String>
   <system:String x:Key="exps.maxvalue">最大值</system:String>
   <system:String x:Key="exps.minvalue">最小值</system:String>
   <system:String x:Key="exps.name">名称</system:String>
@@ -281,7 +281,7 @@
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
   <system:String x:Key="pianoroll.menu.notes.fixoverlap">修复重叠音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">汉字转拼音</system:String>
-  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">加长淡出</system:String>
+  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">加长淡入淡出</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
@@ -336,8 +336,8 @@
   <system:String x:Key="prefs.advanced.lyricshelper">歌词助手</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">歌词助手添加方括号</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">在"最近打开"中记住以下文件格式</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler 日志</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存resampler输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler 路径</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
@@ -392,7 +392,7 @@
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
-  <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
+  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
 1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
@@ -400,14 +400,14 @@
 3. 耐心等待 moresampler 生成缺失的 llsm 文件
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-    注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
+    注意: 将你选择的resampler exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
   </system:String>
   <system:String x:Key="prefs.rendering.skipmuted">跳过静音音轨</system:String>
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     警告：渲染线程过多可能会导致OpenUtau运行缓慢
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">最大渲染线程数</system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Wav 工具</system:String>
+  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
   <system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
