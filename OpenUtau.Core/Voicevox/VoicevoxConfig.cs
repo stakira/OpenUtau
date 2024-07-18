@@ -34,7 +34,6 @@ namespace OpenUtau.Core.Voicevox {
 
         //So that the renderer can distinguish between phonemizers.
         public string Tag = "DEFAULT";
-        public Phoneme_list phonemes_list;
 
         public static VoicevoxConfig Load(USinger singer) {
             try {

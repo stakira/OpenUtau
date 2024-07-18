@@ -42,8 +42,7 @@ namespace OpenUtau.Core.Voicevox {
 
 
     internal static class VoicevoxUtils {
-        public const string VOLSC = "volsc";
-        public const string IVOLC = "ivolc";
+        public const string VOLC = "volc";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
