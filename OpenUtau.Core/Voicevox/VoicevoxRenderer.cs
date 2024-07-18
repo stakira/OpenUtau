@@ -68,7 +68,6 @@ namespace OpenUtau.Core.Voicevox {
                         if (singer != null) {
                             Log.Information($"Starting Voicevox synthesis");
                             VoicevoxNote vvNotes = new VoicevoxNote();
-                            string singerID = VoicevoxUtils.defaultID;
                             if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
                                 Note[][] notes = new Note[phrase.phones.Length][];
                                 for (int i = 0; i < phrase.phones.Length; i++) {
@@ -84,22 +83,20 @@ namespace OpenUtau.Core.Voicevox {
                                 var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis, singer);
 
                                 //Prepare for future additions of Teacher Singer.
-                                if (singer.voicevoxConfig.base_singer_style != null) {
-                                    foreach (var s in singer.voicevoxConfig.base_singer_style) {
-                                        if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
-                                            if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
-                                                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                if (vvNotes.phonemes.Count() == 0) {
-                                    vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
-                                }
+                                string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
+                                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, baseSingerID);
 
+                                int vvTotalFrames = 0;
+                                vvNotes.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
+
+                                if (!phrase.phones[0].direct) {
+                                    double frameMs = (1000d / VoicevoxUtils.fps);
+                                    vvNotes.f0 = VoicevoxUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, vvTotalFrames, vvNotes.phonemes[0].frame_length, vvNotes.phonemes[^1].frame_length , x => MusicMath.ToneToFreq(x * 0.01)).ToList();
+                                } else {
                                 //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
                                 vvNotes.f0 = vvNotes.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
+                                }
+
                                 //Volume parameter for synthesis. Scheduled to be revised
                                 vvNotes.volume = vvNotes.volume.Select(vol => vol = vol * phrase.phones[0].volume).ToList();
                             } else {
@@ -116,7 +113,7 @@ namespace OpenUtau.Core.Voicevox {
                                 }
                                 if (style.name.Equals(phrase.phones[0].suffix) && style.type.Equals("frame_decode")) {
                                     speaker = style.id;
-                                } else if((style.name + "_" + style.type).Equals(phrase.phones[0].suffix)){
+                                } else if ((style.name + "_" + style.type).Equals(phrase.phones[0].suffix)) {
                                     speaker = style.id;
                                 }
                             });
@@ -136,7 +133,7 @@ namespace OpenUtau.Core.Voicevox {
                                     File.WriteAllBytes(wavPath, bytes);
                                 }
                             } catch (Exception e) {
-                                Log.Error($"Failed to create a voice base.");
+                                Log.Error($"Failed to create a voice base.:{e}");
                             }
                             if (cancellation.IsCancellationRequested) {
                                 return new RenderResult();
