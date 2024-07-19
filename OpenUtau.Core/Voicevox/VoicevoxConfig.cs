@@ -197,8 +197,7 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
-
-        public string Lyrictodic(Note[][] notes, int index) {
+        public string Notetodic(Note[][] notes, int index) {
             if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
                     return "";
@@ -206,6 +205,20 @@ namespace OpenUtau.Core.Voicevox {
                 return lyric_;
             }
             return notes[index][0].lyric;
+        }
+
+        public string Lyrictodic(string lyric) {
+            if (dict.TryGetValue(lyric, out var lyric_)) {
+                if (string.IsNullOrEmpty(lyric_)) {
+                    return "";
+                }
+                return lyric_;
+            }
+            return lyric;
+        }
+
+        public bool IsDic(string lyric) {
+            return dict.ContainsKey(lyric);
         }
     }
 

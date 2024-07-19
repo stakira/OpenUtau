@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Voicevox;
@@ -14,40 +13,37 @@ namespace Voicevox {
             this.singer = singer as VoicevoxSinger;
             if (this.singer != null) {
                 this.singer.voicevoxConfig.Tag = this.Tag;
+                VoicevoxUtils.Loaddic(this.singer);
             }
         }
 
+        protected bool IsSyllableVowelExtensionNote(Note note) {
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
+        }
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
-            Phoneme[] phonemes = new Phoneme[notes.Length];
+            List<Phoneme> phonemes = new List<Phoneme>();
             for (int i = 0; i < notes.Length; i++) {
                 var currentLyric = notes[i].lyric.Normalize(); //measures for Unicode
-                if (currentLyric.StartsWith("+")) {
-                    continue;
-                }
-                int toneShift = 0;
-                int? alt = null;
-                if (notes[i].phonemeAttributes != null) {
-                    var attr = notes[i].phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
-                    toneShift = attr.toneShift;
-                    alt = attr.alternate;
-                }
 
                 Note[][] simplenotes = new Note[1][];
                 var lyricList = notes[i].lyric.Split(" ");
                 if (lyricList.Length > 1) {
                     notes[i].lyric = lyricList[1];
                 }
-                if (VoicevoxUtils.IsHiraKana(notes[i].lyric)) {
-                    phonemes[i] = new Phoneme { phoneme = notes[i].lyric };
-                } else if (VoicevoxUtils.IsPau(notes[i].lyric)) {
-                    phonemes[i] = new Phoneme { phoneme = notes[i].lyric };
-                } else {
-                    phonemes[i] = new Phoneme {
-                        phoneme = "error",
-                    };
+                if (!IsSyllableVowelExtensionNote(notes[i])) {
+                    if (VoicevoxUtils.IsHiraKana(notes[i].lyric)) {
+                        phonemes.Add(new Phoneme { phoneme = notes[i].lyric });
+                    } else if (VoicevoxUtils.IsPau(notes[i].lyric)) {
+                        phonemes.Add(new Phoneme { phoneme = "R" });
+                    } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
+                        phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric) });
+                    } else {
+                        phonemes.Add(new Phoneme { phoneme = "error"});
+                    }
                 }
             }
-            return new Result { phonemes = phonemes };
+            return new Result { phonemes = phonemes.ToArray() };
         }
     }
 }

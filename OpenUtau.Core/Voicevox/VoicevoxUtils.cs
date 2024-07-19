@@ -47,7 +47,7 @@ namespace OpenUtau.Core.Voicevox {
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
-        static Dictionary_list dic = new Dictionary_list();
+        public static Dictionary_list dic = new Dictionary_list();
 
         public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
@@ -63,12 +63,12 @@ namespace OpenUtau.Core.Voicevox {
             return new VoicevoxNote();
         }
 
-        public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis, VoicevoxSinger singer) {
-            if (!VoicevoxUtils.IsHiraKana(notes[0][0].lyric) || !VoicevoxUtils.IsPau(notes[0][0].lyric)) {
-                BaseChinesePhonemizer.RomanizeNotes(notes);
-            }
-            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
+        public static void Loaddic(VoicevoxSinger singer) {
             dic.Loaddic(singer.Location);
+        }
+
+        public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
+            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
             int index = 0;
             int duration = 0;
             try {
@@ -80,7 +80,7 @@ namespace OpenUtau.Core.Voicevox {
                 });
                 duration = notes[index][0].position + notes[index][0].duration;
                 while (index < notes.Length) {
-                    string lyric = dic.Lyrictodic(notes, index);
+                    string lyric = dic.Notetodic(notes, index);
                     int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
                     if (length < 2 ) {
