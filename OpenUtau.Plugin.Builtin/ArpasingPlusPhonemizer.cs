@@ -111,6 +111,11 @@ namespace OpenUtau.Plugin.Builtin {
                 {"awn","n"},
                 {"awng","ng"},
                 {"el","l"},
+                // r-colored vowel
+                {"ar","r"},
+                {"or","r"},
+                {"ir","r"},
+                {"ur","r"},
             };
         private readonly Dictionary<string, string> vvDiphthongExceptions =
             new Dictionary<string, string>() {
@@ -125,7 +130,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
-        private string[] tails = "-,R,RB".Split(',');
+        private string[] tails = "-,R".Split(',');
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
