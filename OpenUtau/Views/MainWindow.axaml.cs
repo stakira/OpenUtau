@@ -370,26 +370,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuImportMidi(bool UseDrywetmidi = false) {
+        async void OnMenuImportMidi(object sender, RoutedEventArgs args) {
             var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importmidi", FilePicker.MIDI);
             if (file == null) {
                 return;
             }
             try {
-                viewModel.ImportMidi(file, UseDrywetmidi);
+                viewModel.ImportMidi(file);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
                 _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
             }
-        }
-
-        void OnMenuImportMidiNaudio(object sender, RoutedEventArgs args) {
-            OnMenuImportMidi(false);
-        }
-
-        void OnMenuImportMidiDrywetmidi(object sender, RoutedEventArgs args) {
-            OnMenuImportMidi(true);
         }
 
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
