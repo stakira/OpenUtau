@@ -284,6 +284,50 @@ namespace OpenUtau.App.ViewModels {
                 Height = 1
             });
             items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("tracks.installsinger"),
+                Command = ReactiveCommand.Create(async () => {
+                    var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+                        ?.MainWindow as MainWindow;
+                    if(mainWindow == null){
+                        return;
+                    }
+                    var file = await FilePicker.OpenFileAboutSinger(
+                        mainWindow, "menu.tools.singer.install", FilePicker.ArchiveFiles);
+                    if (file == null) {
+                        return;
+                    }
+                    try {
+                        if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                            Core.Vogen.VogenSingerInstaller.Install(file);
+                            return;
+                        }
+                        if (file.EndsWith(DependencyInstaller.FileExt)) {
+                            DependencyInstaller.Install(file);
+                            return;
+                        }
+
+                        var setup = new SingerSetupDialog() {
+                            DataContext = new SingerSetupViewModel() {
+                                ArchiveFilePath = file,
+                            },
+                        };
+                        _ = setup.ShowDialog(mainWindow);
+                        if (setup.Position.Y < 0) {
+                            setup.Position = setup.Position.WithY(0);
+                        }
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to install singer {file}");
+                        MessageCustomizableException mce;
+                        if(e is MessageCustomizableException){
+                            mce = (MessageCustomizableException)e;
+                        } else {
+                            mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                        }
+                        _ = await MessageBox.ShowError(mainWindow, mce);
+                    }
+                })
+            });
+            items.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("tracks.opensingers"),
                 Command = ReactiveCommand.Create(() => {
                     try {

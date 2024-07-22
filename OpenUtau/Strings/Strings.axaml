@@ -523,6 +523,7 @@ General
 
   <system:String x:Key="tracks.duplicate">Duplicate Track</system:String>
   <system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>
+  <system:String x:Key="tracks.installsinger">Install singer</system:String>
   <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
