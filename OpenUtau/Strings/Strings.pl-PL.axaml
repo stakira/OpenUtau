@@ -10,7 +10,7 @@
   <system:String x:Key="context.part.rename">Zmień nazwę części</system:String>
   <system:String x:Key="context.part.replaceaudio">Wybierz ponownie częśc audio</system:String>
   <system:String x:Key="context.part.transcribe">Transkrybuj audio do części z nutami</system:String>
-  <system:String x:Key="context.part.transcribing">Transkrypcja w toku.../system:String>
+  <system:String x:Key="context.part.transcribing">Transkrypcja w toku...</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
@@ -285,7 +285,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Załaduj wyrenderowaną wysokość dźwięku</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Przesuń o oktawę w dół</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Przesuń o oktawę w górę</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15"Kwantyzuj do 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Kwantyzuj do 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kwantyzuj do 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Usuń końcówkę "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Usuń końcówkę "R"</system:String>
@@ -422,7 +422,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="singers.editoto.gotosource">Idź do pliku źródłowego</system:String>
   <system:String x:Key="singers.editoto.regenfrq">Wygeneruj ponownie FRQ</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">Ponowne generowanie FRQ</system:String>
-  <system:String x:Key="singers.editoto.reset">Przywróć OTO/system:String>
+  <system:String x:Key="singers.editoto.reset">Przywróć OTO</system:String>
   <system:String x:Key="singers.editoto.save">Zapisz OTO</system:String>
   <system:String x:Key="singers.editoto.searchalias">Szukaj aliasu</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Pobierz vLabeler (1.0.0-beta1 or higher) z https://github.com/sdercolin/vlabeler i ustaw ścieżkę docelową vLabeler w Ustawieniach!</system:String>
@@ -431,7 +431,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="singers.otoview.moveleft">Przesuń w lewo</system:String>
   <system:String x:Key="singers.otoview.moveright">Przesuń w prawo</system:String>
   <system:String x:Key="singers.otoview.selectnext">Wybierz następny</system:String>
-  <system:String x:Key="singers.otoview.selectprev"Wybierz poprzedni</system:String>
+  <system:String x:Key="singers.otoview.selectprev">Wybierz poprzedni</system:String>
   <system:String x:Key="singers.otoview.showall">Pokaż całość</system:String>
   <system:String x:Key="singers.otoview.zoomin">Przybliż</system:String>
   <system:String x:Key="singers.otoview.zoomout">Oddal</system:String>
@@ -518,7 +518,7 @@ Ogólne
   <system:String x:Key="tracks.solo.add">Dodatkowe solo (nie wyłącza solo innych ścieżek)</system:String>
   <system:String x:Key="tracks.solo.only">Wyłączne solo (wyłącza solo innych ścieżek)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">Wyłącz wszystkie solo</system:String>
-  <system:String x:Key="tracks.trackcolor"Zmień kolor ścieżki</system:String>
+  <system:String x:Key="tracks.trackcolor">Zmień kolor ścieżki</system:String>
   <system:String x:Key="tracks.tracksettings">Ustawienia ścieżki</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
