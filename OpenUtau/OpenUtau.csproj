@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <TargetFramework>net6.0-windows</TargetFramework>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <CFBundleIconFile>OpenUtau.icns</CFBundleIconFile>
     <NSPrincipalClass>NSApplication</NSPrincipalClass>
     <NSHighResolutionCapable>true</NSHighResolutionCapable>
-        <CFBundleDocumentTypes>
+    <CFBundleDocumentTypes>
         <array>
             <dict>
                 <key>CFBundleTypeName</key>
