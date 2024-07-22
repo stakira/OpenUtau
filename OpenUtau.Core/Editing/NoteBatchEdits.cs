@@ -581,6 +581,18 @@ namespace OpenUtau.Core.Editing {
                         end, 0));
                 }
             }
+            //Clear vibratos for selected notes
+            foreach (var note in notes) {
+                if (note.vibrato.length > 0) {
+                    docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                }
+            }
+            //Clear MOD+ expressions for selected notes
+            foreach(var phoneme in part.phonemes) {
+                if (phoneme.Parent != null && notes.Contains(phoneme.Parent)) {
+                    docManager.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, phoneme, "mod+", null));
+                }
+            }
             docManager.EndUndoGroup();
         }
     }
