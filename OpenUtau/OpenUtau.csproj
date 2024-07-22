@@ -28,6 +28,26 @@
     <CFBundleIconFile>OpenUtau.icns</CFBundleIconFile>
     <NSPrincipalClass>NSApplication</NSPrincipalClass>
     <NSHighResolutionCapable>true</NSHighResolutionCapable>
+        <CFBundleDocumentTypes>
+        <array>
+            <dict>
+                <key>CFBundleTypeName</key>
+                <string>OpenUtau Sequence File</string>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>ustx</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>OpenUtau.icns</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>com.stakira.openutau.ustx</string>
+                </array>
+            </dict>
+        </array>          
+  </CFBundleDocumentTypes>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
