@@ -355,6 +355,11 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(ViewportTracks));
         }
 
+        /// <summary>
+        /// Convert mouse position in piano roll window to tick in part
+        /// </summary>
+        /// <param name="point">Mouse position</param>
+        /// <returns>Tick position related to the beginning of the part</returns>
         public int PointToTick(Point point) {
             return (int)(point.X / TickWidth + TickOffset);
         }
