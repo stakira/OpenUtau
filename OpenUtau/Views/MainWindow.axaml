@@ -48,9 +48,7 @@
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
             <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
-            <MenuItem Header="{DynamicResource menu.file.importmidi}">
-              <MenuItem Header="{DynamicResource menu.file.importmidi.naudio}" Click="OnMenuImportMidiNaudio"/>
-              <MenuItem Header="{DynamicResource menu.file.importmidi.drywetmidi}" Click="OnMenuImportMidiDrywetmidi"/>
+            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
             </MenuItem>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.exportaudio}">
