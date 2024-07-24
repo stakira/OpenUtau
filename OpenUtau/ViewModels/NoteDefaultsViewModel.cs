@@ -9,7 +9,7 @@ using ReactiveUI.Fody.Helpers;
 namespace OpenUtau.App.ViewModels {
     class NoteDefaultsViewModel : ViewModelBase {
 
-        [Reactive] public string DefaultLyric { get; set; }
+        [Reactive] public string? DefaultLyric { get; set; }
         [Reactive] public int CurrentPortamentoLength { get; set; }
         [Reactive] public int CurrentPortamentoStart { get; set; }
         [Reactive] public float CurrentVibratoLength { get; set; }
@@ -57,6 +57,9 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(vm => vm.DefaultLyric)
                     .Subscribe(defaultLyric => {
+                        if(defaultLyric == null){
+                            return;
+                        }
                         NotePresets.Default.DefaultLyric = defaultLyric;
                         NotePresets.Save();
                     });
