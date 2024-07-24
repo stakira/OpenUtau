@@ -83,7 +83,7 @@ Section -Post
   WriteRegStr HKCR ".ustx" "" "OpenUtauFile"
   WriteRegStr HKCR "OpenUtauFile" "" "OpenUtau Sequence File"
   WriteRegStr HKCR "OpenUtauFile\DefaultIcon" "" "$INSTDIR\OpenUtau.exe"
-  WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" "\"$INSTDIR\OpenUtau.exe\" \"%1\""
+  WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
 SectionEnd
 
 
