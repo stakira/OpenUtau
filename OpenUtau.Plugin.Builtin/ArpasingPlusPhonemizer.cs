@@ -110,12 +110,15 @@ namespace OpenUtau.Plugin.Builtin {
                 {"uwr","r"},
                 {"awn","n"},
                 {"awng","ng"},
-                {"el","l"},
-                // r-colored vowel
+                // r-colored vowel and l
                 {"ar","r"},
                 {"or","r"},
                 {"ir","r"},
                 {"ur","r"},
+                {"ol","l"},
+                {"il","l"},
+                {"el","l"},
+                {"ul","l"},
             };
         private readonly Dictionary<string, string> vvDiphthongExceptions =
             new Dictionary<string, string>() {
