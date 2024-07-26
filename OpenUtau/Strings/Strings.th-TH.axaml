@@ -377,7 +377,6 @@
   <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <system:String x:Key="prefs.playback.backend">ระบบเสียงหลังบ้าน</system:String>
   <system:String x:Key="prefs.playback.backend.auto">อัตโนมัติ</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">ระยะขอบเลื่อนอัตโนมัติ</system:String>
   <system:String x:Key="prefs.playback.device">เครื่องเล่นซ้ำ</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">หยุดชั่วคราว</system:String>

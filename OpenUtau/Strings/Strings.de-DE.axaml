@@ -381,7 +381,6 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationärer Cursor</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatisch</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Abstand</system:String>
   <system:String x:Key="prefs.playback.device">Wiedergabegerät</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Beim Pausieren</system:String>
