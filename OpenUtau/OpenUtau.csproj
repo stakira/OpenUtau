@@ -1,11 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFramework>net6.0-windows</TargetFramework>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
@@ -83,11 +78,21 @@
     <None Include="..\runtimes\win-x86\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
     <None Include="..\Microsoft.AI.DirectML\bin\x86-win\DirectML.dll" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-arm64'">
+    <None Include="..\runtimes\win-arm64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+    <None Include="..\Microsoft.AI.DirectML\bin\arm64-win\DirectML.dll" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+  </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx.10.14-x64'">
+    <None Include="..\runtimes\osx\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">
     <None Include="..\runtimes\osx\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
     <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+    <None Include="..\runtimes\linux-arm64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\NotePropertyExpression.axaml.cs">
