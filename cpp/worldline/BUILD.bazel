@@ -3,6 +3,29 @@ package(
 )
 
 cc_library(
+    name = "audio_output_lib",
+    srcs = ["audio_output.c"],
+    hdrs = ["audio_output.h"],
+    deps = [
+        "@miniaudio",
+        "@xxhash",
+    ],
+)
+
+cc_test(
+    name = "audio_output_test",
+    srcs = ["audio_output_test.cc"],
+    deps = [
+        ":audio_output_lib",
+        "@absl//absl/log",
+        "@absl//absl/strings",
+        "@absl//absl/time",
+        "@gtest//:gtest_main",
+        "@xxhash",
+    ],
+)
+
+cc_library(
     name = "synth_request",
     hdrs = ["synth_request.h"],
 )
@@ -35,7 +58,10 @@ cc_library(
 
 cc_shared_library(
     name = "worldline",
-    deps = [":worldline_lib"],
+    deps = [
+        ":audio_output_lib",
+        ":worldline_lib",
+    ],
 )
 
 cc_test(

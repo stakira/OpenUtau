@@ -61,28 +61,28 @@
   <system:String x:Key="dialogs.voicecolorremapping.caption">다음 트랙의 모든 노트에 적용됩니다.</system:String>
 
   <system:String x:Key="errors.caption">오류</system:String>
-  <!--<system:String x:Key="errors.details">Error Details</system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>-->
-  <!--<system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.min">Min must be smaller than max</system:String>-->
-  <!--<system:String x:Key="errors.expression.name">Name must be set</system:String>-->
-  <!--<system:String x:Key="errors.failed.export">Failed to export</system:String>-->
-  <!--<system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>-->
-  <!--<system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>-->
-  <!--<system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>-->
-  <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
-  <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
-  <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
-  <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
-  <!--<system:String x:Key="errors.failed.render">Failed to render</system:String>-->
-  <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
-  <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
-  <!--<system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>-->
+  <system:String x:Key="errors.details">에러 상세정보</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">보코더 로드 중 오류가 발생했어요 </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. 다음 링크에서 보코더를 다운로드해 주세요. </system:String>
+  <system:String x:Key="errors.expression.abbrlong">줄임말의 글자 수는 한 글자 이상 네 글자 이하여야 해요</system:String>
+  <system:String x:Key="errors.expression.abbrset">줄임말은 반드시 설정되어 있어야 해요</system:String>
+  <system:String x:Key="errors.expression.abbrunique">줄임말은 유일한 값이어야 해요</system:String>
+  <system:String x:Key="errors.expression.default">기본값은 최솟값과 최댓값 사이에 있어야 해요</system:String>
+  <system:String x:Key="errors.expression.flagunique">플래그는 유일한 값이어야 해요</system:String>
+  <system:String x:Key="errors.expression.min">최솟값은 최댓값보다 작아야 해요</system:String>
+  <system:String x:Key="errors.expression.name">이름은 반드시 설정되어 있어야 해요</system:String>
+  <system:String x:Key="errors.failed.export">내보내기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.importaudio">오디오 내보내기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.importfiles">파일 내보내기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.importmidi">midi 내보내기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.load">불러오기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.loadprefs">환경설정 불러오기에 실패했어요. 초기화 중이에요.</system:String>
+  <system:String x:Key="errors.failed.openfile">열기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.openlocation">위치 열기에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.render">렌더링에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">매크로 실행에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.save">저장에 실패했어요</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">가수 설정 파일 저장에 실패했어요</system:String>
 
   <system:String x:Key="exps.abbr">줄임말</system:String>
   <system:String x:Key="exps.apply">적용</system:String>
@@ -105,7 +105,7 @@
   <system:String x:Key="languages.en">영어</system:String>
   <system:String x:Key="languages.es">스페인어</system:String>
   <system:String x:Key="languages.fr">프랑스어</system:String>
-  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
+  <system:String x:Key="languages.invariant">번역하지 않음</system:String>
   <system:String x:Key="languages.it">이탈리아어</system:String>
   <system:String x:Key="languages.ja">일본어</system:String>
   <system:String x:Key="languages.ko">한국어</system:String>
@@ -141,10 +141,10 @@
   <system:String x:Key="menu.edit.copy">복사</system:String>
   <system:String x:Key="menu.edit.cut">잘라내기</system:String>
   <system:String x:Key="menu.edit.delete">삭제</system:String>
-  <!--<system:String x:Key="menu.edit.lockunselectednotes">Lock editing of unselected notes</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.expressions">Expressions</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>-->
+  <system:String x:Key="menu.edit.lockunselectednotes">선택되지 않은 노트들의 편집 잠그기</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">표현</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">피치 점</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">비브라토</system:String>
   <system:String x:Key="menu.edit.paste">붙여넣기</system:String>
   <system:String x:Key="menu.edit.redo">다시 실행</system:String>
   <system:String x:Key="menu.edit.selectall">모두 선택</system:String>
@@ -360,13 +360,14 @@
   <system:String x:Key="prefs.appearance.trackcolor">트랙 색상 UI 사용</system:String>
   <system:String x:Key="prefs.cache">캐시</system:String>
   <system:String x:Key="prefs.cache.clearonquit">나갈 때 자동으로 캐시 삭제</system:String>
-  <!--<system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>-->
+  <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger 텐서 캐시</system:String>
   <system:String x:Key="prefs.caption">환경 설정</system:String>
   <system:String x:Key="prefs.note.restart">참고: 설정을 반영하려면 OpenUtau를 재시작하세요.</system:String>
   <system:String x:Key="prefs.off">꺼짐</system:String>
   <system:String x:Key="prefs.on">켜짐</system:String>
   <system:String x:Key="prefs.otoeditor">원음설정 에디터</system:String>
   <system:String x:Key="prefs.otoeditor.select">기본 원음설정 에디터</system:String>
+  <system:String x:Key="prefs.otoeditor.setparampath">setParam 설치 경로</system:String>
   <system:String x:Key="prefs.paths">경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger">가수 폴더 확장</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">앞으로의 가수 설치 경로를 확장된 폴더로 변경</system:String>
@@ -381,7 +382,6 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">커서 스크롤</system:String>
   <system:String x:Key="prefs.playback.backend">오디오 백엔드</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">자동 스크롤 여백</system:String>
   <system:String x:Key="prefs.playback.device">오디오 출력 장치</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">일시정지할 때</system:String>
@@ -391,7 +391,7 @@
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">기본 렌더러 (Classic 음원용)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 렌더링 깊이(Depth)</system:String>
-  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger 렌더링 단계(Steps)</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">그래픽 카드(GPU)</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">머신러닝 실행 장치</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
@@ -406,12 +406,12 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     참고: 외부 리샘플러를 사용하려면, OpenUtau 설치 경로 속 Resamplers 폴더에 리샘플러의 DLL 또는 EXE 파일을 넣어 주세요. 그리고 환경 설정에서 리샘플러를 선택합시다.
   </system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
+  <system:String x:Key="prefs.rendering.skipmuted">뮤트된 트랙 건너뛰기</system:String>
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
     경고: 렌더링 스레드가 너무 많아요. OpenUtau가 느려질 수 있습니다.
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">최대 스레드 수</system:String>
-  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <system:String x:Key="prefs.rendering.wavtool">웨이브툴</system:String>
 
   <system:String x:Key="progress.loadingsingers">가수를 불러오고 있어요...</system:String>
   <system:String x:Key="progress.saved">{0}에 프로젝트를 저장했어요</system:String>
@@ -419,12 +419,14 @@
 
   <system:String x:Key="singers.caption">가수 목록</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 편집</system:String>
+  <system:String x:Key="singers.editoto.editinsetparam">setParam에서 편집</system:String>
   <system:String x:Key="singers.editoto.gotosource">원본 파일로</system:String>
   <system:String x:Key="singers.editoto.regenfrq">FRQ 재생성</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">FRQ를 재생성하고 있어요...</system:String>
   <system:String x:Key="singers.editoto.reset">원음설정 초기화</system:String>
   <system:String x:Key="singers.editoto.save">원음설정 저장</system:String>
   <system:String x:Key="singers.editoto.searchalias">에일리어스 찾기</system:String>
+  <system:String x:Key="singers.editoto.setsetparampath">http://nwp8861.blog92.fc2.com/ 에서 setParam (v4.0b나 그 이상)을 다운로드하고, 환경 설정에서 setParam 경로를 지정해 주세요!</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">https://github.com/sdercolin/vlabeler 에서 vLabeler(1.0.0-beta1 이상)를 다운로드하고, 환경 설정에서 vLabeler 경로를 지정해 주세요!</system:String>
   <system:String x:Key="singers.errorreport">가수 오류 보고서 생성</system:String>
   <system:String x:Key="singers.location">위치 열기</system:String>
@@ -511,6 +513,8 @@
   <system:String x:Key="tracks.mute.allothers">다른 트랙 전부 뮤트</system:String>
   <system:String x:Key="tracks.mute.only">이 트랙만 뮤트</system:String>
   <system:String x:Key="tracks.mute.unmuteall">모든 뮤트 해제</system:String>
+  <system:String x:Key="tracks.opensingers">가수 폴더(기본) 열기</system:String>
+  <system:String x:Key="tracks.openaddsingers">가수 폴더(확장) 열기</system:String>
   <system:String x:Key="tracks.remove">트랙 제거</system:String>
   <system:String x:Key="tracks.rename">트랙 이름 변경</system:String>
   <system:String x:Key="tracks.selectrenderer">렌더러 선택</system:String>
