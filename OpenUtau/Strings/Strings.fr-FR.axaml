@@ -377,7 +377,6 @@ Attention: cela va effacer le préréglage.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Curseur fixe</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatique</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Position du curseur</system:String>
   <system:String x:Key="prefs.playback.device">Audio de sortie</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">En pause</system:String>
