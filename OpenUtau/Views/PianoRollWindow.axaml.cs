@@ -130,6 +130,7 @@ namespace OpenUtau.App.Views {
                 new ResetVibratos(),
                 new ClearTimings(),
                 new ResetAliases(),
+                new ResetAll(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
