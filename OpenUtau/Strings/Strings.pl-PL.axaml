@@ -398,7 +398,6 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Nieruchomy kursor</system:String>
   <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatyczny</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Margines automatycznego przewijania</system:String>
   <system:String x:Key="prefs.playback.device">Urządzenie odtwarzania</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Podczas pauzy</system:String>
