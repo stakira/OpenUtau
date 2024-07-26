@@ -381,7 +381,6 @@ Tieni premuto Ctrl per selezionare</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursore Immobile</system:String>
   <system:String x:Key="prefs.playback.backend">Backend Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatico</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posizione del cursore</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Pausa alla posizione corrente</system:String>
