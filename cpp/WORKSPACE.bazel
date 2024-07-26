@@ -45,3 +45,11 @@ http_archive(
     strip_prefix = "World-f8dd5fb289db6a7f7f704497752bf32b258f9151",
     urls = ["https://github.com/mmorise/World/archive/f8dd5fb289db6a7f7f704497752bf32b258f9151.zip"],
 )
+
+http_archive(
+    name = "miniaudio",
+    build_file = "@//third_party:miniaudio.BUILD",
+    sha256 = "cbde908871e2619115fd216c74235265348060fe7d340f980cd14342e88d7f72",
+    strip_prefix = "miniaudio-0.11.21",
+    urls = ["https://github.com/mackron/miniaudio/archive/refs/tags/0.11.21.zip"],
+)
