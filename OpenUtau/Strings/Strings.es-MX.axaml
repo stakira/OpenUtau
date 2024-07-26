@@ -377,7 +377,6 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor fijo</system:String>
   <system:String x:Key="prefs.playback.backend">Backend de audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Escoger automáticamente</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posición del cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de reproducción</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Cuando se pausa...</system:String>
