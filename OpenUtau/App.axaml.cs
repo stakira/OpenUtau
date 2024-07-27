@@ -124,10 +124,18 @@ namespace OpenUtau.App {
 
         public static void InitAudio() {
             Log.Information("Initializing audio.");
-            try {
-                PlaybackManager.Inst.AudioOutput = new Audio.MiniAudioOutput();
-            } catch (Exception e) {
-                Log.Error(e, "Failed to Initialize audio");
+            if (!OS.IsWindows() || Core.Util.Preferences.Default.PreferPortAudio) {
+                try {
+                    PlaybackManager.Inst.AudioOutput = new Audio.MiniAudioOutput();
+                } catch (Exception e1) {
+                    Log.Error(e1, "Failed to init MiniAudio");
+                }
+            } else {
+                try {
+                    PlaybackManager.Inst.AudioOutput = new Audio.NAudioOutput();
+                } catch (Exception e2) {
+                    Log.Error(e2, "Failed to init NAudio");
+                }
             }
             Log.Information("Initialized audio.");
         }
