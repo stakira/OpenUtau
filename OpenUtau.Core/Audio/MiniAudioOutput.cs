@@ -56,8 +56,12 @@ namespace OpenUtau.Audio {
                         *(ulong*)(guidPtr + 8) = device_infos[i].id;
                     }
                     devices.Add(new AudioOutputDevice {
-                        name = Marshal.PtrToStringUTF8(device_infos[i].name),
-                        api = Marshal.PtrToStringUTF8(device_infos[i].api),
+                        name = OS.IsWindows()
+                            ? Marshal.PtrToStringAnsi(device_infos[i].name)
+                            : Marshal.PtrToStringUTF8(device_infos[i].name),
+                        api = OS.IsWindows()
+                            ? Marshal.PtrToStringAnsi(device_infos[i].api)
+                            : Marshal.PtrToStringUTF8(device_infos[i].api),
                         deviceNumber = i,
                         guid = new Guid(guidData),
                     });
@@ -99,16 +103,24 @@ namespace OpenUtau.Audio {
             PlaybackState = PlaybackState.Stopped;
         }
 
+        float[] temp = new float[0];
         private unsafe void DataCallback(float* buffer, uint channels, uint frame_count) {
-            var temp = new float[channels * frame_count];
+            int samples = (int)(channels * frame_count);
+            if (temp.Length < samples) {
+                temp = new float[samples];
+            }
+            int n = 0;
             if (sampleProvider != null) {
-                int n = sampleProvider.Read(temp, 0, temp.Length);
-                if (n == 0) {
-                    eof = true;
-                }
+                n = sampleProvider.Read(temp, 0, temp.Length);
+            }
+            if (n < samples) {
+                Array.Fill(temp, 0, n, samples - n);
+            }
+            if (n == 0) {
+                eof = true;
             }
             Marshal.Copy(temp, 0, (IntPtr)buffer, temp.Length);
-            currentTimeMs += frame_count * 1000.0 / sampleRate;
+            currentTimeMs += n / channels * 1000.0 / sampleRate;
         }
 
         public long GetPosition() {
