@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Audio {
     public class MiniAudioOutput : IAudioOutput, IDisposable {
@@ -40,14 +41,15 @@ namespace OpenUtau.Audio {
         private void UpdateDeviceList() {
             devices.Clear();
             unsafe {
-                ou_audio_device_info_t* device_infos = stackalloc ou_audio_device_info_t[16];
-                int count = ou_get_audio_device_infos(device_infos, 16);
+                const int kMaxCount = 128;
+                ou_audio_device_info_t* device_infos = stackalloc ou_audio_device_info_t[kMaxCount];
+                int count = ou_get_audio_device_infos(device_infos, kMaxCount);
                 if (count == 0) {
                     throw new Exception("Failed to get any audio device info");
                 }
-                if (count > 16) {
-                    ou_free_audio_device_infos(device_infos, 16);
-                    count = ou_get_audio_device_infos(device_infos, count);
+                if (count > kMaxCount) {
+                    Log.Warning($"More than {kMaxCount} audio devices found, only the first {kMaxCount} will be listed.");
+                    count = kMaxCount;
                 }
                 for (int i = 0; i < count; i++) {
                     var guidData = new byte[16];
@@ -55,13 +57,13 @@ namespace OpenUtau.Audio {
                         *(ulong*)guidPtr = device_infos[i].api_id;
                         *(ulong*)(guidPtr + 8) = device_infos[i].id;
                     }
+                    string api = Marshal.PtrToStringUTF8(device_infos[i].api); // Should be ascii.
+                    string name = (OS.IsWindows() && api != "WASAPI")
+                        ? Marshal.PtrToStringAnsi(device_infos[i].name)
+                        : Marshal.PtrToStringUTF8(device_infos[i].name);
                     devices.Add(new AudioOutputDevice {
-                        name = OS.IsWindows()
-                            ? Marshal.PtrToStringAnsi(device_infos[i].name)
-                            : Marshal.PtrToStringUTF8(device_infos[i].name),
-                        api = OS.IsWindows()
-                            ? Marshal.PtrToStringAnsi(device_infos[i].api)
-                            : Marshal.PtrToStringUTF8(device_infos[i].api),
+                        name = name,
+                        api = api,
                         deviceNumber = i,
                         guid = new Guid(guidData),
                     });
@@ -111,7 +113,7 @@ namespace OpenUtau.Audio {
             }
             int n = 0;
             if (sampleProvider != null) {
-                n = sampleProvider.Read(temp, 0, temp.Length);
+                n = sampleProvider.Read(temp, 0, samples);
             }
             if (n < samples) {
                 Array.Fill(temp, 0, n, samples - n);
@@ -119,7 +121,7 @@ namespace OpenUtau.Audio {
             if (n == 0) {
                 eof = true;
             }
-            Marshal.Copy(temp, 0, (IntPtr)buffer, temp.Length);
+            Marshal.Copy(temp, 0, (IntPtr)buffer, samples);
             currentTimeMs += n / channels * 1000.0 / sampleRate;
         }
 
