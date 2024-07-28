@@ -15,10 +15,6 @@ DLL_API int32_t ou_get_audio_device_infos(ou_audio_device_info_t* device_infos,
 
   for (int i = 0; i < ma_backend_null; i++) {
     backends[0] = (ma_backend)i;
-    if (i == 0 || i == (int)ma_backend_dsound) {
-      backends[0] =
-          (ma_backend)((int)ma_backend_dsound - i);  // Swaps dsound to first.
-    }
     ma_result result = ma_context_init(backends, 1, NULL, &context);
     if (result != MA_SUCCESS) {
       continue;
@@ -74,22 +70,22 @@ static void silence(float* buffer, uint32_t channels, uint32_t frame_count) {
 static void data_callback(ma_device* pDevice, void* pOutput, const void* pInput,
                           ma_uint32 frameCount) {
   if (g_data_callback == NULL) {
-    silence(pOutput, pDevice->playback.channels, frameCount);
+    silence((float*)pOutput, pDevice->playback.channels, frameCount);
   } else {
-    g_data_callback(pOutput, pDevice->playback.channels, frameCount);
+    g_data_callback((float*)pOutput, pDevice->playback.channels, frameCount);
   }
 }
 
 DLL_API ou_audio_context_t* ou_init_audio_device(
     uint32_t api_id, uint64_t id, ou_audio_data_callback_t callback) {
-  ou_audio_context_t* result = malloc(sizeof(ou_audio_context_t));
+  ou_audio_context_t* result = new ou_audio_context_t();
   if (result == NULL) {
     return NULL;
   }
 
   ma_backend backends[1] = {(ma_backend)api_id};
   if (ma_context_init(backends, 1, NULL, &result->context) != MA_SUCCESS) {
-    free(result);
+    delete result;
     return NULL;
   }
 
@@ -101,7 +97,7 @@ DLL_API ou_audio_context_t* ou_init_audio_device(
                              &playback_device_count, &capture_device_infos,
                              &capture_device_count) != MA_SUCCESS) {
     ma_context_uninit(&result->context);
-    free(result);
+    delete result;
     return NULL;
   }
 
@@ -123,14 +119,14 @@ DLL_API ou_audio_context_t* ou_init_audio_device(
 
   if (config.playback.pDeviceID == NULL) {
     ma_context_uninit(&result->context);
-    free(result);
+    delete result;
     return NULL;
   }
 
   if (ma_device_init(&result->context, &config, &result->device) !=
       MA_SUCCESS) {
     ma_context_uninit(&result->context);
-    free(result);
+    delete result;
     return NULL;
   }
 
@@ -143,7 +139,7 @@ DLL_API int ou_free_audio_device(ou_audio_context_t* context) {
   if (result != MA_SUCCESS) {
     return result;
   }
-  free(context);
+  delete context;
   return 0;
 }
 

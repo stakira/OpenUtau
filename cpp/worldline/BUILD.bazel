@@ -2,9 +2,28 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+cc_binary(
+    name = "audio_debug",
+    srcs = ["audio_debug.cc"],
+    deps = [
+        ":audio_output_lib",
+        "@absl//absl/debugging:failure_signal_handler",
+        "@absl//absl/debugging:symbolize",
+        "@absl//absl/flags:flag",
+        "@absl//absl/flags:parse",
+        "@absl//absl/log",
+        "@absl//absl/log:check",
+        "@absl//absl/log:initialize",
+        "@absl//absl/strings",
+        "@absl//absl/strings:string_view",
+        "@miniaudio",
+        "@xxhash",
+    ],
+)
+
 cc_library(
     name = "audio_output_lib",
-    srcs = ["audio_output.c"],
+    srcs = ["audio_output.cc"],
     hdrs = ["audio_output.h"],
     deps = [
         "@miniaudio",
