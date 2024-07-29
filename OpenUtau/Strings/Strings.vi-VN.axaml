@@ -377,7 +377,6 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Con trỏ đứng ở một chỗ</system:String>
   <system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát nhạc</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát nhạc</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Khi dừng phát nhạc</system:String>

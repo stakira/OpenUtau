@@ -11,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     class LyricsViewModel : ViewModelBase {
-        [Reactive] public string Text { get; set; }
+        [Reactive] public string? Text { get; set; }
         [Reactive] public int CurrentCount { get; set; }
         [Reactive] public int TotalCount { get; set; }
         [Reactive] public int MaxCount { get; set; }

@@ -176,7 +176,8 @@ namespace OpenUtau.App.ViewModels {
                         double castX = MusicMath.InterpolateShapeX(lastX, x, lastY, y, point.Y, lastShape) - point.X;
                         double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                         if (dis < 3) {
-                            double msX = viewModel.Project.timeAxis.TickPosToMsPos(viewModel.PointToTick(point)) - note.PositionMs;
+                            var timeAxis = viewModel.Project.timeAxis;
+                            double msX = timeAxis.TickPosToMsPos(viewModel.PointToTick(point) + viewModel.Part.position) - note.PositionMs;
                             double decCentY = (viewModel.PointToToneDouble(point) - note.tone) * 10;
                             return new PitchPointHitInfo() {
                                 Note = note,
@@ -223,7 +224,7 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             double tick = viewModel.PointToTick(point);
-            var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.position - p.leading >= tick);
+            var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.end >= tick);
             if (phrase == null) {
                 phrase = viewModel.Part.renderPhrases.Last();
             }

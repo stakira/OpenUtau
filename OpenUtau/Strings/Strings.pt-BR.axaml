@@ -377,7 +377,6 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Estacionário</system:String>
   <system:String x:Key="prefs.playback.backend">Back-end de áudio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automático</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posição do Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Quando Parar</system:String>
