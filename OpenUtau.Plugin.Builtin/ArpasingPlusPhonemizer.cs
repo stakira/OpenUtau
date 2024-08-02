@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aan", "an", "axn", "aen", "ahn", "aon", "on", "awn", "aun", "ayn", "ain", "ehn", "en", "eyn", "ein", "ihn", "iyn", "in", "own", "oun", "oyn", "oin", "uhn", "uwn", "un",
         "aang", "ang", "axng", "aeng", "ahng", "aong", "ong", "awng", "aung", "ayng", "aing", "ehng", "eng", "eyng", "eing", "ihng", "iyng", "ing", "owng", "oung", "oyng", "oing", "uhng", "uwng", "ung",
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
-        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua"
+        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
         };
         private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
@@ -110,11 +110,16 @@ namespace OpenUtau.Plugin.Builtin {
                 {"uwr","r"},
                 {"awn","n"},
                 {"awng","ng"},
+                {"ean","n"},
+                {"eam","m"},
+                {"eang","ng"},
                 // r-colored vowel and l
                 {"ar","r"},
                 {"or","r"},
+                {"air","r"},
                 {"ir","r"},
                 {"ur","r"},
+                {"al","l"},
                 {"ol","l"},
                 {"il","l"},
                 {"el","l"},
