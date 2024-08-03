@@ -59,6 +59,32 @@ namespace OpenUtau.Core.Format {
             project.RegisterExpression(new UExpressionDescriptor("tone shift (curve)", SHFC, -1200, 1200, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("tension (curve)", TENC, -100, 100, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("voicing (curve)", VOIC, 0, 100, 100) { type = UExpressionType.Curve });
+
+            string message = string.Empty;
+            if (ValidateExpression(project, "g", GEN)) {
+                message += $"\ng flag -> gender";
+            }
+            if (ValidateExpression(project, "B", BRE)) {
+                message += $"\nB flag -> {BRE}";
+            }
+            if (ValidateExpression(project, "H", LPF)) {
+                message += $"\nH flag-> {LPF}";
+            }
+            if (ValidateExpression(project, "P", NORM)) {
+                message += $"\nP flag-> normalize";
+            }
+            if (message != string.Empty) {
+                var e = new MessageCustomizableException("Expressions have been merged due to duplicate flags", $"<translate:errors.expression.marge>:{message}", new Exception(), false);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
+        }
+        private static bool ValidateExpression(UProject project, string flag, string abbr) {
+            if (project.expressions.Any(e => e.Value.flag == flag && e.Value.abbr != abbr)) {
+                var oldExp = project.expressions.First(e => e.Value.flag == flag && e.Value.abbr != abbr);
+                project.MargeExpression(oldExp.Value.abbr, abbr);
+                return true;
+            }
+            return false;
         }
 
         public static UProject Create() {
@@ -68,19 +94,28 @@ namespace OpenUtau.Core.Format {
         }
 
         public static void Save(string filePath, UProject project) {
-            project.ustxVersion = kUstxVersion;
-            project.FilePath = filePath;
-            project.BeforeSave();
-            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-            project.Saved = true;
-            project.AfterSave();
+            try {
+                project.ustxVersion = kUstxVersion;
+                project.FilePath = filePath;
+                project.BeforeSave();
+                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+                project.Saved = true;
+                project.AfterSave();
+            } catch (Exception ex) {
+                var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
         }
 
         public static void AutoSave(string filePath, UProject project) {
-            project.ustxVersion = kUstxVersion;
-            project.BeforeSave();
-            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-            project.AfterSave();
+            try {
+                project.ustxVersion = kUstxVersion;
+                project.BeforeSave();
+                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+                project.AfterSave();
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to autosave: {filePath}");
+            }
         }
 
         public static UProject Load(string filePath) {

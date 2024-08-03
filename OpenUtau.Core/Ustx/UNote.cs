@@ -11,6 +11,9 @@ namespace OpenUtau.Core.Ustx {
     public class UNote : IComparable {
         static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
 
+        /// <summary>
+        /// Position of the note in ticks, relative to the beginning of the part.
+        /// </summary>
         public int position;
         public int duration;
         public int tone;
@@ -22,6 +25,10 @@ namespace OpenUtau.Core.Ustx {
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public int End => position + duration;
+
+        /// <summary>
+        /// Position of the note in milliseconds, relative to the beginning of the project.
+        /// </summary>
         [YamlIgnore] public double PositionMs { get; set; }
         [YamlIgnore] public double DurationMs => EndMs - PositionMs;
         [YamlIgnore] public double EndMs { get; set; }
@@ -63,10 +70,11 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
             foreach (var exp in phonemeExpressions) {
-                if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
+                if (track.TryGetExpDescriptor(project, exp.abbr, out var descriptor)) {
                     exp.descriptor = descriptor;
                 }
             }
+            phonemeExpressions = phonemeExpressions.Where(exp => exp.descriptor != null).ToList();
         }
 
         public void BeforeSave(UProject project, UTrack track, UVoicePart part) {
@@ -434,7 +442,14 @@ namespace OpenUtau.Core.Ustx {
     };
 
     public class PitchPoint : IComparable<PitchPoint> {
+        /// <summary>
+        /// Position relative to the beginning of the note in milliseconds.
+        /// </summary>
         public float X;
+
+        /// <summary>
+        /// Pitch relative to the tone of the note in 0.1 semi-tones.
+        /// </summary>
         public float Y;
         public PitchPointShape shape;
 

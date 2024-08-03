@@ -278,6 +278,87 @@ namespace OpenUtau.App.ViewModels {
                         }).ToArray(),
                 });
             }
+
+            items.Add(new MenuItemViewModel() { // Separator
+                Header = "-",
+                Height = 1
+            });
+            items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("tracks.installsinger"),
+                Command = ReactiveCommand.Create(async () => {
+                    var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+                        ?.MainWindow as MainWindow;
+                    if(mainWindow == null){
+                        return;
+                    }
+                    var file = await FilePicker.OpenFileAboutSinger(
+                        mainWindow, "menu.tools.singer.install", FilePicker.ArchiveFiles);
+                    if (file == null) {
+                        return;
+                    }
+                    try {
+                        if (file.EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                            Core.Vogen.VogenSingerInstaller.Install(file);
+                            return;
+                        }
+                        if (file.EndsWith(DependencyInstaller.FileExt)) {
+                            DependencyInstaller.Install(file);
+                            return;
+                        }
+
+                        var setup = new SingerSetupDialog() {
+                            DataContext = new SingerSetupViewModel() {
+                                ArchiveFilePath = file,
+                            },
+                        };
+                        _ = setup.ShowDialog(mainWindow);
+                        if (setup.Position.Y < 0) {
+                            setup.Position = setup.Position.WithY(0);
+                        }
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to install singer {file}");
+                        MessageCustomizableException mce;
+                        if(e is MessageCustomizableException){
+                            mce = (MessageCustomizableException)e;
+                        } else {
+                            mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                        }
+                        _ = await MessageBox.ShowError(mainWindow, mce);
+                    }
+                })
+            });
+            items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("tracks.opensingers"),
+                Command = ReactiveCommand.Create(() => {
+                    try {
+                        OS.OpenFolder(PathManager.Inst.SingersPath);
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                    }
+                })
+            });
+            if (!string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath) && Directory.Exists(PathManager.Inst.AdditionalSingersPath)) {
+                items.Add(new MenuItemViewModel() {
+                    Header = ThemeManager.GetString("tracks.openaddsingers"),
+                    Command = ReactiveCommand.Create(() => {
+                        try {
+                            OS.OpenFolder(PathManager.Inst.AdditionalSingersPath);
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                        }
+                    })
+                });
+            }
+            items.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("singers.refresh"),
+                Command = ReactiveCommand.Create(() => {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "singer"));
+                    SingerManager.Inst.SearchAllSingers();
+                    DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "singer"));
+                })
+            });
+
             SingerMenuItems = items;
             this.RaisePropertyChanged(nameof(SingerMenuItems));
         }

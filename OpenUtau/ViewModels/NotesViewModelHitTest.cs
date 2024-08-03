@@ -176,7 +176,8 @@ namespace OpenUtau.App.ViewModels {
                         double castX = MusicMath.InterpolateShapeX(lastX, x, lastY, y, point.Y, lastShape) - point.X;
                         double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                         if (dis < 3) {
-                            double msX = viewModel.Project.timeAxis.TickPosToMsPos(viewModel.PointToTick(point)) - note.PositionMs;
+                            var timeAxis = viewModel.Project.timeAxis;
+                            double msX = timeAxis.TickPosToMsPos(viewModel.PointToTick(point) + viewModel.Part.position) - note.PositionMs;
                             double decCentY = (viewModel.PointToToneDouble(point) - note.tone) * 10;
                             return new PitchPointHitInfo() {
                                 Note = note,
@@ -216,6 +217,24 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             return pitch;
+        }
+
+        public double? SampleOverwritePitch(Point point) {
+            if (viewModel.Part == null || viewModel.Part.renderPhrases.Count == 0) {
+                return null;
+            }
+            double tick = viewModel.PointToTick(point);
+            var phrase = viewModel.Part.renderPhrases.FirstOrDefault(p => p.end >= tick);
+            if (phrase == null) {
+                phrase = viewModel.Part.renderPhrases.Last();
+            }
+            if (phrase == null || phrase.pitchesBeforeDeviation.Length == 0) {
+                return null;
+            }
+            var curve = phrase.pitchesBeforeDeviation;
+            var pitchIndex = (int)Math.Round((tick - phrase.position + phrase.leading) / 5);
+            pitchIndex = Math.Clamp(pitchIndex, 0, curve.Length - 1);
+            return curve[pitchIndex];
         }
 
         public VibratoHitInfo HitTestVibrato(Point mousePos) {

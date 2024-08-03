@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -26,16 +26,13 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void ReloadSingers(object sender, RoutedEventArgs e) {
-            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PreferencesDialog), true, "singer"));
-            try {
+        async void ReloadSingers(object sender, RoutedEventArgs e) {
+            MessageBox.ShowLoading(this);
+            await Task.Run(() => {
                 SingerManager.Inst.SearchAllSingers();
-                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
-            } catch (Exception ex) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-            } finally {
-                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PreferencesDialog), false, "singer"));
-            }
+            });
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            MessageBox.CloseLoading();
         }
 
         void ResetVLabelerPath(object sender, RoutedEventArgs e) {
@@ -50,6 +47,20 @@ namespace OpenUtau.App.Views {
             }
             if (OS.AppExists(path)) {
                 ((PreferencesViewModel)DataContext!).SetVLabelerPath(path);
+            }
+        }
+
+        void ResetSetParamPath(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).SetSetParamPath(string.Empty);
+        }
+
+        async void SelectSetParamPath(object sender, RoutedEventArgs e) {
+            var path = await FilePicker.OpenFile(this, "prefs.otoeditor.setparampath", FilePicker.EXE);
+            if (string.IsNullOrEmpty(path)) {
+                return;
+            }
+            if (File.Exists(path)) {
+                ((PreferencesViewModel)DataContext!).SetSetParamPath(path);
             }
         }
     }

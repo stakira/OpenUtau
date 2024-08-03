@@ -72,7 +72,8 @@ namespace OpenUtau.Classic {
                             item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                         }
                         if (!File.Exists(item.outputFile)) {
-                            throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\"");
+                            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                            throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                         }
                         if (!(item.resampler is WorldlineResampler)) {
                             VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
@@ -107,7 +108,7 @@ namespace OpenUtau.Classic {
                             result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                         }
                     } catch (Exception e) {
-                        Log.Error(e, "Failed to render.");
+                        Log.Error(e, $"Failed to render: failed to open {wavPath}");
                     }
                 }
                 if (result.samples == null) {

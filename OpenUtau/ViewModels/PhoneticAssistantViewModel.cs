@@ -21,7 +21,7 @@ namespace OpenUtau.App.ViewModels {
         public List<G2pOption> G2ps => g2ps;
 
         [Reactive] public G2pOption? G2p { get; set; }
-        [Reactive] public string Grapheme { get; set; }
+        [Reactive] public string? Grapheme { get; set; }
         [Reactive] public string Phonemes { get; set; }
 
         private readonly List<G2pOption> g2ps = new List<G2pOption>() {
@@ -33,6 +33,7 @@ namespace OpenUtau.App.ViewModels {
             new G2pOption(typeof(PortugueseG2p)),
             new G2pOption(typeof(RussianG2p)),
             new G2pOption(typeof(SpanishG2p)),
+            new G2pOption(typeof(KoreanG2p)),
         };
 
         private Api.G2pPack? g2p;
@@ -56,7 +57,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void Refresh() {
-            if (g2p == null) {
+            if (Grapheme == null || g2p == null) {
                 Phonemes = string.Empty;
                 return;
             }

@@ -144,22 +144,23 @@ namespace OpenUtau.Core.Ustx {
             var trackExp = TrackExpressions.FirstOrDefault(e => e.descriptor.abbr == abbr);
             if (trackExp != null) {
                 expression = trackExp.Clone();
-                expression.descriptor = descriptor;
             } else {
                 expression = new UExpression(descriptor) { value = descriptor.defaultValue };
             }
             return true;
         }
 
-        public void SetTrackExpression(string abbr, float? value) {
-            if (!TryGetExpDescriptor(DocManager.Inst.Project, abbr, out var descriptor)) {
+        // May be used in the future
+        public void SetTrackExpression(UExpressionDescriptor descriptor, float? value) {
+            if (!TryGetExpDescriptor(DocManager.Inst.Project, descriptor.abbr, out var pDescriptor)) {
+                TrackExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr);
                 return;
             }
 
-            if (value == null || descriptor.defaultValue == value) {
-                TrackExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr);
+            if (value == null || (descriptor.Equals(pDescriptor) && pDescriptor.defaultValue == value)) {
+                TrackExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr);
             } else {
-                var trackExp = TrackExpressions.FirstOrDefault(e => e.descriptor.abbr == abbr);
+                var trackExp = TrackExpressions.FirstOrDefault(e => e.descriptor.abbr == descriptor.abbr);
                 if (trackExp != null) {
                     trackExp.descriptor = descriptor;
                     trackExp.value = (float)value;
@@ -199,7 +200,7 @@ namespace OpenUtau.Core.Ustx {
             oldColors = VoiceColorNames.ToArray();
             newColors = new string[0];
 
-            if (Singer != null && Singer.Found && VoiceColorExp != null) {
+            if (Singer != null && Singer.Found && VoiceColorExp != null && VoiceColorExp.options.Length > 0) {
                 newColors = VoiceColorExp.options.ToArray();
 
                 if (VoiceColorNames.Length > 1) {
@@ -222,6 +223,11 @@ namespace OpenUtau.Core.Ustx {
         public void BeforeSave() {
             singer = Singer?.Id;
             phonemizer = Phonemizer.GetType().FullName;
+            if (Singer != null && Singer.Found && VoiceColorExp != null && VoiceColorExp.options.Length > 0) {
+                VoiceColorNames = VoiceColorExp.options.ToArray();
+            } else {
+                VoiceColorNames = new string[] { "" };
+            }
         }
 
         public void AfterLoad(UProject project) {

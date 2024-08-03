@@ -11,7 +11,10 @@ namespace OpenUtau.Core.Util {
             @"\p{IsCJKUnifiedIdeographs}|\p{IsHiragana}|\p{IsKatakana}|\p{IsHangulSyllables}");
         static Regex contracted = new Regex(@"[ゃゅょぁぃぅぇぉャュョァィゥェォ]");
 
-        public static List<string> Split(string text) {
+        public static List<string> Split(string? text) {
+            if(text == null){
+                return new List<string>();
+            }
             var lyrics = new List<string>();
             var builder = new StringBuilder();
             var etor = StringInfo.GetTextElementEnumerator(text);

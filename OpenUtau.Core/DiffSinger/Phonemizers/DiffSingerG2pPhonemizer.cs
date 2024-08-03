@@ -47,19 +47,25 @@ namespace OpenUtau.Core.DiffSinger
             var g2ps = new List<IG2p>();
 
             // Load dictionary from singer folder.
+            G2pDictionary.Builder g2pBuilder = new G2pDictionary.Builder();
             var replacements = new Dictionary<string,string>();
             foreach(var dictionaryName in dictionaryNames){
                 string dictionaryPath = Path.Combine(rootPath, dictionaryName);
                 if (File.Exists(dictionaryPath)) {
                     try {
-                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(dictionaryPath)).Build());
-                        replacements = G2pReplacementsData.Load(File.ReadAllText(dictionaryPath)).toDict();
+                        string dictText = File.ReadAllText(dictionaryPath);
+                        replacements = G2pReplacementsData.Load(dictText).toDict();
+                        g2pBuilder.Load(dictText);
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {dictionaryPath}");
                     }
                     break;
                 }
             }
+            //SP and AP should always be vowel
+            g2pBuilder.AddSymbol("SP", true);
+            g2pBuilder.AddSymbol("AP", true);
+            g2ps.Add(g2pBuilder.Build());
 
             // Load base g2p.
             var baseG2p = LoadBaseG2p();
@@ -83,7 +89,7 @@ namespace OpenUtau.Core.DiffSinger
                     }
                 }
             }
-            g2ps.Add(new G2pRemapper(baseG2p,phonemeSymbols, replacements));
+            g2ps.Add(new G2pRemapper(baseG2p, phonemeSymbols, replacements));
             return new G2pFallbacks(g2ps.ToArray());
         }
     }

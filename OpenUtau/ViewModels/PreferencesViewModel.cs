@@ -54,6 +54,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
+        public string SetParamPath => Preferences.Default.SetParamPath;
         [Reactive] public bool ClearCacheOnQuit { get; set; }
         public int LogicalCoreCount {
             get => Environment.ProcessorCount;
@@ -373,6 +374,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.VLabelerPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(VLabelerPath));
+        }
+
+        public void SetSetParamPath(string path) {
+            Preferences.Default.SetParamPath = path;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(SetParamPath));
         }
     }
 }

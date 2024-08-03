@@ -151,7 +151,7 @@ namespace OpenUtau.Core.DiffSinger {
             }
             if (singer.dsConfig.mel_scale != "slaney" && singer.dsConfig.mel_scale != "htk") {
                 throw new Exception(
-                    $"Mel scale must be \"slaney\" or \"htk\", but got \"{vocoder.mel_scale}\" from acoustic model");
+                    $"Mel scale must be \"slaney\" or \"htk\", but got \"{singer.dsConfig.mel_scale}\" from acoustic model");
             }
             //mel specification matching checks
             if(vocoder.sample_rate != singer.dsConfig.sample_rate) {
@@ -208,7 +208,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(p => p.phoneme)
                 .Prepend("SP")
                 .Append("SP")
-                .Select(x => (long)(singer.phonemes.IndexOf(x)))
+                .Select(phoneme => (Int64)singer.PhonemeTokenize(phoneme))
                 .ToList();
             var durations = phrase.phones
                 .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error
