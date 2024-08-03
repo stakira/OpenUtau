@@ -377,7 +377,6 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Неподвижный курсор</system:String>
   <system:String x:Key="prefs.playback.backend">Звуковой бэкенд</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Автоматический</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Поле автопрокрутки</system:String>
   <system:String x:Key="prefs.playback.device">Устройство воспроизведения</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">На паузе</system:String>

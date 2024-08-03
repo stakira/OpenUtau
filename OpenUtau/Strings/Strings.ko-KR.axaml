@@ -382,7 +382,6 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">커서 스크롤</system:String>
   <system:String x:Key="prefs.playback.backend">오디오 백엔드</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">자동 스크롤 여백</system:String>
   <system:String x:Key="prefs.playback.device">오디오 출력 장치</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">일시정지할 때</system:String>
