@@ -135,7 +135,6 @@ namespace OpenUtau.Plugin.Builtin {
                 {"oy","ao"},
             };
 
-
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
         private string[] tails = "-,R".Split(',');
@@ -815,64 +814,109 @@ namespace OpenUtau.Plugin.Builtin {
         }
         protected override string ValidateAlias(string alias) {
 
-            //FALLBACKS
-            var cvFallbacks = new Dictionary<string, string> {
-                {"ng ao", "ng ow"},
-                {"ch ao", "sh ow"},
-                {"dh ao", "dh ow"},
-                {"dh oy", "dh ow"},
-                {"jh ao", "jh oy"},
-                {"ao -", "aa -"},
-                {"v ao", "b ao"},
-                {"z ao", "s ao"},
-                {"ng eh", "n eh"},
-                {"z eh", "s eh"},
-                {"jh er", "z er"},
-                {"ng er", "n er"},
-                {"r er", "er"},
-                {"th er", "th r"},
-                {"jh ey", "jh ae"},
-                {"ng ey", "n ey"},
-                {"th ey", "th ae"},
-                {"zh ey", "jh ae"},
-                {"ch ow", "sh ow"},
-                {"jh ow", "jh oy"},
-                {"v ow", "b ow"},
-                {"th ow", "s ow"},
-                {"z ow", "s ow"},
-                {"ch oy", "sh ow"},
-                {"th oy", "s ao"},
-                {"v oy", "b oy"},
-                {"w oy", "w ao"},
-                {"z oy", "z aa"},
-                {"ch uh", "sh uh"},
-                {"dh uh", "d uw"},
-                {"jh uh", "sh uh"},
-                {"ng uh", "n uw"},
-                {"th uh", "f uw"},
-                {"v uh", "b uh"},
-                {"z uh", "s uh"},
-                {"ch uw", "sh uw"},
-                {"dh uw", "d uw"},
-                {"g uw", "k uw"},
-                {"jh uw", "sh uw"},
-                {"ng uw", "n uw"},
-                {"th uw", "f uw"},
-                {"v uw", "b uw"},
-                {"z uw", "s uw"},
-                {"zh aa", "sh aa"},
-                {"zh ao", "sh ao"},
-                {"zh ae", "sh ah"},
-                {"ng oy", "ng ow"},
-                {"sh ao", "sh ow"},
-                {"z uh", "s uw"},
-                {"r uh", "r uw"},
-                {"sh oy", "sh ow"}
-            };
-
-            // Apply CV fallbacks
-            if (cvFallbacks.TryGetValue(alias, out var replacement)) {
-                return replacement;
+            //CV FALLBACKS
+            if (alias == "ng ao") {
+                return alias.Replace("ao", "ow");
+            } else if (alias == "ch ao") {
+                return alias.Replace("ch ao", "sh ow");
+            } else if (alias == "dh ao") {
+                return alias.Replace("ao", "ow");
+            } else if (alias == "dh oy") {
+                return alias.Replace("oy", "ow");
+            } else if (alias == "jh ao") {
+                return alias.Replace("ao", "oy");
+            } else if (alias == "ao -") {
+                return alias.Replace("ao -", "aa -");
+            } else if (alias == "v ao") {
+                return alias.Replace("v", "b");
+            } else if (alias == "z ao") {
+                return alias.Replace("z", "s");
+            } else if (alias == "ng eh") {
+                return alias.Replace("ng", "n");
+            } else if (alias == "z eh") {
+                return alias.Replace("z", "s");
+            } else if (alias == "jh er") {
+                return alias.Replace("jh", "z");
+            } else if (alias == "ng er") {
+                return alias.Replace("ng", "n");
+            } else if (alias == "r er") {
+                return alias.Replace("r er", "er");
+            } else if (alias == "th er") {
+                return alias.Replace("th er", "th r");
+            } else if (alias == "jh ey") {
+                return alias.Replace("ey", "ae");
+            } else if (alias == "ng ey") {
+                return alias.Replace("ng", "n");
+            } else if (alias == "th ey") {
+                return alias.Replace("ey", "ae");
+            } else if (alias == "zh ey") {
+                return alias.Replace("zh ey", "jh ae");
+            } else if (alias == "ch ow") {
+                return alias.Replace("ch", "sh");
+            } else if (alias == "jh ow") {
+                return alias.Replace("ow", "oy");
+            } else if (alias == "v ow") {
+                return alias.Replace("v", "b");
+            } else if (alias == "th ow") {
+                return alias.Replace("th", "s");
+            } else if (alias == "z ow") {
+                return alias.Replace("z", "s");
+            } else if (alias == "ch oy") {
+                return alias.Replace("ch oy", "sh ow");
+            } else if (alias == "th oy") {
+                return alias.Replace("th oy", "s ao");
+            } else if (alias == "v oy") {
+                return alias.Replace("v", "b");
+            } else if (alias == "w oy") {
+                return alias.Replace("oy", "ao");
+            } else if (alias == "z oy") {
+                return alias.Replace("oy", "aa");
+            } else if (alias == "ch uh") {
+                return alias.Replace("ch", "sh");
+            } else if (alias == "dh uh") {
+                return alias.Replace("dh uh", "d uw");
+            } else if (alias == "jh uh") {
+                return alias.Replace("jh", "sh");
+            } else if (alias == "ng uh") {
+                return alias.Replace("ng uh", "n uw");
+            } else if (alias == "th uh") {
+                return alias.Replace("th uh", "f uw");
+            } else if (alias == "v uh") {
+                return alias.Replace("v", "b");
+            } else if (alias == "z uh") {
+                return alias.Replace("z", "s");
+            } else if (alias == "ch uw") {
+                return alias.Replace("ch", "sh");
+            } else if (alias == "dh uw") {
+                return alias.Replace("dh", "d");
+            } else if (alias == "g uw") {
+                return alias.Replace("g", "k");
+            } else if (alias == "jh uw") {
+                return alias.Replace("jh", "sh");
+            } else if (alias == "ng uw") {
+                return alias.Replace("ng", "n");
+            } else if (alias == "th uw") {
+                return alias.Replace("th uw", "f uw");
+            } else if (alias == "v uw") {
+                return alias.Replace("v", "b");
+            } else if (alias == "z uw") {
+                return alias.Replace("z", "s");
+            } else if (alias == "zh aa") {
+                return alias.Replace("zh", "sh");
+            } else if (alias == "zh ao") {
+                return alias.Replace("zh", "sh");
+            } else if (alias == "zh ae") {
+                return alias.Replace("zh ae", "sh ah");
+            } else if (alias == "ng oy") {
+                return alias.Replace("oy", "ow");
+            } else if (alias == "sh ao") {
+                return alias.Replace("ao", "ow");
+            } else if (alias == "z uh") {
+                return alias.Replace("z uh", "s uw");
+            } else if (alias == "r uh") {
+                return alias.Replace("uh", "uw");
+            } else if (alias == "sh oy") {
+                return alias.Replace("oy", "ow");
             }
 
             // VALIDATE ALIAS DEPENDING ON METHOD
@@ -883,14 +927,14 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var CVMappings = new Dictionary<string, string[]> {
-                    { "ao", new[] { "ow" } },
-                    { "oy", new[] { "ow" } },
-                    { "aw", new[] { "ah" } },
-                    { "ay", new[] { "ah" } },
-                    { "eh", new[] { "ae" } },
-                    { "ey", new[] { "eh" } },
-                    { "ow", new[] { "ao" } },
-                    { "uh", new[] { "uw" } },
+                { "ao", new[] { "ow" } },
+                { "oy", new[] { "ow" } },
+                { "aw", new[] { "ah" } },
+                { "ay", new[] { "ah" } },
+                { "eh", new[] { "ae" } },
+                { "ey", new[] { "eh" } },
+                { "ow", new[] { "ao" } },
+                { "uh", new[] { "uw" } },
             };
             foreach (var kvp in CVMappings) {
                 var v1 = kvp.Key;
