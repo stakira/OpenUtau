@@ -816,108 +816,63 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string ValidateAlias(string alias) {
 
             //FALLBACKS
-            if (alias == "ng ao") {
-                return alias.Replace("ao", "ow");
-            } else if (alias == "ch ao") {
-                return alias.Replace("ch ao", "sh ow");
-            } else if (alias == "dh ao") {
-                return alias.Replace("ao", "ow");
-            } else if (alias == "dh oy") {
-                return alias.Replace("oy", "ow");
-            } else if (alias == "jh ao") {
-                return alias.Replace("ao", "oy");
-            } else if (alias == "ao -") {
-                return alias.Replace("ao -", "aa -");
-            } else if (alias == "v ao") {
-                return alias.Replace("v", "b");
-            } else if (alias == "z ao") {
-                return alias.Replace("z", "s");
-            } else if (alias == "ng eh") {
-                return alias.Replace("ng", "n");
-            } else if (alias == "z eh") {
-                return alias.Replace("z", "s");
-            } else if (alias == "jh er") {
-                return alias.Replace("jh", "z");
-            } else if (alias == "ng er") {
-                return alias.Replace("ng", "n");
-            } else if (alias == "r er") {
-                return alias.Replace("r er", "er");
-            } else if (alias == "th er") {
-                return alias.Replace("th er", "th r");
-            } else if (alias == "jh ey") {
-                return alias.Replace("ey", "ae");
-            } else if (alias == "ng ey") {
-                return alias.Replace("ng", "n");
-            } else if (alias == "th ey") {
-                return alias.Replace("ey", "ae");
-            } else if (alias == "zh ey") {
-                return alias.Replace("zh ey", "jh ae");
-            } else if (alias == "ch ow") {
-                return alias.Replace("ch", "sh");
-            } else if (alias == "jh ow") {
-                return alias.Replace("ow", "oy");
-            } else if (alias == "v ow") {
-                return alias.Replace("v", "b");
-            } else if (alias == "th ow") {
-                return alias.Replace("th", "s");
-            } else if (alias == "z ow") {
-                return alias.Replace("z", "s");
-            } else if (alias == "ch oy") {
-                return alias.Replace("ch oy", "sh ow");
-            } else if (alias == "th oy") {
-                return alias.Replace("th oy", "s ao");
-            } else if (alias == "v oy") {
-                return alias.Replace("v", "b");
-            } else if (alias == "w oy") {
-                return alias.Replace("oy", "ao");
-            } else if (alias == "z oy") {
-                return alias.Replace("oy", "aa");
-            } else if (alias == "ch uh") {
-                return alias.Replace("ch", "sh");
-            } else if (alias == "dh uh") {
-                return alias.Replace("dh uh", "d uw");
-            } else if (alias == "jh uh") {
-                return alias.Replace("jh", "sh");
-            } else if (alias == "ng uh") {
-                return alias.Replace("ng uh", "n uw");
-            } else if (alias == "th uh") {
-                return alias.Replace("th uh", "f uw");
-            } else if (alias == "v uh") {
-                return alias.Replace("v", "b");
-            } else if (alias == "z uh") {
-                return alias.Replace("z", "s");
-            } else if (alias == "ch uw") {
-                return alias.Replace("ch", "sh");
-            } else if (alias == "dh uw") {
-                return alias.Replace("dh", "d");
-            } else if (alias == "g uw") {
-                return alias.Replace("g", "k");
-            } else if (alias == "jh uw") {
-                return alias.Replace("jh", "sh");
-            } else if (alias == "ng uw") {
-                return alias.Replace("ng", "n");
-            } else if (alias == "th uw") {
-                return alias.Replace("th uw", "f uw");
-            } else if (alias == "v uw") {
-                return alias.Replace("v", "b");
-            } else if (alias == "z uw") {
-                return alias.Replace("z", "s");
-            } else if (alias == "zh aa") {
-                return alias.Replace("zh", "sh");
-            } else if (alias == "zh ao") {
-                return alias.Replace("zh", "sh");
-            } else if (alias == "zh ae") {
-                return alias.Replace("zh ae", "sh ah");
-            } else if (alias == "ng oy") {
-                return alias.Replace("oy", "ow");
-            } else if (alias == "sh ao") {
-                return alias.Replace("ao", "ow");
-            } else if (alias == "z uh") {
-                return alias.Replace("z uh", "s uw");
-            } else if (alias == "r uh") {
-                return alias.Replace("uh", "uw");
-            } else if (alias == "sh oy") {
-                return alias.Replace("oy", "ow");
+            var cvFallbacks = new Dictionary<string, string> {
+                {"ng ao", "ng ow"},
+                {"ch ao", "sh ow"},
+                {"dh ao", "dh ow"},
+                {"dh oy", "dh ow"},
+                {"jh ao", "jh oy"},
+                {"ao -", "aa -"},
+                {"v ao", "b ao"},
+                {"z ao", "s ao"},
+                {"ng eh", "n eh"},
+                {"z eh", "s eh"},
+                {"jh er", "z er"},
+                {"ng er", "n er"},
+                {"r er", "er"},
+                {"th er", "th r"},
+                {"jh ey", "jh ae"},
+                {"ng ey", "n ey"},
+                {"th ey", "th ae"},
+                {"zh ey", "jh ae"},
+                {"ch ow", "sh ow"},
+                {"jh ow", "jh oy"},
+                {"v ow", "b ow"},
+                {"th ow", "s ow"},
+                {"z ow", "s ow"},
+                {"ch oy", "sh ow"},
+                {"th oy", "s ao"},
+                {"v oy", "b oy"},
+                {"w oy", "w ao"},
+                {"z oy", "z aa"},
+                {"ch uh", "sh uh"},
+                {"dh uh", "d uw"},
+                {"jh uh", "sh uh"},
+                {"ng uh", "n uw"},
+                {"th uh", "f uw"},
+                {"v uh", "b uh"},
+                {"z uh", "s uh"},
+                {"ch uw", "sh uw"},
+                {"dh uw", "d uw"},
+                {"g uw", "k uw"},
+                {"jh uw", "sh uw"},
+                {"ng uw", "n uw"},
+                {"th uw", "f uw"},
+                {"v uw", "b uw"},
+                {"z uw", "s uw"},
+                {"zh aa", "sh aa"},
+                {"zh ao", "sh ao"},
+                {"zh ae", "sh ah"},
+                {"ng oy", "ng ow"},
+                {"sh ao", "sh ow"},
+                {"z uh", "s uw"},
+                {"r uh", "r uw"},
+                {"sh oy", "sh ow"}
+            };
+
+            // Apply CV fallbacks
+            if (cvFallbacks.TryGetValue(alias, out var replacement)) {
+                return replacement;
             }
 
             // VALIDATE ALIAS DEPENDING ON METHOD
@@ -947,23 +902,21 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            Dictionary<string, List<string>> vvReplacements = new Dictionary<string, List<string>>
-            {
             //VV (diphthongs) some
-            { "ay ay", new List<string> { "y ah" } },
-            { "ey ey", new List<string> { "iy ey" } },
-            { "oy oy", new List<string> { "y ow" } },
-            { "er er", new List<string> { "er" } },
-            { "aw aw", new List<string> { "w ae" } },
-            { "ow ow", new List<string> { "w ao" } },
-            { "uw uw", new List<string> { "w uw" } },
+            var vvReplacements = new Dictionary<string, List<string>> {
+                { "ay ay", new List<string> { "y ah" } },
+                { "ey ey", new List<string> { "iy ey" } },
+                { "oy oy", new List<string> { "y ow" } },
+                { "er er", new List<string> { "er" } },
+                { "aw aw", new List<string> { "w ae" } },
+                { "ow ow", new List<string> { "w ao" } },
+                { "uw uw", new List<string> { "w uw" } }
             };
-            foreach (var kvp in vvReplacements) {
-                var originalValue = kvp.Key;
-                var replacementOptions = kvp.Value;
 
-                foreach (var replacement in replacementOptions) {
-                    alias = alias.Replace(originalValue, replacement);
+            // Apply VV replacements
+            foreach (var (originalValue, replacementOptions) in vvReplacements) {
+                foreach (var replacementOption in replacementOptions) {
+                    alias = alias.Replace(originalValue, replacementOption);
                 }
             }
             //VC (diphthongs)
@@ -1272,17 +1225,11 @@ namespace OpenUtau.Plugin.Builtin {
             if (ccSpecific) {
                 //CC (b)
                 //CC (b specific)
-                if (alias == "b ch") {
-                    return alias.Replace("b ch", "t ch");
-                }
                 if (alias == "b dh") {
                     return alias.Replace("b ch", "p dh");
                 }
                 if (alias == "b ng") {
                     return alias.Replace("b ng", "ng");
-                }
-                if (alias == "b th") {
-                    return alias.Replace("b th", "t th");
                 }
                 if (alias == "b zh") {
                     return alias.Replace("zh", "z");
@@ -1306,23 +1253,14 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (d specific)
-                if (alias == "d ch") {
-                    return alias.Replace("d", "t");
-                }
                 if (alias == "d ng") {
                     return alias.Replace("ng", "n");
-                }
-                if (alias == "d th") {
-                    return alias.Replace("d th", "t th");
                 }
                 if (alias == "d zh") {
                     return alias.Replace("zh", "z");
                 }
 
                 //CC (dh specific)
-                if (alias == "dh ch") {
-                    return alias.Replace("dh ch", "t ch");
-                }
                 if (alias == "dh dh") {
                     return alias.Replace("dh dh", "dh d");
                 }
@@ -1349,9 +1287,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (g specific)
-                if (alias == "g ch") {
-                    return alias.Replace("g ch", "t ch");
-                }
                 if (alias == "g dh") {
                     return alias.Replace("g", "d");
                 }
@@ -1366,9 +1301,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (alias == "hh y") {
                     return alias.Replace("hh", "f");
                 }
-                if (alias == "hh -") {
-                    return alias.Replace("hh -", "- hh");
-                }
+                
 
                 //CC (jh specific)
                 if (alias == "jh r") {
@@ -1395,9 +1328,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 if (alias == "l b") {
                     return alias.Replace("b", "d");
-                }
-                if (alias == "l hh") {
-                    return alias.Replace("l", "r");
                 }
                 if (alias == "l jh") {
                     return alias.Replace("jh", "d");
@@ -1478,17 +1408,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (alias == "ng ng") {
                     return alias.Replace("ng", "n");
                 }
-                if (alias == "ng v") {
-                    return alias.Replace("ng v", "ng s");
-                }
                 if (alias == "ng zh") {
                     return alias.Replace("zh", "z");
                 }
 
                 //CC (p specific)
-                if (alias == "p dx") {
-                    return alias.Replace("p dx", "t d");
-                }
                 if (alias == "p z") {
                     return alias.Replace("z", "s");
                 }
@@ -1516,9 +1440,6 @@ namespace OpenUtau.Plugin.Builtin {
                 //CC (s specific)
                 if (alias == "s ch") {
                     return alias.Replace("ch", "t");
-                }
-                if (alias == "s dx") {
-                    return alias.Replace("dx", "d");
                 }
                 if (alias == "s ng") {
                     return alias.Replace("ng", "n");
@@ -1557,9 +1478,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (t specific)
-                if (alias == "t z") {
-                    return alias.Replace("t", "g");
-                }
                 if (alias == "t zh") {
                     return alias.Replace("t zh", "g z");
                 }
@@ -1578,12 +1496,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 if (alias == "v th") {
                     return alias.Replace("v th", "th");
-                }
-                if (alias == "v s") {
-                    return alias.Replace("v", "s");
-                }
-                if (alias == "v z") {
-                    return alias.Replace("v z", "s s");
                 }
                 // CC (w C)
                 foreach (var c2 in consonants) {
