@@ -120,6 +120,7 @@
   <system:String x:Key="languages.vi">ベトナム語</system:String>
   <system:String x:Key="languages.zh">中国語</system:String>
   <system:String x:Key="languages.zh-yue">広東語</system:String>
+  <system:String x:Key="languages.th">タイ語</system:String>
 
   <system:String x:Key="lyrics.apply">適用</system:String>
   <system:String x:Key="lyrics.cancel">キャンセル</system:String>

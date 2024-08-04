@@ -122,6 +122,7 @@
   <system:String x:Key="languages.vi">wietnamski</system:String>
   <system:String x:Key="languages.zh">chiński</system:String>
   <system:String x:Key="languages.zh-yue">kantoński</system:String>
+  <system:String x:Key="languages.th">tajski</system:String>
 
   <system:String x:Key="lyrics.apply">Zastosuj</system:String>
   <system:String x:Key="lyrics.cancel">Anuluj</system:String>

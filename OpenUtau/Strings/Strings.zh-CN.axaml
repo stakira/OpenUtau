@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">越南语</system:String>
   <system:String x:Key="languages.zh">中文</system:String>
   <system:String x:Key="languages.zh-yue">中文（粤语）</system:String>
+  <system:String x:Key="languages.th">泰语</system:String>
 
   <system:String x:Key="lyrics.apply">应用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
