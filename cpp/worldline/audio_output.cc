@@ -133,11 +133,46 @@ DLL_API ou_audio_context_t* ou_init_audio_device(
   return result;
 }
 
+DLL_API ou_audio_context_t* ou_init_audio_device_auto(
+    ou_audio_data_callback_t callback) {
+  ou_audio_context_t* result = new ou_audio_context_t();
+  if (result == NULL) {
+    return NULL;
+  }
+
+  ma_device_config config = ma_device_config_init(ma_device_type_playback);
+  config.playback.format = ma_format_f32;
+  config.playback.channels = 2;
+  config.sampleRate = 44100;
+  g_data_callback = callback;
+  config.dataCallback = data_callback;
+  config.pUserData = result;
+
+  if (ma_device_init(NULL, &config, &result->device) != MA_SUCCESS) {
+    delete result;
+    return NULL;
+  }
+
+  return result;
+}
+
+DLL_API const char* ou_get_audio_device_api(ou_audio_context_t* context) {
+  ma_backend backend = context->device.pContext->backend;
+  return ma_get_backend_name(backend);
+}
+
+DLL_API const char* ou_get_audio_device_name(ou_audio_context_t* context) {
+  return context->device.playback.name;
+}
+
 DLL_API int ou_free_audio_device(ou_audio_context_t* context) {
+  bool release_context = !context->device.isOwnerOfContext;
   ma_device_uninit(&context->device);
-  ma_result result = ma_context_uninit(&context->context);
-  if (result != MA_SUCCESS) {
-    return result;
+  if (release_context) {
+    ma_result result = ma_context_uninit(&context->context);
+    if (result != MA_SUCCESS) {
+      return result;
+    }
   }
   delete context;
   return 0;
