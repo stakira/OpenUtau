@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Korean CVCCV Phonemizer", "KO CVCCV", "RYUUSEI", language:"KO")]
-    public class KoreanCVCCVPhonemizer : Phonemizer {
+    public class KoreanCVCCVPhonemizer : BaseKoreanPhonemizer {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
         static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
         static readonly string YVowelsTable = "ㅣㅑㅖㅛㅠㅕ";
@@ -206,6 +207,14 @@ namespace OpenUtau.Plugin.Builtin {
             "ng=ㅇ",
             "l=ㄹ,ㄺ,ㄻ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ",
         };
+
+        /// <summary>
+        /// Apply Korean sandhi rules to Hangeul lyrics.
+        /// </summary>
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+            // variate lyrics 
+            KoreanPhonemizerUtil.RomanizeNotes(groups, false);
+        }
 
         static readonly Dictionary<string, string> initialConsonantLookup;
         static readonly Dictionary<string, string> ccvContinuousinitialConsonantsLookup;
