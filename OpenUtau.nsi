@@ -45,7 +45,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "OpenUtau-win-x64.exe"
+OutFile "OpenUtau-win-${ARCH}.exe"
 InstallDir "$PROGRAMFILES64\OpenUtau"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -57,7 +57,7 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "bin\win-x64\*"
+  File "bin\win-${ARCH}\*"
 SectionEnd
 
 Section -AdditionalIcons
@@ -86,6 +86,12 @@ Section -Post
   WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
 SectionEnd
 
+Section "VC Redist"
+  SetOutPath "$INSTDIR"
+  File "vc_redist.${ARCH}.exe"
+  ExecWait "$INSTDIR\vc_redist.${ARCH}.exe"
+  Delete "$INSTDIR\vc_redist.${ARCH}.exe"
+SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
