@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aan", "an", "axn", "aen", "ahn", "aon", "on", "awn", "aun", "ayn", "ain", "ehn", "en", "eyn", "ein", "ihn", "iyn", "in", "own", "oun", "oyn", "oin", "uhn", "uwn", "un",
         "aang", "ang", "axng", "aeng", "ahng", "aong", "ong", "awng", "aung", "ayng", "aing", "ehng", "eng", "eyng", "eing", "ihng", "iyng", "ing", "owng", "oung", "oyng", "oing", "uhng", "uwng", "ung",
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
-        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua"
+        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
         };
         private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
@@ -110,7 +110,20 @@ namespace OpenUtau.Plugin.Builtin {
                 {"uwr","r"},
                 {"awn","n"},
                 {"awng","ng"},
+                {"ean","n"},
+                {"eam","m"},
+                {"eang","ng"},
+                // r-colored vowel and l
+                {"ar","r"},
+                {"or","r"},
+                {"air","r"},
+                {"ir","r"},
+                {"ur","r"},
+                {"al","l"},
+                {"ol","l"},
+                {"il","l"},
                 {"el","l"},
+                {"ul","l"},
             };
         private readonly Dictionary<string, string> vvDiphthongExceptions =
             new Dictionary<string, string>() {
@@ -122,10 +135,9 @@ namespace OpenUtau.Plugin.Builtin {
                 {"oy","ao"},
             };
 
-
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
-        private string[] tails = "-,R,RB".Split(',');
+        private string[] tails = "-,R".Split(',');
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
@@ -386,8 +398,9 @@ namespace OpenUtau.Plugin.Builtin {
                         basePhoneme = v;
                     } else if ((HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone) && (!HasOto(v, syllable.vowelTone) && !HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) && (!HasOto(crv, syllable.vowelTone) && !HasOto(ValidateAlias(crv), syllable.vowelTone)))) {
                         basePhoneme = $"{prevV} {v}";
+                    
                     } else {
-                        basePhoneme = $"{cc.Last()} {v}";
+                        basePhoneme = $"{cc.Last()}{v}";
                     }
                     // TRY RCC [- CC]
                     for (var i = cc.Length; i > 1; i--) {
@@ -409,13 +422,15 @@ namespace OpenUtau.Plugin.Builtin {
                 /// CV
                 if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                     basePhoneme = crv;
-                } else if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) && (HasOto(crv, syllable.vowelTone) && HasOto(ValidateAlias(crv), syllable.vowelTone))) {
+                } else if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) && (!HasOto(crv, syllable.vowelTone) && !HasOto(ValidateAlias(crv), syllable.vowelTone))) {
                     basePhoneme = cv;
                     /// C+V
-                } else if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)) && (!HasOto(crv, syllable.vowelTone) && !HasOto(ValidateAlias(crv), syllable.vowelTone))) {
+                /*
+                } else if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone))) {
                     basePhoneme = v;
-                } else if ((HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone) && (!HasOto(v, syllable.vowelTone) && !HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)) && (!HasOto(crv, syllable.vowelTone) && !HasOto(ValidateAlias(crv), syllable.vowelTone)))) {
+                } else if ((HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone) && (!HasOto(v, syllable.vowelTone) && !HasOto(ValidateAlias(v), syllable.vowelTone)))) {
                     basePhoneme = $"{prevV} {v}";
+                */
                 } else {
                     basePhoneme = $"{cc.Last()} {v}";
                 }
@@ -435,7 +450,13 @@ namespace OpenUtau.Plugin.Builtin {
                         break;
                         /// C-Last V
                     } else if (syllable.CurrentWordCc.Length == 1 && syllable.PreviousWordCc.Length == 1) {
-                        basePhoneme = crv;
+                        if ((HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
+                            basePhoneme = crv;
+                        } else if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) && !(HasOto(crv, syllable.vowelTone)) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
+                            basePhoneme = cv;
+                        } else {
+                            basePhoneme = crv;
+                        }
                     }
                 }
                 // try [V C], [V CC], [VC C], [V -][- C]
@@ -479,8 +500,10 @@ namespace OpenUtau.Plugin.Builtin {
 
             for (var i = firstC; i < lastC; i++) {
                 var ccv = $"{string.Join("", cc.Skip(i))} {v}";
+                var ccv1 = $"{string.Join("", cc.Skip(i))}{v}";
                 var cc1 = $"{string.Join(" ", cc.Skip(i))}";
                 var lcv = $"{cc.Last()} {v}";
+                var cv = $"{cc.Last()}{v}";
                 if (!HasOto(cc1, syllable.tone)) {
                     cc1 = ValidateAlias(cc1);
                 }
@@ -510,8 +533,14 @@ namespace OpenUtau.Plugin.Builtin {
                         basePhoneme = ccv;
                         lastC = i;
                         break;
+                    } else if (HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
+                        basePhoneme = ccv1;
+                        lastC = i;
+                        break;
                     } else if ((HasOto(lcv, syllable.vowelTone) || HasOto(ValidateAlias(lcv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !HasOto(ccv, syllable.vowelTone)) {
                         basePhoneme = lcv;
+                    } else if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone)) {
+                        basePhoneme = cv;
                     }
                     // [C1 C2C3]
                     if (HasOto($"{cc[i]} {string.Join("", cc.Skip(i + 1))}", syllable.tone)) {
@@ -519,17 +548,22 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 } else if (syllable.CurrentWordCc.Length == 1 && syllable.PreviousWordCc.Length == 1) {
                     basePhoneme = lcv;
+                    if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone))) {
+                        basePhoneme = cv;
+                    }
                     // [C1 C2]
                     if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = $"{cc[i]} {cc[i + 1]}";
+                    cc1 = $"{cc[i]} {cc[i + 1]}";
                     }
                 }
                 // C+V
-                if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone))) {
+                
+                if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)))) {
                     cPV_FallBack = true;
                     basePhoneme = v;
                     cc1 = ValidateAlias(cc1);
                 }
+                
                 if (i + 1 < lastC) {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
@@ -556,29 +590,37 @@ namespace OpenUtau.Plugin.Builtin {
                             basePhoneme = ccv;
                             lastC = i;
                             break;
+                        } else if (HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
+                            basePhoneme = ccv1;
+                            lastC = i;
+                            break;
                         } else if ((HasOto(lcv, syllable.vowelTone) || HasOto(ValidateAlias(lcv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !HasOto(ccv, syllable.vowelTone)) {
                             basePhoneme = lcv;
+                        } else if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone)) {
+                            basePhoneme = cv;
                         }
                         // [C1 C2C3]
                         if (HasOto($"{cc[i]} {string.Join("", cc.Skip(i + 1))}", syllable.tone)) {
                             cc1 = $"{cc[i]} {string.Join("", cc.Skip(i + 1))}";
                         }
-                        // [C1 C2C3...]
-                        if (HasOto($"{cc[i]} {string.Join("", cc.Skip(i))}", syllable.tone)) {
-                            cc1 = $"{cc[i]} {string.Join("", cc.Skip(i))}";
-                        }
                     } else if (syllable.CurrentWordCc.Length == 1 && syllable.PreviousWordCc.Length == 1) {
                         basePhoneme = lcv;
+                        if ((HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone))) {
+                            basePhoneme = cv;
+                        }
                         // [C1 C2]
                         if (!HasOto(cc1, syllable.tone)) {
                             cc1 = $"{cc[i]} {cc[i + 1]}";
                         }
                     }
                     // C+V
-                    if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone))) {
+                    
+                    if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)))) {
                         cPV_FallBack = true;
                         basePhoneme = v;
+                        cc1 = ValidateAlias(cc1);
                     }
+                    
                     if (HasOto(cc1, syllable.tone) && HasOto(cc1, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                         phonemes.Add(cc1);
@@ -772,7 +814,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
         protected override string ValidateAlias(string alias) {
 
-            //FALLBACKS
+            //CV FALLBACKS
             if (alias == "ng ao") {
                 return alias.Replace("ao", "ow");
             } else if (alias == "ch ao") {
@@ -885,14 +927,14 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var CVMappings = new Dictionary<string, string[]> {
-                    { "ao", new[] { "ow" } },
-                    { "oy", new[] { "ow" } },
-                    { "aw", new[] { "ah" } },
-                    { "ay", new[] { "ah" } },
-                    { "eh", new[] { "ae" } },
-                    { "ey", new[] { "eh" } },
-                    { "ow", new[] { "ao" } },
-                    { "uh", new[] { "uw" } },
+                { "ao", new[] { "ow" } },
+                { "oy", new[] { "ow" } },
+                { "aw", new[] { "ah" } },
+                { "ay", new[] { "ah" } },
+                { "eh", new[] { "ae" } },
+                { "ey", new[] { "eh" } },
+                { "ow", new[] { "ao" } },
+                { "uh", new[] { "uw" } },
             };
             foreach (var kvp in CVMappings) {
                 var v1 = kvp.Key;
@@ -904,23 +946,21 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            Dictionary<string, List<string>> vvReplacements = new Dictionary<string, List<string>>
-            {
             //VV (diphthongs) some
-            { "ay ay", new List<string> { "y ah" } },
-            { "ey ey", new List<string> { "iy ey" } },
-            { "oy oy", new List<string> { "y ow" } },
-            { "er er", new List<string> { "er" } },
-            { "aw aw", new List<string> { "w ae" } },
-            { "ow ow", new List<string> { "w ao" } },
-            { "uw uw", new List<string> { "w uw" } },
+            var vvReplacements = new Dictionary<string, List<string>> {
+                { "ay ay", new List<string> { "y ah" } },
+                { "ey ey", new List<string> { "iy ey" } },
+                { "oy oy", new List<string> { "y ow" } },
+                { "er er", new List<string> { "er" } },
+                { "aw aw", new List<string> { "w ae" } },
+                { "ow ow", new List<string> { "w ao" } },
+                { "uw uw", new List<string> { "w uw" } }
             };
-            foreach (var kvp in vvReplacements) {
-                var originalValue = kvp.Key;
-                var replacementOptions = kvp.Value;
 
-                foreach (var replacement in replacementOptions) {
-                    alias = alias.Replace(originalValue, replacement);
+            // Apply VV replacements
+            foreach (var (originalValue, replacementOptions) in vvReplacements) {
+                foreach (var replacementOption in replacementOptions) {
+                    alias = alias.Replace(originalValue, replacementOption);
                 }
             }
             //VC (diphthongs)
@@ -1229,17 +1269,11 @@ namespace OpenUtau.Plugin.Builtin {
             if (ccSpecific) {
                 //CC (b)
                 //CC (b specific)
-                if (alias == "b ch") {
-                    return alias.Replace("b ch", "t ch");
-                }
                 if (alias == "b dh") {
                     return alias.Replace("b ch", "p dh");
                 }
                 if (alias == "b ng") {
                     return alias.Replace("b ng", "ng");
-                }
-                if (alias == "b th") {
-                    return alias.Replace("b th", "t th");
                 }
                 if (alias == "b zh") {
                     return alias.Replace("zh", "z");
@@ -1263,23 +1297,14 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (d specific)
-                if (alias == "d ch") {
-                    return alias.Replace("d", "t");
-                }
                 if (alias == "d ng") {
                     return alias.Replace("ng", "n");
-                }
-                if (alias == "d th") {
-                    return alias.Replace("d th", "t th");
                 }
                 if (alias == "d zh") {
                     return alias.Replace("zh", "z");
                 }
 
                 //CC (dh specific)
-                if (alias == "dh ch") {
-                    return alias.Replace("dh ch", "t ch");
-                }
                 if (alias == "dh dh") {
                     return alias.Replace("dh dh", "dh d");
                 }
@@ -1306,9 +1331,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (g specific)
-                if (alias == "g ch") {
-                    return alias.Replace("g ch", "t ch");
-                }
                 if (alias == "g dh") {
                     return alias.Replace("g", "d");
                 }
@@ -1323,9 +1345,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (alias == "hh y") {
                     return alias.Replace("hh", "f");
                 }
-                if (alias == "hh -") {
-                    return alias.Replace("hh -", "- hh");
-                }
+                
 
                 //CC (jh specific)
                 if (alias == "jh r") {
@@ -1352,9 +1372,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 if (alias == "l b") {
                     return alias.Replace("b", "d");
-                }
-                if (alias == "l hh") {
-                    return alias.Replace("l", "r");
                 }
                 if (alias == "l jh") {
                     return alias.Replace("jh", "d");
@@ -1435,17 +1452,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (alias == "ng ng") {
                     return alias.Replace("ng", "n");
                 }
-                if (alias == "ng v") {
-                    return alias.Replace("ng v", "ng s");
-                }
                 if (alias == "ng zh") {
                     return alias.Replace("zh", "z");
                 }
 
                 //CC (p specific)
-                if (alias == "p dx") {
-                    return alias.Replace("p dx", "t d");
-                }
                 if (alias == "p z") {
                     return alias.Replace("z", "s");
                 }
@@ -1473,9 +1484,6 @@ namespace OpenUtau.Plugin.Builtin {
                 //CC (s specific)
                 if (alias == "s ch") {
                     return alias.Replace("ch", "t");
-                }
-                if (alias == "s dx") {
-                    return alias.Replace("dx", "d");
                 }
                 if (alias == "s ng") {
                     return alias.Replace("ng", "n");
@@ -1514,9 +1522,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 //CC (t specific)
-                if (alias == "t z") {
-                    return alias.Replace("t", "g");
-                }
                 if (alias == "t zh") {
                     return alias.Replace("t zh", "g z");
                 }
@@ -1535,12 +1540,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 if (alias == "v th") {
                     return alias.Replace("v th", "th");
-                }
-                if (alias == "v s") {
-                    return alias.Replace("v", "s");
-                }
-                if (alias == "v z") {
-                    return alias.Replace("v z", "s s");
                 }
                 // CC (w C)
                 foreach (var c2 in consonants) {
