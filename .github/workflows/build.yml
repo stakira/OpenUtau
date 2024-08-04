@@ -1,65 +1,159 @@
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        default: "0.0.0"
+        required: true
+        type: string
+      release:
+        type: boolean
+        default: false
+        description: "Release"
+      beta:
+        type: boolean
+        default: true
+        description: "Beta"
+      draft:
+        type: boolean
+        default: true
+        description: "Draft"
+
+env:
+  release-name: ${{ inputs.version }}${{ inputs.beta && ' Beta' || '' }}
 
 jobs:
-  pr-test:
-    runs-on: ${{ matrix.os.runs-on }}
+  build:
+    runs-on: ${{ matrix.arch.runs-on }}
 
     strategy:
+      fail-fast: false
       matrix:
-        os:
-          - runs-on: windows-latest
-            arch: win-x64
-            rid: win-x64
-          - runs-on: ubuntu-latest
-            arch: linux-x64
-            rid: linux-x64
+        arch:
+          - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest }
+          - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest }
+          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
+          - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13 }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest }
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest }
 
     steps:
+      # Setup
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "6.0.x"
-      - name: Restore
-        run: dotnet restore OpenUtau -r ${{ matrix.os.rid }}
-      - name: test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: justalemon/VersionPatcher@v0.7.1
+        with:
+          version: ${{ inputs.version }}
+          csproj-files: "OpenUtau/*.csproj"
+
+      # Test
+      - name: Test
         run: dotnet test OpenUtau.Test
 
-      - name: Download DirectML.dll
-        shell: powershell
-        run: Invoke-WebRequest -Uri "https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0" -OutFile "Microsoft.AI.DirectML.nupkg"
-        if: matrix.os.arch == 'win-x64'
-      - name: Extract DirectML.dll
+      # Build
+      - name: Restore
+        run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
+
+      - name: Publish
+        run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
+        if: ${{ matrix.arch.os != 'osx' }}
+
+      # Create Zip
+      - name: DirectML
         shell: cmd
         run: |
+          curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0 -o Microsoft.AI.DirectML.nupkg
           mkdir Microsoft.AI.DirectML
           tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
-        if: matrix.os.arch == 'win-x64'
+          copy /y Microsoft.AI.DirectML\bin\${{ matrix.arch.arch }}-${{ matrix.arch.os }}\DirectML.dll bin\${{ matrix.arch.name }}\
+        if: ${{ matrix.arch.os == 'win' }}
 
-      - name: Build non-mac
-        run: dotnet publish OpenUtau -c Release -r ${{ matrix.os.rid }} --self-contained true -o bin/${{ matrix.os.arch }}/
-        if: matrix.os.arch != 'osx-x64'
-      - name: upload non-mac build
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenUtau-${{ matrix.os.arch }}
-          path: bin/${{ matrix.os.arch }}
-        if: matrix.os.arch != 'osx-x64'
+      - name: Set executable permission
+        run: chmod +x bin/${{ matrix.arch.name }}/OpenUtau
+        if: ${{ matrix.arch.os == 'linux' }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        if: matrix.os.arch == 'osx-x64'
-      - name: Build mac
+      - name: Zip
         run: |
-          dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.os.rid }} -p:UseAppHost=true -p:OutputPath=../bin/${{ matrix.os.arch }}/
-          cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.os.arch }}/publish/OpenUtau.app/Contents/Resources/
-          npm install -g create-dmg
-          create-dmg bin/osx-x64/publish/OpenUtau.app
-          mv *.dmg OpenUtau-osx-x64.dmg
-          codesign -fvs - OpenUtau-osx-x64.dmg
-        if: matrix.os.arch == 'osx-x64'
-      - name: Upload mac build
-        uses: actions/upload-artifact@v4
+          cd bin/${{ matrix.arch.name }}
+          7z a ../../OpenUtau-${{ matrix.arch.name }}.zip *
+        if: ${{ matrix.arch.os != 'osx' }}
+
+      # Create Installer
+      - name: Get VC Redist
+        run: |
+          curl https://aka.ms/vs/17/release/vc_redist.${{ matrix.arch.arch }}.exe -o vc_redist.${{ matrix.arch.arch }}.exe
+        if: ${{ matrix.arch.os == 'win' }}
+
+      - name: Create Installer
+        uses: joncloud/makensis-action@v4.1
         with:
-          name: OpenUtau-${{ matrix.os.arch }}
-          path: OpenUtau-osx-x64.dmg
-        if: matrix.os.arch == 'osx-x64'
+          script-file: OpenUtau.nsi
+          arguments: "-DPRODUCT_VERSION=${{ inputs.version }} -DARCH=${{ matrix.arch.arch }}"
+        if: ${{ matrix.arch.os == 'win' }}
+
+      # Create Dmg
+      - name: Create Dmg
+        run: |
+          dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
+          npm install -g create-dmg
+          cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.arch.name }}/publish/OpenUtau.app/Contents/Resources/
+          create-dmg bin/${{ matrix.arch.name }}/publish/OpenUtau.app || true
+          mv *.dmg OpenUtau-${{ matrix.arch.name }}.dmg
+          codesign -fvs - OpenUtau-${{ matrix.arch.name }}.dmg
+        if: ${{ matrix.arch.os == 'osx' }}
+
+      # Upload Artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.arch.name }}.zip
+          path: OpenUtau-${{ matrix.arch.name }}.zip
+        if: ${{ !inputs.release && matrix.arch.os != 'osx' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.arch.name }}.exe
+          path: OpenUtau-${{ matrix.arch.name }}.exe
+        if: ${{ !inputs.release && matrix.arch.os == 'win' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-osx-${{ matrix.arch.name }}.dmg
+          path: OpenUtau-osx-${{ matrix.arch.name }}.dmg
+        if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
+
+      # Appcast
+      - name: Appcast Windows
+        shell: cmd
+        run: |
+          python appcast.py -v=${{ inputs.version }} -o=windows -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.zip
+          python appcast.py -v=${{ inputs.version }} -o=windows -r=${{ matrix.arch.name }}-installer -f=OpenUtau-${{ matrix.arch.name }}.exe
+        if: ${{ inputs.release && matrix.arch.os == 'win' }}
+
+      - name: Appcast MacOS
+        run: |
+          python appcast.py -v=${{ inputs.version }} -o=macos -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.dmg
+        if: ${{ inputs.release && matrix.arch.os == 'osx' }}
+
+      - name: Appcast Linux
+        run: |
+          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.zip
+        if: ${{ inputs.release && matrix.arch.os == 'linux' }}
+
+      # Release
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ env.release-name }}
+          prerelease: ${{ inputs.beta }}
+          draft: ${{ inputs.draft }}
+          files: |
+            appcast.${{ matrix.arch.name }}*.xml
+            OpenUtau-${{ matrix.arch.name }}.*
+        if: ${{ inputs.release }}
