@@ -8,7 +8,6 @@ using DynamicData.Binding;
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -71,6 +70,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> LyricBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> ResetBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
@@ -88,7 +89,6 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
 
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
-        private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
@@ -167,58 +167,6 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             LoadLegacyPlugins();
-
-            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
-                if (NotesViewModel.Part != null) {
-                    try{
-                        edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
-                    } catch (Exception e) {
-                        var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
-                    }
-                }
-            });
-            NoteBatchEdits.AddRange(new List<BatchEdit>() {
-                new LoadRenderedPitch(),
-                new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
-                new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
-                new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
-                new RemoveTailNote("R", "pianoroll.menu.notes.removetailrest"),
-                new Transpose(12, "pianoroll.menu.notes.octaveup"),
-                new Transpose(-12, "pianoroll.menu.notes.octavedown"),
-                new QuantizeNotes(15),
-                new QuantizeNotes(30),
-                new AutoLegato(),
-                new FixOverlap(),
-                new ResetPitchBends(),
-                new ResetAllExpressions(),
-                new ClearVibratos(),
-                new ResetVibratos(),
-                new ClearTimings(),
-                new ResetAliases(),
-                new BakePitch(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
-            }));
-            LyricBatchEdits.AddRange(new List<BatchEdit>() {
-                new RomajiToHiragana(),
-                new HiraganaToRomaji(),
-                new JapaneseVCVtoCV(),
-                new HanziToPinyin(),
-                new RemoveToneSuffix(),
-                new RemoveLetterSuffix(),
-                new MoveSuffixToVoiceColor(),
-                new RemovePhoneticHint(),
-                new DashToPlus(),
-                new InsertSlur(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
-            }));
-            DocManager.Inst.AddSubscriber(this);
         }
 
         private void LoadLegacyPlugins() {

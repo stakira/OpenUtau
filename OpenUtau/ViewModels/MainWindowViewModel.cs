@@ -97,9 +97,14 @@ namespace OpenUtau.App.ViewModels {
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                Core.Format.Formats.LoadProject(new string[] { args[1] });
-                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-                return;
+                try {
+                    Core.Format.Formats.LoadProject(new string[] { args[1] });
+                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                    return;
+                } catch (Exception e) {
+                    var customEx = new MessageCustomizableException($"Failed to open file {args[1]}", $"<translate:errors.failed.openfile>: {args[1]}", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                }
             }
             NewProject();
         }
@@ -176,17 +181,20 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file, bool UseDrywetmidi = false) {
+        public void ImportMidi(string file) {
             if (file == null) {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
+            var parts = Core.Format.MidiWriter.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
+                if(part.name != "New Part"){
+                    track.TrackName = part.name;
+                }
                 part.AfterLoad(project, track);
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));

@@ -77,7 +77,7 @@ namespace OpenUtau.Core.Util {
         public string Convert(string lyric) {
             var result = pack.Query(lyric);
             if (result == null || result.Length == 0) {
-                return null;
+                return String.Empty;
             }
             return string.Join(" ", pack.Query(lyric));
         }

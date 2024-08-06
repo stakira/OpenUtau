@@ -289,20 +289,15 @@ namespace OpenUtau.App.ViewModels {
                 singerId = Singer.Id;
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), true, "singer"));
-            try {
-                SingerManager.Inst.SearchAllSingers();
-                this.RaisePropertyChanged(nameof(Singers));
-                if (!string.IsNullOrEmpty(singerId) && SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
-                    Singer = singer;
-                } else {
-                    Singer = Singers.FirstOrDefault();
-                }
-                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
-            } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-            } finally {
-                DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
+            SingerManager.Inst.SearchAllSingers();
+            this.RaisePropertyChanged(nameof(Singers));
+            if (!string.IsNullOrEmpty(singerId) && SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                Singer = singer;
+            } else {
+                Singer = Singers.FirstOrDefault();
             }
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(SingersDialog), false, "singer"));
         }
 
         Bitmap? LoadAvatar(USinger singer) {

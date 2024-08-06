@@ -94,19 +94,28 @@ namespace OpenUtau.Core.Format {
         }
 
         public static void Save(string filePath, UProject project) {
-            project.ustxVersion = kUstxVersion;
-            project.FilePath = filePath;
-            project.BeforeSave();
-            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-            project.Saved = true;
-            project.AfterSave();
+            try {
+                project.ustxVersion = kUstxVersion;
+                project.FilePath = filePath;
+                project.BeforeSave();
+                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+                project.Saved = true;
+                project.AfterSave();
+            } catch (Exception ex) {
+                var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
         }
 
         public static void AutoSave(string filePath, UProject project) {
-            project.ustxVersion = kUstxVersion;
-            project.BeforeSave();
-            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-            project.AfterSave();
+            try {
+                project.ustxVersion = kUstxVersion;
+                project.BeforeSave();
+                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+                project.AfterSave();
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to autosave: {filePath}");
+            }
         }
 
         public static UProject Load(string filePath) {

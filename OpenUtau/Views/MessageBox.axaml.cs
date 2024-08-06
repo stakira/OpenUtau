@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using OpenUtau.Core;
@@ -27,13 +31,18 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e) {
-            return ShowError(parent, string.Empty, e);
-        }
-
-        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e, string message = "", bool fromNotif = false) {
             string text = message;
             string title = ThemeManager.GetString("errors.caption");
+            if (fromNotif) {
+                IReadOnlyList<Window> dialogs = ((IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!).Windows;
+                foreach (var dialog in dialogs) {
+                    if (dialog.IsActive) {
+                        parent = dialog;
+                        break;
+                    }
+                }
+            }
 
             if (e is MessageCustomizableException mce) {
                 if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
@@ -44,7 +53,7 @@ namespace OpenUtau.App.Views {
                 }
 
                 if (!mce.ShowStackTrace) {
-                    return Show(parent, text, null, title, MessageBoxButtons.Ok);
+                    return Show(parent, text, title, MessageBoxButtons.Ok);
                 }
             }
 
@@ -81,13 +90,10 @@ namespace OpenUtau.App.Views {
             builder.AppendLine();
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
 
-            return Show(parent, text, builder.ToString(), title, MessageBoxButtons.OkCopy);
+            return Show(parent, text, title, MessageBoxButtons.OkCopy, builder.ToString());
         }
 
-        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {
-            return Show(parent, text, null, title, buttons);
-        }
-        public static Task<MessageBoxResult> Show(Window parent, string text, string? stackTrace, string title, MessageBoxButtons buttons) {
+        public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons, string? stackTrace = null) {
             var msgbox = new MessageBox() {
                 Title = title
             };
@@ -165,6 +171,61 @@ namespace OpenUtau.App.Views {
 
         public static bool LoadingIsActive() {
             return loadingDialog != null && loadingDialog.IsActive;
+        }
+
+        /// <summary>
+        /// Displays a processing message box with a specified text and title, and executes a given action asynchronously.
+        /// </summary>
+        /// <param name="parent">The parent window to which the message box belongs.</param>
+        /// <param name="text">The text to display in the message box.</param>
+        /// <param name="title">The title of the message box.</param>
+        /// <param name="action">The action to execute asynchronously. This action takes the message box instance and a cancellation token as parameters, so it can show progress on the message box.</param>
+        /// <param name="onFinished">An optional action to execute when the asynchronous operation is completed. Takes the task representing the operation as a parameter. Usually it should check if the task is faulted and handle the error thrown during the task, such as showing an error dialog.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="MessageBoxResult"/> indicating the user's response.</returns>
+        /// <remarks>
+        /// The method initializes a message box with the specified title and text, and runs the provided action in a separate task.
+        /// It supports cancellation through the provided cancellation token. The optional onFinished action allows for additional
+        /// operations to be performed once the asynchronous action completes.
+        /// </remarks>
+        public static Task<MessageBoxResult> ShowProcessing(
+                Window parent, 
+                string text, 
+                string title, 
+                Action<MessageBox, 
+                CancellationToken> action,
+                Action<Task>? onFinished= null) {
+            var msgbox = new MessageBox() {
+                Title = title
+            };
+            msgbox.Text.Text = text;
+            var res = MessageBoxResult.Ok;
+            var tokenSource = new CancellationTokenSource();
+
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            var task = Task.Run(() => {
+                action.Invoke(msgbox, tokenSource.Token);
+                return res;
+            }, tokenSource.Token);
+            task.ContinueWith(t => {
+                msgbox.Close();
+                if (onFinished != null) {
+                    onFinished(task);
+                }
+            }, scheduler);
+
+            var btn = new Button { Content = ThemeManager.GetString("dialogs.messagebox.cancel") };
+            btn.Click += (_, __) => {
+                msgbox.Close();
+            };
+            msgbox.Buttons.Children.Add(btn);
+            msgbox.Closed += delegate {
+                if (task.IsCompleted) return;
+                res = MessageBoxResult.Cancel;
+                tokenSource.Cancel();
+            };
+            msgbox.ShowDialog(parent);
+
+            return task;
         }
 
         private void SetTextWithLink(string text, StackPanel textPanel) {

@@ -32,6 +32,13 @@ namespace OpenUtau.Core.DiffSinger
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
+            if(singer==null){
+                return;
+            }
+            if(singer.Location == null){
+                Log.Error("Singer location is null");
+                return;
+            }
             if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
                 rootPath = Path.Combine(singer.Location, "dsdur");
             } else {
