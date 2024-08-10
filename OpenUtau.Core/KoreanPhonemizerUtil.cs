@@ -368,9 +368,6 @@ namespace OpenUtau.Core {
                 nextFirstConsonant = (string)aspirateSounds[basicSounds[firstLastConsonant]];
                 firstLastConsonant = " ";
             } 
-            else if (nextFirstConsonant.Equals("ㅎ")) {
-                nextFirstConsonant = "ㅇ";
-            }
 
             if ((!firstLastConsonant.Equals(" ")) && nextFirstConsonant.Equals("ㅇ") && (!firstLastConsonant.Equals("ㅇ"))) {
                 // 연음 2
