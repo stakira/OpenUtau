@@ -242,8 +242,10 @@ namespace OpenUtau.Core {
                     nextFirstConsonant = (string)aspirateSounds[basicSounds[firstLastConsonant]];
                     firstLastConsonant = " ";
                 } else {
-                    // 뻔한 = 뻔안 (아래에서 연음 적용되서 뻐난 됨)
-                    nextFirstConsonant = "ㅇ";
+                    if (!firstLastConsonant.Equals("ㅇ")) { // 사랑해 -> 사랑애 방지
+                        // 뻔한 = 뻔안 (아래에서 연음 적용되서 뻐난 됨)
+                        nextFirstConsonant = "ㅇ";
+                    }
                 }
             }
 
