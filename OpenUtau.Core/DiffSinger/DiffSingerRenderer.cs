@@ -258,7 +258,19 @@ namespace OpenUtau.Core.DiffSinger {
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                     new DenseTensor<long>(new long[] { speedup }, new int[] { 1 }, false)));
             }
-
+            //Language id
+            if(singer.dsConfig.use_lang_id){
+                var langIdByPhone = phrase.phones
+                    .Select(p => (long)singer.languageIds.GetValueOrDefault(
+                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
+                        ))
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
+                var langIdTensor = new DenseTensor<Int64>(langIdByPhone, new int[] { langIdByPhone.Length }, false)
+                    .Reshape(new int[] { 1, langIdByPhone.Length });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("languages", langIdTensor));
+            }
             //speaker
             if(singer.dsConfig.speakers != null) {
                 var speakerEmbedManager = singer.getSpeakerEmbedManager();

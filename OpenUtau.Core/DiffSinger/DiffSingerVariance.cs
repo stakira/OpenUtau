@@ -22,7 +22,8 @@ namespace OpenUtau.Core.DiffSinger{
     public class DsVariance : IDisposable{
         string rootPath;
         DsConfig dsConfig;
-        List<string> phonemes;
+        Dictionary<string, int> languageIds = new Dictionary<string, int>();
+        Dictionary<string, int> phonemeTokens;
         ulong linguisticHash;
         ulong varianceHash;
         InferenceSession linguisticModel;
@@ -40,9 +41,23 @@ namespace OpenUtau.Core.DiffSinger{
             dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     Encoding.UTF8));
+            //Load language id if needed
+            if(dsConfig.use_lang_id){
+                if(dsConfig.languages == null){
+                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
+                    return;
+                }
+                var langIdPath = Path.Join(rootPath, dsConfig.languages);
+                try {
+                    languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
+                } catch (Exception e) {
+                    Log.Error(e, $"failed to load language id from {langIdPath}");
+                    return;
+                }
+            }
             //Load phonemes list
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
-            phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
+            phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
             //Load models
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
@@ -78,12 +93,13 @@ namespace OpenUtau.Core.DiffSinger{
         }
 
         int PhonemeTokenize(string phoneme){
-            int result = phonemes.IndexOf(phoneme);
-            if(result < 0){
+            bool success = phonemeTokens.TryGetValue(phoneme, out int token);
+            if(!success){
                 throw new Exception($"Phoneme \"{phoneme}\" isn't supported by variance model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
             }
-            return result;
+            return token;
         }
+
         public VarianceResult Process(RenderPhrase phrase){
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
@@ -131,6 +147,19 @@ namespace OpenUtau.Core.DiffSinger{
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                     new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
+            }
+            //Language id
+            if(dsConfig.use_lang_id){
+                var langIdByPhone = phrase.phones
+                    .Select(p => (long)languageIds.GetValueOrDefault(
+                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
+                        ))
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
+                var langIdTensor = new DenseTensor<Int64>(langIdByPhone, new int[] { langIdByPhone.Length }, false)
+                    .Reshape(new int[] { 1, langIdByPhone.Length });
+                linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("languages", langIdTensor));
             }
 
             Onnx.VerifyInputNames(linguisticModel, linguisticInputs);
