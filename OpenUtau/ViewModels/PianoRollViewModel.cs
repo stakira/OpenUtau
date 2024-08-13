@@ -8,7 +8,6 @@ using DynamicData.Binding;
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -48,13 +47,19 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
+        public bool LockPitchPoints { get => Preferences.Default.LockUnselectedNotesPitch; }
+        public bool LockVibrato { get => Preferences.Default.LockUnselectedNotesVibrato; }
+        public bool LockExpressions { get => Preferences.Default.LockUnselectedNotesExpressions; }
         public bool ShowPortrait { get => Preferences.Default.ShowPortrait; }
+        public bool ShowIcon { get => Preferences.Default.ShowIcon; }
         public bool ShowGhostNotes { get => Preferences.Default.ShowGhostNotes; }
         public bool UseTrackColor { get => Preferences.Default.UseTrackColor; }
         public bool DegreeStyle0 { get => Preferences.Default.DegreeStyle == 0 ? true : false; }
         public bool DegreeStyle1 { get => Preferences.Default.DegreeStyle == 1 ? true : false; }
         public bool DegreeStyle2 { get => Preferences.Default.DegreeStyle == 2 ? true : false; }
-        public bool LockStartTime { get => Preferences.Default.LockStartTime == 1 ? true : false; }
+        public bool LockStartTime0 { get => Preferences.Default.LockStartTime == 0 ? true : false; }
+        public bool LockStartTime1 { get => Preferences.Default.LockStartTime == 1 ? true : false; }
+        public bool LockStartTime2 { get => Preferences.Default.LockStartTime == 2 ? true : false; }
         public bool PlaybackAutoScroll0 { get => Preferences.Default.PlaybackAutoScroll == 0 ? true : false; }
         public bool PlaybackAutoScroll1 { get => Preferences.Default.PlaybackAutoScroll == 1 ? true : false; }
         public bool PlaybackAutoScroll2 { get => Preferences.Default.PlaybackAutoScroll == 2 ? true : false; }
@@ -64,6 +69,8 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<MenuItemViewModel> NoteBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> LyricBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> ResetBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
@@ -82,7 +89,6 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
 
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
-        private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
@@ -161,57 +167,6 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             LoadLegacyPlugins();
-
-            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
-                if (NotesViewModel.Part != null) {
-                    try{
-                        edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
-                    } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
-                    }
-                }
-            });
-            NoteBatchEdits.AddRange(new List<BatchEdit>() {
-                new LoadRenderedPitch(),
-                new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
-                new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
-                new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
-                new RemoveTailNote("R", "pianoroll.menu.notes.removetailrest"),
-                new Transpose(12, "pianoroll.menu.notes.octaveup"),
-                new Transpose(-12, "pianoroll.menu.notes.octavedown"),
-                new QuantizeNotes(15),
-                new QuantizeNotes(30),
-                new AutoLegato(),
-                new FixOverlap(),
-                new HanziToPinyin(),
-                new ResetPitchBends(),
-                new ResetAllExpressions(),
-                new ClearVibratos(),
-                new ResetVibratos(),
-                new ClearTimings(),
-                new ResetAliases(),
-                new BakePitch(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
-            }));
-            LyricBatchEdits.AddRange(new List<BatchEdit>() {
-                new RomajiToHiragana(),
-                new HiraganaToRomaji(),
-                new JapaneseVCVtoCV(),
-                new RemoveToneSuffix(),
-                new RemoveLetterSuffix(),
-                new MoveSuffixToVoiceColor(),
-                new RemovePhoneticHint(),
-                new DashToPlus(),
-                new InsertSlur(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
-            }));
-            DocManager.Inst.AddSubscriber(this);
         }
 
         private void LoadLegacyPlugins() {
@@ -255,6 +210,11 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
+        public void Cut() => NotesViewModel.CutNotes();
+        public void Copy() => NotesViewModel.CopyNotes();
+        public void Paste() => NotesViewModel.PasteNotes();
+        public void Delete() => NotesViewModel.DeleteSelectedNotes();
+        public void SelectAll() => NotesViewModel.SelectAllNotes();
 
         public void MouseoverPhoneme(UPhoneme? phoneme) {
             MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));

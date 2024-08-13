@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.App {
     internal class FilePicker {
@@ -32,6 +34,9 @@ namespace OpenUtau.App {
         public static FilePickerFileType ArchiveFiles { get; } = new("Archive File") {
             Patterns = new[] { "*.zip", "*.rar", "*.uar", "*.vogeon", "*.oudep" },
         };
+        public static FilePickerFileType ZIP { get; } = new("ZIP") {
+            Patterns = new[] { "*.zip" },
+        };
         public static FilePickerFileType EXE { get; } = new("EXE") {
             Patterns = new[] { "*.exe" },
         };
@@ -44,10 +49,35 @@ namespace OpenUtau.App {
         public static FilePickerFileType DS { get; } = new("DS") {
             Patterns = new[] { "*.ds" },
         };
+        public static FilePickerFileType OUDEP { get; } = new("OpenUtau dependency") {
+            Patterns = new[] { "*.oudep" },
+        };
 
         public async static Task<string?> OpenFile(
             Window window, string titleKey, params FilePickerFileType[] types) {
             return await OpenFile(window, titleKey, null, types);
+        }
+
+        public async static Task<string?> OpenFileAboutSinger(
+            Window window, string titleKey, params FilePickerFileType[] types) {
+            var path = await OpenFile(window, titleKey, Preferences.Default.RecentOpenSingerDirectory, types);
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null) {
+                Preferences.Default.RecentOpenSingerDirectory = dir;
+                Preferences.Save();
+            }
+            return path;
+        }
+
+        public async static Task<string?> OpenFileAboutProject(
+            Window window, string titleKey, params FilePickerFileType[] types) {
+            var path = await OpenFile(window, titleKey, Preferences.Default.RecentOpenProjectDirectory, types);
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null) {
+                Preferences.Default.RecentOpenProjectDirectory = dir;
+                Preferences.Save();
+            }
+            return path;
         }
 
         public async static Task<string?> OpenFile(
@@ -68,13 +98,30 @@ namespace OpenUtau.App {
                 ?.FirstOrDefault();
         }
 
+        public async static Task<string[]?> OpenFilesAboutProject(
+                Window window, string titleKey, params FilePickerFileType[] types) {
+            var result = await OpenFiles(window, titleKey, Preferences.Default.RecentOpenProjectDirectory, types);
+            if (result != null) {
+                var dir = Path.GetDirectoryName(result.FirstOrDefault());
+                if (dir != null) {
+                    Preferences.Default.RecentOpenProjectDirectory = dir;
+                    Preferences.Save();
+                }
+            }
+            return result;
+        }
+
         public async static Task<string[]?> OpenFiles(
-            Window window, string titleKey, params FilePickerFileType[] types) {
+            Window window, string titleKey, string? startLocation, params FilePickerFileType[] types) {
+            var location = startLocation == null
+                ? null
+                : await window.StorageProvider.TryGetFolderFromPathAsync(startLocation);
             var files = await window.StorageProvider.OpenFilePickerAsync(
                 new FilePickerOpenOptions() {
                     Title = ThemeManager.GetString(titleKey),
                     AllowMultiple = true,
-                    FileTypeFilter = types
+                    FileTypeFilter = types,
+                    SuggestedStartLocation = location
                 });
             return files
                 ?.Select(f => f.TryGetLocalPath())
@@ -82,11 +129,24 @@ namespace OpenUtau.App {
                 ?.ToArray();
         }
 
-        public async static Task<string?> OpenFolder(Window window, string titleKey) {
+        public async static Task<string?> OpenFolderAboutSinger(Window window, string titleKey) {
+            var dir = await OpenFolder(window, titleKey, Preferences.Default.RecentOpenSingerDirectory);
+            if (dir != null) {
+                Preferences.Default.RecentOpenSingerDirectory = dir;
+                Preferences.Save();
+            }
+            return dir;
+        }
+
+        public async static Task<string?> OpenFolder(Window window, string titleKey, string? startLocation) {
+            var location = startLocation == null
+                ? null
+                : await window.StorageProvider.TryGetFolderFromPathAsync(startLocation);
             var dirs = await window.StorageProvider.OpenFolderPickerAsync(
                 new FolderPickerOpenOptions {
                     Title = ThemeManager.GetString(titleKey),
                     AllowMultiple = false,
+                    SuggestedStartLocation = location
                 });
             return dirs
                 ?.Select(f => f.TryGetLocalPath())
@@ -97,6 +157,17 @@ namespace OpenUtau.App {
         public async static Task<string?> SaveFile
             (Window window, string titleKey, params FilePickerFileType[] types) {
             return await SaveFile(window, titleKey, null, null, types);
+        }
+
+        public async static Task<string?> SaveFileAboutProject
+            (Window window, string titleKey, params FilePickerFileType[] types) {
+            var path = await SaveFile(window, titleKey, Preferences.Default.RecentOpenProjectDirectory, null, types);
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null) {
+                Preferences.Default.RecentOpenProjectDirectory = dir;
+                Preferences.Save();
+            }
+            return path;
         }
 
         public async static Task<string?> SaveFile

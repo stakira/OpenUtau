@@ -37,7 +37,7 @@ namespace OpenUtau.Core.Vogen {
                 duration = group[^1].position + group[^1].duration - group[0].position
             });
         }
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             if (groups.Length == 0) {
                 return;
             }

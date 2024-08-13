@@ -11,6 +11,9 @@ namespace OpenUtau.Core.Ustx {
     public class UNote : IComparable {
         static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
 
+        /// <summary>
+        /// Position of the note in ticks, relative to the beginning of the part.
+        /// </summary>
         public int position;
         public int duration;
         public int tone;
@@ -22,6 +25,10 @@ namespace OpenUtau.Core.Ustx {
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public int End => position + duration;
+
+        /// <summary>
+        /// Position of the note in milliseconds, relative to the beginning of the project.
+        /// </summary>
         [YamlIgnore] public double PositionMs { get; set; }
         [YamlIgnore] public double DurationMs => EndMs - PositionMs;
         [YamlIgnore] public double EndMs { get; set; }
@@ -35,6 +42,8 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public int RightBound => position + duration;
         [YamlIgnore] public bool Error { get; set; } = false;
         [YamlIgnore] public bool OverlapError { get; set; } = false;
+        [YamlIgnore] public List<UExpression> phonemizerExpressions = new List<UExpression>();
+        [YamlIgnore] public int[] phonemeIndexes { get; set; } = new int[0];
 
         public static UNote Create() {
             var note = new UNote();
@@ -61,10 +70,11 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
             foreach (var exp in phonemeExpressions) {
-                if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
+                if (track.TryGetExpDescriptor(project, exp.abbr, out var descriptor)) {
                     exp.descriptor = descriptor;
                 }
             }
+            phonemeExpressions = phonemeExpressions.Where(exp => exp.descriptor != null).ToList();
         }
 
         public void BeforeSave(UProject project, UTrack track, UVoicePart part) {
@@ -156,49 +166,84 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out var descriptor);
+            track.TryGetExpression(project, abbr, out UExpression trackExp);
             var list = new List<Tuple<float, bool>>();
-            int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
 
-            for (int i = 0; i < indexes; i++) {
-                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
-                if (expression != null) {
-                    list.Add(Tuple.Create(expression.value, true));
-                } else {
-                    list.Add(Tuple.Create(descriptor.defaultValue, false));
+            if (phonemeIndexes != null && phonemeIndexes.Length > 0) {
+                int indexes = phonemeIndexes.LastOrDefault() + 1;
+                for (int i = 0; i < indexes; i++) {
+                    var phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                    if (phonemeExp != null) {
+                        list.Add(Tuple.Create(phonemeExp.value, true));
+                    } else {
+                        var phonemizerExp = phonemizerExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                        if (phonemizerExp != null) {
+                            list.Add(Tuple.Create(phonemizerExp.value, false));
+                        } else {
+                            list.Add(Tuple.Create(trackExp.value, false));
+                        }
+                    }
                 }
             }
             return list;
         }
 
-        public void SetExpression(UProject project, UTrack track, string abbr, float[] values) {
-            if (!track.TryGetExpression(project, abbr, out var descriptor)) {
+        /// <summary>
+        /// Returns value if phoneme has expression, null otherwise.
+        /// </summary>
+        public float?[] GetExpressionNoteHas(UProject project, UTrack track, string abbr) {
+            var list = new List<float?>();
+
+            if (phonemeIndexes != null && phonemeIndexes.Length > 0) {
+                int indexes = phonemeIndexes.LastOrDefault() + 1;
+                UExpression? phonemeExp = null;
+
+                for (int i = 0; i < indexes; i++) {
+                    if (phonemeIndexes.Contains(i)) {
+                        phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                    }
+                    if (phonemeExp != null) {
+                        list.Add(phonemeExp.value);
+                    } else {
+                        list.Add(null);
+                    }
+                }
+            }
+            return list.ToArray();
+        }
+
+        public void SetExpression(UProject project, UTrack track, string abbr, float?[] values) {
+            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
                 return;
             }
-            int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
+            if (values.Length == 0) {
+                return;
+            }
 
+            int indexes = phonemeIndexes.LastOrDefault() + 1;
             for (int i = 0; i < indexes; i++) {
-                float value;
-                if (values.Length > i) {
-                    value = values[i];
-                } else {
-                    value = values.Last();
-                }
+                if (i == 0 || phonemeIndexes.Contains(i)) {
+                    float? value;
+                    if (values.Length > i) {
+                        value = values[i];
+                    } else {
+                        value = values.Last();
+                    }
 
-                if (descriptor.defaultValue == value) {
-                    phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
-                    continue;
-                }
-                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
-                if (expression != null) {
-                    expression.descriptor = descriptor;
-                    expression.value = value;
-                } else {
-                    phonemeExpressions.Add(new UExpression(descriptor) {
-                        descriptor = descriptor,
-                        index = i,
-                        value = value,
-                    });
+                    if (value == null) {
+                        phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                        continue;
+                    }
+                    var phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
+                    if (phonemeExp != null) {
+                        phonemeExp.descriptor = trackExp.descriptor;
+                        phonemeExp.value = (float)value;
+                    } else {
+                        phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                            index = i,
+                            value = (float)value,
+                        });
+                    }
                 }
             }
         }
@@ -213,6 +258,7 @@ namespace OpenUtau.Core.Ustx {
                 vibrato = vibrato.Clone(),
                 phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
+                phonemeIndexes = (int[])phonemeIndexes.Clone()
             };
         }
     }
@@ -396,7 +442,14 @@ namespace OpenUtau.Core.Ustx {
     };
 
     public class PitchPoint : IComparable<PitchPoint> {
+        /// <summary>
+        /// Position relative to the beginning of the note in milliseconds.
+        /// </summary>
         public float X;
+
+        /// <summary>
+        /// Pitch relative to the tone of the note in 0.1 semi-tones.
+        /// </summary>
         public float Y;
         public PitchPointShape shape;
 

@@ -15,8 +15,6 @@ skip_commits:
     - .github/*
   message: /\[nobuild\]/
 skip_tags: true
-pull_requests:
-  do_not_increment_build_number: true
 configuration: Release
 dotnet_csproj:
   patch: true
@@ -29,7 +27,7 @@ before_build:
   - ps: git config --global user.name "appveyor"
   - cmd: nuget restore
 after_test:
-  - ps: python appveyor.py 2>&1
+  - ps: if ($isWindows) { python appveyor.py 2>&1 } else { python3 appveyor.py 2>&1 }
 artifacts:
   - path: bin\win-x86
     name: OpenUtau-win-x86

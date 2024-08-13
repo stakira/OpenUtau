@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using Avalonia.Platform.Storage;
 using NAudio.Wave;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -104,6 +106,21 @@ namespace OpenUtau.App.Views {
                 Log.Error(e, "Failed to set portrait");
                 _ = await MessageBox.ShowError(this, e);
             }
+        }
+
+        async void OnPublish(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var dialog = new SingerPublishDialog();
+            dialog.DataContext = new SingerPublishViewModel(viewModel.Singer);
+            await dialog.ShowDialog(this);
+        }
+
+        void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            viewModel.SetUseFilenameAsAlias();
         }
 
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
@@ -209,6 +226,58 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void GotoSetParamOto(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var oto = OtoGrid?.SelectedItem as UOto;
+            if (oto == null) {
+                return;
+            }
+            if (viewModel.Singer != null) {
+                OpenInSetParam(viewModel.Singer, oto);
+            }
+        }
+
+        /*void OnEditInVSetParam(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer != null) {
+                OpenInSetParam(viewModel.Singer, null);
+            }
+        }*/
+
+        private void OpenInSetParam(USinger singer, UOto oto) {
+            string path = Core.Util.Preferences.Default.SetParamPath;
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) {
+                MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("singers.editoto.setsetparampath"),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            try {
+                var tempFile = Path.Combine(PathManager.Inst.CachePath, "temp.tmp");
+                Ust.WriteForSetParam(DocManager.Inst.Project, tempFile, new List<UOto> { oto });
+
+                var startInfo = new ProcessStartInfo() {
+                    FileName = path,
+                    Arguments = $"\"{tempFile}\"",
+                    WorkingDirectory = Path.GetDirectoryName(path)
+                };
+                using (var process = Process.Start(startInfo)) {
+                    process!.WaitForExit();
+                }
+            } catch (Exception e) {
+                MessageBox.Show(
+                    this,
+                    e.ToString(),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
         void OnOpenReadme(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer != null) {
@@ -234,7 +303,7 @@ namespace OpenUtau.App.Views {
             var sample = singer.Sample;
             if(sample!=null && File.Exists(sample)){
                 return sample;
-            } else if (singer.SingerType == USingerType.Classic) {
+            } else if (singer.SingerType == USingerType.Classic || singer.SingerType == USingerType.Voicevox) {
                 var path = singer.Location;
                 if(!Directory.Exists(path)){
                     return null;
@@ -348,19 +417,12 @@ namespace OpenUtau.App.Views {
         }
 
         Tuple<int, double[]>? LoadF0(string wavPath) {
-            if(String.IsNullOrEmpty(wavPath)){
-                //If the wav path is null (machine learning voicebank), return null.
-                return null;
-            }
-            string frqFile = Classic.VoicebankFiles.GetFrqFile(wavPath);
-            if (!File.Exists(frqFile)) {
-                return null;
-            }
             var frq = new Classic.Frq();
-            using (var fileStream = File.OpenRead(frqFile)) {
-                frq.Load(fileStream);
+            if (frq.Load(wavPath)) {
+                return Tuple.Create(frq.hopSize, frq.f0);
+            } else {
+                return null;
             }
-            return Tuple.Create(frq.hopSize, frq.f0);
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
@@ -445,7 +507,9 @@ namespace OpenUtau.App.Views {
                 if (viewModel == null) {
                     return;
                 }
-                viewModel.GotoOto(editOto.singer, editOto.oto);
+                if (editOto.singer != null) {
+                    viewModel.GotoOto(editOto.singer, editOto.oto);
+                }
                 OtoGrid?.ScrollIntoView(OtoGrid.SelectedItem, null);
                 Activate();
             }

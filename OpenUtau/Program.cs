@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -50,11 +51,29 @@ namespace OpenUtau.App {
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
+        public static AppBuilder BuildAvaloniaApp() {
+            FontManagerOptions fontOptions = new();
+            if (OS.IsLinux()) {
+                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
+                {
+                    ArgumentList = { "-f", "%{family}" },
+                    RedirectStandardOutput = true
+                })!;
+                process.WaitForExit();
+
+                string fontFamily = process.StandardOutput.ReadToEnd();
+                if (!string.IsNullOrEmpty(fontFamily)) {
+                    string [] fontFamilies = fontFamily.Split(',');
+                    fontOptions.DefaultFamilyName = fontFamilies[0];
+                }
+            }
+            return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .LogToTrace()
-                .UseReactiveUI();
+                .UseReactiveUI()
+                .With(fontOptions)
+                .With(new X11PlatformOptions {EnableIme = true});
+        }
 
         public static void Run(string[] args)
             => BuildAvaloniaApp()

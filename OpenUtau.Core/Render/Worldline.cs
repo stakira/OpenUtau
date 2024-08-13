@@ -206,7 +206,7 @@ namespace OpenUtau.Core.Render {
                     required_length = item.durRequired,
                     consonant = item.consonant,
                     cut_off = item.cutoff,
-                    volume = item.volume,
+                    volume = item.phone.direct ? 0 : item.volume,
                     modulation = item.modulation,
                     tempo = item.tempo,
                     pitch_bend_length = item.pitches.Length,

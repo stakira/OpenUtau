@@ -43,6 +43,9 @@ namespace OpenUtau.Classic {
         Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
         OtoWatcher otoWatcher;
 
+        public bool? UseFilenameAsAlias { get => voicebank.UseFilenameAsAlias; set => voicebank.UseFilenameAsAlias = value; }
+        public Dictionary<string, Frq> Frqs { get; set; } = new Dictionary<string, Frq>();
+
         public ClassicSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
             found = true;
@@ -75,7 +78,7 @@ namespace OpenUtau.Classic {
         void Load() {
             if (Avatar != null && File.Exists(Avatar)) {
                 try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                    using (var stream = new FileStream(Avatar, FileMode.Open, FileAccess.Read)) {
                         using (var memoryStream = new MemoryStream()) {
                             stream.CopyTo(memoryStream);
                             avatarData = memoryStream.ToArray();

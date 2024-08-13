@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.SliderDialog"
+        Icon="/Assets/open-utau.ico"
         Title="SliderDialog" Height="120" Width="300" WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False">
   <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">

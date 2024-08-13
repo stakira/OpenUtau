@@ -133,8 +133,14 @@
   <data name="g2p-it" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-it.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="g2p-ja-mono" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-ja-mono.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="g2p-jyutping" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-jyutping.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="g2p-ko" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-ko.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="g2p-man" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-man.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -144,5 +150,8 @@
   </data>
   <data name="g2p-ru" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-ru.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="g2p_arpabet_plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-arpabet-plus.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

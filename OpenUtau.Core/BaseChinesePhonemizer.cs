@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using OpenUtau.Core.G2p;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class BaseChinesePhonemizer : Phonemizer {
@@ -19,7 +20,22 @@ namespace OpenUtau.Core {
         }
 
         public static string[] Romanize(IEnumerable<string> lyrics) {
-            return ZhG2p.MandarinInstance.Convert(lyrics.ToList(), false, true).Split(" ");
+            var lyricsArray = lyrics.ToArray();
+            var hanziLyrics = lyricsArray
+                .Where(ZhG2p.MandarinInstance.IsHanzi)
+                .ToList();
+            var pinyinResult = ZhG2p.MandarinInstance.Convert(hanziLyrics, false, false).ToLower().Split();
+            if(pinyinResult == null) {
+                return lyricsArray;
+            }
+            var pinyinIndex = 0;
+            for(int i=0; i < lyricsArray.Length; i++) {
+                if (lyricsArray[i].Length == 1 && ZhG2p.MandarinInstance.IsHanzi(lyricsArray[i])) {
+                    lyricsArray[i] = pinyinResult[pinyinIndex];
+                    pinyinIndex++;
+                }
+            }
+            return lyricsArray;
         }
 
         public static void RomanizeNotes(Note[][] groups) {
@@ -27,7 +43,7 @@ namespace OpenUtau.Core {
             Enumerable.Zip(groups, ResultLyrics, ChangeLyric).Last();
         }
 
-        public override void SetUp(Note[][] groups) {
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             RomanizeNotes(groups);
         }
     }

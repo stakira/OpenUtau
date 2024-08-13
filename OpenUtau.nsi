@@ -79,6 +79,11 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+
+  WriteRegStr HKCR ".ustx" "" "OpenUtauFile"
+  WriteRegStr HKCR "OpenUtauFile" "" "OpenUtau Sequence File"
+  WriteRegStr HKCR "OpenUtauFile\DefaultIcon" "" "$INSTDIR\OpenUtau.exe"
+  WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
 SectionEnd
 
 
@@ -99,6 +104,13 @@ Section Uninstall
   Delete "$INSTDIR\*"
 
   Delete "$SMPROGRAMS\OpenUtau\Uninstall.lnk"
+
+  DeleteRegKey HKCR ".ustx"
+  DeleteRegKey HKCR "OpenUtauFile\DefaultIcon"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open\command"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open"
+  DeleteRegKey HKCR "OpenUtauFile\shell"
+  DeleteRegKey HKCR "OpenUtauFile"
 
   RMDir "$SMPROGRAMS\OpenUtau"
   RMDir "$INSTDIR"

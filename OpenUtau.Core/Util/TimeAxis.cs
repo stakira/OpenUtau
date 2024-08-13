@@ -51,7 +51,9 @@ namespace OpenUtau.Core {
                     posTick = timeSigSegments.Last().tickPos
                         + timeSigSegments.Last().ticksPerBar * (timesig.barPosition - lastBarPos);
                 } else {
-                    Debug.Assert(timesig.barPosition == 0);
+                    if(timesig.barPosition != 0) {
+                        throw new Exception("First time signature must be at bar 0.");
+                    }
                 }
                 timeSigSegments.Add(new TimeSigSegment {
                     barPos = timesig.barPosition,
@@ -76,7 +78,9 @@ namespace OpenUtau.Core {
             for (var i = 0; i < project.tempos.Count; ++i) {
                 var tempo = project.tempos[i];
                 if (i == 0) {
-                    Debug.Assert(tempo.position == 0);
+                    if(tempo.position != 0) {
+                        throw new Exception("First tempo must be at tick 0.");
+                    }
                 }
                 var index = tempoSegments.FindIndex(seg => seg.tickPos >= tempo.position);
                 if (index < 0) {
@@ -141,6 +145,18 @@ namespace OpenUtau.Core {
 
         public double MsBetweenTickPos(double tickPos, double tickEnd) {
             return TickPosToMsPos(tickEnd) - TickPosToMsPos(tickPos);
+        }
+
+        /// <summary>
+        /// Convert ms duration to tick at a given reference tick position
+        /// </summary>
+        /// <param name="durationMs">Duration in ms, positive value means starting from refTickPos, negative value means ending at refTickPos</param>
+        /// <param name="refTickPos">Reference tick position</param>
+        /// <returns>Duration in ticks</returns>
+        public int MsToTickAt(double offsetMs, int refTickPos) {
+            return TicksBetweenMsPos(
+                TickPosToMsPos(refTickPos), 
+                TickPosToMsPos(refTickPos) + offsetMs);
         }
 
         public void TickPosToBarBeat(int tick, out int bar, out int beat, out int remainingTicks) {

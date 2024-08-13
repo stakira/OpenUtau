@@ -8,8 +8,8 @@ using Avalonia.Input;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
-using OpenUtau.Core.Util;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.App.Views {
     class KeyboardPlayState {
@@ -400,11 +400,20 @@ namespace OpenUtau.App.Views {
         public override void Begin(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             base.Begin(pointer, point);
+            var project = DocManager.Inst.Project;
             var part = notesVm.Part;
-            newNote = notesVm.MaybeAddNote(point, false);
-            if (part == null || newNote == null) {
+            if (project == null || part == null || note == null) {
                 return;
             }
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            if (note.duration <= snapUnit) {
+                return;
+            }
+            newNote = notesVm.MaybeAddNote(point, false);
+            if (newNote == null) {
+                return;
+            }
+            
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
         }
 
@@ -426,7 +435,13 @@ namespace OpenUtau.App.Views {
             if (notesVm.IsSnapOn && snapUnit > 0) {
                 maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
             }
-            deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
+
+            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0) 
+                ? (oldDur-1) / snapUnit * snapUnit 
+                : oldDur - 15;
+            int maxDelta = maxNoteTicks - note.duration;
+
+            deltaDuration = Math.Clamp(deltaDuration, -maxNegDelta, maxDelta);
 
             if (deltaDuration == 0) {
                 valueTip.UpdateValueTip(note.duration.ToString());
@@ -615,8 +630,7 @@ namespace OpenUtau.App.Views {
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
             if (project == null || part == null ||
-                !track.TryGetExpression(
-                    project, notesVm.PrimaryKey, out descriptor)) {
+                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
                 descriptor = null;
             }
         }
@@ -681,7 +695,7 @@ namespace OpenUtau.App.Views {
                 startValue = Math.Max(descriptor.min, Math.Min(descriptor.max, startValue));
             }
             foreach (var hit in hits) {
-                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                if (Preferences.Default.LockUnselectedNotesExpressions && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
                     continue;
                 }
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
@@ -727,8 +741,7 @@ namespace OpenUtau.App.Views {
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
             if (project == null || part == null ||
-                !track.TryGetExpression(
-                    project, notesVm.PrimaryKey, out descriptor)) {
+                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
                 descriptor = null;
             }
         }
@@ -760,15 +773,14 @@ namespace OpenUtau.App.Views {
                 return;
             }
             foreach (var hit in hits) {
-                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                if (Preferences.Default.LockUnselectedNotesExpressions && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
                     continue;
                 }
-                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if (value == descriptor.defaultValue) {
+                if (!hit.phoneme.GetExpression(notesVm.Project, track, key).Item2) {
                     continue;
                 }
                 DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
+                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, null));
             }
         }
         private void ResetCurveExp(IPointer pointer, Point point) {
@@ -1078,6 +1090,41 @@ namespace OpenUtau.App.Views {
                 (int)Math.Round(tick / 5.0) * 5,
                 vm.NotesViewModel.PointToToneDouble(point));
             double? pitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            if (pitch == null || vm.NotesViewModel.Part == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                (int)Math.Round(tone * 100 - pitch.Value),
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
+    class OverwritePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? lastPitch;
+        Point lastPoint;
+        public OverwritePitchState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SampleOverwritePitch(samplePoint);
             if (pitch == null || vm.NotesViewModel.Part == null) {
                 return;
             }

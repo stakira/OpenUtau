@@ -23,7 +23,17 @@ namespace OpenUtau.Core {
             this.message = message;
             this.e = e;
         }
-        public override string ToString() => $"Error message: {message} {e}";
+        public override string ToString() {
+            if (e is MessageCustomizableException mce) {
+                if (string.IsNullOrWhiteSpace(mce.Message)) {
+                    return $"Error message: {mce.SubstanceException.Message} {mce.SubstanceException}";
+                } else {
+                    return $"Error message: {mce.Message} {mce.SubstanceException}";
+                }
+            } else {
+                return $"Error message: {message} {e}";
+            }
+        }
     }
 
     public class LoadingNotification : UNotification {
@@ -93,10 +103,12 @@ namespace OpenUtau.Core {
     public class SetPlayPosTickNotification : UNotification {
         public readonly int playPosTick;
         public readonly bool waitingRendering;
+        public readonly bool pause;
         public override bool Silent => true;
-        public SetPlayPosTickNotification(int tick, bool waitingRendering = false) {
+        public SetPlayPosTickNotification(int tick, bool waitingRendering = false, bool pause = false) {
             playPosTick = tick;
             this.waitingRendering = waitingRendering;
+            this.pause = pause;
         }
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }
@@ -104,9 +116,11 @@ namespace OpenUtau.Core {
     // Notification for playback manager to change play position
     public class SeekPlayPosTickNotification : UNotification {
         public int playPosTick;
+        public readonly bool pause;
         public override bool Silent => true;
-        public SeekPlayPosTickNotification(int tick) {
+        public SeekPlayPosTickNotification(int tick, bool pause = false) {
             playPosTick = tick;
+            this.pause = pause;
         }
         public override string ToString() => $"Seek play position to tick {playPosTick}";
     }
@@ -211,9 +225,9 @@ namespace OpenUtau.Core {
     }
 
     public class GotoOtoNotification : UNotification {
-        public readonly USinger singer;
-        public readonly UOto oto;
-        public GotoOtoNotification(USinger singer, UOto oto) {
+        public readonly USinger? singer;
+        public readonly UOto? oto;
+        public GotoOtoNotification(USinger? singer, UOto? oto) {
             this.singer = singer;
             this.oto = oto;
         }

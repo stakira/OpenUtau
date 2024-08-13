@@ -70,22 +70,22 @@ namespace OpenUtau.App.ViewModels {
                 .ToProperty(this, x => x.SelectedType, out selectedType);
         }
 
-        public string? Validate() {
+        public string[]? Validate() {
             if (string.IsNullOrWhiteSpace(Name)) {
-                return "Name must be set.";
+                return new string[] { "Name must be set.", "<translate:errors.expression.name>" };
             }
             if (string.IsNullOrWhiteSpace(Abbr)) {
-                return "Abbreviation must be set.";
+                return new string[] { "Abbreviation must be set.", "<translate:errors.expression.abbrset>" };
             }
             if (ExpressionType == UExpressionType.Numerical) {
                 if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
-                    return "Abbreviation must be between 1 and 4 characters long.";
+                    return new string[] { "Abbreviation must be between 1 and 4 characters long.", "<translate:errors.expression.abbrlong>" };
                 }
                 if (Min >= Max) {
-                    return "Min must be smaller than max.";
+                    return new string[] { "Min must be smaller than max.", "<translate:errors.expression.min>" };
                 }
                 if (DefaultValue < Min || DefaultValue > Max) {
-                    return "Default value must be between min and max.";
+                    return new string[] { "Default value must be between min and max.", "<translate:errors.expression.default>" };
                 }
             }
             return null;
@@ -137,15 +137,16 @@ namespace OpenUtau.App.ViewModels {
             if (!Expressions.All(builder => builder.Validate() == null)) {
                 var invalid = Expressions.First(builder => builder.Validate() != null);
                 Expression = invalid;
-                throw new ArgumentException(invalid.Validate());
+                string[] validate = invalid.Validate()!;
+                throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
             }
-            var abbrs = Expressions.Select(builder => builder.Abbr);
-            if (abbrs.Count() != abbrs.Distinct().Count()) {
-                throw new ArgumentException("Abbreviations must be unique.");
+            var abbrs = Expressions.GroupBy(builder => builder.Abbr).Where(g => g.Count() > 1).Select(g => g.Key);
+            if (abbrs.Count() > 0) {
+                throw new MessageCustomizableException("", $"<translate:errors.expression.abbrunique>: {string.Join(", ", abbrs)}", new ArgumentException($"Abbreviations must be unique: {string.Join(", ", abbrs)}"), false);
             }
-            var flags = Expressions.Where(builder => !string.IsNullOrEmpty(builder.Flag)).Select(builder => builder.Flag);
-            if (flags.Count() != flags.Distinct().Count()) {
-                throw new ArgumentException("Flags must be unique.");
+            var flags = Expressions.Where(builder => !string.IsNullOrEmpty(builder.Flag)).GroupBy(builder => builder.Flag).Where(g => g.Count() > 1).Select(g => g.Key);
+            if (flags.Count() > 0) {
+                throw new MessageCustomizableException("", $"<translate:errors.expression.flagunique>: {string.Join(", ", flags)}", new ArgumentException($"Flags must be unique: {string.Join(", ", flags)}"), false);
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(DocManager.Inst.Project, Expressions.Select(builder => builder.Build()).ToArray()));

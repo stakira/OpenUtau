@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -27,7 +28,7 @@ namespace OpenUtau.App.ViewModels {
         public bool ExtendToFrame => OS.IsMacOS();
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
-            : $"{AppVersion} [{DocManager.Inst.Project.FilePath}{(DocManager.Inst.ChangesSaved ? "" : "*")}]";
+            : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -62,7 +63,8 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open recent.", e));
+                    var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
@@ -71,7 +73,8 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to open template.", e));
+                    var customEx = new MessageCustomizableException("Failed to open template", "<translate:errors.failed.openfile>: project template", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
@@ -94,9 +97,14 @@ namespace OpenUtau.App.ViewModels {
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                Core.Format.Formats.LoadProject(new string[] { args[1] });
-                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-                return;
+                try {
+                    Core.Format.Formats.LoadProject(new string[] { args[1] });
+                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                    return;
+                } catch (Exception e) {
+                    var customEx = new MessageCustomizableException($"Failed to open file {args[1]}", $"<translate:errors.failed.openfile>: {args[1]}", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                }
             }
             NewProject();
         }
@@ -110,7 +118,8 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("failed to load default template.", e));
+                    var customEx = new MessageCustomizableException("Failed to load default template", "<translate:errors.failed.load>: default template", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
@@ -137,12 +146,19 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
             this.RaisePropertyChanged(nameof(Title));
         }
+        
+        public void ImportTracks(UProject[] loadedProjects, bool importTempo){
+            if (loadedProjects == null || loadedProjects.Length < 1) {
+                return;
+            }
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, loadedProjects, importTempo);
+        }
 
-        public void ImportTracks(string[] files) {
+        public void ImportTracks(string[] files, bool importTempo) {
             if (files == null) {
                 return;
             }
-            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files);
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files, importTempo);
         }
 
         public void ImportAudio(string file) {
@@ -165,17 +181,20 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file, bool UseDrywetmidi = false) {
+        public void ImportMidi(string file) {
             if (file == null) {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
+            var parts = Core.Format.MidiWriter.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
+                if(part.name != "New Part"){
+                    track.TrackName = part.name;
+                }
                 part.AfterLoad(project, track);
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
@@ -252,6 +271,60 @@ namespace OpenUtau.App.ViewModels {
                     Command = AddTempoChangeCmd,
                     CommandParameter = left,
                 });
+            }
+        }
+
+        /// <summary>
+        /// Remap a tick position from the old time axis to the new time axis without changing its absolute position (in ms).
+        /// Note that this can only be used on positions, not durations.
+        /// </summary>
+        private int RemapTickPos(int tickPos, TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+            double msPos = oldTimeAxis.TickPosToMsPos(tickPos);
+            return newTimeAxis.MsPosToTickPos(msPos);
+        }
+
+        /// <summary>
+        /// Remap the starting and ending positions of all the notes and parts in the whole project 
+        /// from the old time axis to the new time axis, without changing their absolute positions in ms.
+        /// </summary>
+        public void RemapTimeAxis(TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+            var project = DocManager.Inst.Project;
+            foreach(var part in project.parts){
+                var partOldStartTick = part.position;
+                var partNewStartTick = RemapTickPos(part.position, oldTimeAxis, newTimeAxis);
+                if(partNewStartTick != partOldStartTick){
+                    DocManager.Inst.ExecuteCmd(new MovePartCommand(
+                        project, part, partNewStartTick, part.trackNo));
+                }
+                if(part is UVoicePart voicePart){
+                    var partOldEndTick = voicePart.End;
+                    var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
+                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(
+                            project, voicePart, partNewEndTick - partNewStartTick));
+                    }
+                    var noteCommands = new List<UCommand>();
+                    foreach(var note in voicePart.notes){
+                        var noteOldStartTick = note.position + partOldStartTick;
+                        var noteOldEndTick = note.End + partOldStartTick;
+                        var noteOldDuration = note.duration;
+                        var noteNewStartTick = RemapTickPos(noteOldStartTick, oldTimeAxis, newTimeAxis);
+                        var noteNewEndTick = RemapTickPos(noteOldEndTick, oldTimeAxis, newTimeAxis);
+                        var deltaPosTickInPart = (noteNewStartTick - partNewStartTick) - (noteOldStartTick - partOldStartTick);
+                        if(deltaPosTickInPart != 0){
+                            noteCommands.Add(new MoveNoteCommand(voicePart, note, deltaPosTickInPart, 0));
+                        }
+                        var noteNewDuration = noteNewEndTick - noteNewStartTick;
+                        var deltaDur = noteNewDuration - noteOldDuration;
+                        if(deltaDur != 0){
+                            noteCommands.Add(new ResizeNoteCommand(voicePart, note, deltaDur));
+                        }
+                        //TODO: expression curve remapping, phoneme timing remapping
+                    }
+                    foreach(var command in noteCommands){
+                        DocManager.Inst.ExecuteCmd(command);
+                    }
+                }
             }
         }
 
