@@ -170,7 +170,7 @@ namespace OpenUtau.Core.Voicevox {
                         length = 2;
                     }
                     int? tone = null;
-                    if (!string.IsNullOrEmpty(lyric) && !VoicevoxUtils.IsPau(lyric)) {
+                    if (!string.IsNullOrEmpty(lyric)) {
                         if (notes[index][0].phonemeAttributes != null) {
                             if (notes[index][0].phonemeAttributes.Length > 0) {
                                 tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
