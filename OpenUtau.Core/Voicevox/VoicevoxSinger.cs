@@ -81,19 +81,18 @@ namespace OpenUtau.Core.Voicevox {
             table.Clear();
             otos.Clear();
             try {
-                var parentDirectory = Directory.GetParent(this.Location).ToString();
-                var yamlPath = Path.Join(parentDirectory, "phonemes.yaml");
-                var yamlTxt = File.ReadAllText(yamlPath);
-                var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
                 //Prepared for planned changes or additions to phonemizers.
-                foreach (var str in phonemes_list.vowels) {
+                foreach (var str in VoicevoxUtils.phoneme_List.vowels) {
                    phonemes.Add(str);
                 }
-                foreach (var str in phonemes_list.consonants) {
+                foreach (var str in VoicevoxUtils.phoneme_List.consonants) {
                     phonemes.Add(str);
                 }
-                foreach (var str in phonemes_list.kana) {
-                    phonemes.Add(str);
+                foreach (var str in VoicevoxUtils.phoneme_List.kanas) {
+                    phonemes.Add(str.Key);
+                }
+                foreach (var str in VoicevoxUtils.phoneme_List.paus) {
+                    phonemes.Add(str.Key);
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load phonemes.yaml for {Name}");
