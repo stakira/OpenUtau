@@ -34,7 +34,19 @@ namespace OpenUtau.Audio {
             if (Guid.TryParse(Preferences.Default.PlaybackDevice, out var guid)) {
                 SelectDevice(guid, Preferences.Default.PlaybackDeviceNumber);
             } else {
-                SelectDevice(devices[0].guid, devices[0].deviceNumber);
+                bool foundDevice = false;
+                foreach (AudioOutputDevice dev in devices) {
+                    try {
+                        SelectDevice(dev.guid, dev.deviceNumber);
+                        foundDevice = true;
+                        break;
+                    } catch (Exception e) {
+                        Log.Warning(e, $"Failed to init audio device {dev}");
+                    }
+                }
+                if (!foundDevice) {
+                    throw new Exception("Failed to init any audio device");
+                }
             }
         }
 
