@@ -300,7 +300,12 @@ namespace OpenUtau.Core.Voicevox {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(phrase.preEffectHash);
                     writer.Write(phrase.phones[0].tone);
+                    writer.Write(phrase.phones[0].direct);
+                    //if (phrase.phones[0].direct) {
                     writer.Write(phrase.phones[0].toneShift);
+                    //} else {
+                    //    phrase.phones.ForEach(x => writer.Write(x.toneShift));
+                    //}
                     writer.Write(phrase.phones[0].volume);
                     return XXH64.DigestOf(stream.ToArray());
                 }
