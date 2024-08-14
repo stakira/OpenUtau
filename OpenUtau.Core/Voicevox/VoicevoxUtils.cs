@@ -120,9 +120,9 @@ namespace OpenUtau.Core.Voicevox {
             return qnotes;
         }
 
-        public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
+        public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double offset, Func<double, double> convert) {
             const int interval = 5;
-            var result = new double[length]; 
+            var result = new double[length];
             try {
                 if (curve == null) {
                     Array.Fill(result, defaultValue);
@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Voicevox {
                 }
 
                 for (int i = 0; i < length - headFrames - tailFrames; i++) {
-                    double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
+                    double posMs = phrase.positionMs - phrase.leadingMs + (i * frameMs) + offset;
                     int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
                     int index = Math.Max(0, (int)((double)ticks / interval));
                     if (index < curve.Length) {
