@@ -1735,7 +1735,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             foreach (var c in longConsonants) {
                 if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains("ng -")) {
-                    return base.GetTransitionBasicLengthMs() * 2.5;
+                    return base.GetTransitionBasicLengthMs() * 2.6;
                 }
             }
             
@@ -1782,7 +1782,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in connectingGlides) {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains($"{v} {c}") && !alias.Contains($"{c} -") && !alias.Contains($"{v} -")) {
-                        return base.GetTransitionBasicLengthMs() * 2.5;
+                        return base.GetTransitionBasicLengthMs() * 2.3;
                     }
                 }
             }
@@ -1807,7 +1807,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in semiVowels) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
                     if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -")) {
-                        return base.GetTransitionBasicLengthMs() * 1.5;
+                        return base.GetTransitionBasicLengthMs() * 1.6;
                     }
                 }
             }
@@ -1815,7 +1815,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (hasCons) {
                 return base.GetTransitionBasicLengthMs() * 1.3; // Value for 'cons'
             } else if (haslr) {
-                return base.GetTransitionBasicLengthMs() * 1.7; // Value for 'cons'
+                return base.GetTransitionBasicLengthMs() * 1.5; // Value for 'cons'
             }
 
             // Check if the alias ends with a consonant or vowel
