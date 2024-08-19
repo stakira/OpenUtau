@@ -42,17 +42,17 @@ namespace OpenUtau.Core.Voicevox {
     }
     public class Phoneme_list {
         public string[] vowels = "a i u e o A I U E O N pau cl".Split();
-        public string[] consonants = "k s sh t ts ch n h f my r w z j d b p w v ky ny hy my ry gy by py ty dy".Split();
+        public string[] consonants = "b by ch d dy f g gw gy h hy j k kw ky m my n ny p py r ry s sh t ts ty v w y z".Split();
         public Dictionary<string, string> kanas = new Dictionary<string, string>();
         public Dictionary<string, string> paus = new Dictionary<string, string>();
         public Phoneme_list() {
             var kanaGroups = new List<string[]> {
-                "あ か が さ ざ た だ な は ば ぱ ま や ら わ きゃ ぎゃ しゃ じゃ ちゃ てゃ でゃ にゃ ひゃ びゃ ぴゃ ふぁ みゃ りゃ ぁ ゃ ア カ ガ サ ザ タ ダ ナ ハ バ パ マ ヤ ラ ワ キャ ギャ シャ ジャ チャ テャ デャ ニャ ヒャ ビャ ピャ ファ ミャ リャ ァ ャ a".Split(),
-                "い き ぎ し じ ち ぢ に ひ び ぴ み り ゐ いぇ ヴぁ うぃ ヴぃ すぃ ずぃ つぃ てぃ でぃ ふぃ ぃ イ キ ギ シ ジ チ ヂ ニ ヒ ビ ピ ミ リ ヰ イェ ヴァ ウィ ヴィ スィ ズィ ツィ ティ ディ フィ ィ i".Split(),
-                "う く ぐ す ず つ づ ぬ ふ ぶ ぷ む ゆ る きゅ ぎゅ しゅ じゅ ちゅ てゅ でゅ とぅ どぅ にゅ ひゅ びゅ ぴゅ みゅ りゅ ぅ ゅ ウ ク グ ス ズ ツ ヅ ヌ フ ブ プ ム ユ ル ヴ キュ ギュ シュ ジュ チュ テュ デュ トゥ ドゥ ニュ ヒュ ビュ ピュ ミュ リュ ゥ ュ u".Split(),
-                "え け げ せ ぜ て で ね へ べ ぺ め れ ゑ うぇ ヴぇ きぇ ぎぇ しぇ じぇ ちぇ つぇ にぇ ひぇ びぇ ぴぇ ふぇ みぇ りぇ ぇ エ ケ ゲ セ ゼ テ デ ネ ヘ ベ ペ メ レ ヱ ウェ ヴェ キェ ギェ シェ ジェ チェ ツェ ニェ ヒェ ビェ ピェ フェ ミェ リェ ェ e".Split(),
-                "お こ ご そ ぞ と ど の ほ ぼ ぽ も よ ろ を うぉ ヴぉ きょ ぎょ しょ じょ ちょ つぉ てょ でょ にょ ひょ びょ ぴょ ふぉ みょ りょ ぉ ょ オ コ ゴ ソ ゾ ト ド ノ ホ ボ ポ モ ヨ ロ ヲ ウォ ヴォ キョ ギョ ショ ジョ チョ ツォ テョ デョ ニョ ヒョ ビョ ピョ フォ ミョ リョ ォ ョ o".Split(),
-                "ん ン n ng".Split(),
+                "あ ば びゃ ちゃ だ でゃ ふぁ が ぐゎ ぎゃ は ひゃ じゃ か くゎ きゃ ま みゃ な にゃ ぱ ぴゃ ら りゃ さ しゃ た つぁ てゃ ゔぁ わ や ざ ア バ ビャ チャ ダ デャ ファ ガ グヮ ギャ ハ ヒャ ジャ カ クヮ キャ マ ミャ ナ ニャ パ ピャ ラ リャ サ シャ タ ツァ テャ ゔァ ワ ヤ ザ a A".Split(),
+                "い び  ち ぢ でぃ ふぃ ぎ   ひ  じ き   み  に  ぴ  り  すぃ し てぃ つぃ  ゔぃ うぃ  ずぃ イ ビ  チ ヂ ディ フィ ギ   ヒ  ジ キ   ミ  ニ  ピ  リ  スィ シ ティ ツィ  ゔィ ウィ  ズィ i I".Split(),
+                "う ぶ びゅ ちゅ どぅ でゅ ふ ぐ  ぎゅ  ひゅ じゅ く  きゅ む みゅ ぬ にゅ ぷ ぴゅ る りゅ す しゅ つ つ てゅ ゔ  ゆ ず ウ ブ ビュ チュ ドゥ デュ フ グ  ギュ  ヒュ ジュ ク  キュ ム ミュ ヌ ニュ プ ピュ ル リュ ス シュ ツ ツ テュ ゔ  ユ ズ u U".Split(),
+                "え べ びぇ ちぇ で でぇ ふぇ げ  ぎぇ へ ひぇ じぇ け  きぇ め みぇ ね にぇ ぺ ぴぇ れ りぇ せ しぇ て つぇ  ゔぇ うぇ いぇ ぜ エ ベ ビェ チェ デ デェ フェ ゲ  ギェ ヘ ヒェ ジェ ケ  キェ メ ミェ ネ ニェ ペ ピェ レ リェ セ シェ テ ツェ  ゔェ ウェ イェ ゼ e E".Split(),
+                "お ぼ びょ ちょ ど でょ ふぉ ご  ぎょ ほ ひょ じょ こ  きょ も みょ の にょ ぽ ぴょ ろ りょ そ しょ と つぉ てょ ゔぉ を よ ぞ オ ボ ビョ チョ ド デョ フォ ゴ  ギョ ホ ヒョ ジョ コ  キョ モ ミョ ノ ニョ ポ ピョ ロ リョ ソ ショ ト ツォ テョ ゔォ ヲ ヨ ゾ o O".Split(),
+                "ん ン N".Split(),
                 "っ ッ cl".Split()
             };
 
