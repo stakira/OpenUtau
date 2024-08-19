@@ -1815,7 +1815,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (hasCons) {
                 return base.GetTransitionBasicLengthMs() * 1.3; // Value for 'cons'
             } else if (haslr) {
-                return base.GetTransitionBasicLengthMs() * 1.5; // Value for 'cons'
+                return base.GetTransitionBasicLengthMs() * 1.0; // Value for 'cons'
             }
 
             // Check if the alias ends with a consonant or vowel
