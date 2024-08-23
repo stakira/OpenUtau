@@ -30,6 +30,7 @@ namespace OpenUtau.Core.DiffSinger
 
         string defaultPause = "SP";
         protected virtual string GetDictionaryName()=>"dsdict.yaml";
+        protected virtual string GetLangCode()=>String.Empty;//The language code of the language the phonemizer is made for
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
@@ -121,6 +122,29 @@ namespace OpenUtau.Core.DiffSinger
             return new G2pFallbacks(g2ps.ToArray());
         }
 
+        //Check if the phoneme is supported. If unsupported, return an empty string.
+        //And apply language prefix to phoneme
+        string ValidatePhoneme(string phoneme){
+            if(g2p.IsValidSymbol(phoneme)){
+                return phoneme;
+            }
+            var langCode = GetLangCode();
+            if(langCode != String.Empty){
+                var phonemeWithLanguage = langCode + "/" + phoneme;
+                if(g2p.IsValidSymbol(phonemeWithLanguage)){
+                    return phonemeWithLanguage;
+                }
+            }
+            return String.Empty;
+        }
+
+        string[] ParsePhoneticHint(string phoneticHint) {
+            return phoneticHint.Split()
+                .Select(ValidatePhoneme)
+                .Where(s => !String.IsNullOrEmpty(s)) // skip invalid symbols.
+                .ToArray();
+        }
+
         string[] GetSymbols(Note note) {
             //priority:
             //1. phonetic hint
@@ -129,9 +153,7 @@ namespace OpenUtau.Core.DiffSinger
             //4. empty
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // Split space-separated symbols into an array.
-                return note.phoneticHint.Split()
-                    .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
-                    .ToArray();
+                return ParsePhoneticHint(note.phoneticHint);
             }
             // User has not provided hint, query g2p dictionary.
             var g2presult = g2p.Query(note.lyric)
@@ -139,10 +161,8 @@ namespace OpenUtau.Core.DiffSinger
             if(g2presult != null) {
                 return g2presult;
             }
-            //not founded in g2p dictionary, treat lyric as phonetic hint
-            var lyricSplited = note.lyric.Split()
-                    .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
-                    .ToArray();
+            //not found in g2p dictionary, treat lyric as phonetic hint
+            var lyricSplited = ParsePhoneticHint(note.lyric);
             if (lyricSplited.Length > 0) {
                 return lyricSplited;
             }
@@ -183,6 +203,7 @@ namespace OpenUtau.Core.DiffSinger
             }
             for(int i=0; i<dsPhonemes.Length; i++){
                 if(isVowel[i]){
+                    //In "Consonant-Glide-Vowel" syllable, the glide phoneme is the first phoneme in the note's timespan.
                     if(i>=2 && isGlide[i-1] && !isVowel[i-2]){
                         isStart[i-1] = true;
                     }else{
