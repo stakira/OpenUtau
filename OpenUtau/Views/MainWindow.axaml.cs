@@ -314,7 +314,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.USTX,
                 FilePicker.VSQX,
                 FilePicker.UST,
-                FilePicker.MIDI);
+                FilePicker.MIDI,
+                FilePicker.UFDATA);
             if (files == null || files.Length == 0) {
                 return;
             }
@@ -370,26 +371,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuImportMidi(bool UseDrywetmidi = false) {
+        async void OnMenuImportMidi(object sender, RoutedEventArgs args) {
             var file = await FilePicker.OpenFileAboutProject(
                 this, "menu.file.importmidi", FilePicker.MIDI);
             if (file == null) {
                 return;
             }
             try {
-                viewModel.ImportMidi(file, UseDrywetmidi);
+                viewModel.ImportMidi(file);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
                 _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
             }
-        }
-
-        void OnMenuImportMidiNaudio(object sender, RoutedEventArgs args) {
-            OnMenuImportMidi(false);
-        }
-
-        void OnMenuImportMidiDrywetmidi(object sender, RoutedEventArgs args) {
-            OnMenuImportMidi(true);
         }
 
         async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
@@ -614,7 +607,14 @@ namespace OpenUtau.App.Views {
                     setup.Position = setup.Position.WithY(0);
                 }
             } catch (Exception e) {
-                _ = MessageBox.ShowError(this, e);
+                Log.Error(e, $"Failed to install singer {file}");
+                MessageCustomizableException mce;
+                if(e is MessageCustomizableException){
+                    mce = (MessageCustomizableException)e;
+                } else {
+                    mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                }
+                _ = await MessageBox.ShowError(this, mce);
             }
         }
 
@@ -864,7 +864,13 @@ namespace OpenUtau.App.Views {
                     }
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to install singer {file}");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to install singer", "<translate:errors.failed.installsinger>", e));
+                    MessageCustomizableException mce;
+                    if(e is MessageCustomizableException){
+                        mce = (MessageCustomizableException)e;
+                    } else {
+                        mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
+                    }
+                    _ = await MessageBox.ShowError(this, mce);
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
@@ -1334,7 +1340,7 @@ namespace OpenUtau.App.Views {
                            MessageBox.MessageBoxButtons.Ok);
                         break;
                     default:
-                        MessageBox.ShowError(this, notif.message, notif.e);
+                        MessageBox.ShowError(this, notif.e, notif.message, true);
                         break;
                 }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {

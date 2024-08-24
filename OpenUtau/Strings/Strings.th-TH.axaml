@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">เวียดนาม</system:String>
   <system:String x:Key="languages.zh">จีน</system:String>
   <system:String x:Key="languages.zh-yue">กวางตุ้ง</system:String>
+  <system:String x:Key="languages.th">ไทย</system:String>
 
   <system:String x:Key="lyrics.apply">ใช้งาน</system:String>
   <system:String x:Key="lyrics.cancel">ยกเลิก</system:String>
@@ -377,7 +378,6 @@
   <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <system:String x:Key="prefs.playback.backend">ระบบเสียงหลังบ้าน</system:String>
   <system:String x:Key="prefs.playback.backend.auto">อัตโนมัติ</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">ระยะขอบเลื่อนอัตโนมัติ</system:String>
   <system:String x:Key="prefs.playback.device">เครื่องเล่นซ้ำ</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">หยุดชั่วคราว</system:String>

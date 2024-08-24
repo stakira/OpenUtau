@@ -25,14 +25,15 @@ namespace OpenUtau.Core.Voicevox {
         public string version = string.Empty;
         public string policy = string.Empty;
         public string portraitPath = string.Empty;
-        //So that the renderer can distinguish between phonemizers.
-        public string Tag = "DEFAULT";
 
         public List<Style_infos> style_infos;
         //Prepare for future additions of Teacher Singer.
         public List<(string name, Styles styles)> base_singer_style;
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
+
+        //So that the renderer can distinguish between phonemizers.
+        public string Tag = "DEFAULT";
 
         public static VoicevoxConfig Load(USinger singer) {
             try {
@@ -83,6 +84,7 @@ namespace OpenUtau.Core.Voicevox {
             } catch {
                 Log.Error("Could not load VOICEVOX singer.");
             }
+
             return new VoicevoxConfig();
         }
         public void LoadInfo(VoicevoxConfig voicevoxConfig, string location) {
@@ -195,8 +197,7 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
-
-        public string Lyrictodic(Note[][] notes, int index) {
+        public string Notetodic(Note[][] notes, int index) {
             if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
                     return "";
@@ -204,6 +205,20 @@ namespace OpenUtau.Core.Voicevox {
                 return lyric_;
             }
             return notes[index][0].lyric;
+        }
+
+        public string Lyrictodic(string lyric) {
+            if (dict.TryGetValue(lyric, out var lyric_)) {
+                if (string.IsNullOrEmpty(lyric_)) {
+                    return "";
+                }
+                return lyric_;
+            }
+            return lyric;
+        }
+
+        public bool IsDic(string lyric) {
+            return dict.ContainsKey(lyric);
         }
     }
 

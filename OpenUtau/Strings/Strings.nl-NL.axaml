@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">Vietnamees</system:String>
   <system:String x:Key="languages.zh">Chinees</system:String>
   <system:String x:Key="languages.zh-yue">Kantonees</system:String>
+  <system:String x:Key="languages.th">Thais</system:String>
 
   <system:String x:Key="lyrics.apply">Toepassen</system:String>
   <system:String x:Key="lyrics.cancel">Annuleer</system:String>
@@ -377,7 +378,6 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Vaste cursor</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatisch</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Cursorpositie</system:String>
   <system:String x:Key="prefs.playback.device">Afspeelapparaat</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Op pauze</system:String>

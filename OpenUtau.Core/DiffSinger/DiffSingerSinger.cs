@@ -8,7 +8,6 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
-using NumSharp;
 
 namespace OpenUtau.Core.DiffSinger {
     class DiffSingerSinger : USinger {
@@ -192,6 +191,14 @@ namespace OpenUtau.Core.DiffSinger {
                 variancePredictor = new DsVariance(Location);
             }
             return variancePredictor;
+        }
+
+        public int PhonemeTokenize(string phoneme){
+            int result = phonemes.IndexOf(phoneme);
+            if(result < 0){
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by acoustic model. Please check {Path.Combine(Location, dsConfig.phonemes)}");
+            }
+            return result;
         }
 
         public override void FreeMemory(){

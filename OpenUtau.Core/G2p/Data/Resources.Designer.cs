@@ -10,8 +10,8 @@
 
 namespace OpenUtau.Core.G2p.Data {
     using System;
-    
-    
+
+
     /// <summary>
     ///   Класс ресурса со строгой типизацией для поиска локализованных строк и т.д.
     /// </summary>
@@ -23,15 +23,15 @@ namespace OpenUtau.Core.G2p.Data {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
-        
+
         /// <summary>
         ///   Возвращает кэшированный экземпляр ResourceManager, использованный этим классом.
         /// </summary>
@@ -45,7 +45,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Перезаписывает свойство CurrentUICulture текущего потока для всех
         ///   обращений к ресурсу с помощью этого класса ресурса со строгой типизацией.
@@ -59,7 +59,7 @@ namespace OpenUtau.Core.G2p.Data {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -69,7 +69,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -79,7 +79,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -89,7 +89,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -99,7 +99,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -109,7 +109,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -119,7 +119,7 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -129,27 +129,27 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static byte[] g2p_jyutping {
+        internal static byte[] g2p_ja_mono {
             get {
-                object obj = ResourceManager.GetObject("g2p-jyutping", resourceCulture);
+                object obj = ResourceManager.GetObject("g2p-ja-mono", resourceCulture);
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static byte[] g2p_man {
+        internal static byte[] g2p_ko {
             get {
-                object obj = ResourceManager.GetObject("g2p-man", resourceCulture);
+                object obj = ResourceManager.GetObject("g2p-ko", resourceCulture);
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
@@ -159,23 +159,13 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
-        
+
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
         internal static byte[] g2p_ru {
             get {
                 object obj = ResourceManager.GetObject("g2p-ru", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] g2p_ko {
-            get {
-                object obj = ResourceManager.GetObject("g2p-ko", resourceCulture);
                 return ((byte[])(obj));
             }
         }

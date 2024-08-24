@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">越南文</system:String>
   <system:String x:Key="languages.zh">中文</system:String>
   <system:String x:Key="languages.zh-yue">粵語</system:String>
+  <system:String x:Key="languages.th">泰語</system:String>
 
   <system:String x:Key="lyrics.apply">套用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
@@ -377,7 +378,6 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定游標位置</system:String>
   <system:String x:Key="prefs.playback.backend">音訊後端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自動</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">開始捲動位置</system:String>
   <system:String x:Key="prefs.playback.device">播放裝置</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暫停時</system:String>

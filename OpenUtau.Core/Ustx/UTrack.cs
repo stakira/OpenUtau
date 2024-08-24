@@ -200,7 +200,7 @@ namespace OpenUtau.Core.Ustx {
             oldColors = VoiceColorNames.ToArray();
             newColors = new string[0];
 
-            if (Singer != null && Singer.Found && VoiceColorExp != null) {
+            if (Singer != null && Singer.Found && VoiceColorExp != null && VoiceColorExp.options.Length > 0) {
                 newColors = VoiceColorExp.options.ToArray();
 
                 if (VoiceColorNames.Length > 1) {
@@ -223,6 +223,11 @@ namespace OpenUtau.Core.Ustx {
         public void BeforeSave() {
             singer = Singer?.Id;
             phonemizer = Phonemizer.GetType().FullName;
+            if (Singer != null && Singer.Found && VoiceColorExp != null && VoiceColorExp.options.Length > 0) {
+                VoiceColorNames = VoiceColorExp.options.ToArray();
+            } else {
+                VoiceColorNames = new string[] { "" };
+            }
         }
 
         public void AfterLoad(UProject project) {

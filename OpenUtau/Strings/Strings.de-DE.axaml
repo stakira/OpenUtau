@@ -115,6 +115,7 @@
   <system:String x:Key="languages.vi">Vietnamesisch</system:String>
   <system:String x:Key="languages.zh">Chinesisch</system:String>
   <system:String x:Key="languages.zh-yue">Kantonesisch</system:String>
+  <system:String x:Key="languages.th">Thailändisch</system:String>
 
   <system:String x:Key="lyrics.apply">Anwenden</system:String>
   <system:String x:Key="lyrics.cancel">Abbrechen</system:String>
@@ -381,7 +382,6 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationärer Cursor</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatisch</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Abstand</system:String>
   <system:String x:Key="prefs.playback.device">Wiedergabegerät</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Beim Pausieren</system:String>

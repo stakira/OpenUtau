@@ -45,7 +45,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "OpenUtau-win-x64.exe"
+OutFile "OpenUtau-win-${ARCH}.exe"
 InstallDir "$PROGRAMFILES64\OpenUtau"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -57,7 +57,7 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "bin\win-x64\*"
+  File "bin\win-${ARCH}\*"
 SectionEnd
 
 Section -AdditionalIcons
@@ -79,8 +79,19 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+
+  WriteRegStr HKCR ".ustx" "" "OpenUtauFile"
+  WriteRegStr HKCR "OpenUtauFile" "" "OpenUtau Sequence File"
+  WriteRegStr HKCR "OpenUtauFile\DefaultIcon" "" "$INSTDIR\OpenUtau.exe"
+  WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
 SectionEnd
 
+Section "VC Redist"
+  SetOutPath "$INSTDIR"
+  File "vc_redist.${ARCH}.exe"
+  ExecWait "$INSTDIR\vc_redist.${ARCH}.exe"
+  Delete "$INSTDIR\vc_redist.${ARCH}.exe"
+SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
@@ -99,6 +110,13 @@ Section Uninstall
   Delete "$INSTDIR\*"
 
   Delete "$SMPROGRAMS\OpenUtau\Uninstall.lnk"
+
+  DeleteRegKey HKCR ".ustx"
+  DeleteRegKey HKCR "OpenUtauFile\DefaultIcon"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open\command"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open"
+  DeleteRegKey HKCR "OpenUtauFile\shell"
+  DeleteRegKey HKCR "OpenUtauFile"
 
   RMDir "$SMPROGRAMS\OpenUtau"
   RMDir "$INSTDIR"

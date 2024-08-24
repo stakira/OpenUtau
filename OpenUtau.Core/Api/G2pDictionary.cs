@@ -77,6 +77,8 @@ namespace OpenUtau.Api {
                 phonemeSymbols[symbol] = type == "vowel";
                 if(type == "semivowel" || type == "liquid") {
                     glideSymbols.Add(symbol);
+                } else {
+                    glideSymbols.Remove(symbol);
                 }
                 return this;
             }
@@ -88,6 +90,8 @@ namespace OpenUtau.Api {
                 phonemeSymbols[symbol] = isVowel;
                 if (isGlide && !isVowel) {
                     glideSymbols.Add(symbol);
+                } else {
+                    glideSymbols.Remove(symbol);
                 }
                 return this;
             }

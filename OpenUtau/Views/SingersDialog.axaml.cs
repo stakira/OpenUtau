@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using Avalonia.Platform.Storage;
 using NAudio.Wave;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -215,6 +217,58 @@ namespace OpenUtau.App.Views {
             }
             try {
                 Integrations.VLabelerClient.Inst.GotoOto(singer, oto);
+            } catch (Exception e) {
+                MessageBox.Show(
+                    this,
+                    e.ToString(),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
+        void GotoSetParamOto(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var oto = OtoGrid?.SelectedItem as UOto;
+            if (oto == null) {
+                return;
+            }
+            if (viewModel.Singer != null) {
+                OpenInSetParam(viewModel.Singer, oto);
+            }
+        }
+
+        /*void OnEditInVSetParam(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer != null) {
+                OpenInSetParam(viewModel.Singer, null);
+            }
+        }*/
+
+        private void OpenInSetParam(USinger singer, UOto oto) {
+            string path = Core.Util.Preferences.Default.SetParamPath;
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) {
+                MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("singers.editoto.setsetparampath"),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            try {
+                var tempFile = Path.Combine(PathManager.Inst.CachePath, "temp.tmp");
+                Ust.WriteForSetParam(DocManager.Inst.Project, tempFile, new List<UOto> { oto });
+
+                var startInfo = new ProcessStartInfo() {
+                    FileName = path,
+                    Arguments = $"\"{tempFile}\"",
+                    WorkingDirectory = Path.GetDirectoryName(path)
+                };
+                using (var process = Process.Start(startInfo)) {
+                    process!.WaitForExit();
+                }
             } catch (Exception e) {
                 MessageBox.Show(
                     this,
