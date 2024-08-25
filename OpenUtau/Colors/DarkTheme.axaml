@@ -11,7 +11,7 @@
   <Color x:Key="ForegroundColor">#F0F0F0</Color>
   <Color x:Key="ForegroundColorPointerOver">#FCFCFC</Color>
   <Color x:Key="ForegroundColorPressed">#FCFCFC</Color>
-  <Color x:Key="ForegroundColorDisabled">#AAAAAA</Color>
+  <Color x:Key="ForegroundColorDisabled">#A5A5A5</Color>
 
   <Color x:Key="BorderColor">#E0E0E0</Color>
   <Color x:Key="BorderColorPointerOver">#FCFCFC</Color>
@@ -24,7 +24,7 @@
 
   <Color x:Key="NeutralAccentColor">#FCFCFC</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#FCFCFC</Color>
-  <Color x:Key="AccentColor1">#AAAAAA</Color>
+  <Color x:Key="AccentColor1">#A5A5A5</Color>
   <Color x:Key="AccentColor2">#6F6F9F</Color>
   <Color x:Key="AccentColor3">#FCFCFC</Color>
 

@@ -24,13 +24,13 @@
 
   <Color x:Key="NeutralAccentColor">#A1A1B3</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#8A8A9A</Color>
-  <Color x:Key="AccentColor1">#4F4F6E</Color>
+  <Color x:Key="AccentColor1">#A9A6CD</Color>
   <Color x:Key="AccentColor2">#635EA6</Color>
   <Color x:Key="AccentColor3">#736DC1</Color>
   
-  <Color x:Key="TickLineColor">#AFA3B5</Color>
-  <Color x:Key="BarNumberColor">#AFA3B5</Color>
-  <Color x:Key="FinalPitchColor">#FCFCFC</Color>
+  <Color x:Key="TickLineColor">#C0C0CA</Color>
+  <Color x:Key="BarNumberColor">#4F4F6E</Color>
+  <Color x:Key="FinalPitchColor">#4F4F6E</Color>
   <Color x:Key="TrackBackgroundAltColor">#F0F0F0</Color>
 
   <!--Keyboard Background-->
