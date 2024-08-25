@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Util {
             public double DiffSingerDepth = 1.0;
             public int DiffSingerSteps = 20;
             public bool DiffSingerTensorCache = true;
-            public bool SkipRenderingMutedTracks = false;
+            public bool SkipRenderingMutedTracks = true;
             public string Language = string.Empty;
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
