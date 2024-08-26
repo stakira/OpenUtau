@@ -153,12 +153,19 @@ namespace OpenUtau.Core.DiffSinger
         /// distribute phonemes to each note inside the group
         /// </summary>
         List<phonemesPerNote> ProcessWord(Note[] notes, string[] symbols){
+            //Check if all phonemes are defined in dsdict.yaml (for their types)
+            foreach (var symbol in symbols) {
+                if (!g2p.IsValidSymbol(symbol)) {
+                    throw new InvalidDataException(
+                        $"Type definition of symbol \"{symbol}\" not found. Consider adding it to dsdict.yaml (or dsdict-<lang>.yaml) of the phonemizer.");
+                }
+            }
             var wordPhonemes = new List<phonemesPerNote>{
                 new phonemesPerNote(-1, notes[0].tone)
             };
             var dsPhonemes = symbols
                 .Select((symbol, index) => new dsPhoneme(symbol, GetSpeakerAtIndex(notes[0], index)))
-                .ToArray(); 
+                .ToArray();
             var isVowel = dsPhonemes.Select(s => g2p.IsVowel(s.Symbol)).ToArray();
             var isGlide = dsPhonemes.Select(s => g2p.IsGlide(s.Symbol)).ToArray();
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
