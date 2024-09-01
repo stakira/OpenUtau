@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -39,15 +40,97 @@ namespace OpenUtau.Core.Voicevox {
     public class VoicevoxQueryMain {
         public List<VoicevoxQueryNotes> notes = new List<VoicevoxQueryNotes>();
     }
+    public class Phoneme_list {
+        public string[] vowels = "a i u e o A I U E O N pau cl".Split();
+        public string[] consonants = "b by ch d dy f g gw gy h hy j k kw ky m my n ny p py r ry s sh t ts ty v w y z".Split();
+        public Dictionary<string, string> kanas = new Dictionary<string, string>();
+        public Dictionary<string, string> paus = new Dictionary<string, string>();
+        public Phoneme_list() {
+            var kanaGroups = new List<string[]> {
+                "あ ば びゃ ちゃ だ でゃ ふぁ が ぐゎ ぎゃ は ひゃ じゃ か くゎ きゃ ま みゃ な にゃ ぱ ぴゃ ら りゃ さ しゃ た つぁ てゃ ゔぁ わ や ざ".Split(),
+                "い び  ち ぢ でぃ ふぃ ぎ   ひ  じ き   み  に  ぴ  り  すぃ し てぃ つぃ  ゔぃ うぃ  ずぃ".Split(),
+                "う ぶ びゅ ちゅ どぅ でゅ ふ ぐ  ぎゅ  ひゅ じゅ く  きゅ む みゅ ぬ にゅ ぷ ぴゅ る りゅ す しゅ つ つ てゅ ゔ  ゆ ず".Split(),
+                "え べ びぇ ちぇ で でぇ ふぇ げ  ぎぇ へ ひぇ じぇ け  きぇ め みぇ ね にぇ ぺ ぴぇ れ りぇ せ しぇ て つぇ  ゔぇ うぇ いぇ ぜ".Split(),
+                "お ぼ びょ ちょ ど でょ ふぉ ご  ぎょ ほ ひょ じょ こ  きょ も みょ の にょ ぽ ぴょ ろ りょ そ しょ と つぉ てょ ゔぉ を よ ぞ".Split(),
+                "ん ン".Split(),
+                "っ ッ".Split()
+            };
+
+            foreach (var group in kanaGroups) {
+                foreach (var kana in group) {
+                    if (!kanas.ContainsKey(kana)) {
+                        kanas.Add(kana.Normalize(), group[0].Normalize());
+                    }
+                }
+            }
+            string[] pauseGroups = "R pau AP SP".Split();
+
+            foreach (string group in pauseGroups) {
+                if (!paus.ContainsKey(group)) {
+                    paus.Add(group.Normalize(), pauseGroups[0].Normalize());
+                }
+            }
+        }
+    }
+
+    public class Dictionary_list {
+        public Dictionary<string, string> dict = new Dictionary<string, string>();
+
+        public void Loaddic(string location) {
+            try {
+                var parentDirectory = Directory.GetParent(location).ToString();
+                var yamlPath = Path.Join(parentDirectory, "dictionary.yaml");
+                if (File.Exists(yamlPath)) {
+                    var yamlTxt = File.ReadAllText(yamlPath);
+                    var yamlObj = Yaml.DefaultDeserializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(yamlTxt);
+                    var list = yamlObj["list"];
+                    dict = new Dictionary<string, string>();
+
+                    foreach (var item in list) {
+                        foreach (var pair in item) {
+                            dict[pair.Key] = pair.Value;
+                        }
+                    }
+
+                }
+            } catch (Exception e) {
+                Log.Error($"Failed to read dictionary file. : {e}");
+            }
+        }
+        public string Notetodic(Note[][] notes, int index) {
+            if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
+                if (string.IsNullOrEmpty(lyric_)) {
+                    return "";
+                }
+                return lyric_;
+            }
+            return notes[index][0].lyric;
+        }
+
+        public string Lyrictodic(string lyric) {
+            if (dict.TryGetValue(lyric, out var lyric_)) {
+                if (string.IsNullOrEmpty(lyric_)) {
+                    return "";
+                }
+                return lyric_;
+            }
+            return lyric;
+        }
+
+        public bool IsDic(string lyric) {
+            return dict.ContainsKey(lyric);
+        }
+    }
 
 
-    internal static class VoicevoxUtils {
+    public static class VoicevoxUtils {
         public const string VOLC = "volc";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
         public static Dictionary_list dic = new Dictionary_list();
+        public static Phoneme_list phoneme_List = new Phoneme_list();
 
         public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
@@ -83,11 +166,11 @@ namespace OpenUtau.Core.Voicevox {
                     string lyric = dic.Notetodic(notes, index);
                     int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
-                    if (length < 2 ) {
+                    if (length < 2) {
                         length = 2;
                     }
                     int? tone = null;
-                    if (!string.IsNullOrEmpty(lyric) || VoicevoxUtils.IsPau(lyric)) {
+                    if (!string.IsNullOrEmpty(lyric)) {
                         if (notes[index][0].phonemeAttributes != null) {
                             if (notes[index][0].phonemeAttributes.Length > 0) {
                                 tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
@@ -97,6 +180,8 @@ namespace OpenUtau.Core.Voicevox {
                         } else {
                             tone = notes[index][0].tone;
                         }
+                    } else {
+                        lyric = "";
                     }
                     qnotes.notes.Add(new VoicevoxQueryNotes {
                         lyric = lyric,
@@ -146,21 +231,13 @@ namespace OpenUtau.Core.Voicevox {
             return result;
         }
 
-
-        public static bool IsHiraKana(string s) {
-            foreach(char c in s.ToCharArray()) {
-                if (!('\u3041' <= c && c <= '\u309F') || ('\u30A0' <= c && c <= '\u30FF') || c == '\u30FC' || c == '\u30A0') {
-                    return false;
-                }
-            }
-            return true;
+        public static bool IsPau(string s) {
+            return phoneme_List.paus.ContainsKey(s);
         }
 
-        public static bool IsPau(string s) {
-            if (s.EndsWith("R") || s.ToLower().EndsWith("pau") || s.EndsWith("AP") || s.EndsWith("SP")) {
-                return true;
-            }
-            return false;
+        public static bool TryGetPau(string s, out string str) {
+            phoneme_List.paus.TryGetValue(s, out str);
+            return phoneme_List.paus.ContainsKey(s);
         }
 
         public static string getBaseSingerID(VoicevoxSinger singer) {
