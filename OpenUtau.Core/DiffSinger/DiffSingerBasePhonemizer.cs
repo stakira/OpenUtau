@@ -32,14 +32,26 @@ namespace OpenUtau.Core.DiffSinger
         protected virtual string GetDictionaryName()=>"dsdict.yaml";
         protected virtual string GetLangCode()=>String.Empty;//The language code of the language the phonemizer is made for
 
+        private bool _singerLoaded;
+
         public override void SetSinger(USinger singer) {
+            if (_singerLoaded && singer == this.singer) return;
+            try {
+                _singerLoaded = _executeSetSinger(singer);
+            } catch {
+                _singerLoaded = false;
+                throw;
+            }
+        }
+
+        private bool _executeSetSinger(USinger singer) {
             this.singer = singer;
-            if(singer==null){
-                return;
+            if (singer == null) {
+                return false;
             }
             if(singer.Location == null){
                 Log.Error("Singer location is null");
-                return;
+                return false;
             }
             if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
                 rootPath = Path.Combine(singer.Location, "dsdur");
@@ -53,7 +65,7 @@ namespace OpenUtau.Core.DiffSinger
                 dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(configTxt);
             } catch(Exception e) {
                 Log.Error(e, $"failed to load dsconfig from {configPath}");
-                return;
+                return false;
             }
             //Load language id if needed
             if(dsConfig.use_lang_id){
@@ -83,7 +95,7 @@ namespace OpenUtau.Core.DiffSinger
                 linguisticModel = new InferenceSession(linguisticModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load linguistic model from {linguisticModelPath}");
-                return;
+                return false;
             }
             var durationModelPath = Path.Join(rootPath, dsConfig.dur);
             try {
@@ -92,8 +104,9 @@ namespace OpenUtau.Core.DiffSinger
                 durationModel = new InferenceSession(durationModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load duration model from {durationModelPath}");
-                return;
+                return false;
             }
+            return true;
         }
 
         protected virtual IG2p LoadG2p(string rootPath) {
