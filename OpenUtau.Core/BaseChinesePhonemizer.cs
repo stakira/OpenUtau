@@ -24,7 +24,7 @@ namespace OpenUtau.Core {
             var hanziLyrics = lyricsArray
                 .Where(ZhG2p.MandarinInstance.IsHanzi)
                 .ToList();
-            List<G2pRes> g2pResults = ZhG2p.MandarinInstance.Convert(lyrics.ToList(), false, false);
+            List<G2pRes> g2pResults = ZhG2p.MandarinInstance.Convert(hanziLyrics.ToList(), false, false);
             var pinyinResult = g2pResults.Select(res => res.syllable).ToArray();
             if (pinyinResult == null) {
                 return lyricsArray;

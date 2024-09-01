@@ -288,7 +288,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var hanziLyrics = lyricsArray
                     .Where(ZhG2p.CantoneseInstance.IsHanzi)
                     .ToList();
-                List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, false);
+                List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(hanziLyrics.ToList(), false, false);
                 var jyutpingResult = g2pResults.Select(res => res.syllable).ToArray();
                 if (jyutpingResult == null) {
                     return lyricsArray;

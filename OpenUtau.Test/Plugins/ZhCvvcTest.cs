@@ -41,7 +41,14 @@ namespace OpenUtau.Plugins
             new string[] { "", "", "" },
             new string[] { "- niF4", "i hF4", "haoC#4", "ao RC#4" })]
 
-
+        //Mixed hanzi and pinyin input
+        [InlineData("zh_cvvc",
+            new string[] { "鸡", "ni", "tai", "美" },
+            new string[] { "", "", "", "" },
+            new string[] { "F4", "F4", "F4", "F4" },
+            new string[] { "", "", "", "" },
+            new string[] { "- jiF4", "i nyF4", "niF4", "i tF4", "taiF4", "ai mF4", "meiF4", "ei RF4" })]
+        
         public void PhonemizeTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, alts, tones, colors, aliases);
         }

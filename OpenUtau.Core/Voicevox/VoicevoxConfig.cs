@@ -167,61 +167,6 @@ namespace OpenUtau.Core.Voicevox {
         }
     }
 
-    public class Phoneme_list {
-        public string[] vowels;
-        public string[] consonants;
-        public string[] kana;
-    }
-
-    public class Dictionary_list {
-        public Dictionary<string, string> dict = new Dictionary<string, string>();
-
-        public void Loaddic(string location) {
-            try {
-                var parentDirectory = Directory.GetParent(location).ToString();
-                var yamlPath = Path.Join(parentDirectory, "dictionary.yaml");
-                if (File.Exists(yamlPath)) {
-                    var yamlTxt = File.ReadAllText(yamlPath);
-                    var yamlObj = Yaml.DefaultDeserializer.Deserialize<Dictionary<string, List<Dictionary<string, string>>>>(yamlTxt);
-                    var list = yamlObj["list"];
-                    dict = new Dictionary<string, string>();
-
-                    foreach (var item in list) {
-                        foreach (var pair in item) {
-                            dict[pair.Key] = pair.Value;
-                        }
-                    }
-
-                }
-            } catch (Exception e) {
-                Log.Error($"Failed to read dictionary file. : {e}");
-            }
-        }
-        public string Notetodic(Note[][] notes, int index) {
-            if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
-                if (string.IsNullOrEmpty(lyric_)) {
-                    return "";
-                }
-                return lyric_;
-            }
-            return notes[index][0].lyric;
-        }
-
-        public string Lyrictodic(string lyric) {
-            if (dict.TryGetValue(lyric, out var lyric_)) {
-                if (string.IsNullOrEmpty(lyric_)) {
-                    return "";
-                }
-                return lyric_;
-            }
-            return lyric;
-        }
-
-        public bool IsDic(string lyric) {
-            return dict.ContainsKey(lyric);
-        }
-    }
-
     public class Style_infos {
         public int id;
         public string icon = string.Empty;
