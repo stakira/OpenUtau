@@ -106,6 +106,15 @@ namespace OpenUtau.Core.DiffSinger
             var endMs = phrase.notes[^1].endMs + tailMs;
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
+            if (dsConfig.predict_dur || dsConfig.use_note_rest) {
+                //Check if all phonemes are defined in dsdict.yaml (for their types)
+                foreach (var phone in phrase.phones) {
+                    if (!g2p.IsValidSymbol(phone.phoneme)) {
+                        throw new InvalidDataException(
+                            $"Type definition of symbol \"{phone.phoneme}\" not found. Consider adding it to dsdict.yaml of the pitch predictor.");
+                    }
+                }
+            }
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
             var tokens = phrase.phones
