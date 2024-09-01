@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -68,17 +68,17 @@ namespace OpenUtau.Core.DiffSinger
                 return false;
             }
             //Load language id if needed
-            if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
+            if (dsConfig.use_lang_id) {
+                if (dsConfig.languages == null) {
                     Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return;
+                    return false;
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
                     languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
                 } catch (Exception e) {
                     Log.Error(e, $"failed to load language id from {langIdPath}");
-                    return;
+                    return false;
                 }
             }
             this.frameMs = dsConfig.frameMs();
