@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using Newtonsoft.Json;
 using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.DiffSinger {
@@ -94,6 +98,41 @@ namespace OpenUtau.Core.DiffSinger {
         public static string ShapeString<T>(Tensor<T> tensor){
             var shape = tensor.Dimensions;
             return "(" + string.Join(", ", shape.ToArray()) + ")";
+        }
+
+        public static Dictionary<string, int> LoadPhonemes(string filePath){
+            switch(Path.GetExtension(filePath).ToLower()){
+                case ".json":
+                    return LoadPhonemesFromJson(filePath);
+                default:
+                    return LoadPhonemesFromTxt(filePath);
+            }
+        }
+
+        static Dictionary<string, int> LoadPhonemesFromJson(string filePath){
+            var json = File.ReadAllText(filePath, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+        }
+
+        static Dictionary<string, int> LoadPhonemesFromTxt(string filePath){
+            var lines = File.ReadAllLines(filePath, Encoding.UTF8);
+            var result = new Dictionary<string, int>();
+            for (int i = 0; i < lines.Length; i++) {
+                result[lines[i]] = i;
+            }
+            return result;
+        }
+
+        public static Dictionary<string, int> LoadLanguageIds(string filePath){
+            var json = File.ReadAllText(filePath, Encoding.UTF8);
+            return JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+        }
+
+        public static string PhonemeLanguage(string phoneme){
+            if(phoneme.Contains("/")){
+                return phoneme.Split("/")[0];
+            }
+            return "";
         }
     }
 }

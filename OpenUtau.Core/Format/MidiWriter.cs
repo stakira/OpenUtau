@@ -263,6 +263,10 @@ namespace OpenUtau.Core.Format {
                     using (var objectsManager = new TimedObjectsManager<TimedEvent>(trackChunk.Events)) {
                         var events = objectsManager.Objects;
                         foreach (UNote note in voicePart.notes) {
+                            //Ignore notes whose pitch is out of midi range
+                            if(note.tone < 0 || note.tone > 127){
+                                continue;
+                            }
                             string lyric = note.lyric;
                             if (lyric == "+") {
                                 lyric = "-";
