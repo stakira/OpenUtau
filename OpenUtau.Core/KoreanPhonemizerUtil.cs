@@ -1183,7 +1183,7 @@ namespace OpenUtau.Core {
             } 
             catch (IOException e) {
                 Log.Error(e, $"failed to read {iniFileName}, Making new {iniFileName}...");
-                using (StreamWriter writer = new StreamWriter(filePath)){
+                using (StreamWriter writer = new StreamWriter(filePath, Encoding.UTF8)){
                     iniSetting = defaultIniSetting;
                     try{
                         writer.Write(ConvertSettingsToString());
@@ -1193,7 +1193,7 @@ namespace OpenUtau.Core {
                         Log.Error(e_, $"[{iniFileName}] Failed to Write new {iniFileName}.");
                     }
                 };
-                using (StreamReader reader = new StreamReader(filePath)){
+                using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8)){
                     List<IniBlock> blocks = Ini.ReadBlocks(reader, filePath, @"\[\w+\]");
                     this.blocks = blocks;
                 };
