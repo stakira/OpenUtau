@@ -1183,7 +1183,7 @@ namespace OpenUtau.Core {
             } 
             catch (IOException e) {
                 Log.Error(e, $"failed to read {iniFileName}, Making new {iniFileName}...");
-                using (StreamWriter writer = new StreamWriter(filePath, Encoding.UTF8)){
+                using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8)){
                     iniSetting = defaultIniSetting;
                     try{
                         writer.Write(ConvertSettingsToString());
