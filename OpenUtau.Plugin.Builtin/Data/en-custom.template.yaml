@@ -1,0 +1,126 @@
+%YAML 1.2
+---
+symbols:
+  - name: aa
+    type: vowel
+    rename: aa
+  - name: ae
+    type: vowel
+    rename: ae
+  - name: ah
+    type: vowel
+    rename: ah
+  - name: ao
+    type: vowel
+    rename: ao
+  - name: aw
+    type: vowel
+    rename: au
+  - name: ay
+    type: vowel
+    rename: ai
+  - name: b
+    type: consonant
+    rename: b
+  - name: ch
+    type: consonant
+    rename: ch
+  - name: d
+    type: consonant
+    rename: d
+  - name: dh
+    type: consonant
+    rename: dh
+  - name: eh
+    type: vowel
+    rename: eh
+  - name: er
+    type: vowel
+    rename: er
+  - name: ey
+    type: vowel
+    rename: ey
+  - name: f
+    type: consonant
+    rename: f
+  - name: g
+    type: consonant
+    rename: g
+  - name: hh
+    type: consonant
+    rename: hh
+  - name: ih
+    type: vowel
+    rename: ih
+  - name: iy
+    type: vowel
+    rename: iy
+  - name: jh
+    type: consonant
+    rename: jh
+  - name: k
+    type: consonant
+    rename: k
+  - name: l
+    type: consonant
+    rename: l
+  - name: m
+    type: consonant
+    rename: m
+  - name: n
+    type: consonant
+    rename: n
+  - name: ng
+    type: consonant
+    rename: ng
+  - name: ow
+    type: vowel
+    rename: ow
+  - name: oy
+    type: vowel
+    rename: oy
+  - name: p
+    type: consonant
+    rename: p
+  - name: r
+    type: consonant
+    rename: r
+  - name: s
+    type: consonant
+    rename: s
+  - name: sh
+    type: consonant
+    rename: sh
+  - name: t
+    type: consonant
+    rename: t
+  - name: th
+    type: consonant
+    rename: th
+  - name: uh
+    type: vowel
+    rename: uh
+  - name: uw
+    type: vowel
+    rename: uw
+  - name: v
+    type: consonant
+    rename: v
+  - name: w
+    type: consonant
+    rename: w
+  - name: y
+    type: consonant
+    rename: y
+  - name: z
+    type: consonant
+    rename: z
+  - name: zh
+    type: consonant
+    rename: zh
+  - name: dx
+    type: consonant
+    rename: dx
+  - name: ax
+    type: vowel
+    rename: ax

@@ -1,0 +1,98 @@
+%YAML 1.2
+---
+symbols:
+  - name: aa
+    type: vowel
+  - name: ae
+    type: vowel
+  - name: ah
+    type: vowel
+  - name: ao
+    type: vowel
+  - name: aw
+    type: vowel
+  - name: ay
+    type: vowel
+  - name: b
+    type: consonant
+  - name: ch
+    type: consonant
+  - name: d
+    type: consonant
+  - name: dh
+    type: consonant
+  - name: eh
+    type: vowel
+  - name: er
+    type: vowel
+  - name: ey
+    type: vowel
+  - name: f
+    type: consonant
+  - name: g
+    type: consonant
+  - name: hh
+    type: consonant
+  - name: ih
+    type: vowel
+  - name: iy
+    type: vowel
+  - name: jh
+    type: consonant
+  - name: k
+    type: consonant
+    rename: K
+  - name: l
+    type: consonant
+    rename: L
+  - name: m
+    type: consonant
+  - name: n
+    type: consonant
+  - name: ng
+    type: consonant
+  - name: ow
+    type: vowel
+  - name: oy
+    type: vowel
+  - name: p
+    type: consonant
+  - name: r
+    type: consonant
+  - name: s
+    type: consonant
+  - name: sh
+    type: consonant
+  - name: t
+    type: consonant
+    rename: T
+  - name: th
+    type: consonant
+  - name: uh
+    type: vowel
+  - name: uw
+    type: vowel
+  - name: v
+    type: consonant
+  - name: w
+    type: consonant
+    rename: W
+  - name: y
+    type: consonant
+  - name: z
+    type: consonant
+  - name: zh
+    type: consonant
+  - name: dx
+    type: consonant
+    rename: DX
+  - name: ax
+    type: vowel
+  - name: ing
+    type: vowel
+  - name: ul
+    type: vowel
+  - name: st
+    type: consonant
+  - name: ar
+    type: vowel
