@@ -40,7 +40,7 @@ namespace OpenUtau.Core {
         public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
-        internal Vst.Client VstClient { get; set; }
+        internal DawIntegration.Client? VstClient { get; set; }
 
         public void Initialize() {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {

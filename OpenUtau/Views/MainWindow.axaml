@@ -66,7 +66,7 @@
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
             <MenuItem Header="-" Height="1"/>
-            <MenuItem Header="{DynamicResource menu.file.connectvst}" Click="OnMenuVstTerminal"/>
+            <MenuItem Header="{DynamicResource menu.file.connectdaw}" Click="OnMenuDawIntegrationTerminal"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.edit}">
             <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>

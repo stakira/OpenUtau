@@ -503,10 +503,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuVstTerminal(object sender, RoutedEventArgs args) {
-            VstTerminalViewModel dataContext;
-            dataContext = new VstTerminalViewModel();
-            var dialog = new VstTerminalDialog() {
+        void OnMenuDawIntegrationTerminal(object sender, RoutedEventArgs args) {
+            DawIntegrationTerminalViewModel dataContext;
+            dataContext = new DawIntegrationTerminalViewModel();
+            var dialog = new DawIntegrationTerminalDialog() {
                 DataContext = dataContext
             };
             dialog.ShowDialog(this);

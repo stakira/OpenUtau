@@ -117,8 +117,8 @@
     <Compile Update="Views\TrackColorDialog.axaml.cs">
       <DependentUpon>TrackColorDialog.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\VstTerminalDialog.axaml.cs">
-      <DependentUpon>VstTerminalDialog.axaml</DependentUpon>
+    <Compile Update="Views\DawIntegrationTerminalDialog.axaml.cs">
+      <DependentUpon>DawIntegrationTerminalDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
