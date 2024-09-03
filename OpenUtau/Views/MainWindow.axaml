@@ -65,6 +65,8 @@
               <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
+            <MenuItem Header="-" Height="1"/>
+            <MenuItem Header="{DynamicResource menu.file.connectvst}" Click="OnMenuVstTerminal"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.edit}">
             <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>

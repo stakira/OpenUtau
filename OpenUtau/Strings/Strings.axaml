@@ -185,6 +185,8 @@
   <system:String x:Key="menu.file.save">Save</system:String>
   <system:String x:Key="menu.file.saveas">Save As...</system:String>
   <system:String x:Key="menu.file.savetemplate">Save Template...</system:String>
+  <system:String x:Key="menu.file.connectvst">Connect to VST...</system:String>
+  <system:String x:Key="menu.file.disconnectvst">Disconnect from VST</system:String>
   <system:String x:Key="menu.help">Help</system:String>
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
   <system:String x:Key="menu.help.checkupdate">Check Update</system:String>
@@ -545,6 +547,13 @@ General
   <system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>
   <system:String x:Key="tracks.trackcolor">Change track color</system:String>
   <system:String x:Key="tracks.tracksettings">Track Settings</system:String>
+
+  <system:String x:Key="vstterminal.captions">Connect to VST</system:String>
+  <system:String x:Key="vstterminal.description">Download VST, show UI and connect (temporary text)</system:String>
+  <system:String x:Key="vstterminal.downloadvst">Download VST</system:String>
+  <system:String x:Key="vstterminal.column">Name</system:String>
+  <system:String x:Key="vstterminal.refresh">Refresh</system:String>
+  <system:String x:Key="vstterminal.connect">Connect</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
