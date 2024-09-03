@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DawIntegration {
         private static string getServerPath() {
             string temp = Path.GetTempPath();
 
-            return $"{temp}/OpenUtau/VstServers";
+            return $"{temp}/OpenUtau/PluginServers";
         }
         public static List<Server> FindServers() {
             string path = getServerPath();
