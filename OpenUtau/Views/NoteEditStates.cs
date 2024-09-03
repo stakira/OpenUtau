@@ -413,7 +413,7 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-            
+
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
         }
 
@@ -436,8 +436,8 @@ namespace OpenUtau.App.Views {
                 maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
             }
 
-            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0) 
-                ? (oldDur-1) / snapUnit * snapUnit 
+            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0)
+                ? (oldDur-1) / snapUnit * snapUnit
                 : oldDur - 15;
             int maxDelta = maxNoteTicks - note.duration;
 
@@ -1102,6 +1102,50 @@ namespace OpenUtau.App.Views {
                 (int)Math.Round(tone * 100 - pitch.Value),
                 vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
                 (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
+    class DrawLinePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? firstPitch;
+        Point firstPoint;
+        double? lastPitch;
+        Point lastPoint;
+        public DrawLinePitchState(
+            Control control, 
+            PianoRollViewModel vm, 
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            firstPitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            firstPoint = point;
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            if (pitch == null || vm.NotesViewModel.Part == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value)),
+                vm.NotesViewModel.PointToTick(firstPoint),
+                (int)Math.Round(tone * 100 - (firstPitch == null ? pitch.Value : firstPitch.Value))
+                ));
             lastPitch = pitch;
             lastPoint = point;
         }
