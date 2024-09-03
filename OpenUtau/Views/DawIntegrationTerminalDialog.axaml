@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="clr-namespace:OpenUtau.App.Controls"
+        mc:Ignorable="d" MinWidth="200" MinHeight="200" Width="300" Height="350"
+        x:Class="OpenUtau.App.Views.DawIntegrationTerminalDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="{DynamicResource dawintegrationterminal.caption}"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="False">
+  <Design.DataContext>
+    <vm:DawIntegrationTerminalViewModel/>
+  </Design.DataContext>
+  <Grid Margin="10">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="10" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock Text="{DynamicResource dawintegrationterminal.description}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextWrapping="Wrap" />
+    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"
+            Content="{DynamicResource dawintegrationterminal.downloadplugin}" Click="OnDownloadClick" />
+    <ListBox ItemsSource="{Binding DawIntegrationServerList}"
+               SelectedItem="{Binding SelectedServer}"
+               SelectionMode="Single" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" />
+    <Button Grid.Row="6" Grid.Column="0" HorizontalAlignment="Stretch"
+            Content="{DynamicResource dawintegrationterminal.refresh}" />
+    <Button Grid.Row="6" Grid.Column="2" HorizontalAlignment="Stretch"
+            Content="{DynamicResource dawintegrationterminal.connect}" />
+  </Grid>
+</Window>
