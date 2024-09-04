@@ -332,6 +332,13 @@ Warning: this option removes custom presets.</system:String>
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen</system:String>
+  <system:String x:Key="pianoroll.tool.drawlinepitch">
+    Draw Pitch Tool (draw straight line)
+    Left click to draw
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen
+  </system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
   <system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (Ctrl + 4)
