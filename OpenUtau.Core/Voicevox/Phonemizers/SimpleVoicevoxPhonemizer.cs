@@ -7,7 +7,7 @@ namespace Voicevox {
     [Phonemizer("Simple Voicevox Japanese Phonemizer", "S-VOICEVOX JA", language: "JA")]
     public class SimpleVoicevoxPhonemizer : Phonemizer {
 
-        protected VoicevoxSinger singer;
+        protected VoicevoxSinger singer; 
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
@@ -18,7 +18,7 @@ namespace Voicevox {
         }
 
         protected bool IsSyllableVowelExtensionNote(Note note) {
-            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*") || note.lyric.StartsWith("+") || note.lyric.StartsWith("-");
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
@@ -32,15 +32,17 @@ namespace Voicevox {
                     notes[i].lyric = lyricList[1];
                 }
                 if (!IsSyllableVowelExtensionNote(notes[i])) {
-                    if (VoicevoxUtils.IsHiraKana(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = notes[i].lyric });
-                    } else if (VoicevoxUtils.IsPau(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = "R" });
-                    } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric) });
-                    } else {
-                        phonemes.Add(new Phoneme { phoneme = "error"});
+                    string val = "error";
+                    if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric) || VoicevoxUtils.phoneme_List.paus.ContainsKey(notes[i].lyric)) {
+                        if (VoicevoxUtils.phoneme_List.paus.TryGetValue(notes[i].lyric, out string str)) {
+                            val = str;
+                        } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
+                            val = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric);
+                        } else {
+                            val = notes[i].lyric;
+                        }
                     }
+                    phonemes.Add(new Phoneme { phoneme = val });
                 }
             }
             return new Result { phonemes = phonemes.ToArray() };

@@ -258,7 +258,19 @@ namespace OpenUtau.Core.DiffSinger {
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                     new DenseTensor<long>(new long[] { speedup }, new int[] { 1 }, false)));
             }
-
+            //Language id
+            if(singer.dsConfig.use_lang_id){
+                var langIdByPhone = phrase.phones
+                    .Select(p => (long)singer.languageIds.GetValueOrDefault(
+                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
+                        ))
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
+                var langIdTensor = new DenseTensor<Int64>(langIdByPhone, new int[] { langIdByPhone.Length }, false)
+                    .Reshape(new int[] { 1, langIdByPhone.Length });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("languages", langIdTensor));
+            }
             //speaker
             if(singer.dsConfig.speakers != null) {
                 var speakerEmbedManager = singer.getSpeakerEmbedManager();
@@ -324,6 +336,10 @@ namespace OpenUtau.Core.DiffSinger {
                     } else{
                         userEnergy = Enumerable.Repeat(0d, totalFrames);
                     }
+                    if (varianceResult.energy == null) {
+                        throw new KeyNotFoundException(
+                            "The parameter \"energy\" required by acoustic model is not found in variance predictions.");
+                    }
                     var predictedEnergy = DiffSingerUtils.ResampleCurve(varianceResult.energy, totalFrames);
                     var energy = predictedEnergy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
@@ -334,6 +350,10 @@ namespace OpenUtau.Core.DiffSinger {
                     var userBreathiness = DiffSingerUtils.SampleCurve(phrase, phrase.breathiness,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
+                    if (varianceResult.breathiness == null) {
+                        throw new KeyNotFoundException(
+                            "The parameter \"breathiness\" required by acoustic model is not found in variance predictions.");
+                    }
                     var predictedBreathiness = DiffSingerUtils.ResampleCurve(varianceResult.breathiness, totalFrames);
                     var breathiness = predictedBreathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
@@ -344,6 +364,10 @@ namespace OpenUtau.Core.DiffSinger {
                     var userVoicing = DiffSingerUtils.SampleCurve(phrase, phrase.voicing,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
+                    if (varianceResult.voicing == null) {
+                        throw new KeyNotFoundException(
+                            "The parameter \"voicing\" required by acoustic model is not found in variance predictions.");
+                    }
                     var predictedVoicing = DiffSingerUtils.ResampleCurve(varianceResult.voicing, totalFrames);
                     var voicing = predictedVoicing.Zip(userVoicing, (x,y)=>(float)Math.Min(x + (y-100)*12/100, 0)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
@@ -354,6 +378,10 @@ namespace OpenUtau.Core.DiffSinger {
                     var userTension = DiffSingerUtils.SampleCurve(phrase, phrase.tension,
                         0, frameMs, totalFrames, headFrames, tailFrames,
                         x => x);
+                    if (varianceResult.tension == null) {
+                        throw new KeyNotFoundException(
+                            "The parameter \"tension\" required by acoustic model is not found in variance predictions.");
+                    }
                     var predictedTension = DiffSingerUtils.ResampleCurve(varianceResult.tension, totalFrames);
                     var tension = predictedTension.Zip(userTension, (x,y)=>(float)(x + y * 5 / 100)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
