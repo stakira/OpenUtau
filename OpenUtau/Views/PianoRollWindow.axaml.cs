@@ -53,7 +53,7 @@ namespace OpenUtau.App.Views {
 
                 { "pianoroll.menu.notes.reset.pitchbends", "Alt+B" },
                 { "pianoroll.menu.notes.reset.exps", "Alt+E" },
-                { "pianoroll.menu.notes.clear.vibratos", "Alt+V" },
+                { "pianoroll.menu.notes.clear.vibratos", "Alt+C" },
                 { "pianoroll.menu.notes.reset.vibratos", "Alt+R" }
              };
 
