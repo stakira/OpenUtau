@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using NetSparkleUpdater.Enums;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.DawIntegration;
 using OpenUtau.Core.Util;
 using Serilog;
 
