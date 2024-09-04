@@ -306,21 +306,21 @@
               <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" InputGesture="{Binding InputGesture}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
               <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" InputGesture="{Binding InputGesture}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
               <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" InputGesture="{Binding InputGesture}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>

@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Newtonsoft.Json;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -45,6 +47,29 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
+            Dictionary<string, string> gestureDict = new Dictionary<string, string> {
+                { "pianoroll.menu.notes.loadrenderedpitch", "Ctrl+R" },
+                { "pianoroll.menu.notes.autolegato", "Ctrl+L" },
+
+                { "pianoroll.menu.notes.reset.pitchbends", "Alt+B" },
+                { "pianoroll.menu.notes.reset.exps", "Alt+E" },
+                { "pianoroll.menu.notes.clear.vibratos", "Alt+V" },
+                { "pianoroll.menu.notes.reset.vibratos", "Alt+R" }
+             };
+
+            //string json = JsonConvert.SerializeObject(gestureDict, Formatting.Indented);
+            //File.WriteAllText("keyGesture.json", json);
+
+            try {
+                string json = File.ReadAllText("keyGesture.json");
+                var dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                if (dictionary != null) {
+                    gestureDict = dictionary;
+                }
+            }
+            catch {
+                Console.WriteLine("Read KeyGesture Error!!!");
+            }
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
                 var NotesVm = ViewModel?.NotesViewModel;
@@ -105,6 +130,7 @@ namespace OpenUtau.App.Views {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
+                InputGesture = gestureDict.ContainsKey(edit.Name) ? KeyGesture.Parse(gestureDict[edit.Name]) : null,
             }));
             ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() {
                 new RomajiToHiragana(),
@@ -121,6 +147,7 @@ namespace OpenUtau.App.Views {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
+                InputGesture = gestureDict.ContainsKey(edit.Name) ? KeyGesture.Parse(gestureDict[edit.Name]) : null,
             }));
             ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() {
                 new ResetAllParameters(),
@@ -135,23 +162,27 @@ namespace OpenUtau.App.Views {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
+                InputGesture = gestureDict.ContainsKey(edit.Name) ? KeyGesture.Parse(gestureDict[edit.Name]) : null,
             }));
             DocManager.Inst.AddSubscriber(this);
 
             ViewModel.NoteBatchEdits.Insert(5, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
+                InputGesture = gestureDict.ContainsKey("pianoroll.menu.notes.addbreath") ? KeyGesture.Parse(gestureDict["pianoroll.menu.notes.addbreath"]) : null,
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
+                InputGesture = gestureDict.ContainsKey("pianoroll.menu.notes.lengthencrossfade") ? KeyGesture.Parse(gestureDict["pianoroll.menu.notes.lengthencrossfade"]) : null,
                 Command = ReactiveCommand.Create(() => {
                     LengthenCrossfade();
                 })
             });
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
+                InputGesture = gestureDict.ContainsKey("lyricsreplace.replace") ? KeyGesture.Parse(gestureDict["lyricsreplace.replace"]) : null,
                 Command = ReactiveCommand.Create(() => {
                     ReplaceLyrics();
                 })
@@ -1104,6 +1135,32 @@ namespace OpenUtau.App.Views {
                 return true;
             }
 
+            foreach (MenuItemViewModel menu in ViewModel.NoteBatchEdits) {
+                if(menu.InputGesture != null) {
+                    if (menu.InputGesture.Matches(args)) {
+                        menu?.Command?.Execute(menu.CommandParameter);
+                        return true;
+                    }
+                }
+            }
+
+            foreach (MenuItemViewModel menu in ViewModel.LyricBatchEdits) {
+                if (menu.InputGesture != null) {
+                    if (menu.InputGesture.Matches(args)) {
+                        menu?.Command?.Execute(menu.CommandParameter);
+                        return true;
+                    }
+                }
+            }
+            foreach (MenuItemViewModel menu in ViewModel.ResetBatchEdits) {
+                if (menu.InputGesture != null) {
+                    if (menu.InputGesture.Matches(args)) {
+                        menu?.Command?.Execute(menu.CommandParameter);
+                        return true;
+                    }
+                }
+            }
+
             string mainPenIdx = Preferences.Default.PenPlusDefault ? "2+" : "2";
             string altPenIdx = Preferences.Default.PenPlusDefault ? "2" : "2+";
 
@@ -1227,6 +1284,10 @@ namespace OpenUtau.App.Views {
                 case Key.T:
                     if (isNone) {
                         notesVm.ShowTips = !notesVm.ShowTips;
+                        return true;
+                    }
+                    if (isAlt) {
+                        EditLyrics(); ;
                         return true;
                     }
                     break;
