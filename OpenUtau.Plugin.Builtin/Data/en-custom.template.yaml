@@ -16,10 +16,10 @@ symbols:
     type: vowel
     rename: ao
   - name: aw
-    type: vowel
+    type: diphthong
     rename: aw
   - name: ay
-    type: vowel
+    type: diphthong
     rename: ay
   - name: b
     type: consonant
@@ -40,7 +40,7 @@ symbols:
     type: vowel
     rename: er
   - name: ey
-    type: vowel
+    type: diphthong
     rename: ey
   - name: f
     type: consonant
@@ -76,10 +76,10 @@ symbols:
     type: consonant
     rename: ng
   - name: ow
-    type: vowel
+    type: diphthong
     rename: ow
   - name: oy
-    type: vowel
+    type: diphthong
     rename: oy
   - name: p
     type: consonant

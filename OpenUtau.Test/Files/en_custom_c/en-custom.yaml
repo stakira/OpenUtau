@@ -14,9 +14,9 @@ symbols:
   - name: ao
     type: vowel
   - name: aw
-    type: vowel
+    type: diphthong
   - name: ay
-    type: vowel
+    type: diphthong
   - name: b
     type: consonant
   - name: ch
@@ -30,7 +30,7 @@ symbols:
   - name: er
     type: vowel
   - name: ey
-    type: vowel
+    type: diphthong
   - name: f
     type: consonant
   - name: g
@@ -56,9 +56,9 @@ symbols:
   - name: ng
     type: consonant
   - name: ow
-    type: vowel
+    type: diphthong
   - name: oy
-    type: vowel
+    type: diphthong
   - name: p
     type: consonant
   - name: r
@@ -93,10 +93,20 @@ symbols:
   - name: ax
     type: vowel
   - name: ing
-    type: vowel
+    type: diphthong
   - name: ul
-    type: vowel
+    type: diphthong
   - name: st
     type: consonant
   - name: ar
-    type: vowel
+    type: diphthong
+  - name: tr
+    type: consonant
+combinations:
+  - before: "T r"
+    after: "tr"  
+  - before: "ih ng"
+    after: "ing"
+  - before: "s T"
+    after: "st"
+    prefix: "s"

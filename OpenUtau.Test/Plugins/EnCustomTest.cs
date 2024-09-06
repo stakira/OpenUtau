@@ -30,9 +30,9 @@ namespace OpenUtau.Test.Plugins {
                     new NoteParams { lyric = "little", hint = "L ih DX ul", tone = "C4", phonemes = SamePhonemeParams(9, 0, 0, "") },
                     new NoteParams { lyric = "star", hint = "st ar", tone = "C4", phonemes = SamePhonemeParams(9, 0, 0, "") }
                 }, 
-                new string[] { "- T", "T W", "W ih","ih ng", "ng K", "K ah", "ah L", "L T",
+                new string[] { "- T", "T W", "W ing", "ing K", "K ah", "ah L", "L T",
                     "T W", "W ing", "ing K", "K ul", "ul L",
-                    "L ih", "ih DX", "DX ul", "ul st", "st ar", "ar -"});
+                    "L ih", "ih DX", "DX ul", "ul s", "st ar", "ar -"});
         }
 
         [Theory]
@@ -46,6 +46,23 @@ namespace OpenUtau.Test.Plugins {
             new string[] { "hey", "br", "yeah"},
             new string[] { "- hh", "hh ey", "ey br", "- y", "y ae", "ae -" })]
         public void CustomTailTest(string[] lyrics, string[] aliases) {
+            SameAltsTonesColorsTest("en_custom_c", lyrics, aliases, "", "C4", "");
+        }
+
+        [Theory]
+        [InlineData(
+            new string[] { "true"},
+            new string[] { "- tr", "tr uw", "uw -"})]
+        [InlineData(
+            new string[] { "think" },
+            new string[] { "- th", "th ing", "ing K", "K -" })]
+        [InlineData(
+            new string[] { "singing" },
+            new string[] { "- s", "s ing", "ing ing", "ing -" })]
+        [InlineData(
+            new string[] { "last" },
+            new string[] { "- L", "L ae", "ae s", "st -" })]
+        public void CombinePhonemesTest(string[] lyrics, string[] aliases) {
             SameAltsTonesColorsTest("en_custom_c", lyrics, aliases, "", "C4", "");
         }
     }
