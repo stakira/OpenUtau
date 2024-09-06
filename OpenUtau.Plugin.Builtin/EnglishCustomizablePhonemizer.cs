@@ -25,6 +25,8 @@ namespace OpenUtau.Plugin.Builtin {
         private Dictionary<string, string> replacements { get; set; }
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => replacements;
 
+        private string[] tails;
+
         public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
                 string file = "";
@@ -34,13 +36,15 @@ namespace OpenUtau.Plugin.Builtin {
 
                 if (File.Exists(file)) {
                     var data = Core.Yaml.DefaultDeserializer.Deserialize<EnglishCustomConfigData>(File.ReadAllText(file));
+
+                    tails = data.tails;
+
                     var loadVowels = new List<string>();
                     var loadReplacements = new Dictionary<string, string>();
-
                     foreach (var symbol in data.symbols) { 
                         var rename = symbol.rename ?? symbol.name;
                         loadReplacements.Add(symbol.name, rename);
-                        if (symbol.type == "vowel") {
+                        if (symbol.type == "vowel" && !loadVowels.Contains(rename)) {
                             loadVowels.Add(rename);
                         }
                     }
@@ -55,6 +59,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
 
+        protected override string[] GetSymbols(Note note) {
+            if (tails.Contains(note.lyric)) {
+                return new string[] { note.lyric };
+            }
+            return base.GetSymbols(note);
+        }
+
         protected override List<string> ProcessSyllable(Syllable syllable) {
             if (CanMakeAliasExtension(syllable)) {
                 return new List<string> { "null" };
@@ -62,6 +73,8 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<string>();
             var symbols = new List<string>();
+
+            syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
             symbols.Add(syllable.prevV == "" ? "-" : syllable.prevV);
             symbols.AddRange(syllable.cc);
             if (syllable.cc.Length == 0) {
@@ -84,6 +97,10 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
+            if (tails.Contains(ending.prevV)) {
+                return new List<string>();
+            }
+
             var phonemes = new List<string>();
             var symbols = new List<string>();
             symbols.Add(ending.prevV);
@@ -105,5 +122,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public SymbolData[] symbols;
+        public string[] tails;
     }
 }

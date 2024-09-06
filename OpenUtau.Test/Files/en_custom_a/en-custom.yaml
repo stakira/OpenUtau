@@ -1,5 +1,7 @@
 %YAML 1.2
 ---
+tails:
+  - "-"
 symbols:
   - name: aa
     type: vowel

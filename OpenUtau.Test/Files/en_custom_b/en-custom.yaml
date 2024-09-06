@@ -1,5 +1,7 @@
 %YAML 1.2
 ---
+tails:
+  - "-"
 symbols:
   - name: aa
     type: vowel
@@ -15,10 +17,10 @@ symbols:
     rename: AO
   - name: aw
     type: vowel
-    rename: AU
+    rename: AW
   - name: ay
     type: vowel
-    rename: AI
+    rename: AY
   - name: b
     type: consonant
     rename: B

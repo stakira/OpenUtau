@@ -34,5 +34,19 @@ namespace OpenUtau.Test.Plugins {
                     "T W", "W ing", "ing K", "K ul", "ul L",
                     "L ih", "ih DX", "DX ul", "ul st", "st ar", "ar -"});
         }
+
+        [Theory]
+        [InlineData(
+            new string[] { "hey", "-"},
+            new string[] { "- hh", "hh ey", "ey -"})]
+        [InlineData(
+            new string[] { "hey", "R"},
+            new string[] { "- hh", "hh ey", "ey R" })]
+        [InlineData(
+            new string[] { "hey", "br", "yeah"},
+            new string[] { "- hh", "hh ey", "ey br", "- y", "y ae", "ae -" })]
+        public void CustomTailTest(string[] lyrics, string[] aliases) {
+            SameAltsTonesColorsTest("en_custom_c", lyrics, aliases, "", "C4", "");
+        }
     }
 }
