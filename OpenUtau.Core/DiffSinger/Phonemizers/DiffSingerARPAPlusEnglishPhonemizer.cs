@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger English+ Phonemizer", "DIFFS EN+", language: "EN", author: "Cadlaxa")]
@@ -37,15 +39,16 @@ namespace OpenUtau.Core.DiffSinger {
                 throw new Exception("Result not found in the part");
             }
             var processedPhonemes = new List<Phoneme>();
+            var langCode = GetLangCode() + "/";
 
             for (int i = 0; i < phonemes.Count; i++) {
                 var tu = phonemes[i];
 
                 // Check for "n dx" sequence and replace it with "n"
                 // the actual phoneme for this is "nx" like (winner [w ih nx er])
-                if (i < phonemes.Count - 1 && tu.Item1 == "n" && phonemes[i + 1].Item1 == "dx") {
+                if (i < phonemes.Count - 1 && tu.Item1 == langCode + "n" && phonemes[i + 1].Item1 == langCode + "dx") {
                     processedPhonemes.Add(new Phoneme() {
-                        phoneme = "n",
+                        phoneme = langCode + "n",
                         position = tu.Item2
                     });
                     // Skip the next phoneme ("dx")
@@ -70,28 +73,48 @@ namespace OpenUtau.Core.DiffSinger {
         // Method to determine if a phoneme should be replaced based on specific conditions
         private bool ShouldReplacePhoneme(string phoneme, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, out string replacement) {
             replacement = phoneme;
-            if (phoneme == "q") {
+            var langCode = GetLangCode() + "/";
+
+            if (phoneme == langCode + "q" || phoneme == "cl") {
+                // Vocal fry the vowel if the prevNeighbour is null
+                if (!prevNeighbour.HasValue || string.IsNullOrWhiteSpace(prevNeighbour.Value.lyric)) {
+                    replacement = "vf";
+                    return true;
+                }
+            }
+
+            if (phoneme == langCode + "q")  {
+                // Replace "q" with "cl"
                 replacement = "cl";
                 return true;
             }
-            if (phoneme == "q") {
-                // vocal fry the vowel is the prevNeighbour is null
-                if (!prevNeighbour.HasValue || string.IsNullOrWhiteSpace(prevNeighbour.Value.lyric)) {
-                replacement = "vf";
-                return true;
-                }
-            }
-            // automatic relaxed consonants
-            if ((phoneme == "t" || phoneme == "d") && (nextNeighbour.HasValue && IsVowel(nextNeighbour.Value))) {
-                replacement = "dx";
+            
+            // (doesn't work currently) Automatic relaxed consonants: replace "t" or "d" with "dx" if nextNeighbour is a vowel
+            if ((phoneme == langCode + "t" || phoneme == langCode + "d") && nextNeighbour.HasValue && IsVowel(nextNeighbour.Value)) {
+                replacement = langCode + "dx";
                 return true;
             }
             return false;
         }
+
         // Method to check if a phoneme is a vowel
         private bool IsVowel(Note note) {
-            string[] vowels = GetBaseG2pVowels();
-            return vowels.Contains(note.lyric);
+            // Retrieve the language code and vowel list
+            var langCode = GetLangCode();
+            string[] baseVowels = GetBaseG2pVowels();
+
+            // Create the full list of vowel phonemes with language code
+            string[] vowels = baseVowels.Select(vowel => $"{langCode}/{vowel}").ToArray();
+
+            // Combine langCode and note.lyric to get the phoneme to check
+            string phonemeToCheck = $"{langCode}/{note.lyric}";
+
+            // Log the phoneme being checked and the list of vowels
+            Log.Debug($"IsVowel: Checking phoneme={phonemeToCheck}");
+            Log.Debug($"IsVowel: Available vowels={string.Join(", ", vowels)}");
+
+            // Check if the phonemeToCheck is in the list of vowels
+            return vowels.Contains(phonemeToCheck);
         }
     }
 }
