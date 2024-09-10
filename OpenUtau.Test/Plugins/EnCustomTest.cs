@@ -1,10 +1,9 @@
 ﻿using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
-using OpenUtau.Plugins;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace OpenUtau.Test.Plugins {
+namespace OpenUtau.Plugins {
     public class EnCustomTest : PhonemizerTestBase {
         public EnCustomTest(ITestOutputHelper output) : base(output) { }
         protected override Phonemizer CreatePhonemizer() {
@@ -64,6 +63,18 @@ namespace OpenUtau.Test.Plugins {
             new string[] { "- L", "L ae", "ae s", "st -" })]
         public void CombinePhonemesTest(string[] lyrics, string[] aliases) {
             SameAltsTonesColorsTest("en_custom_c", lyrics, aliases, "", "C4", "");
+        }
+
+        [Fact]
+        public void SplitPhonemesTest() {
+            SameAltsTonesColorsTest("en_custom_d",
+                new string[] { "hi", "hey", "toy", "go", "down" },
+                new string[] { "- h", "h a", "a I", "I h", 
+                    "h e", "e I", "I t",
+                    "t O", "O I", "I g",
+                    "g o", "o U", "U d",
+                    "d a", "a U", "U n", "n -"},
+                "", "C4", "");
         }
     }
 }

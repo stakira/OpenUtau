@@ -29,6 +29,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] tails;
         private CombinedPhoneme[] combinations;
+        private Dictionary<string, string[]> splits;
 
         public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
@@ -60,7 +61,6 @@ namespace OpenUtau.Plugin.Builtin {
                     replacements = loadReplacements;
 
                     if (data.combinations != null) {
-                        //combinations = new Dictionary<string, string>();
                         var loadCombinations = new List<CombinedPhoneme>();
                         foreach (var combo in data.combinations) {
                             loadCombinations.Add(new CombinedPhoneme {
@@ -71,7 +71,14 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         combinations = loadCombinations.ToArray();
                     }
-                } else {
+
+                    if (data.splits != null) {
+                        splits = new Dictionary<string, string[]>();
+                        foreach (var split in data.splits) {
+                            splits.Add(split.before, split.after);
+                        }
+                    }
+                } else if (singer.Location != null) {
                     File.WriteAllBytes(file, Data.Resources.en_custom_template);
                 }
 
@@ -93,6 +100,18 @@ namespace OpenUtau.Plugin.Builtin {
                     symbolString = symbolString.Replace(combo.before, combo.after);
                 }
                 symbols = symbolString.Split();
+            }
+
+            if (splits != null) {
+                var adjustedSymbols = new List<string>();
+                foreach(var symbol in symbols) {
+                    if (splits.ContainsKey(symbol)) {
+                        adjustedSymbols.AddRange(splits[symbol]);
+                    } else {
+                        adjustedSymbols.Add(symbol);
+                    }
+                }
+                symbols = adjustedSymbols.ToArray();
             }
 
             return symbols;
@@ -177,5 +196,12 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public CombinePhonemeData[]? combinations;
+
+        public struct SplitPhonemeData {
+            public string before;
+            public string[] after;
+        }
+
+        public SplitPhonemeData[]? splits;
     }
 }
