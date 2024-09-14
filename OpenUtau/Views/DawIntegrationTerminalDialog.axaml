@@ -3,8 +3,6 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:OpenUtau.App.ViewModels"
-        xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" MinWidth="200" MinHeight="200" Width="300" Height="350"
         x:Class="OpenUtau.App.Views.DawIntegrationTerminalDialog"
         Icon="/Assets/open-utau.ico"
@@ -29,12 +27,27 @@
     <TextBlock Text="{DynamicResource dawintegrationterminal.description}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextWrapping="Wrap" />
     <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"
             Content="{DynamicResource dawintegrationterminal.downloadplugin}" Click="OnDownloadClick" />
-    <ListBox ItemsSource="{Binding DawIntegrationServerList}"
-               SelectedItem="{Binding SelectedServer}"
-               SelectionMode="Single" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" />
+    <ListBox IsVisible="{Binding !!ServerList.Count}"
+             ItemsSource="{Binding ServerList}"
+             SelectedItem="{Binding SelectedServer}"
+             SelectionMode="Single" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <MultiBinding StringFormat="{}{0} ({1})">
+            <Binding Path="Name"/>
+            <Binding Path="Port"/>
+          </MultiBinding>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <TextBlock IsVisible="{Binding !ServerList.Count}"
+               Text="{DynamicResource dawintegrationterminal.notfound}"
+               Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" />
     <Button Grid.Row="6" Grid.Column="0" HorizontalAlignment="Stretch"
+            Click="OnRefresh"
             Content="{DynamicResource dawintegrationterminal.refresh}" />
     <Button Grid.Row="6" Grid.Column="2" HorizontalAlignment="Stretch"
+            IsEnabled="{Binding SelectedServer, Converter={x:Static ObjectConverters.IsNotNull}}"
             Content="{DynamicResource dawintegrationterminal.connect}" />
   </Grid>
 </Window>

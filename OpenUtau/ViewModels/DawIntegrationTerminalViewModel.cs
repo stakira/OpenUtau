@@ -12,47 +12,23 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.App.ViewModels {
     public class DawIntegrationTerminalViewModel : ViewModelBase {
-        [Reactive] public DawIntegrationServer? SelectedServer { get; set; } = null;
-        [Reactive]
-        public ObservableCollectionExtended<DawIntegrationServer> DawIntegrationServers { get; set; }
+        [Reactive] public Server? SelectedServer { get; set; } = null;
+        public ObservableCollectionExtended<Server> ServerList { get; set; } = new ObservableCollectionExtended<Server>();
 
         public DawIntegrationTerminalViewModel() {
-            DawIntegrationServers = new ObservableCollectionExtended<DawIntegrationServer>();
-            Task.Run(async () => {
-                var servers = await ServerFinder.FindServers();
-
-                var serverList = servers.Select((server) => new DawIntegrationServer(server)).ToList();
-                if (servers.Count == 0) {
-                    DawIntegrationServers.Add(new DawIntegrationServer(null));
-                    SelectedServer = null;
-                } else {
-                    DawIntegrationServers.Load(serverList);
-                    SelectedServer = DawIntegrationServers[0];
-                }
-            });
-
-        }
-    }
-
-    public class DawIntegrationServer {
-        public Server? server;
-        public bool Enabled {
-            get {
-                return server != null;
-            }
-        }
-        public DawIntegrationServer(Server? server) {
-            this.server = server;
+            Task.Run(() => RefreshServerList());
         }
 
-        public override string ToString() {
-            if (server != null) {
-                return server.Name;
+        public async Task RefreshServerList() {
+            var servers = await ServerFinder.FindServers();
+
+            if (servers.Count == 0) {
+                SelectedServer = null;
             } else {
-                return "{DynamicResource dawintegrationterminal.noservers}";
+                ServerList.Load(servers);
+                SelectedServer = ServerList[0];
             }
         }
+
     }
-
-
 }

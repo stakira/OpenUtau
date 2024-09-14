@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using NetSparkleUpdater.Enums;
@@ -18,10 +20,19 @@ namespace OpenUtau.App.Views {
             DataContext = ViewModel = new DawIntegrationTerminalViewModel();
         }
 
+        void FormatServerList(object sender, ListControlConvertEventArgs e) {
+            var server = (Server)e.ListItem!;
+            e.Value = $"{server.Name} (${server.Port})";
+        }
+
+        void OnRefresh(object sender, RoutedEventArgs args) {
+            Task.Run(() => ViewModel.RefreshServerList());
+        }
+
         void OnClosing(object sender, WindowClosingEventArgs e) {
         }
 
-        private void OnDownloadClick(object sender, RoutedEventArgs args) {
+        void OnDownloadClick(object sender, RoutedEventArgs args) {
             try {
                 OS.OpenWeb("https://example.com");
             } catch (Exception e) {

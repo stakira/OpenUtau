@@ -551,6 +551,7 @@ General
   <system:String x:Key="dawintegrationterminal.captions">Connect to DAW</system:String>
   <system:String x:Key="dawintegrationterminal.description">Download Plugin, show UI and connect (temporary text)</system:String>
   <system:String x:Key="dawintegrationterminal.downloadplugin">Download Plugin</system:String>
+  <system:String x:Key="dawintegrationterminal.notfound">No plugin host found.</system:String>
   <system:String x:Key="dawintegrationterminal.column">Name</system:String>
   <system:String x:Key="dawintegrationterminal.refresh">Refresh</system:String>
   <system:String x:Key="dawintegrationterminal.connect">Connect</system:String>
