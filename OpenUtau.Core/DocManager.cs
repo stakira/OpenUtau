@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -19,6 +20,34 @@ namespace OpenUtau.Core {
         public UPart Part;
         public bool SkipPhonemizer;
         public bool SkipPhoneme;
+    }
+
+    internal struct DawUpdatePoint : IEquatable<DawUpdatePoint> {
+        public UCommandGroup? commandGroup;
+        public UProject project;
+
+        public DawUpdatePoint(UCommandGroup commandGroup, UProject project) {
+            this.commandGroup = commandGroup;
+            this.project = project;
+        }
+
+        public bool Equals(DawUpdatePoint other) {
+            return commandGroup == other.commandGroup && project == other.project;
+        }
+        public override bool Equals(object obj) {
+            return obj is DawUpdatePoint point ? Equals(point) : base.Equals(obj);
+        }
+
+        public static bool operator ==(DawUpdatePoint obj1, DawUpdatePoint obj2) {
+            return obj1.Equals(obj2);
+        }
+
+        public static bool operator !=(DawUpdatePoint obj1, DawUpdatePoint obj2) {
+            return !(obj1 == obj2);
+        }
+        public override int GetHashCode() {
+            return (commandGroup == null ? 0 : commandGroup.GetHashCode()) ^ project.GetHashCode();
+        }
     }
 
     public class DocManager : SingletonBase<DocManager> {
@@ -40,7 +69,10 @@ namespace OpenUtau.Core {
         public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
-        internal DawIntegration.Client? VstClient { get; set; }
+        public DawIntegration.Client? dawClient { get; set; }
+
+        internal bool isDawClientLocked = false;
+        internal DawUpdatePoint? lastDawStatusUpdateCheckPoint = null;
 
         public void Initialize() {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
@@ -177,6 +209,39 @@ namespace OpenUtau.Core {
                 autosavedPoint = undoQueue.LastOrDefault();
             } catch (Exception e) {
                 Log.Error(e, "Autosave failed.");
+            }
+        }
+
+        public async Task UpdateDaw() {
+            if (dawClient == null) {
+                return;
+            }
+            if (isDawClientLocked) {
+                Log.Information("DawClient is in use, skipping");
+                return;
+            }
+            isDawClientLocked = true;
+            try {
+                var currentPoint = new DawUpdatePoint(undoQueue.LastOrDefault(), Project);
+                if (lastDawStatusUpdateCheckPoint != currentPoint) {
+                    lastDawStatusUpdateCheckPoint = currentPoint;
+                    // To reduce some hangs while user is using editor.
+                    Log.Information("Editor is active, skipping sending status to DAW.");
+                    return;
+                }
+                Log.Information("Sending status to DAW...");
+                RenderEngine engine = new RenderEngine(Project, startTick: 0, endTick: -1, trackNo: -1);
+                var renderCancellation = new CancellationTokenSource();
+                var trackMixes = engine.RenderTracks(Inst.MainScheduler, ref renderCancellation);
+                await dawClient.SendStatus(
+                    Project,
+                    trackMixes
+                );
+                Log.Information("Sent status to DAW.");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to send status to DAW.");
+            } finally {
+                isDawClientLocked = false;
             }
         }
 

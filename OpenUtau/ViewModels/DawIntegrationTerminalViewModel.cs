@@ -1,5 +1,7 @@
-﻿using DynamicData.Binding;
+﻿using Avalonia.Threading;
+using DynamicData.Binding;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using OpenUtau.Core;
 using OpenUtau.Core.DawIntegration;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -22,12 +24,22 @@ namespace OpenUtau.App.ViewModels {
         public async Task RefreshServerList() {
             var servers = await ServerFinder.FindServers();
 
+            ServerList.Load(servers);
             if (servers.Count == 0) {
                 SelectedServer = null;
             } else {
-                ServerList.Load(servers);
                 SelectedServer = ServerList[0];
             }
+        }
+
+        public async Task Connect() {
+            if (SelectedServer == null) {
+                return;
+            }
+
+            var client = await Client.Connect(SelectedServer.Port);
+
+            DocManager.Inst.dawClient = client;
         }
 
     }

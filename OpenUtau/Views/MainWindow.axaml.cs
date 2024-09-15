@@ -40,6 +40,7 @@ namespace OpenUtau.App.Views {
         private PartEditState? partEditState;
         private readonly DispatcherTimer timer;
         private readonly DispatcherTimer autosaveTimer;
+        private readonly DispatcherTimer dawUpdateTimer;
         private bool forceClose;
 
         private bool shouldOpenPartsContextMenu;
@@ -80,6 +81,12 @@ namespace OpenUtau.App.Views {
                 DispatcherPriority.Normal,
                 (sender, args) => DocManager.Inst.AutoSave());
             autosaveTimer.Start();
+
+            dawUpdateTimer = new DispatcherTimer(
+                TimeSpan.FromSeconds(5),
+                DispatcherPriority.Normal,
+                (sender, args) => Task.Run(() => DocManager.Inst.UpdateDaw()));
+            dawUpdateTimer.Start();
 
             PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
             PartGotoFileCommand = ReactiveCommand.Create<UPart>(part => GotoFile(part));

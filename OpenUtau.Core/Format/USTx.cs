@@ -95,16 +95,23 @@ namespace OpenUtau.Core.Format {
 
         public static void Save(string filePath, UProject project) {
             try {
-                project.ustxVersion = kUstxVersion;
+                var ustx = CreateUstx(project);
                 project.FilePath = filePath;
-                project.BeforeSave();
-                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-                project.Saved = true;
-                project.AfterSave();
+                File.WriteAllText(filePath, ustx, Encoding.UTF8);
             } catch (Exception ex) {
                 var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
+        }
+
+        public static string CreateUstx(UProject project) {
+            project.ustxVersion = kUstxVersion;
+            project.BeforeSave();
+            var ustx = Yaml.DefaultSerializer.Serialize(project);
+            project.Saved = true;
+            project.AfterSave();
+
+            return ustx;
         }
 
         public static void AutoSave(string filePath, UProject project) {

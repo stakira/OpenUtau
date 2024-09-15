@@ -556,6 +556,8 @@ General
   <system:String x:Key="dawintegrationterminal.refresh">Refresh</system:String>
   <system:String x:Key="dawintegrationterminal.connect">Connect</system:String>
 
+  <system:String x:Key="dawintegration.active"> (Attached to DAW)</system:String>
+
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">Check for Update</system:String>

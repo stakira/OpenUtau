@@ -12,8 +12,6 @@
   <Grid Margin="10">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="10" />
-      <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -24,30 +22,32 @@
       <RowDefinition Height="10"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <TextBlock Text="{DynamicResource dawintegrationterminal.description}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextWrapping="Wrap" />
-    <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch"
+    <TextBlock Text="{DynamicResource dawintegrationterminal.description}" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" />
+    <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch"
             Content="{DynamicResource dawintegrationterminal.downloadplugin}" Click="OnDownloadClick" />
     <ListBox IsVisible="{Binding !!ServerList.Count}"
              ItemsSource="{Binding ServerList}"
              SelectedItem="{Binding SelectedServer}"
-             SelectionMode="Single" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+             SelectionMode="Single" Grid.Row="4" Grid.Column="0">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <MultiBinding StringFormat="{}{0} ({1})">
-            <Binding Path="Name"/>
-            <Binding Path="Port"/>
-          </MultiBinding>
+          <TextBlock>
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0} ({1})">
+                <Binding Path="Name"/>
+                <Binding Path="Port"/>
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
     <TextBlock IsVisible="{Binding !ServerList.Count}"
                Text="{DynamicResource dawintegrationterminal.notfound}"
-               Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" />
+               Grid.Row="4" Grid.Column="0" />
     <Button Grid.Row="6" Grid.Column="0" HorizontalAlignment="Stretch"
-            Click="OnRefresh"
-            Content="{DynamicResource dawintegrationterminal.refresh}" />
-    <Button Grid.Row="6" Grid.Column="2" HorizontalAlignment="Stretch"
             IsEnabled="{Binding SelectedServer, Converter={x:Static ObjectConverters.IsNotNull}}"
+            Click="OnConnect"
             Content="{DynamicResource dawintegrationterminal.connect}" />
   </Grid>
 </Window>

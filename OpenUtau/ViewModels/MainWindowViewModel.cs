@@ -26,9 +26,19 @@ namespace OpenUtau.App.ViewModels {
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public bool ExtendToFrame => OS.IsMacOS();
-        public string Title => !ProjectSaved
-            ? $"{AppVersion}"
-            : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+        public string Title {
+            get {
+                var baseTitle = !ProjectSaved
+                    ? $"{AppVersion}"
+                    : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+
+                if (DocManager.Inst.dawClient == null) {
+                    return baseTitle;
+                } else {
+                    return $"{baseTitle} (Attached to DAW)";
+                }
+            }
+        }
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -146,8 +156,8 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
             this.RaisePropertyChanged(nameof(Title));
         }
-        
-        public void ImportTracks(UProject[] loadedProjects, bool importTempo){
+
+        public void ImportTracks(UProject[] loadedProjects, bool importTempo) {
             if (loadedProjects == null || loadedProjects.Length < 1) {
                 return;
             }
@@ -192,7 +202,7 @@ namespace OpenUtau.App.ViewModels {
                 var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
-                if(part.name != "New Part"){
+                if (part.name != "New Part") {
                     track.TrackName = part.name;
                 }
                 part.AfterLoad(project, track);
@@ -278,7 +288,7 @@ namespace OpenUtau.App.ViewModels {
         /// Remap a tick position from the old time axis to the new time axis without changing its absolute position (in ms).
         /// Note that this can only be used on positions, not durations.
         /// </summary>
-        private int RemapTickPos(int tickPos, TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+        private int RemapTickPos(int tickPos, TimeAxis oldTimeAxis, TimeAxis newTimeAxis) {
             double msPos = oldTimeAxis.TickPosToMsPos(tickPos);
             return newTimeAxis.MsPosToTickPos(msPos);
         }
@@ -287,41 +297,41 @@ namespace OpenUtau.App.ViewModels {
         /// Remap the starting and ending positions of all the notes and parts in the whole project 
         /// from the old time axis to the new time axis, without changing their absolute positions in ms.
         /// </summary>
-        public void RemapTimeAxis(TimeAxis oldTimeAxis, TimeAxis newTimeAxis){
+        public void RemapTimeAxis(TimeAxis oldTimeAxis, TimeAxis newTimeAxis) {
             var project = DocManager.Inst.Project;
-            foreach(var part in project.parts){
+            foreach (var part in project.parts) {
                 var partOldStartTick = part.position;
                 var partNewStartTick = RemapTickPos(part.position, oldTimeAxis, newTimeAxis);
-                if(partNewStartTick != partOldStartTick){
+                if (partNewStartTick != partOldStartTick) {
                     DocManager.Inst.ExecuteCmd(new MovePartCommand(
                         project, part, partNewStartTick, part.trackNo));
                 }
-                if(part is UVoicePart voicePart){
+                if (part is UVoicePart voicePart) {
                     var partOldEndTick = voicePart.End;
                     var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
-                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                    if (partNewEndTick - partNewStartTick != voicePart.Duration) {
                         DocManager.Inst.ExecuteCmd(new ResizePartCommand(
                             project, voicePart, partNewEndTick - partNewStartTick));
                     }
                     var noteCommands = new List<UCommand>();
-                    foreach(var note in voicePart.notes){
+                    foreach (var note in voicePart.notes) {
                         var noteOldStartTick = note.position + partOldStartTick;
                         var noteOldEndTick = note.End + partOldStartTick;
                         var noteOldDuration = note.duration;
                         var noteNewStartTick = RemapTickPos(noteOldStartTick, oldTimeAxis, newTimeAxis);
                         var noteNewEndTick = RemapTickPos(noteOldEndTick, oldTimeAxis, newTimeAxis);
                         var deltaPosTickInPart = (noteNewStartTick - partNewStartTick) - (noteOldStartTick - partOldStartTick);
-                        if(deltaPosTickInPart != 0){
+                        if (deltaPosTickInPart != 0) {
                             noteCommands.Add(new MoveNoteCommand(voicePart, note, deltaPosTickInPart, 0));
                         }
                         var noteNewDuration = noteNewEndTick - noteNewStartTick;
                         var deltaDur = noteNewDuration - noteOldDuration;
-                        if(deltaDur != 0){
+                        if (deltaDur != 0) {
                             noteCommands.Add(new ResizeNoteCommand(voicePart, note, deltaDur));
                         }
                         //TODO: expression curve remapping, phoneme timing remapping
                     }
-                    foreach(var command in noteCommands){
+                    foreach (var command in noteCommands) {
                         DocManager.Inst.ExecuteCmd(command);
                     }
                 }
