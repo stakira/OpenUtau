@@ -11,13 +11,17 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using NAudio.Wave.SampleProviders;
+using Newtonsoft.Json;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
+using OpenUtau.Core.Metronome;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.App.ViewModels {
     public class NotesRefreshEvent { }
@@ -88,6 +92,9 @@ namespace OpenUtau.App.ViewModels {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
         [Reactive] public List<MenuItemViewModel> Keys { get; set; }
+
+        [Reactive] public bool IsMetronomePlaying { get; set; }
+        public ReactiveCommand<Unit, Unit> MetronomePlay { get; }
 
         public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
@@ -216,6 +223,11 @@ namespace OpenUtau.App.ViewModels {
                 KnifeTool = index == "5";
             });
 
+            IsMetronomePlaying = false;
+            MetronomePlay = ReactiveCommand.Create(() => {
+                PlayMetronome(IsMetronomePlaying);
+            });
+
             ShowTips = Preferences.Default.ShowTips;
             IsSnapOn = true;
             SnapDivText = string.Empty;
@@ -335,6 +347,56 @@ namespace OpenUtau.App.ViewModels {
             Notify();
         }
 
+        public void PlayMetronome(bool on) {
+            if(on) {
+                if (AudioPlayer.Instance.IsPlaying)
+                    return;
+                
+
+                if(Project.tempos.Count < 1 || Project.timeSignatures.Count < 1) {
+                    return;
+                }
+
+                Dictionary<string, int> settingDict = new Dictionary<string, int> {
+                    { "WaveType", 3 },
+                    { "AccentClickFreq", 4000 },
+                    { "ClickFreq", 2000 },
+                    { "PrecountBarBeats", 4 },
+                    { "PrecountBarNoteLength", 4 }
+                };
+
+                try {
+                    string json = File.ReadAllText("MetronomeSetting.json");
+                    var dictionary = JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+                    if (dictionary != null) {
+                        settingDict = dictionary;
+                    }
+                } catch {
+                    //Console.WriteLine("Read MetronomeSetting Error!!!");
+                }
+
+                ClickSettings settings = new ClickSettings() {
+                    WaveType = (SignalGeneratorType)settingDict["WaveType"],
+                    AccentClickFreq = settingDict["AccentClickFreq"],
+                    ClickFreq = settingDict["ClickFreq"],
+                    PrecountBarBeats = (byte)settingDict["PrecountBarBeats"],
+                    PrecountBarNoteLength = (byte)settingDict["PrecountBarNoteLength"]
+                };
+
+                var pulse = ClickTrackBuilder.BuildSinglePulse(
+                    new BarInfo((short)Project.tempos[0].bpm, (byte)Project.timeSignatures[0].beatPerBar, (byte)Project.timeSignatures[0].beatUnit),
+                    settings
+                 );
+
+                AudioPlayer.Instance.PlaySound(pulse);
+            }
+            else {
+                if (!AudioPlayer.Instance.IsPlaying)
+                    return;
+                AudioPlayer.Instance.Stop();
+            }
+
+        }
         public void OnYZoomed(Point position, double delta) {
             double center = TrackOffset + position.Y * ViewportTracks;
             double trackHeight = TrackHeight * (1.0 + delta * 2);

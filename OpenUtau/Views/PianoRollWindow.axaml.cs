@@ -20,6 +20,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
+using OpenUtau.Core.Metronome;
 
 namespace OpenUtau.App.Views {
     interface IValueTip {
@@ -1340,6 +1341,9 @@ namespace OpenUtau.App.Views {
                         notesVm.TransposeSelection(12);
                         return true;
                     }
+                    if(isAlt) {
+                        AudioPlayer.Instance.Volume += 0.1f;
+                    }
                     break;
                 case Key.Down:
                     if (isNone) {
@@ -1349,6 +1353,9 @@ namespace OpenUtau.App.Views {
                     if (isCtrl) {
                         notesVm.TransposeSelection(-12);
                         return true;
+                    }
+                    if (isAlt) {
+                        AudioPlayer.Instance.Volume -= 0.1f;
                     }
                     break;
                 case Key.Left:
