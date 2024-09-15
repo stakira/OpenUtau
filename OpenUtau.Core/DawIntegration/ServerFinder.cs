@@ -27,16 +27,15 @@ namespace OpenUtau.Core.DawIntegration {
                 try {
                     var json = await File.ReadAllTextAsync(file.FullName);
                     var server = JsonConvert.DeserializeObject<Server>(json);
-                    if (server != null) {
-                        if (CheckPortUsing(server.Port)) {
-                            servers.Add(server);
-                        } else {
-
-                        }
+                    if (server != null && CheckPortUsing(server.Port)) {
+                        servers.Add(server);
+                        continue;
                     }
                 } catch {
                     // Ignore invalid server files
                 }
+                // Delete invalid server files
+                file.Delete();
             }
 
             return servers;

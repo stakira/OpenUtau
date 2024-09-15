@@ -107,7 +107,7 @@ namespace OpenUtau.Core.DawIntegration {
             var message = new UpdateStatusMessage(
                 ustx,
                 base64Mixes.ToList()
-                );
+            );
 
             await SendMessage("status", message);
         }
