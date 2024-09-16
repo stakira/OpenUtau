@@ -8,18 +8,13 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
-namespace OpenUtau.Core.DiffSinger{
+namespace OpenUtau.Core.DiffSinger
+{
     [Phonemizer("DiffSinger Phonemizer", "Korean (outdated)", author: "EX3", language: "DiffSinger")]
-    public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer{
-        USinger singer;
-        DsConfig dsConfig;
-        string rootPath;
-        float frameMs;
-        InferenceSession linguisticModel;
-        InferenceSession durationModel;
-        IG2p g2p;
-        List<string> phonemes;
-        DiffSingerSpeakerEmbedManager speakerEmbedManager;
+    public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer
+    {
+        protected override string GetDictionaryName()=>"dsdict-ko.yaml";
+        protected override string GetLangCode()=>"ko";
 
         string defaultPause = "SP";
 
@@ -89,7 +84,7 @@ namespace OpenUtau.Core.DiffSinger{
             }
             return new string[] { defaultPause };
         }
-        
+
         // public List<double> stretch(IList<double> source, double ratio, double endPos, bool isVowelWithSemiPhoneme) {
         //     // 이중모음(y, w) 뒤의 모음일 경우, 이 함수를 호출해서 모음의 startPos를 자신의 8분의 1 길이만큼 추가한다. (타이밍을 뒤로 민다)
         //     //source：音素时长序列，单位ms
@@ -121,7 +116,7 @@ namespace OpenUtau.Core.DiffSinger{
         dsPhoneme[] GetDsPhonemes(Note note){
             return GetSymbols(note)
                 .Select((symbol, index) => new dsPhoneme(symbol, GetSpeakerAtIndex(note, index)))
-                .ToArray();            
+                .ToArray();
         }
 
         List<phonemesPerNote> ProcessWord(Note[] notes, bool isLastNote){
@@ -133,7 +128,7 @@ namespace OpenUtau.Core.DiffSinger{
             var symbols = dsPhonemes.Select(s => s.Symbol).ToArray();
             var isThisSemiVowel = dsPhonemes.Select(s => isSemiVowel(s.Symbol)).ToArray();
 
-            
+
             var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
             //distribute phonemes to notes
             var noteIndex = 0;
@@ -150,11 +145,11 @@ namespace OpenUtau.Core.DiffSinger{
                     wordPhonemes.Add(new phonemesPerNote(note.position, note.tone));
                 }
                 else if (isThisSemiVowel[i] && noteIndex < nonExtensionNotes.Length){
-                    // 반모음이 너무 짧으면 부자연스러우니 24분의 1만큼 늘려줌 
+                    // 반모음이 너무 짧으면 부자연스러우니 24분의 1만큼 늘려줌
                     var note = nonExtensionNotes[noteIndex];
                     wordPhonemes.Add(new phonemesPerNote(note.position - note.duration / 24, note.tone));
                 }
-                
+
 
                 wordPhonemes[^1].Phonemes.Add(dsPhonemes[i]);
             }
@@ -166,16 +161,16 @@ namespace OpenUtau.Core.DiffSinger{
         }
 
         int framesBetweenTickPos(double tickPos1, double tickPos2) {
-            return (int)(timeAxis.TickPosToMsPos(tickPos2)/frameMs) 
+            return (int)(timeAxis.TickPosToMsPos(tickPos2)/frameMs)
                 - (int)(timeAxis.TickPosToMsPos(tickPos1)/frameMs);
         }
 
 
-        
+
         protected override void ProcessPart(Note[][] phrase) {
-            
+
             float padding = 1000f; //Padding time for consonants at the beginning of a sentence, ms
-            
+
             float frameMs = dsConfig.frameMs();
             var startMs = timeAxis.TickPosToMsPos(phrase[0][0].position) - padding;
             var lastNote = phrase[^1][^1];
@@ -210,10 +205,10 @@ namespace OpenUtau.Core.DiffSinger{
                     note[0].lyric = KoreanPhonemizerUtil.Variate(prev, prevTemp, next);
                     // Debug.Print(character[0].lyric);
                 }
-                
+
                 prev = prevTemp;
 
-                
+
                 if (i == phrase.Length - 1){
                     isLastNote = true;
                 }
@@ -223,16 +218,16 @@ namespace OpenUtau.Core.DiffSinger{
 
                 // Pass isLastNote to handle Last Consonant(Batchim)'s length.
                 var wordPhonemes = ProcessWord(note, isLastNote);
-                
+
                 phrasePhonemes[^1].Phonemes.AddRange(wordPhonemes[0].Phonemes);
                 phrasePhonemes.AddRange(wordPhonemes.Skip(1));
                 notePhIndex.Add(notePhIndex[^1]+wordPhonemes.SelectMany(n=>n.Phonemes).Count());
 
                 i += 1;
             }
-            
-            
-            
+
+
+
 
             phrasePhonemes.Add(new phonemesPerNote(endTick,lastNote.tone));
             phrasePhonemes[0].Position = timeAxis.MsPosToTickPos(
@@ -293,23 +288,23 @@ namespace OpenUtau.Core.DiffSinger{
             }
             var durationOutputs = durationModel.Run(durationInputs);
             List<double> durationFrames = durationOutputs.First().AsTensor<float>().Select(x=>(double)x).ToList();
-            
+
             //Alignment
             //(the index of the phoneme to be aligned, the Ms position of the phoneme)
             var phAlignPoints = new List<Tuple<int, double>>();
             phAlignPoints = CumulativeSum(phrasePhonemes.Select(n => n.Phonemes.Count).ToList(), 0)
-                .Zip(phrasePhonemes.Skip(1), // 
+                .Zip(phrasePhonemes.Skip(1), //
                     (a, b) => new Tuple<int, double>(a, timeAxis.TickPosToMsPos(b.Position)))
                 .ToList();
             var positions = new List<double>();
             List<double> alignGroup = durationFrames.GetRange(1, phAlignPoints[0].Item1 - 1);
-            
+
             var phs = phrasePhonemes.SelectMany(n => n.Phonemes).ToList();
             //The starting consonant's duration keeps unchanged
             positions.AddRange(stretch(alignGroup, frameMs, phAlignPoints[0].Item2));
 
 
-            
+
             int j = 0;
             double prevRatio = 0;
             //Stretch the duration of the rest phonemes
@@ -320,7 +315,7 @@ namespace OpenUtau.Core.DiffSinger{
                 var nextAlignPoint = pair.Item2;
                 alignGroup = durationFrames.GetRange(currAlignPoint.Item1, nextAlignPoint.Item1 - currAlignPoint.Item1);
                 double ratio = (nextAlignPoint.Item2 - currAlignPoint.Item2) / alignGroup.Sum();
-               
+
                 positions.AddRange(stretch(alignGroup, ratio, nextAlignPoint.Item2));
 
                 prevAlignPoint = phAlignPoints[j];

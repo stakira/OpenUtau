@@ -8,6 +8,7 @@ namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger Phonemizer", "Japanese", language: "DiffSinger")]
     public class DiffSingerJapanesePhonemizer : DiffSingerG2pPhonemizer {
         protected override string GetDictionaryName()=>"dsdict-ja.yaml";
+        protected override string GetLangCode()=>"ja";
         protected override IG2p LoadBaseG2p() => new JapaneseMonophoneG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "A", "AP", "E", "I", "N", "O", "SP", "U",
