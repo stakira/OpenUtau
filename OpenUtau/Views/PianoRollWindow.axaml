@@ -549,7 +549,7 @@
                   
                 <Grid Width="18" Height="18">
                     <Ellipse Classes="stroked" Height="3" Width="3" Margin="0,3,1.2,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    <Path Classes="stroked" Data="M 5.5 15.5 L 5.5 7.5 A 1,1 0 1 1 12.5,7.5 L 12.5 15.5 M 2.5 15.5 H15.5 M 7 8.5 L 11 8.5 M 7 10.5 L 11 10.5 M 9 14.5 L 15 4.5"/>
+                    <Path Classes="stroked" Data="M 5.5 15.5 L 5.5 7.5 A 1,1 0 1 1 12.5,6.5 L 12.5 15.5 M 2.5 15.5 H15.5 M 7 7.5 L 11 7.5 M 7 9.5 L 11 9.5 M 7 11.5 L 11 11.5 M 9 14.5 L 15 4.5"/>
                 </Grid>
             </ToggleButton>
           </StackPanel>

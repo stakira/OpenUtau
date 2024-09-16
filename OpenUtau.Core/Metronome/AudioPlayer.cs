@@ -1,82 +1,187 @@
-﻿using System;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Timers;
 
-namespace OpenUtau.Core.Metronome
-{
-    public class AudioPlayer : IDisposable
+
+namespace OpenUtau.Core.Metronome {
+    public class AudioPlayer
     {
-        public static AudioPlayer Instance => instance;
-
-        public event EventHandler PlaybackStopped;
-
-        public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
-
-        public float Volume
-        {
-            get => outputDevice.Volume;
-            set => outputDevice.Volume = Math.Clamp(value, 0, 1);
+        public static AudioPlayer Instance {
+            get {
+                if (instance == null) {
+                    instance = new AudioPlayer();
+                    return instance;
+                } else {
+                    return instance;
+                }
+            }
         }
 
-        private static readonly AudioPlayer instance;
+        // Output device and mixer
+        private readonly WaveOut outputDevice;
+        private MixingSampleProvider mixer;
+        // Beat pattern
+        public string AccentedBeatPath { get; set; } = "Metronome/SnareHi.wav";
+        public string NormalBeatPath { get; set; } = "Metronome/SnareLo.wav";
+        private PatternEngine patternEngine = new PatternEngine();
+        private SampleSource AccentedPattern { get; set; }
+        private SampleSource NormalPattern { get; set; }
+        public VolumeSampleProvider accentedVolumeProvider { get; set; }
+        public VolumeSampleProvider normalVolumeProvider { get; set; }
+        // Metronome settings
+        public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
+        public int MinBPM { get; set; } = 20;
+        public int MaxBPM { get; set; } = 500;
+        private int bpm = 120;
+        public int BPM { 
+            get {
+                return bpm;
+            }
+            set {
+                if (value < MinBPM)
+                    bpm = MinBPM;
+                else if (value > MaxBPM)
+                    bpm = MaxBPM;
+                else
+                    bpm = value;
+            }
+        }
+        public int Beats { get; set; } = 4;
+        public int NoteLength { get; set; } = 4;
 
-        private readonly IWavePlayer outputDevice;
-        private readonly MixingSampleProvider mixer;
+        private Timer? timer;
+        public float Volume {
+            get => outputDevice.Volume;
+            set {
+                outputDevice.Volume = Math.Clamp(value, 0, 1);
+                if (timer == null) {
+                    timer = new Timer(3000);
+                    timer.Elapsed += saveSetting;
+                    timer.AutoReset = false;
+                    timer.Enabled = true;
+                } else {
+                    timer.Stop();
+                    timer.Interval = 3000;
+                    timer.Start();
+                }
+            }
+        }
+
+        private void saveSetting(Object source, ElapsedEventArgs e) {
+            if (settingsData == null) {
+                settingsData = new MetronomeSetting();
+            }
+            if ((settingsData.Volume != Volume)) {
+                settingsData.Volume = Volume;
+                string jsonString = JsonConvert.SerializeObject(settingsData, Formatting.Indented);
+                File.WriteAllText("Metronome/MetronomeSetting.json", jsonString);
+            }
+
+            timer?.Dispose();
+            timer = null;
+        }
+
+        private static AudioPlayer? instance;
+
+        public class MetronomeSetting {
+            public string AccentedBeatPath { get; set; } = "SnareHi.wav";
+            public string NormalBeatPath { get; set; } = "SnareLo.wav";
+            public float Volume { get; set; } = 1.0f;
+        }
+
+        private MetronomeSetting? settingsData = null;
 
         private AudioPlayer()
         {
-            const int sampleRate = 44100;
-            const int channelCount = 2;
+            try {
+                string jsonString = File.ReadAllText("Metronome/MetronomeSetting.json");
+                settingsData = JsonConvert.DeserializeObject<MetronomeSetting>(jsonString);
+                if (settingsData != null) {
+                    AccentedBeatPath = "Metronome/" + settingsData.AccentedBeatPath;
+                    NormalBeatPath = "Metronome/" + settingsData.NormalBeatPath;
+                }
+            } catch {
+                //Console.WriteLine("Read MetronomeSetting Error!!!");
+            }
 
-            outputDevice = new WaveOutEvent();
+            // Create beat pattern
+            patternEngine.AccentedBeat = new SampleSource(AccentedBeatPath);
+            patternEngine.NormalBeat = new SampleSource(NormalBeatPath);
+            AccentedPattern = patternEngine.CreateAccentedBeatPattern(BPM, Beats, NoteLength);
+            NormalPattern = patternEngine.CreateNormalBeatPattern(BPM, Beats, NoteLength);
 
-            mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
-            mixer.MixerInputEnded += OnMixerInputEnded;
+            // Create Volume Providers
+            accentedVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(AccentedPattern));
+            normalVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(NormalPattern));
 
+            // Create output device and mixer
+            outputDevice = new WaveOut();
+            mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, patternEngine.AccentedBeat.WaveFormat.Channels));
+            mixer.ReadFully = true;
             outputDevice.Init(mixer);
+
+            if(settingsData != null) {
+                Volume = settingsData.Volume;
+            }
         }
 
-        static AudioPlayer()
+        public void UpdateParmas(int bpm, int beats, int noteLength)
         {
-            instance = new AudioPlayer();
+            BPM = bpm;
+            Beats = beats;
+            NoteLength = noteLength;
+            Update();
         }
 
-        public void PlaySound(ISampleProvider input)
+        public void Play()
         {
-            mixer.RemoveAllMixerInputs();
-            AddMixerInput(input);
-            outputDevice.Play();
+            if (!IsPlaying)
+            {
+                accentedVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(AccentedPattern));
+                normalVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(NormalPattern));
+                accentedVolumeProvider.Volume = 1.0f;
+                normalVolumeProvider.Volume = 1.0f;
+                mixer.AddMixerInput(accentedVolumeProvider);
+                mixer.AddMixerInput(normalVolumeProvider);
+                outputDevice.Play();
+            }
         }
 
         public void Stop()
         {
-            outputDevice.Stop();
+            if (IsPlaying) {
+                mixer.RemoveAllMixerInputs();
+                outputDevice.Stop();
+            }
         }
 
-        public void Dispose()
+        public void Update()
         {
-            outputDevice.Dispose();
+            if (IsPlaying) {
+                Stop();
+                AccentedPattern = patternEngine.CreateAccentedBeatPattern(BPM, Beats, NoteLength);
+                NormalPattern = patternEngine.CreateNormalBeatPattern(BPM, Beats, NoteLength);
+                Play();
+            } else {
+                AccentedPattern = patternEngine.CreateAccentedBeatPattern(BPM, Beats, NoteLength);
+                NormalPattern = patternEngine.CreateNormalBeatPattern(BPM, Beats, NoteLength);
+            }
         }
 
-        private void AddMixerInput(ISampleProvider input)
+        public void ApplyBeatSound(string accentedBeatPath, string normalBeatPath)
         {
-            mixer.AddMixerInput(ConvertChannelCount(input));
-        }
+            AccentedBeatPath = accentedBeatPath;
+            NormalBeatPath = normalBeatPath;
+            patternEngine.AccentedBeat = new SampleSource(AccentedBeatPath);
+            patternEngine.NormalBeat = new SampleSource(NormalBeatPath);
+            Update();
 
-        private ISampleProvider ConvertChannelCount(ISampleProvider input)
-        {
-            if (input.WaveFormat.Channels == mixer.WaveFormat.Channels)
-                return input;
-
-            if (input.WaveFormat.Channels == 1 && mixer.WaveFormat.Channels == 2)
-                return new MonoToStereoSampleProvider(input);
-
-            throw new NotImplementedException("Channel count is more that 2");
-        }
-
-        private void OnMixerInputEnded(object sender, SampleProviderEventArgs e)
-        {
-            PlaybackStopped?.Invoke(this, EventArgs.Empty);
+            mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, patternEngine.AccentedBeat.WaveFormat.Channels));
+            mixer.ReadFully = true;
+            outputDevice.Init(mixer);
         }
     }
 }

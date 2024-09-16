@@ -58,9 +58,6 @@ namespace OpenUtau.App.Views {
                 { "pianoroll.menu.notes.reset.vibratos", "Alt+R" }
              };
 
-            //string json = JsonConvert.SerializeObject(gestureDict, Formatting.Indented);
-            //File.WriteAllText("keyGesture.json", json);
-
             try {
                 string json = File.ReadAllText("keyGesture.json");
                 var dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -69,7 +66,7 @@ namespace OpenUtau.App.Views {
                 }
             }
             catch {
-                Console.WriteLine("Read KeyGesture Error!!!");
+                //Console.WriteLine("Read KeyGesture Error!!!");
             }
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
