@@ -1,10 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core.Enunu {
+    public struct VersionResult {
+        public string name;
+        public string version;
+        public string author;
+    }
+
+    public struct VersionResponse {
+        public string error;
+        public VersionResult result;
+    }
+
     public struct EnunuNote {
         public string lyric;
         public int length;
@@ -17,7 +28,11 @@ namespace OpenUtau.Core.Enunu {
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
 
         internal static void WriteUst(IList<EnunuNote> notes, double tempo, USinger singer, string ustPath) {
-            using (var writer = new StreamWriter(ustPath, false, ShiftJIS)) {
+            WriteUst(notes, tempo, singer, ustPath, ShiftJIS);
+        }
+
+        internal static void WriteUst(IList<EnunuNote> notes, double tempo, USinger singer, string ustPath, Encoding encoding) {
+            using (var writer = new StreamWriter(ustPath, false, encoding)) {
                 writer.WriteLine("[#SETTING]");
                 writer.WriteLine($"Tempo={tempo}");
                 writer.WriteLine("Tracks=1");
@@ -36,6 +51,16 @@ namespace OpenUtau.Core.Enunu {
                 }
                 writer.WriteLine("[#TRACKEND]");
             }
+        }
+
+        internal static string SetPortNum() {
+             var ver_response = EnunuClient.Inst.SendRequest<VersionResponse>(new string[] { "ver_check" }, "15556", 1);
+             if (ver_response.error != null) {
+                 Log.Error(ver_response.error);
+             } else if (ver_response.result.name != null) {
+                 return "15556";
+             }
+            return "15555";
         }
     }
 }
