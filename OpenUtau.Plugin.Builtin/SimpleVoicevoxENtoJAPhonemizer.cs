@@ -359,7 +359,6 @@ namespace OpenUtau.Core.Voicevox {
 
         private string ToHiragana(string romaji) {
             var hiragana = WanaKana.ToHiragana(romaji);
-            hiragana = hiragana.Replace("ゔ", "ヴ");
             return hiragana;
         }
     }
