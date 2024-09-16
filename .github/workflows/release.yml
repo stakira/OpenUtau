@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        os: 
+        os:
           - runs-on: windows-latest
             arch: win-x64
           - runs-on: macos-latest
@@ -32,7 +32,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    
+
     - name: Patch Versions
       uses: justalemon/VersionPatcher@v0.7.1
       with:
@@ -62,7 +62,7 @@ jobs:
     - name: add openutau.plugins.builtin
       shell: pwsh
       run: copy OpenUtau.Plugin.Builtin\bin\Release\netstandard2.1\OpenUtau.Plugin.Builtin.dll -Destination bin\${{ matrix.os.arch }}
-    
+
     - name: compress
       run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
 
@@ -72,16 +72,16 @@ jobs:
         file-url: https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-44.1k-hop512-128bin-2024.02/nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
         file-name: nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
         location: ./
-        
+
     - name: extract vocoder
       run: 7z x -o"./bin/${{ matrix.os.arch }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
-     
+
     - name: compress vocoder
       if: ${{ matrix.os.runs-on == 'windows-latest' }} or ${{ matrix.os.runs-on == 'macos-latest' }} or ${{ matrix.os.runs-on == 'ubuntu-latest' }}
       run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
-     
+
     - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: ou-lunai-${{ matrix.os.arch }}.zip
         path: ou-lunai-${{ matrix.os.arch }}.zip
