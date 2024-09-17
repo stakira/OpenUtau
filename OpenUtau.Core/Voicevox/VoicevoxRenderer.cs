@@ -66,7 +66,9 @@ namespace OpenUtau.Core.Voicevox {
                     if (!File.Exists(wavPath)) {
                         var singer = phrase.singer as VoicevoxSinger;
                         if (singer != null) {
-                            VoicevoxUtils.Loaddic(singer);
+                            if (VoicevoxUtils.dic == null) {
+                                VoicevoxUtils.Loaddic(singer);
+                            }
                             try {
                                 Log.Information($"Starting Voicevox synthesis");
                                 VoicevoxNote vvNotes = new VoicevoxNote();
