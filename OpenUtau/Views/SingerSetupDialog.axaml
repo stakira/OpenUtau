@@ -1,0 +1,103 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d" Width="600" Height="400" MinWidth="600" MinHeight="400"
+        x:Class="OpenUtau.App.Views.SingerSetupDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="Singer Setup"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="False">
+  <Window.Resources>
+    <vm:EncodingNameConverter x:Key="encodingNameConverter"/>
+  </Window.Resources>
+  <Design.DataContext>
+    <vm:SingerSetupViewModel/>
+  </Design.DataContext>
+  <Carousel SelectedIndex="{Binding Step}" Margin="{Binding $parent.WindowDecorationMargin}">
+    <!--Archive File Encoding-->
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding}"/>
+        <ComboBox Grid.Row="0" Width="240" Margin="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Converter={StaticResource encodingNameConverter}}"/>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
+      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" ItemsSource="{Binding TextItems}"/>
+      <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
+          <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding.prompt}"></TextBlock>
+          <Button Margin="0" Command="{Binding Next}"
+                  Content="{DynamicResource singersetup.next}"/>
+        </StackPanel>
+      </Grid>
+    </Grid>
+    <!--Text File Encoding-->
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.textfileencoding}"/>
+        <ComboBox Grid.Row="0" Width="240" Margin="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Converter={StaticResource encodingNameConverter}}"/>
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+      </StackPanel>
+      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" ItemsSource="{Binding TextItems}"/>
+      <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
+        <Button Margin="0" Command="{Binding Back}" HorizontalAlignment="Left"
+                 Content="{DynamicResource singersetup.back}"/>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
+          <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.textfileencoding.prompt}"/>
+          <Button Margin="0" Command="{Binding Next}" IsVisible="{Binding MissingInfo}"
+                  Content="{DynamicResource singersetup.next}"/>
+          <Button Margin="0" Click="InstallClicked" IsVisible="{Binding !MissingInfo}"
+                  Content="{DynamicResource singersetup.install}"/>
+        </StackPanel>
+      </Grid>
+    </Grid>
+    <!--Singer Type-->
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Left">
+        <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.missinginfo}"/>
+      </StackPanel>
+      <Grid Grid.Row="1" Margin="10,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="120"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,1,0,0" Text="{DynamicResource singersetup.singertype}"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Width="240" Margin="0" ItemsSource="{Binding SingerTypes}" SelectedItem="{Binding SingerType}"/>
+      </Grid>
+      <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
+        <Button Margin="0" Command="{Binding Back}" HorizontalAlignment="Left"
+                Content="{DynamicResource singersetup.back}"/>
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
+          <Button Margin="0" HorizontalAlignment="Right" Click="InstallClicked"
+                  Content="{DynamicResource singersetup.install}"/>
+        </StackPanel>
+      </Grid>
+    </Grid>
+  </Carousel>
+</Window>

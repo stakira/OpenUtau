@@ -1,0 +1,17 @@
+common --enable_platform_specific_config
+common --experimental_cc_shared_library
+common --enable_bzlmod
+
+run --define absl=1
+test --define absl=1
+
+build:linux --cxxopt='-std=c++17'
+build:macos --cxxopt='-std=c++17'
+build:macos --macos_minimum_os=10.12
+build:windows --cxxopt='/std:c++17'
+
+build:ubuntu-aarch64 --cxxopt='-std=c++17'
+build:ubuntu-aarch64 --linkopt='-lm'
+build:ubuntu-aarch64 --crosstool_top=//toolchain:arm_suite
+build:ubuntu-aarch64 --cpu=aarch64
+build:ubuntu-aarch64 --compiler=gcc

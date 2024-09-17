@@ -1,0 +1,68 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OpenUtau.App.Views.MessageBox" SizeToContent="WidthAndHeight" CanResize="False"
+        Icon="/Assets/open-utau.ico"
+        Title="MessageBox" MinWidth="300" MinHeight="150"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="False">
+  <ScrollViewer MaxHeight="700" VerticalScrollBarVisibility="Auto">
+    <Grid Margin="{Binding $parent.WindowDecorationMargin}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="50"/>
+      </Grid.RowDefinitions>
+
+      <!-- Show simple text -->
+      <TextBlock Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="Text" TextWrapping="Wrap" MaxWidth="560"/>
+
+      <!-- Show text with URL button -->
+      <StackPanel Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="TextPanel" MaxWidth="560">
+        <StackPanel.Styles>
+          <Style Selector="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+          </Style>
+          <Style Selector="Button">
+            <Setter Property="Foreground" Value="Blue" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+              <ControlTemplate>
+                <ContentPresenter Content="{TemplateBinding Content}">
+                  <ContentPresenter.Styles>
+                    <Style Selector="TextBlock">
+                      <Setter Property="Foreground" Value="{TemplateBinding Foreground}"/>
+                      <Setter Property="FontSize" Value="{TemplateBinding FontSize}"/>
+                      <Setter Property="TextDecorations" Value="Underline"/>
+                    </Style>
+                  </ContentPresenter.Styles>
+                </ContentPresenter>
+              </ControlTemplate>
+            </Setter>
+          </Style>
+          <Style Selector="Expander">
+            <Setter Property="Margin" Value="0, 20, 0, 0" />
+            <Setter Property="Width" Value="560" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+          </Style>
+        </StackPanel.Styles>
+      </StackPanel>
+
+      <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+        <StackPanel.Styles>
+          <Style Selector="Button">
+            <Setter Property="Margin" Value="15,0,15,0"/>
+            <Setter Property="MinWidth" Value="80"/>
+          </Style>
+          <Style Selector="Button TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+          </Style>
+        </StackPanel.Styles>
+      </StackPanel>
+    </Grid>
+  </ScrollViewer>
+</Window>

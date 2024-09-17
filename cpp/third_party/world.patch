@@ -1,0 +1,119 @@
+diff --git a/src/d4c.cpp b/src/d4c.cpp
+index 4e81042..bfebadf 100644
+--- a/src/d4c.cpp
++++ b/src/d4c.cpp
+@@ -298,6 +298,10 @@ static void D4CGeneralBody(const double *x, int x_length, int fs,
+       forward_real_fft, static_centroid);
+   GetSmoothedPowerSpectrum(x, x_length, fs, current_f0, fft_size,
+       current_position, forward_real_fft, smoothed_power_spectrum);
++  for (int i = 0; i < fft_size / 2 + 1; ++i) {
++    smoothed_power_spectrum[i] = MyMaxDouble(
++      world::kMySafeGuardMinimum, smoothed_power_spectrum[i]);
++  }
+   GetStaticGroupDelay(static_centroid, smoothed_power_spectrum,
+       fs, current_f0, fft_size, static_group_delay);
+ 
+diff --git a/src/synthesis.cpp b/src/synthesis.cpp
+index 458d1c5..19984b6 100644
+--- a/src/synthesis.cpp
++++ b/src/synthesis.cpp
+@@ -106,7 +106,8 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
+     const double *aperiodic_ratio, double current_vuv,
+     const InverseRealFFT *inverse_real_fft,
+     const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
+-    double fractional_time_shift, int fs, double *periodic_response) {
++    double fractional_time_shift, int fs,
++    const double* tension, double *periodic_response) {
+   if (current_vuv <= 0.5 || aperiodic_ratio[0] > 0.999) {
+     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
+     return;
+@@ -114,7 +115,7 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
+ 
+   for (int i = 0; i <= minimum_phase->fft_size / 2; ++i)
+     minimum_phase->log_spectrum[i] =
+-      log(spectrum[i] * (1.0 - aperiodic_ratio[i]) +
++      log(spectrum[i] * (1.0 - aperiodic_ratio[i]) * tension[i] +
+       world::kMySafeGuardMinimum) / 2.0;
+   GetMinimumPhaseSpectrum(minimum_phase);
+ 
+@@ -187,6 +188,7 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
+     const ForwardRealFFT *forward_real_fft,
+     const InverseRealFFT *inverse_real_fft,
+     const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
++    double* const tension, double breathiness, double voicing,
+     double *response) {
+   double *aperiodic_response = new double[fft_size];
+   double *periodic_response = new double[fft_size];
+@@ -201,7 +203,7 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
+   // Synthesis of the periodic response
+   GetPeriodicResponse(fft_size, spectral_envelope, aperiodic_ratio,
+       current_vuv, inverse_real_fft, minimum_phase, dc_remover,
+-      fractional_time_shift, fs, periodic_response);
++      fractional_time_shift, fs, tension, periodic_response);
+ 
+   // Synthesis of the aperiodic response
+   GetAperiodicResponse(noise_size, fft_size, spectral_envelope,
+@@ -210,9 +212,9 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
+ 
+   double sqrt_noise_size = sqrt(static_cast<double>(noise_size));
+   for (int i = 0; i < fft_size; ++i)
+-    response[i] =
+-      (periodic_response[i] * sqrt_noise_size + aperiodic_response[i]) /
+-      fft_size;
++    response[i] = (periodic_response[i] * voicing * sqrt_noise_size +
++                   aperiodic_response[i] * breathiness) /
++                  fft_size;
+ 
+   delete[] spectral_envelope;
+   delete[] aperiodic_ratio;
+@@ -337,7 +339,9 @@ static void GetDCRemover(int fft_size, double *dc_remover) {
+ 
+ void Synthesis(const double *f0, int f0_length,
+     const double * const *spectrogram, const double * const *aperiodicity,
+-    int fft_size, double frame_period, int fs, int y_length, double *y) {
++    int fft_size, double frame_period, int fs,
++    double** const tension, double* const breathiness, double* const voicing,
++    int y_length, double *y) {
+   randn_reseed();
+ 
+   double *impulse_response = new double[fft_size];
+@@ -368,12 +372,12 @@ void Synthesis(const double *f0, int f0_length,
+   for (int i = 0; i < number_of_pulses; ++i) {
+     noise_size = pulse_locations_index[MyMinInt(number_of_pulses - 1, i + 1)] -
+       pulse_locations_index[i];
+-
++    int frame_index = (int)(1.0 * pulse_locations_index[i] / fs / frame_period);
+     GetOneFrameSegment(interpolated_vuv[pulse_locations_index[i]], noise_size,
+         spectrogram, fft_size, aperiodicity, f0_length, frame_period,
+         pulse_locations[i], pulse_locations_time_shift[i], fs,
+         &forward_real_fft, &inverse_real_fft, &minimum_phase, dc_remover,
+-        impulse_response);
++        tension[frame_index], breathiness[frame_index], voicing[frame_index], impulse_response);
+     offset = pulse_locations_index[i] - fft_size / 2 + 1;
+     lower_limit = MyMaxInt(0, -offset);
+     upper_limit = MyMinInt(fft_size, y_length - offset);
+diff --git a/src/world/synthesis.h b/src/world/synthesis.h
+index fbc5fd2..eae8c17 100644
+--- a/src/world/synthesis.h
++++ b/src/world/synthesis.h
+@@ -22,6 +22,9 @@ WORLD_BEGIN_C_DECLS
+ //   aperiodicity         : Aperiodicity spectrogram based on D4C
+ //   frame_period         : Temporal period used for the analysis
+ //   fs                   : Sampling frequency
++//   tension              : Tension, 1 = unmodified
++//   breathiness          : Breathiness, 1 = unmodified
++//   voicing              : Voicing, 1 = unmodified
+ //   y_length             : Length of the output signal (Memory of y has been
+ //                          allocated in advance)
+ // Output:
+@@ -29,7 +32,9 @@ WORLD_BEGIN_C_DECLS
+ //-----------------------------------------------------------------------------
+ void Synthesis(const double *f0, int f0_length, 
+     const double * const *spectrogram, const double * const *aperiodicity, 
+-    int fft_size, double frame_period, int fs, int y_length, double *y);
++    int fft_size, double frame_period, int fs,
++    double** const tension, double* const breathiness, double* const voicing,
++    int y_length, double *y);
+ 
+ WORLD_END_C_DECLS
+ 

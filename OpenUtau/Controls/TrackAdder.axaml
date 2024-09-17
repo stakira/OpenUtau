@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="64"
+             x:Class="OpenUtau.App.Controls.TrackAdder" Width="300">
+  <Border>
+    <Button Classes="clear" VerticalAlignment="Center" HorizontalAlignment="Center"
+            Width="60" Height="30" CornerRadius="4" Click="ButtonClicked">
+      <TextBlock Foreground="{DynamicResource NeutralAccentBrushSemi}"
+                 Margin="0" Padding="0" FontSize="24" VerticalAlignment="Center">+</TextBlock>
+    </Button>
+  </Border>
+</UserControl>

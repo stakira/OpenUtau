@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="300"
+             x:Class="OpenUtau.App.Controls.LyricBox" Focusable="False"
+             IsVisible="{Binding IsVisible}" IsEnabled="{Binding IsVisible}">
+  <Grid RowDefinitions="22,Auto,Auto" Width="360" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Left" Text="{DynamicResource tip.lyricbox.prev}" IsVisible="{Binding !IsAliasBox, Mode=OneWay}"/>
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Right" Text="{DynamicResource tip.lyricbox.next}" IsVisible="{Binding !IsAliasBox, Mode=OneWay}"/>
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Center" Text="{DynamicResource tip.aliasbox}" IsVisible="{Binding IsAliasBox, Mode=OneWay}"/>
+    <TextBox Name="PART_Box" Grid.Row="1" Padding="4,3" Margin="0" Height="24"
+             Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+             Text="{Binding Text}" Focusable="True"
+             GotFocus="Box_GotFocus" LostFocus="Box_LostFocus" KeyDown="Box_KeyDown"/>
+    <Border Grid.Row="2">
+      <ListBox Name="PART_Suggestions" Grid.Row="2" MaxHeight="240"
+               VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+               BorderThickness="0" Background="Transparent"
+               Margin="{DynamicResource AutoCompleteListPadding}"
+               ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
+               Focusable="True" KeyDown="ListBox_KeyDown">
+        <ListBox.Styles>
+          <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+          </Style>
+        </ListBox.Styles>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid Margin="0" Width="360" HorizontalAlignment="Left" Background="Transparent" PointerPressed="ListBox_PointerPressed">
+              <TextBlock Margin="4" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="{Binding Alias}"/>
+              <TextBlock Margin="4,4,24,4" Grid.Column="1" HorizontalAlignment="Right" IsHitTestVisible="False" FontSize="10" Text="{Binding Source}"/>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+  </Grid>
+</UserControl>

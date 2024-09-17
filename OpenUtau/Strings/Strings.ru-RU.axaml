@@ -1,0 +1,538 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <system:String x:Key="context.note.copy">Скопировать ноту</system:String>
+  <system:String x:Key="context.note.delete">Удалить ноту</system:String>
+  <system:String x:Key="context.note.pasteparameters">Выделение и вставка параметров</system:String>
+  <system:String x:Key="context.part.delete">Удалить часть</system:String>
+  <system:String x:Key="context.part.gotofile">Просмотр расположения файла</system:String>
+  <system:String x:Key="context.part.rename">Переименовать часть</system:String>
+  <system:String x:Key="context.part.replaceaudio">Повторный выбор аудиофайла</system:String>
+  <system:String x:Key="context.part.transcribe">Транскрибировать аудио для создания нотной партии</system:String>
+  <system:String x:Key="context.part.transcribing">Транскрибирование</system:String>
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <system:String x:Key="context.pitch.linear">Линейный</system:String>
+  <system:String x:Key="context.pitch.pointadd">Добавить точку</system:String>
+  <system:String x:Key="context.pitch.pointdel">Удалить точку</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Привязать к предыдущей ноте</system:String>
+  <system:String x:Key="context.timeline.addtempo">Добавить изменение темпа на {0}</system:String>
+  <system:String x:Key="context.timeline.addtimesig">Добавить изменение метки такта</system:String>
+  <system:String x:Key="context.timeline.deltempo">Удалить изменение темпа на {0}</system:String>
+  <system:String x:Key="context.timeline.deltimesig">Удалить изменение метки такта</system:String>
+
+  <system:String x:Key="debug.clear">Очистить</system:String>
+  <system:String x:Key="debug.copylog">Скопировать лог</system:String>
+  <system:String x:Key="debug.reverselogorder">Обратный порядок лога</system:String>
+
+  <system:String x:Key="dialogs.about.caption">О OpenUtau</system:String>
+  <system:String x:Key="dialogs.about.message">
+    OpenUtau стремится стать средой редактирования с открытым исходным кодом для сообщества UTAU, с современным пользовательским интерфейсом и интеллектуальной фонологической поддержкой. Посетите нас на GitHub.
+  </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">Выход из OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Текущий проект содержит несохраненные изменения. Хотите сохранить изменения?</system:String>
+  <system:String x:Key="dialogs.export.caption">Экспорт</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Сначала нужно сохранить проект</system:String>
+  <system:String x:Key="dialogs.importtracks.caption">Импортировать треки</system:String>
+  <system:String x:Key="dialogs.importtracks.importtempo">Импортированный проект содержит следующие маркеры темпа. Использовать их?</system:String>
+  <system:String x:Key="dialogs.installdependency.caption">Установка зависимостей</system:String>
+  <system:String x:Key="dialogs.installdependency.message">Установка </system:String>
+  <system:String x:Key="dialogs.installdll.caption">Установка фонемайзера</system:String>
+  <system:String x:Key="dialogs.installdll.message">Установка </system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">Отмена</system:String>
+  <system:String x:Key="dialogs.messagebox.copy">Скопировать ошибку в буфер обмена</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Нет</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">ОК</system:String>
+  <system:String x:Key="dialogs.messagebox.yes">Да</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Нет ресамплеров</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Нет ресамплеров! Поместите ваш любимый ресамплер (.exe или .dll) в папку Resamplers и выберите его в параметрах!</system:String>
+  <system:String x:Key="dialogs.remaptimeaxis.message">Этот инструмент позволяет изменять темп исполнения без изменения фактических позиций и длительностей (в секундах) нот.
+  Новый BPM:</system:String>
+  <system:String x:Key="dialogs.timesig.caption">Такт</system:String>
+  <system:String x:Key="dialogs.tracksettings.caption">Параметры трека</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">Расположение</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">Рендерер</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">Установить по умолчанию</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">Неподдерживаемый формат файла</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">Неподдерживаемый формат файла: </system:String>
+  <system:String x:Key="dialogs.voicecolorremapping">Изменение цвета голоса</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.caption">Применится ко всем нотам в этом треке:</system:String>
+
+  <system:String x:Key="errors.caption">Ошибка</system:String>
+  <system:String x:Key="errors.details">Подробности ошибки</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">Ошибка загрузки вокодера </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. Пожалуйста, загрузите вокодер из: </system:String>
+  <system:String x:Key="errors.expression.abbrlong">Аббревиатура должна содержать от 1 до 4 символов</system:String>
+  <system:String x:Key="errors.expression.abbrset">Аббревиатура должна быть указана</system:String>
+  <system:String x:Key="errors.expression.abbrunique">Аббревиатуры должны быть уникальными</system:String>
+  <system:String x:Key="errors.expression.default">Значение по умолчанию должно находиться между минимальным и максимальным значением</system:String>
+  <system:String x:Key="errors.expression.flagunique">Флаги должны быть уникальными</system:String>
+  <system:String x:Key="errors.expression.min">Минимальное значение должно быть меньше максимального</system:String>
+  <system:String x:Key="errors.expression.name">Необходимо указать название</system:String>
+  <system:String x:Key="errors.failed.export">Не удалось экспортировать</system:String>
+  <system:String x:Key="errors.failed.importaudio">Не удалось импортировать аудио</system:String>
+  <system:String x:Key="errors.failed.importfiles">Не удалось импортировать файлы</system:String>
+  <system:String x:Key="errors.failed.importmidi">Не удалось импортировать midi</system:String>
+  <system:String x:Key="errors.failed.load">Не удалось загрузить</system:String>
+  <system:String x:Key="errors.failed.loadprefs">Не удалось загрузить параметры, пожалуйста, проведите инициализацию.</system:String>
+  <system:String x:Key="errors.failed.openfile">Не удалось открыть</system:String>
+  <system:String x:Key="errors.failed.openlocation">Не удалось открыть расположение</system:String>
+  <system:String x:Key="errors.failed.render">Не удалось выполнить рендеринг</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">Не удалось запустить макрос редактирования</system:String>
+  <system:String x:Key="errors.failed.save">Не удалось сохранить</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">Не удалось сохранить файл конфигурации вокалиста</system:String>
+
+  <system:String x:Key="exps.abbr">Сокращение</system:String>
+  <system:String x:Key="exps.apply">Применить</system:String>
+  <system:String x:Key="exps.caption">Параметры флагов</system:String>
+  <system:String x:Key="exps.defaultvalue">По умолчанию</system:String>
+  <system:String x:Key="exps.flag">Флаг ресамплера</system:String>
+  <system:String x:Key="exps.getsuggestions">Добавить все выражения, предложенные рендерерами</system:String>
+  <system:String x:Key="exps.isflag">Является флагом ресамплера</system:String>
+  <system:String x:Key="exps.maxvalue">Макс.</system:String>
+  <system:String x:Key="exps.minvalue">Мин.</system:String>
+  <system:String x:Key="exps.name">Название</system:String>
+  <system:String x:Key="exps.optionvalues">Значение параметра</system:String>
+  <system:String x:Key="exps.sepbycomma">Разделять значения через запятую (,)</system:String>
+  <system:String x:Key="exps.type">Тип</system:String>
+  <system:String x:Key="exps.type.curve">Кривая</system:String>
+  <system:String x:Key="exps.type.numerical">Числовой</system:String>
+  <system:String x:Key="exps.type.options">Параметры</system:String>
+
+  <system:String x:Key="languages.de">Немецкий</system:String>
+  <system:String x:Key="languages.en">Английский</system:String>
+  <system:String x:Key="languages.es">Испанский</system:String>
+  <system:String x:Key="languages.fr">Французский</system:String>
+  <system:String x:Key="languages.invariant">Не переводится</system:String>
+  <system:String x:Key="languages.it">Итальянский</system:String>
+  <system:String x:Key="languages.ja">Японский</system:String>
+  <system:String x:Key="languages.ko">Корейский</system:String>
+  <system:String x:Key="languages.pl">Польский</system:String>
+  <system:String x:Key="languages.pt">Португальский</system:String>
+  <system:String x:Key="languages.ru">Русский</system:String>
+  <system:String x:Key="languages.vi">Вьетнамский</system:String>
+  <system:String x:Key="languages.zh">Китайский</system:String>
+  <system:String x:Key="languages.zh-yue">Кантонский</system:String>
+  <system:String x:Key="languages.th">Тайский</system:String>
+
+  <system:String x:Key="lyrics.apply">Применить</system:String>
+  <system:String x:Key="lyrics.cancel">Отмена</system:String>
+  <system:String x:Key="lyrics.caption">Редактировать текст</system:String>
+  <system:String x:Key="lyrics.livepreview">Предварительный просмотр в реальном времени</system:String>
+  <system:String x:Key="lyrics.max">Макс.</system:String>
+  <system:String x:Key="lyrics.reset">Сброс</system:String>
+  <system:String x:Key="lyrics.selectnotes">Сначала выберите несколько нот!</system:String>
+  <system:String x:Key="lyrics.separators">Разделители</system:String>
+
+  <system:String x:Key="lyricsreplace.after">После :</system:String>
+  <system:String x:Key="lyricsreplace.before">До :</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">Убрать алфавит</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Убрать тексты, которые не содержат хирагану</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">Убрать фонетическую подсказку</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">Убрать пробелы и более ранние</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">Убрать суффикс тона</system:String>
+  <system:String x:Key="lyricsreplace.presets">Пресеты</system:String>
+  <system:String x:Key="lyricsreplace.preview">Предпросмотр</system:String>
+  <system:String x:Key="lyricsreplace.regex">Регулярные выражения могут быть использованы</system:String>
+  <system:String x:Key="lyricsreplace.replace">Общая замена текста</system:String>
+
+  <system:String x:Key="menu.edit">Правка</system:String>
+  <system:String x:Key="menu.edit.copy">Копировать</system:String>
+  <system:String x:Key="menu.edit.cut">Вырезать</system:String>
+  <system:String x:Key="menu.edit.delete">Удалить</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes">Заблокировать редактирование не выделенных нот</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">Выражения</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Точки питча</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Вибрато</system:String>
+  <system:String x:Key="menu.edit.paste">Вставить</system:String>
+  <system:String x:Key="menu.edit.redo">Повторить</system:String>
+  <system:String x:Key="menu.edit.selectall">Выбрать все</system:String>
+  <system:String x:Key="menu.edit.undo">Отменить</system:String>
+  <system:String x:Key="menu.file">Файл</system:String>
+  <system:String x:Key="menu.file.exit">Выход</system:String>
+  <system:String x:Key="menu.file.exportaudio">Экспортировать аудио</system:String>
+  <system:String x:Key="menu.file.exportds">Экспортировать скрипты DiffSinger</system:String>
+  <system:String x:Key="menu.file.exportds.v2">Экспортировать скрипты DiffSinger (v2)</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">Экспортировать скрипты DiffSinger (v2, без кривой питча)</system:String>
+  <system:String x:Key="menu.file.exportmidi">Экспорт midi-файла</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Свести в wav файл</system:String>
+  <system:String x:Key="menu.file.exportproject">Экспортировать проект</system:String>
+  <system:String x:Key="menu.file.exportust">Экспортировать UST файлы</system:String>
+  <system:String x:Key="menu.file.exportustto">Экспортировать UST файлы в...</system:String>
+  <system:String x:Key="menu.file.exportwav">Экспорт WAV-файлов</system:String>
+  <system:String x:Key="menu.file.exportwavto">Экспорт WAV-файлов в...</system:String>
+  <system:String x:Key="menu.file.importaudio">Импортировать аудио...</system:String>
+  <system:String x:Key="menu.file.importmidi">Импортировать midi...</system:String>
+  <system:String x:Key="menu.file.importmidi.drywetmidi">Импортер DryWetMidi</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">Импортер NAudio</system:String>
+  <system:String x:Key="menu.file.importtracks">Импортировать треки...</system:String>
+  <system:String x:Key="menu.file.new">Создать</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Создать из шаблона</system:String>
+  <system:String x:Key="menu.file.open">Открыть...</system:String>
+  <system:String x:Key="menu.file.openas">Открыть как</system:String>
+  <system:String x:Key="menu.file.openexportlocation">Открыть расположение экспорта</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">Открыть расположение проекта</system:String>
+  <system:String x:Key="menu.file.openrecent">Открыть последний</system:String>
+  <system:String x:Key="menu.file.save">Сохранить</system:String>
+  <system:String x:Key="menu.file.saveas">Сохранить как...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Сохранить шаблон...</system:String>
+  <system:String x:Key="menu.help">Справка</system:String>
+  <system:String x:Key="menu.help.about">О OpenUtau</system:String>
+  <system:String x:Key="menu.help.checkupdate">Проверить наличие обновлений</system:String>
+  <system:String x:Key="menu.help.logslocation">Открыть расположение логов</system:String>
+  <system:String x:Key="menu.help.reportissue">Сообщить об ошибке</system:String>
+  <system:String x:Key="menu.help.wiki">Вики OpenUtau</system:String>
+  <system:String x:Key="menu.project">Проект</system:String>
+  <system:String x:Key="menu.project.expressions">Выражения...</system:String>
+  <system:String x:Key="menu.project.remaptimeaxis">Регулировка темпа (сохранение тайминга)</system:String>
+  <system:String x:Key="menu.tools">Инструменты</system:String>
+  <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Окно отладки</system:String>
+  <system:String x:Key="menu.tools.dependency.install">Установить зависимость (.oudep)...</system:String>
+  <system:String x:Key="menu.tools.layout">Расположение</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">Горизонтально 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">Горизонтально 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">Горизонтально 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">Вертикально 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">Вертикально 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">Вертикально 1:3</system:String>
+  <system:String x:Key="menu.tools.prefs">Параметры...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Установить вокалиста...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Установить вокалиста (расширенный)...</system:String>
+  <system:String x:Key="menu.tools.singers">Вокалисты...</system:String>
+  <system:String x:Key="menu.view">Вид</system:String>
+
+  <system:String x:Key="notedefaults.lyric">Текст</system:String>
+  <system:String x:Key="notedefaults.lyric.defaultlyric">Текст по умолчанию</system:String>
+  <system:String x:Key="notedefaults.portamento">Портаменто</system:String>
+  <system:String x:Key="notedefaults.portamento.length">Длина</system:String>
+  <system:String x:Key="notedefaults.portamento.start">Начало</system:String>
+  <system:String x:Key="notedefaults.preset">Пресет</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">Новое название пресета</system:String>
+  <system:String x:Key="notedefaults.preset.remove">Убрать</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">Удаляет последнюю примененный пресет.</system:String>
+  <system:String x:Key="notedefaults.preset.save">Сохранить</system:String>
+  <system:String x:Key="notedefaults.preset.save.tooltip">Сохранить текущие настройки в новый пресет.</system:String>
+  <system:String x:Key="notedefaults.reset">Сбросить все настройки</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">Сброс всех настроек до значений по умолчанию.
+Внимание: этот параметр удаляет пользовательские пресеты.</system:String>
+  <system:String x:Key="notedefaults.vibrato">Вибрато</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">Минимальная длина</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Автоматическое вибрато на основе длины</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">Глубина</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">Смещение</system:String>
+  <system:String x:Key="notedefaults.vibrato.in">Нарастание</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">Длина</system:String>
+  <system:String x:Key="notedefaults.vibrato.out">Затухание</system:String>
+  <system:String x:Key="notedefaults.vibrato.period">Период</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">Сдвиг</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>-->
+
+  <system:String x:Key="noteproperty">Свойства ноты</system:String>
+  <system:String x:Key="noteproperty.apply">Применить</system:String>
+  <system:String x:Key="noteproperty.basic">Базовый</system:String>
+  <system:String x:Key="noteproperty.cancel">Отмена</system:String>
+  <system:String x:Key="noteproperty.set">Установить</system:String>
+  <system:String x:Key="noteproperty.setlongnote">Установить только на длинные ноты</system:String>
+  <system:String x:Key="noteproperty.tone">Тон</system:String>
+  <system:String x:Key="noteproperty.vibratoenable">Включить</system:String>
+
+  <system:String x:Key="oto.alias">Алиас</system:String>
+  <system:String x:Key="oto.color">Цвет</system:String>
+  <system:String x:Key="oto.consonant">Согласная</system:String>
+  <system:String x:Key="oto.cutoff">Конец</system:String>
+  <system:String x:Key="oto.edit.consonant">Установить согласную</system:String>
+  <system:String x:Key="oto.edit.cutoff">Установить конец</system:String>
+  <system:String x:Key="oto.edit.offset">Установить начало</system:String>
+  <system:String x:Key="oto.edit.overlap">Установить нахлест</system:String>
+  <system:String x:Key="oto.edit.preutter">Установить вступление</system:String>
+  <system:String x:Key="oto.file">Файл</system:String>
+  <system:String x:Key="oto.offset">Начало</system:String>
+  <system:String x:Key="oto.overlap">Нахлест</system:String>
+  <system:String x:Key="oto.phonetic">Фонетика</system:String>
+  <system:String x:Key="oto.prefix">Префикс</system:String>
+  <system:String x:Key="oto.preutter">Вступление</system:String>
+  <system:String x:Key="oto.set">Установить</system:String>
+  <system:String x:Key="oto.suffix">Суффикс</system:String>
+
+  <system:String x:Key="phoneticassistant.caption">Фонетический помощник</system:String>
+  <system:String x:Key="phoneticassistant.copy">Скопировть</system:String>
+
+  <system:String x:Key="pianoroll.menu.batch">Пакетное редактирование</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics">Текст</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Заменить "-" на "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Редактировать текст</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Хирагана в ромадзи</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.insertslur">Добавить шлейф</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Японский VCV в CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Переместить суффикс в VoiceColor</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Удалить буквенный суффикс</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Удалить фонетическую подсказку</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Удалить суффикс тона</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Ромадзи в хирагану</system:String>
+  <system:String x:Key="pianoroll.menu.notedefaults">Нота по умолчанию</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Ноты</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addbreath">Добавить дыхание</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Добавить "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.autolegato">Автоматическое легато</system:String>
+  <system:String x:Key="pianoroll.menu.notes.bakepitch">Преобразование PITD в контрольные точки питча</system:String>
+  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Очистить вибрато</system:String>
+  <system:String x:Key="pianoroll.menu.notes.fixoverlap">Исправить перекрывающиеся ноты</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Ханьцзы в пиньинь</system:String>
+  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Удлинить кроссфейд</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Загрузить отрендеренный питч</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Переместить на октаву ниже</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Переместить на октаву выше</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Квантовать до 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Квантовать до 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">Удалить хвост "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">Удалить хвост "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.aliases">Сбросить алиасы фонем</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Сбросить все выражения</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Сбросить тайминги фонем</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Сбросить кривые питча</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Сбросить вибрато</system:String>
+  <system:String x:Key="pianoroll.menu.part">Партия</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Устаревшие плагины (экспериментально)</system:String>
+  <system:String x:Key="pianoroll.menu.part.singer">Настройки вокалиста и Oto</system:String>
+  <system:String x:Key="pianoroll.menu.plugin.openfolder">Открыть папку</system:String>
+  <system:String x:Key="pianoroll.menu.plugin.reload">Перезагрузить</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">Найти ноту</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">Выделить все</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.close">Закрыть</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">След</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">Пред</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">Показать отрендеренный питч (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.noteparams">Просмотреть параметры ноты (\)</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Показать фонемы (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Показать кривую питча (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Привязка (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">Авто</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">Авто (триплет)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Показать подсказки (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Переключить тон ноты (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Отображать вибрато (U)</system:String>
+  <system:String x:Key="pianoroll.toggle.waveform">Отображать волну (W)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Инструмент рисовки питча (4)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Ластик (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">Нож (5)</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">Карандаж Plus (Ctrl + 2)
+    Левый клик чтобы рисовать
+    Правый клик чтобы удалить
+    Удерживайте Ctrl чтобы выбрать</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">Карандаш (2)
+    Левый клик чтобы рисовать
+    Удерживайте Ctrl чтобы выбрать</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">Инструмент выбора (1)</system:String>
+
+  <system:String x:Key="prefs.advanced">Дополнительно</system:String>
+  <system:String x:Key="prefs.advanced.beta">Бета</system:String>
+  <system:String x:Key="prefs.advanced.importtempo">Когда импортировуются треки, использовать темп импортированного проекта</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.always">Всегда</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.ask">Спрашивать каждый раз</system:String>
+  <system:String x:Key="prefs.advanced.importtempo.never">Никогда</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Запомнить эти типы файлов в "Открыть последние"</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging">Журналирование ресамплера</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет вывод ресамплера в файлах лога. Эта опция замедляет работу пользовательского интерфейса и рендеринга.</system:String>
+  <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
+  <system:String x:Key="prefs.advanced.vlabelerpath">Путь к Vlabeler</system:String>
+  <system:String x:Key="prefs.appearance">Интерфейс</system:String>
+  <system:String x:Key="prefs.appearance.degree">Стиль отображения градуса шкалы</system:String>
+  <system:String x:Key="prefs.appearance.degree.numbered">Нумерация (1 2 3 4 5 6 7)</system:String>
+  <system:String x:Key="prefs.appearance.degree.off">Отключено</system:String>
+  <system:String x:Key="prefs.appearance.degree.solfege">Сольфеджио (do re mi fa sol la ti)</system:String>
+  <system:String x:Key="prefs.appearance.lang">Язык</system:String>
+  <system:String x:Key="prefs.appearance.showghostnotes">Отображать ноты других треков на пианоролле</system:String>
+  <system:String x:Key="prefs.appearance.showicon">Отображать иконку на пианоролле</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">Отображать портрет на пианоролле</system:String>
+  <system:String x:Key="prefs.appearance.sortorder">Порядок сортировки вокалистов</system:String>
+  <system:String x:Key="prefs.appearance.theme">Тема</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Темная</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Светлая</system:String>
+  <system:String x:Key="prefs.appearance.trackcolor">Использовать цвет дорожки в интерфейсе</system:String>
+  <system:String x:Key="prefs.cache">Кэш</system:String>
+  <system:String x:Key="prefs.cache.clearonquit">Очищать кэш при выходе</system:String>
+  <system:String x:Key="prefs.cache.diffsingertensorcache">Тензорный кэш DiffSinger</system:String>
+  <system:String x:Key="prefs.caption">Параметры</system:String>
+  <system:String x:Key="prefs.note.restart">Примечание: пожалуйста, перезапустите OpenUtau после изменения этого пункта.</system:String>
+  <system:String x:Key="prefs.off">Выкл.</system:String>
+  <system:String x:Key="prefs.on">Вкл.</system:String>
+  <system:String x:Key="prefs.otoeditor">Редактор oto</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Редактор oto по умолчанию</system:String>
+  <system:String x:Key="prefs.paths">Пути</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Дополнительные пути к вокалисту</system:String>
+  <system:String x:Key="prefs.paths.addlsinger.install">Установить в дополнительный путь к вокалисту</system:String>
+  <system:String x:Key="prefs.paths.loaddeepfolders">Загрузить все глубинные папки</system:String>
+  <system:String x:Key="prefs.paths.reset">Сбросить</system:String>
+  <system:String x:Key="prefs.paths.select">Выбрать</system:String>
+  <system:String x:Key="prefs.penplus">Установить инструмент "Перо плюс" по умолчанию</system:String>
+  <system:String x:Key="prefs.playback">Воспроизведение</system:String>
+  <system:String x:Key="prefs.playback.autoscroll">Автопрокрутка</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode">Режим автопрокрутки</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Прокрутка страницы</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Неподвижный курсор</system:String>
+  <system:String x:Key="prefs.playback.backend">Звуковой бэкенд</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">Автоматический</system:String>
+  <system:String x:Key="prefs.playback.cursorposition">Поле автопрокрутки</system:String>
+  <system:String x:Key="prefs.playback.device">Устройство воспроизведения</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime">На паузе</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.off">Ничего не делать</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Переместить курсор назад к месту начала воспроизведения.</system:String>
+  <system:String x:Key="prefs.playback.test">Тест</system:String>
+  <system:String x:Key="prefs.rendering">Рендеринг</system:String>
+  <system:String x:Key="prefs.rendering.defaultrenderer">Рендерер по-умолчанию (для классических войсбанков)</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerdepth">Глубина рендеринга DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">Шаги рендера DiffSinger</system:String>
+  <system:String x:Key="prefs.rendering.onnxgpu">Графический процессор</system:String>
+  <system:String x:Key="prefs.rendering.onnxrunner">Машинное обучение</system:String>
+  <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
+  <system:String x:Key="prefs.rendering.prerender">Пре-рендер</system:String>
+  <system:String x:Key="prefs.rendering.resampler">Ресамплер</system:String>
+  <system:String x:Key="prefs.rendering.resampler.morewarn">
+    Предупреждение: moresampler поддерживается не полностью. Он может быть медленным и вызвать высокую нагрузку процессора. Если вы настаиваете, пожалуйста:
+    1. Для параметра "resampler-compatibility" установите значение "on" в moreconfig.txt.
+    2. Задайте параметру "auto-update-llsm-mrq" значение "off" в moreconfig.txt.
+    3. Терпеливо ждите, пока moresampler сгенерирует недостающие llsm файлы.
+  </system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">
+    Примечание: для использования внешних ресамплеров, пожалуйста, добавьте DLL или EXE ресамплера в папку Resamplers в пути установки OpenUtau и выберите его в параметрах
+  </system:String>
+  <system:String x:Key="prefs.rendering.skipmuted">Пропускать заглушенные треки</system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Предупреждение: слишком большое количество потоков рендеринга может привести к медленной работе OpenUtau.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Максимальное количество потоков рендеринга</system:String>
+  <system:String x:Key="prefs.rendering.wavtool">Вавтул</system:String>
+
+  <system:String x:Key="progress.loadingsingers">Загрузка вокалистов...</system:String>
+  <system:String x:Key="progress.saved">Проект сохранен по пути: {0}</system:String>
+  <system:String x:Key="progress.waitingrendering">Ожидание рендеринга</system:String>
+
+  <system:String x:Key="singers.caption">Вокалисты</system:String>
+  <system:String x:Key="singers.editoto.editinvlabeler">Редактировать в vLabeler</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
+  <system:String x:Key="singers.editoto.regenfrq">Регенерировать FRQ</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">Регенерация FRQ</system:String>
+  <system:String x:Key="singers.editoto.reset">Сбросить oto</system:String>
+  <system:String x:Key="singers.editoto.save">Сохранить oto</system:String>
+  <system:String x:Key="singers.editoto.searchalias">Поиск алиасов</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">Сначала нужно скачать vLabeler версии 1.0.0-beta или выше из https://github.com/sdercolin/vlabeler и указать путь к vLabeler в параметрах!</system:String>
+  <system:String x:Key="singers.errorreport">Создать отчет об ошибках вокалиста</system:String>
+  <system:String x:Key="singers.location">Расположение</system:String>
+  <system:String x:Key="singers.otoview.moveleft">Влево</system:String>
+  <system:String x:Key="singers.otoview.moveright">Вправо</system:String>
+  <system:String x:Key="singers.otoview.selectnext">Выбрать след.</system:String>
+  <system:String x:Key="singers.otoview.selectprev">Выбрать пред.</system:String>
+  <system:String x:Key="singers.otoview.showall">Показать все</system:String>
+  <system:String x:Key="singers.otoview.zoomin">Приблизить</system:String>
+  <system:String x:Key="singers.otoview.zoomout">Отдалить</system:String>
+  <system:String x:Key="singers.playsample">Проиграть пример</system:String>
+  <system:String x:Key="singers.publish">Опубликовать вокалиста</system:String>
+  <system:String x:Key="singers.publish.description">Данная функция позволяет создать оптимизированный zip-файл с вашим вокалистом для удобного распространения.</system:String>
+  <system:String x:Key="singers.publish.ignoretypes">Игнорировать следующие типы файлов при упаковке (используется синтаксис gitignore):</system:String>
+  <system:String x:Key="singers.publish.publish">Опубликовать</system:String>
+  <system:String x:Key="singers.publish.useignore"> Использовать игнорирование типа файлов</system:String>
+  <system:String x:Key="singers.readme">Открыть readme.txt</system:String>
+  <system:String x:Key="singers.readme.notfound">readme.txt не найден.</system:String>
+  <system:String x:Key="singers.refresh">Обновить</system:String>
+  <system:String x:Key="singers.setdefaultphonemizer">Установить фонемайзер по умолчанию</system:String>
+  <system:String x:Key="singers.setencoding">Установить кодировку</system:String>
+  <system:String x:Key="singers.setimage">Установить иконку</system:String>
+  <system:String x:Key="singers.setportrait">Установить портрет</system:String>
+  <system:String x:Key="singers.setsingertype">Установить тип вокалиста</system:String>
+  <system:String x:Key="singers.subbanks.cancel">Отмена</system:String>
+  <system:String x:Key="singers.subbanks.clear">Очистить</system:String>
+  <system:String x:Key="singers.subbanks.color">Цвет</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Добавить цвет</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Убрать цвет</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Переименовать</system:String>
+  <system:String x:Key="singers.subbanks.edit">Редактировать суббанки</system:String>
+  <system:String x:Key="singers.subbanks.export">Экспортировать prefix.map</system:String>
+  <system:String x:Key="singers.subbanks.import">Импортировать prefix.map</system:String>
+  <system:String x:Key="singers.subbanks.reset">Сбросить</system:String>
+  <system:String x:Key="singers.subbanks.save">Сохранить</system:String>
+  <system:String x:Key="singers.subbanks.selectall">Выбрать все</system:String>
+  <system:String x:Key="singers.subbanks.set">Установить</system:String>
+  <system:String x:Key="singers.subbanks.tone">Тон</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Диапазон тональности</system:String>
+  <system:String x:Key="singers.usefilename">Использовать название файла как алиас</system:String>
+  <system:String x:Key="singers.visitwebsite">Посетить сайт</system:String>
+
+  <system:String x:Key="singersetup.archivefileencoding">Кодировка архива</system:String>
+  <system:String x:Key="singersetup.archivefileencoding.prompt">Выберите кодировку, в которой имена файлов будут выглядеть правильно.</system:String>
+  <system:String x:Key="singersetup.back">Назад</system:String>
+  <system:String x:Key="singersetup.install">Установить</system:String>
+  <system:String x:Key="singersetup.missinginfo">Пожалуйста, добавьте следующие настройки в character.yaml этого голосового банка.</system:String>
+  <system:String x:Key="singersetup.next">Далее</system:String>
+  <system:String x:Key="singersetup.singertype">Тип вокалиста</system:String>
+  <system:String x:Key="singersetup.textfileencoding">Кодировка текстового файла</system:String>
+  <system:String x:Key="singersetup.textfileencoding.prompt">Выберите кодировку, в которой содержимое файла будет выглядеть правильно.</system:String>
+
+  <system:String x:Key="tip.aliasbox">Заменить алиасы</system:String>
+  <system:String x:Key="tip.exps">
+    Рисование левой кнопкой мыши: установить выражения
+Рисование правой кнопкой мыши: сброс выражений
+  </system:String>
+  <system:String x:Key="tip.exps.notsupported">Выражения не поддерживаются рендером</system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: следующая нота</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: предыдущая нота</system:String>
+  <system:String x:Key="tip.notes.basics">
+Инструмент выбора
+    Рамка выбора: Выбор нот
+    Ctrl + рамка выбора: Выбрать больше нот
+    ↑/↓: Сместить выбранные ноты
+    Ctrl + ↑/↓: Сместить выбранные ноты на октаву
+Карандаш
+    Рисование левой кнопкой мыши: Добавить ноту
+    Правая кнопка мыши: Удалить ноту
+    Рисование правой кнопкой мыши: Удалить несколько нот
+Общее
+    T: Отобразить подсказку (то что вы видите сейчас)
+    Перетаскивание ноты: Перемещение ноты
+    Перетаскивание конца ноты: Изменение размера ноты
+    Alt + перетаксивание конца ноты: Изменение размера соседних нот
+    Пробел: Воспроизведение
+  </system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Прокрутите здесь для горизонтального масштабирования ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Прокрутите здесь для вертикального масштабирования ▶</system:String>
+
+  <system:String x:Key="tracks.duplicate">Дублирование дорожки</system:String>
+  <system:String x:Key="tracks.duplicatesettings">Параметры дублирования дорожек</system:String>
+  <system:String x:Key="tracks.more">Больше</system:String>
+  <system:String x:Key="tracks.movedown">Вниз</system:String>
+  <system:String x:Key="tracks.moveup">Вверх</system:String>
+  <system:String x:Key="tracks.mute">Приглушить</system:String>
+  <system:String x:Key="tracks.mute.allothers">Приглушить остальные</system:String>
+  <system:String x:Key="tracks.mute.only">Приглушить только это</system:String>
+  <system:String x:Key="tracks.mute.unmuteall">Включить все</system:String>
+  <system:String x:Key="tracks.remove">Убрать</system:String>
+  <system:String x:Key="tracks.rename">Переименовать трек</system:String>
+  <system:String x:Key="tracks.selectrenderer">Выбрать рендерер</system:String>
+  <system:String x:Key="tracks.selectsinger">Выберите вокалиста</system:String>
+  <system:String x:Key="tracks.solo">Соло</system:String>
+  <system:String x:Key="tracks.solo.add">Соло дополнительно (которое не удаляет соло из других треков)</system:String>
+  <system:String x:Key="tracks.solo.only">Соло только для этого (которое удаляет соло из других треков)</system:String>
+  <system:String x:Key="tracks.solo.unsoloall">Убрать соло для всего</system:String>
+  <system:String x:Key="tracks.trackcolor">Изменить цвет трека</system:String>
+  <system:String x:Key="tracks.tracksettings">Настройки трека</system:String>
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+
+  <system:String x:Key="updater.caption">Проверить наличие обновлений</system:String>
+  <system:String x:Key="updater.description">Открытая платформа синтеза вокала</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.status.available">Доступно обновление версии {0}!</system:String>
+  <system:String x:Key="updater.status.checking">Проверка наличия обновлений...</system:String>
+  <system:String x:Key="updater.status.notavailable">Установлена актуальная версия</system:String>
+  <system:String x:Key="updater.status.unknown">Не удалось проверить наличие обновлений</system:String>
+  <system:String x:Key="updater.update">Обновить</system:String>
+
+  <system:String x:Key="warning">Предупреждение</system:String>
+  <system:String x:Key="warning.asciipath">Ваш путь к OpenUtau ("{0}") содержит символы, не являющимися символами ASCII. EXE-ресамплеры могут не работать.</system:String>
+  <system:String x:Key="warning.renderer">Для этого рендерера нет настроек.</system:String>
+</ResourceDictionary>

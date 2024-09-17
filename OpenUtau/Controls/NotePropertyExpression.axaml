@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             x:Class="OpenUtau.App.Controls.NotePropertyExpression">
+  <Grid ColumnDefinitions="143,7,50,20,*">
+    <Label Content="{Binding Name}" Grid.Column="0" VerticalAlignment="Center" FontWeight="{Binding NameFontWeight}"/>
+    <TextBox Text="{Binding Value, Mode=OneWay}" Grid.Column="2" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
+             GotFocus="OnTextBoxGotFocus" LostFocus="OnTextBoxLostFocus"/>
+    <Slider Grid.Column="4" Classes="fader" Value="{Binding Value}" Minimum="{Binding Min}" Maximum="{Binding Max}"
+            TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
+            Name="slider"/>
+    <ComboBox Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"
+              SelectedIndex="{Binding SelectedOption}" MinWidth="120" IsVisible="{Binding IsOptions}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
+              IsDropDownOpen="{Binding DropDownOpen, Mode=OneWayToSource}"/>
+  </Grid>
+</UserControl>

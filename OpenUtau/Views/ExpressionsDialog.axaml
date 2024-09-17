@@ -1,0 +1,92 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.ExpressionsDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="{DynamicResource exps.caption}"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="600" MinHeight="400" Width="600" Height="400"
+        ExtendClientAreaToDecorationsHint="False">
+  <Design.DataContext>
+    <vm:ExpressionsViewModel/>
+  </Design.DataContext>
+  <Window.Styles>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+  </Window.Styles>
+
+  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
+    <Border Margin="10,10,10,40" Width="150" HorizontalAlignment="Left">
+      <ListBox ItemsSource="{Binding Expressions}" SelectedItem="{Binding Expression}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+    <Grid Margin="10" Width="150" Height="20" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" HorizontalAlignment="Stretch" Margin="0" Command="{Binding Add}">+</Button>
+      <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="0" Command="{Binding Remove}" IsEnabled="{Binding Expression.IsCustom}">-</Button>
+    </Grid>
+    <StackPanel Margin="170,10,10,40" HorizontalAlignment="Stretch">
+      <Grid>
+        <Label Content="{DynamicResource exps.name}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Name}"/>
+      </Grid>
+      <Grid>
+        <Label Content="{DynamicResource exps.abbr}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Abbr}"/>
+      </Grid>
+      <Grid>
+        <Label Content="{DynamicResource exps.type}" Width="130" HorizontalAlignment="Left"/>
+        <ComboBox Margin="140,0,0,4" HorizontalAlignment="Stretch"
+                  IsEnabled="{Binding Expression.IsCustom}"
+                  SelectedIndex="{Binding Expression.SelectedType}"
+                  SelectionChanged="OnExpressionTypeChanged">
+          <ComboBoxItem Content="{DynamicResource exps.type.numerical}"/>
+          <ComboBoxItem Content="{DynamicResource exps.type.options}"/>
+          <ComboBoxItem Content="{DynamicResource exps.type.curve}"/>
+        </ComboBox>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.IsOptions}">
+        <Label Content="{DynamicResource exps.isflag}" Width="130" HorizontalAlignment="Left"/>
+        <CheckBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" IsChecked="{Binding Expression.IsFlag}"/>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.IsNumerical}">
+        <Label Content="{DynamicResource exps.flag}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Flag}"/>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
+        <Label Content="{DynamicResource exps.minvalue}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Min}"/>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
+        <Label Content="{DynamicResource exps.maxvalue}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Max}"/>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
+        <Label Content="{DynamicResource exps.defaultvalue}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" Text="{Binding Expression.DefaultValue}"/>
+      </Grid>
+      <Grid IsVisible="{Binding Expression.IsOptions}">
+        <Label Content="{DynamicResource exps.optionvalues}" Width="130" HorizontalAlignment="Left"/>
+        <TextBox Margin="140,0,0,4" Text="{Binding Expression.OptionValues}"/>
+        <TextBlock Margin="140,24,0,4" Text="{DynamicResource exps.sepbycomma}"/>
+      </Grid>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+      <Button Margin="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Content="{DynamicResource exps.getsuggestions}" Command="{Binding GetSuggestions}"/>
+      <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Content="{DynamicResource exps.apply}" Click="ApplyButtonClicked"/>
+    </StackPanel>
+  </Grid>
+</Window>

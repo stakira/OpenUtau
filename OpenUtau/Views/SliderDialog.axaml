@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.SliderDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="SliderDialog" Height="120" Width="300" WindowStartupLocation="CenterOwner"
+        ExtendClientAreaToDecorationsHint="False">
+  <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">
+    <StackPanel Orientation="Horizontal" Spacing="10" Margin="10" HorizontalAlignment="Center">
+      <Slider Name="Slider" Width="150"
+              Classes="fader" TickPlacement="BottomRight" IsSnapToTickEnabled="true"
+              Value="50" Minimum="0" Maximum="100" TickFrequency="1"/>
+      <TextBlock Name="TextBlock" Width="20" />
+    </StackPanel>
+    <Button Name="OkButton" Content="OK" Click="OkButtonClick"
+            Margin="10" HorizontalAlignment="Center" MinWidth="100" />
+  </StackPanel>
+</Window>

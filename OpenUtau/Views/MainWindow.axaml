@@ -1,0 +1,276 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="clr-namespace:OpenUtau.App.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OpenUtau.App.Views.MainWindow"
+        Icon="/Assets/open-utau.ico"
+        Title="{Binding Title}" MinWidth="300" MinHeight="200"
+        KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
+        Focusable="True"
+        TransparencyLevelHint="None"
+        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
+  <Window.Styles>
+    <Style Selector="Button,ToggleButton">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+  </Window.Styles>
+  <Grid>
+    <Grid Name="MainGrid" DragDrop.AllowDrop="True" IsEnabled="False" IsVisible="False" Margin="{Binding $parent[1].WindowDecorationMargin}">
+      <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="300,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
+              Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave">
+          <MenuItem Header="{DynamicResource menu.file}">
+            <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
+            <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" ItemsSource="{Binding OpenTemplates}">
+              <MenuItem.DataTemplates>
+                <DataTemplate DataType="vm:MenuItemViewModel">
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                </DataTemplate>
+              </MenuItem.DataTemplates>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate"/>
+            <MenuItem Header="-" Height="1"/>
+            <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
+            <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}">
+              <MenuItem.DataTemplates>
+                <DataTemplate DataType="vm:MenuItemViewModel">
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                </DataTemplate>
+              </MenuItem.DataTemplates>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
+            <MenuItem Header="-" Height="1"/>
+            <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
+            <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs"/>
+            <MenuItem Header="-" Height="1"/>
+            <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
+            <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
+            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
+            </MenuItem>
+            <MenuItem Header="-" Height="1"/>
+            <MenuItem Header="{DynamicResource menu.file.exportaudio}">
+              <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
+              <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource menu.file.exportproject}">
+              <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
+              <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds}" Click="OnMenuExportDsTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2To"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource menu.edit}">
+            <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
+            <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource menu.project}">
+            <MenuItem Header="{DynamicResource menu.project.expressions}" Click="OnMenuExpressionss"/>
+            <MenuItem Header="{DynamicResource menu.project.remaptimeaxis}" Click="OnMenuRemapTimeaxis"/>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource menu.tools}">
+            <MenuItem Header="{DynamicResource menu.tools.layout}">
+              <MenuItem Header="{DynamicResource menu.tools.layout.vsplit11}" Click="OnMenuLayoutVSplit11"/>
+              <MenuItem Header="{DynamicResource menu.tools.layout.vsplit12}" Click="OnMenuLayoutVSplit12"/>
+              <MenuItem Header="{DynamicResource menu.tools.layout.vsplit13}" Click="OnMenuLayoutVSplit13"/>
+              <MenuItem Header="{DynamicResource menu.tools.layout.hsplit11}" Click="OnMenuLayoutHSplit11"/>
+              <MenuItem Header="{DynamicResource menu.tools.layout.hsplit12}" Click="OnMenuLayoutHSplit12"/>
+              <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
+            </MenuItem>
+            <MenuItem Header="{Binding ClearCacheHeader}" Click="OnMenuClearCache"/>
+            <MenuItem Header="{DynamicResource menu.tools.debugwindow}" Click="OnMenuDebugWindow"/>
+            <MenuItem Header="{DynamicResource phoneticassistant.caption}" Click="OnMenuPhoneticAssistant"/>
+            <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
+            <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
+            <MenuItem Header="{DynamicResource menu.tools.dependency.install}" Click="OnMenuInstallDependency"/>
+            <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource menu.help}">
+            <MenuItem Header="{DynamicResource menu.help.wiki}" Click="OnMenuWiki"/>
+            <MenuItem Header="{DynamicResource menu.help.checkupdate}" Click="OnMenuCheckUpdate"/>
+            <MenuItem Header="{DynamicResource menu.help.reportissue}" Click="OnMenuReportIssue"/>
+            <MenuItem Header="{DynamicResource menu.help.logslocation}" Click="OnMenuLogsLocation"/>
+          </MenuItem>
+        </Menu>
+        <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
+          <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
+            <Grid>
+              <TextBlock Width="28" HorizontalAlignment="Left"
+                         Background="Transparent" PointerPressed="OnEditTimeSignature">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0}/{1}">
+                    <Binding Path="PlaybackViewModel.BeatPerBar"/>
+                    <Binding Path="PlaybackViewModel.BeatUnit"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <TextBlock Width="42" HorizontalAlignment="Right"
+                          Background="Transparent" PointerPressed="OnEditBpm">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0:#0.00}">
+                    <Binding Path="PlaybackViewModel.Bpm"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+            </Grid>
+          </Border>
+          <Border Classes="playback" Width="88" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+              <Button Command="{Binding PlaybackViewModel.SeekStart}">
+                <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                      Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
+              </Button>
+              <Button Click="OnPlayOrPause">
+                <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                      Data="M 0 0 L 7 6.5 L 0 13 Z"/>
+              </Button>
+              <Button Command="{Binding PlaybackViewModel.Pause}">
+                <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                      Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
+              </Button>
+              <Button Command="{Binding PlaybackViewModel.SeekEnd}">
+                <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                      Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
+              </Button>
+            </StackPanel>
+          </Border>
+          <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
+            <Grid>
+              <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+            </Grid>
+          </Border>
+        </Panel>
+        <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+                   DataContext="{Binding TracksViewModel}"
+                   Maximum="{Binding HScrollBarMax, Mode=OneWay}"
+                   Value="{Binding TickOffset}"
+                   ViewportSize="{Binding ViewportTicks}"
+                   LargeChange="{Binding ViewportTicks}"
+                   SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
+        <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                   Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
+                   DataContext="{Binding TracksViewModel}"
+                   Maximum="{Binding VScrollBarMax, Mode=OneWay}"
+                   Value="{Binding TrackOffset}"
+                   ViewportSize="{Binding ViewportTracks}"
+                   LargeChange="{Binding ViewportTracks}"
+                   SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
+        <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
+                Background="Transparent" ClipToBounds="True"
+                PointerWheelChanged="TimelinePointerWheelChanged"
+                PointerPressed="TimelinePointerPressed"
+                PointerMoved="TimelinePointerMoved"
+                PointerReleased="TimelinePointerReleased">
+          <Path Name="PlayPos"
+                Canvas.Left="{Binding TracksViewModel.PlayPosX}"
+                Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
+                Fill="{DynamicResource NeutralAccentBrushSemi}"
+                Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+          <Canvas.ContextMenu>
+            <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
+              <ContextMenu.Styles>
+                <Style Selector="MenuItem">
+                  <Setter Property="Header" Value="{Binding Header}"/>
+                  <Setter Property="Command" Value="{Binding Command}"/>
+                  <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                  <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                </Style>
+              </ContextMenu.Styles>
+            </ContextMenu>
+          </Canvas.ContextMenu>
+        </Canvas>
+        <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
+                             DataContext="{Binding TracksViewModel}"
+                             TrackHeight="{Binding TrackHeight}"
+                             TrackOffset="{Binding TrackOffset}"
+                             Items="{Binding Tracks}"/>
+        <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
+                           Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                           DataContext="{Binding TracksViewModel}"
+                           Bounds="{Binding Bounds, Mode=OneWayToSource}"
+                           TrackHeight="{Binding TrackHeight}"
+                           TrackOffset="{Binding TrackOffset}"/>
+        <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
+                          Foreground="{DynamicResource TickLineBrush}"
+                          Background="{DynamicResource TickLineBrushLow}"
+                          Resolution="{Binding PlaybackViewModel.Resolution}"
+                          TickWidth="{Binding TracksViewModel.TickWidth}"
+                          TickOffset="{Binding TracksViewModel.TickOffset}"
+                          SnapDiv="{Binding TracksViewModel.SnapDiv}"
+                          SnapTicks="{Binding TracksViewModel.SnapTicks}"
+                          ShowBarNumber="True"/>
+        <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
+                       DataContext="{Binding TracksViewModel}"
+                       TickWidth="{Binding TickWidth}"
+                       TrackHeight="{Binding TrackHeight}"
+                       TickOffset="{Binding TickOffset}"
+                       TrackOffset="{Binding TrackOffset}"
+                       Items="{Binding Parts}"
+                       PointerPressed="PartsCanvasPointerPressed"
+                       PointerMoved="PartsCanvasPointerMoved"
+                       PointerReleased="PartsCanvasPointerReleased"
+                       DoubleTapped="PartsCanvasDoubleTapped"
+                       PointerWheelChanged="PartsCanvasPointerWheelChanged">
+          <Rectangle Name="PlayPosHighlight"
+                     Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
+                     Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                     Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
+                     Canvas.Top="0"
+                     Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                     IsHitTestVisible="False"/>
+          <Rectangle Name="SelectionBox" StrokeThickness="2"
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                     Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                     IsHitTestVisible="False" IsVisible="False"/>
+          <c:PartsCanvas.ContextMenu>
+            <ContextMenu Name="PartsContextMenu"
+                         Opening="PartsContextMenuOpening"
+                         Closing="PartsContextMenuClosing">
+              <MenuItem Header="{DynamicResource context.part.delete}"
+                        Command="{Binding PartDeleteCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.gotofile}"
+                        IsVisible="{Binding IsWavePart}"
+                        Command="{Binding PartGotoFileCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.replaceaudio}"
+                        IsVisible="{Binding IsWavePart}"
+                        Command="{Binding PartReplaceAudioCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.rename}"
+                        IsVisible="{Binding IsVoicePart}"
+                        Command="{Binding PartRenameCommand}"
+                        CommandParameter="{Binding Part}"/>
+              <MenuItem Header="{DynamicResource context.part.transcribe}"
+                        IsVisible="{Binding IsWavePart}"
+                        Command="{Binding PartTranscribeCommand}"
+                        CommandParameter="{Binding Part}"/>
+            </ContextMenu>
+          </c:PartsCanvas.ContextMenu>
+        </c:PartsCanvas>
+        <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+                BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
+          <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}">
+            <TextBlock Text="{DynamicResource progress.waitingrendering}"/>
+          </Border>
+        </Border>
+        <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
+          <c:ViewScaler Name="VScaler" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
+        </Border>
+        <TextBlock Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
+        <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
+      </Grid>
+    </Grid>
+    <Border Name="Splash">
+      <TextBlock Text="{DynamicResource progress.loadingsingers}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Border>
+  </Grid>
+</Window>

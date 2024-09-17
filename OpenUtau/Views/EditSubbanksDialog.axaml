@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.EditSubbanksDialog"
+        Icon="/Assets/open-utau.ico"
+        Title="{DynamicResource singers.subbanks.edit}"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="500" MinHeight="600" Width="500" Height="600"
+        ExtendClientAreaToDecorationsHint="False">
+  <Grid ColumnDefinitions="*,10,160" Margin="10">
+    <DataGrid Name="SuffixGrid" Grid.Column="0" SelectionMode="Extended" IsReadOnly="True"
+              CanUserReorderColumns="False" CanUserSortColumns="False" AutoGenerateColumns="False"
+              ItemsSource="{Binding Rows}" SelectionChanged="OnSelectionChanged">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="{StaticResource singers.subbanks.tone}" Width="*" Binding="{Binding Tone}"/>
+        <DataGridTextColumn Header="{StaticResource oto.prefix}" Width="*" Binding="{Binding Prefix}"/>
+        <DataGridTextColumn Header="{StaticResource oto.suffix}" Width="*" Binding="{Binding Suffix}"/>
+      </DataGrid.Columns>
+    </DataGrid>
+    <Grid Grid.Column="2">
+      <Grid RowDefinitions="Auto,*,Auto,*,Auto">
+        <StackPanel VerticalAlignment="Top" Grid.Row="0">
+          <ComboBox HorizontalAlignment="Stretch" Margin="0,0,0,4"
+                    ItemsSource="{Binding Colors}" SelectedItem="{Binding SelectedColor}"/>
+          <Button Content="{DynamicResource singers.subbanks.color.add}" HorizontalAlignment="Stretch" Click="OnAdd"/>
+          <Button Content="{DynamicResource singers.subbanks.color.remove}" HorizontalAlignment="Stretch" Click="OnRemove"
+                  IsEnabled="{Binding IsEditableColor}"/>
+          <Button Content="{DynamicResource singers.subbanks.color.rename}" HorizontalAlignment="Stretch" Click="OnRename"
+                  IsEnabled="{Binding IsEditableColor}"/>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Top" Grid.Row="2">
+          <Button Content="{DynamicResource singers.subbanks.selectall}" HorizontalAlignment="Stretch" Click="OnSelectAll"/>
+          <TextBlock Text="{DynamicResource oto.prefix}"/>
+          <TextBox Margin="0,4" Text="{Binding Prefix}"/>
+          <TextBlock Text="{DynamicResource oto.suffix}"/>
+          <TextBox Margin="0,4" Text="{Binding Suffix}"/>
+          <Button Content="{DynamicResource singers.subbanks.set}" HorizontalAlignment="Stretch" Click="OnSet"/>
+          <Button Content="{DynamicResource singers.subbanks.clear}" HorizontalAlignment="Stretch" Click="OnClear"/>
+          <Button Content="{DynamicResource singers.subbanks.import}" HorizontalAlignment="Stretch" Click="OnImportMap"/>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Bottom" Grid.Row="4">
+          <Button Content="{DynamicResource singers.subbanks.reset}" HorizontalAlignment="Stretch" Command="{Binding LoadSubbanks}"/>
+          <Button Content="{DynamicResource singers.subbanks.save}" HorizontalAlignment="Stretch" Click="OnSave"/>
+          <Button Content="{DynamicResource singers.subbanks.export}" HorizontalAlignment="Stretch" Click="OnExportMap"/>
+          <Button Content="{DynamicResource singers.subbanks.cancel}" Margin="0,4,0,0" HorizontalAlignment="Stretch" Click="OnCancel"/>
+        </StackPanel>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>
