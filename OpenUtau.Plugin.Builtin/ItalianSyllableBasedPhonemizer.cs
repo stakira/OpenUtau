@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
@@ -7,7 +7,7 @@ using System.Linq;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Italian Syllable-Based Phonemizer", "IT SYL", "Lotte V", language:"IT")]
+    [Phonemizer("Italian Syllable-Based Phonemizer", "IT SYL", "Lotte V", language: "UTAU")]
     public class ItalianSyllableBasedPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// Italian syllable-based phonemizer.

@@ -4,7 +4,7 @@ using IKg2p;
 using OpenUtau.Api;
 
 namespace OpenUtau.Core.DiffSinger {
-    [Phonemizer("DiffSinger Jyutping Phonemizer", "DIFFS ZH-YUE", language: "ZH-YUE")]
+    [Phonemizer("DiffSinger Phonemizer", "Jyutping", language: "DiffSinger")]
     public class DiffSingerJyutpingPhonemizer : DiffSingerBasePhonemizer {
         protected override string GetDictionaryName() => "dsdict-zh-yue.yaml";
         protected override string GetLangCode()=>"yue";

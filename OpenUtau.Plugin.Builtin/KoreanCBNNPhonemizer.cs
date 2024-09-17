@@ -8,7 +8,7 @@ using OpenUtau.Core;
 
 namespace OpenUtau.Plugin.Builtin {
     /// Phonemizer for 'KOR CBNN' ///
-    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3", language: "KO")]
+    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3", language: "UTAU")]
 
     public class KoreanCBNNPhonemizer : BaseKoreanPhonemizer {
 

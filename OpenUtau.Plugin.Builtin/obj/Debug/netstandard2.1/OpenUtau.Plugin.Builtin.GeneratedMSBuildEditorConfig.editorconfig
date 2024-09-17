@@ -1,0 +1,11 @@
+is_global = true
+build_property.RootNamespace = OpenUtau.Plugin.Builtin
+build_property.ProjectDir = D:\diffusion\OpenUtauhelp\OpenUtau.Plugin.Builtin\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.PolySharpUsePublicAccessibilityForGeneratedTypes = 
+build_property.PolySharpIncludeRuntimeSupportedAttributes = 
+build_property.PolySharpUseInteropServices2NamespaceForUnmanagedCallersOnlyAttribute = 
+build_property.PolySharpExcludeGeneratedTypes = 
+build_property.PolySharpIncludeGeneratedTypes = 
+build_property.PolySharpExcludeTypeForwardedToDeclarations = 

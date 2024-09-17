@@ -7,7 +7,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Core.DiffSinger {
-    [Phonemizer("DiffSinger English+ Phonemizer", "DIFFS EN+", language: "EN", author: "Cadlaxa")]
+    [Phonemizer("DiffSinger Phonemizer", "English+", language: "DiffSinger", author: "Cadlaxa")]
     public class DiffSingerARPAPlusEnglishPhonemizer : DiffSingerG2pPhonemizer
     // cadlaxa here, this diffsinger english phonemizer just uses the ARPA+ G2p so arpasing+ and this phonemizer
     // have same g2p mechanics such as triggering of glottal stop with ('), manual relaxed consonants

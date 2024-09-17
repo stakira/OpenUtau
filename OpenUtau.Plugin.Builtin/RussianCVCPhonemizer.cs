@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Russian CVC Phonemizer", "RU CVC", "Heiden.BZR", language: "RU")]
+    [Phonemizer("Russian CVC Phonemizer", "RU CVC", "Heiden.BZR", language: "UTAU")]
     public class RussianCVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,e,o,u,y,i,M,N".Split(",");

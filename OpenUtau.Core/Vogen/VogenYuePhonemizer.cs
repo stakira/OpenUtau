@@ -3,7 +3,7 @@ using OpenUtau.Api;
 using System;
 
 namespace OpenUtau.Core.Vogen {
-    [Phonemizer("Vogen Chinese Yue Phonemizer", "VOGEN ZH-YUE", language: "ZH-YUE")]
+    [Phonemizer("Vogen Phonemizer", "Chinese Yue", language: "VOGEN")]
     public class VogenYuePhonemizer : VogenBasePhonemizer {
         private static TrieNode? trie;
         private static InferenceSession? g2p;

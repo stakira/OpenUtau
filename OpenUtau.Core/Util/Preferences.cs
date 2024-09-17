@@ -130,13 +130,13 @@ namespace OpenUtau.Core.Util {
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
-            public bool ShowTips = true;
-            public int Theme;
+            public bool ShowTips = false;
+            public int Theme = 1;
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
-            public bool PreRender = true;
+            public bool PreRender = false;
             public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Util {
             public double DiffSingerDepth = 1.0;
             public int DiffSingerSteps = 20;
             public bool DiffSingerTensorCache = true;
-            public bool SkipRenderingMutedTracks = false;
+            public bool SkipRenderingMutedTracks = true;
             public string Language = string.Empty;
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
@@ -169,7 +169,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowGhostNotes = true;
             public bool PlayTone = true;
             public bool ShowVibrato = true;
-            public bool ShowPitch = true;
+            public bool ShowPitch = false;
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
@@ -181,7 +181,7 @@ namespace OpenUtau.Core.Util {
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
             public string SetParamPath = string.Empty;
-            public bool Beta = false;
+            public bool Beta = true;
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;

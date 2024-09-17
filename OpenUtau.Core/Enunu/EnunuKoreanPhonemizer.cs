@@ -10,7 +10,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu Korean Phonemizer", "ENUNU KO", "EX3", language:"KO")]
+    [Phonemizer("Enunu Phonemizer", "Korean", "EX3", language: "ENUNU")]
     public class EnunuKoreanPhonemizer : EnunuPhonemizer {
         readonly string PhonemizerType = "ENUNU KO";
         public string semivowelSep;

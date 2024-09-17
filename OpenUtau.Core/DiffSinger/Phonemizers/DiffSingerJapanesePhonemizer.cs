@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Core.DiffSinger {
-    [Phonemizer("DiffSinger Japanese Phonemizer", "DIFFS JA", language: "JA")]
+    [Phonemizer("DiffSinger Phonemizer", "Japanese", language: "DiffSinger")]
     public class DiffSingerJapanesePhonemizer : DiffSingerG2pPhonemizer {
         protected override string GetDictionaryName()=>"dsdict-ja.yaml";
         protected override string GetLangCode()=>"ja";

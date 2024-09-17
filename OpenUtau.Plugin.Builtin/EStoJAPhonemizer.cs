@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -6,7 +6,7 @@ using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Spanish to Japanese Phonemizer", "ES to JA", "Lotte V", language: "ES")]
+    [Phonemizer("Spanish to Japanese Phonemizer", "ES to JA", "Lotte V", language: "UTAU")]
     public class EStoJAPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// Phonemizer for using Japanese banks for Spanish songs.

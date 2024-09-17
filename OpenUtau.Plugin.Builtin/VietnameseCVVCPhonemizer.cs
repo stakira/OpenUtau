@@ -4,7 +4,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Vietnamese CVVC Phonemizer", "VIE CVVC", "Jani Tran", language:"VI")]
+    [Phonemizer("Vietnamese CVVC Phonemizer", "VIE CVVC", "Jani Tran", language: "UTAU")]
     public class VietnameseCVVCPhonemizer : Phonemizer {
         /// <summary>
         /// The lookup table to convert a hiragana to its tail vowel.

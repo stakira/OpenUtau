@@ -6,7 +6,7 @@ using System.Linq;
 
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "Mim", language: "FR")]
+    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "Mim", language: "UTAU")]
     // Contributed by Mim with the help of Heiden.BZR & nago's phonemizers
 
     //This is a first implementation and I'm already working on optimization 

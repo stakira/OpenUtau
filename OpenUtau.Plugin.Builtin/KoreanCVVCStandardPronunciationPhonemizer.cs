@@ -8,7 +8,7 @@ using OpenUtau.Core;
 
 namespace OpenUtau.Plugin.Builtin {
     /// Phonemizer for 'KOR CVVC' ///
-    [Phonemizer("Korean CVVC Phonemizer", "KO CVVC", "RYUUSEI & EX3", language: "KO")]
+    [Phonemizer("Korean CVVC Phonemizer", "KO CVVC", "RYUUSEI & EX3", language: "UTAU")]
     public class KoreanCVVCPhonemizer : BaseKoreanPhonemizer {
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {return;}

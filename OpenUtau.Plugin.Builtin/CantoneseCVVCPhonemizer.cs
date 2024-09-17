@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// It works similarly to the Chinese CVVC phonemizer, including presamp.ini requirement.
     /// The big difference is that it converts hanzi to jyutping instead of pinyin.
     /// </summary>
-    [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", "Lotte V", language: "ZH-YUE")]
+    [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", "Lotte V", language: "UTAU")]
     public class CantoneseCVVCPhonemizer : ChineseCVVCPhonemizer {
         protected override string[] Romanize(IEnumerable<string> lyrics) {
             List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, false);

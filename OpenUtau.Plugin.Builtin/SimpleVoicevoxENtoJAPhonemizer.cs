@@ -8,7 +8,7 @@ using OpenUtau.Plugin.Builtin;
 using WanaKanaNet;
 
 namespace OpenUtau.Core.Voicevox {
-    [Phonemizer("Simple Voicevox ENtoJA Phonemizer", "S-VOICEVOX EN to JA", "TUBS & ROKU10SHI", language: "EN")]
+    [Phonemizer("Simple Voicevox Phonemizer", "EN to JA", "TUBS & ROKU10SHI", language: "S-VOICEVOX")]
     public class SimpleVoicevoxENtoJAPhonemizer : SyllableBasedPhonemizer {
 
         protected VoicevoxSinger singer;

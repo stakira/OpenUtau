@@ -1,0 +1,153 @@
+﻿2024-09-18 00:02:43.286 +02:00 [INF] Logging initialized.
+2024-09-18 00:02:43.338 +02:00 [INF] Microsoft Windows NT 10.0.19045.0
+2024-09-18 00:02:43.340 +02:00 [INF] Microsoft Windows 10.0.19045 X64 X64
+2024-09-18 00:02:43.342 +02:00 [INF] OpenUtau v0.0.0.0 win10-x64
+2024-09-18 00:02:43.343 +02:00 [INF] Data path = D:\diffusion\OpenUtauhelp\OpenUtau\bin\Debug\net6.0-windows
+2024-09-18 00:02:43.344 +02:00 [INF] Cache path = D:\diffusion\OpenUtauhelp\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 00:02:44.012 +02:00 [INF] Initializing application.
+2024-09-18 00:02:44.355 +02:00 [INF] Initializing culture.
+2024-09-18 00:02:44.536 +02:00 [INF] Initialized culture.
+2024-09-18 00:02:44.538 +02:00 [INF] Initializing theme.
+2024-09-18 00:02:44.589 +02:00 [INF] Initialized theme.
+2024-09-18 00:02:44.591 +02:00 [INF] Initializing OpenUtau.
+2024-09-18 00:02:44.597 +02:00 [INF] Searching singers.
+2024-09-18 00:02:44.610 +02:00 [INF] Search all singers: 00:00:00.0113730
+2024-09-18 00:02:44.625 +02:00 [INF] Search all plugins: 00:00:00.0233063
+2024-09-18 00:02:44.628 +02:00 [INF] Search all legacy plugins: 00:00:00.0013042
+2024-09-18 00:02:44.633 +02:00 [INF] Initialized OpenUtau.
+2024-09-18 00:02:44.634 +02:00 [INF] Initializing audio.
+2024-09-18 00:02:44.636 +02:00 [INF] ReleaseSourceTemp D:\diffusion\OpenUtauhelp\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 00:02:44.702 +02:00 [INF] Initialized audio.
+2024-09-18 00:02:44.703 +02:00 [INF] Initialized application.
+2024-09-18 00:02:44.704 +02:00 [INF] Framework initialization completed.
+2024-09-18 00:02:44.912 +02:00 [INF] Creating main window.
+2024-09-18 00:02:45.578 +02:00 [INF] Initialized main window component.
+2024-09-18 00:02:45.720 +02:00 [INF] Main window checking Update.
+2024-09-18 00:02:45.723 +02:00 [INF] Created main window.
+2024-09-18 00:02:46.053 +02:00 [INF] SchedulePreRender
+2024-09-18 00:02:46.224 +02:00 [INF] Publish notification Load project
+2024-09-18 00:02:46.729 +02:00 [INF] Checking update at: https://github.com/stakira/OpenUtau/releases/tag/build/0.1.529
+2024-09-18 00:02:46.732 +02:00 [INF] Checking appcast: https://github.com/stakira/OpenUtau/releases/download/build/0.1.529/appcast.win-x64.xml
+2024-09-18 00:02:59.731 +02:00 [INF] undoGroup started
+2024-09-18 00:02:59.734 +02:00 [INF] ExecuteCmd Add part
+2024-09-18 00:02:59.760 +02:00 [INF] undoGroup ended
+2024-09-18 00:02:59.762 +02:00 [INF] SchedulePreRender
+2024-09-18 00:02:59.763 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:02:59.770 +02:00 [INF] undoGroup started
+2024-09-18 00:02:59.775 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:02:59.815 +02:00 [INF] undoGroup ended
+2024-09-18 00:02:59.817 +02:00 [INF] SchedulePreRender
+2024-09-18 00:02:59.819 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:00.238 +02:00 [INF] undoGroup started
+2024-09-18 00:03:00.308 +02:00 [INF] undoGroup ended
+2024-09-18 00:03:00.311 +02:00 [INF] SchedulePreRender
+2024-09-18 00:03:00.313 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:00.390 +02:00 [INF] undoGroup started
+2024-09-18 00:03:00.605 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:00.624 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:00.626 +02:00 [INF] Publish notification Select expression pitd
+2024-09-18 00:03:00.629 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:00.630 +02:00 [INF] Publish notification Select expression clr
+2024-09-18 00:03:00.632 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:00.634 +02:00 [INF] Publish notification Select expression eng
+2024-09-18 00:03:00.637 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:00.638 +02:00 [INF] Publish notification Select expression vel
+2024-09-18 00:03:00.759 +02:00 [ERR] undoGroup already started
+2024-09-18 00:03:00.762 +02:00 [INF] undoGroup ended
+2024-09-18 00:03:00.763 +02:00 [INF] SchedulePreRender
+2024-09-18 00:03:00.765 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:00.766 +02:00 [INF] undoGroup started
+2024-09-18 00:03:00.768 +02:00 [INF] undoGroup ended
+2024-09-18 00:03:00.769 +02:00 [INF] SchedulePreRender
+2024-09-18 00:03:00.771 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:00.773 +02:00 [INF] undoGroup started
+2024-09-18 00:03:00.774 +02:00 [INF] undoGroup ended
+2024-09-18 00:03:00.775 +02:00 [INF] SchedulePreRender
+2024-09-18 00:03:00.776 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:01.050 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:01.052 +02:00 [INF] Publish notification Select expression pitd
+2024-09-18 00:03:01.054 +02:00 [INF] Publish notification Select expression clr
+2024-09-18 00:03:01.055 +02:00 [INF] Publish notification Select expression eng
+2024-09-18 00:03:01.057 +02:00 [INF] Publish notification Select expression vel
+2024-09-18 00:03:01.095 +02:00 [INF] Publish notification Load part
+2024-09-18 00:03:01.098 +02:00 [INF] Publish notification Select expression pitd
+2024-09-18 00:03:01.100 +02:00 [INF] Publish notification Select expression dyn
+2024-09-18 00:03:01.104 +02:00 [ERR] No active undoGroup to end.
+2024-09-18 00:03:01.179 +02:00 [INF] Created bitmap 1820, 60
+2024-09-18 00:03:01.975 +02:00 [INF] undoGroup started
+2024-09-18 00:03:01.979 +02:00 [INF] ExecuteCmd Add note
+2024-09-18 00:03:01.999 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.001 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.003 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.004 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.013 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.015 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.016 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.021 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.022 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.023 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.029 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.030 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.031 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.037 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.038 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.039 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.050 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.051 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.053 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.055 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.056 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.057 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.058 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.060 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.061 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.063 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.064 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.066 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.069 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.070 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.071 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.074 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.075 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.076 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.080 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.081 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.083 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.085 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.086 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.087 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.091 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.092 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.093 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.096 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.097 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.098 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.102 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.103 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.105 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.107 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.108 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.110 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.114 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.115 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.117 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.121 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.122 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.124 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.128 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.129 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.131 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.137 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.138 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.140 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.149 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.150 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.152 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.180 +02:00 [INF] ExecuteCmd Change 1 notes duration
+2024-09-18 00:03:02.182 +02:00 [INF] ExecuteCmd Change vibrato length
+2024-09-18 00:03:02.184 +02:00 [INF] Publish notification Phonemized
+2024-09-18 00:03:02.331 +02:00 [INF] undoGroup ended
+2024-09-18 00:03:02.332 +02:00 [INF] SchedulePreRender
+2024-09-18 00:03:02.335 +02:00 [INF] Publish notification Pre-render notification.
+2024-09-18 00:03:09.084 +02:00 [INF] Exiting.
+2024-09-18 00:03:09.085 +02:00 [INF] Exited.

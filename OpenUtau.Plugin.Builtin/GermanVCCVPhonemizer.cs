@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,7 @@ using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("German VCCV Phonemizer", "DE VCCV", "Lotte V", language: "DE")]
+    [Phonemizer("German VCCV Phonemizer", "DE VCCV", "Lotte V", language: "UTAU")]
     public class GermanVCCVPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// German VCCV phonemizer.

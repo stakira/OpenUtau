@@ -6,7 +6,7 @@ using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English to Japanese Phonemizer", "EN to JA", "TUBS", language: "EN")]
+    [Phonemizer("English to Japanese Phonemizer", "EN to JA", "TUBS", language: "UTAU")]
     public class ENtoJAPhonemizer : SyllableBasedPhonemizer {
         protected override string[] GetVowels() => vowels;
         private static readonly string[] vowels =

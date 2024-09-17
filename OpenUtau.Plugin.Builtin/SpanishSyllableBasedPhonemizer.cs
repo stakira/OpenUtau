@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
@@ -16,7 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// Ít now also uses "i" instead of "y" and "u" instead of "w" depending on what the voicebank supports.
     /// Now with full VCV support, including "consonant VCV" if the voicebank has either of them (ex. "l ba", "n da" but also "m bra" etc.).
     /// </summary>
-    [Phonemizer("Spanish Syllable-Based Phonemizer", "ES SYL", "Lotte V", language: "ES")]
+    [Phonemizer("Spanish Syllable-Based Phonemizer", "ES SYL", "Lotte V", language: "UTAU")]
     public class SpanishSyllableBasedPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,e,i,o,u".Split(',');

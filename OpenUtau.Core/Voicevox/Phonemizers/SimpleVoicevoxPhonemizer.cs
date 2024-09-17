@@ -4,7 +4,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Voicevox;
 
 namespace Voicevox {
-    [Phonemizer("Simple Voicevox Japanese Phonemizer", "S-VOICEVOX JA", language: "JA")]
+    [Phonemizer("Simple Voicevox Phonemizer", "Japanese", language: "S-VOICEVOX")]
     public class SimpleVoicevoxPhonemizer : Phonemizer {
 
         protected VoicevoxSinger singer;

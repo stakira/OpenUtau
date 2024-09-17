@@ -2,7 +2,7 @@
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Core.DiffSinger {
-    [Phonemizer("DiffSinger Italian Phonemizer", "DIFFS IT", language: "IT")]
+    [Phonemizer("DiffSinger Phonemizer", "Italian", language: "DiffSinger")]
     public class DiffSingerItalianPhonemizer : DiffSingerG2pPhonemizer {
         protected override string GetDictionaryName() => "dsdict-it.yaml";
         protected override string GetLangCode()=>"it";

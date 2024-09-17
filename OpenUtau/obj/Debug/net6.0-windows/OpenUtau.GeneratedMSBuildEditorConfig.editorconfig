@@ -1,0 +1,192 @@
+is_global = true
+build_property.AvaloniaNameGeneratorIsEnabled = true
+build_property.AvaloniaNameGeneratorBehavior = InitializeComponent
+build_property.AvaloniaNameGeneratorDefaultFieldModifier = internal
+build_property.AvaloniaNameGeneratorFilterByPath = *
+build_property.AvaloniaNameGeneratorFilterByNamespace = *
+build_property.TargetFramework = net6.0-windows
+build_property.TargetPlatformMinVersion = 7.0
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = OpenUtau
+build_property.ProjectDir = D:\diffusion\OpenUtauhelp\OpenUtau\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.PolySharpUsePublicAccessibilityForGeneratedTypes = 
+build_property.PolySharpIncludeRuntimeSupportedAttributes = 
+build_property.PolySharpUseInteropServices2NamespaceForUnmanagedCallersOnlyAttribute = 
+build_property.PolySharpExcludeGeneratedTypes = 
+build_property.PolySharpIncludeGeneratedTypes = 
+build_property.PolySharpExcludeTypeForwardedToDeclarations = 
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/App.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Colors/Brushes.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Colors/DarkTheme.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Colors/LightTheme.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/ExpSelector.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/LyricBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/NotePropertiesControl.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/NotePropertyExpression.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/SearchBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/TrackAdder.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/TrackHeader.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Controls/ViewScaler.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.de-DE.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.es-ES.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.es-MX.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.fi-FI.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.fr-FR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.id-ID.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.it-IT.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.ja-JP.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.ko-KR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.nl-NL.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.pl-PL.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.pt-BR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.ru-RU.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.th-TH.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.vi-VN.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.zh-CN.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Strings/Strings.zh-TW.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Styles/PianoRollStyles.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Styles/Styles.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/DebugWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/EditSubbanksDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/ExeSetupDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/ExpressionsDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/LyricsDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/LyricsReplaceDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/MainWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/MessageBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/NoteDefaultsDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/PasteParamDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/PhoneticAssistant.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/PianoRollWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/PreferencesDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/SearchNoteDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/SingerPublishDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/SingersDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/SingerSetupDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/SliderDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/TimeSignatureDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/TrackColorDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/TrackSettingsDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/TypeInDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/UpdaterDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/diffusion/OpenUtauhelp/OpenUtau/Views/VoiceColorMappingDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

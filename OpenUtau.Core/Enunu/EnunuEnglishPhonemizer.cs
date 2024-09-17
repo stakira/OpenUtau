@@ -11,7 +11,7 @@ using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", "O3", language:"EN")]
+    [Phonemizer("Enunu Phonemizer", "English", "O3", language: "ENUNU")]
     public class EnunuEnglishPhonemizer : EnunuPhonemizer {
         readonly string PhonemizerType = "ENUNU EN";
 

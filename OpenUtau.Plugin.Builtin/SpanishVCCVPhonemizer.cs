@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
@@ -7,7 +7,7 @@ using System.Linq;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Spanish VCCV Phonemizer", "ES VCCV", "Lotte V", language: "ES")]
+    [Phonemizer("Spanish VCCV Phonemizer", "ES VCCV", "Lotte V", language: "UTAU")]
     public class SpanishVCCVPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// Based on the nJokis method.

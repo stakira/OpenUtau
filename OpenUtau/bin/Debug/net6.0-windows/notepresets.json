@@ -1,0 +1,89 @@
+﻿{
+  "DefaultLyric": "a",
+  "DefaultPortamento": {
+    "Name": "Standard",
+    "PortamentoLength": 80,
+    "PortamentoStart": -40
+  },
+  "PortamentoPresets": [
+    {
+      "Name": "Standard",
+      "PortamentoLength": 80,
+      "PortamentoStart": -40
+    },
+    {
+      "Name": "Fast",
+      "PortamentoLength": 50,
+      "PortamentoStart": -25
+    },
+    {
+      "Name": "Slow",
+      "PortamentoLength": 120,
+      "PortamentoStart": -60
+    },
+    {
+      "Name": "Snap",
+      "PortamentoLength": 2,
+      "PortamentoStart": -1
+    }
+  ],
+  "DefaultVibrato": {
+    "Name": "Standard",
+    "VibratoLength": 75.0,
+    "VibratoPeriod": 175.0,
+    "VibratoDepth": 25.0,
+    "VibratoIn": 10.0,
+    "VibratoOut": 10.0,
+    "VibratoShift": 0.0,
+    "VibratoDrift": 0.0,
+    "VibratoVolLink": 0.0
+  },
+  "VibratoPresets": [
+    {
+      "Name": "Standard",
+      "VibratoLength": 75.0,
+      "VibratoPeriod": 175.0,
+      "VibratoDepth": 25.0,
+      "VibratoIn": 10.0,
+      "VibratoOut": 10.0,
+      "VibratoShift": 0.0,
+      "VibratoDrift": 0.0,
+      "VibratoVolLink": 0.0
+    },
+    {
+      "Name": "UTAU Default",
+      "VibratoLength": 65.0,
+      "VibratoPeriod": 180.0,
+      "VibratoDepth": 35.0,
+      "VibratoIn": 20.0,
+      "VibratoOut": 20.0,
+      "VibratoShift": 0.0,
+      "VibratoDrift": 0.0,
+      "VibratoVolLink": 0.0
+    },
+    {
+      "Name": "UTAU Strong",
+      "VibratoLength": 65.0,
+      "VibratoPeriod": 210.0,
+      "VibratoDepth": 55.0,
+      "VibratoIn": 25.0,
+      "VibratoOut": 25.0,
+      "VibratoShift": 0.0,
+      "VibratoDrift": 0.0,
+      "VibratoVolLink": 0.0
+    },
+    {
+      "Name": "UTAU Weak",
+      "VibratoLength": 65.0,
+      "VibratoPeriod": 165.0,
+      "VibratoDepth": 20.0,
+      "VibratoIn": 25.0,
+      "VibratoOut": 25.0,
+      "VibratoShift": 0.0,
+      "VibratoDrift": 0.0,
+      "VibratoVolLink": 0.0
+    }
+  ],
+  "AutoVibratoToggle": false,
+  "AutoVibratoNoteDuration": 481
+}

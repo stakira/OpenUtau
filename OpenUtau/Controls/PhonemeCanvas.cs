@@ -68,7 +68,7 @@ namespace OpenUtau.App.Controls {
 
         public PhonemeCanvas() {
             ClipToBounds = true;
-            pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+            pointGeometry = new EllipseGeometry(new Rect(0, 0, 0, 0));
             MessageBus.Current.Listen<NotesRefreshEvent>()
                 .Subscribe(_ => InvalidateVisual());
             MessageBus.Current.Listen<NotesSelectionEvent>()
@@ -108,7 +108,7 @@ namespace OpenUtau.App.Controls {
             double lastTextEndX = double.NegativeInfinity;
 
             const double y = 35.5;
-            const double height = 24;
+            const double height = 28;
             foreach (var phoneme in Part.phonemes) {
                 double leftBound = viewModel.Project.timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - Part.position;
                 double rightBound = phoneme.End;

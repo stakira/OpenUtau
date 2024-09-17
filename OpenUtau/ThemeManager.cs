@@ -52,14 +52,14 @@ namespace OpenUtau.App {
         public static IBrush ExpActiveNameBrush = Brushes.White;
 
         public static List<TrackColor> TrackColors = new List<TrackColor>(){
-                new TrackColor("Pink", "#F06292", "#EC407A", "#F48FB1", "#FAC7D8"),
-                new TrackColor("Red", "#EF5350", "#E53935", "#E57373", "#F2B9B9"),
+                new TrackColor("Pink", "#DC799D", "#DA5789", "#E19EBA", "#EBCFDC"),
+                new TrackColor("Red", "#F3383E", "#E61E25", "#E6454A", "#F3AAAD"),
                 new TrackColor("Orange", "#FF8A65", "#FF7043", "#FFAB91", "#FFD5C8"),
-                new TrackColor("Yellow", "#FBC02D", "#F9A825", "#FDD835", "#FEF1B6"),
+                new TrackColor("Yellow", "#FBC13A", "#FBAB32", "#FDD13F", "#FFF4C0"),
                 new TrackColor("Light Green", "#CDDC39", "#C0CA33", "#DCE775", "#F2F7CE"),
                 new TrackColor("Green", "#66BB6A", "#43A047", "#A5D6A7", "#D2EBD3"),
                 new TrackColor("Light Blue", "#4FC3F7", "#29B6F6", "#81D4FA", "#C0EAFD"),
-                new TrackColor("Blue", "#4EA6EA", "#1E88E5", "#90CAF9", "#C8E5FC"),
+                new TrackColor("Blue", "#7266EE", "#4435E6", "#B1ABFB", "#E4E2FD"),
                 new TrackColor("Purple", "#BA68C8", "#AB47BC", "#CE93D8", "#E7C9EC"),
                 new TrackColor("Pink2", "#E91E63", "#C2185B", "#F06292", "#F8B1C9"),
                 new TrackColor("Red2", "#D32F2F", "#B71C1C", "#EF5350", "#F7A9A8"),
@@ -68,7 +68,7 @@ namespace OpenUtau.App {
                 new TrackColor("Light Green2", "#AFB42B", "#9E9D24", "#CDDC39", "#E6EE9C"),
                 new TrackColor("Green2", "#2E7D32", "#1B5E20", "#43A047", "#A1D0A3"),
                 new TrackColor("Light Blue2", "#1976D2", "#0D47A1", "#2196F3", "#90CBF9"),
-                new TrackColor("Blue2", "#3949AB", "#283593", "#5C6BC0", "#AEB5E0"),
+                new TrackColor("Blue2", "#5950BB", "#3529B3", "#8D88C8", "#CCCBE4"),
                 new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#AB47BC", "#D5A3DE"),
             };
 

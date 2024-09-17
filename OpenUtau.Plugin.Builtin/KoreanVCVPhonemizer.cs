@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,7 +8,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin
 {
-	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "KO")]
+	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "UTAU")]
 
 	public class KoreanVCVPhonemizer : BaseKoreanPhonemizer
 	{

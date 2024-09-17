@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// See http://www.speech.cs.cmu.edu/cgi-bin/cmudict and https://arpasing.neocities.org/en/faq.html.
     /// </para>
     /// </summary>
-    [Phonemizer("English Arpasing Phonemizer", "EN ARPA", language: "EN")]
+    [Phonemizer("English Arpasing Phonemizer", "EN ARPA", language: "UTAU")]
     public class ArpasingPhonemizer : LatinDiphonePhonemizer {
         public ArpasingPhonemizer() {
             try {

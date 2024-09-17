@@ -8,7 +8,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu Phonemizer", "ENUNU")]
+    [Phonemizer("Enunu Phonemizer", "Default", language: "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
         readonly string PhonemizerType = "ENUNU";
 

@@ -10,7 +10,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// Supports both full jyutping syllables as well as syllable fallbacks without a final consonant or falling diphthong.
     /// Supports hanzi and jyutping input.
     /// </summary>
-    [Phonemizer("Cantonese Syo-Style Phonemizer", "ZH-YUE SYO", "Lotte V", language: "ZH-YUE")]
+    [Phonemizer("Cantonese Syo-Style Phonemizer", "ZH-YUE SYO", "Lotte V", language: "UTAU")]
     public class CantoneseSyoPhonemizer : Phonemizer {
 
         /// <summary>

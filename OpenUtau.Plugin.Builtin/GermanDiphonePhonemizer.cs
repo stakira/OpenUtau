@@ -12,7 +12,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// You could make a combined English-German diphonic bank, and it will work.
     /// Based on the German CMUSphinx dictionary, with some adjustments: https://sourceforge.net/projects/cmusphinx/files/Acoustic%20and%20Language%20Models/German/
     /// </summary>
-    [Phonemizer("German Diphone Phonemizer", "DE DIPHONE", "Lotte V", language: "DE")]
+    [Phonemizer("German Diphone Phonemizer", "DE DIPHONE", "Lotte V", language: "UTAU")]
     public class GermanDiphonePhonemizer : LatinDiphonePhonemizer {
         
         public GermanDiphonePhonemizer() {
