@@ -83,7 +83,7 @@ namespace OpenUtau.App.Views {
             autosaveTimer.Start();
 
             dawUpdateTimer = new DispatcherTimer(
-                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(1),
                 DispatcherPriority.Normal,
                 (sender, args) => Task.Run(() => DocManager.Inst.UpdateDaw()));
             dawUpdateTimer.Start();

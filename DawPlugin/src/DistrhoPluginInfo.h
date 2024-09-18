@@ -20,6 +20,8 @@
 #define DISTRHO_UI_DEFAULT_HEIGHT 256
 #define DISTRHO_UI_FILE_BROWSER 0
 #define DISTRHO_UI_USER_RESIZABLE 1
+// TODO: Don't use direct access
+#define DISTRHO_PLUGIN_WANT_DIRECT_ACCESS 1
 
 #define DISTRHO_UI_USE_CUSTOM 1
 #define DISTRHO_UI_CUSTOM_INCLUDE_PATH "dpf_widgets/opengl/DearImGui.hpp"

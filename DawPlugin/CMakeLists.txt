@@ -1,13 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(DPF_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/DPF")
-include(./deps/DPF/cmake/DPF-plugin.cmake)
 
-set(ZLIB_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/deps/zlib")
-set(ZLIB_INCLUDE_DIR ${ZLIB_LIBRARY})
-
-find_package(ZLIB REQUIRED)
-
+include(./deps/dpf/cmake/DPF-plugin.cmake)
 project(openutau_daw_plugin)
 
 # MSVC only: Use UTF-8 code page
@@ -25,6 +20,7 @@ file(GLOB_RECURSE imgui_sources "deps/imgui/*.cpp")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG)
+  add_definitions(-DDPF_DEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 
 elseif(NOT CMAKE_BUILD_TYPE)
@@ -53,6 +49,12 @@ dpf_add_plugin(
     src/ui.cpp
     ${ui_sources}
     deps/dpf_widgets/opengl/DearImGui.cpp)
+
+# Including zlib before DPF causes "find_library" to fail with infinite
+# recursion, so we include it after DPF
+set(ZLIB_BUILD_EXAMPLES OFF)
+set(RENAME_ZCONF OFF)
+add_subdirectory(deps/zlib)
 target_compile_features(openutau_daw_plugin PUBLIC cxx_std_20)
 
 target_include_directories(
@@ -61,10 +63,11 @@ target_include_directories(
          "deps"
          "deps/DPF/dgl"
          "deps"
-         "deps/uuid_v4"
          "deps/asio/asio/include"
          "deps/dpf_widgets"
+         "deps/uuid-v4"
          "deps/zlib"
          "deps/gzip-hpp/include"
          "deps/libfar/include")
-target_link_libraries(openutau_daw_plugin PRIVATE ZLIB::ZLIB)
+
+target_link_libraries(openutau_daw_plugin PRIVATE zlibstatic)

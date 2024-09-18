@@ -71,9 +71,6 @@ namespace OpenUtau.Core {
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
         public DawIntegration.Client? dawClient { get; set; }
 
-        internal bool isDawClientLocked = false;
-        internal DawUpdatePoint? lastDawStatusUpdateCheckPoint = null;
-
         public void Initialize() {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 CrashSave();
@@ -212,6 +209,11 @@ namespace OpenUtau.Core {
             }
         }
 
+
+        internal bool isDawClientLocked = false;
+        internal DawUpdatePoint? lastDawStatusUpdateCheckPoint = null;
+        internal DawUpdatePoint? lastDawStatusUpdatePoint = null;
+
         public async Task UpdateDaw() {
             if (dawClient == null) {
                 return;
@@ -229,6 +231,11 @@ namespace OpenUtau.Core {
                     Log.Information("Editor is active, skipping sending status to DAW.");
                     return;
                 }
+                if (lastDawStatusUpdatePoint == currentPoint) {
+                    Log.Information("Already sent status, skipping sending status to DAW.");
+                    return;
+                }
+                lastDawStatusUpdatePoint = currentPoint;
                 Log.Information("Sending status to DAW...");
                 RenderEngine engine = new RenderEngine(Project, startTick: 0, endTick: -1, trackNo: -1);
                 var renderCancellation = new CancellationTokenSource();

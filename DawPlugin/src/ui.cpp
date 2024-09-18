@@ -1,4 +1,5 @@
 #include "DistrhoUI.hpp"
+#include "plugin.hpp"
 #include <string>
 
 START_NAMESPACE_DISTRHO
@@ -36,15 +37,7 @@ protected:
    */
   void parameterChanged(uint32_t, float) override {}
 
-  void stateChanged(const char *rawKey, const char *value) override {
-    std::string key(rawKey);
-    if (key == "name") {
-      this->name = value;
-    } else if (key == "port") {
-      this->port = std::stoi(value);
-    } else if (key == "status") {
-    }
-  }
+  void stateChanged(const char *, const char *) override {}
 
   // ----------------------------------------------------------------------------------------------------------------
   // Widget Callbacks
@@ -56,13 +49,16 @@ protected:
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(getWidth(), getHeight()));
 
+    auto plugin = getPlugin();
+
     ImGui::Text("OpenUtau Bridge: %s", "v1.0.0");
     ImGui::Text("Open OpenUtau, and select this:");
-    ImGui::Text("  %s (%d)", name.c_str(), port);
+    ImGui::Text("  %s (%d)", plugin->name.c_str(), plugin->port);
   }
 
-  std::string name;
-  int port;
+  OpenUtauPlugin *getPlugin() {
+    return static_cast<OpenUtauPlugin *>(getPluginInstancePointer());
+  }
 
   // ----------------------------------------------------------------------------------------------------------------
 

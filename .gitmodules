@@ -1,9 +1,6 @@
 [submodule "DawPlugin/deps/DPF"]
 	path = DawPlugin/deps/DPF
 	url = https://github.com/distrho/DPF.git
-[submodule "DawPlugin/deps/uuid_v4"]
-	path = DawPlugin/deps/uuid_v4
-	url = https://github.com/crashoz/uuid_v4.git
 [submodule "DawPlugin/deps/asio"]
 	path = DawPlugin/deps/asio
 	url = https://github.com/chriskohlhoff/asio
@@ -19,3 +16,6 @@
 [submodule "DawPlugin/deps/gzip-hpp"]
 	path = DawPlugin/deps/gzip-hpp
 	url = https://github.com/mapbox/gzip-hpp.git
+[submodule "DawPlugin/deps/uuid-v4"]
+	path = DawPlugin/deps/uuid-v4
+	url = https://github.com/rkg82/uuid-v4.git
