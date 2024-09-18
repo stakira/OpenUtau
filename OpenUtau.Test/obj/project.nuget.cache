@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vJjO0znwZeMGEFmXPdTaRk4CM3jmxAiDjYsB7umQhOuuvs6xRTZNMJJBcBpcEVFHVRBx31tPx81Rmf741hAAgQ==",
+  "dgSpecHash": "I8DXyDEWKcOIHNE5JarDEhz/ROEjtYw5HsGkW8MWOUsx6UD+yn7lt4lYuYl1KRXPtkdgNHpPagkATdrptOsy3g==",
   "success": true,
-  "projectFilePath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Test\\OpenUtau.Test.csproj",
+  "projectFilePath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Test\\OpenUtau.Test.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Валентин\\.nuget\\packages\\asyncio\\0.1.69\\asyncio.0.1.69.nupkg.sha512",
     "C:\\Users\\Валентин\\.nuget\\packages\\avalonia\\11.0.4\\avalonia.11.0.4.nupkg.sha512",

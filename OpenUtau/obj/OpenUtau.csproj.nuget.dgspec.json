@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj": {}
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj": {}
   },
   "projects": {
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj",
+        "projectUniqueName": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj",
         "projectName": "OpenUtau.Core",
-        "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj",
+        "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj",
         "packagesPath": "C:\\Users\\Валентин\\.nuget\\packages\\",
-        "outputPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\obj\\",
+        "outputPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Валентин\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -162,14 +162,14 @@
         }
       }
     },
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj",
+        "projectUniqueName": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj",
         "projectName": "OpenUtau.Plugin.Builtin",
-        "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj",
+        "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj",
         "packagesPath": "C:\\Users\\Валентин\\.nuget\\packages\\",
-        "outputPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\obj\\",
+        "outputPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Валентин\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -186,8 +186,8 @@
           "netstandard2.1": {
             "targetAlias": "netstandard2.1",
             "projectReferences": {
-              "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {
-                "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj"
+              "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {
+                "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj"
               }
             }
           }
@@ -226,14 +226,14 @@
         }
       }
     },
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj": {
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj": {
       "version": "0.0.0",
       "restore": {
-        "projectUniqueName": "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj",
+        "projectUniqueName": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj",
         "projectName": "OpenUtau",
-        "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj",
+        "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj",
         "packagesPath": "C:\\Users\\Валентин\\.nuget\\packages\\",
-        "outputPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\obj\\",
+        "outputPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Валентин\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -250,11 +250,11 @@
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {
-                "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj"
+              "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {
+                "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj"
               },
-              "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
-                "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj"
+              "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
+                "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj"
               }
             }
           }

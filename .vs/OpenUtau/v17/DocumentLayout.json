@@ -3,6 +3,142 @@
   "WorkspaceRootPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\pianorollwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\pianorollwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\singersetupdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\singersetupdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\sliderdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\sliderdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\timesignaturedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\timesignaturedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\trackcolordialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\trackcolordialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\tracksettingsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\tracksettingsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\typeindialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\typeindialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\updaterdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\updaterdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\lyricsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\lyricsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\lyricsreplacedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\lyricsreplacedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\mainwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\mainwindow.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\notedefaultsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\notedefaultsdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\pasteparamdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\pasteparamdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\phoneticassistant.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\phoneticassistant.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\preferencesdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\preferencesdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\searchnotedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\searchnotedialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\singerpublishdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\singerpublishdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\voicecolormappingdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\voicecolormappingdialog.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\thememanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\thememanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\app.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\app.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\nuget.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\fodyweavers.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\fodyweavers.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\filepicker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\filepicker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\viewlocator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\viewconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\viewconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\viewmodels\\trackcolorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\viewmodels\\trackcolorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\styles\\pianorollstyles.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\styles\\pianorollstyles.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\strings\\strings.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\strings\\strings.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\resources\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\resources\\resources.resx||{FF4D6ACA-9352-4A5F-821E-F4D6EBDCAB11}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\styles\\styles.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\styles\\styles.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\viewmodels\\pianorollviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\viewmodels\\pianorollviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\parteditstates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\parteditstates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\views\\noteeditstates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\views\\noteeditstates.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|d:\\diffusion\\openutau-diffsinger-lunai\\openutau\\controls\\trackadder.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
       "RelativeMoniker": "D:0:0:{9535E26C-4584-4126-B6F7-B91B41113196}|OpenUtau\\OpenUtau.csproj|solutionrelative:openutau\\controls\\trackadder.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
     },
@@ -35,6 +171,425 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "PianoRollWindow.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PianoRollWindow.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\PianoRollWindow.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PianoRollWindow.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\PianoRollWindow.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T07:00:17.44Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TypeInDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TypeInDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\TypeInDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TypeInDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\TypeInDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:59.775Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UpdaterDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\UpdaterDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\UpdaterDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\UpdaterDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\UpdaterDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:58.741Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "LyricsDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\LyricsDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\LyricsDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\LyricsDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\LyricsDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:57.152Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "LyricsReplaceDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\LyricsReplaceDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\LyricsReplaceDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\LyricsReplaceDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\LyricsReplaceDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:55.912Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "NoteDefaultsDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\NoteDefaultsDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\NoteDefaultsDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\NoteDefaultsDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\NoteDefaultsDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:53.053Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TrackSettingsDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TrackSettingsDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\TrackSettingsDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TrackSettingsDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\TrackSettingsDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:49:38.136Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TrackColorDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TrackColorDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\TrackColorDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TrackColorDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\TrackColorDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:49:40.375Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TimeSignatureDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TimeSignatureDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\TimeSignatureDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\TimeSignatureDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\TimeSignatureDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:49:42.6Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SliderDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SliderDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\SliderDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SliderDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\SliderDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:49:45.332Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SingerSetupDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SingerSetupDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\SingerSetupDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SingerSetupDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\SingerSetupDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:49:58.648Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "PhoneticAssistant.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PhoneticAssistant.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\PhoneticAssistant.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PhoneticAssistant.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\PhoneticAssistant.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:50.89Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "VoiceColorMappingDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\VoiceColorMappingDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\VoiceColorMappingDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\VoiceColorMappingDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\VoiceColorMappingDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:58:24.717Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ThemeManager.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ThemeManager.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\ThemeManager.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ThemeManager.cs",
+              "RelativeToolTip": "OpenUtau\\ThemeManager.cs",
+              "ViewState": "AQIAAA8BAAAAAAAAAAAIwEcAAABWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:55:49.065Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "App.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\App.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\App.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\App.axaml",
+              "RelativeToolTip": "OpenUtau\\App.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:56:16.582Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "nuget.config",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\nuget.config",
+              "RelativeDocumentMoniker": "OpenUtau\\nuget.config",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\nuget.config",
+              "RelativeToolTip": "OpenUtau\\nuget.config",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-09-18T06:56:13.607Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "FodyWeavers.xml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\FodyWeavers.xml",
+              "RelativeDocumentMoniker": "OpenUtau\\FodyWeavers.xml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\FodyWeavers.xml",
+              "RelativeToolTip": "OpenUtau\\FodyWeavers.xml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2024-09-18T06:56:11.3Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "FilePicker.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\FilePicker.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\FilePicker.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\FilePicker.cs",
+              "RelativeToolTip": "OpenUtau\\FilePicker.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:56:09.208Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Program.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\Program.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Program.cs",
+              "RelativeToolTip": "OpenUtau\\Program.cs",
+              "ViewState": "AQIAAAIAAAAAAAAAAAAowAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:56:03.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ViewLocator.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewLocator.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\ViewLocator.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewLocator.cs",
+              "RelativeToolTip": "OpenUtau\\ViewLocator.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:56:01.594Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "SingerPublishDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SingerPublishDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\SingerPublishDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SingerPublishDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\SingerPublishDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:50:03.741Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "MainWindow.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\MainWindow.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\MainWindow.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\MainWindow.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\MainWindow.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:47:48.079Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "SearchNoteDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SearchNoteDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\SearchNoteDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\SearchNoteDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\SearchNoteDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:50:16.406Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "PasteParamDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PasteParamDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\PasteParamDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PasteParamDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\PasteParamDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:54:48.27Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "ViewConstants.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewConstants.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\ViewConstants.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewConstants.cs",
+              "RelativeToolTip": "OpenUtau\\ViewConstants.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:55:57.448Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "PreferencesDialog.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PreferencesDialog.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\PreferencesDialog.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PreferencesDialog.axaml",
+              "RelativeToolTip": "OpenUtau\\Views\\PreferencesDialog.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:50:18.94Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "TrackColorViewModel.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewModels\\TrackColorViewModel.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\ViewModels\\TrackColorViewModel.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewModels\\TrackColorViewModel.cs",
+              "RelativeToolTip": "OpenUtau\\ViewModels\\TrackColorViewModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:55:31.714Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "PianoRollStyles.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Styles\\PianoRollStyles.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Styles\\PianoRollStyles.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Styles\\PianoRollStyles.axaml",
+              "RelativeToolTip": "OpenUtau\\Styles\\PianoRollStyles.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:55:21.89Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "Strings.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Strings\\Strings.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Strings\\Strings.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Strings\\Strings.axaml",
+              "RelativeToolTip": "OpenUtau\\Strings\\Strings.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:55:16.104Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "Resources.resx",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Resources\\Resources.resx",
+              "RelativeDocumentMoniker": "OpenUtau\\Resources\\Resources.resx",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Resources\\Resources.resx",
+              "RelativeToolTip": "OpenUtau\\Resources\\Resources.resx",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001005|",
+              "WhenOpened": "2024-09-18T06:55:10.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "Styles.axaml",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Styles\\Styles.axaml",
+              "RelativeDocumentMoniker": "OpenUtau\\Styles\\Styles.axaml",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Styles\\Styles.axaml",
+              "RelativeToolTip": "OpenUtau\\Styles\\Styles.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-09-18T06:54:14.7Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "PianoRollViewModel.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewModels\\PianoRollViewModel.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\ViewModels\\PianoRollViewModel.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\ViewModels\\PianoRollViewModel.cs",
+              "RelativeToolTip": "OpenUtau\\ViewModels\\PianoRollViewModel.cs",
+              "ViewState": "AQIAALwAAAAAAAAAAAAvwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:54:05.268Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "PartEditStates.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PartEditStates.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\PartEditStates.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\PartEditStates.cs",
+              "RelativeToolTip": "OpenUtau\\Views\\PartEditStates.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:49:10.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "NoteEditStates.cs",
+              "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\NoteEditStates.cs",
+              "RelativeDocumentMoniker": "OpenUtau\\Views\\NoteEditStates.cs",
+              "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Views\\NoteEditStates.cs",
+              "RelativeToolTip": "OpenUtau\\Views\\NoteEditStates.cs",
+              "ViewState": "AQIAAAICAAAAAAAAAAAYwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-18T06:48:59.518Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
               "Title": "TrackAdder.axaml",
               "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\TrackAdder.axaml",
               "RelativeDocumentMoniker": "OpenUtau\\Controls\\TrackAdder.axaml",
@@ -46,19 +601,18 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 35,
               "Title": "SearchBar.axaml",
               "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\SearchBar.axaml",
               "RelativeDocumentMoniker": "OpenUtau\\Controls\\SearchBar.axaml",
               "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\SearchBar.axaml",
               "RelativeToolTip": "OpenUtau\\Controls\\SearchBar.axaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-09-16T20:29:23.48Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-16T20:29:23.48Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 36,
               "Title": "NotesCanvas.cs",
               "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\NotesCanvas.cs",
               "RelativeDocumentMoniker": "OpenUtau\\Controls\\NotesCanvas.cs",
@@ -66,24 +620,22 @@
               "RelativeToolTip": "OpenUtau\\Controls\\NotesCanvas.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-16T20:29:21.509Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-16T20:29:21.509Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 37,
               "Title": "LyricBox.axaml",
               "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\LyricBox.axaml",
               "RelativeDocumentMoniker": "OpenUtau\\Controls\\LyricBox.axaml",
               "ToolTip": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\Controls\\LyricBox.axaml",
               "RelativeToolTip": "OpenUtau\\Controls\\LyricBox.axaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-09-16T20:29:14.051Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-16T20:29:14.051Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 38,
               "Title": "DiffSingerKoreanPhonemizer.cs",
               "DocumentMoniker": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\DiffSinger\\Phonemizers\\DiffSingerKoreanPhonemizer.cs",
               "RelativeDocumentMoniker": "OpenUtau.Core\\DiffSinger\\Phonemizers\\DiffSingerKoreanPhonemizer.cs",
@@ -91,8 +643,7 @@
               "RelativeToolTip": "OpenUtau.Core\\DiffSinger\\Phonemizers\\DiffSingerKoreanPhonemizer.cs",
               "ViewState": "AQIAAO8AAAAAAAAAAAAgwAIBAAAkAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-16T07:37:21.936Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-16T07:37:21.936Z"
             }
           ]
         }

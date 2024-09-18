@@ -310,7 +310,7 @@ namespace OpenUtau.App.Views {
             };
             dialog.ShowDialog(this);
         }
-
+        
         void OnMenuNoteDefaults(object sender, RoutedEventArgs args) {
             EditNoteDefaults();
         }

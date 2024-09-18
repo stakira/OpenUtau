@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {}
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {}
   },
   "projects": {
-    "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {
+    "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj",
+        "projectUniqueName": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj",
         "projectName": "OpenUtau.Core",
-        "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj",
+        "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj",
         "packagesPath": "C:\\Users\\Валентин\\.nuget\\packages\\",
-        "outputPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\obj\\",
+        "outputPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Валентин\\AppData\\Roaming\\NuGet\\NuGet.Config",

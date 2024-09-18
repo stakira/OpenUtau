@@ -11128,11 +11128,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Test\\OpenUtau.Test.csproj",
+      "projectUniqueName": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Test\\OpenUtau.Test.csproj",
       "projectName": "OpenUtau.Test",
-      "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Test\\OpenUtau.Test.csproj",
+      "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Test\\OpenUtau.Test.csproj",
       "packagesPath": "C:\\Users\\Валентин\\.nuget\\packages\\",
-      "outputPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Test\\obj\\",
+      "outputPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Test\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Валентин\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -11149,14 +11149,14 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj": {
-              "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj"
+            "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj": {
+              "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj"
             },
-            "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
-              "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj"
+            "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj": {
+              "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Plugin.Builtin\\OpenUtau.Plugin.Builtin.csproj"
             },
-            "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj": {
-              "projectPath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau\\OpenUtau.csproj"
+            "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj": {
+              "projectPath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau\\OpenUtau.csproj"
             }
           }
         }

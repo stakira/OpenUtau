@@ -1,6 +1,6 @@
 is_global = true
 build_property.RootNamespace = OpenUtau.Plugin.Builtin
-build_property.ProjectDir = D:\diffusion\OpenUtauhelp\OpenUtau.Plugin.Builtin\
+build_property.ProjectDir = D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau.Plugin.Builtin\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.PolySharpUsePublicAccessibilityForGeneratedTypes = 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ZI6WiS44SbokvAbp3u4SOCTxWceE6+h7lwij7Ynh3XLSABLxp4U8SyFrc5KeF1oZaa9dTz5SHwfyZOW3D2vtow==",
+  "dgSpecHash": "4lo3NOIxyrhGagsHu0uM+HUkc1rjObu3cQPFdSyslEXbbkvGTMEO/pabEVUsxcuu44y6aMMx2uvCmDiY2cnLwA==",
   "success": true,
-  "projectFilePath": "D:\\diffusion\\OpenUtauhelp\\OpenUtau.Core\\OpenUtau.Core.csproj",
+  "projectFilePath": "D:\\diffusion\\OpenUtau-DiffSinger-Lunai\\OpenUtau.Core\\OpenUtau.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Валентин\\.nuget\\packages\\asyncio\\0.1.69\\asyncio.0.1.69.nupkg.sha512",
     "C:\\Users\\Валентин\\.nuget\\packages\\bunlabs.naudio.flac\\2.0.1\\bunlabs.naudio.flac.2.0.1.nupkg.sha512",
