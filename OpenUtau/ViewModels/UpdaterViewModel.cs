@@ -84,7 +84,7 @@ namespace OpenUtau.App.ViewModels {
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
             client.Timeout = TimeSpan.FromSeconds(30);
-            using var resposne = await client.GetAsync("https://api.github.com/repos/stakira/OpenUtau/releases");
+            using var resposne = await client.GetAsync("https://api.github.com/repos/keirokeer/OpenUtau-DiffSinger-Lunai/releases");
             resposne.EnsureSuccessStatusCode();
             string respBody = await resposne.Content.ReadAsStringAsync();
             List<GithubRelease>? releases = JsonConvert.DeserializeObject<List<GithubRelease>>(respBody);
@@ -134,7 +134,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void OnGithub() {
             try {
-                OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+                OS.OpenWeb("https://github.com/keirokeer/OpenUtau-DiffSinger-Lunai/wiki");
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }

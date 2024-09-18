@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OpenUtau")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.0+897ae2f47e55bc3e64686d34160d4dd7a3eb1e9c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.0+75be94511800a70a7c77b69b289d704cdddeb9bd")]
 [assembly: System.Reflection.AssemblyProductAttribute("OpenUtau")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OpenUtau")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.0.0.0")]

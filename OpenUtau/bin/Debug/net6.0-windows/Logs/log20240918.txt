@@ -151,3 +151,72 @@
 2024-09-18 00:03:02.335 +02:00 [INF] Publish notification Pre-render notification.
 2024-09-18 00:03:09.084 +02:00 [INF] Exiting.
 2024-09-18 00:03:09.085 +02:00 [INF] Exited.
+2024-09-18 09:02:38.924 +02:00 [INF] Logging initialized.
+2024-09-18 09:02:39.008 +02:00 [INF] Microsoft Windows NT 10.0.19045.0
+2024-09-18 09:02:39.011 +02:00 [INF] Microsoft Windows 10.0.19045 X64 X64
+2024-09-18 09:02:39.012 +02:00 [INF] OpenUtau v0.0.0.0 win10-x64
+2024-09-18 09:02:39.014 +02:00 [INF] Data path = D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows
+2024-09-18 09:02:39.015 +02:00 [INF] Cache path = D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 09:02:40.051 +02:00 [INF] Initializing application.
+2024-09-18 09:02:40.326 +02:00 [INF] Initializing culture.
+2024-09-18 09:02:40.508 +02:00 [INF] Initialized culture.
+2024-09-18 09:02:40.509 +02:00 [INF] Initializing theme.
+2024-09-18 09:02:40.555 +02:00 [INF] Initialized theme.
+2024-09-18 09:02:40.557 +02:00 [INF] Initializing OpenUtau.
+2024-09-18 09:02:40.561 +02:00 [INF] Searching singers.
+2024-09-18 09:02:40.572 +02:00 [INF] Search all singers: 00:00:00.0090521
+2024-09-18 09:02:40.586 +02:00 [INF] Search all plugins: 00:00:00.0198717
+2024-09-18 09:02:40.589 +02:00 [INF] Search all legacy plugins: 00:00:00.0020306
+2024-09-18 09:02:40.593 +02:00 [INF] Initialized OpenUtau.
+2024-09-18 09:02:40.595 +02:00 [INF] Initializing audio.
+2024-09-18 09:02:40.596 +02:00 [INF] ReleaseSourceTemp D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 09:02:40.667 +02:00 [INF] Initialized audio.
+2024-09-18 09:02:40.676 +02:00 [INF] Initialized application.
+2024-09-18 09:02:40.678 +02:00 [INF] Framework initialization completed.
+2024-09-18 09:02:40.771 +02:00 [INF] Creating main window.
+2024-09-18 09:02:41.258 +02:00 [INF] Initialized main window component.
+2024-09-18 09:02:41.388 +02:00 [INF] Main window checking Update.
+2024-09-18 09:02:41.391 +02:00 [INF] Created main window.
+2024-09-18 09:02:41.690 +02:00 [INF] SchedulePreRender
+2024-09-18 09:02:41.853 +02:00 [INF] Publish notification Load project
+2024-09-18 09:02:42.237 +02:00 [INF] Checking update at: https://github.com/stakira/OpenUtau/releases/tag/build/0.1.529
+2024-09-18 09:02:42.240 +02:00 [INF] Checking appcast: https://github.com/stakira/OpenUtau/releases/download/build/0.1.529/appcast.win-x64.xml
+2024-09-18 09:02:49.257 +02:00 [INF] Checking update at: https://github.com/stakira/OpenUtau/releases/tag/build/0.1.529
+2024-09-18 09:02:49.259 +02:00 [INF] Checking appcast: https://github.com/stakira/OpenUtau/releases/download/build/0.1.529/appcast.win-x64.xml
+2024-09-18 09:02:52.374 +02:00 [INF] Skipping update 0.1.529
+2024-09-18 09:02:53.613 +02:00 [INF] Exiting.
+2024-09-18 09:02:53.615 +02:00 [INF] Exited.
+2024-09-18 09:16:51.267 +02:00 [INF] Logging initialized.
+2024-09-18 09:16:51.313 +02:00 [INF] Microsoft Windows NT 10.0.19045.0
+2024-09-18 09:16:51.316 +02:00 [INF] Microsoft Windows 10.0.19045 X64 X64
+2024-09-18 09:16:51.317 +02:00 [INF] OpenUtau v0.0.0.0 win10-x64
+2024-09-18 09:16:51.318 +02:00 [INF] Data path = D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows
+2024-09-18 09:16:51.319 +02:00 [INF] Cache path = D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 09:16:51.948 +02:00 [INF] Initializing application.
+2024-09-18 09:16:52.246 +02:00 [INF] Initializing culture.
+2024-09-18 09:16:52.411 +02:00 [INF] Initialized culture.
+2024-09-18 09:16:52.413 +02:00 [INF] Initializing theme.
+2024-09-18 09:16:52.461 +02:00 [INF] Initialized theme.
+2024-09-18 09:16:52.463 +02:00 [INF] Initializing OpenUtau.
+2024-09-18 09:16:52.468 +02:00 [INF] Searching singers.
+2024-09-18 09:16:52.478 +02:00 [INF] Search all singers: 00:00:00.0053997
+2024-09-18 09:16:52.496 +02:00 [INF] Search all plugins: 00:00:00.0225371
+2024-09-18 09:16:52.499 +02:00 [INF] Search all legacy plugins: 00:00:00.0011327
+2024-09-18 09:16:52.504 +02:00 [INF] Initialized OpenUtau.
+2024-09-18 09:16:52.506 +02:00 [INF] Initializing audio.
+2024-09-18 09:16:52.508 +02:00 [INF] ReleaseSourceTemp D:\diffusion\OpenUtau-DiffSinger-Lunai\OpenUtau\bin\Debug\net6.0-windows\Cache
+2024-09-18 09:16:52.573 +02:00 [INF] Initialized audio.
+2024-09-18 09:16:52.575 +02:00 [INF] Initialized application.
+2024-09-18 09:16:52.577 +02:00 [INF] Framework initialization completed.
+2024-09-18 09:16:52.673 +02:00 [INF] Creating main window.
+2024-09-18 09:16:53.167 +02:00 [INF] Initialized main window component.
+2024-09-18 09:16:53.297 +02:00 [INF] Main window checking Update.
+2024-09-18 09:16:53.301 +02:00 [INF] Created main window.
+2024-09-18 09:16:53.604 +02:00 [INF] SchedulePreRender
+2024-09-18 09:16:53.761 +02:00 [INF] Publish notification Load project
+2024-09-18 09:16:53.953 +02:00 [INF] Checking update at: https://github.com/keirokeer/OpenUtau-DiffSinger-Lunai/releases/tag/0.1.0.4
+2024-09-18 09:16:53.955 +02:00 [ERR] No updatable appcast found.
+2024-09-18 09:16:58.198 +02:00 [INF] Checking update at: https://github.com/keirokeer/OpenUtau-DiffSinger-Lunai/releases/tag/0.1.0.4
+2024-09-18 09:16:58.200 +02:00 [ERR] No updatable appcast found.
+2024-09-18 09:17:02.846 +02:00 [INF] Exiting.
+2024-09-18 09:17:02.849 +02:00 [INF] Exited.

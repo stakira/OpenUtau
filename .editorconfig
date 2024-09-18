@@ -7,7 +7,7 @@
 indent_style = space 
 # Code files 
 [*.{cs,csx,vb,vbx}] 
-indent_size = 4 
+indent_size = 4
 insert_final_newline = true 
 charset = utf-8-bom 
 guidelines = 100 
@@ -34,29 +34,40 @@ dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent 
 dotnet_style_readonly_field = true:suggestion 
 # Expression-level preferences 
-dotnet_style_object_initializer = true:suggestion 
-dotnet_style_collection_initializer = true:suggestion 
-dotnet_style_explicit_tuple_names = true:suggestion 
-dotnet_style_null_propagation = true:suggestion 
-dotnet_style_coalesce_expression = true:suggestion 
-dotnet_style_prefer_is_null_check_over_reference_equality_method = true:silent 
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:silent
 dotnet_prefer_inferred_tuple_names = true:suggestion 
 dotnet_prefer_inferred_anonymous_type_member_names = true:suggestion 
-dotnet_style_prefer_auto_properties = true:silent 
-dotnet_style_prefer_conditional_expression_over_assignment = true:silent 
-dotnet_style_prefer_conditional_expression_over_return = true:silent 
+dotnet_style_prefer_auto_properties = true:silent
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
 ############################### 
 # Naming Conventions          # 
 ############################### 
 # Style Definitions 
 dotnet_naming_style.pascal_case_style.capitalization             = pascal_case 
 # Use PascalCase for constant fields   
-dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion 
+dotnet_naming_rule.constant_fields_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.constant_fields_should_be_pascal_case.symbols  = constant_fields 
-dotnet_naming_rule.constant_fields_should_be_pascal_case.style    = pascal_case_style 
+dotnet_naming_rule.constant_fields_should_be_pascal_case.style = pascal_case_style
 dotnet_naming_symbols.constant_fields.applicable_kinds            = field 
 dotnet_naming_symbols.constant_fields.applicable_accessibilities  = * 
 dotnet_naming_symbols.constant_fields.required_modifiers          = const 
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4
+end_of_line = crlf
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+dotnet_code_quality_unused_parameters = all:suggestion
 ############################### 
 # C# Coding Conventions       # 
 ############################### 
@@ -76,16 +87,16 @@ csharp_style_expression_bodied_accessors = true:silent
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion 
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion 
 # Null-checking preferences 
-csharp_style_throw_expression = true:suggestion 
-csharp_style_conditional_delegate_call = true:suggestion 
+csharp_style_throw_expression = true:suggestion
+csharp_style_conditional_delegate_call = true:suggestion
 # Modifier preferences 
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion 
 # Expression-level preferences 
 csharp_prefer_braces = true:silent 
-csharp_style_deconstructed_variable_declaration = true:suggestion 
-csharp_prefer_simple_default_expression = true:suggestion 
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_prefer_simple_default_expression = true:suggestion
 csharp_style_pattern_local_over_anonymous_function = true:suggestion 
-csharp_style_inlined_variable_declaration = true:suggestion 
+csharp_style_inlined_variable_declaration = true:suggestion
 ############################### 
 # C# Formatting Rules         # 
 ############################### 
@@ -109,13 +120,22 @@ csharp_space_between_method_declaration_parameter_list_parentheses = false
 csharp_space_between_parentheses = false 
 csharp_space_before_colon_in_inheritance_clause = true 
 csharp_space_after_colon_in_inheritance_clause = true 
-csharp_space_around_binary_operators = before_and_after 
+csharp_space_around_binary_operators = before_and_after
 csharp_space_between_method_declaration_empty_parameter_list_parentheses = false 
 csharp_space_between_method_call_name_and_opening_parenthesis = false 
 csharp_space_between_method_call_empty_parameter_list_parentheses = false 
 # Wrapping preferences 
 csharp_preserve_single_line_statements = true 
 csharp_preserve_single_line_blocks = true 
+csharp_style_prefer_null_check_over_type_check = true:suggestion
+csharp_style_prefer_local_over_anonymous_function = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+csharp_style_prefer_tuple_swap = true:suggestion
+csharp_style_prefer_utf8_string_literals = true:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 ############################### 
 # VB Coding Conventions       # 
 ############################### 
