@@ -71,15 +71,14 @@ namespace OpenUtau.Core.Voicevox {
                             }
                             try {
                                 Log.Information($"Starting Voicevox synthesis");
-                                VoicevoxNote vvNotes = new VoicevoxNote();
+                                VoicevoxNotes vvNotes = new VoicevoxNotes();
                                 if (!singer.voicevoxConfig.Tag.Equals("VOICEVOX JA")) {
-                                    Note[][] notes = new Note[phrase.phones.Length][];
+                                    VoicevoxNote[] notes = new VoicevoxNote[phrase.phones.Length];
                                     for (int i = 0; i < phrase.phones.Length; i++) {
-                                        notes[i] = new Note[1];
-                                        notes[i][0] = new Note() {
+                                        notes[i] = new VoicevoxNote() {
                                             lyric = phrase.phones[i].phoneme,
-                                            position = phrase.phones[i].position,
-                                            duration = phrase.phones[i].duration,
+                                            positionMs = phrase.phones[i].positionMs,
+                                            durationMs = phrase.phones[i].durationMs,
                                             tone = (int)(phrase.phones[i].tone + phrase.phones[0].toneShift)
                                         };
                                     }
@@ -178,8 +177,8 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         //Synthesize with parameters of phoneme, F0, and volume. Under development
-        static VoicevoxNote PhraseToVoicevoxNotes(RenderPhrase phrase) {
-            VoicevoxNote notes = new VoicevoxNote();
+        static VoicevoxNotes PhraseToVoicevoxNotes(RenderPhrase phrase) {
+            VoicevoxNotes notes = new VoicevoxNotes();
 
             int headFrames = (int)(VoicevoxUtils.headS * VoicevoxUtils.fps);
             int tailFrames = (int)(VoicevoxUtils.tailS * VoicevoxUtils.fps);
@@ -258,22 +257,21 @@ namespace OpenUtau.Core.Voicevox {
                 var singer = phrase.singer as VoicevoxSinger;
                 if (singer != null) {
                     string singerID = VoicevoxUtils.defaultID;
-                    Note[][] notes = new Note[phrase.phones.Length][];
+                    VoicevoxNote[] notes = new VoicevoxNote[phrase.phones.Length];
 
                     for (int i = 0; i < phrase.phones.Length; i++) {
-                        notes[i] = new Note[1];
-                        notes[i][0] = new Note() {
+                        notes[i] = new VoicevoxNote() {
                             lyric = phrase.phones[i].phoneme,
-                            position = phrase.phones[i].position,
-                            duration = phrase.phones[i].duration,
-                            tone = phrase.phones[i].tone + phrase.phones[0].toneShift
+                            positionMs = phrase.phones[i].positionMs,
+                            durationMs = phrase.phones[i].durationMs,
+                            tone = (int)(phrase.phones[i].tone + phrase.phones[0].toneShift)
                         };
                     }
 
                     var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(notes, phrase.timeAxis);
 
                     string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
-                    VoicevoxNote vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
+                    VoicevoxNotes vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
                     int vvTotalFrames = 0 - vvNotes.phonemes[0].frame_length;
                     vvNotes.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
                     var f0 = new double[vvTotalFrames];
