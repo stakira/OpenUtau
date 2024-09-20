@@ -510,13 +510,16 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuDawIntegrationTerminal(object sender, RoutedEventArgs args) {
+        async void OnMenuDawIntegrationTerminal(object sender, RoutedEventArgs args) {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
             DawIntegrationTerminalViewModel dataContext;
             dataContext = new DawIntegrationTerminalViewModel();
             var dialog = new DawIntegrationTerminalDialog() {
                 DataContext = dataContext
             };
-            dialog.ShowDialog(this);
+            await dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }

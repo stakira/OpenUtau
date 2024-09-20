@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.SignalChain;
-using Vortice.Direct3D;
-using WanaKanaNet.Helpers;
 using OpenUtau.Core.Ustx;
 using NAudio.Wave;
 using Newtonsoft.Json;
@@ -44,7 +41,13 @@ namespace OpenUtau.Core.DawIntegration {
                 byte[] currentMessageBuffer = new byte[0];
                 while (true) {
                     byte[] buffer = new byte[1024];
-                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
+                    int bytesRead;
+                    try {
+                        bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
+                    } catch (SocketException) {
+                        onetimeHandlers["disconnect"]("");
+                        break;
+                    }
                     currentMessageBuffer = currentMessageBuffer.Concat(buffer).ToArray();
                     while (currentMessageBuffer.Contains((byte)'\n')) {
                         int index = Array.IndexOf(currentMessageBuffer, (byte)'\n');
@@ -62,11 +65,15 @@ namespace OpenUtau.Core.DawIntegration {
                             Console.WriteLine($"Unhandled message: {kind}");
                         }
                     }
+
+                    if (cancellationTokenSource != null && cancellationTokenSource.IsCancellationRequested) {
+                        break;
+                    }
                 }
             });
         }
 
-        public static async Task<Client> Connect(int port) {
+        public static async Task<(Client, string)> Connect(int port) {
             var client = new Client(port);
             await client.tcpClient.ConnectAsync("127.0.0.1", port);
             client.stream = client.tcpClient.GetStream();
@@ -74,16 +81,24 @@ namespace OpenUtau.Core.DawIntegration {
             client.cancellationTokenSource = new CancellationTokenSource();
             client.receiver = client.StartReceiver(client.cancellationTokenSource.Token);
 
-            var tcs = new TaskCompletionSource<object?>();
+            var tcs = new TaskCompletionSource<InitMessage>();
             client.RegisterOnetimeListener("init", (string message) => {
-                tcs.SetResult(null);
+                tcs.SetResult(
+                    JsonConvert.DeserializeObject<InitMessage>(message)!
+                );
+            });
+            client.RegisterOnetimeListener("error", (string message) => {
+                var messageContent = JsonConvert.DeserializeObject<ErrorMessage>(message);
+                tcs.SetException(
+                    new Exception($"Connection refused: {messageContent!.message}")
+                );
             });
 
             var timeoutCanceller = new CancellationTokenSource();
             timeoutCanceller.CancelAfter(TimeSpan.FromSeconds(5));
             timeoutCanceller.Token.Register(() => tcs.TrySetCanceled());
-            await tcs.Task;
-            return client;
+            var initMessage = await tcs.Task;
+            return (client, initMessage.ustx);
         }
 
         public async Task SendStatus(UProject project, List<WaveMix> mixes) {
@@ -106,6 +121,7 @@ namespace OpenUtau.Core.DawIntegration {
 
             var message = new UpdateStatusMessage(
                 ustx,
+                project.tracks.Select((t) => t.TrackName).ToList(),
                 base64Mixes.ToList()
             );
 

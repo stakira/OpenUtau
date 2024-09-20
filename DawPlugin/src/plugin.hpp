@@ -1,9 +1,11 @@
 #pragma once
+#include "common.hpp"
 #include "DistrhoPlugin.hpp"
 #include "asio.hpp"
 #include "choc/containers/choc_Value.h"
 #include "extra/String.hpp"
 #include <filesystem>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -23,7 +25,12 @@ public:
   ~OpenUtauPlugin() override;
 
   int port;
+  bool inUse;
   std::string name;
+  std::optional<std::chrono::time_point<std::chrono::system_clock>> lastSync;
+
+  std::vector<std::string> trackNames;
+  Structures::OutputMap outputMap;
 
 protected:
   /* --------------------------------------------------------------------------------------------------------
@@ -114,11 +121,15 @@ private:
   static std::string formatMessage(const std::string &kind,
                                    const choc::value::ValueView &payload);
 
-  bool inUse;
+  void syncMapping();
+  void updatePluginServerFile();
+
   std::string ustx;
   std::string uuid;
 
-  std::shared_ptr<std::vector<std::vector<float>>> mixes;
+  std::atomic<bool> wantReplace = false;
+  std::atomic<int> currentAccesses = 0;
+  std::vector<std::vector<float>> mixes;
 
   std::filesystem::path socketPath;
 

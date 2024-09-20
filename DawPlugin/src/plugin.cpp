@@ -1,12 +1,13 @@
 #include "plugin.hpp"
 #include "DistrhoPlugin.hpp"
+#include "DistrhoPluginInfo.h"
 #include "asio.hpp"
 #include "choc/containers/choc_Value.h"
 #include "choc/memory/choc_Base64.h"
 #include "choc/text/choc_JSON.h"
+#include "common.hpp"
 #include "extra/String.hpp"
 #include "gzip/compress.hpp"
-#include "gzip/decompress.hpp"
 #include "uuid/v4/uuid.h"
 #include <cstdio>
 #include <filesystem>
@@ -15,27 +16,29 @@
 #include <thread>
 #include <vector>
 
-std::vector<uint8_t> gunzip(const char *data, size_t size) {
-  std::vector<uint8_t> decompressed;
-  gzip::Decompressor decompressor;
-  decompressor.decompress(decompressed, data, size);
-  return decompressed;
-}
+// std::jthread *ioThread = nullptr;
+std::unique_ptr<std::jthread> ioThread;
+std::shared_ptr<asio::io_context> ioContext = nullptr;
+std::shared_ptr<asio::io_context> getIoContext() {
+  if (!ioContext) {
+    ioContext = std::make_shared<asio::io_context>();
+    ioThread = std::make_unique<std::jthread>([](std::stop_token st) {
+      while (!st.stop_requested()) {
+        try {
+          ioContext->poll();
+        } catch (asio::system_error &e) {
+          // ignore
+        }
+      }
+    });
 
-std::jthread *ioThread = nullptr;
-asio::io_context *ioContext = nullptr;
-asio::io_context &getIoContext() {
-  if (ioContext == nullptr) {
-    ioContext = new asio::io_context();
-    ioThread = new std::jthread([&]() { ioContext->run(); });
     std::atexit([]() {
       ioContext->stop();
+      ioThread->request_stop();
       ioThread->join();
-      delete ioThread;
-      delete ioContext;
     });
   }
-  return *ioContext;
+  return ioContext;
 }
 
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
@@ -44,7 +47,7 @@ START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------------------------------------------
 OpenUtauPlugin::OpenUtauPlugin()
-    : Plugin(0, 0, 3)
+    : Plugin(0, 0, 5)
 
 {
 
@@ -52,7 +55,7 @@ OpenUtauPlugin::OpenUtauPlugin()
     return;
   }
 
-  this->mixes = std::make_shared<std::vector<std::vector<float>>>();
+  this->mixes = std::vector<std::vector<float>>();
 
   auto currentTime = std::chrono::system_clock::now();
   std::string uuid = uuid::v4::UUID::New().String();
@@ -114,20 +117,31 @@ void OpenUtauPlugin::initState(uint32_t index, State &state) {
     state.key = "mixes";
     state.label = "Mixes";
     break;
+  case 3:
+    state.key = "trackNames";
+    state.label = "Track Names";
+    break;
+  case 4:
+    state.key = "mapping";
+    state.label = "Output Mapping";
+    break;
   }
 }
 
-String OpenUtauPlugin::getState(const char *key) const {
+String OpenUtauPlugin::getState(const char *rawKey) const {
   // DPF cannot handle binary data, so we need to encode it to base64
+  std::string key(rawKey);
 
-  if (strcmp(key, "name") == 0) {
+  if (key == "name") {
     return String(name.c_str());
-  } else if (strcmp(key, "ustx") == 0) {
+  } else if (key == "uuid") {
+    return String(uuid.c_str());
+  } else if (key == "ustx") {
     std::string encoded = choc::base64::encodeToString(ustx);
     return String(encoded.c_str());
-  } else if (strcmp(key, "mixes") == 0) {
+  } else if (key == "mixes") {
     choc::value::Value value = choc::value::createEmptyArray();
-    for (const auto &mix : *mixes) {
+    for (const auto &mix : mixes) {
       std::string compressed =
           gzip::compress((char *)mix.data(), mix.size() * sizeof(float));
       std::string encoded = choc::base64::encodeToString(compressed);
@@ -135,35 +149,47 @@ String OpenUtauPlugin::getState(const char *key) const {
     }
 
     return String(choc::json::toString(value).c_str());
+  } else if (key == "trackNames") {
+    return String(Structures::serializeTrackNames(trackNames).c_str());
+  } else if (key == "mapping") {
+    return String(Structures::serializeOutputMap(outputMap).c_str());
   }
   return String();
 }
 
-void OpenUtauPlugin::setState(const char *key, const char *value) {
-  if (strcmp(key, "name") == 0) {
+void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
+  std::string key(rawKey);
+  if (key == "name") {
     this->name = value;
-  } else if (strcmp(key, "uuid") == 0) {
+    this->updatePluginServerFile();
+  } else if (key == "uuid") {
     this->uuid = value;
-  } else if (strcmp(key, "ustx") == 0) {
-    std::vector<uint8_t> decoded;
-    choc::base64::decodeToContainer(decoded, value);
-    this->ustx = std::string(decoded.begin(), decoded.end());
-  } else if (strcmp(key, "mixes") == 0) {
+  } else if (key == "ustx") {
+    this->ustx = Utils::unBase64ToString(value);
+  } else if (key == "mixes") {
     choc::value::Value jsonValue = choc::json::parse(std::string(value));
     std::vector<std::vector<float>> mixes;
     for (choc::value::ValueView encodedValue : jsonValue) {
       std::string encoded(encodedValue.getString());
-      std::vector<uint8_t> decoded;
-      choc::base64::decodeToContainer(decoded, encoded);
+      if (encoded.length() == 0) {
+        mixes.push_back(std::vector<float>());
+        continue;
+      }
+      std::vector<uint8_t> decoded = Utils::unBase64ToVector(encoded);
       std::vector<uint8_t> decompressed =
-          gunzip((char *)decoded.data(), decoded.size());
+          Utils::gunzip((char *)decoded.data(), decoded.size());
       std::vector<float> mix((float *)decompressed.data(),
                              (float *)decompressed.data() +
                                  decompressed.size() / sizeof(float));
       mixes.push_back(mix);
     }
 
-    *this->mixes = mixes;
+    this->mixes = mixes;
+  } else if (key == "trackNames") {
+    this->trackNames = Structures::deserializeTrackNames(value);
+    syncMapping();
+  } else if (key == "mapping") {
+    this->outputMap = Structures::deserializeOutputMap(value);
   }
 }
 
@@ -176,7 +202,10 @@ const char *OpenUtauPlugin::getLicense() const { return "ISC"; }
 /**
    Get the plugin version, in hexadecimal.
  */
-uint32_t OpenUtauPlugin::getVersion() const { return d_version(1, 0, 0); }
+uint32_t OpenUtauPlugin::getVersion() const {
+  return d_version(Constants::majorVersion, Constants::minorVersion,
+                   Constants::patchVersion);
+}
 
 /* --------------------------------------------------------------------------------------------------------
  * Init */
@@ -187,11 +216,10 @@ uint32_t OpenUtauPlugin::getVersion() const { return d_version(1, 0, 0); }
  */
 void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
                                    AudioPort &port) {
-  // treat meter audio ports as stereo
-  port.groupId = kPortGroupStereo;
-
-  // everything else is as default
-  Plugin::initAudioPort(input, index, port);
+  port.groupId = index / 2;
+  port.hints = kPortGroupStereo;
+  auto name = std::format("Channel {}", index / 2 + 1);
+  port.name = String(name.c_str());
 }
 
 /* --------------------------------------------------------------------------------------------------------
@@ -200,40 +228,54 @@ void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
 void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
                          const MidiEvent *midiEvents, uint32_t midiEventCount) {
   initializeNetwork();
-  float *const outL = outputs[0];
-  float *const outR = outputs[1];
   auto timePosition = this->getTimePosition();
 
-  for (uint32_t i = 0; i < frames; ++i) {
-    outL[i] = 0;
-    outR[i] = 0;
+  for (uint32_t i = 0; i < DISTRHO_PLUGIN_NUM_OUTPUTS; ++i) {
+    for (uint32_t j = 0; j < frames; ++j) {
+      outputs[i][j] = 0;
+    }
   }
-  if (this->mixes->size() > 0 && timePosition.playing) {
+
+  if (this->mixes.size() > 0 && timePosition.playing &&
+      !this->wantReplace.load()) {
+    this->currentAccesses++;
+    auto writeFrame = [&](double inFrame, uint32_t outFrame,
+                          uint8_t channelIndex, uint8_t lr, uint32_t mixIndex) {
+      float mix = 0;
+      auto &mixVector = mixes[mixIndex];
+      auto left = (uint32_t)inFrame;
+      auto right = left + 1;
+      auto leftSampleIndex = left * 2 + lr;
+      auto rightSampleIndex = right * 2 + lr;
+      auto ratio = inFrame - left;
+      if (leftSampleIndex < mixVector.size() &&
+          rightSampleIndex < mixVector.size()) {
+        auto leftSample = mixVector[leftSampleIndex];
+        auto rightSample = mixVector[rightSampleIndex];
+        mix = leftSample * (1 - ratio) + rightSample * ratio;
+
+        outputs[channelIndex][outFrame] += mix;
+      }
+    };
     auto sampleRate = getSampleRate();
-    auto mixes = this->mixes;
     for (uint32_t i = 0; i < frames; ++i) {
       auto frame = (i + timePosition.frame) * 44100.0 / sampleRate;
-      for (uint8_t lr = 0; lr < 2; ++lr) {
-        float mix = 0;
-        auto left = (uint32_t)frame;
-        auto right = left + 1;
-        auto leftSampleIndex = left * 2 + lr;
-        auto rightSampleIndex = right * 2 + lr;
-        auto ratio = frame - left;
-        if (leftSampleIndex < (*mixes)[0].size() &&
-            rightSampleIndex < (*mixes)[0].size()) {
-          auto leftSample = (*mixes)[0][leftSampleIndex];
-          auto rightSample = (*mixes)[0][rightSampleIndex];
-          mix = leftSample * (1 - ratio) + rightSample * ratio;
-
-          if (lr == 0) {
-            outL[i] = mix;
-          } else {
-            outR[i] = mix;
+      for (uint32_t j = 0; j < mixes.size(); ++j) {
+        if (j >= this->outputMap.size()) {
+          break;
+        }
+        auto &mapping = outputMap[j];
+        for (uint32_t k = 0; k < DISTRHO_PLUGIN_NUM_OUTPUTS; ++k) {
+          if (mapping.first[k]) {
+            writeFrame(frame, i, k, 0, j);
+          }
+          if (mapping.second[k]) {
+            writeFrame(frame, i, k, 1, j);
           }
         }
       }
     }
+    this->currentAccesses--;
   }
 };
 
@@ -257,13 +299,15 @@ void OpenUtauPlugin::onAccept(std::shared_ptr<OpenUtauPlugin> self,
     self->willAccept();
     if (!self->inUse) {
       self->inUse = true;
-      socket.write_some(
-          asio::buffer(formatMessage("init", choc::value::createObject(""))));
+      socket.write_some(asio::buffer(formatMessage(
+          "init", choc::value::createObject("", "ustx", self->ustx))));
       std::string messageBuffer;
-      char buffer[1024];
+      char buffer[16 * 1024];
       while (true) {
-        size_t len = socket.read_some(asio::buffer(buffer));
-        if (len == 0) {
+        size_t len;
+        try {
+          len = socket.read_some(asio::buffer(buffer));
+        } catch (asio::system_error &e) {
           break;
         }
         messageBuffer.append(buffer, len);
@@ -287,7 +331,11 @@ void OpenUtauPlugin::onAccept(std::shared_ptr<OpenUtauPlugin> self,
         }
       }
 
-      socket.close();
+      try {
+        socket.close();
+      } catch (asio::system_error &e) {
+        // ignore
+      }
       self->inUse = false;
     } else {
       socket.write_some(asio::buffer(formatMessage(
@@ -310,37 +358,76 @@ void OpenUtauPlugin::initializeNetwork() {
   // initialize the ioThread here.
   if (!initializedNetwork) {
     this->acceptor = std::make_shared<asio::ip::tcp::acceptor>(
-        getIoContext(), asio::ip::tcp::endpoint(
-                            asio::ip::address::from_string("127.0.0.1"), 0));
+        getIoContext()->get_executor(),
+        asio::ip::tcp::endpoint(asio::ip::address::from_string("127.0.0.1"),
+                                0));
     int port = acceptor->local_endpoint().port();
     this->port = port;
 
-    std::filesystem::path tempPath = std::filesystem::temp_directory_path();
-    std::filesystem::path socketPath = tempPath / "OpenUtau" / "PluginServers" /
-                                       std::format("{}.json", this->uuid);
-    std::string socketContent = choc::json::toString(
-        choc::value::createObject("", "port", port, "name", this->uuid));
-
-    std::filesystem::create_directories(socketPath.parent_path());
-    std::ofstream socketFile(socketPath);
-    socketFile << socketContent;
-    socketFile.close();
-
-    this->socketPath = socketPath;
-
+    updatePluginServerFile();
     initializedNetwork = true;
     willAccept();
   }
 }
 
+void OpenUtauPlugin::updatePluginServerFile() {
+  std::filesystem::path tempPath = std::filesystem::temp_directory_path();
+  std::filesystem::path socketPath = tempPath / "OpenUtau" / "PluginServers" /
+                                     std::format("{}.json", this->uuid);
+  std::string socketContent = choc::json::toString(
+      choc::value::createObject("", "port", port, "name", this->name));
+
+  std::filesystem::create_directories(socketPath.parent_path());
+  std::ofstream socketFile(socketPath);
+  socketFile << socketContent;
+  socketFile.close();
+
+  this->socketPath = socketPath;
+}
+
 void OpenUtauPlugin::onMessage(const std::string kind,
                                const choc::value::Value payload) {
   if (kind == "status") {
+    this->wantReplace.store(true);
+    while (this->currentAccesses > 0) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    this->lastSync = std::chrono::system_clock::now();
+
     std::string ustx = payload["ustx"].get<std::string>();
     setState("ustx", ustx.c_str());
     std::string mixesJson = choc::json::toString(payload["mixes"]);
     setState("mixes", mixesJson.c_str());
+    std::vector<std::string> trackNames;
+    for (auto track : payload["trackNames"]) {
+      trackNames.push_back(track.get<std::string>());
+    }
+    setState("trackNames", Structures::serializeTrackNames(trackNames).c_str());
+
+    syncMapping();
+    this->wantReplace.store(false);
   }
+}
+
+void OpenUtauPlugin::syncMapping() {
+  auto trackNames = this->trackNames;
+  auto outputMap = this->outputMap;
+  if (trackNames.size() < outputMap.size()) {
+    outputMap.resize(trackNames.size());
+  } else if (trackNames.size() > outputMap.size()) {
+    for (size_t i = outputMap.size(); i < trackNames.size(); ++i) {
+      auto index = i % 16;
+      auto left = index * 2;
+      auto right = left + 1;
+      auto leftChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
+      auto rightChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
+      leftChannel[left] = true;
+      rightChannel[right] = true;
+      outputMap.push_back({leftChannel, rightChannel});
+    }
+  }
+
+  setState("mapping", Structures::serializeOutputMap(outputMap).c_str());
 }
 
 std::string

@@ -3,7 +3,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" MinWidth="200" MinHeight="200" Width="300" Height="350"
+        mc:Ignorable="d" MinWidth="300" MinHeight="200" Width="400" Height="350"
         x:Class="OpenUtau.App.Views.DawIntegrationTerminalDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource dawintegrationterminal.caption}"
@@ -26,6 +26,7 @@
     <Button Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch"
             Content="{DynamicResource dawintegrationterminal.downloadplugin}" Click="OnDownloadClick" />
     <ListBox IsVisible="{Binding !!ServerList.Count}"
+             IsEnabled="{Binding CanConnect}"
              ItemsSource="{Binding ServerList}"
              SelectedItem="{Binding SelectedServer}"
              SelectionMode="Single" Grid.Row="4" Grid.Column="0">
@@ -43,11 +44,18 @@
       </ListBox.ItemTemplate>
     </ListBox>
     <TextBlock IsVisible="{Binding !ServerList.Count}"
+               IsEnabled="{Binding CanConnect}"
                Text="{DynamicResource dawintegrationterminal.notfound}"
                Grid.Row="4" Grid.Column="0" />
     <Button Grid.Row="6" Grid.Column="0" HorizontalAlignment="Stretch"
-            IsEnabled="{Binding SelectedServer, Converter={x:Static ObjectConverters.IsNotNull}}"
             Click="OnConnect"
-            Content="{DynamicResource dawintegrationterminal.connect}" />
+            Content="{DynamicResource dawintegrationterminal.connect}">
+      <Button.IsEnabled>
+        <MultiBinding Converter="{x:Static BoolConverters.And}">
+          <Binding Path="SelectedServer" Converter="{x:Static ObjectConverters.IsNotNull}" />
+          <Binding Path="CanConnect"/>
+        </MultiBinding>
+      </Button.IsEnabled>
+    </Button>
   </Grid>
 </Window>

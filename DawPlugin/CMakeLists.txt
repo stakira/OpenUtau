@@ -10,14 +10,6 @@ if(MSVC)
   add_compile_options("/utf-8")
 endif()
 
-# Main sources
-file(GLOB_RECURSE dsp_sources "src/plugin_*.cpp")
-file(GLOB_RECURSE ui_sources "src/ui_*.cpp")
-file(GLOB_RECURSE common_sources "src/*.cpp")
-
-# Dependencies
-file(GLOB_RECURSE imgui_sources "deps/imgui/*.cpp")
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG)
   add_definitions(-DDPF_DEBUG)
@@ -32,8 +24,6 @@ endif()
 # Windows 10
 add_definitions(-D_WIN32_WINNT=0x0A00)
 
-list(REMOVE_ITEM common_sources ${dsp_sources} ${ui_sources})
-
 dpf_add_plugin(
   openutau_daw_plugin
   TARGETS
@@ -41,13 +31,11 @@ dpf_add_plugin(
   UI_TYPE
     opengl
   FILES_COMMON
-    ${common_sources}
+    src/common.cpp
   FILES_DSP
     src/plugin.cpp
-    ${dsp_sources}
   FILES_UI
     src/ui.cpp
-    ${ui_sources}
     deps/dpf_widgets/opengl/DearImGui.cpp)
 
 # Including zlib before DPF causes "find_library" to fail with infinite

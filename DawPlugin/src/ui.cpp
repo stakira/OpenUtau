@@ -1,10 +1,16 @@
+#include "DistrhoPluginInfo.h"
 #include "DistrhoUI.hpp"
+#include "common.hpp"
+#include "dpf_widgets/generic/ResizeHandle.hpp"
+#include "dpf_widgets/opengl/DearImGui/imgui.h"
 #include "plugin.hpp"
 #include <string>
 
 START_NAMESPACE_DISTRHO
 
 // --------------------------------------------------------------------------------------------------------------------
+
+int fontSize = 13.f;
 
 class OpenUtauUI : public UI {
 public:
@@ -13,7 +19,9 @@ public:
      The UI should be initialized to a default state that matches the plugin
      side.
    */
-  OpenUtauUI() : UI(DISTRHO_UI_DEFAULT_WIDTH, DISTRHO_UI_DEFAULT_HEIGHT) {
+  OpenUtauUI()
+      : UI(DISTRHO_UI_DEFAULT_WIDTH, DISTRHO_UI_DEFAULT_HEIGHT),
+        resizeHandle(this) {
     const double scaleFactor = getScaleFactor();
 
     if (d_isEqual(scaleFactor, 1.0)) {
@@ -25,7 +33,16 @@ public:
       setGeometryConstraints(width, height);
       setSize(width, height);
     }
+
+    if (isResizable())
+      resizeHandle.hide();
+
+    setTheme();
+
+    setFontSize(fontSize);
   }
+
+  bool showDemoWindow = false;
 
 protected:
   // ----------------------------------------------------------------------------------------------------------------
@@ -51,9 +68,141 @@ protected:
 
     auto plugin = getPlugin();
 
-    ImGui::Text("OpenUtau Bridge: %s", "v1.0.0");
-    ImGui::Text("Open OpenUtau, and select this:");
-    ImGui::Text("  %s (%d)", plugin->name.c_str(), plugin->port);
+    auto &style = ImGui::GetStyle();
+
+    ImGui::Begin("OpenUtau Bridge", nullptr,
+                 ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+
+    ImGui::TextColored(style.Colors[ImGuiCol_ButtonActive],
+                       "OpenUtau Bridge v%d.%d.%d", Constants::majorVersion,
+                       Constants::minorVersion, Constants::patchVersion);
+
+    ImGui::Separator();
+
+    ImGui::Text("Plugin name:");
+    ImGui::SameLine();
+    ImGui::InputText("##plugin-name", nameBuffer, sizeof(nameBuffer));
+    if (ImGui::IsItemDeactivatedAfterEdit()) {
+      setState("name", nameBuffer);
+      plugin->name = nameBuffer;
+    } else if (!(ImGui::IsItemActive() &&
+                 ImGui::TempInputIsActive(ImGui::GetActiveID()))) {
+      strncpy_s(nameBuffer, plugin->name.c_str(), sizeof(nameBuffer));
+    }
+
+    partiallyColoredText(
+        std::format("Plugin identifier: [{} ({})]", plugin->name, plugin->port),
+        style.Colors[ImGuiCol_ButtonActive]);
+
+    partiallyColoredText(
+        std::format("Connected: [{}]", plugin->inUse ? "Yes" : "No"),
+        plugin->inUse ? style.Colors[ImGuiCol_ButtonActive]
+                      : style.Colors[ImGuiCol_TextDisabled]);
+
+#ifdef DEBUG
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D))) {
+      showDemoWindow = !showDemoWindow;
+    }
+    if (showDemoWindow) {
+      ImGui::ShowDemoWindow(&showDemoWindow);
+    }
+#endif
+
+    if (plugin->lastSync) {
+      auto lastSyncDuration =
+          std::chrono::duration_cast<std::chrono::seconds>(
+              std::chrono::system_clock::now() - *plugin->lastSync)
+              .count();
+      if (lastSyncDuration > 60) {
+        ImGui::Text("Last sync: %lldm ago", lastSyncDuration / 60);
+      } else {
+        partiallyColoredText(
+            std::format("Last sync: [{}s ago]", lastSyncDuration),
+            style.Colors[ImGuiCol_ButtonActive]);
+      }
+    } else {
+      partiallyColoredText("Last sync: [N/A]",
+                           style.Colors[ImGuiCol_TextDisabled]);
+    }
+
+    if (plugin->trackNames.size() > 0) {
+      ImGui::Spacing();
+      ImGui::TextColored(style.Colors[ImGuiCol_ButtonActive], "Track Mapping:");
+      if (ImGui::BeginTable("##track_mapping",
+                            DISTRHO_PLUGIN_NUM_OUTPUTS / 2 + 1,
+                            ImGuiTableFlags_Borders)) {
+        ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_NoReorder);
+        for (int i = 0; i < DISTRHO_PLUGIN_NUM_OUTPUTS / 2; i++) {
+          ImGui::TableSetupColumn(std::format("Ch. {}", i + 1).c_str(),
+                                  ImGuiTableColumnFlags_NoReorder |
+                                      ImGuiTableColumnFlags_WidthFixed |
+                                      ImGuiTableColumnFlags_NoSort,
+                                  style.FramePadding.x * 4 + fontSize * 2);
+        }
+        ImGui::TableHeadersRow();
+        for (int i = 0; i < plugin->outputMap.size(); i++) {
+          ImGui::TableNextRow();
+          for (int lr = 0; lr < 2; lr++) {
+            ImGui::TableNextColumn();
+            ImGui::Text("%s: %s", plugin->trackNames[i].c_str(),
+                        lr == 0 ? "L" : "R");
+            for (int j = 0; j < DISTRHO_PLUGIN_NUM_OUTPUTS; j += 2) {
+              ImGui::TableNextColumn();
+              bool leftValue;
+              bool rightValue;
+              if (lr == 0) {
+                leftValue = plugin->outputMap[i].first[j];
+                rightValue = plugin->outputMap[i].first[j + 1];
+              } else {
+                leftValue = plugin->outputMap[i].second[j];
+                rightValue = plugin->outputMap[i].second[j + 1];
+              }
+
+              bool leftCheckboxChanged = ImGui::Checkbox(
+                  std::format("##track-mapping-checkbox-{}-{}-{}", i, lr, j)
+                      .c_str(),
+                  &leftValue);
+              if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                ImGui::SetTooltip("Channel %d, Left", j / 2 + 1);
+              }
+              ImGui::SameLine(0, style.ItemSpacing.x / 2.0f);
+              bool rightCheckboxChanged = ImGui::Checkbox(
+                  std::format("##track-mapping-checkbox-{}-{}-{}", i, lr, j + 1)
+                      .c_str(),
+                  &rightValue);
+              if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
+                ImGui::SetTooltip("Channel %d, Right", j / 2 + 1);
+              }
+              if (leftCheckboxChanged || rightCheckboxChanged) {
+                auto newOutputMap = plugin->outputMap;
+                if (lr == 0) {
+                  newOutputMap[i].first[j] = leftValue;
+                  newOutputMap[i].first[j + 1] = rightValue;
+                } else {
+                  newOutputMap[i].second[j] = leftValue;
+                  newOutputMap[i].second[j + 1] = rightValue;
+                }
+                setState("outputMap",
+                         Structures::serializeOutputMap(newOutputMap).c_str());
+                plugin->outputMap = newOutputMap;
+              }
+            }
+          }
+        }
+        ImGui::EndTable();
+      }
+    } else {
+      ImGui::Text("Please sync with OpenUtau first.");
+      ImGui::Text("1. Launch OpenUtau");
+      partiallyColoredText(
+          "2. Click ['File'] > ['Connect to DAW...'] in OpenUtau",
+          style.Colors[ImGuiCol_ButtonActive]);
+      partiallyColoredText(std::format("3. Select ['{} ({})'] in the list",
+                                       plugin->name, plugin->port),
+                           style.Colors[ImGuiCol_ButtonActive]);
+    }
+
+    ImGui::End();
   }
 
   OpenUtauPlugin *getPlugin() {
@@ -61,6 +210,58 @@ protected:
   }
 
   // ----------------------------------------------------------------------------------------------------------------
+  void setTheme() {
+    ImGui::StyleColorsLight();
+    ImVec4 *colors = ImGui::GetStyle().Colors;
+    // #ff679d
+    auto color = ImVec4(1.0f, 0.4f, 0.6f, 1.0f);
+    auto darkColor = ImVec4(0.8f, 0.3f, 0.5f, 1.0f);
+    auto lightColor = ImVec4(1.0f, 0.5f, 0.7f, 1.0f);
+    colors[ImGuiCol_SliderGrab] = color;
+    colors[ImGuiCol_SliderGrabActive] = darkColor;
+    colors[ImGuiCol_ButtonActive] = darkColor;
+    colors[ImGuiCol_SeparatorHovered] = lightColor;
+    colors[ImGuiCol_TabHovered] = lightColor;
+    colors[ImGuiCol_TabActive] = color;
+    colors[ImGuiCol_CheckMark] = color;
+    colors[ImGuiCol_PlotHistogram] = color;
+    colors[ImGuiCol_PlotHistogramHovered] = darkColor;
+
+    // #4ea6ea
+    auto hoverColor = ImVec4(0.3f, 0.7f, 0.9f, 1.0f);
+    colors[ImGuiCol_FrameBgHovered] =
+        ImVec4(hoverColor.w, hoverColor.x, hoverColor.y, 0.20f);
+    colors[ImGuiCol_FrameBgActive] =
+        ImVec4(hoverColor.w, hoverColor.x, hoverColor.y, 0.40f);
+  }
+
+  void partiallyColoredText(const std::string &text, const ImVec4 &color) {
+    std::string remainingText = text;
+    while (remainingText.size() > 0) {
+      auto pos = remainingText.find_first_of('[');
+      if (pos == std::string::npos) {
+        ImGui::TextUnformatted(remainingText.c_str());
+        break;
+      }
+      ImGui::TextUnformatted(remainingText.substr(0, pos).c_str());
+      ImGui::SameLine(0, 0);
+      remainingText = remainingText.substr(pos + 1);
+      pos = remainingText.find_first_of(']');
+      if (pos == std::string::npos) {
+        ImGui::TextUnformatted(remainingText.c_str());
+        break;
+      }
+      auto coloredText = remainingText.substr(0, pos);
+      ImGui::TextColored(color, "%s", coloredText.c_str());
+      remainingText = remainingText.substr(pos + 1);
+      if (remainingText.size() > 0) {
+        ImGui::SameLine(0, 0);
+      }
+    }
+  }
+
+  ResizeHandle resizeHandle;
+  char nameBuffer[1024];
 
   DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpenUtauUI)
 };
