@@ -157,6 +157,9 @@
   <system:String x:Key="menu.edit.redo">Redo</system:String>
   <system:String x:Key="menu.edit.selectall">Select All</system:String>
   <system:String x:Key="menu.edit.undo">Undo</system:String>
+  <system:String x:Key="menu.edit.copypoints">Copy Points</system:String>
+  <system:String x:Key="menu.edit.pastepoints">Paste Points</system:String>
+  <system:String x:Key="menu.edit.deletepoints">Delete Points</system:String>
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
   <system:String x:Key="menu.file.exportaudio">Export Audio</system:String>
@@ -328,6 +331,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
   <system:String x:Key="pianoroll.toggle.Metronome">Metronome</system:String>
+  <system:String x:Key="pianoroll.toggle.EditCurve">Edit Curve Points (Ctrl+E)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
     Left click to draw
     Right click to reset

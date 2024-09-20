@@ -33,6 +33,13 @@ namespace OpenUtau.App.ViewModels {
             tempSelectedNotes = selection.TempSelectedNotes.ToArray();
         }
     }
+    public class CurvesRefreshEvent { }
+    public class CurvePointsSelectionEvent {
+        public readonly int[] selectedPoints;
+        public CurvePointsSelectionEvent(List<int> selection) {
+            selectedPoints = selection.ToArray();
+        }
+    }
     public class WaveformRefreshEvent { }
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
@@ -95,6 +102,8 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public bool IsMetronomePlaying { get; set; }
         public ReactiveCommand<Unit, Unit> MetronomePlay { get; }
+        [Reactive] public bool IsEditCurve { get; set; }
+        public ReactiveCommand<Unit, Unit> EditCurveStart { get; }
 
         public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
@@ -108,6 +117,13 @@ namespace OpenUtau.App.ViewModels {
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
 
         public readonly NoteSelectionViewModel Selection = new NoteSelectionViewModel();
+
+        public readonly List<int> SelectionPoints = new List<int>();
+        public readonly List<int> tmpSelectionPoints = new List<int>();
+        public  int LastSelectionPoint { get; set; } = -1;
+        public Point LastSelectionPos { get; set; }
+        public string CopyCurveType { get; set; } = "";
+        public readonly List<int> CopyPoints = new List<int>();
 
         internal NotesViewModelHitTest HitTest;
         private int _lastNoteLength = 480;
@@ -226,6 +242,10 @@ namespace OpenUtau.App.ViewModels {
             IsMetronomePlaying = false;
             MetronomePlay = ReactiveCommand.Create(() => {
                 PlayMetronome(IsMetronomePlaying);
+            });
+            IsEditCurve = false;
+            EditCurveStart = ReactiveCommand.Create(() => {
+                MessageBus.Current.SendMessage(new CurvesRefreshEvent());
             });
 
             ShowTips = Preferences.Default.ShowTips;
@@ -879,7 +899,134 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
         }
+        public void DeselectCurvePoints() {
+            tmpSelectionPoints.Clear();
+            SelectionPoints.Clear();
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+        }
+        public void SelectCurvePoints(List<int> selection) {
+            SelectionPoints.Clear();
+            SelectionPoints.AddRange(selection);
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+        }
+        public void ToggleSelectCurvePoint(int index) {
+            if (SelectionPoints.Contains(index)) {
+                SelectionPoints.Remove(index);
+                LastSelectionPoint = -1;
+            } else {
+                SelectionPoints.Add(index);
+                LastSelectionPoint = index;
+            }
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+        }
+        public void SelectCurvePointsUntil(int index) {
+            if (Part == null) {
+                return;
+            }
+            if(LastSelectionPoint == -1) {
+                LastSelectionPoint = index;
+                return;
+            }
 
+            int startIndex = Math.Min(LastSelectionPoint, index);
+            int endIndex = Math.Max(LastSelectionPoint, index);
+
+            for (int i = startIndex; i <= endIndex; i++) {
+                if (SelectionPoints.Contains(i)) { continue; }
+                SelectionPoints.Add(i);
+            }
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+        }
+        public void setTmpSelectCurvePoints() {
+            tmpSelectionPoints.Clear();
+            tmpSelectionPoints.AddRange(SelectionPoints);
+        }
+        public void TempSelectPoints(double x0, double x1, double y0, double y1, double height) {
+            var track = Project.tracks[Part!.trackNo];
+            UExpressionDescriptor? descriptor;
+            if (Project == null || Part == null || !track.TryGetExpDescriptor(Project, PrimaryKey, out descriptor)) {
+                return;
+            }
+            if (descriptor.type != UExpressionType.Curve) {
+                return;
+            }
+
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+            if (curve == null) {
+                return;
+            }
+
+            int tickX1 = PointToTick(new Point(x0, y0));
+            int tickX2 = PointToTick(new Point(x1, y1));
+            int tickY0 = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - y0 / height));
+            int tickY1 = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - y1 / height));
+
+            SelectionPoints.Clear();
+            SelectionPoints.AddRange(tmpSelectionPoints);
+            for (int i = 0; i < curve.xs.Count; i++) {
+                int x = curve.xs[i];
+                int y = curve.ys[i];
+                if (x < tickX1) { continue; }
+                if ((x > tickX2)) { break; }
+                if (SelectionPoints.Contains(i)) { continue; }
+
+                if (y < tickY0 && y > tickY1) {
+                    SelectionPoints.Add(i);
+                }
+            }
+            
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+        }
+        public void CopyCurvePoints() {
+            if (Part != null && SelectionPoints.Count != 0) {
+                CopyPoints.Clear();
+                CopyPoints.AddRange(SelectionPoints);
+                CopyPoints.Sort();
+                CopyCurveType = PrimaryKey;
+            }
+        }
+        public void PasteCurvePoints() {
+
+            if (Part == null || PrimaryKey == null) return;
+            if (CopyPoints.Count == 0 || CopyCurveType != PrimaryKey) return;
+
+            var curve = Part.curves.FirstOrDefault(c => c.descriptor.abbr == PrimaryKey);
+            if(curve == null) return;
+
+            var xs = new List<int>();
+            var ys = new List<int>();
+
+            foreach(var index in CopyPoints) {
+                int tickX = curve.xs[index];
+                int tickY = curve.ys[index];
+                xs.Add(tickX);
+                ys.Add(tickY);
+            }
+
+            int firstTickX = xs[0];
+            int posTick = PointToTick(LastSelectionPos);
+            int offsetTickX = posTick - firstTickX;
+            for (int i = 0; i < xs.Count; i++) {
+                xs[i] += offsetTickX;
+            }
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new PasteCurvePointsCommand(Project, Part, PrimaryKey, xs.ToArray(), ys.ToArray()));
+            DocManager.Inst.EndUndoGroup();
+        }
+        public void DeleteCurvePoints() {
+
+            if (Part == null || PrimaryKey == null) return;
+            var curve = Part.curves.FirstOrDefault(c => c.descriptor.abbr == PrimaryKey);
+            if (curve == null) return;
+
+            var selection = SelectionPoints.ToArray();
+            SelectionPoints.Clear();
+            MessageBus.Current.SendMessage(new CurvePointsSelectionEvent(SelectionPoints));
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new DeleteCurvePointsCommand(Project, Part, PrimaryKey, selection));
+            DocManager.Inst.EndUndoGroup();
+        }
         public async void PasteSelectedParams(PianoRollWindow window) {
             if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
                 var selectedNotes = Selection.ToList();

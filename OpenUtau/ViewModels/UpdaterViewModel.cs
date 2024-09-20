@@ -13,6 +13,7 @@ using NetSparkleUpdater.SignatureVerifiers;
 using Newtonsoft.Json;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using Org.BouncyCastle.Asn1.X509;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 
@@ -84,7 +85,7 @@ namespace OpenUtau.App.ViewModels {
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
             client.Timeout = TimeSpan.FromSeconds(30);
-            using var resposne = await client.GetAsync("https://api.github.com/repos/stakira/OpenUtau/releases");
+            using var resposne = await client.GetAsync("https://api.github.com/repos/JackZ2024/OpenUtau/releases");
             resposne.EnsureSuccessStatusCode();
             string respBody = await resposne.Content.ReadAsStringAsync();
             List<GithubRelease>? releases = JsonConvert.DeserializeObject<List<GithubRelease>>(respBody);
@@ -116,6 +117,48 @@ namespace OpenUtau.App.ViewModels {
                 UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
                 return;
             }
+
+            if(updateInfo.Status == UpdateStatus.UpdateAvailable) {
+                string version = updateInfo.Updates[0].Version;
+                string installVersion = updateInfo.Updates[0].AppVersionInstalled;
+
+                string[] versionList = version.Split('.');
+                string[] installVersionList = installVersion.Split(".");
+
+                int length = installVersionList.Length > versionList.Length ? versionList.Length : installVersionList.Length;
+                int ret = 0;
+                for (int i = 0; i < length; i++) {
+                    int versionNum;
+                    int installVersionNum;
+                    var versionS = int.TryParse(versionList[i], out versionNum);
+                    var installVersionS = int.TryParse(installVersionList[i], out installVersionNum);
+                    if(versionS && installVersionS) {
+                        if(versionNum > installVersionNum) {
+                            ret = 1; 
+                            break;
+                        }
+                        else if(versionNum < installVersionNum) {
+                            ret = -1;
+                            break;
+                        }
+                    }
+                }
+                if (ret == 0) {
+                    if (installVersionList.Length > versionList.Length) {
+                        ret = -1;
+                    } else if (installVersionList.Length < versionList.Length) {
+                        ret = 1;
+                    }
+                }
+
+                if (ret == 1) {
+                    updateInfo.Status = UpdateStatus.UpdateAvailable;
+                }
+                else {
+                    updateInfo.Status = UpdateStatus.UpdateNotAvailable;
+                }
+            }
+
             switch (updateInfo.Status) {
                 case UpdateStatus.UpdateAvailable:
                 case UpdateStatus.UserSkipped:

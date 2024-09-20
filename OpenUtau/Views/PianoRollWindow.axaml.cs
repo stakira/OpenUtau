@@ -871,17 +871,52 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                editState = new ExpSetValueState(control, ViewModel, this);
+                if(ViewModel.NotesViewModel.IsEditCurve) {
+                    ExpCanvasLeftPointerPressed(control, point, args);
+                } else {
+                    editState = new ExpSetValueState(control, ViewModel, this);
+                }
             } else if (point.Properties.IsRightButtonPressed) {
                 editState = new ExpResetValueState(control, ViewModel, this);
                 Cursor = ViewConstants.cursorNo;
+            } else if (point.Properties.IsMiddleButtonPressed) {
+                editState = new ExpCurvePanningState(control, ViewModel, this);
+                Cursor = ViewConstants.cursorHand;
             }
             if (editState != null) {
                 editState.Begin(point.Pointer, point.Position);
                 editState.Update(point.Pointer, point.Position, args);
             }
         }
+        private void ExpCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
 
+            var curveHitInfo = ViewModel.NotesViewModel.HitTest.HitTestCurvePoint(point.Position, control.Bounds.Height);
+            if (curveHitInfo.OnPoint) {
+                if (args.KeyModifiers == cmdKey) {
+                    ViewModel.NotesViewModel.ToggleSelectCurvePoint(curveHitInfo.Index);
+                } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                    ViewModel.NotesViewModel.SelectCurvePointsUntil(curveHitInfo.Index);
+                } else {
+                    if (!ViewModel.NotesViewModel.SelectionPoints.Contains(curveHitInfo.Index)) {
+                        ViewModel.NotesViewModel.SelectCurvePoints(new List<int> { curveHitInfo.Index });
+                    }
+
+                    editState = new ExpPointsMoveEditState(control, ViewModel, this);
+                    ViewModel.NotesViewModel.LastSelectionPoint = curveHitInfo.Index;
+                }
+            } else {
+                if(args.KeyModifiers == cmdKey) {
+                    ViewModel.NotesViewModel.setTmpSelectCurvePoints();
+                } else {
+                    ViewModel.NotesViewModel.DeselectCurvePoints();
+                    ViewModel.NotesViewModel.LastSelectionPos = point.Position;
+                }
+                editState = new ExpPointsSelectionEditState(control, ViewModel, this, PointsSelectionBox);
+                Cursor = ViewConstants.cursorCross;
+
+                ViewModel.NotesViewModel.LastSelectionPoint = -1;
+            }
+        }
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
@@ -908,6 +943,35 @@ namespace OpenUtau.App.Views {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+        }
+        public void ExpCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            LyricBox?.EndEdit();
+            var control = (Control)sender;
+            var position = args.GetCurrentPoint(control).Position;
+            var size = control.Bounds.Size;
+            var delta = args.Delta;
+            if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
+                if (args.KeyModifiers == KeyModifiers.Shift) {
+                    delta = new Vector(delta.Y, delta.X);
+                }
+                if (delta.X != 0) {
+                    HScrollBar.Value = Math.Max(HScrollBar.Minimum,
+                        Math.Min(HScrollBar.Maximum, HScrollBar.Value - HScrollBar.SmallChange * delta.X));
+                }
+                if (delta.Y != 0) {
+                    VScrollBar.Value = Math.Max(VScrollBar.Minimum,
+                        Math.Min(VScrollBar.Maximum, VScrollBar.Value - VScrollBar.SmallChange * delta.Y));
+                }
+            } else if (args.KeyModifiers == KeyModifiers.Alt) {
+                position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
+                ViewModel.NotesViewModel.OnYZoomed(position, 0.1 * args.Delta.Y);
+            } else if (args.KeyModifiers == cmdKey) {
+                TimelinePointerWheelChanged(TimelineCanvas, args);
+            }
+            if (editState != null) {
+                var point = args.GetCurrentPoint(editState.control);
+                editState.Update(point.Pointer, point.Position);
+            }
         }
 
         public void PhonemeCanvasDoubleTapped(object sender, TappedEventArgs args) {
@@ -1431,6 +1495,10 @@ namespace OpenUtau.App.Views {
                         notesVm.CopyNotes();
                         return true;
                     }
+                    if(isShift) {
+                        notesVm.CopyCurvePoints();
+                        return true;
+                    }
                     break;
                 case Key.X:
                     if (isCtrl) {
@@ -1445,6 +1513,10 @@ namespace OpenUtau.App.Views {
                     }
                     if (isAlt) {
                         notesVm.PasteSelectedParams(this);
+                        return true;
+                    }
+                    if(isShift) {
+                        notesVm.PasteCurvePoints();
                         return true;
                     }
                     break;
@@ -1466,6 +1538,10 @@ namespace OpenUtau.App.Views {
                 case Key.Back:
                     if (isNone) {
                         notesVm.DeleteSelectedNotes();
+                        return true;
+                    }
+                    if(isShift) {
+                        notesVm.DeleteCurvePoints();
                         return true;
                     }
                     break;
@@ -1633,6 +1709,11 @@ namespace OpenUtau.App.Views {
                             y = 0.5;
                         }
                         notesVm.OnXZoomed(new Point(x, y), 0.1);
+                        return true;
+                    }
+                    if(isCtrl) {
+                        notesVm.IsEditCurve = !notesVm.IsEditCurve;
+                        MessageBus.Current.SendMessage(new CurvesRefreshEvent());
                         return true;
                     }
                     break;

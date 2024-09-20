@@ -205,6 +205,10 @@
               <MenuItem Header="{DynamicResource menu.edit.paste}" InputGesture="Ctrl+V" Command="{Binding Paste}"/>
               <MenuItem Header="{DynamicResource menu.edit.delete}" InputGesture="Delete" Command="{Binding Delete}"/>
               <MenuItem Header="-" Height="1"/>
+              <MenuItem Header="{DynamicResource menu.edit.copypoints}" InputGesture="Shift+C" Command="{Binding CopyPoints}"/>
+              <MenuItem Header="{DynamicResource menu.edit.pastepoints}" InputGesture="Shift+V" Command="{Binding PastePoints}"/>
+              <MenuItem Header="{DynamicResource menu.edit.deletepoints}" InputGesture="Shift+Delete" Command="{Binding DeletePoints}"/>
+              <MenuItem Header="-" Height="1"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" InputGesture="Ctrl+F" Click="OnMenuSearchNote"/>
               <MenuItem Header="{DynamicResource menu.edit.selectall}" InputGesture="Ctrl+A" Command="{Binding SelectAll}"/>
               <MenuItem Header="-" Height="1"/>
@@ -552,6 +556,19 @@
                     <Path Classes="stroked" Data="M 5.5 15.5 L 5.5 7.5 A 1,1 0 1 1 12.5,6.5 L 12.5 15.5 M 2.5 15.5 H15.5 M 7 7.5 L 11 7.5 M 7 9.5 L 11 9.5 M 7 11.5 L 11 11.5 M 9 14.5 L 15 4.5"/>
                 </Grid>
             </ToggleButton>
+            <ToggleButton Name="EditCurve" Classes="toolbar" Margin="0" Padding="1" Height="20"
+                          IsChecked="{Binding NotesViewModel.IsEditCurve}"
+                          Command="{Binding NotesViewModel.EditCurveStart}"
+                          ToolTip.Tip="{DynamicResource pianoroll.toggle.EditCurve}">
+
+                  <Grid Width="18" Height="18">
+                      <Ellipse Classes="stroked" Height="3" Width="3" Margin="1,0,0,3.5" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                      <Ellipse Classes="stroked" Height="3" Width="3" Margin="5,0,0,7" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                      <Ellipse Classes="stroked" Height="3" Width="3" Margin="0,7.5,5,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                      <Ellipse Classes="stroked" Height="3" Width="3" Margin="0,4,1,0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                      <Path Classes="stroked" Data="M 2.5 13.5 L 6.5 9.5 L 11.5 9.5 L 15.5 5.5"/>
+                  </Grid>
+            </ToggleButton>
           </StackPanel>
         </Border>
         <Border Grid.Column="4">
@@ -622,8 +639,15 @@
                           Key="{Binding NotesViewModel.PrimaryKey}"
                           PointerPressed="ExpCanvasPointerPressed"
                           PointerMoved="ExpCanvasPointerMoved"
-                          PointerReleased="ExpCanvasPointerReleased">
+                          PointerReleased="ExpCanvasPointerReleased"
+                          PointerWheelChanged="ExpCanvasPointerWheelChanged">
       </c:ExpressionCanvas>
+      <Canvas Grid.Row="5" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
+        <Rectangle Name="PointsSelectionBox" StrokeThickness="2"
+                   Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                   Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                   IsHitTestVisible="False" IsVisible="False"/>
+      </Canvas>
       <TextBlock Classes="tips" Grid.Row="5" Grid.Column="1"
                  IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
                  IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"

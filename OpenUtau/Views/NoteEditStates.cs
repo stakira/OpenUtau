@@ -10,6 +10,8 @@ using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using ReactiveUI;
+using SharpCompress;
 
 namespace OpenUtau.App.Views {
     class KeyboardPlayState {
@@ -726,7 +728,175 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }
     }
+    class ExpCurvePanningState : NoteEditState {
+        public override MouseButton MouseButton => MouseButton.Middle;
+        protected override bool ShowValueTip => false;
+        public ExpCurvePanningState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            pointer.Capture(control);
+            startPoint = point;
+        }
+        public override void End(IPointer pointer, Point point) {
+            pointer.Capture(null);
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            double deltaX = (point.X - startPoint.X) / notesVm.TickWidth;
+            double deltaY = 0;
+            startPoint = point;
+            notesVm.TickOffset = Math.Max(0, notesVm.TickOffset - deltaX);
+            notesVm.TrackOffset = Math.Max(0, notesVm.TrackOffset - deltaY);
+        }
+    }
+    class ExpPointsSelectionEditState : NoteEditState {
+        public readonly Rectangle selectionBox;
+        protected override bool ShowValueTip => false;
+        public ExpPointsSelectionEditState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            Rectangle selectionBox) : base(control, vm, valueTip) {
+            this.selectionBox = selectionBox;
+        }
+        public override void Begin(IPointer pointer, Point point) {
+            pointer.Capture(control);
+            startPoint = point;
+            selectionBox.IsVisible = true;
+        }
+        public override void End(IPointer pointer, Point point) {
+            pointer.Capture(null);
+            selectionBox.IsVisible = false;
+        }
+        public override void Update(IPointer pointer, Point point) {
 
+            double x0 = Math.Min(startPoint.X, point.X);
+            double x1 = Math.Max(startPoint.X, point.X);
+
+            double y0 = Math.Min(startPoint.Y, point.Y);
+            double y1 = Math.Max(startPoint.Y,point.Y);
+
+            Canvas.SetLeft(selectionBox, x0);
+            Canvas.SetTop(selectionBox, y0);
+            selectionBox.Width = x1 - x0;
+            selectionBox.Height = y1 - y0;
+
+            var notesVm = vm.NotesViewModel;
+            notesVm.TempSelectPoints(x0, x1, y0, y1, control.Bounds.Height);
+        }
+    }
+    class ExpPointsMoveEditState : NoteEditState {
+ 
+        private Point lastPoint;
+        protected override bool ShowValueTip => false;
+        public ExpPointsMoveEditState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) {
+        }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            var part = notesVm.Part;
+            var track = project.tracks[part!.trackNo];
+
+            UExpressionDescriptor? descriptor;
+            if (project == null || part == null || !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
+                return;
+            }
+            if(descriptor == null) { return; }
+            if (descriptor.type != UExpressionType.Curve) {
+                return;
+            }
+
+            var curve = part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+            if (curve == null) {
+                return;
+            }
+
+            int lastTickX = notesVm.PointToTick(lastPoint);
+            int tickX = notesVm.PointToTick(point);
+            int lastTickY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+            int tickY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
+
+            int offsetTickX = tickX - lastTickX;
+            int offsetTickY = tickY - lastTickY;
+            var tmpSelection = notesVm.SelectionPoints.ToArray();
+            if(tmpSelection == null) { return; }
+
+            var xs = curve.xs.ToArray();
+            var ys = curve.ys.ToArray();
+
+            if (offsetTickX <= 0) {
+                for (int i = 0; i < tmpSelection.Length; i++) {
+                    int index = tmpSelection[i];
+                    int x = xs[index];
+                    int y = ys[index];
+
+                    int newTickX = x + offsetTickX;
+                    int newTickY = Math.Clamp(y + offsetTickY, (int)descriptor.min, (int)descriptor.max);
+                    xs[index] = newTickX;
+                    ys[index] = newTickY;
+
+                    for (int j = index - 1; j >= 0; j--) {
+                        if (tmpSelection.Contains(j)) continue;
+
+                        int preX = xs[j];
+                        int preY = ys[j];
+                        if (preX < newTickX) break;
+
+                        xs[j] = newTickX;
+                        ys[j] = newTickY;
+
+                        xs[index] = preX;
+                        ys[index] = preY;
+
+                        tmpSelection[i] = j;
+                        index = j;
+                    }
+                }
+            } else if (offsetTickX > 0) {
+                for (int i = tmpSelection.Length - 1; i >= 0; i--) {
+                    int index = tmpSelection[i];
+                    int x = xs[index];
+                    int y = ys[index];
+
+                    int newtickx = x + offsetTickX;
+                    int newticky = Math.Clamp(y + offsetTickY, (int)descriptor.min, (int)descriptor.max);
+                    xs[index] = newtickx;
+                    ys[index] = newticky;
+
+                    for (int j = index + 1; j < curve.xs.Count; j++) {
+                        if (tmpSelection.Contains(j)) continue;
+
+                        int nextx = xs[j];
+                        int nexty = ys[j];
+                        if (nextx > newtickx) break;
+
+                        xs[j] = newtickx;
+                        ys[j] = newticky;
+
+                        xs[index] = nextx;
+                        ys[index] = nexty;
+
+                        tmpSelection[i] = j;
+                        index = j;
+                    }
+                }
+            }
+
+            notesVm.SelectCurvePoints(tmpSelection.ToList());
+            lastPoint = point;
+            DocManager.Inst.ExecuteCmd(new MoveCurvePointsCommand(project, part, notesVm.PrimaryKey, xs, ys));
+        }
+    }
     class ExpResetValueState : NoteEditState {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using UtfUnknown.Core.Models.SingleByte.Vietnamese;
 
 namespace OpenUtau.Core {
     public abstract class ExpCommand : UCommand {
@@ -296,6 +298,154 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class MoveCurvePointsCommand : ExpCommand {
+        readonly UProject project;
+        readonly string abbr;
+        int[] oldXs;
+        int[] oldYs;
+        int[] newXs;
+        int[] newYs;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
+        public MoveCurvePointsCommand(UProject project, UVoicePart part, string abbr, int[] newXs, int[] newYs) : base(part) {
+            this.project = project;
+            this.abbr = abbr;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            oldXs = curve?.xs.ToArray();
+            oldYs = curve?.ys.ToArray();
+            this.newXs = newXs;
+            this.newYs = newYs;
+        }
+        public override string ToString() => "Move Curve Points";
+        public override void Execute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (newXs != null && newYs != null) {
+                curve.xs.AddRange(newXs);
+                curve.ys.AddRange(newYs);
+            }
+        }
+        public override void Unexecute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+    }
+    public class PasteCurvePointsCommand : ExpCommand {
+        readonly UProject project;
+        readonly string abbr;
+        readonly int[] oldXs;
+        readonly int[] oldYs;
+        readonly int[] newXs;
+        readonly int[] newYs;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
+        public PasteCurvePointsCommand(UProject project, UVoicePart part, string abbr, int[] newXs, int[] newYs) : base(part) {
+            this.project = project;
+            this.abbr = abbr;
+            this.newXs = newXs;
+            this.newYs = newYs;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            oldXs = curve?.xs.ToArray();
+            oldYs = curve?.ys.ToArray();
+        }
+        public override string ToString() => "Edit Curve";
+        public override void Execute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+
+            for (int i = 0; i < newXs.Length; i++) {
+                if (i == 0) {
+                    curve.Set(newXs[i], newYs[i], newXs[i], newYs[i]);
+                } else {
+                    curve.Set(newXs[i], newYs[i], newXs[i - 1], newYs[i - 1]);
+                }
+            }
+        }
+        public override void Unexecute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+    }
+    public class DeleteCurvePointsCommand : ExpCommand {
+        readonly UProject project;
+        readonly string abbr;
+        readonly int[] oldXs;
+        readonly int[] oldYs;
+        readonly int[] selections;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
+        public DeleteCurvePointsCommand(UProject project, UVoicePart part, string abbr, int[] selections) : base(part) {
+            this.project = project;
+            this.abbr = abbr;
+            this.selections = selections;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            oldXs = curve?.xs.ToArray();
+            oldYs = curve?.ys.ToArray();
+        }
+        public override string ToString() => "Edit Curve";
+        public override void Execute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+
+            for (int i = 0; i < selections.Length; i++) {
+                int index = selections[i];
+                curve.xs.RemoveAt(index);
+                curve.ys.RemoveAt(index);
+            }
+        }
+        public override void Unexecute() {
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+    }
     public class MergedSetCurveCommand : ExpCommand {
         readonly UProject project;
         readonly string abbr;

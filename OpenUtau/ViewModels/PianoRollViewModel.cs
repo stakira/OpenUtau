@@ -214,6 +214,9 @@ namespace OpenUtau.App.ViewModels {
         public void Copy() => NotesViewModel.CopyNotes();
         public void Paste() => NotesViewModel.PasteNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
+        public void CopyPoints() => NotesViewModel.CopyCurvePoints();
+        public void PastePoints() => NotesViewModel.PasteCurvePoints();
+        public void DeletePoints() => NotesViewModel.DeleteCurvePoints();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
 
         public void MouseoverPhoneme(UPhoneme? phoneme) {

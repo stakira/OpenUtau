@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
+using Melanchall.DryWetMidi.Tools;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace OpenUtau.App.ViewModels {
     public struct NoteHitInfo {
@@ -22,6 +24,12 @@ namespace OpenUtau.App.ViewModels {
         public bool OnPoint;
         public float X;
         public float Y;
+    }
+
+    public struct CurvePointHitInfo {
+        public UCurve Curve;
+        public int Index;
+        public bool OnPoint;
     }
 
     public struct VibratoHitInfo {
@@ -193,6 +201,49 @@ namespace OpenUtau.App.ViewModels {
                     lastShape = pit.shape;
                 }
             }
+            return default;
+        }
+
+        public CurvePointHitInfo HitTestCurvePoint(Point point, double height) {
+  
+            var project = viewModel.Project;
+            var part = viewModel.Part;
+            var track = project.tracks[part!.trackNo];
+            UExpressionDescriptor? descriptor;
+            if (project == null || part == null || !track.TryGetExpDescriptor(project, viewModel.PrimaryKey, out descriptor)) {
+                return default;
+            }
+            if (descriptor.type != UExpressionType.Curve) {
+                return default;
+            }
+
+            var curve = part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+            if (curve == null) {
+                return default;
+            }
+
+            double leftTick = viewModel.TickOffset - 480;
+            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double defaultHeight = Math.Round(height - height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+            for (int i = 0; i < curve.xs.Count; i++) {
+                int x = curve.xs[i];
+                int y = curve.ys[i];
+                if (x < leftTick) { continue; }
+
+                double pointX = viewModel.TickToneToPoint(x, 0).X;
+                double pointY = defaultHeight - height * (y - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                if ((Math.Abs(pointX - point.X) < 3) && (Math.Abs(pointY - point.Y) < 3)) {
+                    return new CurvePointHitInfo() {
+                        Curve = curve,
+                        Index = i,
+                        OnPoint = true,
+                    };
+                }
+                else if(pointX - point.X > 10) {
+                    break;
+                }
+            }
+
             return default;
         }
 

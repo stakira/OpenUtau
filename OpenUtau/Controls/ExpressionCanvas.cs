@@ -57,6 +57,7 @@ namespace OpenUtau.App.Controls {
         private string key = string.Empty;
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
+        private HashSet<int> selectedPoints = new HashSet<int>();
         private Geometry pointGeometry;
         private Geometry circleGeometry;
 
@@ -71,6 +72,15 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.Clear();
                     selectedNotes.UnionWith(e.selectedNotes);
                     selectedNotes.UnionWith(e.tempSelectedNotes);
+                    InvalidateVisual();
+                });
+
+            MessageBus.Current.Listen<CurvesRefreshEvent>()
+                .Subscribe(_ => InvalidateVisual());
+            MessageBus.Current.Listen<CurvePointsSelectionEvent>()
+                .Subscribe(e => {
+                    selectedPoints.Clear();
+                    selectedPoints.UnionWith(e.selectedPoints);
                     InvalidateVisual();
                 });
         }
@@ -133,9 +143,14 @@ namespace OpenUtau.App.Controls {
                     double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
                     var pen = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? lPen : lPen2;
                     context.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
-                    //using (var state = context.PushTransform(Matrix.CreateTranslation(x1, y1))) {
-                    //    context.DrawGeometry(brush, null, pointGeometry);
-                    //}
+                    if(viewModel.IsEditCurve && viewModel.PrimaryKey == descriptor.abbr) {
+                        using (var state = context.PushTransform(Matrix.CreateTranslation(x1, y1))) {
+                            context.DrawGeometry(brush, null, pointGeometry);
+                        }
+                        if(selectedPoints.Contains(index)) {
+                            context.DrawEllipse(null, lPen2, new Point(x1, y1), 4, 4);
+                        }
+                    }
                     index++;
                     if (tick2 >= rTick) {
                         break;

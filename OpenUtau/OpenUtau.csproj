@@ -48,7 +48,7 @@
             </dict>
         </array>          
   </CFBundleDocumentTypes>
-    <AssemblyVersion>0.1.543.3</AssemblyVersion>
+    <AssemblyVersion></AssemblyVersion>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
     <None Include="..\runtimes\linux-arm64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".\Resources\Metronome\**" CopyToOutputDirectory="PreserveNewest" TargetPath="Metronome\%(RecursiveDir)%(Filename)%(Extension)" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\NotePropertyExpression.axaml.cs">
