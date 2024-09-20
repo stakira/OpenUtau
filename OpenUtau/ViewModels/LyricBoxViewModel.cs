@@ -19,7 +19,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public LyricBoxNoteOrPhoneme? NoteOrPhoneme { get; set; }
         [Reactive] public bool IsVisible { get; set; }
-        [Reactive] public string Text { get; set; }
+        [Reactive] public string? Text { get; set; }
         [Reactive] public SuggestionItem? SelectedSuggestion { get; set; }
         [Reactive] public ObservableCollectionExtended<SuggestionItem> Suggestions { get; set; }
 
@@ -77,7 +77,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Commit() {
-            if (Part == null || NoteOrPhoneme == null) {
+            if (Part == null || NoteOrPhoneme == null || Text == null) {
                 return;
             }
             if (!IsAliasBox) {
