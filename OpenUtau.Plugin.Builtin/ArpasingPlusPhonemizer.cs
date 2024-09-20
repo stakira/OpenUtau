@@ -1743,15 +1743,15 @@ namespace OpenUtau.Plugin.Builtin {
             var numbers = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
             foreach (var c in longConsonants) {
-                if (alias.Contains(c) && !alias.Contains("ng -")) {
-                    return base.GetTransitionBasicLengthMs() * 2.6;
+                if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -")) {
+                    return base.GetTransitionBasicLengthMs() * 2.5;
                 }
             }
-            
+
             foreach (var c in normalConsonants) {
                 foreach (var v in normalConsonants.Except(GlideVCCons)) {
                     foreach (var b in normalConsonants.Except(NormVCCons)) {
-                        if (alias.Contains(c) &&
+                        if (alias.Contains(c) && !alias.StartsWith(c) &&
                         !alias.Contains("dx") && !alias.Contains($"{c} -")) {
                             if ("b,d,g,k,p,t".Split(',').Contains(c)) {
                                 hasCons = true;
@@ -1770,7 +1770,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if (alias.Contains(c) && !alias.Contains("- ") && alias.Contains($"{v} {c}")
                        && !alias.Contains("dx")) {
                         return base.GetTransitionBasicLengthMs() * 2.0;
-                    } 
+                    }
                 }
             }
 
@@ -1783,7 +1783,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             foreach (var c in affricates) {
-                if (alias.Contains(c)) {
+                if (alias.Contains(c) && !alias.StartsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 1.5;
                 }
             }
@@ -1791,7 +1791,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in connectingGlides) {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains($"{v} {c}") && !alias.Contains($"{c} -") && !alias.Contains($"{v} -")) {
-                        return base.GetTransitionBasicLengthMs() * 2.3;
+                        return base.GetTransitionBasicLengthMs() * 2.2;
                     }
                 }
             }
@@ -1807,7 +1807,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             foreach (var c in semilongConsonants) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
-                    if (alias.Contains(c) && !alias.Contains($"{c} -") && !alias.Contains($"- q")) {
+                    if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -") && !alias.Contains($"- q")) {
                         return base.GetTransitionBasicLengthMs() * 1.5;
                     }
                 }
@@ -1815,8 +1815,8 @@ namespace OpenUtau.Plugin.Builtin {
 
             foreach (var c in semiVowels) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
-                    if (alias.Contains(c) && !alias.Contains($"{c} -")) {
-                        return base.GetTransitionBasicLengthMs() * 1.6;
+                    if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -")) {
+                        return base.GetTransitionBasicLengthMs() * 1.5;
                     }
                 }
             }
@@ -1824,7 +1824,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (hasCons) {
                 return base.GetTransitionBasicLengthMs() * 1.3; // Value for 'cons'
             } else if (haslr) {
-                return base.GetTransitionBasicLengthMs() * 1.3; // Value for 'cons'
+                return base.GetTransitionBasicLengthMs() * 1.2; // Value for 'cons'
             }
 
             // Check if the alias ends with a consonant or vowel
@@ -1841,7 +1841,7 @@ namespace OpenUtau.Plugin.Builtin {
                     break;
                 }
             }
-            
+
             // If the alias ends with a consonant or vowel, return 0.5 ms
             if (isEndingConsonant || isEndingVowel) {
                 return base.GetTransitionBasicLengthMs() * 0.5;

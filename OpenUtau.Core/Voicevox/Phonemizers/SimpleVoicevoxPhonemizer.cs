@@ -7,7 +7,7 @@ namespace Voicevox {
     [Phonemizer("Simple Voicevox Japanese Phonemizer", "S-VOICEVOX JA", language: "JA")]
     public class SimpleVoicevoxPhonemizer : Phonemizer {
 
-        protected VoicevoxSinger singer; 
+        protected VoicevoxSinger singer;
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
@@ -33,14 +33,12 @@ namespace Voicevox {
                 }
                 if (!IsSyllableVowelExtensionNote(notes[i])) {
                     string val = "error";
-                    if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric) || VoicevoxUtils.phoneme_List.paus.ContainsKey(notes[i].lyric)) {
-                        if (VoicevoxUtils.phoneme_List.paus.TryGetValue(notes[i].lyric, out string str)) {
-                            val = str;
-                        } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
-                            val = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric);
-                        } else {
-                            val = notes[i].lyric;
-                        }
+                    if (VoicevoxUtils.phoneme_List.paus.TryGetValue(notes[i].lyric, out string pau)) {
+                        val = pau;
+                    } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric)) {
+                        val = notes[i].lyric;
+                    } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
+                        val = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric);
                     }
                     phonemes.Add(new Phoneme { phoneme = val });
                 }
