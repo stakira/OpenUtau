@@ -153,9 +153,8 @@
   <system:String x:Key="menu.file">檔案</system:String>
   <system:String x:Key="menu.file.exit">結束</system:String>
   <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds">Export DiffSinger Scripts To</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To (v2)</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (v2, without pitch curve)</system:String>-->
+  <system:String x:Key="menu.file.exportds.v2">匯出DiffSinger腳本至</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">匯出DiffSinger腳本至（不包含音高曲線）</system:String>
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
   <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
