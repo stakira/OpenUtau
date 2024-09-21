@@ -123,13 +123,19 @@ private:
 
   void syncMapping();
   void updatePluginServerFile();
+  void resampleMixes(double newSampleRate);
+  void requestWrite();
+  void doneWriting();
 
   std::string ustx;
   std::string uuid;
 
-  std::atomic<bool> wantReplace = false;
-  std::atomic<int> currentAccesses = 0;
+  std::atomic<bool> writing = false;
+  std::atomic<int> readingCount = 0;
+
   std::vector<std::vector<float>> mixes;
+  std::vector<std::pair<std::vector<float>, std::vector<float>>> resampledMixes;
+  double currentSampleRate = 44100.0;
 
   std::filesystem::path socketPath;
 

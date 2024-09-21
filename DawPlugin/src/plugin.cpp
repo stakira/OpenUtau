@@ -184,7 +184,12 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
       mixes.push_back(mix);
     }
 
-    this->mixes = mixes;
+    {
+      this->requestWrite();
+      this->mixes = mixes;
+      this->doneWriting();
+    }
+    resampleMixes(this->currentSampleRate);
   } else if (key == "trackNames") {
     this->trackNames = Structures::deserializeTrackNames(value);
     syncMapping();
@@ -236,46 +241,35 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
     }
   }
 
-  if (this->mixes.size() > 0 && timePosition.playing &&
-      !this->wantReplace.load()) {
-    this->currentAccesses++;
-    auto writeFrame = [&](double inFrame, uint32_t outFrame,
-                          uint8_t channelIndex, uint8_t lr, uint32_t mixIndex) {
-      float mix = 0;
-      auto &mixVector = mixes[mixIndex];
-      auto left = (uint32_t)inFrame;
-      auto right = left + 1;
-      auto leftSampleIndex = left * 2 + lr;
-      auto rightSampleIndex = right * 2 + lr;
-      auto ratio = inFrame - left;
-      if (leftSampleIndex < mixVector.size() &&
-          rightSampleIndex < mixVector.size()) {
-        auto leftSample = mixVector[leftSampleIndex];
-        auto rightSample = mixVector[rightSampleIndex];
-        mix = leftSample * (1 - ratio) + rightSample * ratio;
-
-        outputs[channelIndex][outFrame] += mix;
-      }
-    };
-    auto sampleRate = getSampleRate();
-    for (uint32_t i = 0; i < frames; ++i) {
-      auto frame = (i + timePosition.frame) * 44100.0 / sampleRate;
+  auto sampleRate = getSampleRate();
+  if (this->resampledMixes.size() > 0 && timePosition.playing &&
+      !this->writing.load()) {
+    this->readingCount++;
+    if (this->currentSampleRate == sampleRate) {
       for (uint32_t j = 0; j < mixes.size(); ++j) {
         if (j >= this->outputMap.size()) {
           break;
         }
-        auto &mapping = outputMap[j];
-        for (uint32_t k = 0; k < DISTRHO_PLUGIN_NUM_OUTPUTS; ++k) {
-          if (mapping.first[k]) {
-            writeFrame(frame, i, k, 0, j);
-          }
-          if (mapping.second[k]) {
-            writeFrame(frame, i, k, 1, j);
+        const auto &mapping = outputMap[j];
+        const auto &left = resampledMixes[j].first;
+        const auto &right = resampledMixes[j].second;
+
+        for (uint32_t i = 0; i < frames; ++i) {
+          auto frame = (i + timePosition.frame);
+          for (uint32_t k = 0; k < DISTRHO_PLUGIN_NUM_OUTPUTS; ++k) {
+            if (mapping.first[k] && frame < left.size()) {
+              outputs[k][i] += left[frame];
+            }
+            if (mapping.second[k] && frame < right.size()) {
+              outputs[k][i] += right[frame];
+            }
           }
         }
       }
+    } else {
+      resampleMixes(sampleRate);
     }
-    this->currentAccesses--;
+    this->readingCount--;
   }
 };
 
@@ -291,7 +285,9 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
  */
 void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 
-void OpenUtauPlugin::sampleRateChanged(double newSampleRate) {}
+void OpenUtauPlugin::sampleRateChanged(double newSampleRate) {
+  resampleMixes(newSampleRate);
+}
 void OpenUtauPlugin::onAccept(std::shared_ptr<OpenUtauPlugin> self,
                               const asio::error_code &error,
                               asio::ip::tcp::socket socket) {
@@ -388,10 +384,6 @@ void OpenUtauPlugin::updatePluginServerFile() {
 void OpenUtauPlugin::onMessage(const std::string kind,
                                const choc::value::Value payload) {
   if (kind == "status") {
-    this->wantReplace.store(true);
-    while (this->currentAccesses > 0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
     this->lastSync = std::chrono::system_clock::now();
 
     std::string ustx = payload["ustx"].get<std::string>();
@@ -405,30 +397,100 @@ void OpenUtauPlugin::onMessage(const std::string kind,
     setState("trackNames", Structures::serializeTrackNames(trackNames).c_str());
 
     syncMapping();
-    this->wantReplace.store(false);
   }
 }
 
 void OpenUtauPlugin::syncMapping() {
+  this->requestWrite();
+
   auto trackNames = this->trackNames;
   auto outputMap = this->outputMap;
   if (trackNames.size() < outputMap.size()) {
     outputMap.resize(trackNames.size());
   } else if (trackNames.size() > outputMap.size()) {
+    bool customized = false;
+    auto defaultLeft = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
+    auto defaultRight = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
+    defaultLeft[0] = true;
+    defaultRight[1] = true;
+    for (const auto &mapping : outputMap) {
+      if (mapping.first != defaultLeft || mapping.second != defaultRight) {
+        customized = true;
+        break;
+      }
+    }
     for (size_t i = outputMap.size(); i < trackNames.size(); ++i) {
-      auto index = i % 16;
-      auto left = index * 2;
-      auto right = left + 1;
       auto leftChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
       auto rightChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
-      leftChannel[left] = true;
-      rightChannel[right] = true;
+      if (customized) {
+        auto index = i % 16;
+        auto left = index * 2;
+        auto right = left + 1;
+        leftChannel[left] = true;
+        rightChannel[right] = true;
+      } else {
+        leftChannel[0] = true;
+        rightChannel[1] = true;
+      }
+
       outputMap.push_back({leftChannel, rightChannel});
     }
   }
 
+  this->outputMap = outputMap;
+  this->doneWriting();
   setState("mapping", Structures::serializeOutputMap(outputMap).c_str());
 }
+
+void OpenUtauPlugin::resampleMixes(double newSampleRate) {
+  requestWrite();
+
+  std::vector<std::pair<std::vector<float>, std::vector<float>>> resampledMixes;
+  for (const auto &mix : mixes) {
+    std::vector<float> resampledLeft;
+    std::vector<float> resampledRight;
+    resampledLeft.resize(mix.size() * newSampleRate / 44100.0 / 2 + 1);
+    resampledRight.resize(mix.size() * newSampleRate / 44100.0 / 2 + 1);
+    for (size_t i = 0; i < resampledLeft.size(); ++i) {
+      auto leftSource = i * 44100.0 / newSampleRate * 2;
+      auto rightSource = leftSource + 1;
+      auto leftLeftIndex = (size_t)leftSource;
+      auto rightLeftIndex = (size_t)rightSource;
+      auto leftRightIndex = leftLeftIndex + 2;
+      auto rightRightIndex = rightLeftIndex + 2;
+      auto fraction = leftSource - leftLeftIndex;
+      if (rightRightIndex < mix.size()) {
+        resampledLeft[i] = mix[leftLeftIndex] * (1 - fraction) +
+                           mix[leftRightIndex] * fraction;
+        resampledRight[i] = mix[rightLeftIndex] * (1 - fraction) +
+                            mix[rightRightIndex] * fraction;
+      } else if (rightLeftIndex < mix.size()) {
+        resampledLeft[i] = mix[leftLeftIndex];
+        resampledRight[i] = mix[rightLeftIndex];
+      } else {
+        resampledLeft[i] = 0;
+        resampledRight[i] = 0;
+      }
+    }
+
+    resampledMixes.push_back({resampledLeft, resampledRight});
+  }
+  this->resampledMixes = resampledMixes;
+  this->currentSampleRate = newSampleRate;
+
+  doneWriting();
+}
+
+void OpenUtauPlugin::requestWrite() {
+  while (this->writing.load()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  this->writing.store(true);
+  while (this->readingCount > 0) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+}
+void OpenUtauPlugin::doneWriting() { this->writing.store(false); }
 
 std::string
 OpenUtauPlugin::formatMessage(const std::string &kind,
