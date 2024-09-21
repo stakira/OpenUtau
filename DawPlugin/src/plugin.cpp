@@ -482,10 +482,9 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
 }
 
 void OpenUtauPlugin::requestWrite() {
-  while (this->writing.load()) {
+  while (this->writing.exchange(true)) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
-  this->writing.store(true);
   while (this->readingCount > 0) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
