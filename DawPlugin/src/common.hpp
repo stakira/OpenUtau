@@ -1,4 +1,6 @@
 #pragma once
+#include "DistrhoPluginInfo.h"
+#include <bitset>
 #include <string>
 #include <vector>
 
@@ -9,7 +11,9 @@ std::vector<uint8_t> unBase64ToVector(const std::string &encoded);
 } // namespace Utils
 
 namespace Structures {
-using OutputMap = std::vector<std::pair<std::vector<bool>, std::vector<bool>>>;
+using OutputMap =
+    std::vector<std::pair<std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>,
+                          std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>>>;
 std::string serializeTrackNames(const std::vector<std::string> &trackNames);
 std::vector<std::string> deserializeTrackNames(const std::string &data);
 

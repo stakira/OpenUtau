@@ -1,11 +1,10 @@
 #pragma once
-#include "common.hpp"
 #include "DistrhoPlugin.hpp"
 #include "asio.hpp"
 #include "choc/containers/choc_Value.h"
+#include "common.hpp"
 #include "extra/String.hpp"
 #include <filesystem>
-#include <mutex>
 #include <string>
 #include <vector>
 
@@ -25,12 +24,14 @@ public:
   ~OpenUtauPlugin() override;
 
   int port;
-  bool inUse;
+  bool connected;
   std::string name;
   std::optional<std::chrono::time_point<std::chrono::system_clock>> lastSync;
 
   std::vector<std::string> trackNames;
   Structures::OutputMap outputMap;
+
+  bool isProcessing();
 
 protected:
   /* --------------------------------------------------------------------------------------------------------
@@ -108,8 +109,7 @@ protected:
   // -------------------------------------------------------------------------------------------------------
 
 private:
-  static void onAccept(std::shared_ptr<OpenUtauPlugin> self,
-                       const asio::error_code &error,
+  static void onAccept(OpenUtauPlugin *self, const asio::error_code &error,
                        asio::ip::tcp::socket socket);
 
   void willAccept();
@@ -130,6 +130,8 @@ private:
   std::string ustx;
   std::string uuid;
 
+  std::chrono::time_point<std::chrono::system_clock> lastPing;
+
   std::atomic<bool> writing = false;
   std::atomic<int> readingCount = 0;
 
@@ -139,8 +141,11 @@ private:
 
   std::filesystem::path socketPath;
 
-  bool initializedNetwork = false;
-  std::shared_ptr<asio::ip::tcp::acceptor> acceptor;
+  std::atomic<bool> networkInitialized = false;
+  std::unique_ptr<asio::ip::tcp::acceptor> acceptor;
+  std::unique_ptr<std::jthread> acceptorThread;
+
+  std::mutex statusMutex;
 
   /**
      Set our plugin class as non-copyable and add a leak detector just in case.

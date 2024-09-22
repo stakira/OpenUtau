@@ -126,10 +126,16 @@ namespace OpenUtau.Core.Format {
         }
 
         public static UProject Load(string filePath) {
-            string text = File.ReadAllText(filePath, Encoding.UTF8);
+            var text = File.ReadAllText(filePath, Encoding.UTF8);
+            var project = LoadText(text);
+            project.FilePath = filePath;
+
+            return project;
+        }
+
+        public static UProject LoadText(string text) {
             UProject project = Yaml.DefaultDeserializer.Deserialize<UProject>(text);
             AddDefaultExpressions(project);
-            project.FilePath = filePath;
             project.Saved = true;
             project.AfterLoad();
             project.ValidateFull();

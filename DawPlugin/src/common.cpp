@@ -42,16 +42,8 @@ Structures::deserializeTrackNames(const std::string &data) {
 std::string Structures::serializeOutputMap(const OutputMap &outputMap) {
   choc::value::Value value = choc::value::createEmptyArray();
   for (const auto &mapping : outputMap) {
-    choc::value::Value leftChannel = choc::value::createEmptyArray();
-    choc::value::Value rightChannel = choc::value::createEmptyArray();
-    for (const auto &channel : mapping.first) {
-      leftChannel.addArrayElement(channel);
-    }
-    for (const auto &channel : mapping.second) {
-      rightChannel.addArrayElement(channel);
-    }
-    value.addArrayElement(leftChannel);
-    value.addArrayElement(rightChannel);
+    value.addArrayElement(mapping.first.to_string());
+    value.addArrayElement(mapping.second.to_string());
   }
   auto json = choc::json::toString(value);
   return json;
@@ -62,14 +54,13 @@ Structures::deserializeOutputMap(const std::string &data) {
   auto value = choc::json::parse(data);
   OutputMap outputMap;
   for (uint32_t i = 0; i < value.size(); i += 2) {
-    std::vector<bool> leftChannel;
-    std::vector<bool> rightChannel;
-    for (auto element : value[i]) {
-      leftChannel.push_back(element.getBool());
-    }
-    for (auto element : value[i + 1]) {
-      rightChannel.push_back(element.getBool());
-    }
+    auto leftChannelString = std::string(value[i].getString());
+    auto leftChannel =
+        std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>(leftChannelString);
+    auto rightChannelString = std::string(value[i + 1].getString());
+    auto rightChannel =
+        std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>(rightChannelString);
+
     outputMap.push_back({leftChannel, rightChannel});
   }
   return outputMap;

@@ -34,7 +34,7 @@ namespace OpenUtau.App.ViewModels {
                 var (client, ustx) = await Client.Connect(SelectedServer.Port);
 
                 if (ustx.Length > 0) {
-                    DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Load(ustx)));
+                    DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.LoadText(ustx)));
                 }
                 DocManager.Inst.dawClient = client;
             } finally {

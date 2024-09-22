@@ -12,6 +12,10 @@ START_NAMESPACE_DISTRHO
 
 int fontSize = 13.f;
 
+// #ff679d
+static auto themePinkColor = ImVec4(1.0f, 0.4f, 0.6f, 1.0f);
+static auto themeBlueColor = ImVec4(0.3f, 0.7f, 0.9f, 1.0f);
+
 class OpenUtauUI : public UI {
 public:
   /**
@@ -73,9 +77,9 @@ protected:
     ImGui::Begin("OpenUtau Bridge", nullptr,
                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
-    ImGui::TextColored(style.Colors[ImGuiCol_ButtonActive],
-                       "OpenUtau Bridge v%d.%d.%d", Constants::majorVersion,
-                       Constants::minorVersion, Constants::patchVersion);
+    ImGui::TextColored(themePinkColor, "OpenUtau Bridge v%d.%d.%d",
+                       Constants::majorVersion, Constants::minorVersion,
+                       Constants::patchVersion);
 
     ImGui::Separator();
 
@@ -92,12 +96,12 @@ protected:
 
     partiallyColoredText(
         std::format("Plugin identifier: [{} ({})]", plugin->name, plugin->port),
-        style.Colors[ImGuiCol_ButtonActive]);
+        themePinkColor);
 
     partiallyColoredText(
-        std::format("Connected: [{}]", plugin->inUse ? "Yes" : "No"),
-        plugin->inUse ? style.Colors[ImGuiCol_ButtonActive]
-                      : style.Colors[ImGuiCol_TextDisabled]);
+        std::format("Connected: [{}]", plugin->connected ? "Yes" : "No"),
+        plugin->connected ? themePinkColor
+                          : style.Colors[ImGuiCol_TextDisabled]);
 
 #ifdef DEBUG
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D))) {
@@ -108,26 +112,29 @@ protected:
     }
 #endif
 
-    if (plugin->lastSync) {
-      auto lastSyncDuration =
-          std::chrono::duration_cast<std::chrono::seconds>(
-              std::chrono::system_clock::now() - *plugin->lastSync)
-              .count();
-      if (lastSyncDuration > 60) {
-        ImGui::Text("Last sync: %lldm ago", lastSyncDuration / 60);
+    ImGui::Text("Last sync: ");
+    ImGui::SameLine(0, 0);
+
+    if (plugin->isProcessing()) {
+      if (plugin->lastSync) {
+        auto lastSyncDuration =
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now() - *plugin->lastSync)
+                .count();
+        if (lastSyncDuration > 60) {
+          ImGui::Text("%lldm ago", lastSyncDuration / 60);
+        } else {
+          ImGui::TextColored(themePinkColor, "%llds ago", lastSyncDuration);
+        }
       } else {
-        partiallyColoredText(
-            std::format("Last sync: [{}s ago]", lastSyncDuration),
-            style.Colors[ImGuiCol_ButtonActive]);
+        ImGui::TextColored(style.Colors[ImGuiCol_TextDisabled], "N/A");
       }
-    } else {
-      partiallyColoredText("Last sync: [N/A]",
-                           style.Colors[ImGuiCol_TextDisabled]);
+      ImGui::TextColored(themeBlueColor, "Processing");
     }
 
     if (plugin->trackNames.size() > 0) {
       ImGui::Spacing();
-      ImGui::TextColored(style.Colors[ImGuiCol_ButtonActive], "Track Mapping:");
+      ImGui::TextColored(themePinkColor, "Track Mapping:");
       if (ImGui::BeginTable("##track_mapping",
                             DISTRHO_PLUGIN_NUM_OUTPUTS / 2 + 1,
                             ImGuiTableFlags_Borders)) {
@@ -196,10 +203,10 @@ protected:
       ImGui::Text("1. Launch OpenUtau");
       partiallyColoredText(
           "2. Click ['File'] > ['Connect to DAW...'] in OpenUtau",
-          style.Colors[ImGuiCol_ButtonActive]);
+          themePinkColor);
       partiallyColoredText(std::format("3. Select ['{} ({})'] in the list",
                                        plugin->name, plugin->port),
-                           style.Colors[ImGuiCol_ButtonActive]);
+                           themePinkColor);
     }
 
     ImGui::End();
@@ -214,7 +221,7 @@ protected:
     ImGui::StyleColorsLight();
     ImVec4 *colors = ImGui::GetStyle().Colors;
     // #ff679d
-    auto color = ImVec4(1.0f, 0.4f, 0.6f, 1.0f);
+    auto color = themePinkColor;
     auto darkColor = ImVec4(0.8f, 0.3f, 0.5f, 1.0f);
     auto lightColor = ImVec4(1.0f, 0.5f, 0.7f, 1.0f);
     colors[ImGuiCol_SliderGrab] = color;
@@ -228,7 +235,7 @@ protected:
     colors[ImGuiCol_PlotHistogramHovered] = darkColor;
 
     // #4ea6ea
-    auto hoverColor = ImVec4(0.3f, 0.7f, 0.9f, 1.0f);
+    auto hoverColor = themeBlueColor;
     colors[ImGuiCol_FrameBgHovered] =
         ImVec4(hoverColor.w, hoverColor.x, hoverColor.y, 0.20f);
     colors[ImGuiCol_FrameBgActive] =

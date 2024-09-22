@@ -12,34 +12,36 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <string>
 #include <thread>
 #include <vector>
 
 // std::jthread *ioThread = nullptr;
-std::unique_ptr<std::jthread> ioThread;
-std::shared_ptr<asio::io_context> ioContext = nullptr;
+namespace Network {
+// std::jthread *ioThread = nullptr;
+std::shared_ptr<std::jthread> ioThread;
+std::shared_ptr<asio::io_context> ioContext;
 std::shared_ptr<asio::io_context> getIoContext() {
-  if (!ioContext) {
-    ioContext = std::make_shared<asio::io_context>();
-    ioThread = std::make_unique<std::jthread>([](std::stop_token st) {
+  if (ioThread == nullptr) {
+    if (ioContext == nullptr) {
+      ioContext = std::make_shared<asio::io_context>();
+    }
+    ioThread = std::make_shared<std::jthread>([](std::stop_token st) {
       while (!st.stop_requested()) {
-        try {
-          ioContext->poll();
-        } catch (asio::system_error &e) {
-          // ignore
-        }
+        ioContext->run();
       }
     });
-
     std::atexit([]() {
       ioContext->stop();
       ioThread->request_stop();
       ioThread->join();
     });
   }
+
   return ioContext;
 }
+} // namespace Network
 
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
 
@@ -57,19 +59,26 @@ OpenUtauPlugin::OpenUtauPlugin()
 
   this->mixes = std::vector<std::vector<float>>();
 
-  auto currentTime = std::chrono::system_clock::now();
   std::string uuid = uuid::v4::UUID::New().String();
   setState("uuid", uuid.c_str());
 
   setState("name", uuid.c_str());
-  this->inUse = false;
+
+  this->connected = false;
 }
 OpenUtauPlugin::~OpenUtauPlugin() {
   if (std::filesystem::exists(this->socketPath)) {
     std::filesystem::remove(this->socketPath);
   }
-  if (acceptor) {
-    acceptor->close();
+
+  if (this->acceptor != nullptr) {
+    this->acceptor->close();
+  }
+  if (this->acceptorThread != nullptr) {
+    this->acceptorThread->request_stop();
+  }
+  while (this->connected) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 }
 
@@ -232,7 +241,10 @@ void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
 
 void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
                          const MidiEvent *midiEvents, uint32_t midiEventCount) {
+  // Constructor might be called during the initial loading of the plugin, so
+  // initialize the network in the run method
   initializeNetwork();
+
   auto timePosition = this->getTimePosition();
 
   for (uint32_t i = 0; i < DISTRHO_PLUGIN_NUM_OUTPUTS; ++i) {
@@ -258,10 +270,22 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
           auto frame = (i + timePosition.frame);
           for (uint32_t k = 0; k < DISTRHO_PLUGIN_NUM_OUTPUTS; ++k) {
             if (mapping.first[k] && frame < left.size()) {
-              outputs[k][i] += left[frame];
+              if (outputs[k][i] > FLT_MAX - left[frame]) {
+                outputs[k][i] = FLT_MAX;
+              } else if (outputs[k][i] < -FLT_MAX + left[frame]) {
+                outputs[k][i] = -FLT_MAX;
+              } else {
+                outputs[k][i] += left[frame];
+              }
             }
             if (mapping.second[k] && frame < right.size()) {
-              outputs[k][i] += right[frame];
+              if (outputs[k][i] > FLT_MAX - right[frame]) {
+                outputs[k][i] = FLT_MAX;
+              } else if (outputs[k][i] < -FLT_MAX + right[frame]) {
+                outputs[k][i] = -FLT_MAX;
+              } else {
+                outputs[k][i] += right[frame];
+              }
             }
           }
         }
@@ -288,51 +312,84 @@ void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 void OpenUtauPlugin::sampleRateChanged(double newSampleRate) {
   resampleMixes(newSampleRate);
 }
-void OpenUtauPlugin::onAccept(std::shared_ptr<OpenUtauPlugin> self,
+void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                               const asio::error_code &error,
                               asio::ip::tcp::socket socket) {
   if (!error) {
     self->willAccept();
-    if (!self->inUse) {
-      self->inUse = true;
-      socket.write_some(asio::buffer(formatMessage(
-          "init", choc::value::createObject("", "ustx", self->ustx))));
-      std::string messageBuffer;
-      char buffer[16 * 1024];
-      while (true) {
-        size_t len;
-        try {
-          len = socket.read_some(asio::buffer(buffer));
-        } catch (asio::system_error &e) {
-          break;
-        }
-        messageBuffer.append(buffer, len);
+    if (!self->connected) {
+      self->connected = true;
+      self->acceptorThread = std::make_unique<std::jthread>(
+          [self, socket = std::move(socket)](std::stop_token st) mutable {
+            socket.write_some(asio::buffer(formatMessage(
+                "init", choc::value::createObject("", "ustx", self->ustx))));
+            std::string messageBuffer;
+            char buffer[16 * 1024];
+            std::promise<std::variant<size_t, asio::error_code>> readPromise;
+            auto readFuture = readPromise.get_future();
+            bool timeout = false;
+            while (!st.stop_requested()) {
+              if (!timeout) {
+                readPromise =
+                    std::promise<std::variant<size_t, asio::error_code>>();
+                readFuture = readPromise.get_future();
+                socket.async_read_some(
+                    asio::buffer(buffer),
+                    [&](const asio::error_code &error, size_t len) {
+                      if (error) {
+                        readPromise.set_value(error);
+                      } else {
+                        readPromise.set_value(len);
+                      }
+                    });
+              }
+              if (readFuture.wait_for(std::chrono::seconds(1)) ==
+                  std::future_status::timeout) {
+                timeout = true;
+              } else {
+                timeout = false;
+                auto result = readFuture.get();
+                if (std::holds_alternative<asio::error_code>(result)) {
+                  break;
+                }
+                auto len = std::get<size_t>(result);
+                messageBuffer.append(buffer, len);
 
-        size_t pos;
-        while ((pos = messageBuffer.find('\n')) != std::string::npos) {
-          std::string message = messageBuffer.substr(0, pos);
-          messageBuffer.erase(0, pos + 1);
-          if (message == "close") {
-            socket.close();
-            self->inUse = false;
-            return;
-          }
+                size_t pos;
+                while ((pos = messageBuffer.find('\n')) != std::string::npos) {
+                  std::string message = messageBuffer.substr(0, pos);
+                  messageBuffer.erase(0, pos + 1);
+                  if (message == "close") {
+                    socket.close();
+                    self->connected = false;
+                    return;
+                  }
 
-          size_t sep = message.find(' ');
-          std::string kind = message.substr(0, sep);
-          std::string payload = message.substr(sep + 1);
-          choc::value::Value value = choc::json::parse(payload);
+                  size_t sep = message.find(' ');
+                  std::string kind = message.substr(0, sep);
+                  std::string payload = message.substr(sep + 1);
+                  choc::value::Value value = choc::json::parse(payload);
 
-          self->onMessage(kind, value);
-        }
-      }
+                  self->onMessage(kind, value);
+                }
+              }
 
-      try {
-        socket.close();
-      } catch (asio::system_error &e) {
-        // ignore
-      }
-      self->inUse = false;
+              auto currentTime = std::chrono::system_clock::now();
+              if (currentTime - self->lastPing > std::chrono::seconds(5)) {
+                socket.write_some(asio::buffer(
+                    formatMessage("ping", choc::value::createObject(""))));
+                self->lastPing = currentTime;
+              }
+            }
+
+            try {
+              socket.close();
+            } catch (asio::system_error &e) {
+              // ignore
+            }
+
+            self->connected = false;
+          });
     } else {
       socket.write_some(asio::buffer(formatMessage(
           "error",
@@ -344,24 +401,21 @@ void OpenUtauPlugin::onAccept(std::shared_ptr<OpenUtauPlugin> self,
 }
 
 void OpenUtauPlugin::willAccept() {
-  acceptor->async_accept(std::bind(
-      &OpenUtauPlugin::onAccept, std::shared_ptr<OpenUtauPlugin>(this),
-      std::placeholders::_1, std::placeholders::_2));
+  acceptor->async_accept(std::bind(&OpenUtauPlugin::onAccept, this,
+                                   std::placeholders::_1,
+                                   std::placeholders::_2));
 }
 
 void OpenUtauPlugin::initializeNetwork() {
-  // Constructor might be called during the initial loading of the plugin, so
-  // initialize the ioThread here.
-  if (!initializedNetwork) {
-    this->acceptor = std::make_shared<asio::ip::tcp::acceptor>(
-        getIoContext()->get_executor(),
+  if (!networkInitialized.exchange(true)) {
+    this->acceptor = std::make_unique<asio::ip::tcp::acceptor>(
+        Network::getIoContext()->get_executor(),
         asio::ip::tcp::endpoint(asio::ip::address::from_string("127.0.0.1"),
                                 0));
-    int port = acceptor->local_endpoint().port();
-    this->port = port;
 
+    auto port = this->acceptor->local_endpoint().port();
+    this->port = port;
     updatePluginServerFile();
-    initializedNetwork = true;
     willAccept();
   }
 }
@@ -384,19 +438,20 @@ void OpenUtauPlugin::updatePluginServerFile() {
 void OpenUtauPlugin::onMessage(const std::string kind,
                                const choc::value::Value payload) {
   if (kind == "status") {
-    this->lastSync = std::chrono::system_clock::now();
-
-    std::string ustx = payload["ustx"].get<std::string>();
-    setState("ustx", ustx.c_str());
-    std::string mixesJson = choc::json::toString(payload["mixes"]);
+    auto _lock = std::lock_guard(this->statusMutex);
+    auto ustx = payload["ustx"].get<std::string>();
+    auto ustxBase64 = choc::base64::encodeToString(ustx);
+    setState("ustx", ustxBase64.c_str());
+    auto mixesJson = choc::json::toString(payload["mixes"]);
     setState("mixes", mixesJson.c_str());
     std::vector<std::string> trackNames;
     for (auto track : payload["trackNames"]) {
       trackNames.push_back(track.get<std::string>());
     }
     setState("trackNames", Structures::serializeTrackNames(trackNames).c_str());
-
     syncMapping();
+
+    this->lastSync = std::chrono::system_clock::now();
   }
 }
 
@@ -408,30 +463,11 @@ void OpenUtauPlugin::syncMapping() {
   if (trackNames.size() < outputMap.size()) {
     outputMap.resize(trackNames.size());
   } else if (trackNames.size() > outputMap.size()) {
-    bool customized = false;
-    auto defaultLeft = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
-    auto defaultRight = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
-    defaultLeft[0] = true;
-    defaultRight[1] = true;
-    for (const auto &mapping : outputMap) {
-      if (mapping.first != defaultLeft || mapping.second != defaultRight) {
-        customized = true;
-        break;
-      }
-    }
     for (size_t i = outputMap.size(); i < trackNames.size(); ++i) {
-      auto leftChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
-      auto rightChannel = std::vector<bool>(DISTRHO_PLUGIN_NUM_OUTPUTS, false);
-      if (customized) {
-        auto index = i % 16;
-        auto left = index * 2;
-        auto right = left + 1;
-        leftChannel[left] = true;
-        rightChannel[right] = true;
-      } else {
-        leftChannel[0] = true;
-        rightChannel[1] = true;
-      }
+      auto leftChannel = std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>();
+      auto rightChannel = std::bitset<DISTRHO_PLUGIN_NUM_OUTPUTS>();
+      leftChannel[0] = true;
+      rightChannel[1] = true;
 
       outputMap.push_back({leftChannel, rightChannel});
     }
@@ -496,6 +532,14 @@ OpenUtauPlugin::formatMessage(const std::string &kind,
                               const choc::value::ValueView &payload) {
   std::string json = choc::json::toString(payload);
   return std::format("{} {}\n", kind, json);
+}
+
+bool OpenUtauPlugin::isProcessing() {
+  if (this->statusMutex.try_lock()) {
+    this->statusMutex.unlock();
+    return false;
+  }
+  return true;
 }
 
 /* ------------------------------------------------------------------------------------------------------------
