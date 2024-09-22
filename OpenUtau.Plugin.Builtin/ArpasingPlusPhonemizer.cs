@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aan", "an", "axn", "aen", "ahn", "aon", "on", "awn", "aun", "ayn", "ain", "ehn", "en", "eyn", "ein", "ihn", "iyn", "in", "own", "oun", "oyn", "oin", "uhn", "uwn", "un",
         "aang", "ang", "axng", "aeng", "ahng", "aong", "ong", "awng", "aung", "ayng", "aing", "ehng", "eng", "eyng", "eing", "ihng", "iyng", "ing", "owng", "oung", "oyng", "oing", "uhng", "uwng", "ung",
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
-        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
+        "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang", "N", "nn", "mm", "ll"
         };
         private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
@@ -33,7 +33,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] semilongConsonants = "ng,n,m,v,z,q,hh".Split(",");
         private readonly string[] semiVowels = "y,w".Split(",");
         private readonly string[] connectingGlides = "l,r,ll".Split(",");
-        private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c".Split(",");
+        private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t,l,r".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr").Split(';')
@@ -48,7 +48,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
         // For banks with missing vowels
-        private readonly Dictionary<string, string> missingVphonemes = "ax=ah,aa=ah,ae=ah,iy=ih,uh=uw,ix=ih,ux=uh,oh=ao,eu=uh,oe=ax,uy=uw,yw=uw,yx=iy,wx=uw,ea=eh,ia=iy,oa=ao,ua=uw,R=-".Split(',')
+        private readonly Dictionary<string, string> missingVphonemes = "ax=ah,aa=ah,ae=ah,iy=ih,uh=uw,ix=ih,ux=uh,oh=ao,eu=uh,oe=ax,uy=uw,yw=uw,yx=iy,wx=uw,ea=eh,ia=iy,oa=ao,ua=uw,R=-,N=n,mm=m,ll=l".Split(',')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -153,8 +153,6 @@ namespace OpenUtau.Plugin.Builtin {
             string[] tr = new[] { "tr" };
             string[] dr = new[] { "dr" };
             string[] wh = new[] { "wh" };
-            string[] c_wy = new[] { "by", "dy", "fy", "gy", "hy", "jy", "ky", "ly", "my", "ny", "py", "ry", "sy", "ty", "vy", "zy",
-                                    "bw", "chw", "dw", "fw", "gw", "hw", "jw", "kw", "lw", "mw", "nw", "pw", "rw", "sw", "tw", "vw", "zw"};
             string[] av_c = new[] { "al", "am", "an", "ang", "ar" };
             string[] ev_c = new[] { "el", "em", "en", "eng", "err" };
             string[] iv_c = new[] { "il", "im", "in", "ing", "ir" };
@@ -186,9 +184,6 @@ namespace OpenUtau.Plugin.Builtin {
                         break;
                     case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto($"ay {str}", note.tone):
                         modified.AddRange(new string[] { "hh", s[1].ToString() });
-                        break;
-                    case var str when c_wy.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto($"{str}", note.tone):
-                        modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                         break;
                     case var str when av_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "aa", s[1].ToString() });
@@ -374,6 +369,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var rccv3 = $"-{string.Join("", cc)}{v}";
                 var crv = $"{cc.Last()} {v}";
                 var ccv = $"{string.Join("", cc)} {v}";
+                var ccv1 = $"{string.Join("", cc)}{v}";
                 /// - CCV
                 if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
                     basePhoneme = rccv;
@@ -391,6 +387,8 @@ namespace OpenUtau.Plugin.Builtin {
                     /// CCV and CV
                     if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
                         basePhoneme = ccv;
+                    } else if (HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
+                        basePhoneme = ccv1;
                     } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                         basePhoneme = crv;
                         /// C+V
@@ -434,10 +432,10 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     basePhoneme = $"{cc.Last()} {v}";
                 }
-                // try [CC V]
+                // try [CC V] or [CCV]
                 for (var i = firstC; i < cc.Length - 1; i++) {
                     var ccv = $"{string.Join("", cc)} {v}";
-                    var ccv1 = string.Join("", cc.Skip(i)) + " " + v;
+                    var ccv1 = $"{string.Join("", cc)}{v}";
                     /// CCV
                     if (syllable.CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[i])) {
                         if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
@@ -446,6 +444,7 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                         } else if (HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone)) {
                             basePhoneme = ccv1;
+                            lastC = i;
                         }
                         break;
                         /// C-Last V
