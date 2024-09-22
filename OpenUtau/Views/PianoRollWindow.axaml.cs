@@ -1230,11 +1230,18 @@ namespace OpenUtau.App.Views {
                 #region document keys
                 case Key.Space:
                     if (isNone) {
+                        if (notesVm.IsMetronomePlaying) {
+                            notesVm.UpdateMetronome();
+                        }
                         playVm.PlayOrPause();
+                        
                         return true;
                     }
                     if (isAlt) {
                         if (!notesVm.Selection.IsEmpty) {
+                            if (notesVm.IsMetronomePlaying) {
+                                notesVm.UpdateMetronome();
+                            }
                             playVm.PlayOrPause(
                                 tick: notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position,
                                 endTick: notesVm.Part.position + notesVm.Selection.LastOrDefault()!.RightBound
@@ -1403,7 +1410,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if(isAlt) {
-                        AudioPlayer.Instance.Volume += 0.1f;
+                        MetronomePlayer.Instance.Volume += 0.1f;
                     }
                     break;
                 case Key.Down:
@@ -1416,7 +1423,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isAlt) {
-                        AudioPlayer.Instance.Volume -= 0.1f;
+                        MetronomePlayer.Instance.Volume -= 0.1f;
                     }
                     break;
                 case Key.Left:

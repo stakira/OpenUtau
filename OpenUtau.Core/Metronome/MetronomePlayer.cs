@@ -7,12 +7,11 @@ using System.Timers;
 
 
 namespace OpenUtau.Core.Metronome {
-    public class AudioPlayer
-    {
-        public static AudioPlayer Instance {
+    public class MetronomePlayer {
+        public static MetronomePlayer Instance {
             get {
                 if (instance == null) {
-                    instance = new AudioPlayer();
+                    instance = new MetronomePlayer();
                     return instance;
                 } else {
                     return instance;
@@ -51,6 +50,7 @@ namespace OpenUtau.Core.Metronome {
         }
         public int Beats { get; set; } = 4;
         public int NoteLength { get; set; } = 4;
+        public bool OpenMetronome { get; set; } = false;
 
         private Timer? timer;
         public float Volume {
@@ -84,7 +84,7 @@ namespace OpenUtau.Core.Metronome {
             timer = null;
         }
 
-        private static AudioPlayer? instance;
+        private static MetronomePlayer? instance;
 
         public class MetronomeSetting {
             public string AccentedBeatPath { get; set; } = "SnareHi.wav";
@@ -94,7 +94,7 @@ namespace OpenUtau.Core.Metronome {
 
         private MetronomeSetting? settingsData = null;
 
-        private AudioPlayer()
+        private MetronomePlayer()
         {
             try {
                 string jsonString = File.ReadAllText("Metronome/MetronomeSetting.json");
@@ -138,8 +138,7 @@ namespace OpenUtau.Core.Metronome {
 
         public void Play()
         {
-            if (!IsPlaying)
-            {
+            if (!IsPlaying && OpenMetronome) {
                 accentedVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(AccentedPattern));
                 normalVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(NormalPattern));
                 accentedVolumeProvider.Volume = 1.0f;
@@ -149,7 +148,6 @@ namespace OpenUtau.Core.Metronome {
                 outputDevice.Play();
             }
         }
-
         public void Stop()
         {
             if (IsPlaying) {
@@ -160,12 +158,7 @@ namespace OpenUtau.Core.Metronome {
 
         public void Update()
         {
-            if (IsPlaying) {
-                Stop();
-                AccentedPattern = patternEngine.CreateAccentedBeatPattern(BPM, Beats, NoteLength);
-                NormalPattern = patternEngine.CreateNormalBeatPattern(BPM, Beats, NoteLength);
-                Play();
-            } else {
+            if (!IsPlaying) {
                 AccentedPattern = patternEngine.CreateAccentedBeatPattern(BPM, Beats, NoteLength);
                 NormalPattern = patternEngine.CreateNormalBeatPattern(BPM, Beats, NoteLength);
             }
@@ -177,11 +170,12 @@ namespace OpenUtau.Core.Metronome {
             NormalBeatPath = normalBeatPath;
             patternEngine.AccentedBeat = new SampleSource(AccentedBeatPath);
             patternEngine.NormalBeat = new SampleSource(NormalBeatPath);
-            Update();
 
             mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, patternEngine.AccentedBeat.WaveFormat.Channels));
             mixer.ReadFully = true;
             outputDevice.Init(mixer);
+
+            Update();
         }
     }
 }

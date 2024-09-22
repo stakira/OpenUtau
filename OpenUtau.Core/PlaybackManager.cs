@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.Metronome;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
@@ -77,7 +78,7 @@ namespace OpenUtau.Core {
                 Freq = freq,
             };
             AudioOutput.Init(sineGen);
-            AudioOutput.Play();
+            AudioOutput.Play();  
             return sineGen;
         }
 
@@ -96,19 +97,23 @@ namespace OpenUtau.Core {
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
+                MetronomePlayer.Instance.Play();
                 return;
             }
             AudioOutput.Stop();
+            MetronomePlayer.Instance.Stop();
             Render(project, tick, endTick, trackNo);
             StartingToPlay = true;
         }
 
         public void StopPlayback() {
             AudioOutput.Stop();
+            MetronomePlayer.Instance.Stop();
         }
 
         public void PausePlayback() {
             AudioOutput.Pause();
+            MetronomePlayer.Instance.Stop();
         }
 
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
@@ -117,8 +122,10 @@ namespace OpenUtau.Core {
             Log.Information($"StartPlayback at {start}");
             masterMix = masterAdapter;
             AudioOutput.Stop();
+            MetronomePlayer.Instance.Stop();
             AudioOutput.Init(masterMix);
             AudioOutput.Play();
+            MetronomePlayer.Instance.Play();
         }
 
         private void Render(UProject project, int tick, int endTick, int trackNo) {

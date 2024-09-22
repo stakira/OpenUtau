@@ -241,7 +241,7 @@ namespace OpenUtau.App.ViewModels {
 
             IsMetronomePlaying = false;
             MetronomePlay = ReactiveCommand.Create(() => {
-                PlayMetronome(IsMetronomePlaying);
+                MetronomePlayer.Instance.OpenMetronome = IsMetronomePlaying;
             });
             IsEditCurve = false;
             EditCurveStart = ReactiveCommand.Create(() => {
@@ -367,24 +367,12 @@ namespace OpenUtau.App.ViewModels {
             Notify();
         }
 
-        public void PlayMetronome(bool on) {
-            if(on) {
-                if (AudioPlayer.Instance.IsPlaying)
-                    return;
-                
-                if(Project.tempos.Count < 1 || Project.timeSignatures.Count < 1) {
-                    return;
-                }
-
-                AudioPlayer.Instance.UpdateParmas((int)Project.tempos[0].bpm, Project.timeSignatures[0].beatPerBar, Project.timeSignatures[0].beatUnit);
-                AudioPlayer.Instance.Play();
-            }
-            else {
-                if (!AudioPlayer.Instance.IsPlaying)
-                    return;
-                AudioPlayer.Instance.Stop();
+        public void UpdateMetronome() {
+            if(Project.tempos.Count < 1 || Project.timeSignatures.Count < 1) {
+                return;
             }
 
+            MetronomePlayer.Instance.UpdateParmas((int)Project.tempos[0].bpm, Project.timeSignatures[0].beatPerBar, Project.timeSignatures[0].beatUnit);
         }
         public void OnYZoomed(Point position, double delta) {
             double center = TrackOffset + position.Y * ViewportTracks;
