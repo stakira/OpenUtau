@@ -95,6 +95,12 @@ OpenUtauPlugin::~OpenUtauPlugin() {
   if (this->acceptorThread != nullptr) {
     this->acceptorThread->request_stop();
   }
+  for (auto &[_, thread] : this->threads) {
+    thread.request_stop();
+  }
+  for (auto &[_, thread] : this->threads) {
+    thread.join();
+  }
   while (this->connected) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
@@ -586,6 +592,10 @@ choc::value::Value OpenUtauPlugin::onRequest(const std::string kind,
 
     this->requestResampleMixes(this->currentSampleRate);
 
+    if (toAdd.size() == 0) {
+      this->lastSync = std::chrono::system_clock::now();
+    }
+
     return response;
   }
 
@@ -627,6 +637,7 @@ void OpenUtauPlugin::onNotification(const std::string kind,
       this->audioBuffers = audioBuffers;
     }
 
+    this->lastSync = std::chrono::system_clock::now();
     this->requestResampleMixes(this->currentSampleRate);
   }
 }
@@ -670,17 +681,17 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
   auto _lock3 = std::shared_lock(this->partsMutex);
 
   std::vector<std::pair<std::vector<float>, std::vector<float>>> mixes;
-  for (const auto &parts : this->parts) {
+  for (const auto &[_, parts] : this->parts) {
     std::vector<float> resampledLeft;
     std::vector<float> resampledRight;
-    auto maxRightMs = std::max_element(
-        parts.second.begin(), parts.second.end(),
+    auto maxEndMs = std::max_element(
+        parts.begin(), parts.end(),
         [](const Part &a, const Part &b) { return a.endMs < b.endMs; });
-    resampledLeft.resize((size_t)(maxRightMs->endMs / 1000.0 * newSampleRate) +
+    resampledLeft.resize((size_t)(maxEndMs->endMs / 1000.0 * newSampleRate) +
                          1);
-    resampledRight.resize((size_t)(maxRightMs->endMs / 1000.0 * newSampleRate) +
+    resampledRight.resize((size_t)(maxEndMs->endMs / 1000.0 * newSampleRate) +
                           1);
-    for (const auto &part : parts.second) {
+    for (const auto &part : parts) {
       auto startFrame = (size_t)(part.startMs / 1000.0 * newSampleRate);
       auto endFrame = (size_t)(part.endMs / 1000.0 * newSampleRate);
       auto rate = 44100.0 / newSampleRate;
@@ -690,12 +701,12 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
       auto &buffer = audioBuffers[part.hash];
 
       for (size_t i = startFrame; i < endFrame; ++i) {
-        auto frame = (size_t)(i * rate);
+        auto frame = (size_t)((i - startFrame) * rate);
         auto leftFrameLeft = frame * 2;
         auto leftFrameRight = frame * 2 + 2;
         auto rightFrameLeft = frame * 2 + 1;
         auto rightFrameRight = frame * 2 + 3;
-        auto lerp = (i * rate) - frame;
+        auto lerp = ((i - startFrame) * rate) - frame;
         if (rightFrameRight >= buffer.size()) {
           break;
         }
@@ -734,11 +745,11 @@ OpenUtauPlugin::formatMessage(const std::string &kind,
 }
 
 bool OpenUtauPlugin::isProcessing() {
-  if (this->partMutex.try_lock()) {
-    this->partMutex.unlock();
-    return false;
+  if (!this->mixMutex.try_lock()) {
+    return true;
   }
-  return true;
+  this->mixMutex.unlock();
+  return false;
 }
 
 /* ------------------------------------------------------------------------------------------------------------
