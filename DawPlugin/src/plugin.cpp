@@ -120,9 +120,9 @@ OpenUtauPlugin::~OpenUtauPlugin() {
  * Information */
 
 /**
-                                                               Get the plugin
-   label. This label is a short restricted name consisting of only _, a-z, A-Z
-   and 0-9 characters.
+                                                                                                                               Get the plugin
+       label. This label is a short restricted name consisting of only _, a-z,
+   A-Z and 0-9 characters.
  */
 const char *OpenUtauPlugin::getLabel() const { return "OpenUtau"; }
 
@@ -262,11 +262,8 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
     }
     this->requestResampleMixes(this->currentSampleRate);
   } else if (key == "tracks") {
-    {
-      auto _lock = std::lock_guard(this->tracksMutex);
-      this->tracks = Structures::deserializeTracks(value);
-    }
-    syncMapping();
+    auto _lock = std::lock_guard(this->tracksMutex);
+    this->tracks = Structures::deserializeTracks(value);
   } else if (key == "mapping") {
     this->outputMap = Structures::deserializeOutputMap(value);
   }
@@ -290,9 +287,9 @@ uint32_t OpenUtauPlugin::getVersion() const {
  * Init */
 
 /**
-                                                               Initialize the
-   audio port @a index.@n This function will be called once, shortly after the
-   plugin is created.
+                                                                                                                               Initialize the
+       audio port @a index.@n This function will be called once, shortly after
+   the plugin is created.
  */
 void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
                                    AudioPort &port) {
@@ -380,12 +377,12 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
  * Callbacks (optional) */
 
 /**
-                                                               Optional callback
-   to inform the plugin about a buffer size change. This function will only be
-   called when the plugin is deactivated.
-                                                               @note This value
-   is only a hint! Hosts might call run() with a higher or lower number of
-   frames.
+                                                                                                                               Optional callback
+       to inform the plugin about a buffer size change. This function will only
+   be called when the plugin is deactivated.
+                                                                                                                               @note This value
+       is only a hint! Hosts might call run() with a higher or lower number of
+       frames.
  */
 void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 

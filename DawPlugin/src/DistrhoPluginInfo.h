@@ -2,11 +2,19 @@
 #define DISTRHO_PLUGIN_INFO_H_INCLUDED
 
 #define DISTRHO_PLUGIN_BRAND "stakira"
+#ifdef DEBUG
+#define DISTRHO_PLUGIN_NAME "OpenUtau Bridge (Debug)
+#else
 #define DISTRHO_PLUGIN_NAME "OpenUtau Bridge"
+#endif
 #define DISTRHO_PLUGIN_URI "https://github.com/stakira/OpenUtau/"
 
 #define DISTRHO_PLUGIN_BRAND_ID Stak
+#ifdef DEBUG
+#define DISTRHO_PLUGIN_UNIQUE_ID OpUD
+#else
 #define DISTRHO_PLUGIN_UNIQUE_ID OpUt
+#endif
 
 #define DISTRHO_PLUGIN_HAS_UI 1
 #define DISTRHO_PLUGIN_IS_SYNTH 1
