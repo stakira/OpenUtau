@@ -95,7 +95,7 @@ namespace OpenUtau.Core.Format {
 
         public static void Save(string filePath, UProject project) {
             try {
-                var ustx = CreateUstx(project);
+                var ustx = FromProject(project);
                 project.FilePath = filePath;
                 File.WriteAllText(filePath, ustx, Encoding.UTF8);
             } catch (Exception ex) {
@@ -104,7 +104,7 @@ namespace OpenUtau.Core.Format {
             }
         }
 
-        public static string CreateUstx(UProject project) {
+        public static string FromProject(UProject project) {
             project.ustxVersion = kUstxVersion;
             project.BeforeSave();
             var ustx = Yaml.DefaultSerializer.Serialize(project);

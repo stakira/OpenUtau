@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.App.ViewModels {
     public class DawIntegrationTerminalViewModel : ViewModelBase {
-        [Reactive] public Server? SelectedServer { get; set; } = null;
+        [Reactive] public DawServer? SelectedServer { get; set; } = null;
         [Reactive] public bool CanConnect { get; set; } = true;
-        public ObservableCollectionExtended<Server> ServerList { get; set; } = new ObservableCollectionExtended<Server>();
+        public ObservableCollectionExtended<DawServer> ServerList { get; set; } = new ObservableCollectionExtended<DawServer>();
 
         public DawIntegrationTerminalViewModel() {
             Task.Run(() => RefreshServerList());
         }
 
         public async Task RefreshServerList() {
-            var servers = await ServerFinder.FindServers();
+            var servers = await DawServerFinder.FindServers();
 
             ServerList.Load(servers);
             if (servers.Count == 0) {
@@ -31,12 +31,12 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 CanConnect = false;
-                var (client, ustx) = await Client.Connect(SelectedServer.Port);
+                var (client, ustx) = await DawClient.Connect(SelectedServer);
 
                 if (ustx.Length > 0) {
                     DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.LoadText(ustx)));
                 }
-                DocManager.Inst.dawClient = client;
+                DawManager.Inst.dawClient = client;
             } finally {
                 CanConnect = true;
             }

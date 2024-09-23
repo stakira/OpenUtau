@@ -1,21 +1,36 @@
 #pragma once
 #include "DistrhoPlugin.hpp"
+#include "alternate_shared_mutex.hpp"
 #include "asio.hpp"
 #include "choc/containers/choc_Value.h"
 #include "common.hpp"
 #include "extra/String.hpp"
+#include "yamc_rwlock_sched.hpp"
 #include <filesystem>
+#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
 
-START_NAMESPACE_DISTRHO
+using AudioHash = uint32_t;
+class Part {
+public:
+  int trackNo;
+  double startMs;
+  double endMs;
+
+  AudioHash hash;
+
+  static Part deserialize(const choc::value::ValueView &value);
+  choc::value::Value serialize() const;
+};
 
 // -----------------------------------------------------------------------------------------------------------
 
 /**
-  Plugin to show how to get some basic information sent to the UI.
+  Plugin to show how to get somebasic information sent to the UI.
  */
 class OpenUtauPlugin : public Plugin {
 public:
@@ -28,7 +43,7 @@ public:
   std::string name;
   std::optional<std::chrono::time_point<std::chrono::system_clock>> lastSync;
 
-  std::vector<std::string> trackNames;
+  std::vector<Structures::Track> tracks;
   Structures::OutputMap outputMap;
 
   bool isProcessing();
@@ -116,36 +131,42 @@ private:
 
   void initializeNetwork();
 
-  void onMessage(const std::string kind, const choc::value::Value payload);
+  choc::value::Value onRequest(const std::string kind,
+                               const choc::value::Value payload);
+  void onNotification(const std::string kind, const choc::value::Value payload);
 
   static std::string formatMessage(const std::string &kind,
                                    const choc::value::ValueView &payload);
 
   void syncMapping();
   void updatePluginServerFile();
+  void requestResampleMixes(double newSampleRate);
   void resampleMixes(double newSampleRate);
-  void requestWrite();
-  void doneWriting();
 
   std::string ustx;
   std::string uuid;
 
   std::chrono::time_point<std::chrono::system_clock> lastPing;
 
-  std::atomic<bool> writing = false;
-  std::atomic<int> readingCount = 0;
+  yamc::alternate::basic_shared_mutex<yamc::rwlock::WriterPrefer> audioBuffersMutex;
+  std::map<AudioHash, std::vector<float>> audioBuffers;
 
-  std::vector<std::vector<float>> mixes;
-  std::vector<std::pair<std::vector<float>, std::vector<float>>> resampledMixes;
+  yamc::alternate::basic_shared_mutex<yamc::rwlock::WriterPrefer> partsMutex;
+  std::map<int, std::vector<Part>> parts;
+
+  yamc::alternate::basic_shared_mutex<yamc::rwlock::WriterPrefer> mixMutex;
+  std::vector<std::pair<std::vector<float>, std::vector<float>>> mixes;
   double currentSampleRate = 44100.0;
 
   std::filesystem::path socketPath;
 
-  std::atomic<bool> networkInitialized = false;
   std::unique_ptr<asio::ip::tcp::acceptor> acceptor;
   std::unique_ptr<std::jthread> acceptorThread;
 
-  std::mutex statusMutex;
+  std::unordered_map<std::string, std::jthread> threads;
+
+  yamc::alternate::basic_shared_mutex<yamc::rwlock::WriterPrefer> tracksMutex;
+  std::mutex partMutex;
 
   /**
      Set our plugin class as non-copyable and add a leak detector just in case.
@@ -153,5 +174,3 @@ private:
   DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpenUtauPlugin)
 };
 // -----------------------------------------------------------------------------------------------------------
-
-END_NAMESPACE_DISTRHO

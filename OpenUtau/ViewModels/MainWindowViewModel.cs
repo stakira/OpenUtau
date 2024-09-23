@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
+using OpenUtau.Core.DawIntegration;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,14 +29,14 @@ namespace OpenUtau.App.ViewModels {
         public bool ExtendToFrame => OS.IsMacOS();
         public string Title {
             get {
-                var baseTitle = !ProjectSaved
-                    ? $"{AppVersion}"
-                    : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+                if (DawManager.Inst.dawClient == null) {
+                    var baseTitle = !ProjectSaved
+                        ? $"{AppVersion}"
+                        : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
 
-                if (DocManager.Inst.dawClient == null) {
                     return baseTitle;
                 } else {
-                    return $"{baseTitle} (Attached to DAW)";
+                    return $"{AppVersion} [{DawManager.Inst.dawClient.server.Name}] (Attached to DAW)";
                 }
             }
         }

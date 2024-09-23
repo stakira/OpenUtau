@@ -20,23 +20,42 @@ std::vector<uint8_t> Utils::unBase64ToVector(const std::string &encoded) {
   return decoded;
 }
 
-std::string
-Structures::serializeTrackNames(const std::vector<std::string> &trackNames) {
+double Utils::dbToMultiplier(double db) {
+  return (db <= -24)  ? 0
+         : (db < -16) ? std::pow(10, (db * 2 + 16) / 20)
+                      : std::pow(10, db / 20);
+}
+
+choc::value::Value Structures::Track::serialize() const {
+  return choc::value::createObject("", "name", name, "pan", pan, "volume",
+                                   volume);
+}
+Structures::Track
+Structures::Track::deserialize(const choc::value::ValueView &value) {
+  Track track;
+  track.name = value["name"].get<std::string>();
+  track.pan = value["pan"].get<float>();
+  track.volume = value["volume"].get<float>();
+  return track;
+}
+
+std::string Structures::serializeTracks(const std::vector<Track> &tracks) {
   choc::value::Value value = choc::value::createEmptyArray();
-  for (const auto &track : trackNames) {
-    value.addArrayElement(track);
+  for (const auto &track : tracks) {
+    value.addArrayElement(track.serialize());
   }
   auto json = choc::json::toString(value);
   return choc::base64::encodeToString(json.data(), json.size());
 }
-std::vector<std::string>
-Structures::deserializeTrackNames(const std::string &data) {
-  auto value = choc::json::parse(Utils::unBase64ToString(data));
-  std::vector<std::string> trackNames;
-  for (auto element : value) {
-    trackNames.push_back(std::string(element.getString()));
+std::vector<Structures::Track>
+Structures::deserializeTracks(const std::string &data) {
+  auto json = Utils::unBase64ToString(data);
+  auto value = choc::json::parse(json);
+  std::vector<Track> tracks;
+  for (const auto &trackValue : value) {
+    tracks.push_back(Track::deserialize(trackValue));
   }
-  return trackNames;
+  return tracks;
 }
 
 std::string Structures::serializeOutputMap(const OutputMap &outputMap) {

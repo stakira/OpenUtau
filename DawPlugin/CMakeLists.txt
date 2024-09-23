@@ -38,11 +38,12 @@ dpf_add_plugin(
     src/ui.cpp
     deps/dpf_widgets/opengl/DearImGui.cpp)
 
-# Including zlib before DPF causes "find_library" to fail with infinite
+# Including other libraries before DPF causes "find_library" to fail with infinite
 # recursion, so we include it after DPF
 set(ZLIB_BUILD_EXAMPLES OFF)
 set(RENAME_ZCONF OFF)
 add_subdirectory(deps/zlib)
+add_subdirectory(deps/xxhash_cpp)
 target_compile_features(openutau_daw_plugin PUBLIC cxx_std_20)
 
 target_include_directories(
@@ -55,7 +56,8 @@ target_include_directories(
          "deps/dpf_widgets"
          "deps/uuid-v4"
          "deps/zlib"
-         "deps/gzip-hpp/include"
-         "deps/libfar/include")
+         "deps/xxhash_cpp/include"
+         "deps/yamc/include"
+         "deps/gzip-hpp/include")
 
-target_link_libraries(openutau_daw_plugin PRIVATE zlibstatic)
+target_link_libraries(openutau_daw_plugin PRIVATE zlibstatic xxhash_cpp)

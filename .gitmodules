@@ -19,3 +19,9 @@
 [submodule "DawPlugin/deps/uuid-v4"]
 	path = DawPlugin/deps/uuid-v4
 	url = https://github.com/rkg82/uuid-v4.git
+[submodule "DawPlugin/deps/yamc"]
+	path = DawPlugin/deps/yamc
+	url = https://github.com/yohhoy/yamc.git
+[submodule "DawPlugin/deps/xxhash_cpp"]
+	path = DawPlugin/deps/xxhash_cpp
+	url = https://github.com/RedSpah/xxhash_cpp.git

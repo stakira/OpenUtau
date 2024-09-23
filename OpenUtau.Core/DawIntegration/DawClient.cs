@@ -11,24 +11,26 @@ using OpenUtau.Core.Ustx;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using System.IO.Compression;
+using NumSharp.Utilities;
 
 namespace OpenUtau.Core.DawIntegration {
-    public class Client {
+    public class DawClient {
         static int VERSION = 1;
-        private readonly int port;
-        private TcpClient tcpClient;
+        public readonly DawServer server;
+        private readonly TcpClient tcpClient;
         private Stream? stream;
         private Task? receiver;
         private CancellationTokenSource? cancellationTokenSource;
         private Dictionary<string, Action<string>> handlers = new Dictionary<string, Action<string>>();
         private Dictionary<string, Action<string>> onetimeHandlers = new Dictionary<string, Action<string>>();
+        readonly SemaphoreSlim writerSemaphore = new SemaphoreSlim(1, 1);
 
-        private Client(int port) {
-            this.port = port;
+        private DawClient(DawServer server) {
+            this.server = server;
             tcpClient = new TcpClient();
         }
 
-        ~Client() {
+        ~DawClient() {
             tcpClient.Close();
             cancellationTokenSource?.Cancel();
         }
@@ -48,7 +50,7 @@ namespace OpenUtau.Core.DawIntegration {
                         onetimeHandlers["disconnect"]("");
                         break;
                     }
-                    currentMessageBuffer = currentMessageBuffer.Concat(buffer).ToArray();
+                    currentMessageBuffer = currentMessageBuffer.Concat(buffer.Slice(0, bytesRead)).ToArray();
                     while (currentMessageBuffer.Contains((byte)'\n')) {
                         int index = Array.IndexOf(currentMessageBuffer, (byte)'\n');
                         string message = Encoding.UTF8.GetString(currentMessageBuffer.Take(index).ToArray());
@@ -73,72 +75,75 @@ namespace OpenUtau.Core.DawIntegration {
             });
         }
 
-        public static async Task<(Client, string)> Connect(int port) {
-            var client = new Client(port);
-            await client.tcpClient.ConnectAsync("127.0.0.1", port);
+        public static async Task<(DawClient, string)> Connect(DawServer server) {
+            var client = new DawClient(server);
+            await client.tcpClient.ConnectAsync("127.0.0.1", server.Port);
             client.stream = client.tcpClient.GetStream();
 
             client.cancellationTokenSource = new CancellationTokenSource();
             client.receiver = client.StartReceiver(client.cancellationTokenSource.Token);
 
-            var tcs = new TaskCompletionSource<InitMessage>();
-            client.RegisterOnetimeListener("init", (string message) => {
-                tcs.SetResult(
-                    JsonConvert.DeserializeObject<InitMessage>(message)!
-                );
-            });
-            client.RegisterOnetimeListener("error", (string message) => {
-                var messageContent = JsonConvert.DeserializeObject<ErrorMessage>(message);
-                tcs.SetException(
-                    new Exception($"Connection refused: {messageContent!.message}")
-                );
-            });
-
             var timeoutCanceller = new CancellationTokenSource();
             timeoutCanceller.CancelAfter(TimeSpan.FromSeconds(5));
-            timeoutCanceller.Token.Register(() => tcs.TrySetCanceled());
-            var initMessage = await tcs.Task;
+            var initMessage = await client.SendRequest<InitResponse>(new InitRequest(), timeoutCanceller.Token);
             return (client, initMessage.ustx);
         }
 
-        public async Task SendStatus(UProject project, List<WaveMix> mixes) {
-            var ustx = Format.Ustx.CreateUstx(project);
-            var base64Mixes = mixes.Select(mixSource => {
-                if (mixSource == null) {
-                    return "";
-                }
-                var mix = new ExportAdapter(mixSource).ToWaveProvider();
-                using (var ms = new MemoryStream())
-                using (var compressor = new GZipStream(ms, CompressionMode.Compress)) {
-                    var buffer = new byte[mix.WaveFormat.AverageBytesPerSecond];
-                    int bytesRead;
-                    while ((bytesRead = mix.Read(buffer, 0, buffer.Length)) > 0) {
-                        compressor.Write(buffer, 0, bytesRead);
-                    }
-                    return Convert.ToBase64String(ms.ToArray());
-                }
-            });
-
-            var message = new UpdateStatusMessage(
-                ustx,
-                project.tracks.Select((t) => t.TrackName).ToList(),
-                base64Mixes.ToList()
-            );
-
-            await SendMessage("status", message);
-        }
-
-        private async Task SendMessage(string kind, object json) {
+        private async Task SendMessage(string header, DawMessage data) {
             if (stream == null) {
                 throw new Exception("stream is null");
             }
-            await stream.WriteAsync(Encoding.UTF8.GetBytes($"{kind} {JsonConvert.SerializeObject(json)}\n"));
+            await writerSemaphore.WaitAsync();
+            try {
+                await stream.WriteAsync(Encoding.UTF8.GetBytes($"{header} {JsonConvert.SerializeObject(data)}\n"));
+            } finally {
+                writerSemaphore.Release();
+            }
+        }
+        public async Task<T> SendRequest<T>(DawDawRequest data,
+            CancellationToken? token = null) where T : DawDawResponse {
+            if (stream == null) {
+                throw new Exception("stream is null");
+            }
+            var uuid = Guid.NewGuid().ToString();
+
+            var tcs = new TaskCompletionSource<DawResult<T>>();
+            token?.Register(() => tcs.TrySetCanceled());
+            RegisterOnetimeListener($"response:{uuid}", (string message) => {
+                tcs.SetResult(
+                    JsonConvert.DeserializeObject<DawResult<T>>(message)!
+                );
+            });
+            await SendMessage($"request:{uuid}:{data.kind}", data);
+
+            var result = await tcs.Task;
+            if (!result.success) {
+                throw new Exception($"DAW returned error to request {data.kind}: {result.error!}");
+            }
+            if (result.data == null) {
+                throw new Exception("Unreachable: result.success && result.data == null");
+            }
+
+            return result.data;
+        }
+        public async Task SendNotification(DawDawNotification data,
+            CancellationToken? token = null) {
+            if (stream == null) {
+                throw new Exception("stream is null");
+            }
+            await SendMessage($"notification:{data.kind}", data);
         }
 
-        public void RegisterListener(string kind, Action<string> handler) {
+        public void RegisterNotification<T>(string kind, Action<T> handler) where T : DawOuNotification {
+            handlers[kind] = (string message) => {
+                handler(JsonConvert.DeserializeObject<T>(message)!);
+            };
+        }
+
+        private void RegisterListener(string kind, Action<string> handler) {
             handlers[kind] = handler;
         }
-        public void RegisterOnetimeListener(string kind, Action<string> handler) {
+        private void RegisterOnetimeListener(string kind, Action<string> handler) {
             onetimeHandlers[kind] = handler;
         }
     }

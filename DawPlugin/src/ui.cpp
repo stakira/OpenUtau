@@ -116,6 +116,8 @@ protected:
     ImGui::SameLine(0, 0);
 
     if (plugin->isProcessing()) {
+      ImGui::TextColored(themeBlueColor, "Processing");
+    } else {
       if (plugin->lastSync) {
         auto lastSyncDuration =
             std::chrono::duration_cast<std::chrono::seconds>(
@@ -129,10 +131,9 @@ protected:
       } else {
         ImGui::TextColored(style.Colors[ImGuiCol_TextDisabled], "N/A");
       }
-      ImGui::TextColored(themeBlueColor, "Processing");
     }
 
-    if (plugin->trackNames.size() > 0) {
+    if (plugin->tracks.size() > 0) {
       ImGui::Spacing();
       ImGui::TextColored(themePinkColor, "Track Mapping:");
       if (ImGui::BeginTable("##track_mapping",
@@ -151,7 +152,7 @@ protected:
           ImGui::TableNextRow();
           for (int lr = 0; lr < 2; lr++) {
             ImGui::TableNextColumn();
-            ImGui::Text("%s: %s", plugin->trackNames[i].c_str(),
+            ImGui::Text("%s: %s", plugin->tracks[i].name.c_str(),
                         lr == 0 ? "L" : "R");
             for (int j = 0; j < DISTRHO_PLUGIN_NUM_OUTPUTS; j += 2) {
               ImGui::TableNextColumn();

@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.DawIntegration {
-    public class ServerFinder {
+    public class DawServerFinder {
         private static string getServerPath() {
             var temp = Path.GetTempPath();
 
             return $"{temp}OpenUtau/PluginServers";
         }
-        public static async Task<List<Server>> FindServers() {
+        public static async Task<List<DawServer>> FindServers() {
             var path = getServerPath();
             if (!Directory.Exists(path)) {
-                return new List<Server>();
+                return new List<DawServer>();
             }
 
             var di = new DirectoryInfo(path);
             var files = di.GetFiles("*.json");
 
-            var servers = new List<Server>();
+            var servers = new List<DawServer>();
             foreach (FileInfo file in files) {
                 try {
                     var json = await File.ReadAllTextAsync(file.FullName);
-                    var server = JsonConvert.DeserializeObject<Server>(json);
+                    var server = JsonConvert.DeserializeObject<DawServer>(json);
                     if (server != null && CheckPortUsing(server.Port)) {
                         servers.Add(server);
                         continue;
@@ -60,12 +60,12 @@ namespace OpenUtau.Core.DawIntegration {
         }
     }
 
-    public class Server {
+    public class DawServer {
         public int Port { get; }
         public string Name { get; }
 
         [JsonConstructor]
-        Server(int port, string name) {
+        DawServer(int port, string name) {
             Port = port;
             Name = name;
         }
