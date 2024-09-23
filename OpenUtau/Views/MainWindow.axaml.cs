@@ -18,6 +18,7 @@ using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Analysis.Some;
+using OpenUtau.Core.DawIntegration;
 using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -517,6 +518,10 @@ namespace OpenUtau.App.Views {
                 dialog.Position = dialog.Position.WithY(0);
             }
         }
+        async void OnMenuDisconnectFromDaw(object sender, RoutedEventArgs args) {
+            await DawManager.Inst.Disconnect();
+        }
+
 
         private async Task<bool> WarnToSave(UProject project) {
             if (string.IsNullOrEmpty(project.FilePath)) {

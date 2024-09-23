@@ -21,7 +21,7 @@ public:
   double startMs;
   double endMs;
 
-  AudioHash hash;
+  std::optional<AudioHash> hash;
 
   static Part deserialize(const choc::value::ValueView &value);
   choc::value::Value serialize() const;

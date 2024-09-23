@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
-using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -13,28 +11,44 @@ using Serilog;
 namespace OpenUtau.Core.DawIntegration {
     public class DawManager : SingletonBase<DawManager>, ICmdSubscriber {
         public DawClient? dawClient = null;
-        CancellationTokenSource? debounceCancellation = null;
-        CancellationTokenSource renderCancellation = null;
+        CancellationTokenSource? renderCancellation = null;
+        private Debounce sendLayoutDebounce = new Debounce();
+        private Debounce sendAudioDebounce = new Debounce();
 
         private DawManager() {
             DocManager.Inst.AddSubscriber(this);
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is UNotification) {
+            if (cmd is UNotification && !(
+                cmd is DawConnectedNotification ||
+                cmd is PartRenderedNotification ||
+                cmd is VolumeChangeNotification ||
+                cmd is PanChangeNotification
+                )) {
                 return;
             }
-            debounceCancellation?.Cancel();
-            debounceCancellation = new CancellationTokenSource();
 
-            Task.Delay(TimeSpan.FromSeconds(5), debounceCancellation.Token)
-                .ContinueWith(async task => {
-                    if (task.IsCompletedSuccessfully) {
-                        await UpdateUstx();
-                        await UpdateTracks();
-                        await UpdateAudio();
-                    }
-                });
+            sendLayoutDebounce.Do(TimeSpan.FromSeconds(1), async () => {
+                await UpdateUstx();
+                await UpdateTracks();
+            });
+            sendAudioDebounce.Do(TimeSpan.FromSeconds(5), async () => {
+                await UpdateAudio();
+            });
+        }
+
+        public async Task Disconnect() {
+            if (this.dawClient == null) {
+                return;
+            }
+            await UpdateUstx();
+            await UpdateTracks();
+            await UpdateAudio();
+
+            var dawClient = this.dawClient;
+            this.dawClient = null;
+            dawClient.Disconnect();
         }
 
         internal bool isDawClientLocked = false;

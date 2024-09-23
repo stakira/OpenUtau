@@ -49,15 +49,25 @@ std::shared_ptr<asio::io_context> getIoContext() {
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
 
 choc::value::Value Part::serialize() const {
-  return choc::value::createObject("", "trackNo", trackNo, "startMs", startMs,
-                                   "endMs", endMs, "audioHash", (int64_t)hash);
+  auto obj = choc::value::createObject("", "trackNo", trackNo, "startMs",
+                                       startMs, "endMs", endMs);
+  if (hash.has_value()) {
+    // choc cannot set uint32_t, so we need to cast it to int64_t
+    obj.setMember("audioHash", (int64_t)hash.value());
+  }
+
+  return obj;
 }
 Part Part::deserialize(const choc::value::ValueView &value) {
   Part part;
   part.trackNo = value["trackNo"].get<int>();
   part.startMs = value["startMs"].get<double>();
   part.endMs = value["endMs"].get<double>();
-  part.hash = value["audioHash"].get<uint32_t>();
+  if (value.hasObjectMember("audioHash")) {
+    part.hash = value["audioHash"].get<uint32_t>();
+  } else {
+    part.hash = std::nullopt;
+  }
   return part;
 }
 
@@ -110,9 +120,9 @@ OpenUtauPlugin::~OpenUtauPlugin() {
  * Information */
 
 /**
-                               Get the plugin label.
-                               This label is a short restricted name consisting
-   of only _, a-z, A-Z and 0-9 characters.
+                                                               Get the plugin
+   label. This label is a short restricted name consisting of only _, a-z, A-Z
+   and 0-9 characters.
  */
 const char *OpenUtauPlugin::getLabel() const { return "OpenUtau"; }
 
@@ -252,7 +262,10 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
     }
     this->requestResampleMixes(this->currentSampleRate);
   } else if (key == "tracks") {
-    this->tracks = Structures::deserializeTracks(value);
+    {
+      auto _lock = std::lock_guard(this->tracksMutex);
+      this->tracks = Structures::deserializeTracks(value);
+    }
     syncMapping();
   } else if (key == "mapping") {
     this->outputMap = Structures::deserializeOutputMap(value);
@@ -277,9 +290,9 @@ uint32_t OpenUtauPlugin::getVersion() const {
  * Init */
 
 /**
-                               Initialize the audio port @a index.@n
-                               This function will be called once, shortly after
-   the plugin is created.
+                                                               Initialize the
+   audio port @a index.@n This function will be called once, shortly after the
+   plugin is created.
  */
 void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
                                    AudioPort &port) {
@@ -367,12 +380,12 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
  * Callbacks (optional) */
 
 /**
-                               Optional callback to inform the plugin about a
-   buffer size change. This function will only be called when the plugin is
-   deactivated.
-                               @note This value is only a hint!
-                                                                 Hosts might
-   call run() with a higher or lower number of frames.
+                                                               Optional callback
+   to inform the plugin about a buffer size change. This function will only be
+   called when the plugin is deactivated.
+                                                               @note This value
+   is only a hint! Hosts might call run() with a higher or lower number of
+   frames.
  */
 void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 
@@ -391,111 +404,113 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                      std::move(socket))](std::stop_token st) mutable {
             std::string messageBuffer;
             char buffer[16 * 1024];
-            std::promise<std::variant<size_t, asio::error_code>> readPromise;
+            std::promise<size_t> readPromise;
             auto readFuture = readPromise.get_future();
             bool timeout = false;
-            while (!st.stop_requested()) {
-              if (!timeout) {
-                readPromise =
-                    std::promise<std::variant<size_t, asio::error_code>>();
-                readFuture = readPromise.get_future();
-                socket->async_read_some(
-                    asio::buffer(buffer),
-                    [&](const asio::error_code &error, size_t len) {
-                      if (error) {
-                        readPromise.set_value(error);
-                      } else {
-                        readPromise.set_value(len);
-                      }
-                    });
-              }
-              if (st.stop_requested()) {
-                break;
-              }
-              if (readFuture.wait_for(std::chrono::seconds(1)) ==
-                  std::future_status::timeout) {
-                timeout = true;
-              } else {
-                timeout = false;
-                auto result = readFuture.get();
-                if (std::holds_alternative<asio::error_code>(result)) {
+            try {
+              while (!st.stop_requested()) {
+                if (!timeout) {
+                  readPromise = std::promise<size_t>();
+                  readFuture = readPromise.get_future();
+                  socket->async_read_some(
+                      asio::buffer(buffer),
+                      [&](const asio::error_code &error, size_t len) {
+                        if (error) {
+                          readPromise.set_exception(
+                              std::make_exception_ptr(error));
+                        } else {
+                          readPromise.set_value(len);
+                        }
+                      });
+                }
+                if (st.stop_requested()) {
                   break;
                 }
-                auto len = std::get<size_t>(result);
-                messageBuffer.append(buffer, len);
+                if (readFuture.wait_for(std::chrono::seconds(1)) ==
+                    std::future_status::timeout) {
+                  timeout = true;
+                } else {
+                  timeout = false;
+                  auto result = readFuture.get();
+                  auto len = result;
+                  messageBuffer.append(buffer, len);
 
-                size_t pos;
-                while ((pos = messageBuffer.find('\n')) != std::string::npos) {
-                  std::string message = messageBuffer.substr(0, pos);
-                  messageBuffer.erase(0, pos + 1);
-                  if (message == "close") {
-                    socket->close();
-                    self->connected = false;
-                    return;
-                  }
+                  size_t pos;
+                  while ((pos = messageBuffer.find('\n')) !=
+                         std::string::npos) {
+                    std::string message = messageBuffer.substr(0, pos);
+                    messageBuffer.erase(0, pos + 1);
+                    if (message == "close") {
+                      socket->close();
+                      self->connected = false;
+                      return;
+                    }
 
-                  size_t sep = message.find(' ');
-                  std::string header = message.substr(0, sep);
-                  std::string payload = message.substr(sep + 1);
+                    size_t sep = message.find(' ');
+                    std::string header = message.substr(0, sep);
+                    std::string payload = message.substr(sep + 1);
 
-                  size_t firstColon = header.find(':');
+                    size_t firstColon = header.find(':');
 
-                  std::string messageType = header.substr(0, firstColon);
-                  choc::value::Value value = choc::json::parse(payload);
+                    std::string messageType = header.substr(0, firstColon);
+                    choc::value::Value value = choc::json::parse(payload);
 
-                  if (messageType == "request") {
-                    size_t secondColon = header.find(':', firstColon + 1);
+                    if (messageType == "request") {
+                      size_t secondColon = header.find(':', firstColon + 1);
 
-                    std::string messageId = header.substr(
-                        firstColon + 1, secondColon - firstColon - 1);
-                    std::string requestType = header.substr(secondColon + 1);
+                      std::string messageId = header.substr(
+                          firstColon + 1, secondColon - firstColon - 1);
+                      std::string requestType = header.substr(secondColon + 1);
 
-                    self->threads[messageId] =
-                        std::jthread([self, socket, messageId, requestType,
-                                      value](std::stop_token st) mutable {
-                          choc::value::Value responseObj =
-                              choc::value::createObject("");
-                          try {
-                            auto response = self->onRequest(requestType, value);
-                            responseObj.setMember("success", true);
-                            responseObj.setMember("data", response);
-                          } catch (std::exception &e) {
-                            responseObj.setMember("success", false);
-                            responseObj.setMember("error", e.what());
-                          }
+                      self->threads[messageId] =
+                          std::jthread([self, socket, messageId, requestType,
+                                        value](std::stop_token st) mutable {
+                            choc::value::Value responseObj =
+                                choc::value::createObject("");
+                            try {
+                              auto response =
+                                  self->onRequest(requestType, value);
+                              responseObj.setMember("success", true);
+                              responseObj.setMember("data", response);
+                            } catch (std::exception &e) {
+                              responseObj.setMember("success", false);
+                              responseObj.setMember("error", e.what());
+                            }
 
-                          auto responseString = formatMessage(
-                              std::format("response:{}", messageId),
-                              responseObj);
-                          socket->write_some(asio::buffer(responseString));
+                            auto responseString = formatMessage(
+                                std::format("response:{}", messageId),
+                                responseObj);
+                            socket->write_some(asio::buffer(responseString));
 
-                          self->threads[messageId].detach();
-                          self->threads.erase(messageId);
-                        });
-                  } else if (messageType == "notification") {
-                    std::string notificationType =
-                        header.substr(firstColon + 1);
-                    auto messageId = uuid::v4::UUID::New().String();
-                    self->threads[messageId] =
-                        std::jthread([self, socket, messageId, notificationType,
-                                      value](std::stop_token st) mutable {
-                          self->onNotification(notificationType, value);
+                            self->threads[messageId].detach();
+                            self->threads.erase(messageId);
+                          });
+                    } else if (messageType == "notification") {
+                      std::string notificationType =
+                          header.substr(firstColon + 1);
+                      auto messageId = uuid::v4::UUID::New().String();
+                      self->threads[messageId] = std::jthread(
+                          [self, socket, messageId, notificationType,
+                           value](std::stop_token st) mutable {
+                            self->onNotification(notificationType, value);
 
-                          self->threads[messageId].detach();
-                          self->threads.erase(messageId);
-                        });
+                            self->threads[messageId].detach();
+                            self->threads.erase(messageId);
+                          });
+                    }
                   }
                 }
-              }
 
-              auto currentTime = std::chrono::system_clock::now();
-              if (currentTime - self->lastPing > std::chrono::seconds(5)) {
-                socket->write_some(asio::buffer(
-                    formatMessage("ping", choc::value::createObject(""))));
-                self->lastPing = currentTime;
+                auto currentTime = std::chrono::system_clock::now();
+                if (currentTime - self->lastPing > std::chrono::seconds(5)) {
+                  socket->write_some(asio::buffer(
+                      formatMessage("ping", choc::value::createObject(""))));
+                  self->lastPing = currentTime;
+                }
               }
+            } catch (asio::system_error &e) {
+              // ignore
             }
-
             try {
               socket->close();
             } catch (asio::system_error &e) {
@@ -561,7 +576,9 @@ choc::value::Value OpenUtauPlugin::onRequest(const std::string kind,
         parts[part.trackNo] = std::vector<Part>();
       }
       parts[part.trackNo].push_back(part);
-      hashes.insert(part.hash);
+      if (part.hash.has_value()) {
+        hashes.insert(part.hash.value());
+      }
     }
     {
       auto _lock = std::lock_guard(this->partsMutex);
@@ -608,19 +625,21 @@ void OpenUtauPlugin::onNotification(const std::string kind,
     auto ustxBase64 = choc::base64::encodeToString(ustx);
     setState("ustx", ustxBase64.c_str());
   } else if (kind == "updateTracks") {
-    auto _lock = std::lock_guard(this->tracksMutex);
-    auto tracks = std::vector<Structures::Track>();
-    for (const auto &track : payload["tracks"]) {
-      tracks.push_back(Structures::Track::deserialize(track));
-    }
+    {
+      auto _lock = std::unique_lock(this->tracksMutex);
+      auto tracks = std::vector<Structures::Track>();
+      for (const auto &track : payload["tracks"]) {
+        tracks.push_back(Structures::Track::deserialize(track));
+      }
 
-    this->tracks = tracks;
+      this->tracks = tracks;
+    }
     syncMapping();
   } else if (kind == "updateAudio") {
     {
-      auto _lock = std::lock_guard(this->audioBuffersMutex);
+      auto _lock = std::unique_lock(this->audioBuffersMutex);
 
-      std::map<AudioHash, std::vector<float>> audioBuffers;
+      auto audioBuffers = this->audioBuffers;
       payload["audios"].visitObjectMembers(
           [&](std::string_view key, const choc::value::ValueView &value) {
             auto hash = std::stoul(std::string(key));
@@ -644,7 +663,7 @@ void OpenUtauPlugin::onNotification(const std::string kind,
 
 void OpenUtauPlugin::syncMapping() {
   {
-    auto _lock = std::unique_lock(this->mixMutex);
+    auto _lock = std::shared_lock(this->tracksMutex);
 
     auto tracks = this->tracks;
     auto outputMap = this->outputMap;
@@ -692,13 +711,16 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
     resampledRight.resize((size_t)(maxEndMs->endMs / 1000.0 * newSampleRate) +
                           1);
     for (const auto &part : parts) {
+      if (!part.hash.has_value()) {
+        continue;
+      }
       auto startFrame = (size_t)(part.startMs / 1000.0 * newSampleRate);
       auto endFrame = (size_t)(part.endMs / 1000.0 * newSampleRate);
       auto rate = 44100.0 / newSampleRate;
-      if (audioBuffers.find(part.hash) == audioBuffers.end()) {
+      if (audioBuffers.find(part.hash.value()) == audioBuffers.end()) {
         continue;
       }
-      auto &buffer = audioBuffers[part.hash];
+      auto &buffer = audioBuffers[part.hash.value()];
 
       for (size_t i = startFrame; i < endFrame; ++i) {
         auto frame = (size_t)((i - startFrame) * rate);

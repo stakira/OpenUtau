@@ -29,17 +29,18 @@ namespace OpenUtau.App.ViewModels {
         public bool ExtendToFrame => OS.IsMacOS();
         public string Title {
             get {
-                if (DawManager.Inst.dawClient == null) {
+                if (IsConnectedToDaw) {
+                    return $"{AppVersion} [{DawManager.Inst.dawClient!.server.Name}] (Attached to DAW)";
+                } else {
                     var baseTitle = !ProjectSaved
                         ? $"{AppVersion}"
                         : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
 
                     return baseTitle;
-                } else {
-                    return $"{AppVersion} [{DawManager.Inst.dawClient.server.Name}] (Attached to DAW)";
                 }
             }
         }
+        public bool IsConnectedToDaw => DawManager.Inst.dawClient != null;
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -351,6 +352,8 @@ namespace OpenUtau.App.ViewModels {
                 Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {
                 Core.Util.Preferences.AddRecentFileIfEnabled(saveProject.Path);
+            } else if (cmd is DawConnectedNotification ||cmd is DawDisconnectedNotification) {
+                this.RaisePropertyChanged(nameof(IsConnectedToDaw));
             }
             this.RaisePropertyChanged(nameof(Title));
         }

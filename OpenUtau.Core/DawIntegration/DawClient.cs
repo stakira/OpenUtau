@@ -6,11 +6,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using OpenUtau.Core.SignalChain;
-using OpenUtau.Core.Ustx;
 using NAudio.Wave;
 using Newtonsoft.Json;
-using System.IO.Compression;
 using NumSharp.Utilities;
 
 namespace OpenUtau.Core.DawIntegration {
@@ -47,7 +44,6 @@ namespace OpenUtau.Core.DawIntegration {
                     try {
                         bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
                     } catch (SocketException) {
-                        onetimeHandlers["disconnect"]("");
                         break;
                     }
                     currentMessageBuffer = currentMessageBuffer.Concat(buffer.Slice(0, bytesRead)).ToArray();
@@ -72,6 +68,8 @@ namespace OpenUtau.Core.DawIntegration {
                         break;
                     }
                 }
+
+                OnDisconnect();
             });
         }
 
@@ -145,6 +143,26 @@ namespace OpenUtau.Core.DawIntegration {
         }
         private void RegisterOnetimeListener(string kind, Action<string> handler) {
             onetimeHandlers[kind] = handler;
+        }
+
+        public void Disconnect() {
+            tcpClient.Close();
+            cancellationTokenSource?.Cancel();
+            OnDisconnect();
+        }
+
+        private void OnDisconnect() {
+            foreach ((var key, var handler) in onetimeHandlers) {
+                if (key.StartsWith("response")) {
+                    handler(
+                        JsonConvert.SerializeObject(new DawResult<DawDawResponse>(
+                          false, null, "Disconnected"
+                        ))
+                    );
+                }
+            }
+
+            DocManager.Inst.ExecuteCmd(new DawDisconnectedNotification());
         }
     }
 }
