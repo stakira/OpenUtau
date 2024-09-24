@@ -56,7 +56,6 @@ jobs:
         mkdir Microsoft.AI.DirectML
         tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
         copy /y Microsoft.AI.DirectML\bin\${{ matrix.arch.arch }}-${{ matrix.arch.os }}\DirectML.dll bin\${{ matrix.arch.name }}\
-      if: ${{ matrix.arch.os == 'win' }}
 
     - name: compress
       run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
