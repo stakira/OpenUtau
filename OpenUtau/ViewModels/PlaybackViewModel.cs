@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenUtau.Core;
+using OpenUtau.Core.Metronome;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -30,6 +31,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Project.EndTick));
         }
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
+            MetronomePlayer.Instance.UpdateParmas((int)Project.tempos[0].bpm, Project.timeSignatures[0].beatPerBar, Project.timeSignatures[0].beatUnit);
             PlaybackManager.Inst.PlayOrPause(tick: tick, endTick: endTick, trackNo: trackNo);
             var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
             if (!PlaybackManager.Inst.Playing && !PlaybackManager.Inst.StartingToPlay && lockStartTime) {

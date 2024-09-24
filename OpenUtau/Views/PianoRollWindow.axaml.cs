@@ -926,7 +926,16 @@ namespace OpenUtau.App.Views {
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position, args);
             } else {
-                Cursor = null;
+                if (ViewModel.NotesViewModel.IsEditCurve) {
+                    var curveHitInfo = ViewModel.NotesViewModel.HitTest.HitTestCurvePoint(point.Position, control.Bounds.Height);
+                    if (curveHitInfo.OnPoint) {
+                        Cursor = ViewConstants.cursorHand;
+                    } else {
+                        Cursor = null;
+                    }
+                } else {
+                    Cursor = null;
+                }
             }
         }
 
@@ -1186,6 +1195,8 @@ namespace OpenUtau.App.Views {
             bool isCtrl = args.KeyModifiers == cmdKey;
             bool isShift = args.KeyModifiers == KeyModifiers.Shift;
             bool isBoth = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+            bool isCtrlAlt = args.KeyModifiers == (cmdKey | KeyModifiers.Alt);
+            bool isShiftAlt = args.KeyModifiers == (KeyModifiers.Shift | KeyModifiers.Alt);
 
             if (PluginMenu.IsSubMenuOpen && isNone) {
                 if (ViewModel.LegacyPluginShortcuts.ContainsKey(args.Key)) {
@@ -1230,18 +1241,12 @@ namespace OpenUtau.App.Views {
                 #region document keys
                 case Key.Space:
                     if (isNone) {
-                        if (notesVm.IsMetronomePlaying) {
-                            notesVm.UpdateMetronome();
-                        }
                         playVm.PlayOrPause();
                         
                         return true;
                     }
                     if (isAlt) {
                         if (!notesVm.Selection.IsEmpty) {
-                            if (notesVm.IsMetronomePlaying) {
-                                notesVm.UpdateMetronome();
-                            }
                             playVm.PlayOrPause(
                                 tick: notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position,
                                 endTick: notesVm.Part.position + notesVm.Selection.LastOrDefault()!.RightBound
@@ -1405,6 +1410,12 @@ namespace OpenUtau.App.Views {
                         notesVm.TransposeSelection(1);
                         return true;
                     }
+                    if(isCtrlAlt) {
+                        notesVm.MoveSelectionCurvePoints(0, 10);
+                    }
+                    if(isShiftAlt) {
+                        notesVm.MoveSelectionCurvePoints(0, 1);
+                    }
                     if (isCtrl) {
                         notesVm.TransposeSelection(12);
                         return true;
@@ -1418,6 +1429,12 @@ namespace OpenUtau.App.Views {
                         notesVm.TransposeSelection(-1);
                         return true;
                     }
+                    if (isCtrlAlt) {
+                        notesVm.MoveSelectionCurvePoints(0, -10);
+                    }
+                    if (isShiftAlt) {
+                        notesVm.MoveSelectionCurvePoints(0, -1);
+                    }
                     if (isCtrl) {
                         notesVm.TransposeSelection(-12);
                         return true;
@@ -1430,6 +1447,12 @@ namespace OpenUtau.App.Views {
                     if (isNone) {
                         notesVm.MoveCursor(-1);
                         return true;
+                    }
+                    if (isCtrlAlt) {
+                        notesVm.MoveSelectionCurvePoints(-50, 0);
+                    }
+                    if (isShiftAlt) {
+                        notesVm.MoveSelectionCurvePoints(-5, 0);
                     }
                     if (isAlt) {
                         notesVm.ResizeSelectedNotes(-1 * deltaTicks);
@@ -1448,6 +1471,12 @@ namespace OpenUtau.App.Views {
                     if (isNone) {
                         notesVm.MoveCursor(1);
                         return true;
+                    }
+                    if (isCtrlAlt) {
+                        notesVm.MoveSelectionCurvePoints(50, 0);
+                    }
+                    if (isShiftAlt) {
+                        notesVm.MoveSelectionCurvePoints(5, 0);
                     }
                     if (isAlt) {
                         notesVm.ResizeSelectedNotes(deltaTicks);

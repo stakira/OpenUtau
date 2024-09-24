@@ -366,14 +366,6 @@ namespace OpenUtau.App.ViewModels {
             TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
             Notify();
         }
-
-        public void UpdateMetronome() {
-            if(Project.tempos.Count < 1 || Project.timeSignatures.Count < 1) {
-                return;
-            }
-
-            MetronomePlayer.Instance.UpdateParmas((int)Project.tempos[0].bpm, Project.timeSignatures[0].beatPerBar, Project.timeSignatures[0].beatUnit);
-        }
         public void OnYZoomed(Point position, double delta) {
             double center = TrackOffset + position.Y * ViewportTracks;
             double trackHeight = TrackHeight * (1.0 + delta * 2);
@@ -999,6 +991,94 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new PasteCurvePointsCommand(Project, Part, PrimaryKey, xs.ToArray(), ys.ToArray()));
+            DocManager.Inst.EndUndoGroup();
+        }
+        public void MoveSelectionCurvePoints(int countX, int countY) {
+
+            if (Part == null || PrimaryKey == null) return;
+            if (SelectionPoints.Count == 0) return;
+
+            var track = Project.tracks[Part.trackNo];
+            UExpressionDescriptor? descriptor;
+            if (!track.TryGetExpDescriptor(Project, PrimaryKey, out descriptor)) {
+                return;
+            }
+            if (descriptor == null) return;
+
+            var curve = Part.curves.FirstOrDefault(c => c.descriptor.abbr == PrimaryKey);
+            if (curve == null) return;
+
+            var xs = curve.xs.ToArray();
+            var ys = curve.ys.ToArray();
+
+            int offsetTickX = countX;
+            int offsetTickY = (int)Math.Round((descriptor.max - descriptor.min) * (countY / ExpBounds.Height));
+
+            var tmpSelection = SelectionPoints.ToArray();
+            if (tmpSelection == null) { return; }
+
+            if (offsetTickX <= 0) {
+                for (int i = 0; i < tmpSelection.Length; i++) {
+                    int index = tmpSelection[i];
+                    int x = xs[index];
+                    int y = ys[index];
+
+                    int newTickX = x + offsetTickX;
+                    int newTickY = Math.Clamp(y + offsetTickY, (int)descriptor.min, (int)descriptor.max);
+                    xs[index] = newTickX;
+                    ys[index] = newTickY;
+
+                    for (int j = index - 1; j >= 0; j--) {
+                        if (tmpSelection.Contains(j)) continue;
+
+                        int preX = xs[j];
+                        int preY = ys[j];
+                        if (preX < newTickX) break;
+
+                        xs[j] = newTickX;
+                        ys[j] = newTickY;
+
+                        xs[index] = preX;
+                        ys[index] = preY;
+
+                        tmpSelection[i] = j;
+                        index = j;
+                    }
+                }
+            } else if (offsetTickX > 0) {
+                for (int i = tmpSelection.Length - 1; i >= 0; i--) {
+                    int index = tmpSelection[i];
+                    int x = xs[index];
+                    int y = ys[index];
+
+                    int newtickx = x + offsetTickX;
+                    int newticky = Math.Clamp(y + offsetTickY, (int)descriptor.min, (int)descriptor.max);
+                    xs[index] = newtickx;
+                    ys[index] = newticky;
+
+                    for (int j = index + 1; j < curve.xs.Count; j++) {
+                        if (tmpSelection.Contains(j)) continue;
+
+                        int nextx = xs[j];
+                        int nexty = ys[j];
+                        if (nextx > newtickx) break;
+
+                        xs[j] = newtickx;
+                        ys[j] = newticky;
+
+                        xs[index] = nextx;
+                        ys[index] = nexty;
+
+                        tmpSelection[i] = j;
+                        index = j;
+                    }
+                }
+            }
+
+            SelectCurvePoints(tmpSelection.ToList());
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new MoveCurvePointsCommand(Project, Part, PrimaryKey, xs.ToArray(), ys.ToArray()));
             DocManager.Inst.EndUndoGroup();
         }
         public void DeleteCurvePoints() {

@@ -53,18 +53,21 @@ namespace OpenUtau.Core.Metronome {
         public bool OpenMetronome { get; set; } = false;
 
         private Timer? timer;
+        private float _volume = 0.6f;
         public float Volume {
-            get => outputDevice.Volume;
+            get => _volume;
             set {
-                outputDevice.Volume = Math.Clamp(value, 0, 1);
+                _volume = Math.Clamp(value, 0.1f, 1);
+                accentedVolumeProvider.Volume = _volume;
+                normalVolumeProvider.Volume = _volume;
                 if (timer == null) {
-                    timer = new Timer(3000);
+                    timer = new Timer(2000);
                     timer.Elapsed += saveSetting;
                     timer.AutoReset = false;
                     timer.Enabled = true;
                 } else {
                     timer.Stop();
-                    timer.Interval = 3000;
+                    timer.Interval = 2000;
                     timer.Start();
                 }
             }
@@ -89,7 +92,7 @@ namespace OpenUtau.Core.Metronome {
         public class MetronomeSetting {
             public string AccentedBeatPath { get; set; } = "SnareHi.wav";
             public string NormalBeatPath { get; set; } = "SnareLo.wav";
-            public float Volume { get; set; } = 1.0f;
+            public float Volume { get; set; } = 0.6f;
         }
 
         private MetronomeSetting? settingsData = null;
@@ -130,10 +133,12 @@ namespace OpenUtau.Core.Metronome {
 
         public void UpdateParmas(int bpm, int beats, int noteLength)
         {
-            BPM = bpm;
-            Beats = beats;
-            NoteLength = noteLength;
-            Update();
+            if ((OpenMetronome)) {
+                BPM = bpm;
+                Beats = beats;
+                NoteLength = noteLength;
+                Update();
+            }
         }
 
         public void Play()
@@ -141,8 +146,8 @@ namespace OpenUtau.Core.Metronome {
             if (!IsPlaying && OpenMetronome) {
                 accentedVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(AccentedPattern));
                 normalVolumeProvider = new VolumeSampleProvider(new SampleSourceProvider(NormalPattern));
-                accentedVolumeProvider.Volume = 1.0f;
-                normalVolumeProvider.Volume = 1.0f;
+                accentedVolumeProvider.Volume = Volume;
+                normalVolumeProvider.Volume = Volume;
                 mixer.AddMixerInput(accentedVolumeProvider);
                 mixer.AddMixerInput(normalVolumeProvider);
                 outputDevice.Play();

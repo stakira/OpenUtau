@@ -790,6 +790,8 @@ namespace OpenUtau.App.Views {
     class ExpPointsMoveEditState : NoteEditState {
  
         private Point lastPoint;
+        private readonly KeyModifiers cmdKey =
+            OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         protected override bool ShowValueTip => false;
         public ExpPointsMoveEditState(
             Control control,
@@ -800,7 +802,7 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             lastPoint = point;
         }
-        public override void Update(IPointer pointer, Point point) {
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
 
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
@@ -831,6 +833,14 @@ namespace OpenUtau.App.Views {
             var tmpSelection = notesVm.SelectionPoints.ToArray();
             if(tmpSelection == null) { return; }
 
+            bool isShift = args.KeyModifiers == KeyModifiers.Shift;
+            bool isCtrl = args.KeyModifiers == cmdKey;
+            if (isShift) {
+                offsetTickX = 0;
+            } else if (isCtrl) {
+                offsetTickY = 0;
+            }
+            
             var xs = curve.xs.ToArray();
             var ys = curve.ys.ToArray();
 
