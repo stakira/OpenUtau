@@ -49,19 +49,13 @@ jobs:
       shell: pwsh
       run: copy OpenUtau.Plugin.Builtin\bin\Release\netstandard2.1\OpenUtau.Plugin.Builtin.dll -Destination bin\${{ matrix.os.arch }}
 
-    - name: download directml dll from nuget
-      if: ${{ matrix.os.runs-on == 'windows-latest' }}
-      uses: carlosperate/download-file-action@v1.0.3
-      with:
-        file-url: https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0
-        file-name: Microsoft.AI.DirectML.nupkg
-        location: .
-
-    - name: extract directml
+    - name: DirectML
       if: ${{ matrix.os.runs-on == 'windows-latest' }}
       run: |
+        curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0 -o Microsoft.AI.DirectML.nupkg
         mkdir Microsoft.AI.DirectML
         tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
+        copy /y Microsoft.AI.DirectML\bin\${{ matrix.arch.arch }}-${{ matrix.arch.os }}\DirectML.dll bin\${{ matrix.arch.name }}\
 
     - name: compress
       run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
