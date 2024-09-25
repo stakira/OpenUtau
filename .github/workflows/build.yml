@@ -30,13 +30,13 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest }
-          - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest }
-          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
-          - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13 }
-          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest }
-          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest }
+          - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest, daw-plugin: true }
+          - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest, daw-plugin: false }
+          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: false }
+          - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, daw-plugin: true }
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest, daw-plugin: false }
 
     steps:
       # Setup
@@ -73,30 +73,26 @@ jobs:
           cd ./DawPlugin
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.arch.name == 'win-x64' }}
+        if: ${{ matrix.daw-plugin && matrix.arch.os == 'win' }}
 
-      - name: "Setup XCode 15.4"
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '15.4'
-        if: ${{ matrix.arch.os == 'osx' }}
       - name: Build Daw Plugin (Mac)
         run: |
           cd ./DawPlugin
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.arch.os == 'osx' }}
+        if: ${{ matrix.daw-plugin && matrix.arch.os == 'osx' }}
 
       - name: Build Daw Plugin (Linux)
         run: |
           cd ./DawPlugin
-          sudo apt-get install libgl1-mesa-dev gcc-14 g++-14
-          export CC=gcc-14
-          export CXX=g++-14
+          sudo apt-get install libgl1-mesa-dev gcc-13 g++-13
+
+          export CC=gcc-13
+          export CXX=g++-3
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.arch.os == 'linux' }}
+        if: ${{ matrix.daw-plugin && matrix.arch.os == 'linux' }}
 
       - name: Package Daw Plugin
         shell: bash
@@ -104,7 +100,7 @@ jobs:
           # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
           cd DawPlugin/build/bin
           7z a openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip openutau_daw_plugin.vst3
-        if: ${{ matrix.arch.arch == 'x64' }}
+        if: ${{ matrix.daw-plugin }}
 
       # Create Zip
       - name: DirectML
