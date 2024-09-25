@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-set(DPF_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/DPF")
+set(DPF_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/dpf")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(PROJECT_NAME openutau_daw_plugin_debug)
@@ -55,8 +55,8 @@ target_include_directories(
   ${PROJECT_NAME}
   PUBLIC "src"
          "deps"
-         "deps/DPF/dgl"
-         "deps"
+         "deps/dpf/dgl"
+         "deps/dpf/distrho"
          "deps/asio/asio/include"
          "deps/dpf_widgets"
          "deps/uuid-v4"
