@@ -79,7 +79,7 @@ jobs:
         run: |
           # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
           cd DawPlugin/build/bin
-          7z a openutau_daw_plugin.vst3.zip openutau_daw_plugin.vst3
+          7z a openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip openutau_daw_plugin.vst3
         if: ${{ matrix.arch.arch == 'x64' }}
 
       # Create Zip
@@ -147,8 +147,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: openutau_daw_plugin.vst3.zip
-          path: DawPlugin/build/bin/openutau_daw_plugin.vst3.zip
+          name: openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
+          path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
         if: ${{ !inputs.release && matrix.arch.arch == 'x64' }}
 
       # Appcast
@@ -180,5 +180,5 @@ jobs:
           files: |
             appcast.${{ matrix.arch.name }}*.xml
             OpenUtau-${{ matrix.arch.name }}.*
-            DawPlugin/build/bin/openutau_daw_plugin.vst3.zip
+            DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
         if: ${{ inputs.release }}
