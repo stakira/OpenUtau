@@ -72,7 +72,7 @@ Part Part::deserialize(const choc::value::ValueView &value) {
 
 // -----------------------------------------------------------------------------------------------------------
 OpenUtauPlugin::OpenUtauPlugin()
-    : Plugin(0, 0, 5)
+    : Plugin(0, 0, 6)
 
 {
 

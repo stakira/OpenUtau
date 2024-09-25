@@ -1,5 +1,5 @@
-[submodule "DawPlugin/deps/DPF"]
-	path = DawPlugin/deps/DPF
+[submodule "DawPlugin/deps/dpf"]
+	path = DawPlugin/deps/dpf
 	url = https://github.com/distrho/DPF.git
 [submodule "DawPlugin/deps/asio"]
 	path = DawPlugin/deps/asio
