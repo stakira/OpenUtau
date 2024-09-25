@@ -1,17 +1,8 @@
 ﻿using System;
-using System.ServiceModel;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
-using NetSparkleUpdater.Enums;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
-using OpenUtau.Core.DawIntegration;
-using OpenUtau.Core.Util;
-using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class DawIntegrationTerminalDialog : Window {
