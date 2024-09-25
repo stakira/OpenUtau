@@ -15,9 +15,12 @@ endif()
 include(./deps/dpf/cmake/DPF-plugin.cmake)
 project(${PROJECT_NAME})
 
-# MSVC only: Use UTF-8 code page
+# MSVC only:
+# - Use UTF-8 code page
+# - Make asio use Windows 10 APIs
 if(MSVC)
   add_compile_options("/utf-8")
+  add_definitions(-D_WIN32_WINNT=0x0A00)
 endif()
 
 # MacOS only: use -Wno-implicit-function-declaration for zlib
@@ -31,9 +34,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
   # nothing atm
 endif()
-
-# Windows 10
-add_definitions(-D_WIN32_WINNT=0x0A00)
 
 dpf_add_plugin(
   ${PROJECT_NAME}

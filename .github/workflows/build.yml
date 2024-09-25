@@ -70,7 +70,7 @@ jobs:
       - name: Install OpenGL
         run: |
           sudo apt-get install libgl1-mesa-dev
-        if: ${{ github.os == 'ubuntu-latest' }}
+        if: ${{ matrix.arch.os == 'linux' }}
 
       - name: Build Daw Plugin
         run: |
