@@ -63,10 +63,11 @@ Part Part::deserialize(const choc::value::ValueView &value) {
   part.trackNo = value["trackNo"].get<int>();
   part.startMs = value["startMs"].get<double>();
   part.endMs = value["endMs"].get<double>();
-  if (value.hasObjectMember("audioHash")) {
-    part.hash = value["audioHash"].get<uint32_t>();
-  } else {
+  auto audioHash = value["audioHash"];
+  if (audioHash.isVoid()) {
     part.hash = std::nullopt;
+  } else {
+    part.hash = (uint32_t)audioHash.get<int64_t>();
   }
   return part;
 }
@@ -124,7 +125,13 @@ OpenUtauPlugin::~OpenUtauPlugin() {
        label. This label is a short restricted name consisting of only _, a-z,
    A-Z and 0-9 characters.
  */
-const char *OpenUtauPlugin::getLabel() const { return "OpenUtau"; }
+const char *OpenUtauPlugin::getLabel() const { 
+#ifdef DEBUG
+    return "OpenUtau_Debug"; 
+#else
+    return "OpenUtau"; 
+#endif
+}
 
 /**
    Get an extensive comment/description about the plugin.
@@ -413,8 +420,8 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                       asio::buffer(buffer),
                       [&](const asio::error_code &error, size_t len) {
                         if (error) {
-                          readPromise.set_exception(
-                              std::make_exception_ptr(error));
+                            readPromise.set_exception(
+                                std::make_exception_ptr<asio::system_error>(error));
                         } else {
                           readPromise.set_value(len);
                         }

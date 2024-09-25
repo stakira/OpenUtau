@@ -3,7 +3,7 @@
 
 #define DISTRHO_PLUGIN_BRAND "stakira"
 #ifdef DEBUG
-#define DISTRHO_PLUGIN_NAME "OpenUtau Bridge (Debug)
+#define DISTRHO_PLUGIN_NAME "OpenUtau Bridge (Debug)"
 #else
 #define DISTRHO_PLUGIN_NAME "OpenUtau Bridge"
 #endif

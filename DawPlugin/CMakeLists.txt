@@ -2,8 +2,18 @@ cmake_minimum_required(VERSION 3.24)
 
 set(DPF_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/DPF")
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(PROJECT_NAME openutau_daw_plugin_debug)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(PROJECT_NAME openutau_daw_plugin)
+elseif(NOT CMAKE_BUILD_TYPE)
+  message(FATAL_ERROR "Build type not set")
+else()
+  message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
 include(./deps/dpf/cmake/DPF-plugin.cmake)
-project(openutau_daw_plugin)
+project(${PROJECT_NAME})
 
 # MSVC only: Use UTF-8 code page
 if(MSVC)
@@ -14,18 +24,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG)
   add_definitions(-DDPF_DEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-
-elseif(NOT CMAKE_BUILD_TYPE)
-  message(FATAL_ERROR "Build type not set")
-else()
-  message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
+  # nothing atm
 endif()
 
 # Windows 10
 add_definitions(-D_WIN32_WINNT=0x0A00)
 
 dpf_add_plugin(
-  openutau_daw_plugin
+  ${PROJECT_NAME}
   TARGETS
     vst3
   UI_TYPE
@@ -44,10 +50,10 @@ set(ZLIB_BUILD_EXAMPLES OFF)
 set(RENAME_ZCONF OFF)
 add_subdirectory(deps/zlib)
 add_subdirectory(deps/xxhash_cpp)
-target_compile_features(openutau_daw_plugin PUBLIC cxx_std_20)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
 target_include_directories(
-  openutau_daw_plugin
+  ${PROJECT_NAME}
   PUBLIC "src"
          "deps"
          "deps/DPF/dgl"
@@ -60,4 +66,4 @@ target_include_directories(
          "deps/yamc/include"
          "deps/gzip-hpp/include")
 
-target_link_libraries(openutau_daw_plugin PRIVATE zlibstatic xxhash_cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE zlibstatic xxhash_cpp)

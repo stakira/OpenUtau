@@ -77,7 +77,12 @@ protected:
     ImGui::Begin("OpenUtau Bridge", nullptr,
                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
-    ImGui::TextColored(themePinkColor, "OpenUtau Bridge v%d.%d.%d",
+    ImGui::TextColored(themePinkColor,
+#ifdef DEBUG
+                       "OpenUtau Bridge v%d.%d.%d (Debug)",
+#else
+                       "OpenUtau Bridge v%d.%d.%d",
+#endif
                        Constants::majorVersion, Constants::minorVersion,
                        Constants::patchVersion);
 
@@ -112,7 +117,7 @@ protected:
     }
 #endif
 
-    ImGui::Text("Last sync: ");
+    ImGui::Text("Last audio sync: ");
     ImGui::SameLine(0, 0);
 
     if (plugin->isProcessing()) {
