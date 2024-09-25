@@ -49,7 +49,6 @@ dpf_add_plugin(
 set(ZLIB_BUILD_EXAMPLES OFF)
 set(RENAME_ZCONF OFF)
 add_subdirectory(deps/zlib)
-add_subdirectory(deps/xxhash_cpp)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 
 target_include_directories(
@@ -62,8 +61,7 @@ target_include_directories(
          "deps/dpf_widgets"
          "deps/uuid-v4"
          "deps/zlib"
-         "deps/xxhash_cpp/include"
          "deps/yamc/include"
          "deps/gzip-hpp/include")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE zlibstatic xxhash_cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE zlibstatic)

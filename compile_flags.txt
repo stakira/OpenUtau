@@ -7,8 +7,6 @@
 -I./DawPlugin/deps/dpf_widgets
 -I./DawPlugin/deps/zlib
 -I./DawPlugin/deps/gzip-hpp/include
--I./DawPlugin/deps/libfar/include
 -I./DawPlugin/deps/uuid-v4
--I./DawPlugin/deps/xxhash_cpp/include
 -I./DawPlugin/deps/yamc/include
 -I./DawPlugin/deps/

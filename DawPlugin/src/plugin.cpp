@@ -8,7 +8,6 @@
 #include "choc/text/choc_JSON.h"
 #include "common.hpp"
 #include "extra/String.hpp"
-#include "gzip/compress.hpp"
 #include "uuid/v4/uuid.h"
 #include <cstdio>
 #include <filesystem>
