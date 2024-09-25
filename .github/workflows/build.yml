@@ -83,11 +83,17 @@ jobs:
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
-      - name: Build Daw Plugin (Linux)
+      - name: Cache GCC (Linux)
+        id: cache-gcc
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/gcc-14.1.0
+          key: gcc-14.1.0
+          restore-keys: gcc-14.1.0
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' }}
+      - name: Build GCC (Linux)
         run: |
-          cd ./DawPlugin
-          # Install OpenGL
-          sudo apt-get install libgl1-mesa-dev
+          cd /tmp
 
           # https://askubuntu.com/a/1518433
           sudo apt install libmpfr-dev libgmp3-dev libmpc-dev -y
@@ -97,8 +103,17 @@ jobs:
           ./configure -v --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --prefix=/usr/local/gcc-14.1.0 --enable-checking=release --enable-languages=c,c++ --disable-multilib --program-suffix=-14.1.0
           make
           sudo make install
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' && steps.cache-gcc.outputs.cache-hit != 'true' }}
+      - name: Build Daw Plugin (Linux)
+        run: |
+          cd ./DawPlugin
+
+          # Configure GCC
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/local/gcc-14.1.0/bin/g++14.1.0 14
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/local/gcc-14.1.0/bin/gcc14.1.0 14
+
+          # Install OpenGL
+          sudo apt-get install libgl1-mesa-dev
 
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
