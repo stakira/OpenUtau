@@ -8,7 +8,6 @@
 #include "choc/text/choc_JSON.h"
 #include "common.hpp"
 #include "extra/String.hpp"
-#include "gzip/compress.hpp"
 #include "uuid/v4/uuid.h"
 #include <cstdio>
 #include <filesystem>
@@ -19,6 +18,14 @@
 #include <string>
 #include <thread>
 #include <vector>
+
+#if CHOC_OSX
+// Workaround for zlib
+// https://github.com/Blosc/python-blosc/issues/229#issuecomment-676819560
+#include <unistd.h>
+#endif
+
+#include "gzip/compress.hpp"
 
 namespace Network {
 std::shared_ptr<std::jthread> ioThread;
