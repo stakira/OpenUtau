@@ -67,17 +67,36 @@ jobs:
         if: ${{ matrix.arch.os != 'osx' }}
 
       # Build: Daw Plugin
-      - name: Install OpenGL
-        run: |
-          sudo apt-get install libgl1-mesa-dev
-        if: ${{ matrix.arch.os == 'linux' }}
 
-      - name: Build Daw Plugin
+      - name: Build Daw Plugin (Windows)
         run: |
           cd ./DawPlugin
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.arch.arch == 'x64' }}
+        if: ${{ matrix.arch.name == 'win-x64' }}
+
+      - name: "Setup XCode 15.4"
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.4'
+        if: ${{ matrix.arch.os == 'osx' }}
+      - name: Build Daw Plugin (Mac)
+        run: |
+          cd ./DawPlugin
+          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+        if: ${{ matrix.arch.os == 'osx' }}
+
+      - name: Build Daw Plugin (Linux)
+        run: |
+          cd ./DawPlugin
+          sudo apt-get install libgl1-mesa-dev gcc-14 g++-14
+          export CC=gcc-14
+          export CXX=g++-14
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+        if: ${{ matrix.arch.os == 'linux' }}
 
       - name: Package Daw Plugin
         shell: bash
