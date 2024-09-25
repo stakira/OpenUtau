@@ -169,7 +169,7 @@ jobs:
         with:
           name: openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
           path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
-        if: ${{ !inputs.release && matrix.arch.arch == 'x64' }}
+        if: ${{ !inputs.release && matrix.daw-plugin }}
 
       # Appcast
       - name: Appcast Windows
