@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using NumSharp.Utilities;
+using Serilog;
 
 namespace OpenUtau.Core.DawIntegration {
     public class DawClient {
@@ -60,7 +61,7 @@ namespace OpenUtau.Core.DawIntegration {
                             onetimeHandlers[kind](content);
                             onetimeHandlers.Remove(kind);
                         } else {
-                            Console.WriteLine($"Unhandled message: {kind}");
+                            Log.Warning($"Unhandled message: {kind}");
                         }
                     }
 
@@ -84,6 +85,8 @@ namespace OpenUtau.Core.DawIntegration {
             var timeoutCanceller = new CancellationTokenSource();
             timeoutCanceller.CancelAfter(TimeSpan.FromSeconds(5));
             var initMessage = await client.SendRequest<InitResponse>(new InitRequest(), timeoutCanceller.Token);
+
+            client.RegisterNotification<DawOuNotification>("ping", (_) => { });
             return (client, initMessage.ustx);
         }
 
@@ -92,10 +95,17 @@ namespace OpenUtau.Core.DawIntegration {
                 throw new Exception("stream is null");
             }
             await writerSemaphore.WaitAsync();
+            var disconnected = false;
             try {
                 await stream.WriteAsync(Encoding.UTF8.GetBytes($"{header} {JsonConvert.SerializeObject(data)}\n"));
+            } catch (SocketException) {
+                disconnected = true;
             } finally {
                 writerSemaphore.Release();
+            }
+
+            if (disconnected) {
+                Disconnect();
             }
         }
         public async Task<T> SendRequest<T>(DawDawRequest data,

@@ -18,11 +18,6 @@ static auto themeBlueColor = ImVec4(0.3f, 0.7f, 0.9f, 1.0f);
 
 class OpenUtauUI : public UI {
 public:
-  /**
-     UI class constructor.
-     The UI should be initialized to a default state that matches the plugin
-     side.
-   */
   OpenUtauUI()
       : UI(DISTRHO_UI_DEFAULT_WIDTH, DISTRHO_UI_DEFAULT_HEIGHT),
         resizeHandle(this) {
@@ -50,22 +45,10 @@ public:
 
 protected:
   // ----------------------------------------------------------------------------------------------------------------
-  // DSP/Plugin Callbacks
-
-  /**
-     A parameter has changed on the plugin side.@n
-     This is called by the host to inform the UI about parameter changes.
-   */
   void parameterChanged(uint32_t, float) override {}
 
   void stateChanged(const char *, const char *) override {}
 
-  // ----------------------------------------------------------------------------------------------------------------
-  // Widget Callbacks
-
-  /**
-     ImGui specific onDisplay function.
-   */
   void onImGuiDisplay() override {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(getWidth(), getHeight()));

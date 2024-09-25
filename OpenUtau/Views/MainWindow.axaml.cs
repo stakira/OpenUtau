@@ -1380,6 +1380,14 @@ namespace OpenUtau.App.Views {
                         VoiceColorRemapping(track, oldColors, newColors);
                     }
                 }
+            } else if (cmd is DawConnectedNotification) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(1,
+                    ThemeManager.GetString("dawintegration.status.connected")
+                ));
+            } else if (cmd is DawDisconnectedNotification) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
+                    ThemeManager.GetString("dawintegration.status.disconnected")
+                ));
             }
         }
     }

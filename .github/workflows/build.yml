@@ -41,6 +41,8 @@ jobs:
     steps:
       # Setup
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "6.0.x"
@@ -56,13 +58,28 @@ jobs:
       - name: Test
         run: dotnet test OpenUtau.Test
 
-      # Build
+      # Build: Main
       - name: Restore
         run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
 
       - name: Publish
         run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
+
+      # Build: Daw Plugin
+      - name: Build Daw Plugin
+        run: |
+          cd ./DawPlugin
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+        if: ${{ matrix.arch.cpu == 'x64' }}
+
+      - name: Package Daw Plugin
+        shell: bash
+        run: |
+          # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
+          cd DawPlugin/build/bin
+          7z a openutau_daw_plugin.vst3.zip openutau_daw_plugin.vst3
 
       # Create Zip
       - name: DirectML
@@ -127,6 +144,12 @@ jobs:
           path: OpenUtau-osx-${{ matrix.arch.name }}.dmg
         if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openutau_daw_plugin.vst3.zip
+          path: DawPlugin/build/bin/openutau_daw_plugin.vst3.zip
+        if: ${{ !inputs.release && matrix.arch.cpu == 'x64' }}
+
       # Appcast
       - name: Appcast Windows
         shell: cmd
@@ -156,4 +179,5 @@ jobs:
           files: |
             appcast.${{ matrix.arch.name }}*.xml
             OpenUtau-${{ matrix.arch.name }}.*
+            DawPlugin/build/bin/openutau_daw_plugin.vst3.zip
         if: ${{ inputs.release }}

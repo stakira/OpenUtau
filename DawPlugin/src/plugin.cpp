@@ -8,6 +8,7 @@
 #include "choc/text/choc_JSON.h"
 #include "common.hpp"
 #include "extra/String.hpp"
+#include "gzip/compress.hpp"
 #include "uuid/v4/uuid.h"
 #include <cstdio>
 #include <filesystem>
@@ -19,9 +20,7 @@
 #include <thread>
 #include <vector>
 
-// std::jthread *ioThread = nullptr;
 namespace Network {
-// std::jthread *ioThread = nullptr;
 std::shared_ptr<std::jthread> ioThread;
 std::shared_ptr<asio::io_context> ioContext;
 std::shared_ptr<asio::io_context> getIoContext() {
@@ -116,37 +115,20 @@ OpenUtauPlugin::~OpenUtauPlugin() {
   }
 }
 
-/* --------------------------------------------------------------------------------------------------------
- * Information */
-
-/**
-                                                                                                                               Get the plugin
-       label. This label is a short restricted name consisting of only _, a-z,
-   A-Z and 0-9 characters.
- */
-const char *OpenUtauPlugin::getLabel() const { 
+const char *OpenUtauPlugin::getLabel() const {
 #ifdef DEBUG
-    return "OpenUtau_Debug"; 
+  return "OpenUtau_Debug";
 #else
-    return "OpenUtau"; 
+  return "OpenUtau";
 #endif
 }
 
-/**
-   Get an extensive comment/description about the plugin.
- */
 const char *OpenUtauPlugin::getDescription() const {
-  return "Plugin to show how to get some basic information sent to the UI.";
+  return "Bridge between OpenUtau and your DAW";
 }
 
-/**
-   Get the plugin author/maker.
- */
 const char *OpenUtauPlugin::getMaker() const { return "stakira"; }
 
-/**
-   Get the plugin homepage.
- */
 const char *OpenUtauPlugin::getHomePage() const {
   return "https://github.com/stakira/OpenUtau/";
 }
@@ -275,28 +257,13 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
   }
 }
 
-/**
-   Get the plugin license name (a single line of text).
-   For commercial plugins this should return some short copyright information.
- */
-const char *OpenUtauPlugin::getLicense() const { return "ISC"; }
+const char *OpenUtauPlugin::getLicense() const { return "MIT"; }
 
-/**
-   Get the plugin version, in hexadecimal.
- */
 uint32_t OpenUtauPlugin::getVersion() const {
   return d_version(Constants::majorVersion, Constants::minorVersion,
                    Constants::patchVersion);
 }
 
-/* --------------------------------------------------------------------------------------------------------
- * Init */
-
-/**
-                                                                                                                               Initialize the
-       audio port @a index.@n This function will be called once, shortly after
-   the plugin is created.
- */
 void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
                                    AudioPort &port) {
   port.groupId = index / 2;
@@ -304,9 +271,6 @@ void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
   auto name = std::format("Channel {}", index / 2 + 1);
   port.name = String(name.c_str());
 }
-
-/* --------------------------------------------------------------------------------------------------------
- * Audio/MIDI Processing */
 
 void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
                          const MidiEvent *midiEvents, uint32_t midiEventCount) {
@@ -379,17 +343,6 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
   }
 };
 
-/* --------------------------------------------------------------------------------------------------------
- * Callbacks (optional) */
-
-/**
-                                                                                                                               Optional callback
-       to inform the plugin about a buffer size change. This function will only
-   be called when the plugin is deactivated.
-                                                                                                                               @note This value
-       is only a hint! Hosts might call run() with a higher or lower number of
-       frames.
- */
 void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 
 void OpenUtauPlugin::sampleRateChanged(double newSampleRate) {
@@ -419,8 +372,9 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                       asio::buffer(buffer),
                       [&](const asio::error_code &error, size_t len) {
                         if (error) {
-                            readPromise.set_exception(
-                                std::make_exception_ptr<asio::system_error>(error));
+                          readPromise.set_exception(
+                              std::make_exception_ptr<asio::system_error>(
+                                  error));
                         } else {
                           readPromise.set_value(len);
                         }
@@ -507,7 +461,7 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                 auto currentTime = std::chrono::system_clock::now();
                 if (currentTime - self->lastPing > std::chrono::seconds(5)) {
                   socket->write_some(asio::buffer(
-                      formatMessage("ping", choc::value::createObject(""))));
+                      formatMessage("notification:ping", choc::value::createObject(""))));
                   self->lastPing = currentTime;
                 }
               }
@@ -777,8 +731,7 @@ bool OpenUtauPlugin::isProcessing() {
   return false;
 }
 
-/* ------------------------------------------------------------------------------------------------------------
- * Plugin entry point, called by DPF to create a new plugin instance. */
+// ------------------------------------------------------------------------------------------------------------
 
 START_NAMESPACE_DISTRHO
 Plugin *createPlugin() { return new OpenUtauPlugin(); }
