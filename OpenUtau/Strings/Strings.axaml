@@ -212,6 +212,7 @@
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="mergevoicebank.back">Back</system:String>
+  <system:String x:Key="mergevoicebank.merge">Merge</system:String>
   <system:String x:Key="mergevoicebank.next">Next</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
