@@ -88,8 +88,16 @@ jobs:
           cd ./DawPlugin
           sudo apt-get install libgl1-mesa-dev gcc-13 g++-13
 
-          export CC=gcc-13
-          export CXX=g++-3
+          # https://askubuntu.com/a/1518433
+          wget http://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz
+          tar -xf gcc-14.1.0.tar.gz
+          cd gcc-14.1.0
+          ./configure -v --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --prefix=/usr/local/gcc-14.1.0 --enable-checking=release --enable-languages=c,c++ --disable-multilib --program-suffix=-14.1.0
+          make
+          sudo make install
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/local/gcc-14.1.0/bin/g++14.1.0 14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/local/gcc-14.1.0/bin/gcc14.1.0 14
+
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' }}
