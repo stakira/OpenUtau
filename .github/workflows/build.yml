@@ -86,7 +86,7 @@ jobs:
       - name: Build Daw Plugin (Linux)
         run: |
           cd ./DawPlugin
-          sudo apt-get install libgl1-mesa-dev gcc-13 g++-13
+          sudo apt-get install libgl1-mesa-dev
 
           # https://askubuntu.com/a/1518433
           wget http://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.gz
