@@ -72,7 +72,7 @@ jobs:
           cd ./DawPlugin
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.arch.cpu == 'x64' }}
+        if: ${{ matrix.arch.arch == 'x64' }}
 
       - name: Package Daw Plugin
         shell: bash
@@ -80,6 +80,7 @@ jobs:
           # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
           cd DawPlugin/build/bin
           7z a openutau_daw_plugin.vst3.zip openutau_daw_plugin.vst3
+        if: ${{ matrix.arch.arch == 'x64' }}
 
       # Create Zip
       - name: DirectML
@@ -148,7 +149,7 @@ jobs:
         with:
           name: openutau_daw_plugin.vst3.zip
           path: DawPlugin/build/bin/openutau_daw_plugin.vst3.zip
-        if: ${{ !inputs.release && matrix.arch.cpu == 'x64' }}
+        if: ${{ !inputs.release && matrix.arch.arch == 'x64' }}
 
       # Appcast
       - name: Appcast Windows
