@@ -73,7 +73,7 @@ jobs:
           cd ./DawPlugin
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.daw-plugin && matrix.arch.os == 'win' }}
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'win' }}
 
       - name: Build Daw Plugin (Mac)
         run: |
@@ -81,7 +81,7 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.daw-plugin && matrix.arch.os == 'osx' }}
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
       - name: Build Daw Plugin (Linux)
         run: |
@@ -92,7 +92,7 @@ jobs:
           export CXX=g++-3
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
-        if: ${{ matrix.daw-plugin && matrix.arch.os == 'linux' }}
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' }}
 
       - name: Package Daw Plugin
         shell: bash
@@ -100,7 +100,7 @@ jobs:
           # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
           cd DawPlugin/build/bin
           7z a openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip openutau_daw_plugin.vst3
-        if: ${{ matrix.daw-plugin }}
+        if: ${{ matrix.arch.daw-plugin }}
 
       # Create Zip
       - name: DirectML
@@ -169,7 +169,7 @@ jobs:
         with:
           name: openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
           path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
-        if: ${{ !inputs.release && matrix.daw-plugin }}
+        if: ${{ !inputs.release && matrix.arch.daw-plugin }}
 
       # Appcast
       - name: Appcast Windows
