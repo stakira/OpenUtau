@@ -20,6 +20,11 @@ if(MSVC)
   add_compile_options("/utf-8")
 endif()
 
+# MacOS only: use -Wno-implicit-function-declaration for zlib
+if(APPLE)
+  add_compile_options("-Wno-implicit-function-declaration")
+endif()
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DDEBUG)
   add_definitions(-DDPF_DEBUG)

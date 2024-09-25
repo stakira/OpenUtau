@@ -67,6 +67,11 @@ jobs:
         if: ${{ matrix.arch.os != 'osx' }}
 
       # Build: Daw Plugin
+      - name: Install OpenGL
+        run: |
+          sudo apt-get install libgl1-mesa-dev
+        if: ${{ github.os == 'ubuntu-latest' }}
+
       - name: Build Daw Plugin
         run: |
           cd ./DawPlugin

@@ -6,8 +6,9 @@
 #include "choc/containers/choc_Value.h"
 #include "choc/memory/choc_Base64.h"
 #include "choc/text/choc_JSON.h"
+#include "gzip/compress.hpp"
 #include "common.hpp"
-#include "extra/String.hpp"
+#include "dpf/distrho/extra/String.hpp"
 #include "uuid/v4/uuid.h"
 #include <cstdio>
 #include <filesystem>
@@ -18,14 +19,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#if CHOC_OSX
-// Workaround for zlib
-// https://github.com/Blosc/python-blosc/issues/229#issuecomment-676819560
-#include <unistd.h>
-#endif
-
-#include "gzip/compress.hpp"
 
 namespace Network {
 std::shared_ptr<std::jthread> ioThread;
@@ -467,8 +460,8 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
 
                 auto currentTime = std::chrono::system_clock::now();
                 if (currentTime - self->lastPing > std::chrono::seconds(5)) {
-                  socket->write_some(asio::buffer(
-                      formatMessage("notification:ping", choc::value::createObject(""))));
+                  socket->write_some(asio::buffer(formatMessage(
+                      "notification:ping", choc::value::createObject(""))));
                   self->lastPing = currentTime;
                 }
               }
