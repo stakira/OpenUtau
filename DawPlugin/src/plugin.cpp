@@ -6,9 +6,9 @@
 #include "choc/containers/choc_Value.h"
 #include "choc/memory/choc_Base64.h"
 #include "choc/text/choc_JSON.h"
-#include "gzip/compress.hpp"
 #include "common.hpp"
 #include "dpf/distrho/extra/String.hpp"
+#include "gzip/compress.hpp"
 #include "uuid/v4/uuid.h"
 #include <cfloat>
 #include <cstdio>
@@ -268,9 +268,17 @@ uint32_t OpenUtauPlugin::getVersion() const {
 void OpenUtauPlugin::initAudioPort(bool input, uint32_t index,
                                    AudioPort &port) {
   port.groupId = index / 2;
-  port.hints = kPortGroupStereo;
   auto name = std::format("Channel {}", index / 2 + 1);
+  auto symbol =
+      std::format("channel-{}-{}", index / 2, index % 2 == 0 ? "l" : "r");
   port.name = String(name.c_str());
+  port.symbol = String(symbol.c_str());
+}
+void OpenUtauPlugin::initPortGroup(uint32_t groupId, PortGroup &group) {
+  auto name = std::format("Group {}", groupId + 1);
+  auto symbol = std::format("group-{}", groupId);
+  group.symbol = String(symbol.c_str());
+  group.name = String(name.c_str());
 }
 
 void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
@@ -343,8 +351,6 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
     }
   }
 };
-
-void OpenUtauPlugin::bufferSizeChanged(uint32_t newBufferSize) {}
 
 void OpenUtauPlugin::sampleRateChanged(double newSampleRate) {
   requestResampleMixes(newSampleRate);
