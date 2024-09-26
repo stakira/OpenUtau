@@ -82,10 +82,11 @@ jobs:
           brew install llvm
           export PATH="/usr/local/opt/llvm/bin:$PATH"
           export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib -lunwind -fexperimental-library"
-          export CPPFLAGS="-I/usr/local/opt/llvm/include"
+          export CPPFLAGS="-I/usr/local/opt/llvm/include -fexperimental-library"
 
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
-             -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++
+             -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+             -DCMAKE_CXX_FLAGS="-stdlib=libc++ -fexperimental-library"
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
