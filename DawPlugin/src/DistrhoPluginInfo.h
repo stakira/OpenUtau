@@ -12,8 +12,10 @@
 #define DISTRHO_PLUGIN_BRAND_ID Stak
 #ifdef DEBUG
 #define DISTRHO_PLUGIN_UNIQUE_ID OpUD
+#define DISTRHO_PLUGIN_CLAP_ID "stakira.openutau-bridge-debug"
 #else
 #define DISTRHO_PLUGIN_UNIQUE_ID OpUt
+#define DISTRHO_PLUGIN_CLAP_ID "stakira.openutau-bridge"
 #endif
 
 #define DISTRHO_PLUGIN_HAS_UI 1
