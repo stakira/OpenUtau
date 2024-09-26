@@ -78,8 +78,10 @@ jobs:
       - name: Build Daw Plugin (Mac)
         run: |
           cd ./DawPlugin
+
+          brew install llvm
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
-             -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+             -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 

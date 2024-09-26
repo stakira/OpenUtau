@@ -79,7 +79,11 @@ protected:
       plugin->name = nameBuffer;
     } else if (!(ImGui::IsItemActive() &&
                  ImGui::TempInputIsActive(ImGui::GetActiveID()))) {
+#if CHOC_WINDOWS
       strncpy_s(nameBuffer, plugin->name.c_str(), sizeof(nameBuffer));
+#else
+      strncpy(nameBuffer, plugin->name.c_str(), sizeof(nameBuffer));
+#endif
     }
 
     partiallyColoredText(
@@ -107,14 +111,14 @@ protected:
       ImGui::TextColored(themeBlueColor, "Processing");
     } else {
       if (plugin->lastSync) {
-        auto lastSyncDuration =
+        long lastSyncDuration =
             std::chrono::duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now() - *plugin->lastSync)
                 .count();
         if (lastSyncDuration > 60) {
-          ImGui::Text("%lldm ago", lastSyncDuration / 60);
+          ImGui::Text("%ldm ago", lastSyncDuration / 60);
         } else {
-          ImGui::TextColored(themePinkColor, "%llds ago", lastSyncDuration);
+          ImGui::TextColored(themePinkColor, "%lds ago", lastSyncDuration);
         }
       } else {
         ImGui::TextColored(style.Colors[ImGuiCol_TextDisabled], "N/A");
