@@ -32,11 +32,11 @@ jobs:
         arch:
           - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest, daw-plugin: true }
           - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest, daw-plugin: false }
-          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: false }
+          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: true }
           - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: false }
-          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: false }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, daw-plugin: true }
-          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest, daw-plugin: false }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: true }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
 
     steps:
       # Setup
@@ -78,7 +78,9 @@ jobs:
       - name: Build Daw Plugin (Mac)
         run: |
           cd ./DawPlugin
-          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          brew install gcc
+          export CC=gcc
+          export CXX=g++
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
@@ -88,10 +90,8 @@ jobs:
           cd ./DawPlugin
 
           # Configure GCC
-          sudo add-apt-repository universe
-          sudo apt update -qq
-          sudo apt install -y gcc-14 g++-14 libpcre3 liblapack-dev
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 60 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+          export CC=gcc
+          export CXX=g++
 
           # Install OpenGL
           sudo apt-get install libgl1-mesa-dev
