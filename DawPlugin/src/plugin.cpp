@@ -10,6 +10,7 @@
 #include "common.hpp"
 #include "dpf/distrho/extra/String.hpp"
 #include "uuid/v4/uuid.h"
+#include <cfloat>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
