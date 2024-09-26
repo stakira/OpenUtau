@@ -79,7 +79,7 @@ jobs:
         run: |
           cd ./DawPlugin
           cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
-             -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+             -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 

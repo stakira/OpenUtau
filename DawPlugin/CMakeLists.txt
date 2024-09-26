@@ -64,6 +64,7 @@ target_include_directories(
          "deps/dpf/distrho"
          "deps/asio/asio/include"
          "deps/dpf_widgets"
+         "deps/dpf_widgets/opengl"
          "deps/uuid-v4"
          "deps/zlib"
          "deps/yamc/include"
