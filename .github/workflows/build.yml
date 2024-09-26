@@ -78,10 +78,8 @@ jobs:
       - name: Build Daw Plugin (Mac)
         run: |
           cd ./DawPlugin
-          brew install gcc
-          export CC=gcc
-          export CXX=g++
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
@@ -89,14 +87,11 @@ jobs:
         run: |
           cd ./DawPlugin
 
-          # Configure GCC
-          export CC=gcc
-          export CXX=g++
-
           # Install OpenGL
           sudo apt-get install libgl1-mesa-dev
 
-          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
           cmake --build build --config Release
         if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' }}
 
