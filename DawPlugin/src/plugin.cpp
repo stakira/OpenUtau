@@ -660,6 +660,7 @@ void OpenUtauPlugin::requestResampleMixes(double newSampleRate) {
 
 void OpenUtauPlugin::resampleMixes(double newSampleRate) {
   auto _lock = std::unique_lock(this->mixMutex);
+  this->mixMutexLocked = true;
   auto _lock2 = std::shared_lock(this->audioBuffersMutex);
   auto _lock3 = std::shared_lock(this->partsMutex);
 
@@ -721,6 +722,7 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
   }
   this->mixes = mixes;
   this->currentSampleRate = newSampleRate;
+  this->mixMutexLocked = false;
 }
 
 std::string
@@ -731,11 +733,11 @@ OpenUtauPlugin::formatMessage(const std::string &kind,
 }
 
 bool OpenUtauPlugin::isProcessing() {
-  if (!this->mixMutex.try_lock()) {
-    return true;
-  }
-  this->mixMutex.unlock();
-  return false;
+  // Doing try_lock() and unlock() causes some flickering in the UI, so use
+  // flag instead. I know it's not the best practice, but this is only for a
+  // UI, which does not affect the audio processing nor causes some critical
+  // issues.
+  return this->mixMutexLocked;
 }
 
 // ------------------------------------------------------------------------------------------------------------

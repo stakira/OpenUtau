@@ -105,10 +105,16 @@ jobs:
       - name: Package Daw Plugin
         shell: bash
         run: |
-          # mkdir -p DawPlugin/build/bin/openutau_daw_plugin.vst3
           cd DawPlugin/build/bin
           7z a openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip openutau_daw_plugin.vst3
         if: ${{ matrix.arch.daw-plugin }}
+
+      - name: Package Daw Plugin (Mac)
+        shell: bash
+        run: |
+          cd DawPlugin/build/bin
+          7z a openutau_daw_plugin-${{ matrix.arch.name }}.au.zip openutau_daw_plugin.component
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
       # Create Zip
       - name: DirectML
@@ -179,6 +185,12 @@ jobs:
           path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
         if: ${{ !inputs.release && matrix.arch.daw-plugin }}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
+          path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
+        if: ${{ !inputs.release && matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
+
       # Appcast
       - name: Appcast Windows
         shell: cmd
@@ -209,4 +221,5 @@ jobs:
             appcast.${{ matrix.arch.name }}*.xml
             OpenUtau-${{ matrix.arch.name }}.*
             DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
+            DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
         if: ${{ inputs.release }}

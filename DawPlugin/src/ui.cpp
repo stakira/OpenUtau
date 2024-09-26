@@ -3,6 +3,7 @@
 #include "common.hpp"
 #include "dpf_widgets/generic/ResizeHandle.hpp"
 #include "dpf_widgets/opengl/DearImGui/imgui.h"
+#include "noto_sans/noto_sans.hpp"
 #include "plugin.hpp"
 #include <string>
 
@@ -10,7 +11,7 @@ START_NAMESPACE_DISTRHO
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int fontSize = 13.f;
+int fontSize = 16.f;
 
 // #ff679d
 static auto themePinkColor = ImVec4(1.0f, 0.4f, 0.6f, 1.0f);
@@ -37,8 +38,7 @@ public:
       resizeHandle.hide();
 
     setTheme();
-
-    setFontSize(fontSize);
+    setFont();
   }
 
   bool showDemoWindow = false;
@@ -233,6 +233,36 @@ protected:
         ImVec4(hoverColor.w, hoverColor.x, hoverColor.y, 0.20f);
     colors[ImGuiCol_FrameBgActive] =
         ImVec4(hoverColor.w, hoverColor.x, hoverColor.y, 0.40f);
+  }
+
+  // TODO: Implement Chinese font properly
+  // https://heistak.github.io/your-code-displays-japanese-wrong/
+  void setFont() {
+    const double scaleFactor = getScaleFactor();
+
+    auto &io = ImGui::GetIO();
+    ImFontConfig fc;
+    fc.FontDataOwnedByAtlas = false;
+    fc.OversampleH = 1;
+    fc.OversampleV = 1;
+    fc.PixelSnapH = true;
+
+    ImFontGlyphRangesBuilder rangeBuilder;
+    static ImVector<ImWchar> ranges;
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesKorean());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesVietnamese());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesThai());
+    rangeBuilder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesGreek());
+    rangeBuilder.BuildRanges(&ranges);
+
+    io.Fonts->AddFontFromMemoryTTF((void *)notoSansJpRegular,
+                                   notoSansJpRegularLen, fontSize * scaleFactor,
+                                   &fc, ranges.Data);
+    io.Fonts->Build();
   }
 
   void partiallyColoredText(const std::string &text, const ImVec4 &color) {
