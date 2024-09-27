@@ -126,6 +126,11 @@
   <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符</system:String>
 
+  <system:String x:Key="remark.add">添加备注</system:String>
+  <system:String x:Key="remark.edit">编辑备注</system:String>
+  <system:String x:Key="remark.delete">删除备注</system:String>
+  <system:String x:Key="remark.selectcolor">选择颜色: </system:String>
+
   <system:String x:Key="lyricsreplace.after">替换为：</system:String>
   <system:String x:Key="lyricsreplace.before">查找内容：</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">去除英文字母</system:String>

@@ -32,6 +32,12 @@ namespace OpenUtau.App.ViewModels {
         public bool OnPoint;
     }
 
+    public struct RemarkHitInfo {
+        public URemark Remark;
+        public int Index;
+        public bool OnPoint;
+    }
+
     public struct VibratoHitInfo {
         public UNote note;
         public bool hit;
@@ -246,7 +252,31 @@ namespace OpenUtau.App.ViewModels {
 
             return default;
         }
+        public RemarkHitInfo HitTestRemark(Point point) {
+            if (viewModel.Part == null || viewModel.Part.remarks == null) {
+                return default;
+            }
+            RemarkHitInfo result = default;
 
+            double leftTick = viewModel.TickOffset - 480;
+            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+
+            for (int i = 0; i < viewModel.Part.remarks.Count; i++) {
+                var remark = viewModel.Part.remarks[i];
+                int x = remark.position;
+                if (x < leftTick || x > rightTick) { continue; }
+                var posX = viewModel.TickToneToPoint(x, 0).X;
+                if (Math.Abs(posX - point.X) < 7 && Math.Abs(point.Y - 10) < 7) {
+                    return new RemarkHitInfo() {
+                        Remark = remark,
+                        Index = i,
+                        OnPoint = true,
+                    };
+                }
+            }
+
+            return result;
+        }
         public double? SamplePitch(Point point) {
             if (viewModel.Part == null) {
                 return null;

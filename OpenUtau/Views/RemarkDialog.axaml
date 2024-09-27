@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" MinWidth="400" MinHeight="200" Width="600" Height="300"
+        x:Class="OpenUtau.App.Views.RemarkDialog" WindowStartupLocation="CenterOwner"
+        xmlns:controls="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls"
+        Icon="/Assets/open-utau.ico"
+        Title="{Binding Title}"
+        KeyDown="OnKeyDown"
+        Opened="OnOpened">
+    <Window.Styles>
+        <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+    </Window.Styles>
+    <Grid Margin="10,10,10,4" RowDefinitions="*,Auto">
+        <TextBox Name="DIALOG_Box" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Height="NaN"
+                 Text="{Binding Text}" Focusable="True"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Left">
+            <TextBlock Text="{StaticResource remark.selectcolor}" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding RemarkColors}" SelectedItem="{Binding SelectedColor}" Width="120" Height="30" VerticalAlignment="Center">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <Border Background="{Binding}" VerticalAlignment="Center" Width="20" Height="20"/>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+            <Button Content="{StaticResource lyrics.cancel}" Margin="0" Click="OnCancel"/>
+            <Button Content="{StaticResource lyrics.apply}" Margin="0" Click="OnFinish"/>
+        </StackPanel>
+    </Grid>
+</Window>

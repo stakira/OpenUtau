@@ -87,6 +87,11 @@
           </Path>
         </Button>
       </Grid>
+      <c:RemarkCanvas Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="20"
+                        Background="{DynamicResource BackgroundBrushSemi}"
+                        TickWidth="{Binding NotesViewModel.TickWidth}"
+                        TickOffset="{Binding NotesViewModel.TickOffset}"
+                        Part="{Binding NotesViewModel.Part}"/>
       <Canvas Name="TimelineCanvas" Grid.Row="2" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
@@ -98,6 +103,21 @@
               Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
               Fill="{DynamicResource NeutralAccentBrushSemi}"
               Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+        <Canvas.ContextMenu>
+            <ContextMenu ItemsSource="{Binding RemarkContextMenuItems}"
+                        Opening="RemarkContextMenuOpening"
+                        Closing="RemarkContextMenuClosing">
+                <ContextMenu.Styles>
+                    <Style Selector="MenuItem">
+                        <Setter Property="Header" Value="{Binding Header}"/>
+                        <Setter Property="Command" Value="{Binding Command, FallbackValue={x:Null}}"/>
+                        <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                        <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                        <Setter Property="InputGesture" Value="{Binding InputGesture}"/>
+                    </Style>
+                </ContextMenu.Styles>
+            </ContextMenu>
+        </Canvas.ContextMenu>
       </Canvas>
       <c:TrackBackground Grid.Row="3" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"

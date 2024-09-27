@@ -105,20 +105,9 @@ namespace OpenUtau.App.ViewModels {
                 .FirstOrDefault();
         }
 
-        async void Init() {
-            UpdaterStatus = ThemeManager.GetString("updater.status.checking");
-            sparkle = await NewUpdaterAsync();
-            if (sparkle == null) {
-                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
-                return;
-            }
-            updateInfo = await sparkle.CheckForUpdatesQuietly();
-            if (updateInfo == null) {
-                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
-                return;
-            }
+        public static void UpdateVersionInfo(ref UpdateInfo updateInfo) {
 
-            if(updateInfo.Status == UpdateStatus.UpdateAvailable) {
+            if (updateInfo.Status == UpdateStatus.UpdateAvailable) {
                 string version = updateInfo.Updates[0].Version;
                 string installVersion = updateInfo.Updates[0].AppVersionInstalled;
 
@@ -132,12 +121,11 @@ namespace OpenUtau.App.ViewModels {
                     int installVersionNum;
                     var versionS = int.TryParse(versionList[i], out versionNum);
                     var installVersionS = int.TryParse(installVersionList[i], out installVersionNum);
-                    if(versionS && installVersionS) {
-                        if(versionNum > installVersionNum) {
-                            ret = 1; 
+                    if (versionS && installVersionS) {
+                        if (versionNum > installVersionNum) {
+                            ret = 1;
                             break;
-                        }
-                        else if(versionNum < installVersionNum) {
+                        } else if (versionNum < installVersionNum) {
                             ret = -1;
                             break;
                         }
@@ -153,11 +141,25 @@ namespace OpenUtau.App.ViewModels {
 
                 if (ret == 1) {
                     updateInfo.Status = UpdateStatus.UpdateAvailable;
-                }
-                else {
+                } else {
                     updateInfo.Status = UpdateStatus.UpdateNotAvailable;
                 }
             }
+        }
+
+        async void Init() {
+            UpdaterStatus = ThemeManager.GetString("updater.status.checking");
+            sparkle = await NewUpdaterAsync();
+            if (sparkle == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+                return;
+            }
+            updateInfo = await sparkle.CheckForUpdatesQuietly();
+            if (updateInfo == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+                return;
+            }
+            UpdateVersionInfo(ref updateInfo);
 
             switch (updateInfo.Status) {
                 case UpdateStatus.UpdateAvailable:

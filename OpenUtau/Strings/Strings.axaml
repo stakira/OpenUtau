@@ -133,6 +133,11 @@
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
 
+  <system:String x:Key="remark.add">Add Remark</system:String>
+  <system:String x:Key="remark.edit">Edit Remark</system:String>
+  <system:String x:Key="remark.delete">Delete Remark</system:String>
+  <system:String x:Key="remark.selectcolor">Select Color: </system:String>
+
   <system:String x:Key="lyricsreplace.after">After :</system:String>
   <system:String x:Key="lyricsreplace.before">Before :</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>

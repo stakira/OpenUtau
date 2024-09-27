@@ -74,6 +74,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> RemarkContextMenuItems { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
             = new Dictionary<Key, MenuItemViewModel>();
 
@@ -87,7 +89,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitSnapCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitDelCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
-
+        
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
 
         public PianoRollViewModel() {

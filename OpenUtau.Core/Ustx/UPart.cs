@@ -19,6 +19,7 @@ namespace OpenUtau.Core.Ustx {
         public string comment = string.Empty;
         public int trackNo;
         public int position = 0;
+        public List<URemark> remarks = new List<URemark>();
 
         [YamlIgnore] public virtual string DisplayName { get; }
         [YamlIgnore] public virtual int Duration { set; get; }

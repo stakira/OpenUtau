@@ -21,6 +21,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using OpenUtau.Core.Metronome;
+using Avalonia.Threading;
 
 namespace OpenUtau.App.Views {
     interface IValueTip {
@@ -39,15 +40,29 @@ namespace OpenUtau.App.Views {
         private NoteEditState? editState;
         private Point valueTipPointerPosition;
         private bool shouldOpenNotesContextMenu;
+        private DispatcherTimer _remarkTimer;
+        private Point lastPoint;
+        private URemark? CopyRemark;
 
         private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
         private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
         private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
+        public ReactiveCommand<int, Unit> RemarkAddCommand;
+        public ReactiveCommand<RemarkHitInfo, Unit> RemarkEditCommand;
+        public ReactiveCommand<RemarkHitInfo, Unit> RemarkDelCommand;
+        public ReactiveCommand<RemarkHitInfo, Unit> RemarkCopyCommand;
+        public ReactiveCommand<int, Unit> RemarkPasteCommand;
+
         public PianoRollWindow() {
             InitializeComponent();
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
+            _remarkTimer = new DispatcherTimer {
+                Interval = TimeSpan.FromMilliseconds(600)
+            };
+            _remarkTimer.Tick += HandleShowRemark;
+
             Dictionary<string, string> gestureDict = new Dictionary<string, string> {
                 { "pianoroll.menu.notes.loadrenderedpitch", "Ctrl+R" },
                 { "pianoroll.menu.notes.autolegato", "Ctrl+L" },
@@ -191,8 +206,45 @@ namespace OpenUtau.App.Views {
             noteDefaultsCommand = ReactiveCommand.Create(() => {
                 EditNoteDefaults();
             });
+            RemarkAddCommand = ReactiveCommand.Create<int>(pos => {
+                if (ViewModel?.NotesViewModel.Part == null) { return; }
+                var vm = new RemarkViewModel(ViewModel.NotesViewModel.Part, new URemark(), pos, -1);
+                vm.Title = ThemeManager.GetString("remark.add");
+                var dialog = new RemarkDialog() {
+                    DataContext = vm,
+                };
+                dialog.ShowDialog(this);
+            });
+            RemarkEditCommand = ReactiveCommand.Create<RemarkHitInfo>(info => {
+                if (ViewModel?.NotesViewModel.Part == null) { return; }
+                var remark = info.Remark;
+                var vm = new RemarkViewModel(ViewModel.NotesViewModel.Part, remark, remark.position, info.Index);
+                vm.Title = ThemeManager.GetString("remark.edit");
+                var dialog = new RemarkDialog() {
+                    DataContext = vm,
+                };
+                dialog.ShowDialog(this);
+            });
+            RemarkDelCommand = ReactiveCommand.Create<RemarkHitInfo>(info => {
+                if (ViewModel?.NotesViewModel.Part == null) { return; }
+                var remark = info.Remark;
+                var vm = new RemarkViewModel(ViewModel.NotesViewModel.Part, remark, remark.position, info.Index);
+                vm.DeleteRemark();
+            });
+            RemarkCopyCommand = ReactiveCommand.Create<RemarkHitInfo>(info => {
+                if (ViewModel?.NotesViewModel.Part == null) { return; }
+                CopyRemark = info.Remark.Clone();
+            });
+            RemarkPasteCommand = ReactiveCommand.Create<int>(pos => {
+                if (ViewModel?.NotesViewModel.Part == null || CopyRemark == null) { return; }
+                DocManager.Inst.StartUndoGroup();
+                CopyRemark.position = pos;
+                DocManager.Inst.ExecuteCmd(new AddRemarkCommand(ViewModel.NotesViewModel.Part, CopyRemark));
+                DocManager.Inst.EndUndoGroup();
+                MessageBus.Current.SendMessage(new NotesRefreshEvent());
+            });
 
-            DocManager.Inst.AddSubscriber(this);
+        DocManager.Inst.AddSubscriber(this);
         }
 
         public void WindowDeactivated(object sender, EventArgs args) {
@@ -483,24 +535,99 @@ namespace OpenUtau.App.Views {
                 ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
+            } else if (point.Properties.IsRightButtonPressed) {
+                lastPoint = new Point();
+                var remarkHitInfo = ViewModel.NotesViewModel.HitTest.HitTestRemark(point.Position);
+                if (remarkHitInfo.OnPoint && ViewModel?.NotesViewModel?.Part != null) {
+                    ViewModel.RemarkContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("remark.edit"),
+                        Command = RemarkEditCommand,
+                        CommandParameter = remarkHitInfo,
+                    });
+                    ViewModel.RemarkContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("remark.delete"),
+                        Command = RemarkDelCommand,
+                        CommandParameter = remarkHitInfo,
+                    });
+                    ViewModel.RemarkContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("menu.edit.copy"),
+                        Command = RemarkCopyCommand,
+                        CommandParameter = remarkHitInfo,
+                    });
+                } else {
+                    if (ViewModel?.NotesViewModel.Part == null) {
+                        return;
+                    }
+                    int tick = ViewModel.NotesViewModel.PointToTick(point.Position);
+                    ViewModel.RemarkContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("remark.add"),
+                        Command = RemarkAddCommand,
+                        CommandParameter = tick,
+                    });
+                    ViewModel.RemarkContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("menu.edit.paste"),
+                        Command = RemarkPasteCommand,
+                        CommandParameter = tick,
+                    });
+                }
+                shouldOpenNotesContextMenu = true;
+                return;
             }
+
             LyricBox?.EndEdit();
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            lastPoint = point.Position;
             if (point.Properties.IsLeftButtonPressed) {
                 ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
+                return;
+            }
+            if (ValueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
+            }
+            var remarkHitInfo = ViewModel.NotesViewModel.HitTest.HitTestRemark(point.Position);
+            if (remarkHitInfo.OnPoint) {
+                if (!_remarkTimer.IsEnabled) {
+                    _remarkTimer.Start();
+                }
+            } else {
+                ((IValueTip)this).HideValueTip();
+                if (_remarkTimer.IsEnabled) {
+                    _remarkTimer.Stop();
+                }
             }
         }
 
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
             args.Pointer.Capture(null);
         }
-
+        private void HandleShowRemark(object? sender, EventArgs e) {
+            var remarkHitInfo = ViewModel.NotesViewModel.HitTest.HitTestRemark(lastPoint);
+            if (remarkHitInfo.OnPoint) {
+                ((IValueTip)this).ShowValueTip();
+                ((IValueTip)this).UpdateValueTip(remarkHitInfo.Remark.text);
+            } else {
+                ((IValueTip)this).HideValueTip();
+                if (_remarkTimer.IsEnabled) {
+                    _remarkTimer.Stop();
+                }
+            }
+        }
+        public void RemarkContextMenuOpening(object sender, CancelEventArgs args) {
+            if (shouldOpenNotesContextMenu) {
+                shouldOpenNotesContextMenu = false;
+            } else {
+                args.Cancel = true;
+            }
+        }
+        public void RemarkContextMenuClosing(object sender, CancelEventArgs args) {
+            ViewModel.RemarkContextMenuItems?.Clear();
+        }
         public void NotesCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
