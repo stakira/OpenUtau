@@ -21,7 +21,9 @@ namespace OpenUtau.Core.Enunu {
         public int length;
         public int noteNum;
         public int noteIndex;
+        public int style_shift;
         public string timbre;
+        public int velocity;
     }
 
     internal static class EnunuUtils {
@@ -45,8 +47,9 @@ namespace OpenUtau.Core.Enunu {
                     writer.WriteLine($"Lyric={notes[i].lyric}");
                     writer.WriteLine($"Length={notes[i].length}");
                     writer.WriteLine($"NoteNum={notes[i].noteNum}");
+                    writer.WriteLine($"Velocity={notes[i].velocity}");
                     if (!string.IsNullOrEmpty(notes[i].timbre)) {
-                        writer.WriteLine($"Flags={notes[i].timbre}");
+                        writer.WriteLine($"Flags={notes[i].timbre}S{notes[i].style_shift}");
                     }
                 }
                 writer.WriteLine("[#TRACKEND]");

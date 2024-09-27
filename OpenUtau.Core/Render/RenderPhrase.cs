@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Render {
         public readonly bool direct;
         public readonly Vector2[] envelope;
 
-        // voicevox args
+        // voicevox & enunu args
         public readonly int toneShift;
 
         public readonly UOto oto;

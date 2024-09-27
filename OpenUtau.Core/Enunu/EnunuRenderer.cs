@@ -28,6 +28,7 @@ namespace OpenUtau.Core.Enunu {
             Format.Ustx.BREC,
             Format.Ustx.TENC,
             Format.Ustx.VOIC,
+            Format.Ustx.VEL,
             Format.Ustx.SHFT
 
         };
@@ -86,7 +87,7 @@ namespace OpenUtau.Core.Enunu {
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{hash:x16}");
                     var ustPath = tmpPath + ".tmp";
                     var enutmpPath = tmpPath + "_enutemp";
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{(phrase.hash+ hash):x16}.wav");
                     var voicebankNameHash = $"{(phrase.singer as EnunuSinger).voicebankNameHash:x16}";
                     config = EnunuConfig.Load(phrase.singer);
                     if (port == null) {
@@ -104,7 +105,7 @@ namespace OpenUtau.Core.Enunu {
                                 var enunuNotes = PhraseToEnunuNotes(phrase);
                                 // TODO: using first note tempo as ust tempo.
                                 EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
-                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600", phrase.phones[0].toneShift.ToString() }, port);
+                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600" }, port);
                                 if (ac_response.error != null) {
                                     Log.Error(ac_response.error);
                                 }
@@ -118,7 +119,7 @@ namespace OpenUtau.Core.Enunu {
                             var editorF0 = SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
                             np.Save(editorF0, editorf0Path);
                             SyntheResponse sy_response = new SyntheResponse();
-                            sy_response = EnunuClient.Inst.SendRequest<SyntheResponse>(new string[] { "synthe", ustPath, wavPath, voicebankNameHash, "600", phrase.phones[0].toneShift.ToString() }, port);
+                            sy_response = EnunuClient.Inst.SendRequest<SyntheResponse>(new string[] { "synthe", ustPath, wavPath, voicebankNameHash, "600" }, port);
                             if (sy_response.error != null) {
                                 throw new Exception(sy_response.error);
                             }
@@ -131,7 +132,7 @@ namespace OpenUtau.Core.Enunu {
                                 var enunuNotes = PhraseToEnunuNotes(phrase);
                                 // TODO: using first note tempo as ust tempo.
                                 EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
-                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600",  phrase.phones[0].toneShift.ToString() }, port);
+                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600"}, port);
                                 if (ac_response.error != null) {
                                     throw new Exception(ac_response.error);
                                 }
@@ -241,20 +242,22 @@ namespace OpenUtau.Core.Enunu {
             notes.Add(new EnunuNote {
                 lyric = "R",
                 length = headTicks,
-                noteNum = 60,
+                noteNum = phrase.phones[0].tone,
             });
             foreach (var phone in phrase.phones) {
                 notes.Add(new EnunuNote {
                     lyric = phone.phoneme,
                     length = phone.duration,
                     noteNum = phone.tone,
+                    style_shift = phone.toneShift,
                     timbre = phone.suffix,
+                    velocity = (int)phone.velocity * 100,
                 });
             }
             notes.Add(new EnunuNote {
                 lyric = "R",
                 length = tailTicks,
-                noteNum = 60,
+                noteNum = phrase.phones[^1].tone,
             });
             return notes.ToArray();
         }
@@ -270,7 +273,10 @@ namespace OpenUtau.Core.Enunu {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(phrase.preEffectHash);
-                    writer.Write(phrase.phones[0].toneShift);
+                    foreach (var phone in phrase.phones) {
+                        writer.Write(phone.toneShift);
+                        writer.Write(phone.velocity);
+                    }
                     return XXH64.DigestOf(stream.ToArray());
                 }
             }
