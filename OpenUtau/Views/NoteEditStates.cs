@@ -5,11 +5,13 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using NWaves.Features;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using SharpCompress;
 
 namespace OpenUtau.App.Views {
     class KeyboardPlayState {
@@ -615,11 +617,13 @@ namespace OpenUtau.App.Views {
     }
 
     class ExpSetValueState : NoteEditState {
+        private Point firstPoint;
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
 
         private double startValue = 0;
+        private bool ctrlWasHeld = false;
         private bool shiftWasHeld = false;
         public ExpSetValueState(
             Control control,
@@ -636,6 +640,7 @@ namespace OpenUtau.App.Views {
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
+            firstPoint = point;
             lastPoint = point;
         }
         public override void End(IPointer pointer, Point point) {
@@ -645,11 +650,12 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            bool ctrlHeld = args.KeyModifiers == KeyModifiers.Control;
             bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
             if (descriptor.type != UExpressionType.Curve) {
                 UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
-                UpdateCurveExp(pointer, point);
+                UpdateCurveExp(pointer, point, ctrlHeld,shiftHeld);
             }
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
             double displayValue;
@@ -675,6 +681,7 @@ namespace OpenUtau.App.Views {
             }
             valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
+            ctrlWasHeld = ctrlHeld;
             shiftWasHeld = shiftHeld;
         }
         private void UpdatePhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
@@ -714,15 +721,26 @@ namespace OpenUtau.App.Views {
                 }
             }
         }
-        private void UpdateCurveExp(IPointer pointer, Point point) {
+        private void UpdateCurveExp(IPointer pointer, Point point, bool ctrlHeld, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
-            int lastX = notesVm.PointToTick(lastPoint);
-            int x = notesVm.PointToTick(point);
             if (descriptor == null || notesVm.Part == null) {
                 return;
             }
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
+            if (shiftHeld) {
+                lastX = notesVm.PointToTick(lastPoint);
+                x = notesVm.PointToTick(point);
+                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+            }else if (ctrlHeld) {
+                lastX = notesVm.PointToTick(firstPoint);
+                x = notesVm.PointToTick(lastPoint);
+                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+            }
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }
     }
