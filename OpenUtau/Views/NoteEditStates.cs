@@ -5,13 +5,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
-using NWaves.Features;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using SharpCompress;
 
 namespace OpenUtau.App.Views {
     class KeyboardPlayState {
