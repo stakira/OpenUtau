@@ -638,6 +638,7 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             firstPoint = point;
             lastPoint = point;
+            startValue = 0;
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
@@ -646,14 +647,15 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
-            bool ctrlHeld = args.KeyModifiers == KeyModifiers.Control;
             bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
-            if (descriptor.type != UExpressionType.Curve) {
+            bool ctrlShiftHeld = args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift);
+            bool typeOptions = descriptor.type == UExpressionType.Options;
+            if (typeOptions) {
                 UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
-                UpdateCurveExp(pointer, point, ctrlHeld,shiftHeld);
+                UpdateCurveExp(pointer, point, ctrlShiftHeld, shiftHeld);
             }
-            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            double viewMax = descriptor.max + (typeOptions ? 1 : 0);
             double displayValue;
             if (shiftHeld) {
                 displayValue = startValue;
@@ -662,7 +664,7 @@ namespace OpenUtau.App.Views {
                 displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
             }
             string valueTipText;
-            if (descriptor.type == UExpressionType.Options) {
+            if (typeOptions) {
                 int index = (int)displayValue;
                 if (index >= 0 && index < descriptor.options.Length) {
                     valueTipText = descriptor.options[index];
@@ -716,7 +718,7 @@ namespace OpenUtau.App.Views {
                 }
             }
         }
-        private void UpdateCurveExp(IPointer pointer, Point point, bool ctrlHeld, bool shiftHeld) {
+        private void UpdateCurveExp(IPointer pointer, Point point, bool ctrlShiftHeld, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
             if (descriptor == null || notesVm.Part == null) {
                 return;
@@ -725,12 +727,11 @@ namespace OpenUtau.App.Views {
             int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
-            if (shiftHeld && ctrlHeld) {
+            if (ctrlShiftHeld) {
                 lastX = notesVm.PointToTick(firstPoint);
                 x = notesVm.PointToTick(lastPoint);
                 lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
                 y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
-                startValue = y;
             } else if (shiftHeld) {
                 lastX = notesVm.PointToTick(lastPoint);
                 x = notesVm.PointToTick(point);
