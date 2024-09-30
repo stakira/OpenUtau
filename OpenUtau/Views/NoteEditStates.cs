@@ -413,7 +413,6 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
         }
 
@@ -621,7 +620,6 @@ namespace OpenUtau.App.Views {
         private UTrack track;
 
         private double startValue = 0;
-        private bool ctrlWasHeld = false;
         private bool shiftWasHeld = false;
         public ExpSetValueState(
             Control control,
@@ -679,7 +677,6 @@ namespace OpenUtau.App.Views {
             }
             valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
-            ctrlWasHeld = ctrlHeld;
             shiftWasHeld = shiftHeld;
         }
         private void UpdatePhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
@@ -728,16 +725,18 @@ namespace OpenUtau.App.Views {
             int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
-            if (shiftHeld) {
-                lastX = notesVm.PointToTick(lastPoint);
-                x = notesVm.PointToTick(point);
-                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
-                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
-            }else if (ctrlHeld) {
+            if (shiftHeld && ctrlHeld) {
                 lastX = notesVm.PointToTick(firstPoint);
                 x = notesVm.PointToTick(lastPoint);
                 lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
                 y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+                startValue = y;
+            } else if (shiftHeld) {
+                lastX = notesVm.PointToTick(lastPoint);
+                x = notesVm.PointToTick(point);
+                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+                startValue = y;
             }
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }

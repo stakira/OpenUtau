@@ -328,7 +328,8 @@
     右クリックでリセット
     Ctrl長押しで選択
     Alt長押しで線をなめらかにする</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">ピッチ描画ツール (4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">
+    ラインピッチ描画ツール (Shift + 4)
     左クリックで描画（直線を描きます）
     右クリックでリセット
     Ctrl長押しで選択

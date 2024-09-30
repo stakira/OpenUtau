@@ -333,8 +333,8 @@ Warning: this option removes custom presets.</system:String>
     Hold Ctrl to select
     Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.drawlinepitch">
-    Draw Pitch Tool (draw straight line)
-    Left click to draw
+    Line Draw Pitch Tool (Shift + 4)
+    Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen

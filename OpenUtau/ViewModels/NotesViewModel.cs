@@ -214,8 +214,8 @@ namespace OpenUtau.App.ViewModels {
                 PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
-                DrawLinePitchTool = index == "4++";
                 OverwritePitchTool = index == "4+";
+                DrawLinePitchTool = index == "4++";
                 KnifeTool = index == "5";
             });
 

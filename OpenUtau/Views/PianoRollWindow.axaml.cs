@@ -1208,6 +1208,10 @@ namespace OpenUtau.App.Views {
                         notesVm.SelectToolCommand?.Execute("4+").Subscribe();
                         return true;
                     }
+                    if (isShift) {
+                        notesVm.SelectToolCommand?.Execute("4++").Subscribe();
+                        return true;
+                    }
                     break;
                 case Key.D5:
                     if (isNone) {
