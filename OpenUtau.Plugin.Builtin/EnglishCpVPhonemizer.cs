@@ -12,7 +12,7 @@ using Serilog;
 using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Arpabet C+V Phonemizer", "EN C+V Phonemizer", "Cadlaxa", language: "EN")]
+    [Phonemizer("Arpabet C+V Phonemizer", "EN C+V", "Cadlaxa", language: "EN")]
     // Custom C+V Phonemizer for OU
     // Arpabet only but in the future update, it can be customize the phoneme set
     public class EnglishCpVPhonemizer : SyllableBasedPhonemizer {
