@@ -18,17 +18,29 @@ jobs:
       matrix:
         os:
           - runs-on: windows-latest
-            arch: win-x64
+            name: win-x64
+            arch: x64
+            os: win
           - runs-on: macos-latest
-            arch: osx-x64
+            name: osx-x64
+            arch: x64
+            os: osx
           - runs-on: ubuntu-latest
-            arch: linux-x64
+            name: linux-x64
+            arch: x64
+            os: linux
           - runs-on: windows-latest
-            arch: win-arm64
+            name: win-arm64
+            arch: arm64
+            os: win
           - runs-on: macos-latest
-            arch: osx-arm64
+            name: osx-arm64
+            arch: arm64
+            os: osx
           - runs-on: ubuntu-latest
-            arch: linux-arm64
+            name: linux-arm64
+            arch: arm64
+            os: linux
 
     steps:
     - uses: actions/checkout@v1
@@ -40,31 +52,25 @@ jobs:
         csproj-files: "OpenUtau/*.csproj"
 
     - name: restore
-      run: dotnet restore OpenUtau -r ${{ matrix.os.arch }}
+      run: dotnet restore OpenUtau -r ${{ matrix.os.name }}
 
     - name: build
-      run: dotnet publish OpenUtau -c Release -r ${{ matrix.os.arch }} --self-contained true -o bin/${{ matrix.os.arch }}
+      run: dotnet publish OpenUtau -c Release -r ${{ matrix.os.name }} --self-contained true -o bin/${{ matrix.os.name }}
 
     - name: add openutau.plugins.builtin
       shell: pwsh
-      run: copy OpenUtau.Plugin.Builtin\bin\Release\netstandard2.1\OpenUtau.Plugin.Builtin.dll -Destination bin\${{ matrix.os.arch }}
+      run: copy OpenUtau.Plugin.Builtin\bin\Release\netstandard2.1\OpenUtau.Plugin.Builtin.dll -Destination bin\${{ matrix.os.name }}
 
-    - name: download directml dll from nuget
-      if: ${{ matrix.os.runs-on == 'windows-latest' }}
-      uses: carlosperate/download-file-action@v1.0.3
-      with:
-        file-url: https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0
-        file-name: Microsoft.AI.DirectML.nupkg
-        location: .
-
-    - name: extract directml
+    - name: DirectML
       if: ${{ matrix.os.runs-on == 'windows-latest' }}
       run: |
+        curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0 -o Microsoft.AI.DirectML.nupkg
         mkdir Microsoft.AI.DirectML
         tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
+        xcopy /Y Microsoft.AI.DirectML\bin\${{ matrix.os.arch }}-${{ matrix.os.os }}\DirectML.dll bin\${{ matrix.os.name }}\
 
     - name: compress
-      run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
+      run: 7z a ou-lunai-${{ matrix.os.name }}.zip ./bin/${{ matrix.os.name }}/*
 
     - name: download vocoder
       uses: carlosperate/download-file-action@v1.0.3
@@ -74,17 +80,17 @@ jobs:
         location: ./
 
     - name: extract vocoder
-      run: 7z x -o"./bin/${{ matrix.os.arch }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
+      run: 7z x -o"./bin/${{ matrix.os.name }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
 
     - name: compress vocoder
       if: ${{ matrix.os.runs-on == 'windows-latest' }} or ${{ matrix.os.runs-on == 'macos-latest' }} or ${{ matrix.os.runs-on == 'ubuntu-latest' }}
-      run: 7z a ou-lunai-${{ matrix.os.arch }}.zip ./bin/${{ matrix.os.arch }}/*
+      run: 7z a ou-lunai-${{ matrix.os.name }}.zip ./bin/${{ matrix.os.name }}/*
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ou-lunai-${{ matrix.os.arch }}.zip
-        path: ou-lunai-${{ matrix.os.arch }}.zip
+        name: ou-lunai-${{ matrix.os.name }}.zip
+        path: ou-lunai-${{ matrix.os.name }}.zip
 
     - name: Create release and upload artifact
       if: ${{ inputs.create-release }}
@@ -92,4 +98,4 @@ jobs:
       with:
         tag_name: ${{ inputs.version }}
         files: |
-          ou-lunai-${{ matrix.os.arch }}.zip
+          ou-lunai-${{ matrix.os.name }}.zip
