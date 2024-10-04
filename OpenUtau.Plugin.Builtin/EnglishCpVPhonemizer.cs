@@ -156,13 +156,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (string s in original) {
                 switch (s) {
-                    case var str when dr.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto($"ay {str}", note.tone):
+                    case var str when dr.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "jh", s[1].ToString() });
                         break;
-                    case var str when tr.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto($"ay {str}", note.tone):
+                    case var str when tr.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ch", s[1].ToString() });
                         break;
-                    case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto($"ay {str}", note.tone):
+                    case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "hh", s[1].ToString() });
                         break;
                     case var str when av_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
@@ -293,9 +293,9 @@ namespace OpenUtau.Plugin.Builtin {
                 
                 // [CCV/CC V] or [C C] + [CV/C V]
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
-                /// CCV with multiple starting consonants
+                /// CCV with multiple starting consonants with cc's support
                 basePhoneme = AliasFormat(v, "cv", syllable.vowelTone, "");
-                TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}", $"-{cc[0]}", $"{cc[0]}", ValidateAlias($"- {cc[0]}"), ValidateAlias($"-{cc[0]}"), ValidateAlias($"{cc[0]}"));
+                //TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}", $"-{cc[0]}", $"{cc[0]}", ValidateAlias($"- {cc[0]}"), ValidateAlias($"-{cc[0]}"), ValidateAlias($"{cc[0]}"));
                 
                 // TRY RCC [- CC] [-CC] [CC]
                 for (var i = cc.Length; i > 1; i--) {
@@ -362,6 +362,10 @@ namespace OpenUtau.Plugin.Builtin {
                         // [C1] [C2]
                         cc1 = $"{cc[i + 1]}";
                     }
+                    if (!HasOto(cc1, syllable.tone) || !HasOto(ValidateAlias(cc1), syllable.tone)) {
+                        // [C1] [C2]
+                        cc1 = $"{cc[i]}{cc[i + 1]}";
+                    }
                     if (!HasOto(cc1, syllable.tone) && !HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i + 1]}", syllable.tone)) {
                         // [C1 -] [C2 -]
                         cc1 = $"{cc[i + 1]} -";
@@ -379,6 +383,10 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc1, syllable.tone) || !HasOto(ValidateAlias(cc1), syllable.tone)) {
                             // [C1] [C2]
                             cc1 = $"{cc[i + 1]}";
+                        }
+                        if (!HasOto(cc1, syllable.tone) || !HasOto(ValidateAlias(cc1), syllable.tone)) {
+                            // [C1] [C2]
+                            cc1 = $"{cc[i]}{cc[i + 1]}";
                         }
                         if (!HasOto(cc1, syllable.tone) && !HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i + 1]}", syllable.tone)) {
                             // [C1 -] [C2 -]
