@@ -261,7 +261,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
         public string WordToPhonemes(string input) {
-            input.Replace(" ", "");
+            input = input.Replace(" ", "");
             input = RemoveInvalidLetters(input);
             if (!Regex.IsMatch(input, "[ก-ฮ]")) {
                 return input;
