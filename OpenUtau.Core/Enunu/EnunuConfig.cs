@@ -4,8 +4,11 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
     class EnunuConfig {
-        public string tablePath;
-        public string questionPath;
+        public string enunu_type = string.Empty;
+
+        public string feature_type = string.Empty;
+        public string tablePath = string.Empty;
+        public string questionPath = string.Empty;
         public int sampleRate;
         public double framePeriod;
         public EnunuExtensions extensions;
@@ -16,8 +19,10 @@ namespace OpenUtau.Core.Enunu {
             if (File.Exists(configPath)) {
                 var configTxt = File.ReadAllText(configPath);
                 config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+                config.enunu_type = "ENUNU";
             } else {
                 config = SetSimpleENUNUConfig(singer.Location);
+                config.enunu_type = "SimpleENUNU";
             }
             return config.Convert();
         }
@@ -70,14 +75,19 @@ namespace OpenUtau.Core.Enunu {
     }
 
     class RawEnunuConfig {
-        public string tablePath;
-        public string questionPath;
+        public string enunu_type = string.Empty;
+        public string feature_type = string.Empty;
+        public string tablePath = string.Empty;
+        public string questionPath = string.Empty;
         public int sampleRate;
         public double framePeriod;
         public RawEnunuExtensions extensions;
 
         public EnunuConfig Convert() {
             EnunuConfig enunuConfig = new EnunuConfig();
+            enunuConfig.enunu_type = this.enunu_type;
+
+            enunuConfig.feature_type = this.feature_type;
             enunuConfig.tablePath = this.tablePath;
             enunuConfig.questionPath = this.questionPath;
             enunuConfig.sampleRate = this.sampleRate;

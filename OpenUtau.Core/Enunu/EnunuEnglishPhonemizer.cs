@@ -60,6 +60,9 @@ namespace OpenUtau.Core.Enunu {
         public override void SetSinger(USinger singer) {
             this.singer = singer as EnunuSinger;
             g2p = LoadG2p();
+            if (port == null) {
+                port = EnunuUtils.SetPortNum();
+            }
         }
 
         string[] GetSymbols(Note note) {

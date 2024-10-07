@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using K4os.Hash.xxHash;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Enunu {
     public class EnunuSinger : USinger {
@@ -46,6 +46,7 @@ namespace OpenUtau.Core.Enunu {
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
 
         public byte[] avatarData;
+        public ulong voicebankNameHash;
 
         public EnunuSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -74,6 +75,7 @@ namespace OpenUtau.Core.Enunu {
 
         void Load() {
             enuconfig = EnunuConfig.Load(this);
+            voicebankNameHash = Hash();
             phonemes.Clear();
             timbres.Clear();
             table.Clear();
@@ -197,6 +199,16 @@ namespace OpenUtau.Core.Enunu {
             return string.IsNullOrEmpty(Sample)
                 ? null
                 : File.ReadAllBytes(Sample);
+        }
+
+        private ulong Hash() {
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(Name);
+                    writer.Write(enuconfig.enunu_type);
+                    return XXH64.DigestOf(stream.ToArray());
+                }
+            }
         }
     }
 }
