@@ -211,24 +211,15 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         (string Consonant, string Dipthong, string Vowel, string EndingConsonant) ParseInput(string input) {
-
             input = WordToPhonemes(input);
 
             string consonant = null;
-            string dipthong = null;
+            string diphthong = null;
             string vowel = null;
             string endingConsonant = null;
 
             if (input == null) {
                 return (null, null, null, null);
-            }
-
-            if (input.Length >= 3) {
-                foreach (var dip in diphthongs) {
-                    if (input[1].ToString().Equals(dip) || input[2].ToString().Equals(dip)) {
-                        dipthong = dip;
-                    }
-                }
             }
 
             foreach (var con in consonants) {
@@ -237,6 +228,27 @@ namespace OpenUtau.Plugin.Builtin {
                         consonant = con;
                     }
                 }
+            }
+
+            int startIdx = consonant?.Length ?? 0;
+            foreach (var dip in diphthongs) {
+                if (input.Substring(startIdx).StartsWith(dip)) {
+                    if (diphthong == null || diphthong.Length < dip.Length) {
+                        diphthong = dip;
+                    }
+                }
+            }
+
+            startIdx += diphthong?.Length ?? 0;
+            foreach (var vow in vowels) {
+                if (input.Substring(startIdx).StartsWith(vow)) {
+                    if (vowel == null || vowel.Length < vow.Length) {
+                        vowel = vow;
+                    }
+                }
+            }
+
+            foreach (var con in endingConsonants) {
                 if (input.EndsWith(con)) {
                     if (endingConsonant == null || endingConsonant.Length < con.Length) {
                         endingConsonant = con;
@@ -244,19 +256,12 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            foreach (var vow in vowels) {
-                if (input.Contains(vow)) {
-                    if (vowel == null || vowel.Length < vow.Length) {
-                        vowel = vow;
-                    }
-                }
-            }
-
-            return (consonant, dipthong, vowel, endingConsonant);
+            return (consonant, diphthong, vowel, endingConsonant);
         }
 
+
         public string WordToPhonemes(string input) {
-            input.Replace(" ", "");
+            input = input.Replace(" ", "");
             input = RemoveInvalidLetters(input);
             if (!Regex.IsMatch(input, "[ก-ฮ]")) {
                 return input;
@@ -295,7 +300,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return ConvertC(input.Substring(0, 2).ToString()) + "o" + ConvertX(input[1].ToString());
                 }
             } else if (input.Length == 4) {
-                if (input[21] == 'ว') {
+                if (input[2] == 'ว') {
                     return ConvertC(input.Substring(0, 2).ToString()) + "ua" + ConvertX(input[3].ToString());
                 }
             }
