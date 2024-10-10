@@ -715,7 +715,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             foreach (var c in longConsonants) {
                 if (alias.Contains(c) && !alias.Contains($"{c} -") && !alias.Contains("h -")) {
-                    return base.GetTransitionBasicLengthMs() * 2.4;
+                    return base.GetTransitionBasicLengthMs() * 2.5;
                 }
             }
 
@@ -779,7 +779,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in semilongConsonants) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
                     if (alias.Contains(c) && !alias.Contains($"{c} -") && !alias.Contains($"- q") && !alias.Contains("ng -") && !alias.Contains("h -")) {
-                        return base.GetTransitionBasicLengthMs() * 1.5;
+                        return base.GetTransitionBasicLengthMs() * 1.7;
                     }
                 }
             }
