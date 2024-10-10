@@ -16,6 +16,7 @@ namespace OpenUtau.Core.DiffSinger {
     [Serializable]
     public class DsConfig {
         public string phonemes = "phonemes.txt";
+        public string languages;
         public string acoustic;
         public string vocoder;
         public List<string> speakers;
@@ -28,6 +29,7 @@ namespace OpenUtau.Core.DiffSinger {
         public bool useTensionEmbed = false;
         public AugmentationArgs augmentationArgs;
         public bool useContinuousAcceleration = false;
+        public bool use_lang_id = false;
         [YamlMember(Alias = "use_shallow_diffusion")] public bool? _useShallowDiffusion;
         [YamlMember(Alias = "use_variable_depth")] public bool? _useVariableDepth;
         [YamlIgnore]
