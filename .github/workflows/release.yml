@@ -75,12 +75,12 @@ jobs:
     - name: download vocoder
       uses: carlosperate/download-file-action@v1.0.3
       with:
-        file-url: https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-44.1k-hop512-128bin-2024.02/nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
-        file-name: nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
+        file-url: https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-44.1k-hop512-128bin-2024.02/nsf_hifigan_44.1k_hop512_128bin_2024.02_logE.oudep
+        file-name: nsf_hifigan_44.1k_hop512_128bin_2024.02_logE.oudep
         location: ./
 
     - name: extract vocoder
-      run: 7z x -o"./bin/${{ matrix.os.name }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02.oudep
+      run: 7z x -o"./bin/${{ matrix.os.name }}/Dependencies/nsf_hifigan" ./nsf_hifigan_44.1k_hop512_128bin_2024.02_logE.oudep
 
     - name: compress vocoder
       if: ${{ matrix.os.runs-on == 'windows-latest' }} or ${{ matrix.os.runs-on == 'macos-latest' }} or ${{ matrix.os.runs-on == 'ubuntu-latest' }}
