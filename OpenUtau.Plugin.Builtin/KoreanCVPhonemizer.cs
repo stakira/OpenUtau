@@ -33,9 +33,9 @@ namespace OpenUtau.Plugin.Builtin {
                     {"Use replace the batchim 'L' with 'l' when followed by 'r'", false},
                 }},
                 {"BATCHIM", new Hashtable(){
+                    {"Use space between the Batchim and the next note", true},
                     {"Use tan Batchim", false},
                     {"Use 'aX' instead of 'a X'", false},
-                    {"Use space between the Batchim and the next note", true},
                 }}
             });
 
@@ -72,10 +72,10 @@ namespace OpenUtau.Plugin.Builtin {
                 isUsingCV_L = resultValue;
 
                 SetOrReadThisValue("BATCHIM", "Use tan Batchim", false, out resultValue); // 받침 표기를 단독음식으로 할지 유무 - 기본값 false (=a n 사용)
-                isUsing_aX = resultValue;
+                isUsingTanBatchim = resultValue;
 
                 SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false, out resultValue); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
-                isUsingTanBatchim = resultValue;
+                isUsing_aX = resultValue;
 
                 SetOrReadThisValue("BATCHIM", "Use space between the Batchim and the next note", true, out resultValue); // 받침과 다음 노트 사이의 공백 추가 유무 - 기본값 true
                 isUsingBatchimSpace = resultValue;
@@ -217,6 +217,9 @@ namespace OpenUtau.Plugin.Builtin {
             
             if (isUsing_aX) {
                 batchim = $"{thisMidVowelTail}{LAST_CONSONANTS[thisLyric[2]][0]}";
+            }
+            else if (isUsingTanBatchim) {
+                batchim = $"{LAST_CONSONANTS[thisLyric[2]][0]}";
             }
             else {
                 batchim = $"{thisMidVowelTail} {LAST_CONSONANTS[thisLyric[2]][0]}";
