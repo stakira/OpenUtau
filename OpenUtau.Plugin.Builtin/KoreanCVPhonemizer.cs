@@ -191,9 +191,16 @@ namespace OpenUtau.Plugin.Builtin {
                 thisMidVowelTail = $"{MIDDLE_VOWELS[thisLyric[1]][2]}";
             }
             
+            
             string CV = $"{FIRST_CONSONANTS[thisLyric[0]]}{thisMidVowelHead}{thisMidVowelTail}"; 
             string frontCV;
             string batchim;
+
+            if (isUsingCV_L) {
+                if (prevLyric[2] == "ㄹ" && thisLyric[0] == "ㄹ") { // 앞 노트의 종성이 ㄹ 이면서 시작하는 노트의 초성이 ㄹ 일 경우
+                    CV = $"l{thisMidVowelHead}{thisMidVowelTail}"; // 초성을 l로 변경
+                }
+            }
             
             if (isRentan) {
                 frontCV = $"- {CV}";
