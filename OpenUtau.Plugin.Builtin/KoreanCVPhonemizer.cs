@@ -223,16 +223,19 @@ namespace OpenUtau.Plugin.Builtin {
             }
             
             if (thisLyric[2] == "ㅁ" || ! HARD_BATCHIMS.Contains(thisLyric[2])) { // batchim ㅁ + ㄴ ㄹ ㅇ
-                if (isItNeedsFrontCV){
-                    return isRelaxedVC ? 
-                    GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
+                if (isItNeedsFrontCV) {
+                   return isRelaxedVC ? 
+                        GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8) 
+                        : (isUsingBatchimSpace ? 
+                            GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5) 
+                            : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8));
                 }
                 return isRelaxedVC ? 
-                GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
-            }
-            else {
+                    GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8) 
+                    : (isUsingBatchimSpace ? 
+                        GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5) 
+                        : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8));
+            } else {
                 if (isItNeedsFrontCV){
                     return isRelaxedVC ? 
                     GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
