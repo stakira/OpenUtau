@@ -1,1 +1,0 @@
-name=zh_cvvc
