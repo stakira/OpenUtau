@@ -15,7 +15,7 @@ namespace OpenUtau.Plugin.Builtin {
         // 1. Load Singer and Settings
         private KoreanCVIniSetting koreanCVIniSetting; // Manages Setting
 
-        public bool isUsingShi, isUsing_aX, isUsing_i, isRentan;
+        public bool isUsingShi, isUsing_aX, isUsingCV_L, isUsing_i, isRentan, isUsingBatchimSpace, isUsingTanBatchim;
 
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {return;}
@@ -30,14 +30,20 @@ namespace OpenUtau.Plugin.Builtin {
                     {"Use rentan", false},
                     {"Use 'shi' for '시'(otherwise 'si')", false},
                     {"Use 'i' for '의'(otherwise 'eui')", false},
+                    {"Use replace the batchim 'L' with 'l' when followed by 'r'", false},
                 }},
                 {"BATCHIM", new Hashtable(){
-                    {"Use 'aX' instead of 'a X'", false}
+                    {"Use tan Batchim", false},
+                    {"Use 'aX' instead of 'a X'", false},
+                    {"Use space between the Batchim and the next note", true},
                 }}
             });
 
             isUsingShi = koreanCVIniSetting.isUsingShi;
+            isUsingBatchimSpace = koreanCVIniSetting.isUsingBatchimSpace;
+            isUsingTanBatchim = koreanCVIniSetting.isUsingTanBatchim;
             isUsing_aX = koreanCVIniSetting.isUsing_aX;
+            isUsingCV_L = koreanCVIniSetting.isUsingCV_L;
             isUsing_i = koreanCVIniSetting.isUsing_i;
             isRentan = koreanCVIniSetting.isRentan;
         }
@@ -46,7 +52,10 @@ namespace OpenUtau.Plugin.Builtin {
             public bool isRentan;
             public bool isUsingShi;
             public bool isUsing_aX;
+            public bool isUsingCV_L;
             public bool isUsing_i;
+            public bool isUsingBatchimSpace;
+            public bool isUsingTanBatchim;
 
             protected override void IniSetUp(Hashtable iniSetting) {
                 // ko-CV.ini
@@ -58,9 +67,18 @@ namespace OpenUtau.Plugin.Builtin {
 
                 SetOrReadThisValue("CV", "Use 'i' for '의'(otherwise 'eui')", false, out resultValue); // 의를 [i]로 표기할 지 유무 - 기본값 false
                 isUsing_i = resultValue;
+                
+                SetOrReadThisValue("CV", "Use replace the batchim 'L' with 'l' when followed by 'r'", false, out resultValue); // 받침 ㄹ 뒤에 오는 ㄹ 가사를 l로 치환 유무 - 기본값 false(= r 사용)
+                isUsingCV_L = resultValue;
+
+                SetOrReadThisValue("BATCHIM", "Use tan Batchim", false, out resultValue); // 받침 표기를 단독음식으로 할지 유무 - 기본값 false (=a n 사용)
+                isUsing_aX = resultValue;
 
                 SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false, out resultValue); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
-                isUsing_aX = resultValue;
+                isUsingTanBatchim = resultValue;
+
+                SetOrReadThisValue("BATCHIM", "Use space between the Batchim and the next note", true, out resultValue); // 받침과 다음 노트 사이의 공백 추가 유무 - 기본값 true
+                isUsingBatchimSpace = resultValue;
             }
         }
         
