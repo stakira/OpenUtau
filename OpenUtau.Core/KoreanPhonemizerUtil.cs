@@ -195,6 +195,23 @@ namespace OpenUtau.Core {
 
             return isHangeul;
         }
+
+        /// <summary>
+        /// 
+        /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인합니다.
+        /// </summary>
+        /// <param name="lyric"> 
+        /// <br/>(Example: 'rin') 
+        /// </param>
+        /// <returns> Bool
+        /// </returns>
+        public static bool IsKoreanRomaji(string lyric) {
+            if (!KoreanPhonemizerUtil.IsHangeul(lyric) && KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric) != null) {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// 
         /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인하고, 유효할 경우 한국어로 변환합니다. 아닐 경우 null을 반환합니다.
@@ -202,8 +219,8 @@ namespace OpenUtau.Core {
         /// <param name="romaji"> 
         /// <br/>(Example: 'rin') 
         /// </param>
-        /// <returns> True / False
-        /// (ex) True
+        /// <returns> String or null
+        /// (ex) 린
         /// </returns>
         public static string? TryParseKoreanRomaji(string? romaji) {
             
