@@ -12,66 +12,66 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
-    /// zhcvvplus.yaml 클래스
+    /// zhcvvplus.yaml class
     /// </summary> 
     [Serializable]
     public class ChineseCVVPlusConfigYaml {
 
         /// <summary>
-        /// 접모음의 접두사 지정. 기본값 "_"
+        /// Prefix of affix vowel. Default value is "_"
         /// </summary>
         public string VowelTailPrefix = "_";
 
         /// <summary>
-        /// 일정 길이 이상의 비운모를 접모음 없이 사용할 건지에 대한 여부
+        /// Whether to use a long Nasal Vowel without a tail vowel
         /// </summary>
         public bool UseSingleNasalVowel = false;
 
         /// <summary>
-        /// 일정 길이 이상의 복합운모를 접모음 없이 사용할 건지에 대한 여부
+        /// Whether to use a long Multiple Vowel without a tail vowel
         /// </summary>
         public bool UseSingleMultipleVowel = false;
 
         /// <summary>
-        /// 연단음 여부. True로 설정시 첫번째 노트의 가사에 "- " 추가
+        /// Whether to use retan. If set to True, "- " is added to the first note's lyrics.
         /// </summary>
         public bool UseRetan = false;
 
         /// <summary>
-        /// 어미숨 종류. 여러개 사용 가능
+        /// Types of End Breath. Multiple types can be used.
         /// </summary>
         public string[] SupportedTailBreath = { "-" };
 
         /// <summary>
-        /// 성모 지정. 추가 자음이 생길 상황을 대비해 커스텀 가능하게 yaml에 분리
+        /// Specify the Consonant. Separated into yaml for customization in case additional consonants are needed.
         /// </summary>
         public string[] ConsonantDict = { "zh", "ch", "sh", "b", "p", "m", "f", "d", "t", "n", "l", "z", "c", "s", "r", "j", "q", "x", "g", "k", "h" };
 
         /// <summary>
-        /// 운모 지정. 위와 동일한 이유로 yaml에 분리
+        /// Specify the Vowel. Separated into yaml for the same reason as above.
         /// </summary>
         public string[] SingleVowelDict = { "a", "o", "e", "i", "u", "v", "er" };
 
         /// <summary>
-        /// 비운모 지정. 위와 동일한 이유로 yaml에 분리
+        /// Specify the Nasal Vowel. Separated into yaml for the same reason as above.
         /// </summary>
         public string[] NasalVowelDict = { "an", "en", "ang", "eng", "ong", "ian", "iang", "ing", "iong", "uan", "uen", "un", "uang", "ueng", "van", "vn" };
 
         /// <summary>
-        /// 복합운모 지정. 위와 동일한 이유로 yaml에 분리
+        /// Specify the Multiple Vowel. Separated into yaml for the same reason as above.
         /// </summary>
         public string[] MultipleVowelDict = { "ai", "ei", "ao", "ou", "ia", "iao", "ie", "iou", "ua", "uo", "uai", "uei", "ui", "ve" };
 
         /// <summary>
-        /// 빠른 접모음의 위치 (tick 단위).
+        /// Position of fast tail vowel (in ticks).
         /// </summary>
         public int FastTailVowelTimingTick = 100;
         /// <summary>
-        /// UseSingleNasalVowel 혹은 UseSingleMultipleVowel 가 True 일때, 단독 사용의 판단 기준 (tick 단위)
+        /// The criterion for determining single usage when UseSingleNasalVowel or UseSingleMultipleVowel is set to True (in ticks).
         /// </summary>
         public int SingleVowelsReferenceTimimgTick = 480;
         /// <summary>
-        /// 빠른 복합운모. 만일 빠른 복합운모의 비운모가 필요가 없다면 이부분은 비워두고 전부 SlowTailVowelDict 로 옮겨두면 됨
+        /// Fast Multiple Vowel. If a fast Nasal Vowel is not needed, leave this empty and move everything to SlowTailVowelDict.
         /// </summary>
         public Dictionary<string, string> FastTailVowelDict = new Dictionary<string, string>() {
             {"ia", "ia"},
@@ -81,9 +81,9 @@ namespace OpenUtau.Plugin.Builtin {
             {"ve", "ve"},
         };
         /// <summary>
-        /// 느린 복합운모. 느린 복합운모의 포지션은 노트의 1/3로 계산 됨
+        /// Slow Multiple Vowel. The position of the slow Multiple Vowel is calculated as 1/3 of the note.
         /// <br></br>
-        /// {"모음의 기본형": "접모음의 접두사를 제외한 표기"}
+        /// {"Basic form of the vowel": "Representation excluding the prefix of the tail vowel"}
         /// </summary>
         public Dictionary<string, string> SlowTailVowelDict = new Dictionary<string, string>()
         {
@@ -133,7 +133,7 @@ namespace OpenUtau.Plugin.Builtin {
     }
 
     /// <summary>
-    /// yaml을 직렬화 할 때, 배열을 인라인 스타일로 만들기 위한 커스텀 이벤트
+    /// Custom event to make arrays in inline style when serializing yaml
     /// </summary>
     class FlowStyleIntegerSequences : ChainedEventEmitter {
         public FlowStyleIntegerSequences(IEventEmitter nextEmitter)
@@ -150,13 +150,13 @@ namespace OpenUtau.Plugin.Builtin {
 
 
     /// <summary>
-    /// 포네마이저
+    /// Phonemizer
     /// </summary>
     [Phonemizer("Chinese CVV Plus Phonemizer", "ZH CVV+", "2xxbin", language: "ZH")]
     public class ChineseCVVPlusPhonemizer : BaseChinesePhonemizer {
         private USinger? singer;
         /// <summary>
-        /// zhcvvplus.yaml를 담아두는 변수
+        /// Variable containing zhcvvplus.yaml
         /// </summary>
         ChineseCVVPlusConfigYaml Config;
         public override void SetSinger(USinger singer) {
@@ -165,15 +165,15 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
 
-            // zhcvvplus.yaml 경로 지정
+            // Specify the path of zhcvvplus.yaml
             var configPath = Path.Join(singer.Location, "zhcvvplus.yaml");
 
-            // 만약 없다면, 새로 제작해 추가
+            // If it doesn't exist, create and add it
             if (!File.Exists(configPath)) {
                 CreateConfigChineseCVVPlus(configPath);
             }
 
-            // zhcvvplus.yaml 읽기
+            // Read zhcvvplus.yaml
             try {
                 var configContent = File.ReadAllText(configPath);
                 var deserializer = new DeserializerBuilder().Build();
@@ -187,7 +187,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // 음원 지정
+            // Specify the singer
             this.singer = singer;
 
             if (Config == null) {
@@ -196,7 +196,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
 
-        // 노트의 가사를 받아 모음을 반환하는 메소드.
+        // Method that takes the lyrics of a note and returns the vowel.
         private string GetLyricVowel(string lyric) {
             string initialPrefix = string.Empty;
 
@@ -209,22 +209,22 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // 자음 뿐만이 아닌 모음도 제거가 되는 문제(ian -> ia 등) 을 방지하기 위해 가사의 앞 2글자 분리
+            // Split the first two characters of the lyrics to prevent the issue of removing vowels, not just consonants (e.g., ian -> ia)
             string prefix = lyric.Substring(0, Math.Min(2, lyric.Length));
             string suffix = lyric.Length > 2 ? lyric.Substring(2) : string.Empty;
 
-            // 자음 리스트를 순서대로 선회하며 replace 됨.
+            // Iterate through the consonant list in order and replace them.
             foreach (var consonant in Config.Consonants) {
                 if (prefix.StartsWith(consonant)) {
                     prefix = prefix.Replace(consonant, string.Empty);
                 }
             }
 
-            // 모음 표기를 일반 표기로 변경
+            // Convert vowel notation to the standard form
             return $"{initialPrefix}{(prefix + suffix).Replace("yu", "v").Replace("y", "i").Replace("w", "u").Trim()}";
         }
 
-        // oto.ini 안에 해당 에일리어스가 있는지 확인하는 메소드.
+        // Method to check if the alias exists in oto.ini.
         public static bool isExistPhonemeInOto(USinger singer, string phoneme, Note note) {
 
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
@@ -279,16 +279,16 @@ namespace OpenUtau.Plugin.Builtin {
                 string phoneme = notes[0].lyric;
                 string? lryicVowel = GetLyricVowel(notes[0].lyric);
 
-                // 만약 발음 힌트가 존재 한다면.
+                // If a phonetic hint exists.
                 if (notes[0].phoneticHint != null) {
-                    // 발음 힌트는 쉼표 기준으로 분리 됨.
+                    // Phonetic hints are separated by commas.
                     var phoneticHints = notes[0].phoneticHint.Split(",");
                     var phonemes = new Phoneme[phoneticHints.Length];
 
                     foreach (var phoneticHint in phoneticHints.Select((hint, index) => (hint, index))) {
                         phonemes[phoneticHint.index] = new Phoneme {
                             phoneme = GetOtoAlias(singer, phoneticHint.hint.Trim(), notes[0]) ,
-                            // 포지션은 균등하게 n등분
+                            // The position is evenly divided into n parts.
                             position = totalDuration - ((totalDuration / phoneticHints.Length) * (phoneticHints.Length - phoneticHint.index)),
                         };
                     }
@@ -298,68 +298,68 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
 
-                // 만약 노트가 끝 어미숨 노트라면
+                // If the note is an End Breath note
                 if (Config.SupportedTailBreath.Contains(phoneme) && prev != null) {
                     phoneme = GetOtoAlias(singer, $"{GetLyricVowel(prev?.lyric)} {phoneme}", notes[0]);
                     
                     return new Result {
-                        // "모음의 기본 형태 + 가사로 작성한 어미숨" 형태로 출력
+                        // Output in the form "Basic vowel shape + End Breath written with lyrics"
                         phonemes = new Phoneme[] { new Phoneme { phoneme = phoneme } }
                     };
                 }
 
-                // 만약 zhcvvplus.yaml에서 연단음 여부가 True고, 앞 노트가 없으면서, oto.ini에 "- 가사" 에일리어스가 존재한다면
+                // If retan is set to True in zhcvvplus.yaml, there is no previous note, and the "- lyrics" alias exists in oto.ini
                 if (Config.UseRetan && prev == null && isExistPhonemeInOto(singer, $"- {phoneme}", notes[0])) {
                     // 가사를 "- 가사"로 변경
                     phoneme = $"- {phoneme}";
                     phoneme = GetOtoAlias(singer, phoneme, notes[0]);
                 }
 
-                // 만약 접모음이 필요한 가사라면
+                // If the lyrics require a tail vowel
                 if (Config.TailVowels.ContainsKey(lryicVowel)) {
-                    // 접노트 가사 선언
+                    // Declare the lyrics for the connecting note
                     var tailPhoneme = $"{Config.VowelTailPrefix}{Config.TailVowels[lryicVowel]}";
 
-                    // 1. 노트의 길이가 zhcvvplus.yaml의 판단 틱보다 작거나 같은 동시에 
-                    // 1-1. 가사가 비운모면서 zhcvvplus.yaml의 비운모 단독 사용 여부가 True 거나
-                    // 1-2. 가사가 복합 운모면서 zhcvvplus.yaml의 복합운모 단독 사용 여부가 True 일때
-                    // 2. 혹은 zhcvvplus.yaml의 비운모 단독 사용 여부가 False 이면서 가사가 비운모일때
-                    // 3. 혹은 zhcvvplus.yaml의 복합운모 단독 사용 여부가 False 이면서 가사가 복합운모일때 
+                    // 1. When the length of the note is less than or equal to the judgment tick in zhcvvplus.yaml
+                    // 1-1. The lyrics are a Nasal Vowel, and the single use of Nasal Vowel in zhcvvplus.yaml is set to True, or
+                    // 1-2. The lyrics are a Multiple Vowel, and the single use of Multiple Vowel in zhcvvplus.yaml is set to True
+                    // 2. Or when the single use of Nasal Vowel in zhcvvplus.yaml is set to False, and the lyrics are a Nasal Vowel
+                    // 3. Or when the single use of Multiple Vowel in zhcvvplus.yaml is set to False, and the lyrics are a Multiple Vowel
                     if ((totalDuration <= Config.SingleVowelsReferenceTimimgTick &&
                         (Config.UseSingleNasalVowel && Config.NasalVowelDict.Contains(lryicVowel)
                         || Config.UseSingleMultipleVowel && Config.MultipleVowelDict.Contains(lryicVowel)) ||
                         (!Config.UseSingleNasalVowel && Config.NasalVowelDict.Contains(lryicVowel)) ||
                         (!Config.UseSingleMultipleVowel && Config.MultipleVowelDict.Contains(lryicVowel)))) {
 
-                        // 자연스러움을 위해 접운모의 위치는 노트의 1/3로 지정
+                        // To ensure naturalness, the position of the tail vowel is set to 1/3 of the note.
                         var tailVowelPosition = totalDuration - totalDuration / 3;
 
-                        // 만약 빠른 접모음 이라면
+                        // If it is a fast tail vowel,
                         if (Config.FastTailVowelDict.ContainsKey(lryicVowel)) {
-                            // zhcvvplus.yaml에서 지정한 포지션으로 변경
+                            // Change to the position specified in zhcvvplus.yaml.
                             tailVowelPosition = Config.FastTailVowelTimingTick;
                         }
                         phoneme = GetOtoAlias(singer, phoneme, notes[0]);
                         tailPhoneme = GetOtoAlias(singer, tailPhoneme, notes[0]);
                         return new Result() {
                             phonemes = new Phoneme[] {
-                                new Phoneme { phoneme = phoneme }, // 원 노트 가사
-                                new Phoneme { phoneme = tailPhoneme, position = tailVowelPosition}, // 접모음
+                                new Phoneme { phoneme = phoneme }, // Original note lyrics
+                                new Phoneme { phoneme = tailPhoneme, position = tailVowelPosition}, // Tail vowel
                             }
                         };
                     }
                 };
 
-                // 위 if문중 어디에도 해당하지 않는다면
+                // If it does not match any of the above if statements,
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = phoneme, // 입력한 가사로 출력
+                            phoneme = phoneme, // Output the entered lyrics.
                         }
                     }
                 };
             } catch (Exception e) { 
-                Log.Error(e, "An error occurred during the phoneme processing in zh cvv+ module."); // 로깅
+                Log.Error(e, "An error occurred during the phoneme processing in zh cvv+ module."); // Logging
 
                 return new Result {
                     phonemes = new Phoneme[] {
