@@ -90,6 +90,74 @@ namespace OpenUtau.Core {
             ["ㅁ"] = 2
         };
 
+        /// <summary>
+        /// A dictionary of first consonants composed of {Romanization: Hangul}.
+        /// <br/><br/>{로마자:한글} 로 구성된 초성 딕셔너리 입니다.
+        /// </summary>
+        public static readonly Dictionary<String, String> ROMAJI_KOREAN_FIRST_CONSONANTS_DICT = new Dictionary<String, String>() {
+            {"g", "ㄱ"},
+            {"n", "ㄴ"},
+            {"d", "ㄷ"},
+            {"r", "ㄹ"},
+            {"l", "ㄹ"},
+            {"m", "ㅁ"},
+            {"b", "ㅂ"},
+            {"s", "ㅅ"},
+            {"j", "ㅈ"},
+            {"ch", "ㅊ"},
+            {"k", "ㅋ"},
+            {"t", "ㅌ"},
+            {"p", "ㅍ"},
+            {"h", "ㅎ"},
+            {"gg", "ㄲ"},
+            {"kk", "ㄲ"},
+            {"dd", "ㄸ"},
+            {"tt", "ㄸ"},
+            {"bb", "ㅃ"},
+            {"pp", "ㅃ"},
+            {"ss", "ㅆ"},
+            {"jj", "ㅉ"}
+        };
+
+        /// <summary>
+        /// A dictionary of middle vowels composed of {Romanization: Hangul}.
+        /// <br/><br/>{로마자:한글} 로 구성된 중성 딕셔너리 입니다.
+        /// </summary>
+        public static readonly Dictionary<String, String> ROMAJI_KOREAN_MIDDLE_VOWELS_DICT = new Dictionary<String, String>() {
+            {"yeo", "ㅕ"},
+            {"weo", "ㅝ"},
+            {"eui", "ㅢ"},
+            {"ui", "ㅢ"},
+            {"wa", "ㅘ"},
+            {"wi", "ㅟ"},
+            {"we", "ㅙ"},
+            {"ya", "ㅑ"},
+            {"yu", "ㅠ"},
+            {"ye", "ㅖ"},
+            {"yo", "ㅛ"},
+            {"eu", "ㅡ"},
+            {"eo", "ㅓ"},
+            {"a", "ㅏ"},
+            {"i", "ㅣ"},
+            {"u", "ㅜ"},
+            {"e", "ㅔ"},
+            {"o", "ㅗ"},
+        };
+
+        // <summary>
+        /// A dictionary of last consonants composed of {Romanization: Hangul}.
+        /// <br/><br/>{로마자:한글} 로 구성된 종성 딕셔너리 입니다.
+        /// </summary>
+        public static readonly Dictionary<String, String> ROMAJI_KOREAN_LAST_CONSONANTS_DICT = new Dictionary<String, String>() {
+            {"k", "ㄱ"},
+            {"n", "ㄴ"},
+            {"t", "ㅅ"},
+            {"l", "ㄹ"},
+            {"m", "ㅁ"},
+            {"p", "ㅍ"},
+            {"ng", "ㅇ"},
+            {"", ""},
+        };
 
         /// <summary>
         /// Confirms if input string is hangeul.
