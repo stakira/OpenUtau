@@ -151,12 +151,11 @@ namespace OpenUtau.Core {
         public static readonly Dictionary<String, String> ROMAJI_KOREAN_LAST_CONSONANTS_DICT = new Dictionary<String, String>() {
             {"k", "ㄱ"},
             {"n", "ㄴ"},
-            {"t", "ㅅ"},
+            {"t", "ㄷ"},
             {"l", "ㄹ"},
             {"m", "ㅁ"},
-            {"p", "ㅍ"},
+            {"p", "ㅂ"},
             {"ng", "ㅇ"},
-            {"", ""},
         };
 
         /// <summary>
