@@ -168,6 +168,70 @@ namespace OpenUtau.Plugin.Builtin {
             };
         }
 
+        public class ProcessResult {
+            public Note[] KoreanLryicNotes { get; set; }
+            public Note? KoreanLryicPrevNote { get; set; }
+            public Note? KoreanLryicNextNote { get; set; }
+        }
+
+        // <summary>
+        /// 
+        /// 로마자 가사들을 전부 한글로 바꿔줍니다.
+        /// </summary>
+        /// <param name="notes"></param>
+        /// <param name="prevNote"></param>
+        /// <param name="noteNote></param>
+        /// <returns> ProcessResult? </returns>
+        public static ProcessResult? ConvertRomajiNoteToHangeul(Note[] notes, Note? prevNote, Note? nextNote) {
+            var note = notes[0];
+            var lyric = note.lyric;
+
+            if (KoreanPhonemizerUtil.IsKoreanRomaji(lyric)) { // TODO
+                notes[0] = new Note() {
+                    lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric),
+                    phoneticHint = note.phoneticHint,
+                    position = note.position,
+                    duration = note.duration,
+                    tone = note.tone,
+                    phonemeAttributes = note.phonemeAttributes
+                };
+                Note? prevNoteNew = prevNote;
+                Note? nextNoteNew = nextNote;
+                if (prevNote != null) {
+                    if (KoreanPhonemizerUtil.IsHangeul(prevNote.Value.lyric) != null) {
+                        if (prevNote != null) {
+                            prevNoteNew = new Note() {
+                                lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(prevNote.Value.lyric),
+                                phoneticHint = prevNote.Value.phoneticHint,
+                                position = prevNote.Value.position,
+                                duration = prevNote.Value.duration,
+                                tone = prevNote.Value.tone,
+                                phonemeAttributes = prevNote.Value.phonemeAttributes
+                            };
+                        }
+                        if (nextNote != null) {
+                            nextNoteNew = new Note() {
+                                lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(nextNote.Value.lyric),
+                                phoneticHint = nextNote.Value.phoneticHint,
+                                position = nextNote.Value.position,
+                                duration = nextNote.Value.duration,
+                                tone = nextNote.Value.tone,
+                                phonemeAttributes = nextNote.Value.phonemeAttributes
+                            };
+
+                        }
+                        
+                    }
+                }
+                return new ProcessResult {
+                    KoreanLryicNotes = notes,
+                    KoreanLryicPrevNote = prevNoteNew,
+                    KoreanLryicNextNote = nextNoteNew,
+                };
+            }
+            return null;
+        }
+
         /// <summary>
         /// Returns Result with three input Phonemes. 
         /// 
@@ -298,45 +362,13 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes = phonemes
                 };
             } 
-            else if (!KoreanPhonemizerUtil.IsHangeul(lyric) && KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric) != null) { // TODO
-                notes[0] = new Note() {
-                    lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric),
-                    phoneticHint = note.phoneticHint,
-                    position = note.position,
-                    duration = note.duration,
-                    tone = note.tone,
-                    phonemeAttributes = note.phonemeAttributes
-                };
-                Note? prevNoteNew = prevNeighbour;
-                Note? nextNoteNew = nextNeighbour;
-                if (KoreanPhonemizerUtil.IsHangeul(prevNote.Value.lyric) != null) {
-                    
-                    if (prevNote != null) {
-                        prevNoteNew = new Note() {
-                            lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(prevNote.Value.lyric),
-                            phoneticHint = prevNote.Value.phoneticHint,
-                            position = prevNote.Value.position,
-                            duration = prevNote.Value.duration,
-                            tone = prevNote.Value.tone,
-                            phonemeAttributes = prevNote.Value.phonemeAttributes
-                        };
-                    }
-                    if (nextNote != null) {
-                        nextNoteNew = new Note() {
-                            lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(nextNote.Value.lyric),
-                            phoneticHint = nextNote.Value.phoneticHint,
-                            position = nextNote.Value.position,
-                            duration = nextNote.Value.duration,
-                            tone = nextNote.Value.tone,
-                            phonemeAttributes = nextNote.Value.phonemeAttributes
-                        };
 
-                    }
-                    
-                }
-                return ConvertPhonemes(notes, prev, next, prevNoteNew, nextNoteNew, prevNeighbours);
+            var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
+            if (romaji2Korean != null) {
+                return ConvertPhonemes(romaji2Korean.KoreanLryicNotes, prev, next, romaji2Korean.KoreanLryicPrevNote, romaji2Korean.KoreanLryicNextNote, prevNeighbours);
             }
-            else if (KoreanPhonemizerUtil.IsHangeul(lyric) || !KoreanPhonemizerUtil.IsHangeul(lyric) && additionalTest(lyric)) {
+
+            if (KoreanPhonemizerUtil.IsHangeul(lyric) || !KoreanPhonemizerUtil.IsHangeul(lyric) && additionalTest(lyric)) {
                 return ConvertPhonemes(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             } 
             else {
