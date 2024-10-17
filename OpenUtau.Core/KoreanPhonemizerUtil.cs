@@ -122,6 +122,7 @@ namespace OpenUtau.Core {
         /// <summary>
         /// A dictionary of middle vowels composed of {Romanization: Hangul}.
         /// <br/><br/>{로마자:한글} 로 구성된 중성 딕셔너리 입니다.
+        /// <br/>로마자의 길이 순으로 정렬 되어 있습니다.
         /// </summary>
         public static readonly Dictionary<String, String> ROMAJI_KOREAN_MIDDLE_VOWELS_DICT = new Dictionary<String, String>() {
             {"yeo", "ㅕ"},
@@ -192,6 +193,40 @@ namespace OpenUtau.Core {
             return isHangeul;
         }
         /// <summary>
+        /// 
+        /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인합니다.
+        /// <br/> 중성 -> 초성 -> 종성 순으로 로마자 표기와 동일하다면, 유효한 한국어 로마자로 판단합니다.
+        /// <br /> 문자열 중 로마자가 아닌 글자가 들어갈 경우, False를 반환합니다.
+        /// </summary>
+        /// <param name="romaji"> 
+        /// <br/>(Example: 'rin') 
+        /// </param>
+        /// <returns> True / False
+        /// (ex) True
+        /// </returns>
+        public static bool IsKoreanRomaji(string? romaji) {
+            if (string.IsNullOrEmpty(romaji)) { return false; }
+            
+            // 모든 글자가 로마자인지 판별
+            foreach (char c in romaji) {
+                if (!char.IsLetter(char.ToLower(c))) {
+                    return false;
+                }
+            }
+            
+            if (ROMAJI_KOREAN_MIDDLE_VOWELS_DICT.ContainsKey(romaji)) {
+                var separatedRomaji = SeparateRomaji(romaji);
+                
+                if (ROMAJI_KOREAN_FIRST_CONSONANTS_DICT.ContainsKey(separatedRomaji[0]) && 
+                   (separatedRomaji[2] == "" || ROMAJI_KOREAN_LAST_CONSONANTS_DICT.ContainsKey(separatedRomaji[2]))) {
+                    return true;
+                }    
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Separates complete hangeul string's first character in three parts - firstConsonant(초성), middleVowel(중성), lastConsonant(종성).
         /// <br/>입력된 문자열의 0번째 글자를 초성, 중성, 종성으로 분리합니다.
         /// </summary>
@@ -242,6 +277,48 @@ namespace OpenUtau.Core {
 
 
             return separatedHangeul;
+        }
+
+        /// <summary>
+        /// 
+        /// <br/> 입력된 한국어 로마자의 문자열을 로마자 표기 초성, 중성, 종성으로 분리합니다.
+        /// <br/> 올바르지 않은 표기법의 로마자가 들어오면 빈 문자열이 담긴 Length 3의 리스트를 반환합니다.
+        /// </summary>
+        /// <param name="character"> 
+        /// <br/>(Example: 'nyang') 
+        /// </param>
+        /// <returns>{firstConsonant(초성), middleVowel(중성), lastConsonant(종성)}
+        /// (ex) {"n", "ya", "ng"}
+        /// </returns>
+        public static string[] SeparateRomaji(string character) {
+            try {
+                string[] separatedCharacter = new string[0];
+                foreach (var vowel in ROMAJI_KOREAN_MIDDLE_VOWELS_DICT.Keys) {
+                    if (character.Contains(vowel)) {
+                        // 예시를 기준으로 변수 part는 {"n", "ng"}
+                        var part = character.Split(vowel);
+                        if (!(part[1] == "")) { // 글자에 초성, 중성, 종성이 전부 있는 경우
+                            separatedCharacter = new string[] { part[0], vowel, part[1] };
+                        } else if (part == new string[] {"", ""}) { // 글자에 중성만 존재하는 경우
+                            separatedCharacter = new string[] { "", vowel, "" };
+                        } else if (part.Length == 2) { // 글자에 초성, 중성만 존재 하는 경우
+                            separatedCharacter = new string[] { part[0], vowel, "" };
+                        }
+                    break;
+                }
+
+                if (separatedCharacter.Length == 0) { // 무엇도 해당하지 않을경우 빈 문자열 3개만 담음
+                    separatedCharacter = new string[] { "", "", ""};
+                }
+
+                return separatedCharacter;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "SeparateRomaji Method Error!");
+                return new string[] {"", "", ""};
+            }
+            
+            return new string[] {"", "", ""};
         }
 
         /// <summary>
