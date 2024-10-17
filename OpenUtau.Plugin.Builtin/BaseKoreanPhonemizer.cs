@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -298,6 +298,44 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes = phonemes
                 };
             } 
+            else if (!KoreanPhonemizerUtil.IsHangeul(lyric) && KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric) != null) { // TODO
+                notes[0] = new Note() {
+                    lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(lyric),
+                    phoneticHint = note.phoneticHint,
+                    position = note.position,
+                    duration = note.duration,
+                    tone = note.tone,
+                    phonemeAttributes = note.phonemeAttributes
+                };
+                Note? prevNoteNew = prevNeighbour;
+                Note? nextNoteNew = nextNeighbour;
+                if (KoreanPhonemizerUtil.IsHangeul(prevNote.Value.lyric) != null) {
+                    
+                    if (prevNote != null) {
+                        prevNoteNew = new Note() {
+                            lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(prevNote.Value.lyric),
+                            phoneticHint = prevNote.Value.phoneticHint,
+                            position = prevNote.Value.position,
+                            duration = prevNote.Value.duration,
+                            tone = prevNote.Value.tone,
+                            phonemeAttributes = prevNote.Value.phonemeAttributes
+                        };
+                    }
+                    if (nextNote != null) {
+                        nextNoteNew = new Note() {
+                            lyric = KoreanPhonemizerUtil.TryParseKoreanRomaji(nextNote.Value.lyric),
+                            phoneticHint = nextNote.Value.phoneticHint,
+                            position = nextNote.Value.position,
+                            duration = nextNote.Value.duration,
+                            tone = nextNote.Value.tone,
+                            phonemeAttributes = nextNote.Value.phonemeAttributes
+                        };
+
+                    }
+                    
+                }
+                return ConvertPhonemes(notes, prev, next, prevNoteNew, nextNoteNew, prevNeighbours);
+            }
             else if (KoreanPhonemizerUtil.IsHangeul(lyric) || !KoreanPhonemizerUtil.IsHangeul(lyric) && additionalTest(lyric)) {
                 return ConvertPhonemes(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             } 
