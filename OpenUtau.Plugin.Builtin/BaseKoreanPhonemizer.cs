@@ -180,7 +180,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="notes"></param>
         /// <param name="prevNote"></param>
-        /// <param name="noteNote></param>
+        /// <param name="nextNote"></param>
         /// <returns> ProcessResult? </returns>
         public static ProcessResult? ConvertRomajiNoteToHangeul(Note[] notes, Note? prevNote, Note? nextNote) {
             var note = notes[0];
@@ -232,44 +232,16 @@ namespace OpenUtau.Plugin.Builtin {
             return null;
         }
 
-        /// <summary>
-        /// Returns Result with three input Phonemes. 
+        // <summary>
         /// 
+        /// 발음 힌트를 분석하여 Result를 반환합니다.
         /// </summary>
-        /// <param name="firstPhoneme"></param>
-        /// <param name="secondPhoneme"></param>
-        /// <param name="thirdPhoneme"></param>
+        /// <param name="singer"></param>
+        /// <param name="note"></param>
         /// <param name="totalDuration"></param>
-        /// <param name="secondPhonemePosition"></param>
-        /// <param name="secondTotalDurationDivider"></param>
-        /// <param name="thirdTotalDurationDivider"></param>
-        /// <returns> Result  </returns>
-        public Result GenerateResult(String firstPhoneme, String secondPhoneme, String thirdPhoneme, int totalDuration, int secondTotalDurationDivider=3, int thirdTotalDurationDivider=8){
-            return new Result() {
-                phonemes = new Phoneme[] {
-                    new Phoneme { phoneme = firstPhoneme},
-                    new Phoneme { phoneme = secondPhoneme,
-                    position = totalDuration - totalDuration / secondTotalDurationDivider},
-                    new Phoneme { phoneme = thirdPhoneme,
-                    position = totalDuration - totalDuration / thirdTotalDurationDivider},
-                }// -음소 있이 이어줌
-            };
-        }
-        /// <summary>
-        /// <para> It AUTOMATICALLY generates phonemes based on phoneme hints (each phonemes should be separated by ",". (Example: [a, a i, ya])) </para>
-        /// <para> But it can't generate phonemes automatically, so should implement ConvertPhonemes() Method in child class. </para>
-        /// <para> Also it can't generate Endsounds automatically, so should implement GenerateEndSound() Method in child class.</para>
-        /// </summary>
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
-            Note note = notes[0];
-            string lyric = note.lyric;
-            string phoneticHint = note.phoneticHint;
-
-            Note? prevNote = prevNeighbour; // null or Note
-            Note thisNote = note;
-            Note? nextNote = nextNeighbour; // null or Note
-
-            int totalDuration = notes.Sum(n => n.duration);
+        /// <returns> Result? </returns>
+        public  Result? RenderPhoneticHint(USinger singer, Note note, int totalDuration) {
+            var phoneticHint = note.phoneticHint;
 
             if (phoneticHint != null) {
                 // if there are phonetic hint
@@ -361,7 +333,52 @@ namespace OpenUtau.Plugin.Builtin {
                 return new Result() {
                     phonemes = phonemes
                 };
-            } 
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns Result with three input Phonemes. 
+        /// 
+        /// </summary>
+        /// <param name="firstPhoneme"></param>
+        /// <param name="secondPhoneme"></param>
+        /// <param name="thirdPhoneme"></param>
+        /// <param name="totalDuration"></param>
+        /// <param name="secondPhonemePosition"></param>
+        /// <param name="secondTotalDurationDivider"></param>
+        /// <param name="thirdTotalDurationDivider"></param>
+        /// <returns> Result  </returns>
+        public Result GenerateResult(String firstPhoneme, String secondPhoneme, String thirdPhoneme, int totalDuration, int secondTotalDurationDivider=3, int thirdTotalDurationDivider=8){
+            return new Result() {
+                phonemes = new Phoneme[] {
+                    new Phoneme { phoneme = firstPhoneme},
+                    new Phoneme { phoneme = secondPhoneme,
+                    position = totalDuration - totalDuration / secondTotalDurationDivider},
+                    new Phoneme { phoneme = thirdPhoneme,
+                    position = totalDuration - totalDuration / thirdTotalDurationDivider},
+                }// -음소 있이 이어줌
+            };
+        }
+        /// <summary>
+        /// <para> It AUTOMATICALLY generates phonemes based on phoneme hints (each phonemes should be separated by ",". (Example: [a, a i, ya])) </para>
+        /// <para> But it can't generate phonemes automatically, so should implement ConvertPhonemes() Method in child class. </para>
+        /// <para> Also it can't generate Endsounds automatically, so should implement GenerateEndSound() Method in child class.</para>
+        /// </summary>
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
+            Note note = notes[0];
+            string lyric = note.lyric;
+
+            Note? prevNote = prevNeighbour; // null or Note
+            Note thisNote = note;
+            Note? nextNote = nextNeighbour; // null or Note
+
+            int totalDuration = notes.Sum(n => n.duration);
+
+            var phoneticHint = RenderPhoneticHint(singer, note, totalDuration);
+            if (phoneticHint != null) {
+                return (Result) phoneticHint;
+            }
 
             var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
             if (romaji2Korean != null) {
