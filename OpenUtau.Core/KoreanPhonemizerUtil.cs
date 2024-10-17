@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using OpenUtau.Classic;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
 using OpenUtau.Api;
+using System.Text;
 
 namespace OpenUtau.Core {
     /// <summary>
@@ -116,7 +117,8 @@ namespace OpenUtau.Core {
             {"bb", "ㅃ"},
             {"pp", "ㅃ"},
             {"ss", "ㅆ"},
-            {"jj", "ㅉ"}
+            {"jj", "ㅉ"},
+            {"", "ㅇ" }
         };
 
         /// <summary>
@@ -157,6 +159,7 @@ namespace OpenUtau.Core {
             {"m", "ㅁ"},
             {"p", "ㅂ"},
             {"ng", "ㅇ"},
+            {"", " " }
         };
 
         /// <summary>
@@ -194,9 +197,7 @@ namespace OpenUtau.Core {
         }
         /// <summary>
         /// 
-        /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인합니다.
-        /// <br/> 중성 -> 초성 -> 종성 순으로 로마자 표기와 동일하다면, 유효한 한국어 로마자로 판단합니다.
-        /// <br /> 문자열 중 로마자가 아닌 글자가 들어갈 경우, False를 반환합니다.
+        /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인하고, 유효할 경우 한국어로 변환합니다. 아닐 경우 null을 반환합니다.
         /// </summary>
         /// <param name="romaji"> 
         /// <br/>(Example: 'rin') 
@@ -204,26 +205,48 @@ namespace OpenUtau.Core {
         /// <returns> True / False
         /// (ex) True
         /// </returns>
-        public static bool IsKoreanRomaji(string? romaji) {
-            if (string.IsNullOrEmpty(romaji)) { return false; }
+        public static string? TryParseKoreanRomaji(string? romaji) {
             
-            // 모든 글자가 로마자인지 판별
-            foreach (char c in romaji) {
-                if (!char.IsLetter(char.ToLower(c))) {
-                    return false;
+            if (string.IsNullOrEmpty(romaji)) {
+                return null;
+            }
+            List<string> allRomajiHangeul = new List<string>();
+            List<string> allRomajiRomaji = new List<string>();
+            StringBuilder sb = new StringBuilder();
+            foreach (var first in ROMAJI_KOREAN_FIRST_CONSONANTS_DICT.Keys) {
+                foreach (var middle in ROMAJI_KOREAN_MIDDLE_VOWELS_DICT.Keys) {
+                    foreach (var last in ROMAJI_KOREAN_LAST_CONSONANTS_DICT.Keys) {
+                        sb.Clear();
+                        sb.Append(first);
+                        sb.Append(middle);
+                        sb.Append(last);
+                        allRomajiRomaji.Add(sb.ToString());
+                        sb.Clear();
+                        sb.Append(ROMAJI_KOREAN_FIRST_CONSONANTS_DICT[first]);
+                        sb.Append("\t");
+                        sb.Append(ROMAJI_KOREAN_MIDDLE_VOWELS_DICT[middle]);
+                        sb.Append("\t");
+                        sb.Append(ROMAJI_KOREAN_LAST_CONSONANTS_DICT[last]);
+                        allRomajiHangeul.Add(sb.ToString());
+
+                    }
                 }
             }
-            
-            if (ROMAJI_KOREAN_MIDDLE_VOWELS_DICT.ContainsKey(romaji)) {
-                var separatedRomaji = SeparateRomaji(romaji);
-                
-                if (ROMAJI_KOREAN_FIRST_CONSONANTS_DICT.ContainsKey(separatedRomaji[0]) && 
-                   (separatedRomaji[2] == "" || ROMAJI_KOREAN_LAST_CONSONANTS_DICT.ContainsKey(separatedRomaji[2]))) {
-                    return true;
-                }    
+
+            if (allRomajiRomaji.Contains(romaji)) {
+                string hangeul = allRomajiHangeul[allRomajiRomaji.IndexOf(romaji)];
+                Hashtable separated = new Hashtable() {
+                    [0] = hangeul.Split("\t")[0].ToString(),
+                    [1] = hangeul.Split("\t")[1].ToString(),
+                    [2] = hangeul.Split("\t")[2].ToString()
+                };
+                string result = Merge(separated);
+                Log.Debug("Korean Romaji Parsed: " + romaji + " -> " + result);
+                return result;
+            } else {
+                return null;
             }
 
-            return false;
         }
 
         /// <summary>
@@ -346,7 +369,7 @@ namespace OpenUtau.Core {
             int mergedCode = HANGEUL_UNICODE_START + (firstConsonantIndex * 21 + middleVowelIndex) * 28 + lastConsonantIndex;
             
             string result = Convert.ToChar(mergedCode).ToString();
-            Debug.Print("Hangeul merged: " + $"{firstConsonant} + {middleVowel} + {lastConsonant} = " + result);
+            //Debug.Print("Hangeul merged: " + $"{firstConsonant} + {middleVowel} + {lastConsonant} = " + result);
             return result;
         }
 
