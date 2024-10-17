@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Melanchall.DryWetMidi.MusicTheory;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -294,11 +295,28 @@ namespace OpenUtau.Plugin.Builtin {
 
             int totalDuration = notes.Sum(n => n.duration);
             int vcLength = 120;
+            
+            var phoneticHint = RenderPhoneticHint(singer, notes[0], totalDuration);
+            if (phoneticHint != null) {
+                return (Result) phoneticHint;
+            }
+
+            var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
+            if (romaji2Korean != null) {
+                notes = romaji2Korean.KoreanLryicNotes;
+                prevNeighbour = romaji2Korean.KoreanLryicPrevNote;
+                nextNeighbour = romaji2Korean.KoreanLryicNextNote;
+                
+                prevLyric = prevNeighbour?.lyric;
+                nextLyric = nextNeighbour?.lyric;
+            } 
+
 
             List<Phoneme> phonemesArr = new List<Phoneme>();
 
             var currentLyric = notes[0].lyric;
             currentKoreanLyrics = SeparateHangul(currentLyric != null ? currentLyric[0] : '\0');
+
 
             if (currentLyric[0] >= '가' && currentLyric[0] <= '힣') {
 
