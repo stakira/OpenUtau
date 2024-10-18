@@ -176,7 +176,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         // <summary>
-        /// 
+        /// The Romanized lyrics will be completely converted to Hangul.
         /// 로마자 가사들을 전부 한글로 바꿔줍니다.
         /// </summary>
         /// <param name="notes"></param>
@@ -234,7 +234,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         // <summary>
-        /// 
+        /// It analyzes the phonetic hint and returns the result.
         /// 발음 힌트를 분석하여 Result를 반환합니다.
         /// </summary>
         /// <param name="singer"></param>
