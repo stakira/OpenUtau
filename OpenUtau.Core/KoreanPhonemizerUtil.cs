@@ -198,7 +198,7 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// 
+        /// It checks if the input string is valid Korean Romanization.
         /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인합니다.
         /// </summary>
         /// <param name="lyric"> 
@@ -214,7 +214,7 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// 
+        /// It checks if the input string is valid Korean Romanization, converts it to Korean if valid, and returns null if not.
         /// <br/> 입력된 문자열이 유효한 표기의 한국어 로마자인지 확인하고, 유효할 경우 한국어로 변환합니다. 아닐 경우 null을 반환합니다.
         /// </summary>
         /// <param name="romaji"> 
@@ -321,7 +321,8 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// 
+        /// It separates the input Korean Romanized string into initial consonant, medial vowel, and final consonant.
+        /// <br/> If the Romanized string contains incorrect notation, it returns a list of length 3 filled with empty strings.
         /// <br/> 입력된 한국어 로마자의 문자열을 로마자 표기 초성, 중성, 종성으로 분리합니다.
         /// <br/> 올바르지 않은 표기법의 로마자가 들어오면 빈 문자열이 담긴 Length 3의 리스트를 반환합니다.
         /// </summary>
