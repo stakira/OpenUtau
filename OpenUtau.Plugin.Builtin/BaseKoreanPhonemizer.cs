@@ -34,7 +34,8 @@ namespace OpenUtau.Plugin.Builtin {
             // nullIfNotFound가 true이면 음소가 찾아지지 않을 때 음소가 아닌 null을 리턴한다.
             // nullIfNotFound가 false면 음소가 찾아지지 않을 때 그대로 음소를 반환
             string phonemeToReturn;
-            string color = string.Empty;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            string color = attr.voiceColor ?? string.Empty;
             int toneShift = 0;
             int? alt = null;
             if (phoneme.Equals("")) {return phoneme;}
