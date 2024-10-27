@@ -14,7 +14,7 @@ namespace OpenUtau.Core.DiffSinger
         };
 
         protected override string[] GetBaseG2pConsonants() => new string[] {
-            "y", "w", "f", "k", "p", "s", "sh", "t", "h", "b", "d", "g", "l",
+            "y", "w", "uy", "f", "k", "p", "s", "sh", "t", "h", "b", "d", "g", "l",
             "m", "n", "r", "v", "z", "j", "ng", "q"
         };
     }
