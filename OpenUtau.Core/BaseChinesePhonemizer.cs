@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using IKg2p;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Pinyin;
 
 namespace OpenUtau.Core {
     public abstract class BaseChinesePhonemizer : Phonemizer {
@@ -22,16 +22,15 @@ namespace OpenUtau.Core {
         public static string[] Romanize(IEnumerable<string> lyrics) {
             var lyricsArray = lyrics.ToArray();
             var hanziLyrics = lyricsArray
-                .Where(ZhG2p.MandarinInstance.IsHanzi)
+                .Where(Pinyin.Pinyin.Instance.IsHanzi)
                 .ToList();
-            List<G2pRes> g2pResults = ZhG2p.MandarinInstance.Convert(hanziLyrics.ToList(), false, false);
-            var pinyinResult = g2pResults.Select(res => res.syllable).ToArray();
+            var pinyinResult = Pinyin.Pinyin.Instance.HanziToPinyin(hanziLyrics, ManTone.Style.NORMAL, Pinyin.Error.Default, false, false, false).ToStrList();
             if (pinyinResult == null) {
                 return lyricsArray;
             }
             var pinyinIndex = 0;
             for (int i = 0; i < lyricsArray.Length; i++) {
-                if (lyricsArray[i].Length == 1 && ZhG2p.MandarinInstance.IsHanzi(lyricsArray[i])) {
+                if (lyricsArray[i].Length == 1 && Pinyin.Pinyin.Instance.IsHanzi(lyricsArray[i])) {
                     lyricsArray[i] = pinyinResult[pinyinIndex];
                     pinyinIndex++;
                 }

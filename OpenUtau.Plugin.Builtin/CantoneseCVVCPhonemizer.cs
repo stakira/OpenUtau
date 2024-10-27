@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using IKg2p;
 using OpenUtau.Api;
+using Pinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -12,8 +12,7 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Cantonese CVVC Phonemizer", "ZH-YUE CVVC", "Lotte V", language: "ZH-YUE")]
     public class CantoneseCVVCPhonemizer : ChineseCVVCPhonemizer {
         protected override string[] Romanize(IEnumerable<string> lyrics) {
-            List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyrics.ToList(), false, false);
-            return g2pResults.Select(res => res.syllable).ToArray();
+            return Pinyin.Jyutping.Instance.HanziToPinyin(lyrics.ToList(), CanTone.Style.NORMAL, Pinyin.Error.Default).Select(res => res.pinyin).ToArray();
         }
     }
 }
