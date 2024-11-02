@@ -128,17 +128,22 @@ namespace OpenUtau.Core {
         /// <br/>로마자의 길이 순으로 정렬 되어 있습니다.
         /// </summary>
         public static readonly Dictionary<String, String> ROMAJI_KOREAN_MIDDLE_VOWELS_DICT = new Dictionary<String, String>() {
+            {"yae", "ㅒ"},
             {"yeo", "ㅕ"},
+            {"wae", "ㅙ"},
             {"weo", "ㅝ"},
             {"eui", "ㅢ"},
             {"ui", "ㅢ"},
             {"wa", "ㅘ"},
+            {"oe", "ㅚ"},
+            {"wo", "ㅝ"},
             {"wi", "ㅟ"},
-            {"we", "ㅙ"},
+            {"we", "ㅞ"},
             {"ya", "ㅑ"},
             {"yu", "ㅠ"},
             {"ye", "ㅖ"},
             {"yo", "ㅛ"},
+            {"ae", "ㅐ"},
             {"eu", "ㅡ"},
             {"eo", "ㅓ"},
             {"a", "ㅏ"},
