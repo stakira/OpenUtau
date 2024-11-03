@@ -27,7 +27,7 @@
         </ListBox.Styles>
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <DockPanel Margin="0" Width="360" Background="Transparent" PointerPressed="ListBox_PointerPressed">
+            <DockPanel Margin="0" Width="360" Background="Transparent" PointerPressed="ListBox_PointerPressed" ToolTip.Tip="{Binding Source}">
               <TextBlock Margin="4" DockPanel.Dock="Left" IsHitTestVisible="False" Text="{Binding Alias}"/>
               <TextBlock Margin="4" DockPanel.Dock="Right" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" IsHitTestVisible="False" FontSize="10" VerticalAlignment="Center" Text="{Binding Source}"/>
             </DockPanel>
