@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
     // This is a temporary solution until Cz's comes out with their own.
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
-    // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and AnAndroNerd for their help.
+    // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and Anjo for their help.
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
@@ -326,7 +326,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (phonemes.Count == 0) {
                             // opera [9 p] + [pr] + [_ru]
                             parsingCC = $"{cc[0]}{cc[1]}";
-                            if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ucvCs.Contains($"{cc[1]}")) {
+                            if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ucvCs.Contains($"{cc[1]}") && parsingCC != "rl" ) {
                                 parsingVCC = $"{prevV} {cc[0]}";
 
                                 basePhoneme = $"_{cc.Last()}{v}";
