@@ -328,7 +328,8 @@ namespace OpenUtau.Core.Editing {
             int finished = 0;
             setProgressCallback(0, phrases.Length);
             var commands = new List<SetCurveCommand>();
-            foreach (var phrase in phrases) {
+            for (int ph_i = phrases.Count() - 1; ph_i >= 0; ph_i--) {
+                var phrase = phrases[ph_i];
                 var result = renderer.LoadRenderedPitch(phrase);
                 if (result == null) {
                     continue;
@@ -342,6 +343,12 @@ namespace OpenUtau.Core.Editing {
                         continue;
                     }
                     int x = phrase.position - part.position + (int)result.ticks[i];
+                    if (x < phrase.position) {
+                        continue;
+                    }
+                    if (x >= phrase.position + phrase.duration) {
+                        i = result.tones.Length - 1;
+                    }
                     int pitchIndex = Math.Clamp((x - (phrase.position - part.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
                     float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
                     int y = (int)(result.tones[i] * 100 - basePitch);
