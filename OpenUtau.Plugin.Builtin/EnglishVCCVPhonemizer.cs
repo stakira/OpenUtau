@@ -96,6 +96,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"skw","sk"},
                 {"sky","sk"},
                 {"spy","sp"},
+                {"skt","sk"},
             };
         //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
