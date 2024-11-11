@@ -120,6 +120,15 @@ namespace OpenUtau.Api {
 
             public Builder Load(string input) {
                 var data = Core.Yaml.DefaultDeserializer.Deserialize<G2pDictionaryData>(input);
+                return Load(data);
+            }
+
+            public Builder Load(TextReader textReader) {
+                var data = Core.Yaml.DefaultDeserializer.Deserialize<G2pDictionaryData>(textReader);
+                return Load(data);
+            }
+
+            public Builder Load(G2pDictionaryData data){
                 if (data.symbols != null) {
                     foreach (var symbolData in data.symbols) {
                         AddSymbol(symbolData.symbol, symbolData.type);
@@ -129,17 +138,6 @@ namespace OpenUtau.Api {
                     foreach (var entry in data.entries) {
                         AddEntry(entry.grapheme, entry.phonemes);
                     }
-                }
-                return this;
-            }
-
-            public Builder Load(TextReader textReader) {
-                var data = Core.Yaml.DefaultDeserializer.Deserialize<G2pDictionaryData>(textReader);
-                foreach (var symbolData in data.symbols) {
-                    AddSymbol(symbolData.symbol, symbolData.type);
-                }
-                foreach (var entry in data.entries) {
-                    AddEntry(entry.grapheme, entry.phonemes);
                 }
                 return this;
             }

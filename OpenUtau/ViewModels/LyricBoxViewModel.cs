@@ -7,7 +7,6 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using WanaKanaNet;
 
 namespace OpenUtau.App.ViewModels {
     class LyricBoxViewModel : ViewModelBase {
@@ -19,7 +18,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public LyricBoxNoteOrPhoneme? NoteOrPhoneme { get; set; }
         [Reactive] public bool IsVisible { get; set; }
-        [Reactive] public string Text { get; set; }
+        [Reactive] public string? Text { get; set; }
         [Reactive] public SuggestionItem? SelectedSuggestion { get; set; }
         [Reactive] public ObservableCollectionExtended<SuggestionItem> Suggestions { get; set; }
 
@@ -55,9 +54,9 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            Task.Run(() => singer.GetSuggestions(Text).Select(oto => new SuggestionItem() {
+            Task.Run(() => singer.GetSuggestions(Text ?? "").Select(oto => new SuggestionItem() {
                 Alias = oto.Alias,
-                Source = string.IsNullOrEmpty(oto.Set) ? singer.Id : $"{singer.Id} / {oto.Set}",
+                Source = string.IsNullOrEmpty(oto.Set) ? singer.Id : $"{oto.Set}",
             }).Take(32).ToList()).ContinueWith(task => {
                 Suggestions.Clear();
                 if (!string.IsNullOrEmpty(Text) && Core.Util.ActiveLyricsHelper.Inst.Current != null) {
@@ -77,7 +76,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Commit() {
-            if (Part == null || NoteOrPhoneme == null) {
+            if (Part == null || NoteOrPhoneme == null || Text == null) {
                 return;
             }
             if (!IsAliasBox) {
