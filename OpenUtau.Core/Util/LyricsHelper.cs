@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IKg2p;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using Pinyin;
 
 namespace OpenUtau.Core.Util {
     public interface ILyricsHelper {
@@ -39,12 +39,15 @@ namespace OpenUtau.Core.Util {
             typeof(ArpabetG2pLyricsHelper),
             typeof(ArpabetPlusG2pLyricsHelper),
             typeof(FrenchG2pLyricsHelper),
+            typeof(FrenchMillefeuilleG2pLyricsHelper),
             typeof(GermanG2pLyricsHelper),
+            typeof(GermanMarzipanG2pLyricsHelper),
             typeof(ItalianG2pLyricsHelper),
             typeof(PortugueseG2pLyricsHelper),
             typeof(RussianG2pLyricsHelper),
             typeof(SpanishG2pLyricsHelper),
             typeof(KoreanG2pLyricsHelper),
+            typeof(ThaiG2pLyricsHelper),
         };
     }
 
@@ -58,14 +61,16 @@ namespace OpenUtau.Core.Util {
     public class PinyinLyricsHelper : ILyricsHelper {
         public string Source => "汉->han";
         public string Convert(string lyric) {
-            return Pinyin.Pinyin.Instance.GetDefaultPinyin(lyric, ManTone.Style.NORMAL, false, false).ToArray()[0];
+            List<G2pRes> g2pResults = ZhG2p.MandarinInstance.Convert(lyric, false, true);
+            return g2pResults.Select(res => res.syllable).ToArray()[0];
         }
     }
 
     public class JyutpingLyricsHelper : ILyricsHelper {
         public string Source => "粤->jyut";
         public string Convert(string lyric) {
-            return Pinyin.Jyutping.Instance.GetDefaultPinyin(lyric, CanTone.Style.NORMAL).ToArray()[0];
+            List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyric, false, true);
+            return g2pResults.Select(res => res.syllable).ToArray()[0];
         }
     }
 
@@ -94,9 +99,15 @@ namespace OpenUtau.Core.Util {
     public class FrenchG2pLyricsHelper : G2pLyricsHelper {
         public FrenchG2pLyricsHelper() : base(new FrenchG2p()) { }
     }
+    public class FrenchMillefeuilleG2pLyricsHelper : G2pLyricsHelper {
+        public FrenchMillefeuilleG2pLyricsHelper() : base(new FrenchMillefeuilleG2p()) { }
+    }
 
     public class GermanG2pLyricsHelper : G2pLyricsHelper {
         public GermanG2pLyricsHelper() : base(new GermanG2p()) { }
+    }
+    public class GermanMarzipanG2pLyricsHelper : G2pLyricsHelper {
+        public GermanMarzipanG2pLyricsHelper() : base(new GermanMarzipanG2p()) { }
     }
 
     public class ItalianG2pLyricsHelper : G2pLyricsHelper {
@@ -118,5 +129,8 @@ namespace OpenUtau.Core.Util {
     public class KoreanG2pLyricsHelper : G2pLyricsHelper {
         public KoreanG2pLyricsHelper() : base(new KoreanG2p()) { }
     }
-}
 
+    public class ThaiG2pLyricsHelper : G2pLyricsHelper {
+        public ThaiG2pLyricsHelper() : base(new ThaiG2p()) { }
+    }
+}
