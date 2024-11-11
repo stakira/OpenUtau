@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
@@ -46,19 +47,28 @@ namespace OpenUtau.Core.DiffSinger {
 
                 // Check for "n dx" sequence and replace it with "n"
                 // the actual phoneme for this is "nx" like (winner [w ih nx er])
-                if (i < phonemes.Count - 1 && tu.Item1 == langCode + "n" && phonemes[i + 1].Item1 == langCode + "dx") {
+                if (i < phonemes.Count - 1 && tu.Item1 == langCode + "n" && HasPhoneme(langCode + "n") && phonemes[i + 1].Item1 == langCode + "dx" && HasPhoneme(langCode + "dx")) {
+                    // If phoneme "n" and "dx" exist, process "n" and skip "dx"
                     processedPhonemes.Add(new Phoneme() {
                         phoneme = langCode + "n",
                         position = tu.Item2
                     });
-                    // Skip the next phoneme ("dx")
+                    i++; // Skip next phoneme
+                } else if (i < phonemes.Count - 1 && tu.Item1 == "n" && HasPhoneme("n") && phonemes[i + 1].Item1 == "dx" && HasPhoneme("dx") && !HasPhoneme(langCode + "n") && !HasPhoneme(langCode + "dx")) {
+                    // If phoneme "n" and "dx" exist, but language-specific "n" and "dx" don't exist, process "n"
+                    processedPhonemes.Add(new Phoneme() {
+                        phoneme = "n",
+                        position = tu.Item2
+                    });
                     i++;
                 } else if (ShouldReplacePhoneme(tu.Item1, prev, next, prevNeighbour, nextNeighbour, out string replacement)) {
+                    // If phoneme should be replaced, process the replacement
                     processedPhonemes.Add(new Phoneme() {
                         phoneme = replacement,
                         position = tu.Item2
                     });
                 } else {
+                    // If no conditions are met, just add the current phoneme
                     processedPhonemes.Add(new Phoneme() {
                         phoneme = tu.Item1,
                         position = tu.Item2
@@ -70,51 +80,44 @@ namespace OpenUtau.Core.DiffSinger {
             };
         }
 
-        // Method to determine if a phoneme should be replaced based on specific conditions
         private bool ShouldReplacePhoneme(string phoneme, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, out string replacement) {
             replacement = phoneme;
             var langCode = GetLangCode() + "/";
 
-            if (phoneme == langCode + "q" || phoneme == "cl") {
-                // Vocal fry the vowel if the prevNeighbour is null
+            if ((phoneme == langCode + "cl" || !HasPhoneme("q")) && HasPhoneme("vf")) {
                 if (!prevNeighbour.HasValue || string.IsNullOrWhiteSpace(prevNeighbour.Value.lyric)) {
                     replacement = "vf";
                     return true;
                 }
             }
-
-            if (phoneme == langCode + "q")  {
-                // Replace "q" with "cl"
+            if ((phoneme == langCode + "q" || phoneme == "q") && HasPhoneme("vf")) {
+                if (!prevNeighbour.HasValue || string.IsNullOrWhiteSpace(prevNeighbour.Value.lyric)) {
+                    replacement = "vf";
+                    return true;
+                }
+            }
+            if ((phoneme == langCode + "q" || phoneme == "q") && HasPhoneme("cl")) {
                 replacement = "cl";
                 return true;
             }
-            
-            // (doesn't work currently) Automatic relaxed consonants: replace "t" or "d" with "dx" if nextNeighbour is a vowel
-            if ((phoneme == langCode + "t" || phoneme == langCode + "d") && nextNeighbour.HasValue && IsVowel(nextNeighbour.Value)) {
-                replacement = langCode + "dx";
+            if (phoneme == langCode + "q" && !HasPhoneme("cl")) {
+                replacement = "q";
                 return true;
             }
-            return false;
+            if (phoneme == langCode + "q" && !HasPhoneme("cl") && HasPhoneme(langCode + "q")) {
+                replacement = langCode + "q";  // Keep the language-specific "q"
+                return true;
+            }
+            if (phoneme == "ax" && !HasPhoneme("ax")) {
+                return true;
+            }
+            if (phoneme == langCode + "ax" && !HasPhoneme(langCode + "ax")) {
+                replacement = langCode + "ah";  // Replace language-specific "ax" with "ah"
+                return true;
+            }
+
+            return false; 
         }
 
-        // Method to check if a phoneme is a vowel
-        private bool IsVowel(Note note) {
-            // Retrieve the language code and vowel list
-            var langCode = GetLangCode();
-            string[] baseVowels = GetBaseG2pVowels();
-
-            // Create the full list of vowel phonemes with language code
-            string[] vowels = baseVowels.Select(vowel => $"{langCode}/{vowel}").ToArray();
-
-            // Combine langCode and note.lyric to get the phoneme to check
-            string phonemeToCheck = $"{langCode}/{note.lyric}";
-
-            // Log the phoneme being checked and the list of vowels
-            Log.Debug($"IsVowel: Checking phoneme={phonemeToCheck}");
-            Log.Debug($"IsVowel: Available vowels={string.Join(", ", vowels)}");
-
-            // Check if the phonemeToCheck is in the list of vowels
-            return vowels.Contains(phonemeToCheck);
-        }
     }
 }
