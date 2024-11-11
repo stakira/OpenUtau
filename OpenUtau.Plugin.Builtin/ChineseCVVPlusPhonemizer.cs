@@ -152,7 +152,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// Phonemizer
     /// </summary>
-    [Phonemizer("Chinese CVV Plus Phonemizer", "ZH CVV+", "2xxbin", language: "ZH")]
+    [Phonemizer("Chinese CVV Plus Phonemizer", "ZH CVV+", "2xxbin", language: "UTAU")]
     public class ChineseCVVPlusPhonemizer : BaseChinesePhonemizer {
         private USinger? singer;
         /// <summary>
