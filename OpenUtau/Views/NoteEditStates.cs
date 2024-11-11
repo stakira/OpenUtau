@@ -1012,7 +1012,7 @@ namespace OpenUtau.App.Views {
             var project = notesVm.Project;
             double preutter = project.timeAxis.MsBetweenTickPos(notesVm.PointToTick(point), phoneme.position);
             double preutterDelta = preutter - phoneme.autoPreutter;
-            preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
+            preutterDelta = Math.Max(-phoneme.oto?.Preutter ?? 0, preutterDelta);
             if (notesVm.Part == null) {
                 return;
             }
