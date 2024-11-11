@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IKg2p;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using Pinyin;
 
 namespace OpenUtau.Core.Util {
     public interface ILyricsHelper {
@@ -58,16 +58,14 @@ namespace OpenUtau.Core.Util {
     public class PinyinLyricsHelper : ILyricsHelper {
         public string Source => "汉->han";
         public string Convert(string lyric) {
-            List<G2pRes> g2pResults = ZhG2p.MandarinInstance.Convert(lyric, false, true);
-            return g2pResults.Select(res => res.syllable).ToArray()[0];
+            return Pinyin.Pinyin.Instance.GetDefaultPinyin(lyric, ManTone.Style.NORMAL, false, false).ToArray()[0];
         }
     }
 
     public class JyutpingLyricsHelper : ILyricsHelper {
         public string Source => "粤->jyut";
         public string Convert(string lyric) {
-            List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(lyric, false, true);
-            return g2pResults.Select(res => res.syllable).ToArray()[0];
+            return Pinyin.Jyutping.Instance.GetDefaultPinyin(lyric, CanTone.Style.NORMAL).ToArray()[0];
         }
     }
 

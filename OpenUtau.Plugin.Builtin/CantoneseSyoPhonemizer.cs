@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using IKg2p;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Pinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -286,16 +286,15 @@ namespace OpenUtau.Plugin.Builtin {
             public static string[] Romanize(IEnumerable<string> lyrics) {
                 var lyricsArray = lyrics.ToArray();
                 var hanziLyrics = lyricsArray
-                    .Where(ZhG2p.CantoneseInstance.IsHanzi)
+                    .Where(Pinyin.Jyutping.Instance.IsHanzi)
                     .ToList();
-                List<G2pRes> g2pResults = ZhG2p.CantoneseInstance.Convert(hanziLyrics.ToList(), false, false);
-                var jyutpingResult = g2pResults.Select(res => res.syllable).ToArray();
+                var jyutpingResult = Pinyin.Jyutping.Instance.HanziToPinyin(hanziLyrics, CanTone.Style.NORMAL, Pinyin.Error.Default).ToStrList();
                 if (jyutpingResult == null) {
                     return lyricsArray;
                 }
                 var jyutpingIndex = 0;
                 for (int i = 0; i < lyricsArray.Length; i++) {
-                    if (lyricsArray[i].Length == 1 && ZhG2p.CantoneseInstance.IsHanzi(lyricsArray[i])) {
+                    if (lyricsArray[i].Length == 1 && Pinyin.Jyutping.Instance.IsHanzi(lyricsArray[i])) {
                         lyricsArray[i] = jyutpingResult[jyutpingIndex];
                         jyutpingIndex++;
                     }

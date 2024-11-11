@@ -169,6 +169,7 @@ namespace OpenUtau.Plugin.Builtin {
             string currentLyric = note.lyric; // 현재 가사
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            int totalDuration = notes.Sum(n => n.duration);
 
             // 가사의 초성, 중성, 종성 분리
             // P(re)Lconsonant, PLvowel, PLfinal / C(urrent)Lconsonant, CLvowel, CLfinal / N(ext)Lconsonant, NLvowel, NLfinal
@@ -212,6 +213,11 @@ namespace OpenUtau.Plugin.Builtin {
             int lCL, lPL, lNL;
             int uCL, uPL, uNL;
             lCL = 0; lPL = 0; lNL = 0;
+
+            var phoneticHint = RenderPhoneticHint(singer, notes[0], totalDuration);
+            if (phoneticHint != null) {
+                return (Result) phoneticHint;
+            }
 
 
             // 현재 노트 첫번째 글자 확인
@@ -583,7 +589,6 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // 만약 받침이 있다면
                 if (FC != "") {
-                    int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
                     if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { fcLength = totalDuration / 2; }
 
@@ -610,7 +615,6 @@ namespace OpenUtau.Plugin.Builtin {
                     // 뒤에 노트가 있다면
                     if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = TCLplainvowel + "l"; } }
                     if ((VC != "") && (TNLconsonant != "")) {
-                        int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
                         if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
                         else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
@@ -634,7 +638,6 @@ namespace OpenUtau.Plugin.Builtin {
                             };
                         }
                     } else if (VC != "" && TNLconsonant == "") {
-                        int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
                         var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                         var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
@@ -886,8 +889,7 @@ namespace OpenUtau.Plugin.Builtin {
                         },
                     };
                 }
-
-                int totalDuration = notes.Sum(n => n.duration);
+                
                 int vcLength = 60;
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {

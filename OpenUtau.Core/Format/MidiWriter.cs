@@ -188,7 +188,8 @@ namespace OpenUtau.Core.Format {
                         var events = objectsManager.Objects;
                         //{position of lyric: lyric text}
                         Dictionary<long, string> lyrics = events.Where(e => e.Event is LyricEvent)
-                            .ToDictionary(e=> e.Time, e => ((LyricEvent)e.Event).Text);
+                            .GroupBy(e => e.Time)
+                            .ToDictionary(g=> g.Key, g => ((LyricEvent)g.First().Event).Text);
                         var trackName = events.Where(e => e.Event is SequenceTrackNameEvent)
                             .Select(e => ((SequenceTrackNameEvent)e.Event).Text).FirstOrDefault();
                         if (trackName != null) {
