@@ -10,8 +10,8 @@
   <ItemGroup>
     <PackageReference Include="BunLabs.NAudio.Flac" Version="2.0.1" />
     <PackageReference Include="Concentus.OggFile" Version="1.0.4" />
+    <PackageReference Include="csharp-pinyin" Version="1.0.0" />
     <PackageReference Include="Ignore" Version="0.1.50" />
-    <PackageReference Include="IkG2p" Version="1.0.6" />
     <PackageReference Include="K4os.Hash.xxHash" Version="1.0.8" />
     <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.2" />
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
@@ -25,6 +25,7 @@
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
     <PackageReference Include="Vortice.DXGI" Version="2.4.2" />
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
