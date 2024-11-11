@@ -305,7 +305,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
                         Log.Warning($"Subword '{subword}' from word '{note.lyric}' can't be found in the dictionary");
-                        subResult = HandleWordNotFound(subword);
+                        subResult = HandleWordNotFound(note);
                         if (subResult == null) {
                             return null;
                         }
@@ -491,8 +491,17 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        protected virtual string[] HandleWordNotFound(string word) {
-            error = "word not found";
+        protected virtual string[] HandleWordNotFound(Note note) {
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            string alt = attr.alternate?.ToString() ?? string.Empty;
+            string color = attr.voiceColor;
+            int toneShift = attr.toneShift;
+            var mpdlyric = MapPhoneme(note.lyric, note.tone + toneShift, color, alt, singer);
+            if(HasOto(mpdlyric, note.tone)){
+                error = mpdlyric;
+            }else{
+                error = "word not found";
+            }
             return null;
         }
 
