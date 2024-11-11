@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -117,8 +118,14 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref expression, value);
         }
 
+        public List<ExpressionBuilder>? SelectExpressions {
+            get => selectexpressions;
+            set => this.RaiseAndSetIfChanged(ref selectexpressions, value);
+        }
+
         private ReadOnlyObservableCollection<ExpressionBuilder> expressions;
         private ExpressionBuilder? expression;
+        private List<ExpressionBuilder>? selectexpressions;
 
         private ObservableCollectionExtended<ExpressionBuilder> expressionsSource;
 
@@ -130,6 +137,7 @@ namespace OpenUtau.App.ViewModels {
             expressionsSource.AddRange(DocManager.Inst.Project.expressions.Select(pair => new ExpressionBuilder(pair.Value)));
             if (expressionsSource.Count > 0) {
                 expression = expressionsSource[0];
+                selectexpressions = expressionsSource.ToList();
             }
         }
 
@@ -160,7 +168,13 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Remove() {
-            if (Expression != null) {
+            if (SelectExpressions != null) {
+                foreach (var expression in SelectExpressions) {
+                    if (expression.IsCustom) {
+                        expressionsSource.Remove(expression);
+                    }
+                }
+            } else if (Expression != null) {
                 expressionsSource.Remove(Expression);
             }
         }
