@@ -14,12 +14,20 @@ using static OpenUtau.Api.Phonemizer;
  */
 
 namespace OpenUtau.Core.Voicevox {
+
+    public struct VoicevoxNote {
+        public string lyric;
+        public double positionMs;
+        public double durationMs;
+        public int tone;
+    }
+
     public class Phonemes {
         public string phoneme;
         public int frame_length;
 
     }
-    public class VoicevoxNote {
+    public class VoicevoxNotes {
         public List<double> f0 = new List<double>();
         public List<double> volume = new List<double>();
         public List<Phonemes> phonemes = new List<Phonemes>();
@@ -97,14 +105,14 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
-        public string Notetodic(Note[][] notes, int index) {
-            if (dict.TryGetValue(notes[index][0].lyric, out var lyric_)) {
+        public string Notetodic(VoicevoxNote[] notes, int index) {
+            if (dict.TryGetValue(notes[index].lyric, out var lyric_)) {
                 if (string.IsNullOrEmpty(lyric_)) {
                     return "";
                 }
                 return lyric_;
             }
-            return notes[index][0].lyric;
+            return notes[index].lyric;
         }
 
         public string Lyrictodic(string lyric) {
@@ -132,28 +140,28 @@ namespace OpenUtau.Core.Voicevox {
         public static Dictionary_list dic = new Dictionary_list();
         public static Phoneme_list phoneme_List = new Phoneme_list();
 
-        public static VoicevoxNote VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
+        public static VoicevoxNotes VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
-            VoicevoxNote configs;
+            VoicevoxNotes vvNotes;
             var jObj = JObject.Parse(response.Item1);
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
             } else {
-                configs = jObj.ToObject<VoicevoxNote>();
-                return configs;
+                vvNotes = jObj.ToObject<VoicevoxNotes>();
+                return vvNotes;
             }
-            return new VoicevoxNote();
+            return new VoicevoxNotes();
         }
 
         public static void Loaddic(VoicevoxSinger singer) {
             dic.Loaddic(singer.Location);
         }
 
-        public static VoicevoxQueryMain NoteGroupsToVoicevox(Note[][] notes, TimeAxis timeAxis) {
+        public static VoicevoxQueryMain NoteGroupsToVoicevox(VoicevoxNote[] notes, TimeAxis timeAxis) {
             VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
             int index = 0;
-            int duration = 0;
+            double durationMs = 0;
             try {
                 qnotes.notes.Add(new VoicevoxQueryNotes() {
                     lyric = "",
@@ -161,25 +169,17 @@ namespace OpenUtau.Core.Voicevox {
                     key = null,
                     vqnindex = -1
                 });
-                duration = notes[index][0].position + notes[index][0].duration;
+                durationMs = notes[index].positionMs + notes[index].durationMs;
                 while (index < notes.Length) {
                     string lyric = dic.Notetodic(notes, index);
-                    int length = (int)Math.Round(((timeAxis.TickPosToMsPos(notes[index].Sum(n => n.duration)) / 1000f) * VoicevoxUtils.fps), MidpointRounding.AwayFromZero);
+                    int length = (int)Math.Round((notes[index].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
                     if (length < 2) {
                         length = 2;
                     }
                     int? tone = null;
                     if (!string.IsNullOrEmpty(lyric)) {
-                        if (notes[index][0].phonemeAttributes != null) {
-                            if (notes[index][0].phonemeAttributes.Length > 0) {
-                                tone = notes[index][0].tone + notes[index][0].phonemeAttributes[0].toneShift;
-                            } else {
-                                tone = notes[index][0].tone;
-                            }
-                        } else {
-                            tone = notes[index][0].tone;
-                        }
+                        tone = notes[index].tone;
                     } else {
                         lyric = "";
                     }
@@ -189,7 +189,7 @@ namespace OpenUtau.Core.Voicevox {
                         key = tone,
                         vqnindex = index
                     });
-                    duration += notes[index][0].duration;
+                    durationMs += notes[index].durationMs;
                     index++;
                 }
                 qnotes.notes.Add(new VoicevoxQueryNotes {

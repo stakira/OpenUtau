@@ -62,9 +62,7 @@ SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateDirectory "$SMPROGRAMS\OpenUtau"
-  CreateShortCut "$SMPROGRAMS\OpenUtau\OpenUtau.lnk" "$INSTDIR\OpenUtau.exe"
-  CreateShortCut "$SMPROGRAMS\OpenUtau\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\OpenUtau.lnk" "$INSTDIR\OpenUtau.exe"
 SectionEnd
 
 Section -Post
@@ -76,6 +74,7 @@ Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\OpenUtau.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -109,7 +108,7 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\*"
 
-  Delete "$SMPROGRAMS\OpenUtau\Uninstall.lnk"
+  Delete "$SMPROGRAMS\OpenUtau.lnk"
 
   DeleteRegKey HKCR ".ustx"
   DeleteRegKey HKCR "OpenUtauFile\DefaultIcon"
@@ -118,7 +117,6 @@ Section Uninstall
   DeleteRegKey HKCR "OpenUtauFile\shell"
   DeleteRegKey HKCR "OpenUtauFile"
 
-  RMDir "$SMPROGRAMS\OpenUtau"
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"

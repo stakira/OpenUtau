@@ -83,7 +83,7 @@ namespace OpenUtau.Core.DiffSinger
             }
             this.frameMs = dsConfig.frameMs();
             //Load g2p
-            g2p = LoadG2p(rootPath);
+            g2p = LoadG2p(rootPath, dsConfig.use_lang_id);
             //Load phonemes list
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
@@ -109,7 +109,7 @@ namespace OpenUtau.Core.DiffSinger
             return true;
         }
 
-        protected virtual IG2p LoadG2p(string rootPath) {
+        protected virtual IG2p LoadG2p(string rootPath, bool useLangId = false) {
             //Each phonemizer has a delicated dictionary name, such as dsdict-en.yaml, dsdict-ru.yaml.
             //If this dictionary exists, load it.
             //If not, load dsdict.yaml.
@@ -138,13 +138,13 @@ namespace OpenUtau.Core.DiffSinger
         //Check if the phoneme is supported. If unsupported, return an empty string.
         //And apply language prefix to phoneme
         string ValidatePhoneme(string phoneme){
-            if(g2p.IsValidSymbol(phoneme)){
+            if(g2p.IsValidSymbol(phoneme) && phonemeTokens.ContainsKey(phoneme)){
                 return phoneme;
             }
             var langCode = GetLangCode();
             if(langCode != String.Empty){
                 var phonemeWithLanguage = langCode + "/" + phoneme;
-                if(g2p.IsValidSymbol(phonemeWithLanguage)){
+                if(g2p.IsValidSymbol(phonemeWithLanguage)  && phonemeTokens.ContainsKey(phonemeWithLanguage)){
                     return phonemeWithLanguage;
                 }
             }
@@ -306,7 +306,7 @@ namespace OpenUtau.Core.DiffSinger
             var wordFound = new bool[phrase.Length];
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
-                var symbols = GetSymbols(word[0]);
+                var symbols = GetSymbols(word[0]).Where(s => phonemeTokens.ContainsKey(s)).ToArray();
                 if (symbols == null || symbols.Length == 0) {
                     symbols = new string[] { defaultPause };
                     wordFound[wordIndex] = false;
