@@ -89,7 +89,7 @@ namespace OpenUtau.App.Controls {
             listBox.SelectedIndex = index;
         }
 
-        private void Box_KeyDown(object? sender, KeyEventArgs e) {
+        private void Box_KeyDown(object? sender, KeyEventArgs e)    {
             switch (e.Key) {
                 case Key.Enter:
                     EndEdit(true);
@@ -135,8 +135,8 @@ namespace OpenUtau.App.Controls {
         }
 
         public void ListBox_PointerPressed(object sender, PointerPressedEventArgs args) {
-            if (sender is Grid grid &&
-                grid.DataContext is LyricBoxViewModel.SuggestionItem item) {
+            if (sender is DockPanel panel &&
+                panel.DataContext is LyricBoxViewModel.SuggestionItem item) {
                 box.Text = item.Alias;
             }
             EndEdit(true);
