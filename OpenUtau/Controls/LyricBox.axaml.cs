@@ -89,7 +89,7 @@ namespace OpenUtau.App.Controls {
             listBox.SelectedIndex = index;
         }
 
-        private void Box_KeyDown(object? sender, KeyEventArgs e)    {
+        private void Box_KeyDown(object? sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
                     EndEdit(true);
