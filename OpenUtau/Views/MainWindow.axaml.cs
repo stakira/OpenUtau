@@ -413,22 +413,6 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
-            var project = DocManager.Inst.Project;
-            var file = await FilePicker.SaveFileAboutProject(
-                this, "menu.file.exportds", FilePicker.DS);
-            if (!string.IsNullOrEmpty(file)) {
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
-                        DiffSingerScript.SavePart(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
-            }
-        }
-
         async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             var file = await FilePicker.SaveFileAboutProject(

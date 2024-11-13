@@ -153,9 +153,8 @@
   <system:String x:Key="menu.file">Fichier</system:String>
   <system:String x:Key="menu.file.exit">Quitter</system:String>
   <system:String x:Key="menu.file.exportaudio">Exporter l'audio</system:String>
-  <!--<system:String x:Key="menu.file.exportds">Export DiffSinger Scripts To</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To (v2)</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (v2, without pitch curve)</system:String>-->
+  <!--<system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To</system:String>-->
+  <!--<system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (without pitch curve)</system:String>-->
   <system:String x:Key="menu.file.exportmidi">Exporter un MIDI</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixer en fichier Wav</system:String>
   <system:String x:Key="menu.file.exportproject">Exporter le projet</system:String>
