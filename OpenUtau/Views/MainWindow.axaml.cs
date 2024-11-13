@@ -18,6 +18,7 @@ using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Analysis.Some;
+using OpenUtau.Core.DawIntegration;
 using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -149,9 +150,9 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        
-        
-        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e){
+
+
+        void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog {
                 Title = ThemeManager.GetString("menu.project.remaptimeaxis")
@@ -160,13 +161,13 @@ namespace OpenUtau.App.Views {
             dialog.SetPrompt(ThemeManager.GetString("dialogs.remaptimeaxis.message"));
             dialog.SetText(project.tempos[0].bpm.ToString());
             dialog.onFinish = s => {
-                try{
+                try {
                     if (double.TryParse(s, out double bpm)) {
                         DocManager.Inst.StartUndoGroup();
                         var oldTimeAxis = project.timeAxis.Clone();
                         DocManager.Inst.ExecuteCmd(new BpmCommand(
                             project, bpm));
-                        foreach(var tempo in project.tempos.Skip(1)){
+                        foreach (var tempo in project.tempos.Skip(1)) {
                             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(
                                 project, tempo.position));
                         }
@@ -321,20 +322,20 @@ namespace OpenUtau.App.Views {
             }
             try {
                 var loadedProjects = Formats.ReadProjects(files);
-                if(loadedProjects == null || loadedProjects.Length == 0){
+                if (loadedProjects == null || loadedProjects.Length == 0) {
                     return;
-                } 
+                }
                 bool importTempo = true;
-                switch(Preferences.Default.ImportTempo){
+                switch (Preferences.Default.ImportTempo) {
                     case 1:
                         importTempo = false;
                         break;
                     case 2:
-                        if(loadedProjects[0].tempos.Count == 0){
+                        if (loadedProjects[0].tempos.Count == 0) {
                             importTempo = false;
                             break;
                         }
-                        var tempoString = String.Join("\n", 
+                        var tempoString = String.Join("\n",
                             loadedProjects[0].tempos
                                 .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
                             );
@@ -344,7 +345,7 @@ namespace OpenUtau.App.Views {
                             ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
                             ThemeManager.GetString("dialogs.importtracks.caption"),
                             MessageBox.MessageBoxButtons.YesNo);
-                        if(result == MessageBox.MessageBoxResult.No){
+                        if (result == MessageBox.MessageBoxResult.No) {
                             importTempo = false;
                         }
                         break;
@@ -421,7 +422,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4] + ".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -437,7 +438,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4] + ".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath, true);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -453,7 +454,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4] + ".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath, true, false);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -503,6 +504,25 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuDawIntegrationTerminal(object sender, RoutedEventArgs args) {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
+            DawIntegrationTerminalViewModel dataContext;
+            dataContext = new DawIntegrationTerminalViewModel();
+            var dialog = new DawIntegrationTerminalDialog() {
+                DataContext = dataContext
+            };
+            await dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
+        }
+        async void OnMenuDisconnectFromDaw(object sender, RoutedEventArgs args) {
+            await DawManager.Inst.Disconnect();
+        }
+
+
         private async Task<bool> WarnToSave(UProject project) {
             if (string.IsNullOrEmpty(project.FilePath)) {
                 await MessageBox.Show(
@@ -537,8 +557,8 @@ namespace OpenUtau.App.Views {
         /// If the user haven't selected a singer for the track, or the singer specified in ustx project doesn't exist, return null.
         /// Otherwise, return the singer.
         /// </summary>
-        public USinger? TrackSingerIfFound(UTrack track){
-            if(track.Singer?.Found ?? false){
+        public USinger? TrackSingerIfFound(UTrack track) {
+            if (track.Singer?.Found ?? false) {
                 return track.Singer;
             }
             return null;
@@ -609,7 +629,7 @@ namespace OpenUtau.App.Views {
             } catch (Exception e) {
                 Log.Error(e, $"Failed to install singer {file}");
                 MessageCustomizableException mce;
-                if(e is MessageCustomizableException){
+                if (e is MessageCustomizableException) {
                     mce = (MessageCustomizableException)e;
                 } else {
                     mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
@@ -618,7 +638,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuInstallDependency(object sender, RoutedEventArgs args){
+        async void OnMenuInstallDependency(object sender, RoutedEventArgs args) {
             var file = await FilePicker.OpenFile(
                 this, "menu.tools.dependency.install", FilePicker.OUDEP);
             if (file == null) {
@@ -734,7 +754,7 @@ namespace OpenUtau.App.Views {
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
             if (pianoRollWindow != null) {
-                pianoRollWindow.Position = new PixelPoint(x != null ? (int) Width : 0, y != null ? (int) (Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
                 pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
                 pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
             }
@@ -745,7 +765,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var tracksVm = viewModel.TracksViewModel;
-            if (args.KeyModifiers == KeyModifiers.None){
+            if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
@@ -834,7 +854,7 @@ namespace OpenUtau.App.Views {
             }
             string file = storageItem.Path.LocalPath;
             var ext = Path.GetExtension(file);
-            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext==".ufdata") {
+            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext == ".ufdata") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
@@ -852,7 +872,7 @@ namespace OpenUtau.App.Views {
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
-                try{
+                try {
                     var setup = new SingerSetupDialog() {
                         DataContext = new SingerSetupViewModel() {
                             ArchiveFilePath = file,
@@ -865,7 +885,7 @@ namespace OpenUtau.App.Views {
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to install singer {file}");
                     MessageCustomizableException mce;
-                    if(e is MessageCustomizableException){
+                    if (e is MessageCustomizableException) {
                         mce = (MessageCustomizableException)e;
                     } else {
                         mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
@@ -936,7 +956,7 @@ namespace OpenUtau.App.Views {
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var control = (Control)sender;
-            var position = args.GetCurrentPoint((Visual) sender).Position;
+            var position = args.GetCurrentPoint((Visual)sender).Position;
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             viewModel.TracksViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
@@ -1039,7 +1059,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control) sender;
+            var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (partEditState != null) {
                 partEditState.Update(point.Pointer, point.Position);
@@ -1068,7 +1088,7 @@ namespace OpenUtau.App.Views {
                 if (partEditState.MouseButton != args.InitialPressMouseButton) {
                     return;
                 }
-                var control = (Control) sender;
+                var control = (Control)sender;
                 var point = args.GetCurrentPoint(control);
                 partEditState.Update(point.Pointer, point.Position);
                 partEditState.End(point.Pointer, point.Position);
@@ -1187,20 +1207,20 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        void Transcribe(UPart part){
+        void Transcribe(UPart part) {
             //Convert audio to notes
-            if(part is UWavePart wavePart){
-                try{
+            if (part is UWavePart wavePart) {
+                try {
                     string text = ThemeManager.GetString("context.part.transcribing");
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
                     //Duration of the wave file in seconds
                     int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
                     var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                    var transcribeTask = Task.Run(()=>{
-                        using(var some = new Some()){
-                            return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS =>{
+                    var transcribeTask = Task.Run(() => {
+                        using (var some = new Some()) {
+                            return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS => {
                                 //msgbox?.SetText($"{text} {part.name}\n{wavPosS}/{wavDurS}");
-                                msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s",text, part.name, wavPosS, wavDurS));
+                                msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, wavPosS, wavDurS));
                             });
                         }
                     });
@@ -1213,7 +1233,7 @@ namespace OpenUtau.App.Views {
                         }
                         var voicePart = task.Result;
                         //Add voicePart into project
-                        if(voicePart != null){
+                        if (voicePart != null) {
                             var project = DocManager.Inst.Project;
                             var track = new UTrack(project);
                             track.TrackNo = project.tracks.Count;
@@ -1350,7 +1370,7 @@ namespace OpenUtau.App.Views {
                     MessageBox.CloseLoading();
                 }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
-                if(voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
+                if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
                     ValidateTracksVoiceColor();
                 } else {
                     UTrack track = DocManager.Inst.Project.tracks[voicecolorNotif.TrackNo];
@@ -1360,6 +1380,14 @@ namespace OpenUtau.App.Views {
                         VoiceColorRemapping(track, oldColors, newColors);
                     }
                 }
+            } else if (cmd is DawConnectedNotification) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(1,
+                    ThemeManager.GetString("dawintegration.status.connected")
+                ));
+            } else if (cmd is DawDisconnectedNotification) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
+                    ThemeManager.GetString("dawintegration.status.disconnected")
+                ));
             }
         }
     }

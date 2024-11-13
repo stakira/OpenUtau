@@ -95,16 +95,23 @@ namespace OpenUtau.Core.Format {
 
         public static void Save(string filePath, UProject project) {
             try {
-                project.ustxVersion = kUstxVersion;
+                var ustx = FromProject(project);
                 project.FilePath = filePath;
-                project.BeforeSave();
-                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
-                project.Saved = true;
-                project.AfterSave();
+                File.WriteAllText(filePath, ustx, Encoding.UTF8);
             } catch (Exception ex) {
                 var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
+        }
+
+        public static string FromProject(UProject project) {
+            project.ustxVersion = kUstxVersion;
+            project.BeforeSave();
+            var ustx = Yaml.DefaultSerializer.Serialize(project);
+            project.Saved = true;
+            project.AfterSave();
+
+            return ustx;
         }
 
         public static void AutoSave(string filePath, UProject project) {
@@ -119,10 +126,16 @@ namespace OpenUtau.Core.Format {
         }
 
         public static UProject Load(string filePath) {
-            string text = File.ReadAllText(filePath, Encoding.UTF8);
+            var text = File.ReadAllText(filePath, Encoding.UTF8);
+            var project = LoadText(text);
+            project.FilePath = filePath;
+
+            return project;
+        }
+
+        public static UProject LoadText(string text) {
             UProject project = Yaml.DefaultDeserializer.Deserialize<UProject>(text);
             AddDefaultExpressions(project);
-            project.FilePath = filePath;
             project.Saved = true;
             project.AfterLoad();
             project.ValidateFull();
