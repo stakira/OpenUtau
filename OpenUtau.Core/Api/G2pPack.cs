@@ -68,7 +68,7 @@ namespace OpenUtau.Api {
             if (grapheme.Length == 0 || kAllPunct.IsMatch(grapheme)) {
                 return null;
             }
-            var phonemes = Dict.Query(grapheme);
+            var phonemes = Dict.Query(grapheme.ToLowerInvariant());
             if (phonemes == null && !PredCache.TryGetValue(grapheme, out phonemes)) {
                 phonemes = Predict(grapheme);
                 if (phonemes.Length == 0) {
