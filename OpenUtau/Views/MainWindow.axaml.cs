@@ -221,7 +221,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.VSQX,
                 FilePicker.UST,
                 FilePicker.MIDI,
-                FilePicker.UFDATA);
+                FilePicker.UFDATA,
+                FilePicker.MUSICXML);
             if (files == null || files.Length == 0) {
                 return;
             }
@@ -315,7 +316,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.VSQX,
                 FilePicker.UST,
                 FilePicker.MIDI,
-                FilePicker.UFDATA);
+                FilePicker.UFDATA,
+                FilePicker.MUSICXML);
             if (files == null || files.Length == 0) {
                 return;
             }
