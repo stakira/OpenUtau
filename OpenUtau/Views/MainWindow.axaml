@@ -18,7 +18,7 @@
     </Style>
   </Window.Styles>
   <Grid>
-    <Grid Name="MainGrid" DragDrop.AllowDrop="True" IsEnabled="False" IsVisible="False" Margin="{Binding $parent[1].WindowDecorationMargin}">
+    <Grid Name="MainGrid" DragDrop.AllowDrop="True" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="300,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
               Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave">
@@ -269,8 +269,5 @@
         <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
       </Grid>
     </Grid>
-    <Border Name="Splash">
-      <TextBlock Text="{DynamicResource progress.loadingsingers}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-    </Border>
   </Grid>
 </Window>
