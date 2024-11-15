@@ -90,10 +90,6 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
-        public Task? GetInitSingerTask() {
-            return SingerManager.Inst.InitializationTask;
-        }
-
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
