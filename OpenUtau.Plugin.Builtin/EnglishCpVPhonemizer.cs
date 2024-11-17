@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using Classic;
@@ -165,25 +164,25 @@ namespace OpenUtau.Plugin.Builtin {
                     case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "hh", s[1].ToString() });
                         break;
-                    case var str when av_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when av_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "aa", s[1].ToString() });
                         break;
-                    case var str when ev_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ev_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "eh", s[1].ToString() });
                         break;
-                    case var str when iv_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when iv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "iy", s[1].ToString() });
                         break;
-                    case var str when ov_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ov_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ao", s[1].ToString() });
                         break;
-                    case var str when uv_c.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when uv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "uw", s[1].ToString() });
                         break;
-                    case var str when vowel3S.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel3S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s[2].ToString() });
                         break;
-                    case var str when vowel4S.Contains(str) && !HasOto($"b {str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel4S.Contains(str) &&!HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s.Substring(2, 2) });
                         break;
                     default:
