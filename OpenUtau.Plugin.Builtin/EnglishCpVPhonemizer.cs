@@ -7,7 +7,7 @@ using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
-using Serilog
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Arpabet C+V Phonemizer", "EN C+V", "Cadlaxa", language: "EN")]
