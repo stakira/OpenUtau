@@ -29,7 +29,7 @@
 
   <system:String x:Key="dialogs.about.caption">O OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtau ma na celu być otwartym środowiskiem do edytowania dla społeczności UTAU, z nowoczesnym UI/UX i inteligentym wsparciem fonemicznym. Odwiedź nas na Github.
+    OpenUtau ma na celu być otwartym środowiskiem do edycji przez społeczność UTAU, z nowoczesnym UI/UX i inteligentnym wsparciem fonemicznym. Odwiedź nas na Github.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Wyjdź z OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">Obecny projekt zawiera niezapisane zmiany. Czy chcesz go zapisać?</system:String>
@@ -62,8 +62,8 @@
 
   <system:String x:Key="errors.caption">Błąd</system:String>
   <system:String x:Key="errors.details">Szczegóły błędu</system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder1">Błąd ładowania wokodera</system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder2">. Proszę pobrać wokoder z  </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">Błąd ładowania wokodera.</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">Proszę pobrać wokoder z  </system:String>
 	 <system:String x:Key="errors.encryptedarchive">Nieobsługiwany typ zaszyfrowanego archiwum. Proszę ręcznie rozpakować archiwum</system:String>
   <system:String x:Key="errors.expression.abbrlong">Skrót powienien zawierać 1 do 4 znaków</system:String>
   <system:String x:Key="errors.expression.abbrset">Proszę ustawić skrót</system:String>
@@ -190,7 +190,7 @@
   <system:String x:Key="menu.help.checkupdate">Sprawdź aktualizację...</system:String>
   <system:String x:Key="menu.help.logslocation">Otwórz lokalizację logów</system:String>
   <system:String x:Key="menu.help.reportissue">Zgłoś problem</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <system:String x:Key="menu.help.wiki">Dokumentacja OpenUtau</system:String>
   <system:String x:Key="menu.project">Projekt</system:String>
   <system:String x:Key="menu.project.expressions">Ekspresje...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Dostosuj tempo (zachowaj timing)</system:String>
@@ -331,6 +331,13 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
     PPM, by wyczyścić
     Przytrzymaj Ctrl, by zaznaczać
     Przytrzymaj Alt, by wygładzić</system:String>
+  <system:String x:Key="pianoroll.tool.drawlinepitch">
+    Rysowanie linii (Shift + 4)
+    LPM, by rysować linię prostą
+    PPM, by wyczyścić
+    Przytrzymaj Ctrl, by zaznaczać
+    Przytrzymaj Alt, by wygładzić
+  </system:String>
   <system:String x:Key="pianoroll.tool.eraser">Gumka (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Nóż(5)</system:String>
     <system:String x:Key="pianoroll.tool.overwritepitch">Nadpisywanie wysokości (Ctrl + 4)
@@ -356,7 +363,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Nigdy</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper dodaje kwadratowe nawiasy</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">Zapamiętaj te typy plików w "Ostanio otwierane"</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Zapamiętaj te typy plików w "Ostatnio otwierane"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Zapisuje działania resamplera w logach. Ta opcja spowalnia UI i rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabilne</system:String>
@@ -399,6 +406,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Nieruchomy kursor</system:String>
   <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatyczny</system:String>
+  <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Margines automatycznego przewijania</system:String>
   <system:String x:Key="prefs.playback.device">Urządzenie odtwarzania</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Podczas pauzy</system:String>
