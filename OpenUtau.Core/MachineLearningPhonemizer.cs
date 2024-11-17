@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core {
     public abstract class MachineLearningPhonemizer : Phonemizer
@@ -30,7 +31,12 @@ namespace OpenUtau.Core {
                     phrase.Add(groups[i]);
                 } else {
                     //If the previous and current notes are not connected, process the current sentence and start the next sentence
-                    ProcessPart(phrase.ToArray());
+                    try{
+                        ProcessPart(phrase.ToArray());
+                    }catch(Exception e){
+                        var sentenceLyrics = string.Join(" ", phrase.Select(group => group[0].lyric));
+                        Log.Error($"Failed to phonemize sentence {sentenceLyrics}: {e.Message}");
+                    }
                     phrase.Clear();
                     phrase.Add(groups[i]);
                 }

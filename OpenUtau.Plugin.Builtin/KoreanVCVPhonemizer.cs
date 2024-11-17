@@ -131,6 +131,7 @@ namespace OpenUtau.Plugin.Builtin
 			string color = string.Empty;
 			int shift = 0;
 			int? alt;
+			int totalDuration = notes.Sum(n => n.duration);
 
             string color1 = string.Empty;
             int shift1 = 0;
@@ -149,6 +150,20 @@ namespace OpenUtau.Plugin.Builtin
 			string[] currIMF;
 			string currPhoneme;
 			string[] prevIMF;
+
+			var phoneticHint = RenderPhoneticHint(singer, notes[0], totalDuration);
+      if (phoneticHint != null) {
+        return (Result) phoneticHint;
+      }
+
+      var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
+      if (romaji2Korean != null) {
+        notes = romaji2Korean.KoreanLryicNotes;
+        prevNeighbour = romaji2Korean.KoreanLryicPrevNote;
+        nextNeighbour = romaji2Korean.KoreanLryicNextNote;
+
+				note = notes[0];
+      } 
 
 			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
 			if (note.lyric == "R" || note.lyric == "R2" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
