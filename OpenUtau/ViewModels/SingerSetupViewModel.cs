@@ -90,7 +90,7 @@ namespace OpenUtau.App.ViewModels {
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
                 textItems.AddRange(archive.Entries
-                    .Select(entry => entry.Key)
+                    .Select(entry => entry.Key!)
                     .ToArray());
             }
         }
@@ -127,7 +127,7 @@ namespace OpenUtau.App.ViewModels {
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 try {
                     textItems.Clear();
-                    foreach (var entry in archive.Entries.Where(entry => entry.Key.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
+                    foreach (var entry in archive.Entries.Where(entry => entry.Key!.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
                         using (var stream = entry.OpenEntryStream()) {
                             using var reader = new StreamReader(stream, TextEncoding);
                             textItems.Add($"------ {entry.Key} ------");
