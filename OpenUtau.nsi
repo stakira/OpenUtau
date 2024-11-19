@@ -83,6 +83,26 @@ Section -Post
   WriteRegStr HKCR "OpenUtauFile" "" "OpenUtau Sequence File"
   WriteRegStr HKCR "OpenUtauFile\DefaultIcon" "" "$INSTDIR\OpenUtau.exe"
   WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
+
+  ;move userdata from Documents to AppData upon update
+  IfFileExists "$DOCUMENTS\OpenUtau\prefs.json" 0 +18
+    CreateDirectory "$APPDATA\OpenUtau"
+    CopyFiles "$DOCUMENTS\OpenUtau\*.*" "$APPDATA\OpenUtau\"
+    CreateDirectory "$APPDATA\OpenUtau\Backups"
+    CopyFiles "$DOCUMENTS\OpenUtau\Backups\*.*" "$APPDATA\OpenUtau\Backups\"
+    CreateDirectory "$APPDATA\OpenUtau\Logs"
+    CopyFiles "$DOCUMENTS\OpenUtau\Logs\*.*" "$APPDATA\OpenUtau\Logs\"
+    CreateDirectory "$APPDATA\OpenUtau\Plugins"
+    CopyFiles "$DOCUMENTS\OpenUtau\Plugins\*.*" "$APPDATA\OpenUtau\Plugins\"
+    CreateDirectory "$APPDATA\OpenUtau\Singers"
+    CopyFiles "$DOCUMENTS\OpenUtau\Singers\*.*" "$APPDATA\OpenUtau\Singers\"
+    CreateDirectory "$APPDATA\OpenUtau\Resamplers"
+    CopyFiles "$DOCUMENTS\OpenUtau\Resamplers\*.*" "$APPDATA\OpenUtau\Resamplers\"
+    CreateDirectory "$APPDATA\OpenUtau\Templates"
+    CopyFiles "$DOCUMENTS\OpenUtau\Templates\*.*" "$APPDATA\OpenUtau\Templates\"
+    CreateDirectory "$APPDATA\OpenUtau\Wavtools"
+    CopyFiles "$DOCUMENTS\OpenUtau\Wavtools\*.*" "$APPDATA\OpenUtau\Wavtools\"
+    RMDir /r "$DOCUMENTS\OpenUtau"
 SectionEnd
 
 Section "VC Redist"
