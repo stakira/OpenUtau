@@ -15,7 +15,7 @@ namespace OpenUtau.Plugin.Builtin {
         // 1. Load Singer and Settings
         private KoreanCVIniSetting koreanCVIniSetting; // Manages Setting
 
-        public bool isUsingShi, isUsing_aX, isUsing_i, isRentan;
+        public bool isUsingShi, isUsing_aX, isUsingCV_L, isUsing_i, isRentan, isUsingBatchimSpace, isUsingTanBatchim;
 
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {return;}
@@ -30,14 +30,20 @@ namespace OpenUtau.Plugin.Builtin {
                     {"Use rentan", false},
                     {"Use 'shi' for '시'(otherwise 'si')", false},
                     {"Use 'i' for '의'(otherwise 'eui')", false},
+                    {"Use replace the batchim 'L' with 'l' when followed by 'r'", false},
                 }},
                 {"BATCHIM", new Hashtable(){
-                    {"Use 'aX' instead of 'a X'", false}
+                    {"Use space between the Batchim and the next note", true},
+                    {"Use tan Batchim", false},
+                    {"Use 'aX' instead of 'a X'", false},
                 }}
             });
 
             isUsingShi = koreanCVIniSetting.isUsingShi;
+            isUsingBatchimSpace = koreanCVIniSetting.isUsingBatchimSpace;
+            isUsingTanBatchim = koreanCVIniSetting.isUsingTanBatchim;
             isUsing_aX = koreanCVIniSetting.isUsing_aX;
+            isUsingCV_L = koreanCVIniSetting.isUsingCV_L;
             isUsing_i = koreanCVIniSetting.isUsing_i;
             isRentan = koreanCVIniSetting.isRentan;
         }
@@ -46,7 +52,10 @@ namespace OpenUtau.Plugin.Builtin {
             public bool isRentan;
             public bool isUsingShi;
             public bool isUsing_aX;
+            public bool isUsingCV_L;
             public bool isUsing_i;
+            public bool isUsingBatchimSpace;
+            public bool isUsingTanBatchim;
 
             protected override void IniSetUp(Hashtable iniSetting) {
                 // ko-CV.ini
@@ -58,9 +67,18 @@ namespace OpenUtau.Plugin.Builtin {
 
                 SetOrReadThisValue("CV", "Use 'i' for '의'(otherwise 'eui')", false, out resultValue); // 의를 [i]로 표기할 지 유무 - 기본값 false
                 isUsing_i = resultValue;
+                
+                SetOrReadThisValue("CV", "Use replace the batchim 'L' with 'l' when followed by 'r'", false, out resultValue); // 받침 ㄹ 뒤에 오는 ㄹ 가사를 l로 치환 유무 - 기본값 false(= r 사용)
+                isUsingCV_L = resultValue;
+
+                SetOrReadThisValue("BATCHIM", "Use tan Batchim", false, out resultValue); // 받침 표기를 단독음식으로 할지 유무 - 기본값 false (=a n 사용)
+                isUsingTanBatchim = resultValue;
 
                 SetOrReadThisValue("BATCHIM", "Use 'aX' instead of 'a X'", false, out resultValue); // 받침 표기를 a n 처럼 할 지 an 처럼 할지 유무 - 기본값 false(=a n 사용)
                 isUsing_aX = resultValue;
+
+                SetOrReadThisValue("BATCHIM", "Use space between the Batchim and the next note", true, out resultValue); // 받침과 다음 노트 사이의 공백 추가 유무 - 기본값 true
+                isUsingBatchimSpace = resultValue;
             }
         }
         
@@ -173,9 +191,16 @@ namespace OpenUtau.Plugin.Builtin {
                 thisMidVowelTail = $"{MIDDLE_VOWELS[thisLyric[1]][2]}";
             }
             
+            
             string CV = $"{FIRST_CONSONANTS[thisLyric[0]]}{thisMidVowelHead}{thisMidVowelTail}"; 
             string frontCV;
             string batchim;
+
+            if (isUsingCV_L) {
+                if (prevLyric[2] == "ㄹ" && thisLyric[0] == "ㄹ") { // 앞 노트의 종성이 ㄹ 이면서 시작하는 노트의 초성이 ㄹ 일 경우
+                    CV = $"l{thisMidVowelHead}{thisMidVowelTail}"; // 초성을 l로 변경
+                }
+            }
             
             if (isRentan) {
                 frontCV = $"- {CV}";
@@ -200,21 +225,27 @@ namespace OpenUtau.Plugin.Builtin {
             if (isUsing_aX) {
                 batchim = $"{thisMidVowelTail}{LAST_CONSONANTS[thisLyric[2]][0]}";
             }
+            else if (isUsingTanBatchim) {
+                batchim = $"{LAST_CONSONANTS[thisLyric[2]][0]}";
+            }
             else {
                 batchim = $"{thisMidVowelTail} {LAST_CONSONANTS[thisLyric[2]][0]}";
             }
             
             if (thisLyric[2] == "ㅁ" || ! HARD_BATCHIMS.Contains(thisLyric[2])) { // batchim ㅁ + ㄴ ㄹ ㅇ
-                if (isItNeedsFrontCV){
-                    return isRelaxedVC ? 
-                    GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                    : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
+                if (isItNeedsFrontCV) {
+                   return isRelaxedVC ? 
+                        GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8) 
+                        : (isUsingBatchimSpace ? 
+                            GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5) 
+                            : GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8));
                 }
                 return isRelaxedVC ? 
-                GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8)
-                : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5);
-            }
-            else {
+                    GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8) 
+                    : (isUsingBatchimSpace ? 
+                        GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), "", totalDuration, 120, 3, 5) 
+                        : GenerateResult(FindInOto(CV, note), FindInOto(batchim, note), totalDuration, 120, 8));
+            } else {
                 if (isItNeedsFrontCV){
                     return isRelaxedVC ? 
                     GenerateResult(FindInOto(frontCV, note), FindInOto(batchim, note), totalDuration, 120, 8)
