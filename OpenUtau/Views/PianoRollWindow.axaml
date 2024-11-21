@@ -59,6 +59,7 @@
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
                          TrackOffset="{Binding TrackOffset}"
+                         Key="{Binding Key}"
                          PointerWheelChanged="KeyboardPointerWheelChanged"
                          PointerPressed="KeyboardPointerPressed"
                          PointerMoved="KeyboardPointerMoved"
