@@ -164,10 +164,10 @@ namespace OpenUtau.Core.Util {
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
-            public bool ShowPortrait = true;
+            public bool ShowPortrait = false;
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
-            public bool PlayTone = true;
+            public bool PlayTone = false;
             public bool ShowVibrato = true;
             public bool ShowPitch = false;
             public bool ShowFinalPitch = true;
