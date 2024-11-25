@@ -195,6 +195,7 @@
   <system:String x:Key="menu.project.expressions">Biểu cảm...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Chỉnh nhịp độ (Giữ trường độ)</system:String>
   <system:String x:Key="menu.tools">Công cụ</system:String>
+  <system:String x:Key="menu.tools.fullscreen">Toàn màn hình</system:String>
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
   <system:String x:Key="menu.tools.debugwindow">Mở cửa sổ Debug</system:String>
   <system:String x:Key="menu.tools.dependency.install">Cài đặt tệp phụ thuộc (.oudep)...</system:String>
