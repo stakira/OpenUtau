@@ -188,7 +188,7 @@
   <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
   <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
-  <system:String x:Key="menu.tools.fullscreen">Layar Penuh</system:String>
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <system:String x:Key="menu.tools.clearcache">Hapus Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Jendela Debug</system:String>
   <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->

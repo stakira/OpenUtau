@@ -188,7 +188,7 @@
   <system:String x:Key="menu.project.expressions">表情...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">修复曲速（保持绝对时长）</system:String>
   <system:String x:Key="menu.tools">工具</system:String>
-  <system:String x:Key="menu.tools.fullscreen">全屏</system:String>
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <system:String x:Key="menu.tools.clearcache">清空缓存</system:String>
   <system:String x:Key="menu.tools.debugwindow">调试窗口</system:String>
   <system:String x:Key="menu.tools.dependency.install">安装依赖项（.oudep）...</system:String>

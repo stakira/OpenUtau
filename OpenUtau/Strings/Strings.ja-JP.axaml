@@ -193,7 +193,7 @@
   <system:String x:Key="menu.project.expressions">表情...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">音符の位置を維持したままテンポを再設定</system:String>
   <system:String x:Key="menu.tools">ツール</system:String>
-  <system:String x:Key="menu.tools.fullscreen">全画面表示</system:String>
+  <system:String x:Key="menu.tools.fullscreen">フルスクリーン</system:String>
   <system:String x:Key="menu.tools.clearcache">キャッシュクリア</system:String>
   <system:String x:Key="menu.tools.debugwindow">デバッグウインドウ</system:String>
   <system:String x:Key="menu.tools.dependency.install">依存関係ファイルをインストール(.oudep)...</system:String>

@@ -195,7 +195,7 @@
   <system:String x:Key="menu.project.expressions">Ekspresje...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Dostosuj tempo (zachowaj timing)</system:String>
   <system:String x:Key="menu.tools">Narzędzia</system:String>
-  <system:String x:Key="menu.tools.fullscreen">pełny ekran</system:String>
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <system:String x:Key="menu.tools.clearcache">Wyczyść cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Okno debugowania</system:String>
   <system:String x:Key="menu.tools.dependency.install">Zainstaluj zależność (.oudep)...</system:String>

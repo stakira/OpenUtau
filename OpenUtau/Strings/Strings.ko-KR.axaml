@@ -188,7 +188,7 @@
   <system:String x:Key="menu.project.expressions">표현 목록...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">템포 조정 (타이밍은 유지)</system:String>
   <system:String x:Key="menu.tools">도구</system:String>
-  <system:String x:Key="menu.tools.fullscreen">전체 화면</system:String>
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <system:String x:Key="menu.tools.clearcache">캐시 삭제</system:String>
   <system:String x:Key="menu.tools.debugwindow">디버그 창</system:String>
   <system:String x:Key="menu.tools.dependency.install">의존 요소 설치(.oudep)...</system:String>
