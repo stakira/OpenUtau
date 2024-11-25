@@ -46,7 +46,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Patch Versions
-      uses: justalemon/VersionPatcher@v0.7.1
+      uses: justalemon/VersionPatcher@v0.8
       with:
         version: ${{ inputs.version }}
         csproj-files: "OpenUtau/*.csproj"
