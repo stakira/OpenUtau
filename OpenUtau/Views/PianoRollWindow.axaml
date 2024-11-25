@@ -249,6 +249,7 @@
                   <CheckBox IsChecked="{Binding UseTrackColor}" />
                 </MenuItem.Icon>
               </MenuItem>
+              <MenuItem Header="{DynamicResource menu.tools.fullscreen}" Click="OnMenuFullScreen"/>
               <MenuItem Header="{DynamicResource prefs.appearance.degree}">
                 <MenuItem Header="{DynamicResource prefs.appearance.degree.off}" Click="OnMenuDegreeStyle" Tag="0">
                   <MenuItem.Icon>
