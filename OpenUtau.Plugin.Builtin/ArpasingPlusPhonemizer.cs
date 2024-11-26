@@ -90,10 +90,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
-                {"e","y"},
-                {"i","y"},
-                {"o","w"},
-                {"u","w"},
                 {"aw","w"},
                 {"ow","w"},
                 {"uw","w"},
@@ -619,7 +615,6 @@ namespace OpenUtau.Plugin.Builtin {
                             firstC = 1;
                             break;
                         } else if ((HasOto(vcc2, ending.tone) || HasOto(ValidateAlias(vcc2), ending.tone)) && lastC == 1 && !ccvException.Contains(cc[0])) {
-
                             phonemes.Add(vcc2);
                             firstC = 1;
                             break;
@@ -809,16 +804,16 @@ namespace OpenUtau.Plugin.Builtin {
                 // If the alias contains a space, split it into consonant and vowel
                 if (alias.Contains(" ")) {
                     var parts = alias.Split(' ');
-                    consonant = parts[0];
-                    vowel = parts[1];
+                    consonant = parts[1];
+                    vowel = parts[0];
                 } else {
                     consonant = alias;
                 }
                 var dynamicVariations1 = new List<string> {
+                    $"{vowel}{consonant} -",    // "VC -"
                     $"{vowel} {consonant}-",    // "V C-"
                     $"{vowel}{consonant}-",    // "VC-"
                     $"{vowel} {consonant} -",    // "V C -"
-                    $"{vowel}{consonant} -",    // "VC -"
                 };
                 // Check each dynamically generated format
                 foreach (var variation1 in dynamicVariations1) {
