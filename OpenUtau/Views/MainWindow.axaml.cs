@@ -639,6 +639,12 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuFullScreen(object sender, RoutedEventArgs args) {
+            this.WindowState = this.WindowState == WindowState.FullScreen
+                ? WindowState.Normal
+                : WindowState.FullScreen;
+        }
+
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
@@ -743,6 +749,9 @@ namespace OpenUtau.App.Views {
                             int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
+                        break;
+                    case Key.F11:
+                        OnMenuFullScreen(this, new RoutedEventArgs());
                         break;
                     default:
                         args.Handled = false;

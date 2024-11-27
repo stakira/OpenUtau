@@ -188,6 +188,7 @@
   <system:String x:Key="menu.project.expressions">Ausdrücke...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Tempo Anpassen (Timing beibehalten)</system:String>
   <system:String x:Key="menu.tools">Werkzeuge</system:String>
+  <system:String x:Key="menu.tools.fullscreen">Vollbild</system:String>
   <system:String x:Key="menu.tools.clearcache">Cache leeren</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug Fenster</system:String>
   <system:String x:Key="menu.tools.dependency.install">Installiere Abhängigkeit (.oudep)...</system:String>
