@@ -170,7 +170,7 @@
 
         <!-- Appearance -->
         <StackPanel>
-          <TextBlock Text="{DynamicResource prefs.appearance.lang}" />
+          <TextBlock Text="{DynamicResource prefs.appearance.lang}" Margin="0,10,0,0"/>
           <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}">
             <ComboBox.ItemTemplate>
               <DataTemplate>
@@ -209,7 +209,7 @@
             <TextBlock Text="{DynamicResource prefs.appearance.showicon}" HorizontalAlignment="Left"/>
             <ToggleSwitch IsChecked="{Binding ShowIcon}"/>
           </Grid>
-          <Grid>
+          <Grid Margin="0,5,0,0">
             <TextBlock Text="{DynamicResource prefs.appearance.showghostnotes}" HorizontalAlignment="Left"/>
             <ToggleSwitch IsChecked="{Binding ShowGhostNotes}"/>
           </Grid>
@@ -217,9 +217,9 @@
 
         <!-- UTAU -->
         <StackPanel>
-          <TextBlock Text="{DynamicResource prefs.rendering.defaultrenderer}"/>
+          <TextBlock Text="{DynamicResource prefs.rendering.defaultrenderer}" Margin="0,10,0,0"/>
           <ComboBox ItemsSource="{Binding DefaultRendererOptions}" SelectedItem="{Binding DefaultRenderer}"/>
-          <TextBlock Text="{DynamicResource prefs.otoeditor.select}" />
+          <TextBlock Text="{DynamicResource prefs.otoeditor.select}" Margin="0,10,0,0"/>
           <ComboBox SelectedIndex="{Binding OtoEditor}">
             <ComboBoxItem Content="OpenUtau"/>
             <ComboBoxItem Content="vLabeler"/>
@@ -261,7 +261,7 @@
               <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerDepth}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"/>
           </Grid>
-          <Grid>
+          <Grid Margin="0,5,0,0">
             <TextBlock Text="{DynamicResource prefs.cache.diffsingertensorcache}" HorizontalAlignment="Left" />
             <ToggleSwitch IsChecked="{Binding DiffSingerTensorCache}" />
           </Grid>
@@ -269,12 +269,12 @@
 
         <!-- Advanced -->
         <StackPanel>
-          <Grid>
+          <Grid Margin="0,5,0,0">
             <TextBlock Text="{DynamicResource prefs.advanced.beta}" HorizontalAlignment="Left"/>
             <ToggleSwitch IsChecked="{Binding Beta}"/>
           </Grid>
           <TextBlock Classes="restart"/>
-          <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" Margin="0,5,0,0"/>
+          <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" Margin="0,10,0,0"/>
           <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center" Margin="4">
             <CheckBox IsChecked="{Binding RememberMid}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
             <TextBlock Text=" .mid" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
