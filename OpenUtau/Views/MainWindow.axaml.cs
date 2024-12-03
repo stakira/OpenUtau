@@ -33,8 +33,6 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
-        private bool splashDone = false;
-
         private PianoRollWindow? pianoRollWindow;
         private bool openPianoRollWindow;
 
@@ -55,20 +53,12 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            viewModel.GetInitSingerTask()!.ContinueWith(_ => {
-                viewModel.InitProject();
-                viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
-                viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
-                viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
-                viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
 
-                Splash.IsEnabled = false;
-                Splash.IsVisible = false;
-                MainGrid.IsEnabled = true;
-                MainGrid.IsVisible = true;
-                splashDone = true;
-            }, CancellationToken.None, TaskContinuationOptions.None, scheduler);
+            viewModel.InitProject();
+            viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
+            viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
+            viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
+            viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
 
             timer = new DispatcherTimer(
                 TimeSpan.FromMilliseconds(15),
@@ -761,9 +751,6 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (!splashDone) {
-                return;
-            }
             var tracksVm = viewModel.TracksViewModel;
             if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;
