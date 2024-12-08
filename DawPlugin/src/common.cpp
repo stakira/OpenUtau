@@ -2,6 +2,7 @@
 #include "choc/memory/choc_Base64.h"
 #include "choc/text/choc_JSON.h"
 #include "gzip/decompress.hpp"
+#include "gzip/compress.hpp"
 
 std::vector<uint8_t> Utils::gunzip(const char *data, size_t size) {
   std::vector<uint8_t> decompressed;

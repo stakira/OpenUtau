@@ -133,12 +133,12 @@ namespace OpenUtau.Core.DawIntegration {
 
                 if (missingAudios.missingAudios.Count > 0) {
                     Log.Information($"DAW requested {missingAudios.missingAudios.Count} missing audios.");
-                    var buffersDict = buffers.ToDictionary(buffer => buffer.hash);
+                    var buffersDict = buffers.GroupBy(buffer => buffer.hash).ToDictionary(group => group.Key, group => group.First());
                     var audios = new Dictionary<uint, string>();
                     foreach (var audioHash in missingAudios.missingAudios) {
-                        var buffer = buffersDict[audioHash];
+                        var buffer = buffersDict[audioHash].byteBuffer;
 
-                        var compressed = Gzip.Compress(buffer.byteBuffer);
+                        var compressed = Gzip.Compress(buffer);
                         audios[audioHash] = Convert.ToBase64String(compressed);
                     }
 

@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <fstream>
 #include <future>
+#include <mutex>
 #include <set>
 #include <shared_mutex>
 #include <string>
@@ -179,15 +180,22 @@ String OpenUtauPlugin::getState(const char *rawKey) const {
     std::string encoded = choc::base64::encodeToString(ustx);
     return String(encoded.c_str());
   } else if (key == "audios") {
-    choc::value::Value value = choc::value::createObject("");
-    for (const auto &[audioHash, audio] : audioBuffers) {
-      std::string compressed =
-          gzip::compress((char *)audio.data(), audio.size() * sizeof(float));
-      std::string encoded = choc::base64::encodeToString(compressed);
-      value.setMember(std::to_string(audioHash), encoded);
+    std::vector<uint8_t> raw;
+    for (const auto &[hash, audio] : audioBuffers) {
+      uint32_t hashBytes = hash;
+      raw.insert(raw.end(), (uint8_t *)&hashBytes,
+                 (uint8_t *)&hashBytes + sizeof(uint32_t));
+      uint32_t size = audio.size();
+      raw.insert(raw.end(), (uint8_t *)&size,
+                 (uint8_t *)&size + sizeof(uint32_t));
+      raw.insert(raw.end(), (uint8_t *)audio.data(),
+                 (uint8_t *)audio.data() + size * sizeof(float));
     }
+    auto compressed = gzip::compress((const char *)raw.data(), raw.size());
+    auto compressedString = choc::base64::encodeToString(raw);
 
-    return String(choc::json::toString(value).c_str());
+    std::string encoded = choc::base64::encodeToString(compressedString);
+    return String(encoded.c_str());
   } else if (key == "parts") {
     choc::value::Value value = choc::value::createEmptyArray();
     for (const auto &[trackNo, parts] : parts) {
@@ -214,21 +222,24 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
   } else if (key == "ustx") {
     this->ustx = Utils::unBase64ToString(value);
   } else if (key == "audios") {
-    choc::value::Value audioValue = choc::json::parse(value);
+    auto decoded = Utils::unBase64ToVector(value);
+    auto decompressed = Utils::gunzip((char *)decoded.data(), decoded.size());
+
+    uint32_t cursor = 0;
     std::map<AudioHash, std::vector<float>> audioBuffers;
-    choc::value::ValueView(audioValue)
-        .visitObjectMembers(
-            [&](std::string_view key, const choc::value::ValueView &value) {
-              auto hash = std::stoul(std::string(key));
-              std::string encoded = value.get<std::string>();
-              auto decoded = Utils::unBase64ToVector(encoded);
-              auto decompressed =
-                  Utils::gunzip((char *)decoded.data(), decoded.size());
-              std::vector<float> audio((float *)decompressed.data(),
-                                       (float *)decompressed.data() +
-                                           decompressed.size() / sizeof(float));
-              audioBuffers[hash] = audio;
-            });
+    while (true) {
+      if (cursor >= decompressed.size()) {
+        break;
+      }
+      uint32_t hash = *(uint32_t *)&decompressed[cursor];
+      cursor += sizeof(uint32_t);
+      uint32_t size = *(uint32_t *)&decompressed[cursor];
+      cursor += sizeof(uint32_t);
+      std::vector<float> audio((float *)&decompressed[cursor],
+                               (float *)&decompressed[cursor + size]);
+      cursor += size * sizeof(float);
+      audioBuffers[hash] = audio;
+    }
 
     {
       auto _lock = std::lock_guard(this->audioBuffersMutex);
@@ -378,12 +389,16 @@ void OpenUtauPlugin::onAccept(OpenUtauPlugin *self,
                   socket->async_read_some(
                       asio::buffer(buffer),
                       [&](const asio::error_code &error, size_t len) {
-                        if (error) {
-                          readPromise.set_exception(
-                              std::make_exception_ptr<asio::system_error>(
-                                  error));
-                        } else {
-                          readPromise.set_value(len);
+                        try {
+                          if (error) {
+                            readPromise.set_exception(
+                                std::make_exception_ptr<asio::system_error>(
+                                    error));
+                          } else {
+                            readPromise.set_value(len);
+                          }
+                        } catch (std::exception &e) {
+                          // ignore
                         }
                       });
                 }

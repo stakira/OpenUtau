@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.App.ViewModels {
     public class DawIntegrationTerminalViewModel : ViewModelBase {
-        [Reactive] public DawServer? SelectedServer { get; set; } = null;
+        [Reactive] public DawServer? SelectedServer { get; set; }
         [Reactive] public bool CanConnect { get; set; } = true;
         public ObservableCollectionExtended<DawServer> ServerList { get; set; } = new ObservableCollectionExtended<DawServer>();
 
