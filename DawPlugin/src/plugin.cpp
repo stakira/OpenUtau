@@ -1,15 +1,16 @@
 #include "plugin.hpp"
+#include "DistrhoDetails.hpp"
+#include "DistrhoPlugin.hpp"
+#include "DistrhoPluginInfo.h"
+#include "asio.hpp"
+#include "choc/containers/choc_Value.h"
+#include "choc/memory/choc_Base64.h"
+#include "choc/text/choc_JSON.h"
 #include "common.hpp"
-#include <DistrhoDetails.hpp>
-#include <DistrhoPlugin.hpp>
-#include <DistrhoPluginInfo.h>
-#include <asio.hpp>
+#include "dpf/distrho/extra/String.hpp"
+#include "uuid/v4/uuid.h"
 #include <cfloat>
-#include <choc/containers/choc_Value.h>
-#include <choc/memory/choc_Base64.h>
-#include <choc/text/choc_JSON.h>
 #include <cstdio>
-#include <dpf/distrho/extra/String.hpp>
 #include <filesystem>
 #include <fstream>
 #include <future>
@@ -18,7 +19,6 @@
 #include <shared_mutex>
 #include <string>
 #include <thread>
-#include <uuid/v4/uuid.h>
 #include <vector>
 
 namespace Network {
@@ -190,7 +190,7 @@ String OpenUtauPlugin::getState(const char *rawKey) const {
       raw.insert(raw.end(), (uint8_t *)audio.data(),
                  (uint8_t *)audio.data() + size * sizeof(float));
     }
-    auto compressed = Utils::zstd(raw.data(), raw.size(), 0);
+    auto compressed = Utils::zstd(raw.data(), raw.size());
     auto encoded = choc::base64::encodeToString(compressed);
 
     return String(encoded.c_str());

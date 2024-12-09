@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace Utils {
-std::vector<uint8_t> zstd(const uint8_t *data, size_t size, int level);
+std::vector<uint8_t> zstd(const uint8_t *data, size_t size, int level = 3);
 std::vector<uint8_t> unzstd(const uint8_t *data, size_t size);
 std::string unBase64ToString(const std::string &encoded);
 std::vector<uint8_t> unBase64ToVector(const std::string &encoded);

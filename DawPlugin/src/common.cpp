@@ -11,8 +11,7 @@ std::vector<uint8_t> Utils::zstd(const uint8_t *data, size_t size, int level) {
   comp_buffer.resize(est_compress_size);
 
   auto compress_size =
-      ZSTD_compress(comp_buffer.data(), est_compress_size, data, size,
-                    level == 0 ? ZSTD_maxCLevel() : level);
+      ZSTD_compress(comp_buffer.data(), est_compress_size, data, size, level);
 
   comp_buffer.resize(compress_size);
   comp_buffer.shrink_to_fit();
