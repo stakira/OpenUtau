@@ -16,9 +16,6 @@
 [submodule "DawPlugin/deps/yamc"]
 	path = DawPlugin/deps/yamc
 	url = https://github.com/yohhoy/yamc.git
-[submodule "DawPlugin/deps/zlib"]
-	path = DawPlugin/deps/zlib
-	url = https://github.com/madler/zlib.git
-[submodule "DawPlugin/deps/gzip-hpp"]
-	path = DawPlugin/deps/gzip-hpp
-	url = https://github.com/mapbox/gzip-hpp.git
+[submodule "DawPlugin/deps/zstd"]
+	path = DawPlugin/deps/zstd
+	url = https://github.com/facebook/zstd

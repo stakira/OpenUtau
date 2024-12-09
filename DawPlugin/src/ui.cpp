@@ -1,10 +1,10 @@
-#include "DistrhoPluginInfo.h"
-#include "DistrhoUI.hpp"
 #include "common.hpp"
-#include "dpf_widgets/generic/ResizeHandle.hpp"
-#include "dpf_widgets/opengl/DearImGui/imgui.h"
-#include "noto_sans/noto_sans.hpp"
 #include "plugin.hpp"
+#include <DistrhoPluginInfo.h>
+#include <DistrhoUI.hpp>
+#include <dpf_widgets/generic/ResizeHandle.hpp>
+#include <dpf_widgets/opengl/DearImGui/imgui.h>
+#include <noto_sans/noto_sans.hpp>
 #include <string>
 
 START_NAMESPACE_DISTRHO

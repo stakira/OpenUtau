@@ -1,17 +1,15 @@
 #include "plugin.hpp"
-#include "DistrhoDetails.hpp"
-#include "DistrhoPlugin.hpp"
-#include "DistrhoPluginInfo.h"
-#include "asio.hpp"
-#include "choc/containers/choc_Value.h"
-#include "choc/memory/choc_Base64.h"
-#include "choc/text/choc_JSON.h"
 #include "common.hpp"
-#include "dpf/distrho/extra/String.hpp"
-#include "gzip/compress.hpp"
-#include "uuid/v4/uuid.h"
+#include <DistrhoDetails.hpp>
+#include <DistrhoPlugin.hpp>
+#include <DistrhoPluginInfo.h>
+#include <asio.hpp>
 #include <cfloat>
+#include <choc/containers/choc_Value.h>
+#include <choc/memory/choc_Base64.h>
+#include <choc/text/choc_JSON.h>
 #include <cstdio>
+#include <dpf/distrho/extra/String.hpp>
 #include <filesystem>
 #include <fstream>
 #include <future>
@@ -20,6 +18,7 @@
 #include <shared_mutex>
 #include <string>
 #include <thread>
+#include <uuid/v4/uuid.h>
 #include <vector>
 
 namespace Network {
@@ -191,7 +190,7 @@ String OpenUtauPlugin::getState(const char *rawKey) const {
       raw.insert(raw.end(), (uint8_t *)audio.data(),
                  (uint8_t *)audio.data() + size * sizeof(float));
     }
-    auto compressed = gzip::compress((const char *)raw.data(), raw.size());
+    auto compressed = Utils::zstd(raw.data(), raw.size(), 0);
     auto encoded = choc::base64::encodeToString(compressed);
 
     return String(encoded.c_str());
@@ -222,7 +221,7 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
     this->ustx = Utils::unBase64ToString(value);
   } else if (key == "audios") {
     auto decoded = Utils::unBase64ToVector(value);
-    auto decompressed = Utils::gunzip((char *)decoded.data(), decoded.size());
+    auto decompressed = Utils::unzstd(decoded.data(), decoded.size());
 
     uint32_t cursor = 0;
     std::map<AudioHash, std::vector<float>> audioBuffers;
@@ -623,8 +622,7 @@ void OpenUtauPlugin::onNotification(const std::string kind,
             auto hash = std::stoul(std::string(key));
             std::string encoded = value.get<std::string>();
             auto decoded = Utils::unBase64ToVector(encoded);
-            auto decompressed =
-                Utils::gunzip((char *)decoded.data(), decoded.size());
+            auto decompressed = Utils::unzstd(decoded.data(), decoded.size());
             std::vector<float> audio((float *)decompressed.data(),
                                      (float *)decompressed.data() +
                                          decompressed.size() / sizeof(float));

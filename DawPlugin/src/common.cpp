@@ -1,15 +1,44 @@
 #include "common.hpp"
-#include "choc/memory/choc_Base64.h"
-#include "choc/text/choc_JSON.h"
-#include "gzip/decompress.hpp"
-#include "gzip/compress.hpp"
+#include <choc/memory/choc_Base64.h>
+#include <choc/text/choc_JSON.h>
+#include <vector>
+#include <zstd.h>
 
-std::vector<uint8_t> Utils::gunzip(const char *data, size_t size) {
-  std::vector<uint8_t> decompressed;
-  gzip::Decompressor decompressor;
-  decompressor.decompress(decompressed, data, size);
-  return decompressed;
+std::vector<uint8_t> Utils::zstd(const uint8_t *data, size_t size, int level) {
+  size_t est_compress_size = ZSTD_compressBound(size);
+
+  std::vector<uint8_t> comp_buffer;
+  comp_buffer.resize(est_compress_size);
+
+  auto compress_size =
+      ZSTD_compress(comp_buffer.data(), est_compress_size, data, size,
+                    level == 0 ? ZSTD_maxCLevel() : level);
+
+  comp_buffer.resize(compress_size);
+  comp_buffer.shrink_to_fit();
+
+  return comp_buffer;
 }
+std::vector<uint8_t> Utils::unzstd(const uint8_t *data, size_t size) {
+  auto est_decomp_size = ZSTD_getFrameContentSize(data, size);
+  if (est_decomp_size == ZSTD_CONTENTSIZE_ERROR || est_decomp_size == 0) {
+    return {};
+  }
+  if (est_decomp_size == ZSTD_CONTENTSIZE_UNKNOWN) {
+    est_decomp_size = ZSTD_DStreamOutSize();
+  }
+
+  std::vector<uint8_t> decomp_buffer;
+  decomp_buffer.resize(est_decomp_size);
+
+  size_t const decomp_size =
+      ZSTD_decompress(decomp_buffer.data(), est_decomp_size, data, size);
+
+  decomp_buffer.resize(decomp_size);
+  decomp_buffer.shrink_to_fit();
+  return decomp_buffer;
+}
+
 std::string Utils::unBase64ToString(const std::string &encoded) {
   std::vector<uint8_t> decoded;
   choc::base64::decodeToContainer(decoded, encoded);

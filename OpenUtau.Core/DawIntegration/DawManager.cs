@@ -137,8 +137,8 @@ namespace OpenUtau.Core.DawIntegration {
                     var audios = new Dictionary<uint, string>();
                     foreach (var audioHash in missingAudios.missingAudios) {
                         var buffer = buffersDict[audioHash].byteBuffer;
+                        var compressed = Zstd.Compress(buffer);
 
-                        var compressed = Gzip.Compress(buffer);
                         audios[audioHash] = Convert.ToBase64String(compressed);
                     }
 

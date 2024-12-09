@@ -2,11 +2,13 @@
 #include "DistrhoPluginInfo.h"
 #include "choc/containers/choc_Value.h"
 #include <bitset>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace Utils {
-std::vector<uint8_t> gunzip(const char *data, size_t size);
+std::vector<uint8_t> zstd(const uint8_t *data, size_t size, int level);
+std::vector<uint8_t> unzstd(const uint8_t *data, size_t size);
 std::string unBase64ToString(const std::string &encoded);
 std::vector<uint8_t> unBase64ToVector(const std::string &encoded);
 
