@@ -234,8 +234,8 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
       cursor += sizeof(uint32_t);
       uint32_t size = *(uint32_t *)&decompressed[cursor];
       cursor += sizeof(uint32_t);
-      std::vector<float> audio((float *)&decompressed[cursor],
-                               (float *)&decompressed[cursor + size]);
+      std::vector<float> audio(size);
+      memcpy(audio.data(), &decompressed[cursor], size * sizeof(float));
       cursor += size * sizeof(float);
       audioBuffers[hash] = audio;
     }
