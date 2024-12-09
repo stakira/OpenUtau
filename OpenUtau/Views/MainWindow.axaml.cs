@@ -1368,7 +1368,7 @@ namespace OpenUtau.App.Views {
                     }
                 }
             } else if (cmd is DawConnectedNotification) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(1,
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(100,
                     ThemeManager.GetString("dawintegration.status.connected")
                 ));
             } else if (cmd is DawDisconnectedNotification) {

@@ -192,9 +192,8 @@ String OpenUtauPlugin::getState(const char *rawKey) const {
                  (uint8_t *)audio.data() + size * sizeof(float));
     }
     auto compressed = gzip::compress((const char *)raw.data(), raw.size());
-    auto compressedString = choc::base64::encodeToString(compressed);
+    auto encoded = choc::base64::encodeToString(compressed);
 
-    std::string encoded = choc::base64::encodeToString(compressedString);
     return String(encoded.c_str());
   } else if (key == "parts") {
     choc::value::Value value = choc::value::createEmptyArray();
