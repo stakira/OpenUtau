@@ -822,8 +822,8 @@ namespace OpenUtau.App.Views {
                 return;
             }
             string file = storageItem.Path.LocalPath;
-            var ext = Path.GetExtension(file);
-            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext == ".ufdata") {
+            var ext = Path.GetExtension(file).ToLower();
+            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext == ".ufdata" || ext == ".musicxml") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
