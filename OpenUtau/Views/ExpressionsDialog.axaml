@@ -67,11 +67,11 @@
       </Grid>
       <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.minvalue}" Width="130" HorizontalAlignment="Left"/>
-        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Min}"/>
+        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Min}"/>
       </Grid>
       <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.maxvalue}" Width="130" HorizontalAlignment="Left"/>
-        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Max}"/>
+        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Max}"/>
       </Grid>
       <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.defaultvalue}" Width="130" HorizontalAlignment="Left"/>
