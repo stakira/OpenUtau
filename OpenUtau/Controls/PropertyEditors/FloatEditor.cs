@@ -6,7 +6,7 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using ReactiveUI;
 
-namespace OpenUtau.Controls.PropertyEditors{
+namespace OpenUtau.Controls{
     public class FloatEditor : TextBox
     {
         protected override Type StyleKeyOverride => typeof(TextBox);

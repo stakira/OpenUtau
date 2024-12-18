@@ -6,7 +6,7 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using ReactiveUI;
 
-namespace OpenUtau.Controls.PropertyEditors{
+namespace OpenUtau.Controls{
     public class IntEditor : TextBox
     {
         protected override Type StyleKeyOverride => typeof(TextBox);
@@ -53,7 +53,7 @@ namespace OpenUtau.Controls.PropertyEditors{
 
         protected override void OnLostFocus(RoutedEventArgs e) {
             base.OnLostFocus(e);
-            if (!float.TryParse(Text, out float newValue))
+            if (!int.TryParse(Text, out int newValue))
             {
                 Text = Value.ToString();
             }
