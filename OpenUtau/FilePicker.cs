@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using OpenUtau.Core;
 using OpenUtau.Core.Util;
 
 namespace OpenUtau.App {
@@ -161,7 +162,8 @@ namespace OpenUtau.App {
 
         public async static Task<string?> SaveFileAboutProject
             (Window window, string titleKey, params FilePickerFileType[] types) {
-            var path = await SaveFile(window, titleKey, Preferences.Default.RecentOpenProjectDirectory, null, types);
+            var path = await SaveFile(window, titleKey, Preferences.Default.RecentOpenProjectDirectory, 
+                Path.GetFileName(Path.ChangeExtension(DocManager.Inst.Project.FilePath, null)), types);
             var dir = Path.GetDirectoryName(path);
             if (dir != null) {
                 Preferences.Default.RecentOpenProjectDirectory = dir;
