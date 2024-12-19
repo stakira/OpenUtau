@@ -80,11 +80,13 @@ namespace OpenUtau.App.Views {
 
             DocManager.Inst.AddSubscriber(this);
 
-            Log.Information("Main window checking Update.");
-            UpdaterDialog.CheckForUpdate(
-                dialog => dialog.Show(this),
-                () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
-                TaskScheduler.FromCurrentSynchronizationContext());
+            if (Preferences.Default.CheckForUpdateOnStart) {
+                Log.Information("Main window checking Update.");
+                UpdaterDialog.CheckForUpdate(
+                    dialog => dialog.Show(this),
+                    () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
+                    TaskScheduler.FromCurrentSynchronizationContext());
+            }
             Log.Information("Created main window.");
         }
 

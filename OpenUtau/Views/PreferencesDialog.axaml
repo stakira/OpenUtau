@@ -235,6 +235,10 @@
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
           <StackPanel>
             <Grid>
+              <TextBlock Text="{DynamicResource prefs.advanced.checkupdateonstart}" HorizontalAlignment="Left"/>
+              <ToggleSwitch IsChecked="{Binding CheckForUpdateOnStart}"/>
+            </Grid>
+            <Grid>
               <TextBlock Text="{DynamicResource prefs.advanced.beta}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding Beta}"/>
             </Grid>
