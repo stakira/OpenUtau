@@ -366,6 +366,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các tổ hợp thiết lập của b
   <system:String x:Key="pianoroll.tool.selectionv2">Chọn nốt (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">Tính năng thử nghiệm</system:String>
   <system:String x:Key="prefs.advanced.importtempo">Khi cho vào track, sử dụng nhịp độ kèm trong tệp đó</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Luôn luôn</system:String>

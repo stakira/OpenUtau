@@ -366,6 +366,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Mano (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">Versiones en desarrollo</system:String>
   <system:String x:Key="prefs.advanced.importtempo">Al importar pistas, se usa el tempo importado</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Siempre</system:String>

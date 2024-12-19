@@ -363,6 +363,7 @@ Attention : cela va effacer les préréglages.</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Sélectionner (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Paramètres avancés</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.importtempo">Lors de l'import des pistes, utiliser le tempo du projet importé</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Toujours</system:String>

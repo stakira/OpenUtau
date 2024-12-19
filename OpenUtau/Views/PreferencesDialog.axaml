@@ -273,6 +273,10 @@
         <!-- Advanced -->
         <StackPanel>
           <Grid Margin="0,5,0,0">
+            <TextBlock Text="{DynamicResource prefs.advanced.checkupdateonstart}" HorizontalAlignment="Left"/>
+            <ToggleSwitch IsChecked="{Binding CheckForUpdateOnStart}"/>
+          </Grid>
+          <Grid Margin="0,5,0,0">
             <TextBlock Text="{DynamicResource prefs.advanced.beta}" HorizontalAlignment="Left"/>
             <ToggleSwitch IsChecked="{Binding Beta}"/>
           </Grid>

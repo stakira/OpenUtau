@@ -362,6 +362,7 @@
   <system:String x:Key="pianoroll.tool.selectionv2">Инструмент выбора (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
   <system:String x:Key="prefs.advanced.importtempo">Когда импортировуются треки, использовать темп импортированного проекта</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Всегда</system:String>

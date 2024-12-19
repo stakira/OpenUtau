@@ -366,6 +366,7 @@
   <system:String x:Key="pianoroll.tool.selectionv2">선택 도구 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">고급</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">베타 버전 사용</system:String>
   <system:String x:Key="prefs.advanced.importtempo">프로젝트를 불러올 때, 프로젝트에 포함된 템포 사용</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">항상</system:String>

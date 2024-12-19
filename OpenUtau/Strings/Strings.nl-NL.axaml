@@ -362,6 +362,7 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Selectiegereedschap (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Geavanceerd</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
   <system:String x:Key="prefs.advanced.importtempo.always">Altijd</system:String>

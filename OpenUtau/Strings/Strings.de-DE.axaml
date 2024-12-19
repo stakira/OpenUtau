@@ -366,6 +366,7 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
   <system:String x:Key="pianoroll.tool.selectionv2">Auswahlwerkzeug (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Fortgeschritten</system:String>
+  <system:String x:Key="prefs.advanced.checkupdateonstart">Beim Start nach Update suchen</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.importtempo">Beim importieren von Spuren das Tempo des importierten Projekts verwenden</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Immer</system:String>

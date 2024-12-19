@@ -370,6 +370,7 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>
   <system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
   <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
