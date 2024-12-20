@@ -153,11 +153,11 @@
   <system:String x:Key="menu.file">Datei</system:String>
   <system:String x:Key="menu.file.exit">Verlassen</system:String>
   <system:String x:Key="menu.file.exportaudio">Audio exportieren</system:String>
-  <system:String x:Key="menu.file.exportds">Exportiere DiffSinger Scripts To</system:String>
-  <system:String x:Key="menu.file.exportds.v2">Exportiere DiffSinger Scripts To (v2)</system:String>
-  <system:String x:Key="menu.file.exportds.v2withoutpitch">Exportiere DiffSinger Scripts To (v2, ohne pitch curve)</system:String>
+  <system:String x:Key="menu.file.exportds">Exportiere DiffSinger Scripts zu</system:String>
+  <system:String x:Key="menu.file.exportds.v2">Exportiere DiffSinger Scripts zu (v2)</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">Exportiere DiffSinger Scripts zu (v2, ohne pitch curve)</system:String>
   <system:String x:Key="menu.file.exportmidi">Midi Datei exportieren</system:String>
-  <system:String x:Key="menu.file.exportmixdown">zu Wav Datei konvertieren</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Zu Wav Datei konvertieren</system:String>
   <system:String x:Key="menu.file.exportproject">Projekt exportieren</system:String>
   <system:String x:Key="menu.file.exportust">Ust Dateien exportieren</system:String>
   <system:String x:Key="menu.file.exportustto">Ust Dateien nach... exportieren</system:String>
@@ -183,7 +183,7 @@
   <system:String x:Key="menu.help.checkupdate">Nach Updates suchen</system:String>
   <system:String x:Key="menu.help.logslocation">Log Speicherort öffnen</system:String>
   <system:String x:Key="menu.help.reportissue">Problem melden</system:String>
-  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.help.wiki">OpenUtau Dokumentation</system:String>
   <system:String x:Key="menu.project">Projekt</system:String>
   <system:String x:Key="menu.project.expressions">Ausdrücke...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Tempo Anpassen (Timing beibehalten)</system:String>
@@ -221,7 +221,7 @@
 Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:String>
   <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
   <system:String x:Key="notedefaults.vibrato.autominlength">Minimale Länge</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">Automatisches Vibrato nach Länge</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Auto Vibrato nach Länge</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Tiefe</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>-->
   <system:String x:Key="notedefaults.vibrato.in">Einblenden</system:String>
@@ -322,9 +322,21 @@ Warnung: Diese Option entfernt alle benutzerdefinierten Einstellungen.</system:S
     Rechtsklick um zurückzusetzen
     Strg halten um auszuwählen
     Alt halten um zu glätten</system:String>
+  <system:String x:Key="pianoroll.tool.drawlinepitch">
+    Linienzeichnungstool (Shift + 4)
+    Linksklick um zu zeichnen (gerade Linie zeichnen)
+    Rechtsklick um zu löschen
+    Strg halten um auszuwähle
+    Alt halten um zu glätten
+  </system:String>
   <system:String x:Key="pianoroll.tool.eraser">Radierer Werkzeug (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Messer Werkzeug (5)</system:String>
-  <system:String x:Key="pianoroll.tool.penplus">Stift Plus Werkzeug (Ctrl + 2)
+  <system:String x:Key="pianoroll.tool.overwritepitch">Pitch überschreibungstool (Strg + 4)
+    Linksklick um zu zeichnen (Überschreibt Vibrato oder mod+)
+    Rechtsklick um zu löschen
+    Strg halten um auszuwählen
+    Alt halten um zu glätten</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">Stift Plus Werkzeug (Strg + 2)
     Linksklick um zu zeichnen
     Rechtsklick um zu löschen
     Strg halten um auszuwählen</system:String>
