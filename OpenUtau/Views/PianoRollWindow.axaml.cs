@@ -225,6 +225,11 @@ namespace OpenUtau.App.Views {
             ViewModel.RaisePropertyChanged(nameof(ViewModel.UseTrackColor));
             MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
         }
+        void OnMenuFullScreen(object sender, RoutedEventArgs args) {
+            this.WindowState = this.WindowState == WindowState.FullScreen
+                ? WindowState.Normal
+                : WindowState.FullScreen;
+        }
         void OnMenuDegreeStyle(object sender, RoutedEventArgs args) {
             if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
                 Preferences.Default.DegreeStyle = tag;
@@ -1145,6 +1150,9 @@ namespace OpenUtau.App.Views {
                         Hide();
                         return true;
                     }
+                    break;
+                case Key.F11:
+                    OnMenuFullScreen(this, new RoutedEventArgs());
                     break;
                 case Key.Enter:
                     if (isNone) {

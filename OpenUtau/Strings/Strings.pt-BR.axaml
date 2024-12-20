@@ -188,6 +188,7 @@
   <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
   <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <system:String x:Key="menu.tools.clearcache">Limpar Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Janela de Debug</system:String>
   <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
