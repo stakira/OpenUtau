@@ -49,6 +49,12 @@
         </array>          
   </CFBundleDocumentTypes>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
@@ -116,6 +122,9 @@
     </Compile>
     <Compile Update="Views\TrackColorDialog.axaml.cs">
       <DependentUpon>TrackColorDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DawIntegrationTerminalDialog.axaml.cs">
+      <DependentUpon>DawIntegrationTerminalDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

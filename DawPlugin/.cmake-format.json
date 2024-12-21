@@ -1,0 +1,23 @@
+{
+  "additional_commands": {
+    "dpf_add_plugin": {
+      "pargs": 1,
+      "kwargs": {
+        "TARGETS": "*",
+        "UI_TYPE": 1,
+        "FILES_DSP": "*",
+        "FILES_UI": "*",
+        "FILES_COMMON": "*"
+      }
+    },
+    "corrosion_import_crate": {
+      "pargs": 0,
+      "kwargs": {
+        "MANIFEST_PATH": "*",
+        "PROFILE": 1,
+        "CRATES": "*",
+        "FEATURES": "*"
+      }
+    }
+  }
+}
