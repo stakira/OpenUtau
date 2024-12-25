@@ -18,7 +18,7 @@ namespace Voicevox {
         }
 
         protected bool IsSyllableVowelExtensionNote(Note note) {
-            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*") || note.lyric.StartsWith("+") || note.lyric.StartsWith("-");
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
@@ -32,15 +32,15 @@ namespace Voicevox {
                     notes[i].lyric = lyricList[1];
                 }
                 if (!IsSyllableVowelExtensionNote(notes[i])) {
-                    if (VoicevoxUtils.IsHiraKana(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = notes[i].lyric });
-                    } else if (VoicevoxUtils.IsPau(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = "R" });
+                    string val = "error";
+                    if (VoicevoxUtils.phoneme_List.paus.TryGetValue(notes[i].lyric, out string pau)) {
+                        val = pau;
+                    } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric)) {
+                        val = notes[i].lyric;
                     } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric) });
-                    } else {
-                        phonemes.Add(new Phoneme { phoneme = "error"});
+                        val = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric);
                     }
+                    phonemes.Add(new Phoneme { phoneme = val });
                 }
             }
             return new Result { phonemes = phonemes.ToArray() };

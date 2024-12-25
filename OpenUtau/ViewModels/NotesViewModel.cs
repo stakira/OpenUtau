@@ -43,6 +43,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapDiv { get; set; }
+        [Reactive] public int Key { get; set; }
         public ObservableCollectionExtended<int> SnapTicks { get; } = new ObservableCollectionExtended<int>();
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
@@ -53,6 +54,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool PenPlusTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
         [Reactive] public bool DrawPitchTool { get; set; }
+        [Reactive] public bool DrawLinePitchTool { get; set; }
         [Reactive] public bool OverwritePitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
@@ -107,6 +109,7 @@ namespace OpenUtau.App.ViewModels {
         private string? portraitSource;
         private readonly object portraitLock = new object();
         private int userSnapDiv = -2;
+        private int userKey => Project.key;
 
         public NotesViewModel() {
             SnapDivs = new List<MenuItemViewModel>();
@@ -204,6 +207,7 @@ namespace OpenUtau.App.ViewModels {
             }
             EraserTool = false;
             DrawPitchTool = false;
+            DrawLinePitchTool = false;
             OverwritePitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
@@ -213,6 +217,7 @@ namespace OpenUtau.App.ViewModels {
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 OverwritePitchTool = index == "4+";
+                DrawLinePitchTool = index == "4++";
                 KnifeTool = index == "5";
             });
 
@@ -314,8 +319,8 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void UpdateKey(){
-            int key = Project.key;
-            KeyText = "1="+MusicMath.KeysInOctave[key].Item1;
+            Key = userKey;
+            KeyText = "1="+MusicMath.KeysInOctave[userKey].Item1;
         }
 
         public void OnXZoomed(Point position, double delta) {

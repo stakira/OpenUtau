@@ -413,7 +413,6 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-            
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
         }
 
@@ -436,8 +435,8 @@ namespace OpenUtau.App.Views {
                 maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
             }
 
-            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0) 
-                ? (oldDur-1) / snapUnit * snapUnit 
+            int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0)
+                ? (oldDur-1) / snapUnit * snapUnit
                 : oldDur - 15;
             int maxDelta = maxNoteTicks - note.duration;
 
@@ -615,6 +614,7 @@ namespace OpenUtau.App.Views {
     }
 
     class ExpSetValueState : NoteEditState {
+        private Point firstPoint;
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
@@ -636,7 +636,9 @@ namespace OpenUtau.App.Views {
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
+            firstPoint = point;
             lastPoint = point;
+            startValue = 0;
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
@@ -646,12 +648,14 @@ namespace OpenUtau.App.Views {
                 return;
             }
             bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+            bool ctrlShiftHeld = args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift);
             if (descriptor.type != UExpressionType.Curve) {
                 UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
-                UpdateCurveExp(pointer, point);
+                UpdateCurveExp(pointer, point, ctrlShiftHeld, shiftHeld);
             }
-            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            bool typeOptions = descriptor.type == UExpressionType.Options;
+            double viewMax = descriptor.max + (typeOptions ? 1 : 0);
             double displayValue;
             if (shiftHeld) {
                 displayValue = startValue;
@@ -660,7 +664,7 @@ namespace OpenUtau.App.Views {
                 displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
             }
             string valueTipText;
-            if (descriptor.type == UExpressionType.Options) {
+            if (typeOptions) {
                 int index = (int)displayValue;
                 if (index >= 0 && index < descriptor.options.Length) {
                     valueTipText = descriptor.options[index];
@@ -714,15 +718,27 @@ namespace OpenUtau.App.Views {
                 }
             }
         }
-        private void UpdateCurveExp(IPointer pointer, Point point) {
+        private void UpdateCurveExp(IPointer pointer, Point point, bool ctrlShiftHeld, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
-            int lastX = notesVm.PointToTick(lastPoint);
-            int x = notesVm.PointToTick(point);
             if (descriptor == null || notesVm.Part == null) {
                 return;
             }
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
+            if (ctrlShiftHeld) {
+                lastX = notesVm.PointToTick(firstPoint);
+                x = notesVm.PointToTick(lastPoint);
+                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
+            } else if (shiftHeld) {
+                lastX = notesVm.PointToTick(lastPoint);
+                x = notesVm.PointToTick(point);
+                lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+                y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - firstPoint.Y / control.Bounds.Height));
+                startValue = y;
+            }
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }
     }
@@ -996,7 +1012,7 @@ namespace OpenUtau.App.Views {
             var project = notesVm.Project;
             double preutter = project.timeAxis.MsBetweenTickPos(notesVm.PointToTick(point), phoneme.position);
             double preutterDelta = preutter - phoneme.autoPreutter;
-            preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
+            preutterDelta = Math.Max(-phoneme.oto?.Preutter ?? 0, preutterDelta);
             if (notesVm.Part == null) {
                 return;
             }
@@ -1102,6 +1118,50 @@ namespace OpenUtau.App.Views {
                 (int)Math.Round(tone * 100 - pitch.Value),
                 vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
                 (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
+    class DrawLinePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? firstPitch;
+        Point firstPoint;
+        double? lastPitch;
+        Point lastPoint;
+        public DrawLinePitchState(
+            Control control, 
+            PianoRollViewModel vm, 
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            firstPitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            firstPoint = point;
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            if (pitch == null || vm.NotesViewModel.Part == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value)),
+                vm.NotesViewModel.PointToTick(firstPoint),
+                (int)Math.Round(tone * 100 - (firstPitch == null ? pitch.Value : firstPitch.Value))
+                ));
             lastPitch = pitch;
             lastPoint = point;
         }

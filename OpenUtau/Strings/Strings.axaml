@@ -119,10 +119,10 @@
   <system:String x:Key="languages.pl">Polish</system:String>
   <system:String x:Key="languages.pt">Portuguese</system:String>
   <system:String x:Key="languages.ru">Russian</system:String>
+  <system:String x:Key="languages.th">Thai</system:String>
   <system:String x:Key="languages.vi">Vietnamese</system:String>
   <system:String x:Key="languages.zh">Chinese</system:String>
   <system:String x:Key="languages.zh-yue">Cantonese</system:String>
-  <system:String x:Key="languages.th">Thai</system:String>
 
   <system:String x:Key="lyrics.apply">Apply</system:String>
   <system:String x:Key="lyrics.cancel">Cancel</system:String>
@@ -190,7 +190,7 @@
   <system:String x:Key="menu.help.checkupdate">Check Update</system:String>
   <system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>
   <system:String x:Key="menu.help.reportissue">Report Issue</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <system:String x:Key="menu.help.wiki">OpenUtau Documentation</system:String>
   <system:String x:Key="menu.project">Project</system:String>
   <system:String x:Key="menu.project.expressions">Expressions...</system:String>
   <system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>
@@ -198,6 +198,7 @@
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
   <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
+  <system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
@@ -327,6 +328,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
+  <system:String x:Key="pianoroll.tool.drawlinepitch">
+    Line Draw Pitch Tool (Shift + 4)
+    Left click to draw (draw straight line)
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen
+  </system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
     Left click to draw
     Right click to reset
@@ -380,6 +388,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
+  <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
+  <system:String x:Key="prefs.editing">Editing</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
@@ -432,6 +442,7 @@ Warning: this option removes custom presets.</system:String>
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
+  <system:String x:Key="prefs.utau">UTAU</system:String>
 
   <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
@@ -533,8 +544,8 @@ General
   <system:String x:Key="tracks.mute.allothers">Mute all others</system:String>
   <system:String x:Key="tracks.mute.only">Mute this only</system:String>
   <system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>
-  <system:String x:Key="tracks.opensingers">Open singers location</system:String>
   <system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>
+  <system:String x:Key="tracks.opensingers">Open singers location</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>

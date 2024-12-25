@@ -64,17 +64,20 @@
   <!--<system:String x:Key="errors.details">Error Details</system:String>-->
   <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
   <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
+  <!--<system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>-->
   <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
   <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
   <!--<system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>-->
   <!--<system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>-->
   <!--<system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>-->
+  <!--<system:String x:Key="errors.expression.marge">The following expressions have been merged due to duplicate flags</system:String>-->
   <!--<system:String x:Key="errors.expression.min">Min must be smaller than max</system:String>-->
   <!--<system:String x:Key="errors.expression.name">Name must be set</system:String>-->
   <!--<system:String x:Key="errors.failed.export">Failed to export</system:String>-->
   <!--<system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>-->
   <!--<system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>-->
   <!--<system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>-->
+  <!--<system:String x:Key="errors.failed.installsinger">Failed to install singer</system:String>-->
   <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
   <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
   <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
@@ -83,6 +86,10 @@
   <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
   <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
   <!--<system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>-->
+  <!--<system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>-->
+  <!--<system:String x:Key="errors.install.cpp">Try installing the latest Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>-->
+  <!--<system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>-->
+  <!--<system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>-->
 
   <system:String x:Key="exps.abbr">Abreviación</system:String>
   <system:String x:Key="exps.apply">Aplicar</system:String>
@@ -112,10 +119,10 @@
   <system:String x:Key="languages.pl">polaco</system:String>
   <system:String x:Key="languages.pt">portugués</system:String>
   <system:String x:Key="languages.ru">ruso</system:String>
+  <system:String x:Key="languages.th">tailandés</system:String>
   <system:String x:Key="languages.vi">vietnamita</system:String>
   <system:String x:Key="languages.zh">chino</system:String>
   <system:String x:Key="languages.zh-yue">cantonés</system:String>
-  <system:String x:Key="languages.th">tailandés</system:String>
 
   <system:String x:Key="lyrics.apply">Aplicar</system:String>
   <system:String x:Key="lyrics.cancel">Cancelar</system:String>
@@ -191,6 +198,7 @@
   <system:String x:Key="menu.tools.clearcache">Limpiar caché</system:String>
   <system:String x:Key="menu.tools.debugwindow">Ventana de depuración</system:String>
   <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
+  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
@@ -261,6 +269,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
 
   <!--<system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
@@ -291,6 +300,8 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.all">Reset notes to default</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.allparameters">Reset all parameters</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Restablecer duración fonética</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reestablecer curvas del tono</system:String>
@@ -300,6 +311,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <!--<system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.plugin.openfolder">Open folder</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.reset">Reset</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>-->
@@ -316,9 +328,22 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar tono de nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver vibratos (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Ver formas de onda (W)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">
+    Line Draw Pitch Tool (Shift + 4)
+    Left click to draw (draw straight line)
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen
+  </system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">Dibujar en tono avanzado (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (Ctrl + 4)
+    Left click to draw (overwrites vibrato or mod+)
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen
+  </system:String>-->
   <system:String x:Key="pianoroll.tool.penplus">Lápiz avanzado (Ctrl + 2)
     Click izquierdo para dibujar
     Click derecho para borrar
@@ -359,11 +384,14 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <!--<system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>-->
   <!--<system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>-->
   <system:String x:Key="prefs.caption">Ajustes</system:String>
+  <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
+  <!--<system:String x:Key="prefs.editing">Editing</system:String>-->
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
   <system:String x:Key="prefs.off">No</system:String>
   <system:String x:Key="prefs.on">Sí</system:String>
   <system:String x:Key="prefs.otoeditor">Editor de OTO</system:String>
   <system:String x:Key="prefs.otoeditor.select">Editor predeterminado</system:String>
+  <!--<system:String x:Key="prefs.otoeditor.setparampath">setParam Path</system:String>-->
   <system:String x:Key="prefs.paths">Rutas</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Ruta de voces adicional</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Instalar a la ruta adicional</system:String>
@@ -378,11 +406,13 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor fijo</system:String>
   <system:String x:Key="prefs.playback.backend">Backend de audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Escoger automáticamente</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posición del cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de reproducción</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Cuando se pausa...</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Hacer nada</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Mover el cursor a donde se empezó a reproducir</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime.onlycursor">Move only cursor back to where you started playing</system:String>-->
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
   <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
@@ -408,12 +438,14 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   </system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <system:String x:Key="prefs.rendering.wavtool">WAVTool</system:String>
+  <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
   <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando al Renderizador...</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
+  <!--<system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>-->
   <system:String x:Key="singers.editoto.editinvlabeler">Editar en vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Ver el archivo fuente</system:String>
   <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
@@ -421,6 +453,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.editoto.reset">Restablecer OTO</system:String>
   <system:String x:Key="singers.editoto.save">Guardar OTO</system:String>
   <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
+  <!--<system:String x:Key="singers.editoto.setsetparampath">Download setParam (v4.0b or higher) from http://nwp8861.blog92.fc2.com/ and set setParam path in Preferences first!</system:String>-->
   <system:String x:Key="singers.editoto.setvlabelerpath">Por favor, descarga vLabeler (1.0.0-beta1 o más nuevo) de https://github.com/sdercolin/vlabeler y configura la ruta de vLabeler en ajustes primero.</system:String>
   <system:String x:Key="singers.errorreport">Generar registro de error de voz</system:String>
   <system:String x:Key="singers.location">Mostrar archivos</system:String>
@@ -503,6 +536,7 @@ General
 
   <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
   <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
+  <!--<system:String x:Key="tracks.installsinger">Install singer</system:String>-->
   <system:String x:Key="tracks.more">Más</system:String>
   <system:String x:Key="tracks.movedown">Mover Abajo</system:String>
   <system:String x:Key="tracks.moveup">Mover Arriba</system:String>
@@ -510,6 +544,8 @@ General
   <!--<system:String x:Key="tracks.mute.allothers">Mute all others</system:String>-->
   <!--<system:String x:Key="tracks.mute.only">Mute this only</system:String>-->
   <!--<system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>-->
+  <!--<system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>-->
+  <!--<system:String x:Key="tracks.opensingers">Open singers location</system:String>-->
   <system:String x:Key="tracks.remove">Borrar</system:String>
   <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">Seleccionar Renderizador</system:String>
