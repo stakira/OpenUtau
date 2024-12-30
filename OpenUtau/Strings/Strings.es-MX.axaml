@@ -49,7 +49,7 @@
   <system:String x:Key="dialogs.noresampler.caption">No se encontró un resampler.</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">Esta herramienta cambia el tempo sin mover las notas ni cambiar su duración.
-  Nuevo BPM:</system:String>-->
+  Nuevo BPM:</system:String>
   <system:String x:Key="dialogs.timesig.caption">Medida del compás</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Ajustes de la pista</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Ubicación</system:String>
