@@ -2,7 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-
   <system:String x:Key="context.note.copy">Copiar nota</system:String>
   <system:String x:Key="context.note.delete">Borrar nota</system:String>
   <system:String x:Key="context.note.pasteparameters">Seleccionar y pegar parámetros</system:String>
