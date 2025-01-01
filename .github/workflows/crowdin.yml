@@ -28,17 +28,18 @@ jobs:
 
           # Visit https://crowdin.com/settings#api-key to create this token
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-
-      - run: ls -l OpenUtau/Strings/
       
       - name: Set permissions
         run: sudo chmod -R 777 .
 
-      - run: ls -l OpenUtau/Strings/
-
       - name: Run sync_strings.py
         run: python Misc/sync_strings.py
       
+      - name: git config
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
       - name: git commit
         run: |
           git add .
