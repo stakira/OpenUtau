@@ -1,6 +1,4 @@
-preserve_hierarchy: true
 files:
   - source: /OpenUtau/Strings/Strings.axaml
-    dest: "/[oxygen-dioxide.OpenUtau] master/OpenUtau/Strings/Strings.xaml"
     translation: /OpenUtau/Strings/Strings.%locale%.axaml
     type: xaml
