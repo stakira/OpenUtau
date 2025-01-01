@@ -19,6 +19,7 @@ def file_to_dict(filename):
         child.get('{http://schemas.microsoft.com/winfx/2006/xaml}Key'):
         (tag_class.sub('', child.tag), child.text)
         for child in src_etree.getroot()[:]
+        if (child.text != "" and child.text is not None)
     }
 
 
