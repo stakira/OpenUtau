@@ -1,4 +1,3 @@
-preserve_hierarchy: true
 files:
   - source: /OpenUtau/Strings/Strings.axaml
     translation: /OpenUtau/Strings/Strings.%locale%.axaml
