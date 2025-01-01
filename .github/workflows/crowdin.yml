@@ -28,9 +28,13 @@ jobs:
 
           # Visit https://crowdin.com/settings#api-key to create this token
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - run: ls -l OpenUtau/Strings/
       
       - name: Set permissions
         run: sudo chmod -R 777 OpenUtau/Strings/
+
+      - run: ls -l OpenUtau/Strings/
 
       - name: Run sync_strings.py
         run: python Misc/sync_strings.py
