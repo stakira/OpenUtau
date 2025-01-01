@@ -32,7 +32,7 @@ jobs:
       - run: ls -l OpenUtau/Strings/
       
       - name: Set permissions
-        run: sudo chmod -R 777 OpenUtau/Strings/
+        run: sudo chmod -R 777 .
 
       - run: ls -l OpenUtau/Strings/
 
