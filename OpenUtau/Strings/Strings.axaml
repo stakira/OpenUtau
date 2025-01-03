@@ -571,6 +571,4 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
-
-  <system:String x:Key="teststring">Test importing new string keys into crowdin.</system:String>
 </ResourceDictionary>
