@@ -2,6 +2,9 @@ name: Crowdin Action
 
 on:
   workflow_dispatch: {}
+  schedule:
+    # runs every day
+    - cron: '0 4 * * *'
 
 jobs:
   synchronize-with-crowdin:
