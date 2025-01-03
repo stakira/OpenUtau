@@ -17,6 +17,7 @@ jobs:
         uses: crowdin/github-action@v2
         with:
           upload_sources: true
+          upload_sources_args: --auto-update
           upload_translations: false
           download_translations: true
           localization_branch_name: crowdin-translated
