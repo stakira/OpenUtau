@@ -8,7 +8,6 @@ image:
   - Ubuntu
 branches:
   only:
-    - master
     - stable
 skip_commits:
   files:

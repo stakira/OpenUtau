@@ -8,7 +8,6 @@ namespace OpenUtau.Audio {
         public string api;
         public int deviceNumber;
         public Guid guid;
-        public object data;
 
         public override string ToString() => $"[{api}] {name}";
     }

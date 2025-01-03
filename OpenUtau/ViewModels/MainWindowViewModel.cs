@@ -90,10 +90,6 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
-        public Task? GetInitSingerTask() {
-            return SingerManager.Inst.InitializationTask;
-        }
-
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
@@ -181,12 +177,12 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file, bool UseDrywetmidi = true) {
+        public void ImportMidi(string file) {
             if (file == null) {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
+            var parts = Core.Format.MidiWriter.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack(project);

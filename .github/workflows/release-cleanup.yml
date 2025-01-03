@@ -4,9 +4,8 @@ name: release-cleanup
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
-  push:
-    branches: [ "master" ]
+  schedule:
+    - cron: '15 10 * * 3' # every Wednesday at 10:15 UTC
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

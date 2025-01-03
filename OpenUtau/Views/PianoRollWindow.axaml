@@ -59,6 +59,7 @@
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
                          TrackOffset="{Binding TrackOffset}"
+                         Key="{Binding Key}"
                          PointerWheelChanged="KeyboardPointerWheelChanged"
                          PointerPressed="KeyboardPointerPressed"
                          PointerMoved="KeyboardPointerMoved"
@@ -195,7 +196,7 @@
                 </Style>
               </Style>
             </Menu.Styles>
-            
+
             <MenuItem Header="{DynamicResource menu.edit}">
               <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
               <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
@@ -227,7 +228,7 @@
                 </MenuItem>
               </MenuItem>
             </MenuItem>
-          
+
             <MenuItem Header="{DynamicResource menu.view}">
               <MenuItem Header="{DynamicResource prefs.appearance.showportrait}" Click="OnMenuShowPortrait">
                 <MenuItem.Icon>
@@ -249,6 +250,7 @@
                   <CheckBox IsChecked="{Binding UseTrackColor}" />
                 </MenuItem.Icon>
               </MenuItem>
+              <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
               <MenuItem Header="{DynamicResource prefs.appearance.degree}">
                 <MenuItem Header="{DynamicResource prefs.appearance.degree.off}" Click="OnMenuDegreeStyle" Tag="0">
                   <MenuItem.Icon>
@@ -303,34 +305,10 @@
             </MenuItem>
 
             <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
-              <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
-              <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
-              <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
-              <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}" Height="{Binding Height}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
+              <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}" Classes="MenuItemWithSubMenu"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}" Classes="MenuItemWithSubMenu"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}" Classes="MenuItemWithSubMenu"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu" Classes="MenuItemWithSubMenu"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
             <MenuItem Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
@@ -426,7 +404,22 @@
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4+"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.overwritepitch}">
               <Grid Width="18" Height="18">
-                <Path Classes="filled" Data="M9.75 20.85C11.53 20.15 11.14 18.22 10.24 17C9.35 15.75 8.12 14.89 6.88 14.06C6 13.5 5.19 12.8 4.54 12C4.26 11.67 3.69 11.06 4.27 10.94C4.86 10.82 5.88 11.4 6.4 11.62C7.31 12 8.21 12.44 9.05 12.96L10.06 11.26C8.5 10.23 6.5 9.32 4.64 9.05C3.58 8.89 2.46 9.11 2.1 10.26C1.78 11.25 2.29 12.25 2.87 13.03C4.24 14.86 6.37 15.74 7.96 17.32C8.3 17.65 8.71 18.04 8.91 18.5C9.12 18.94 9.07 18.97 8.6 18.97C7.36 18.97 5.81 18 4.8 17.36L3.79 19.06C5.32 20 7.88 21.47 9.75 20.85M20.84 5.25C21.06 5.03 21.06 4.67 20.84 4.46L19.54 3.16C19.33 2.95 18.97 2.95 18.76 3.16L17.74 4.18L19.82 6.26M11 10.92V13H13.08L19.23 6.85L17.15 4.77L11 10.92Z" >
+                <Path Classes="filled" Data="M 19.540126 3.1598821 C 19.330126 2.9498825 18.969979 2.9502481 18.759981 3.1602475 L 17.740128 4.1801 L 19.820028 6.2599998 L 20.840246 5.2500134 C 21.060246 5.0300138 21.060246 4.6700018 20.840246 4.4600022 L 19.540126 3.1598821 Z  M 17.149995 4.7702332 L 11.000186 10.920042 L 11.000186 12.999942 L 13.080086 12.999942 L 19.229895 6.8501331 L 17.149995 4.7702332 Z  M 19.879589 13.222841 L 17.879714 13.222475 L 17.879714 16.222471 L 14.879718 16.222471 L 14.879718 18.222712 L 17.879714 18.222712 L 17.879714 21.222708 L 19.879955 21.222708 L 19.879955 18.222712 L 22.879951 18.222712 L 22.879585 16.222837 L 19.879589 16.222837 L 19.879589 13.222841 Z  M 10.059992 11.260237 C 8.4999952 10.230239 6.499898 9.3198861 4.6399018 9.0498865 C 3.5799038 8.8898869 2.4599531 9.1097532 2.0999539 10.259751 C 1.7799545 11.249749 2.2898688 12.249906 2.8698676 13.029906 C 4.2398648 14.859902 6.369998 15.739794 7.9599948 17.31979 C 8.2999942 17.64979 8.7100549 18.040057 8.9100545 18.500057 C 9.1200541 18.940055 9.0701879 18.969971 8.6001889 18.969971 C 7.3601913 18.969971 5.8099483 17.999985 4.7999503 17.359985 L 3.7899638 19.059861 C 5.3199608 19.999859 7.8801301 21.469991 9.7501265 20.849993 C 11.530123 20.149993 11.139771 18.220057 10.239773 17.000059 C 9.349774 15.750061 8.1202131 14.889988 6.8802155 14.05999 C 6.0002173 13.49999 5.1901443 12.79982 4.5401455 11.999822 C 4.2601461 11.669822 3.6901105 11.059774 4.2701093 10.939774 C 4.8601081 10.819776 5.880071 11.399798 6.40007 11.619798 C 7.3100682 11.999798 8.2100072 12.440113 9.0500056 12.960113 L 10.059992 11.260237 Z" >
+                  <Path.RenderTransform>
+                    <TransformGroup>
+                      <ScaleTransform ScaleX=".7" ScaleY=".7" />
+                      <TranslateTransform X="-2" Y="-2"/>
+                    </TransformGroup>
+                  </Path.RenderTransform>
+                </Path>
+              </Grid>
+            </ToggleButton>
+            <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+                          IsChecked="{Binding NotesViewModel.DrawLinePitchTool, Mode=OneWay}"
+                          Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4++"
+                          ToolTip.Tip="{DynamicResource pianoroll.tool.drawlinepitch}">
+              <Grid Width="18" Height="18">
+                <Path Classes="filled" Data="m 1.9654432,15.883124 a 0.74547489,0.74547489 0 0 0 -0.00284,1.052361 l 4.9071522,4.946703 a 0.74547489,0.74547489 0 0 0 1.0555507,0.0035 L 22.513776,7.3542255 a 0.74547489,0.74547489 0 0 0 0.0024,-1.053823 L 17.585453,1.3481852 a 0.74547489,0.74547489 0 0 0 -1.05524,-0.00189 L 13.795097,4.077798 a 0.74547489,0.74547489 0 0 0 -0.01235,0.00583 l -2.970023,2.9664092 a 0.74547489,0.74547489 0 0 0 -0.0019,0.00148 L 7.8078572,10.05092 a 0.74547489,0.74547489 0 0 0 -4.549e-4,7.9e-5 l -2.9880739,2.98446 a 0.74547489,0.74547489 0 0 0 5.6e-5,3.19e-4 0.74547489,0.74547489 0 0 0 -8.034e-4,2.32e-4 z  m 1.5792305,0.530266 1.8022733,-1.799373 1.4875429,1.472969 9.4e-5,9.4e-5 a 0.74547489,0.74547489 0 0 0 1.0491324,-1.059188 l -1.879e-4,-1.87e-4 -0.00182,-0.0019 -1.4792147,-1.465706 1.9335572,-1.930656 1.5071022,1.492572 A 0.74547489,0.74547489 0 0 0 10.89214,12.062682 l -1.5009923,-1.48671 1.9421273,-1.9392277 1.470447,1.4883567 0.0033,0 2.85e-4,2.87e-4 A 0.74547489,0.74547489 0 0 0 13.868294,9.0814325 L 13.868009,9.0811469 12.38859,7.5827533 14.310718,5.6635241 15.799339,7.1434007 A 0.74547489,0.74547489 0 0 0 16.85022,6.0859614 l -1.480921,-1.472178 1.687093,-1.6841938 3.878195,3.89507 L 7.4011867,20.301022 Z" >
                   <Path.RenderTransform>
                     <TransformGroup>
                       <ScaleTransform ScaleX=".7" ScaleY=".7" />

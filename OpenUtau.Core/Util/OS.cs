@@ -57,10 +57,19 @@ namespace OpenUtau {
                 if (RuntimeInformation.ProcessArchitecture == Architecture.X86) {
                     return "win-x86";
                 }
+                if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) {
+                    return "win-arm64";
+                }
                 return "win-x64";
             } else if (IsMacOS()) {
+                if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) {
+                    return "osx-arm64";
+                }
                 return "osx-x64";
             } else if (IsLinux()) {
+                if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64) {
+                    return "linux-arm64";
+                }
                 return "linux-x64";
             }
             throw new NotSupportedException();
