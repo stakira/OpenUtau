@@ -16,8 +16,8 @@ jobs:
 
       - name: Sync from official repo
         run: |
-          git fetch https://github.com/stakira/OpenUtau master
-          git checkout FETCH_HEAD
+          git remote add official https://github.com/stakira/OpenUtau
+          git pull official master
 
       - run: ls -l OpenUtau/Strings
       
