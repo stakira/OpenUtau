@@ -22,7 +22,7 @@ jobs:
       - name: Sync from official repo
         run: |
           git remote add official https://github.com/stakira/OpenUtau
-          git switch master --track official/master
+          git switch -c master --track official/master
           git pull --rebase
 
       - run: ls -l OpenUtau/Strings
