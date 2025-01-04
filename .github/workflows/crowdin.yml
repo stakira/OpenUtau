@@ -18,7 +18,7 @@ jobs:
         run: |
           git remote add official https://github.com/stakira/OpenUtau
           git fetch official master
-          git merge FETCH_HEAD
+          git merge FETCH_HEAD --allow-unrelated-histories
 
       - run: ls -l OpenUtau/Strings
       
