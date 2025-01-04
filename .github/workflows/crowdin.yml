@@ -14,6 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Sync from official repo
+        run: |
+          git fetch https://github.com/stakira/OpenUtau master
+          git checkout FETCH_HEAD
+
       - run: ls -l OpenUtau/Strings
       
       - name: crowdin action
