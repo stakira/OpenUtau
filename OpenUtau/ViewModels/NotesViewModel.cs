@@ -120,11 +120,6 @@ namespace OpenUtau.App.ViewModels {
 
             Keys = new List<MenuItemViewModel>();
             SetKeyCommand = ReactiveCommand.Create<int>(key => {
-                //Turn on scale degree display if it is off
-                if(Preferences.Default.DegreeStyle == 0){
-                    Preferences.Default.DegreeStyle = 1;
-                    Preferences.Save();
-                }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new KeyCommand(Project, key));
                 DocManager.Inst.EndUndoGroup();
