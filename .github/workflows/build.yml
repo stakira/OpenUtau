@@ -161,6 +161,6 @@ jobs:
 
             If you encountered issues, see [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
-            ## macOS says "App damaged"
+            ## macOS says "This app is damaged"
             Open a terminal and run `xattr -rc /Applications/OpenUtau.app`. Try opening OpenUtau again.
         if: ${{ inputs.release }}
