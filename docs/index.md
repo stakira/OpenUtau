@@ -6,7 +6,7 @@ description: "OpenUtau: Open singing synthesis platform / Open source UTAU succe
 permalink: /
 ---
 
-![OpenUtau](assets/images/openutau.png)
+![OpenUtau](assets/images/openutau.png){: style="width: 256px; height: auto;" }
 
 # OpenUtau
 {: .fs-9 }
@@ -20,13 +20,13 @@ Open singing synthesis platform / Open source UTAU successor
 ---
 
 # Download
-[Windows x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x64.zip){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
-[Installation Guide](https://github.com/stakira/OpenUtau/wiki/Getting-Started#windows){: .btn .fs-5 .mb-4 .mb-md-0 }
-
-[Windows x86](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x86.zip){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Windows x64 installer](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x64.exe){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Windows x64 portable](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x64.zip){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Windows x86 portable](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x86.zip){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Installation Guide](https://github.com/stakira/OpenUtau/wiki/Getting-Started#windows){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 [macOS x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-osx-x64.dmg){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[macOS arm64 (Beta)](https://github.com/stakira/OpenUtau/releases/download/0.1.547/OpenUtau-osx-arm64.dmg){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Installation Guide](https://github.com/stakira/OpenUtau/wiki/Getting-Started#macos){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 [Linux x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-linux-x64.tar.gz){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
