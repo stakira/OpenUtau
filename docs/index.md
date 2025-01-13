@@ -6,7 +6,7 @@ description: "OpenUtau: Open singing synthesis platform / Open source UTAU succe
 permalink: /
 ---
 
-![OpenUtau](assets/images/openutau.png){: style="width: 256px; height: auto;" }
+![OpenUtau](assets/images/openutau.png){: style="width: 128px; height: auto;" }
 
 # OpenUtau
 {: .fs-9 }
