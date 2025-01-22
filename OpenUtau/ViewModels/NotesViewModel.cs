@@ -424,7 +424,7 @@ namespace OpenUtau.App.ViewModels {
             int tick = PointToTick(point);
             int snappedTick = (int)Math.Floor((double)tick / snapUnit) * snapUnit;
             UNote note = project.CreateNote(tone, snappedTick,
-                useLastLength ? _lastNoteLength : IsSnapOn ? snappedTick : 15);
+                useLastLength ? _lastNoteLength : IsSnapOn ? snapUnit : 15);
             DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
             return note;
         }
