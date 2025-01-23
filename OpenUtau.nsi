@@ -45,7 +45,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "OpenUtau-win-x64.exe"
+OutFile "OpenUtau-win-${ARCH}.exe"
 InstallDir "$PROGRAMFILES64\OpenUtau"
 ShowInstDetails show
 ShowUnInstDetails show
@@ -57,14 +57,12 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
-  File "bin\win-x64\*"
+  File "bin\win-${ARCH}\*"
 SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateDirectory "$SMPROGRAMS\OpenUtau"
-  CreateShortCut "$SMPROGRAMS\OpenUtau\OpenUtau.lnk" "$INSTDIR\OpenUtau.exe"
-  CreateShortCut "$SMPROGRAMS\OpenUtau\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\OpenUtau.lnk" "$INSTDIR\OpenUtau.exe"
 SectionEnd
 
 Section -Post
@@ -76,11 +74,23 @@ Section -Post
   WriteUninstaller "$INSTDIR\uninst.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\OpenUtau.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+
+  WriteRegStr HKCR ".ustx" "" "OpenUtauFile"
+  WriteRegStr HKCR "OpenUtauFile" "" "OpenUtau Sequence File"
+  WriteRegStr HKCR "OpenUtauFile\DefaultIcon" "" "$INSTDIR\OpenUtau.exe"
+  WriteRegStr HKCR "OpenUtauFile\shell\open\command" "" `"$INSTDIR\OpenUtau.exe" "%1"`
 SectionEnd
 
+Section "VC Redist"
+  SetOutPath "$INSTDIR"
+  File "vc_redist.${ARCH}.exe"
+  ExecWait "$INSTDIR\vc_redist.${ARCH}.exe"
+  Delete "$INSTDIR\vc_redist.${ARCH}.exe"
+SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
@@ -98,9 +108,15 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\*"
 
-  Delete "$SMPROGRAMS\OpenUtau\Uninstall.lnk"
+  Delete "$SMPROGRAMS\OpenUtau.lnk"
 
-  RMDir "$SMPROGRAMS\OpenUtau"
+  DeleteRegKey HKCR ".ustx"
+  DeleteRegKey HKCR "OpenUtauFile\DefaultIcon"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open\command"
+  DeleteRegKey HKCR "OpenUtauFile\shell\open"
+  DeleteRegKey HKCR "OpenUtauFile\shell"
+  DeleteRegKey HKCR "OpenUtauFile"
+
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"

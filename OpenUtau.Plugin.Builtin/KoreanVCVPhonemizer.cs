@@ -3,13 +3,14 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin
 {
 	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "KO")]
 
-	public class KoreanVCVPhonemizer : Phonemizer
+	public class KoreanVCVPhonemizer : BaseKoreanPhonemizer
 	{
 		/// <summary>
 		/// Initial jamo as ordered in Unicode
@@ -38,6 +39,14 @@ namespace OpenUtau.Plugin.Builtin
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
 		static readonly string[] extras = { "f", "v", "th", "dh", "z", "rr", "kk", "pp", "tt" };
+
+		/// <summary>
+		/// Apply Korean sandhi rules to Hangeul lyrics.
+		/// </summary>
+		public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+			// variate lyrics 
+			KoreanPhonemizerUtil.RomanizeNotes(groups, false);
+		}
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.
@@ -122,6 +131,7 @@ namespace OpenUtau.Plugin.Builtin
 			string color = string.Empty;
 			int shift = 0;
 			int? alt;
+			int totalDuration = notes.Sum(n => n.duration);
 
             string color1 = string.Empty;
             int shift1 = 0;
@@ -140,6 +150,20 @@ namespace OpenUtau.Plugin.Builtin
 			string[] currIMF;
 			string currPhoneme;
 			string[] prevIMF;
+
+			var phoneticHint = RenderPhoneticHint(singer, notes[0], totalDuration);
+      if (phoneticHint != null) {
+        return (Result) phoneticHint;
+      }
+
+      var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
+      if (romaji2Korean != null) {
+        notes = romaji2Korean.KoreanLryicNotes;
+        prevNeighbour = romaji2Korean.KoreanLryicPrevNote;
+        nextNeighbour = romaji2Korean.KoreanLryicNextNote;
+
+				note = notes[0];
+      } 
 
 			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
 			if (note.lyric == "R" || note.lyric == "R2" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")

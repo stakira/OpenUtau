@@ -107,7 +107,12 @@ namespace OpenUtau.Core.Render {
                 if (task.IsFaulted && !wait) {
                     Log.Error(task.Exception.Flatten(), "Failed to render.");
                     PlaybackManager.Inst.StopPlayback();
-                    var customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", task.Exception);
+                    MessageCustomizableException customEx;
+                    if (task.Exception.Flatten().InnerExceptions.ToList().Any(e => e is DllNotFoundException)) {
+                        customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>: <translate:errors.install.cpp>", task.Exception);
+                    } else {
+                        customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", task.Exception);
+                    }
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
