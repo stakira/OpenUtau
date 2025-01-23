@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -53,7 +52,7 @@ namespace OpenUtau.App.Views {
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
 
-            viewModel.InitProject(this);
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -86,6 +85,10 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+        }
+
+        public void InitProject() {
+            viewModel.InitProject(this);
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
