@@ -52,7 +52,7 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
-          
+
             viewModel.InitProject(this);
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));

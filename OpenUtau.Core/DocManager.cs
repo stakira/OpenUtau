@@ -115,7 +115,7 @@ namespace OpenUtau.Core {
         UCommandGroup? undoGroup = null;
         UCommandGroup? savedPoint = null;
         UCommandGroup? autosavedPoint = null;
-        public bool Recovered { get; set; } = false;
+        public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
 
         public bool ChangesSaved {
             get {
