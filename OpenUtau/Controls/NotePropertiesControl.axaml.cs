@@ -158,8 +158,11 @@ namespace OpenUtau.App.Controls {
                     LoadPart(notif.part);
                 } else if (cmd is LoadProjectNotification) {
                     LoadPart(null);
-                } else if (cmd is SingersRefreshedNotification) {
-                    LoadPart(notif.part);
+                } else if (cmd is SingersRefreshedNotification srn && srn.singer != null && ViewModel.Part != null) {
+                    var singer = DocManager.Inst.Project.tracks[ViewModel.Part.trackNo].Singer;
+                    if (singer != null && singer == srn.singer) {
+                        LoadPart(ViewModel.Part);
+                    }
                 }
             } else if (cmd is TrackCommand) {
                 if (cmd is RemoveTrackCommand removeTrack) {
