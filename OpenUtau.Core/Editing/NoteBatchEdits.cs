@@ -292,11 +292,11 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class RondomizeTiming : BatchEdit {
+    public class RandomizeTiming : BatchEdit {
         public virtual string Name => name;
         private string name;
 
-        public RondomizeTiming() {
+        public RandomizeTiming() {
             name = "pianoroll.menu.notes.randomizetiming";
         }
 
@@ -331,11 +331,11 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class RondomizePhonemeOffset : BatchEdit {
+    public class RandomizePhonemeOffset : BatchEdit {
         public virtual string Name => name;
         private string name;
 
-        public RondomizePhonemeOffset() {
+        public RandomizePhonemeOffset() {
             name = "pianoroll.menu.notes.randomizeoffset";
         }
 

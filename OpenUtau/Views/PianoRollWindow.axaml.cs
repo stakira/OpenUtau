@@ -101,8 +101,8 @@ namespace OpenUtau.App.Views {
                 new AutoLegato(),
                 new FixOverlap(),
                 new BakePitch(),
-                new RondomizeTiming(),
-                new RondomizePhonemeOffset()
+                new RandomizeTiming(),
+                new RandomizePhonemeOffset()
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
