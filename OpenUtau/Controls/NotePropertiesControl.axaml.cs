@@ -170,8 +170,8 @@ namespace OpenUtau.App.Controls {
                         LoadPart(null);
                     }
                 }
-            } else if (cmd is ConfigureExpressionsCommand) {
-                LoadPart(null);
+            } else if (cmd is ConfigureExpressionsCommand && ViewModel.Part != null) {
+                LoadPart(ViewModel.Part);
             }
         }
     }
