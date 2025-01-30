@@ -313,9 +313,13 @@ namespace OpenUtau.Plugin.Builtin
 			// Adjust Result if note has batchim
 			else
 			{
-				string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || currIMF[1] == "ui") ? currIMF[1].Remove(0, 1) : currIMF[1];
+				if (currIMF[1] == "eui") {
+                    currIMF[1] = "ui";
+                }
+					
+                string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || (currIMF[1] == "ui")) ? currIMF[1].Remove(0, 1) : currIMF[1];
 
-				if (nextNeighbour == null)
+                if (nextNeighbour == null)
 				{
 					if (string.IsNullOrEmpty(currIMF[2])) secondPhoneme += " R";
 					else
