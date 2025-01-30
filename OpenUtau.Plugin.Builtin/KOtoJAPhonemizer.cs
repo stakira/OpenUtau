@@ -631,19 +631,20 @@ namespace OpenUtau.Plugin.Builtin {
                         && (singer.TryGetMappedOto($"{ToHiragana(AltCv.ContainsKey(currPhoneme) ? AltCv[currPhoneme] : currPhoneme)}", note.tone + shift1, color1, out _)
                         || singer.TryGetMappedOto($"{ToHiragana(ConditionalAlt.ContainsKey(currPhoneme) ? ConditionalAlt[currPhoneme] : currPhoneme)}", note.tone + shift1, color1, out _))) {
                         int vcLength = 60;
+                        int endTick = notes[^1].position + notes[^1].duration;
                         // totalDuration calculated on basis of previous note length
                         int totalDuration = prevNeighbour.Value.duration;
                         if (singer.TryGetMappedOto($"{ToHiragana(AltCv.ContainsKey(currPhoneme) ? AltCv[currPhoneme] : currPhoneme)}", notes[0].tone + shift1, color1, out var oto)) {
                             if (oto.Overlap < 0) {
-                                vcLength = MsToTick(oto.Preutter - oto.Overlap);
+                                vcLength = -timeAxis.MsToTickAt(-(oto.Preutter - oto.Overlap), endTick);
                             } else {
-                                vcLength = MsToTick(oto.Preutter);
+                                vcLength = -timeAxis.MsToTickAt(-oto.Preutter, endTick);
                             }
                         } else if (singer.TryGetMappedOto($"{ToHiragana(ConditionalAlt.ContainsKey(currPhoneme) ? ConditionalAlt[currPhoneme] : currPhoneme)}", notes[0].tone + shift1, color1, out var otoCon)) {
                             if (otoCon.Overlap < 0) {
-                                vcLength = MsToTick(otoCon.Preutter - otoCon.Overlap);
+                                vcLength = -timeAxis.MsToTickAt(-(otoCon.Preutter - otoCon.Overlap), endTick);
                             } else {
-                                vcLength = MsToTick(otoCon.Preutter);
+                                vcLength = -timeAxis.MsToTickAt(-otoCon.Preutter, endTick);
                             }
                         }
                         // vcLength depends on the Vel of the current base note
