@@ -1613,7 +1613,7 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains(c) && !alias.Contains("- ") && alias.Contains($"{v} {c}")
                        && !alias.Contains("dx")) {
-                        return base.GetTransitionBasicLengthMs() * 2.0;
+                        return base.GetTransitionBasicLengthMs() * 1.4;
                     }
                 }
             }
@@ -1635,7 +1635,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in connectingGlides) {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains($"{v} {c}") && !alias.Contains($"{c} -") && !alias.Contains($"{v} -")) {
-                        return base.GetTransitionBasicLengthMs() * 2.2;
+                        return base.GetTransitionBasicLengthMs() * 2.1;
                     }
                 }
             }
