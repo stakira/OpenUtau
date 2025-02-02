@@ -99,7 +99,7 @@ namespace OpenUtau.Classic {
             }
             if (FindDuplication(out List<Oto> duplicates)) {
                 string message = "";
-                duplicates.ForEach(oto => message += "\n" + oto.FileTrace.file + " : " + oto.Alias);
+                duplicates.ForEach(oto => message += $"\n{oto.FileTrace.file} line {oto.FileTrace.lineNumber}: {oto.Alias}");
                 Errors.Add(new VoicebankError() {
                     message = $"There are duplicate aliases.{message}"
                 });
@@ -295,7 +295,7 @@ namespace OpenUtau.Classic {
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
         bool CheckDuplicatedNameIgnoringCase(OtoSet otoSet) {
-            var wavNames = otoSet.Otos.Select(x => x.Wav).Where(x => string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+            var wavNames = otoSet.Otos.Select(x => x.Wav).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
             var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
                 .Where(group => group.Count() > 1)
                 .ToList();
