@@ -72,6 +72,9 @@ namespace OpenUtau.Classic {
             foreach (var otoSet in voicebank.OtoSets) {
                 string dir = Path.Combine(path, Path.GetDirectoryName(otoSet.File));
                 foreach (var oto in otoSet.Otos) {
+                    if (oto.FileTrace.line == string.Empty || oto.FileTrace.line.StartsWith("#Charaset:")) {
+                        continue;
+                    }
                     if (!oto.IsValid) {
                         Errors.Add(new VoicebankError() {
                             trace = oto.FileTrace,
@@ -270,7 +273,7 @@ namespace OpenUtau.Classic {
                 .Select(Path.GetFileName)
                 .ToDictionary(x => x.ToLower(), x => x);
             foreach(string fileName in correctFileNames) {
-                if(!fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
+                if (string.IsNullOrWhiteSpace(fileName) || !fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
                     continue;
                 }
                 if (fileNamesLowerToActual[fileName.ToLower()] != fileName) {
@@ -292,7 +295,7 @@ namespace OpenUtau.Classic {
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
         bool CheckDuplicatedNameIgnoringCase(OtoSet otoSet) {
-            var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
+            var wavNames = otoSet.Otos.Select(x => x.Wav).Where(x => string.IsNullOrWhiteSpace(x)).Distinct().ToList();
             var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
                 .Where(group => group.Count() > 1)
                 .ToList();
