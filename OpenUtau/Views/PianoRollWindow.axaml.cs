@@ -564,12 +564,6 @@ namespace OpenUtau.App.Views {
             }
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
             if (noteHitInfo.hitBody) {
-                if (ViewModel.NotesViewModel.KnifeTool && !args.KeyModifiers.HasFlag(cmdKey)) {
-                    ViewModel.NotesViewModel.DeselectNotes();
-                    editState = new NoteSplitEditState(
-                            control, ViewModel, this, noteHitInfo.note);
-                    return;
-                }
                 if (noteHitInfo.hitResizeArea) {
                     editState = new NoteResizeEditState(
                         control, ViewModel, this, noteHitInfo.note,
@@ -580,6 +574,10 @@ namespace OpenUtau.App.Views {
                     ViewModel.NotesViewModel.ToggleSelectNote(noteHitInfo.note);
                 } else if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
                     ViewModel.NotesViewModel.SelectNotesUntil(noteHitInfo.note);
+                } else if (ViewModel.NotesViewModel.KnifeTool) {
+                    ViewModel.NotesViewModel.DeselectNotes();
+                    editState = new NoteSplitEditState(
+                            control, ViewModel, this, noteHitInfo.note);
                 } else {
                     editState = new NoteMoveEditState(control, ViewModel, this, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeAll;
