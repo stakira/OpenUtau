@@ -334,6 +334,12 @@ namespace OpenUtau.App.ViewModels {
                     result.hitPosition = true;
                     return result;
                 }
+                point = viewModel.TickToneToPoint(phoneme.End, 0);
+                if (p0x <= mousePos.X && mousePos.X <= point.X && mousePos.Y >= 36) {
+                    result.phoneme = phoneme;
+                    result.hit = true;
+                    return result;
+                }
             }
             return result;
         }
