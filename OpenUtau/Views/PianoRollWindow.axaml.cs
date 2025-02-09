@@ -1452,6 +1452,7 @@ namespace OpenUtau.App.Views {
                 // PLAY POSITION + SELECTION
                 case Key.Home:
                     if (isNone) {
+                        playVm.MovePlayPos(notesVm.Part.position);
                         HScrollBar.Value = HScrollBar.Minimum;
                         return true;
                     }
