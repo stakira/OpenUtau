@@ -1027,6 +1027,35 @@ namespace OpenUtau.App.Views {
             KeyMenu.Open();
         }
 
+        bool MoveToNextPart(bool next) {
+            var notesVm = ViewModel.NotesViewModel;
+            var playVm = ViewModel.PlaybackViewModel;
+            if (notesVm?.Part == null || playVm == null) {
+                return false;
+            }
+            // tick is the center of NotesCanvas
+            var tick = (int)(notesVm.TickOffset + notesVm.Bounds.Width / notesVm.TickWidth / 2 + notesVm.Part.position);
+            var parts = notesVm.Project.parts
+                .Where(part => part is UVoicePart && part.position <= tick && tick <= part.End)
+                .OfType<UVoicePart>()
+                .OrderBy(part => part.trackNo)
+                .ThenBy(part => part.position)
+                .ToArray();
+            if (parts.Length == 0) {
+                return false;
+            }
+            var index = Array.IndexOf(parts, notesVm.Part);
+            index = next ? index + 1 : index - 1;
+            if (parts.Length <= index) {
+                index = 0;
+            } else if (index < 0) {
+                index = parts.Length - 1;
+            }
+            DocManager.Inst.ExecuteCmd(new LoadPartNotification(parts[index], notesVm.Project, tick));
+            AttachExpressions();
+            return true;
+        }
+
         void OnKeyKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None) {
                 if (sender is ContextMenu menu && menu.SelectedItem is MenuItemViewModel item) {
@@ -1424,6 +1453,7 @@ namespace OpenUtau.App.Views {
                 case Key.Home:
                     if (isNone) {
                         playVm.MovePlayPos(notesVm.Part.position);
+                        HScrollBar.Value = HScrollBar.Minimum;
                         return true;
                     }
                     if (isShift) {
@@ -1437,6 +1467,7 @@ namespace OpenUtau.App.Views {
                 case Key.End:
                     if (isNone) {
                         playVm.MovePlayPos(notesVm.Part.End);
+                        HScrollBar.Value = HScrollBar.Maximum;
                         return true;
                     }
                     if (isShift) {
@@ -1601,7 +1632,21 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
-                    #endregion
+                #endregion
+                #region scroll and select keys
+                case Key.PageUp: {
+                        if (isNone) {
+                            return MoveToNextPart(false);
+                        }
+                    }
+                    break;
+                    case Key.PageDown: {
+                        if (isNone) {
+                            return MoveToNextPart(true);
+                        }
+                    }
+                    break;
+                #endregion
             }
             return false;
         }
