@@ -1632,7 +1632,7 @@ namespace OpenUtau.App.Views {
                     }
                     break;
                 #endregion
-                #region scroll and select keys
+                #region move to the next track part
                 case Key.PageUp: {
                         if (isNone) {
                             return MoveToNextPart(false);
