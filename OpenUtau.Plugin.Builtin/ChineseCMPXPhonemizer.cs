@@ -118,7 +118,7 @@ namespace OpenUtau.Plugin.Builtin {
       if (pinyin.StartsWith("w")) return "u" + pinyin.Substring(1);
       
       if (pinyin.EndsWith("i") && iiVowelConsonants.Contains(pinyin.Replace("i", ""))) return "ii";
-      if (pinyin.Contains("u") && vVowelConsonants.Contains(pinyin.Substring(0, 1))) return "v" + pinyin.Substring(2);
+      if (pinyin.Substring(1).StartsWith("u") && vVowelConsonants.Contains(pinyin.Substring(0, 1))) return "v" + pinyin.Substring(2);
       
       if (pinyin.EndsWith("iu")) return "iou";
       if (pinyin.EndsWith("ui")) return "uei";
@@ -254,7 +254,7 @@ namespace OpenUtau.Plugin.Builtin {
         // back semivowel
         if (vowelPhoneme[^1].StartsWith(":")) {
           string backSemiVowel = vowelPhoneme[^1];
-          resultPhonemes.Add(new Phoneme() { phoneme = GetOtoAlias(singer, vowelPhoneme[^2] + " " + backSemiVowel, note), position = totalDuration - ((totalDuration / 3) + VCtiming) });
+          resultPhonemes.Add(new Phoneme() { phoneme = GetOtoAlias(singer, vowelPhoneme[^2] + " " + backSemiVowel, note), position = (totalDuration - VCtiming) - ((totalDuration - VCtiming) / 3) });
         }
 
         // VC 추가
