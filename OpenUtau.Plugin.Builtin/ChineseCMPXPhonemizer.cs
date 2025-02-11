@@ -67,6 +67,7 @@ namespace OpenUtau.Plugin.Builtin {
     };
 
     public readonly static string[] iiVowelConsonants = new string[] { "zh", "ch", "sh", "z", "c", "s" };
+    public readonly static string[] vVowelConsonants = new string[] { "n", "l", "j", "q", "x" };
     public readonly static string[] initalLiquidConsonants = new string[] { "m", "n", "l", "r" };
     public readonly static string[] initalSibilantConsonants = new string[] { "f", "z", "s", "zh", "ch", "sh", "x" };
     public readonly static string[] endBreaths = new string[] { "R", "-" };
@@ -116,7 +117,7 @@ namespace OpenUtau.Plugin.Builtin {
       if (pinyin.StartsWith("y")) return "i" + pinyin.Substring(1);
       if (pinyin.StartsWith("w")) return "u" + pinyin.Substring(1);
       
-      if (pinyin.Contains("i") && iiVowelConsonants.Contains(pinyin.Substring(0, 2))) return "ii";
+      if (pinyin.Contains("i") && iiVowelConsonants.Contains(pinyin.Replace("i", ""))) return "ii";
       
       if (pinyin.EndsWith("iu")) return "iou";
       if (pinyin.EndsWith("ui")) return "uei";
