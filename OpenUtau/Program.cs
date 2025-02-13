@@ -81,20 +81,22 @@ namespace OpenUtau.App {
                     args, ShutdownMode.OnMainWindowClose);
 
         public static void InitLogging() {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.Debug()
-                .WriteTo.Logger(lc => lc
-                    .MinimumLevel.Information()
-                    .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8))
-                .WriteTo.Logger(lc => lc
-                    .MinimumLevel.ControlledBy(DebugViewModel.Sink.Inst.LevelSwitch)
-                    .WriteTo.Sink(DebugViewModel.Sink.Inst))
-                .CreateLogger();
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
-                Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
-            });
-            Log.Information("Logging initialized.");
+            if (Preferences.Default.LogFile) {
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Verbose()
+                    .WriteTo.Debug()
+                    .WriteTo.Logger(lc => lc
+                        .MinimumLevel.Information()
+                        .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8))
+                    .WriteTo.Logger(lc => lc
+                        .MinimumLevel.ControlledBy(DebugViewModel.Sink.Inst.LevelSwitch)
+                        .WriteTo.Sink(DebugViewModel.Sink.Inst))
+                    .CreateLogger();
+                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
+                    Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
+                });
+                Log.Information("Logging initialized.");
+            }
         }
     }
 }
