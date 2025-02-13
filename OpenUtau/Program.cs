@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.App {
