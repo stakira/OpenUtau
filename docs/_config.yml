@@ -24,3 +24,6 @@ nav_external_links:
   - title: チュートリアル (日本語)
     url: https://github.com/stakira/OpenUtau/wiki/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB-(%E6%97%A5%E6%9C%AC%E8%AA%9E)
     hide_icon: false
+  - title: Discord
+    url: https://discord.gg/UfpMnqMmEM
+    hide_icon: false
