@@ -66,7 +66,7 @@ namespace OpenUtau.Plugin.Builtin {
       { "vn", new string[] { "v", ":n" } },
     };
 
-    public readonly static string[] iiVowelConsonants = new string[] { "zh", "ch", "sh", "z", "c", "s" };
+    public readonly static string[] iiVowelConsonants = new string[] { "zh", "ch", "sh", "z", "c", "s", "r" };
     public readonly static string[] vVowelConsonants = new string[] { "j", "q", "x" };
     public readonly static string[] initalLiquidConsonants = new string[] { "m", "n", "l", "r" };
     public readonly static string[] initalSibilantConsonants = new string[] { "f", "z", "s", "zh", "ch", "sh", "x" };
@@ -213,7 +213,7 @@ namespace OpenUtau.Plugin.Builtin {
         if (consonant != "") {
           resultPhonemes.Add(new Phoneme() { phoneme = GetOtoAlias(singer, consonant + vowelPhoneme[0], note), position = 0 });
         } else if (!frontSemiVowels.Contains(vowelPhoneme[0])) { // VV
-          string beforeVowel = prev != null ? vowelPhonemes[GetPinyinVowel(prev?.lyric)][^1] : "-";
+          string beforeVowel = prev != null && !endBreaths.Contains(prev?.lyric) ? vowelPhonemes[GetPinyinVowel(prev?.lyric)][^1] : "-";
           string phoneme = vowelPhoneme[0];
           if (phoneme.StartsWith("i")) phoneme = "yi" + phoneme.Substring(1);
           if (phoneme == "u") phoneme = "wu";
