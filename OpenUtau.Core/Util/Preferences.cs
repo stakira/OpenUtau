@@ -182,7 +182,7 @@ namespace OpenUtau.Core.Util {
             public string VLabelerPath = string.Empty;
             public string SetParamPath = string.Empty;
             public bool Beta = false;
-            public bool LogFile = true
+            public bool LogFile = true;
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
