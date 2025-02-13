@@ -1,5 +1,6 @@
-﻿<?xml version="1.0"?>
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:system="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.note.copy">音符をコピー</system:String>
   <system:String x:Key="context.note.delete">音符を削除</system:String>
@@ -270,7 +271,7 @@
   <system:String x:Key="pianoroll.menu.batch">一括編集</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">バッチ編集を実行中</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">&quot;-&quot; を &quot;+&quot; に置き換え</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.insertslur">スラーにする</system:String>
@@ -283,8 +284,8 @@
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addbreath">ブレスを追加</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に&quot;-&quot;を追加</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に&quot;R&quot;を追加</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">音符の隙間を埋める</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">ピッチ曲線（PITD）をピッチ点に変換</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ビブラートを削除</system:String>
@@ -296,8 +297,8 @@
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の&quot;-&quot;を削除</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の&quot;R&quot;を削除</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の"R"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">編集したエイリアスをリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.all">ノートをデフォルトにリセット</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.allparameters">全てのパラメータをリセット</system:String>
@@ -387,7 +388,7 @@
   <system:String x:Key="prefs.cache.clearonquit">終了時にキャッシュを消去する</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensorキャッシュ</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
-  <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
+  <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
   <system:String x:Key="prefs.editing">編集中</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
   <system:String x:Key="prefs.off">オフ</system:String>
@@ -409,7 +410,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">カーソル追従</system:String>
   <system:String x:Key="prefs.playback.backend">オーディオバックエンド</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自動</system:String>
-  <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">カーソルの場所</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">一時停止した時のカーソル</system:String>
@@ -421,15 +422,15 @@
   <system:String x:Key="prefs.rendering.defaultrenderer">Classic UTAU音源のデフォルトレンダラー</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSingerレンダー深度</system:String>
   <system:String x:Key="prefs.rendering.diffsingersteps">DiffSingerレンダーステップ</system:String>
-  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">機械学習ランナー</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">位相補正</system:String>
   <system:String x:Key="prefs.rendering.prerender">リアルタイムレンダリング</system:String>
-  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     警告: moresamplerは完全にはサポートされていません。速度が遅くなり、CPU使用率が高くなる可能性があります。それでも使用する場合:
-1. moreconfig.txt内の &quot;resampler-compatibility&quot; を&quot;on&quot; に設定
-2. moreconfig.txt内の&quot;auto-update-llsm-mrq&quot; を &quot;off&quot; に設定
+1. moreconfig.txt内の "resampler-compatibility" を"on" に設定
+2. moreconfig.txt内の"auto-update-llsm-mrq" を "off" に設定
 3. moresamplerが不足しているllsmファイルを生成するのを辛抱強く待ってください。
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
@@ -440,8 +441,8 @@
     警告：レンダースレッドが多すぎるとOpenUTAUの動作が遅くなる可能性があります。
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">最大レンダースレッド</system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
-  <system:String x:Key="prefs.utau">UTAU</system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
@@ -556,11 +557,11 @@
   <system:String x:Key="tracks.trackcolor">トラックカラーを変更</system:String>
   <system:String x:Key="tracks.tracksettings">トラック設定</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.fontfamily">Meiryo UI,Hiragino Sans,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">アップデートの確認</system:String>
   <system:String x:Key="updater.description">オープンソース歌声合成のプラットフォーム</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">アップデート v{0} が利用できます!</system:String>
   <system:String x:Key="updater.status.checking">アップデートを確認しています...</system:String>
   <system:String x:Key="updater.status.notavailable">最新版を使用中</system:String>
@@ -568,6 +569,6 @@
   <system:String x:Key="updater.update">アップデート</system:String>
 
   <system:String x:Key="warning">警告</system:String>
-  <system:String x:Key="warning.asciipath">OpenUtauのファイルパス &quot;{0}&quot; に非ASCII文字が含まれています。 EXE形式のエンジンが動作しない可能性があります。</system:String>
+  <system:String x:Key="warning.asciipath">OpenUtauのファイルパス "{0}" に非ASCII文字が含まれています。 EXE形式のエンジンが動作しない可能性があります。</system:String>
   <system:String x:Key="warning.renderer">このレンダラーには設定項目がありません</system:String>
 </ResourceDictionary>
