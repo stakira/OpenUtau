@@ -110,5 +110,27 @@ namespace OpenUtau.Core.Format {
                 Assert.Equal(l, n.duration);
             }
         }
+
+        [Fact]
+        public void LyricsTest(){
+            var project = MusicXML.LoadProject(Path.Join(basePath, "61a-Lyrics.musicxml"));
+            var part = project.parts.First() as UVoicePart;
+            Assert.Equal(0, part.notes.First().position);
+            AssertLegato(part);
+            var notesList = part.notes.ToList();
+            foreach(var n in notesList[..^1]){
+                Assert.Equal(69, n.tone);
+                Assert.Equal(480, n.duration);
+            }
+            Assert.Equal(69, notesList[^1].tone);
+            Assert.Equal(960, notesList[^1].duration);
+            Assert.Equal("Tra", notesList[0].lyric);
+            Assert.Equal("la", notesList[1].lyric);
+            Assert.Equal("li", notesList[2].lyric);
+            Assert.Equal("Ja!", notesList[3].lyric);
+            Assert.Equal("Tra", notesList[5].lyric);
+            Assert.Equal("ra!", notesList[7].lyric);
+            Assert.Equal("Bah!", notesList[9].lyric);
+        }
     }
 }
