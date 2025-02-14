@@ -1,0 +1,122 @@
+%YAML 1.2
+---
+tails:
+  - "-"
+symbols:
+  - name: aa
+    type: vowel
+    rename: A
+  - name: ae
+    type: vowel
+    rename: "{"
+  - name: ah
+    type: vowel
+    rename: V
+  - name: ao
+    type: vowel
+    rename: O
+  - name: aw
+    type: diphthong
+  - name: ay
+    type: diphthong
+  - name: b
+    type: consonant
+  - name: ch
+    type: consonant
+    rename: tS
+  - name: d
+    type: consonant
+  - name: dh
+    type: consonant
+    rename: D
+  - name: eh
+    type: vowel
+    rename: E
+  - name: er
+    type: vowel
+    rename: "3"
+  - name: ey
+    type: diphthong
+  - name: f
+    type: consonant
+  - name: g
+    type: consonant
+  - name: hh
+    type: consonant
+    rename: h
+  - name: ih
+    type: vowel
+    rename: I
+  - name: iy
+    type: vowel
+    rename: i
+  - name: jh
+    type: consonant
+    rename: dZ
+  - name: k
+    type: consonant
+  - name: l
+    type: consonant
+  - name: m
+    type: consonant
+  - name: n
+    type: consonant
+  - name: ng
+    type: consonant
+    rename: N
+  - name: ow
+    type: diphthong
+  - name: oy
+    type: diphthong
+  - name: p
+    type: consonant
+  - name: r
+    type: consonant
+  - name: s
+    type: consonant
+  - name: sh
+    type: consonant
+    rename: S
+  - name: t
+    type: consonant
+  - name: th
+    type: consonant
+    rename: T
+  - name: uh
+    type: vowel
+    rename: U
+  - name: uw
+    type: vowel
+    rename: u
+  - name: v
+    type: consonant
+  - name: w
+    type: consonant
+  - name: y
+    type: consonant
+    rename: j
+  - name: z
+    type: consonant
+  - name: zh
+    type: consonant
+    rename: Z
+  - name: ax
+    type: vowel
+    rename: "@"
+  - name: a
+    type: vowel
+  - name: e
+    type: vowel
+  - name: o
+    type: vowel
+splits:
+  - before: ay
+    after: [a, I]
+  - before: ey
+    after: [e, I]
+  - before: oy
+    after: [O, I]
+  - before: ow
+    after: [o, U]
+  - before: aw
+    after: [a, U]
