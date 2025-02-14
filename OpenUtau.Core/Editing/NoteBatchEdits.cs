@@ -619,11 +619,7 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             //Clear MOD+ expressions for selected notes
-            foreach (var phoneme in part.phonemes) {
-                if (phoneme.Parent != null && notes.Contains(phoneme.Parent)) {
-                    docManager.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, phoneme, "mod+", null));
-                }
-            }
+            docManager.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, notes, "mod+", null));
             docManager.EndUndoGroup();
         }
     }
