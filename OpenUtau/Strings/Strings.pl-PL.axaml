@@ -38,9 +38,9 @@
   <system:String x:Key="dialogs.importtracks.caption">Importuj ścieżki</system:String>
   <system:String x:Key="dialogs.importtracks.importtempo">Zaimportowany projekt zawiera znaczniki tempa. Czu chcesz ich użyć?</system:String>
   <system:String x:Key="dialogs.installdependency.caption">Instalowanie zależności</system:String>
-  <system:String x:Key="dialogs.installdependency.message">Instalacja</system:String>
+  <system:String x:Key="dialogs.installdependency.message">Instalacja </system:String>
   <system:String x:Key="dialogs.installdll.caption">Instalowanie fonemizera</system:String>
-  <system:String x:Key="dialogs.installdll.message">Instalacja</system:String>
+  <system:String x:Key="dialogs.installdll.message">Instalacja </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Anuluj</system:String>
   <system:String x:Key="dialogs.messagebox.copy">Skopiuj błąd do schowka</system:String>
   <system:String x:Key="dialogs.messagebox.no">Nie</system:String>
@@ -62,8 +62,8 @@
 
   <system:String x:Key="errors.caption">Błąd</system:String>
   <system:String x:Key="errors.details">Szczegóły błędu</system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder1">Błąd ładowania wokodera</system:String>
-  <system:String x:Key="errors.diffsinger.downloadvocoder2">. Proszę pobrać wokoder z  </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">Błąd ładowania wokodera </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2">. Proszę pobrać wokoder z </system:String>
   <system:String x:Key="errors.encryptedarchive">Nieobsługiwany typ zaszyfrowanego archiwum. Proszę ręcznie rozpakować archiwum</system:String>
   <system:String x:Key="errors.expression.abbrlong">Skrót powienien zawierać 1 do 4 znaków</system:String>
   <system:String x:Key="errors.expression.abbrset">Proszę ustawić skrót</system:String>
@@ -473,7 +473,7 @@ Uwaga: ta opcja usuwa presety własne.</system:String>
   <system:String x:Key="singers.publish.description">Stwórz zoptymizowane archiwum ZIP z twoim głosem do dystrybucji online.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">Ignoruj poniższe rozszerzenia podczas pakowania (składnia gitignore):</system:String>
   <system:String x:Key="singers.publish.publish">Opublikuj</system:String>
-  <system:String x:Key="singers.publish.useignore">Użyj ignorowania rozszerzeń plików</system:String>
+  <system:String x:Key="singers.publish.useignore"> Użyj ignorowania rozszerzeń plików</system:String>
   <system:String x:Key="singers.readme">Otwórz readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">Nie znaleziono readme.txt.</system:String>
   <system:String x:Key="singers.refresh">Odśwież</system:String>
