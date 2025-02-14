@@ -33,7 +33,7 @@ jobs:
           - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest }
           - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest }
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
-          - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13 }
+          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13 }
           - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
           - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest }
           - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest }
