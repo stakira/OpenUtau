@@ -59,11 +59,11 @@ namespace OpenUtau.Core.Ustx {
         /// <summary>
         /// Transient field used for serialization.
         /// </summary>
-        public List<UVoicePart> voiceParts;
+        public List<UVoicePart>? voiceParts;
         /// <summary>
         /// Transient field used for serialization.
         /// </summary>
-        public List<UWavePart> waveParts;
+        public List<UWavePart>? waveParts;
 
         [YamlIgnore] public string FilePath { get; set; } = string.Empty;
         [YamlIgnore] public bool Saved { get; set; } = false;
@@ -141,13 +141,13 @@ namespace OpenUtau.Core.Ustx {
             }
             voiceParts = parts
                 .Where(part => part is UVoicePart)
-                .Select(part => part as UVoicePart)
+                .OfType<UVoicePart>()
                 .OrderBy(part => part.trackNo)
                 .ThenBy(part => part.position)
                 .ToList();
             waveParts = parts
                 .Where(part => part is UWavePart)
-                .Select(part => part as UWavePart)
+                .OfType<UWavePart>()
                 .OrderBy(part => part.trackNo)
                 .ThenBy(part => part.position)
                 .ToList();
