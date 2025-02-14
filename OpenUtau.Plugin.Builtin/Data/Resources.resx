@@ -127,6 +127,9 @@
   <data name="envccv_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>envccv.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="en_cPv_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>en_cPv.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="en_xsampa_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\en-xsampa.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
