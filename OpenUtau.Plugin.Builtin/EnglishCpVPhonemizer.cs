@@ -32,7 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t,l,r".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
-        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr").Split(';')
+        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr;a=aa;e=eh;i=iy;o=ao;u=uw;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -136,6 +136,9 @@ namespace OpenUtau.Plugin.Builtin {
             string[] iv_c = new[] { "il", "im", "in", "ing", "ir" };
             string[] ov_c = new[] { "ol", "om", "on", "ong", "or" };
             string[] uv_c = new[] { "ul", "um", "un", "ung", "ur" };
+            string[] ccv = new[] { "bw", "by", "dw", "dy", "fw", "fy", "gw", "gy", "hw", "hy", "kw", "ky"
+                                   , "lw", "ly", "mw", "my", "nw", "ny", "pw", "py", "rw", "ry", "sw", "sy"
+                                    , "tw", "ty", "ts", "vw", "vy", "zw", "zy"};
             var consonatsV1 = new List<string> { "l", "m", "n", "r" };
             var consonatsV2 = new List<string> { "mm", "nn", "ng" };
             // SPLITS UP 2 SYMBOL VOWELS AND 1 SYMBOL CONSONANT
@@ -181,8 +184,11 @@ namespace OpenUtau.Plugin.Builtin {
                     case var str when vowel3S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s[2].ToString() });
                         break;
-                    case var str when vowel4S.Contains(str) &&!HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel4S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s.Substring(2, 2) });
+                        break;
+                    case var str when ccv.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                        modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                         break;
                     default:
                         modified.Add(s);
@@ -195,14 +201,14 @@ namespace OpenUtau.Plugin.Builtin {
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
             // LOAD DICTIONARY FROM FOLDER
-            string path = Path.Combine(PluginDir, "arpasing.yaml");
+            string path = Path.Combine(PluginDir, "en-cPv.yaml");
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
-                File.WriteAllBytes(path, Data.Resources.arpasing_template);
+                File.WriteAllBytes(path, Data.Resources.en_cPv_template);
             }
             // LOAD DICTIONARY FROM SINGER FOLDER
             if (singer != null && singer.Found && singer.Loaded) {
-                string file = Path.Combine(singer.Location, "arpasing.yaml");
+                string file = Path.Combine(singer.Location, "en-cPv.yaml");
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
