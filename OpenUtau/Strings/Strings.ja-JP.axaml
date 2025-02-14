@@ -48,6 +48,8 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
+  <system:String x:Key="dialogs.recovery">前回異常終了しました。復旧しますか？</system:String>
+  <system:String x:Key="dialogs.recovery.caption">プロジェクトの復旧</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">このツールでは、音符の実際の位置と長さ（秒単位）を変えずに、プロジェクトのテンポを変更します。
 新しいBPM：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍子</system:String>

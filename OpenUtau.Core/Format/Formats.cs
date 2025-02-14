@@ -109,6 +109,25 @@ namespace OpenUtau.Core.Format {
         }
 
         /// <summary>
+        /// Load project from backup file.
+        /// </summary>
+        /// <param name="files">Names of the files to be loaded</param>
+        public static void RecoveryProject(string[] files) {
+            UProject project = ReadProject(files);
+            if (project != null) {
+                string originalPath = project.FilePath.Replace("-autosave.ustx", ".ustx").Replace("-backup.ustx", ".ustx");
+                if (File.Exists(originalPath)) {
+                    project.FilePath = originalPath;
+                } else {
+                    project.FilePath = string.Empty;
+                    project.Saved = false;
+                }
+                
+                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            }
+        }
+
+        /// <summary>
         /// Import tracks from files to the current existing editing project.
         /// </summary>
         /// <param name="project">The current existing editing project</param>

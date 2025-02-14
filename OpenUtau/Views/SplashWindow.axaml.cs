@@ -54,6 +54,7 @@ namespace OpenUtau.App.Views {
                     var mainWindow = new MainWindow();
                     mainWindow.Show();
                     desktop.MainWindow = mainWindow;
+                    mainWindow.InitProject();
                     Close();
                 }
             }, CancellationToken.None, TaskContinuationOptions.None, mainScheduler);
