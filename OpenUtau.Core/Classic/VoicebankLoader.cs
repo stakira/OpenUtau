@@ -469,9 +469,11 @@ namespace OpenUtau.Classic {
                 oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
             }
-            if (oto.Offset == 0 && oto.Consonant == 0 && oto.Cutoff == 0 && oto.Preutter == 0 && oto.Overlap == 0) {
-                oto.Error = $"{trace}\nOto is not set.";
-                return oto;
+            if (!IsTest) {
+                if (oto.Offset == 0 && oto.Consonant == 0 && oto.Cutoff == 0 && oto.Preutter == 0 && oto.Overlap == 0) {
+                    oto.Error = $"{trace}\nOto is not set.";
+                    return oto;
+                }
             }
             oto.IsValid = true;
             return oto;
