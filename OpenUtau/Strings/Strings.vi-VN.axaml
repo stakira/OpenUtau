@@ -88,7 +88,7 @@
   <system:String x:Key="errors.failed.savesingerconfig">Không lưu thiết lập thư viện được</system:String>
   <system:String x:Key="errors.failed.searchsinger">Không tìm thấy tên thư viện</system:String>
   <system:String x:Key="errors.install.cpp">Cần cần đặt bản mới nhất của Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
-  <system:String x:Key="errors.lyrics.regex">Không được dùng kí tự này trong biểu thức chính quy  </system:String>
+  <system:String x:Key="errors.lyrics.regex">Không được dùng kí tự này trong biểu thức chính quy</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- lỗi biểu thức chính quy -</system:String>
 
   <system:String x:Key="exps.abbr">Viết tắt</system:String>
@@ -386,7 +386,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các tổ hợp thiết lập của b
   <system:String x:Key="prefs.appearance.trackcolor">Dùng màu của track trong giao diện</system:String>
   <system:String x:Key="prefs.cache">Bộ nhớ đệm</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Dọn bộ nhớ đệm khi thoát chương trình</system:String>
-  <system:String x:Key="prefs.cache.diffsingertensorcache">Bộ nhớ đệm Tensor của DiffSinger </system:String>
+  <system:String x:Key="prefs.cache.diffsingertensorcache">Bộ nhớ đệm Tensor của DiffSinger</system:String>
   <system:String x:Key="prefs.caption">Tuỳ chọn</system:String>
   <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
   <!--<system:String x:Key="prefs.editing">Editing</system:String>-->
@@ -534,8 +534,7 @@ Tổng quát
     Kéo thả nốt: Di chuyển nốt nhạc
     Kéo đuôi nốt: Chỉnh trường độ nốt
     Alt + Kéo đuôi nốt: Chỉnh trường độ giữa hai nốt
-    Space: Nghe thử
-  </system:String>
+    Space: Nghe thử</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Lăn chuột chỗ này để phóng chiều ngang ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Lăn chuột chỗ này để phóng chiều dọc ▶</system:String>
 

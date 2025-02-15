@@ -15,8 +15,8 @@
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
   <system:String x:Key="context.pitch.linear">เส้นตรง</system:String>
-  <system:String x:Key="context.pitch.pointadd">เพิ่มจุด </system:String>
-  <system:String x:Key="context.pitch.pointdel">ลบจุด </system:String>
+  <system:String x:Key="context.pitch.pointadd">เพิ่มจุด</system:String>
+  <system:String x:Key="context.pitch.pointdel">ลบจุด</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">สแน็ปไปยังโน้ตก่อนหน้า</system:String>
   <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
   <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
@@ -424,7 +424,7 @@
   <system:String x:Key="prefs.rendering.prerender">ประมวลผลล่วงหน้า</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-คําเตือน: moresampler ไม่ได้รับการสนับสนุนอย่างเต็มที่ อาจทำให้ประมวลผลล่าช้า และทําให้การใช้งาน CPU สูงมากยิ่งขึ้น หากคุณยืนยัน โปรด:
+    คําเตือน: moresampler ไม่ได้รับการสนับสนุนอย่างเต็มที่ อาจทำให้ประมวลผลล่าช้า และทําให้การใช้งาน CPU สูงมากยิ่งขึ้น หากคุณยืนยัน โปรด:
 1. ตั้งค่า "resampler-compatibility" เป็น "เปิด" ใน moreconfig.txt
 2. ตั้งค่า "auto-update-llsm-mrq" เป็น "ปิด" ใน moreconfig.txt.
 3. อดทนรอให้ moresampler สร้างไฟล์ llsm ที่หายไป
@@ -507,15 +507,12 @@
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
-  <system:String x:Key="tip.exps">
-คลิกปุ่มซ้าย: ตั้งค่าเครื่องหมาย 
-คลิกปุ่มขวา: คืนค่าเครื่องหมาย
-  </system:String>
+  <system:String x:Key="tip.exps">คลิกปุ่มซ้าย: ตั้งค่าเครื่องหมาย 
+คลิกปุ่มขวา: คืนค่าเครื่องหมาย</system:String>
   <system:String x:Key="tip.exps.notsupported">เครื่องหมายยังไม่ได้รับการสนับสนุนจากการประมวลผล</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: โน้ตถัดไป</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: โน้ตก่อนหน้า</system:String>
-  <system:String x:Key="tip.notes.basics">
-เคอร์เซอร์สำหรับเลือกโน้ต
+  <system:String x:Key="tip.notes.basics">เคอร์เซอร์สำหรับเลือกโน้ต
     สร้างสี่เหลี่ยมคลุมโน้ต: เลือกโน้ตที่คลุม
     Ctrl + สร้างสี่เหลี่ยมคลุมโน้ต: เลือกโน้ตที่ต้องการเพิ่มเติม
     Up/Down: สลับเปลี่ยนโน้ตที่เลือก
@@ -529,8 +526,7 @@
     คลิกซ้ายทับบนตัวโน้ต: เคลื่อนย้ายโน้ตนั้นตามต้องการ
     คลิกซ้ายทับท้ายตัวโน้ต: ปรับขนาดความสั้นยาวของโน้ต
     Alt + คลิกซ้ายทับท้ายตัวโน้ต: ปรับขนาดความสั้นยาวของโน้ตที่เลือก กรณีมีโน้ตติดกันป้องกันโน้ตซ้อนกัน
-    Space: เล่น
-  </system:String>
+    Space: เล่น</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ เลื่อนที่นี่เพื่อซูมในแนวนอน ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">เลื่อนที่นี่เพื่อซูมในแนวตั้ง ▶</system:String>
 
