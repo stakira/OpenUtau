@@ -170,9 +170,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public class ProcessResult {
-            public Note[] KoreanLryicNotes { get; set; }
-            public Note? KoreanLryicPrevNote { get; set; }
-            public Note? KoreanLryicNextNote { get; set; }
+            public Note[] KoreanLyricNotes { get; set; }
+            public Note? KoreanLyricPrevNote { get; set; }
+            public Note? KoreanLyricNextNote { get; set; }
         }
 
         // <summary>
@@ -225,9 +225,9 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
                 return new ProcessResult {
-                    KoreanLryicNotes = notes,
-                    KoreanLryicPrevNote = prevNoteNew,
-                    KoreanLryicNextNote = nextNoteNew,
+                    KoreanLyricNotes = notes,
+                    KoreanLyricPrevNote = prevNoteNew,
+                    KoreanLyricNextNote = nextNoteNew,
                 };
             }
             return null;
@@ -383,7 +383,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
             if (romaji2Korean != null) {
-                return ConvertPhonemes(romaji2Korean.KoreanLryicNotes, prev, next, romaji2Korean.KoreanLryicPrevNote, romaji2Korean.KoreanLryicNextNote, prevNeighbours);
+                return ConvertPhonemes(romaji2Korean.KoreanLyricNotes, prev, next, romaji2Korean.KoreanLyricPrevNote, romaji2Korean.KoreanLyricNextNote, prevNeighbours);
             }
 
             if (KoreanPhonemizerUtil.IsHangeul(lyric) || !KoreanPhonemizerUtil.IsHangeul(lyric) && additionalTest(lyric)) {
