@@ -61,6 +61,7 @@ namespace OpenUtau.Plugin.Builtin {
       { "uen", new string[] { "W", "e", ":n" } },
       { "uang", new string[] { "W", "a", ":ng" } },
       { "ueng", new string[] { "W", "e", ":ng" } },
+      { "uong", new string[] { "W", "oo", ":ng" } },
       { "ve", new string[] { "V", "ee" } },
       { "van", new string[] { "V", "ee", ":n" } },
       { "vn", new string[] { "v", ":n" } },
@@ -73,7 +74,7 @@ namespace OpenUtau.Plugin.Builtin {
     public readonly static string[] endBreaths = new string[] { "R", "-" };
     public readonly static string[] initalCV = new string[] { "h" };
 
-    public readonly static int frontSemiVowelTiming = 50;
+    public readonly static int frontSemiVowelTiming = 25;
     
     public readonly static int initalLiquidCTiming = 25;
     public readonly static int initalSibilantCTiming = 100;
@@ -146,8 +147,8 @@ namespace OpenUtau.Plugin.Builtin {
       string consonant = getPinyinConsonant(pinyin);
       int timing = 60;
 
-      if (longVCTimingConsonants.Contains(consonant)) timing = duration / 2;
-      if (shortVCTimingConsonants.Contains(consonant)) timing = duration / 3;
+      if (longVCTimingConsonants.Contains(consonant)) timing = duration / 3;
+      if (shortVCTimingConsonants.Contains(consonant)) timing = duration / 4;
 
       return timing;
     }
