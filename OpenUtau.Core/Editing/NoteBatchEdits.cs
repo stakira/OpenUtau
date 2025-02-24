@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Editing {
 
         public QuantizeNotes(int quantize) {
             this.quantize = quantize;
-            name = $"pianoroll.menu.notes.quantize{quantize}";
+            name = $"pianoroll.menu.notes.quantize";
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {

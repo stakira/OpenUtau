@@ -96,8 +96,6 @@ namespace OpenUtau.App.Views {
                 new RemoveTailNote("R", "pianoroll.menu.notes.removetailrest"),
                 new Transpose(12, "pianoroll.menu.notes.octaveup"),
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
-                new QuantizeNotes(15),
-                new QuantizeNotes(30),
                 new AutoLegato(),
                 new FixOverlap(),
                 new BakePitch(),
@@ -141,6 +139,12 @@ namespace OpenUtau.App.Views {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
+                })
+            });
+            ViewModel.NoteBatchEdits.Insert(8, new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
+                Command = ReactiveCommand.Create(() => {
+                    QuantizeNotes();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
@@ -356,6 +360,15 @@ namespace OpenUtau.App.Views {
             };
             dialog.SetText("br");
             dialog.ShowDialog(this);
+        }
+
+        void QuantizeNotes() {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
+            var edit = new QuantizeNotes(notesVM.Project.resolution * 4 / notesVM.SnapDiv);
+            edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
         }
 
         void LengthenCrossfade() {
