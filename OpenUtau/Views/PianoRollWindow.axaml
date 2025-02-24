@@ -64,18 +64,36 @@
                          PointerPressed="KeyboardPointerPressed"
                          PointerMoved="KeyboardPointerMoved"
                          PointerReleased="KeyboardPointerReleased"/>
-      <Grid Grid.Column="0" Grid.Row="5">
-        <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="0" Margin="0,0,0,0" ToolTip.Tip="Alt + 1"/>
-        <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="1" Margin="0,22,0,0" ToolTip.Tip="Alt + 2"/>
-        <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="2" Margin="0,44,0,0" ToolTip.Tip="Alt + 3"/>
-        <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="3" Margin="0,66,0,0" ToolTip.Tip="Alt + 4"/>
-        <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="4" Margin="0,88,0,0" ToolTip.Tip="Alt + 5"/>
-        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20" Margin="0" Background="Transparent" Click="OnExpButtonClick">
+      <Grid  Grid.Column="0" Grid.Row="5">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
+          <StackPanel >
+            <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="0" ToolTip.Tip="Alt + 1"/>
+            <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="1" ToolTip.Tip="Alt + 2"/>
+            <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="2" ToolTip.Tip="Alt + 3"/>
+            <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="3" ToolTip.Tip="Alt + 4"/>
+            <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="4" ToolTip.Tip="Alt + 5"/>
+            <c:ExpSelector Name="expSelector6" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="5" ToolTip.Tip="Alt + 6"/>
+            <c:ExpSelector Name="expSelector7" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="6" ToolTip.Tip="Alt + 7"/>
+            <c:ExpSelector Name="expSelector8" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="7" ToolTip.Tip="Alt + 8"/>
+            <c:ExpSelector Name="expSelector9" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="8" ToolTip.Tip="Alt + 9"/>
+            <c:ExpSelector Name="expSelector10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="9" ToolTip.Tip="Alt + 0"/>
+          </StackPanel >
+        </ScrollViewer>
+        <Button Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20" Margin="0" Background="Transparent" Click="OnExpButtonClick">
           <Path Classes="clear" Width="24" Height="24"
                 Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
                 Fill="{StaticResource NeutralAccentBrush}">
@@ -87,7 +105,7 @@
             </Path.RenderTransform>
           </Path>
         </Button>
-      </Grid>
+      </Grid >
       <Canvas Name="TimelineCanvas" Grid.Row="2" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
