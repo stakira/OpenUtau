@@ -296,7 +296,9 @@ namespace OpenUtau.Plugin.Builtin {
                     } else {
                         {
                             if (HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
-                                basePhoneme = AliasFormat($"{prevV} {v}", "dynMid_vv", syllable.vowelTone, "");
+                                basePhoneme = $"{prevV} {v}";
+                            } else if (HasOto($"{prevV}{v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV}{v}"), syllable.vowelTone)) {
+                                basePhoneme = $"{prevV}{v}";
                             } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
                                 basePhoneme = v;
                             } else {
@@ -789,29 +791,6 @@ namespace OpenUtau.Plugin.Builtin {
                 var dynamicVariations1 = new List<string> {
                     $"{consonant}{vowel}",    // "CV"
                     $"{consonant} {vowel}",    // "C V"
-                    $"{consonant}_{vowel}",    // "C_V"
-                };
-                // Check each dynamically generated format
-                foreach (var variation1 in dynamicVariations1) {
-                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
-                        return variation1;
-                    }
-                }
-            }
-
-            if (type.Contains("dynMid_vv")) {
-                string consonant = "";
-                string vowel = "";
-                if (alias.Contains(" ")) {
-                    var parts = alias.Split(' ');
-                    consonant = parts[0];
-                    vowel = parts[1];
-                } else {
-                    consonant = alias;
-                }
-                var dynamicVariations1 = new List<string> {
-                    $"{consonant} {vowel}",    // "C V"
-                    $"{consonant}{vowel}",    // "CV"
                     $"{consonant}_{vowel}",    // "C_V"
                 };
                 // Check each dynamically generated format
