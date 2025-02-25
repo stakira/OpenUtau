@@ -373,11 +373,27 @@ namespace OpenUtau.App.ViewModels {
             return key;
         }
 
+        PhonemizerFactory? FindPhonemizerByName(string name){
+            return DocManager.Inst.PhonemizerFactories.FirstOrDefault(
+                factory => factory.type.FullName == name);
+        }
+
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
+            //Singer default
+            if (track != null && track.Singer != null && track.Singer.Found){
+                var factory = FindPhonemizerByName(track.Singer.DefaultPhonemizer);
+                if(factory != null){
+                    items.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("tracks.singerdefault") + factory.ToString(),
+                        Command = SelectPhonemizerCommand,
+                        CommandParameter = factory,
+                    });
+                }
+            }
             //Recently used phonemizers
             items.AddRange(Preferences.Default.RecentPhonemizers
-                .Select(name => DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == name))
+                .Select(name => FindPhonemizerByName(name))
                 .OfType<PhonemizerFactory>()
                 .OrderBy(factory => factory.tag)
                 .Select(factory => new MenuItemViewModel() {

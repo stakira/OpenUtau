@@ -187,8 +187,10 @@ namespace OpenUtau.Core.DiffSinger{
 
             //Variance Predictor
             var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
-                x => x * 0.01)
-                .Select(f => (float)f).ToArray();
+                x => x * 0.01).Select(f => (float)f).ToArray();
+            var toneShift = DiffSingerUtils.SampleCurve(phrase, phrase.toneShift, 0, frameMs, totalFrames, headFrames, tailFrames,
+                x => x * 0.01).Select(f => (float)f).ToArray();
+            pitch = pitch.Zip(toneShift, (x, d) => x + d).ToArray();
 
             var varianceInputs = new List<NamedOnnxValue>();
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));

@@ -10,7 +10,8 @@
         ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="True"
-        SystemDecorations="BorderOnly">
+        SystemDecorations="BorderOnly"
+        WindowStartupLocation="CenterScreen">
   <Grid>
     <Image Margin="20" Width="96" Height="96"
            VerticalAlignment="Top" HorizontalAlignment="Center"

@@ -106,13 +106,11 @@ namespace OpenUtau.Core.DiffSinger
             var endMs = phrase.notes[^1].endMs + tailMs;
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
-            if (dsConfig.predict_dur || dsConfig.use_note_rest) {
-                //Check if all phonemes are defined in dsdict.yaml (for their types)
-                foreach (var phone in phrase.phones) {
-                    if (!g2p.IsValidSymbol(phone.phoneme)) {
-                        throw new InvalidDataException(
-                            $"Type definition of symbol \"{phone.phoneme}\" not found. Consider adding it to dsdict.yaml of the pitch predictor.");
-                    }
+            //Check if all phonemes are defined in dsdict.yaml (for their types)
+            foreach (var phone in phrase.phones) {
+                if (!g2p.IsValidSymbol(phone.phoneme)) {
+                    throw new InvalidDataException(
+                        $"Type definition of symbol \"{phone.phoneme}\" not found. Consider adding it to dsdict.yaml of the pitch predictor.");
                 }
             }
             //Linguistic Encoder
@@ -195,29 +193,29 @@ namespace OpenUtau.Core.DiffSinger
             
             //Pitch Predictor   
             var note_rest = new List<bool>{true};
-                bool prevNoteRest = true;
-                int phIndex = 0;
-                foreach(var note in phrase.notes) {
-                    //Slur notes follow the previous note's rest status
-                    if(note.lyric.StartsWith("+")) {
-                        note_rest.Add(prevNoteRest);
-                        continue;
-                    }
-                    //find all the phonemes in the note's time range
-                    while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
-                        phIndex++;
-                    }
-                    var phs = phrase.phones
-                        .SkipWhile(ph => ph.end <= note.position + 1)
-                        .TakeWhile(ph => ph.position < note.end - 1)
-                        .ToArray();
-                    //If all the phonemes in a note's time range are AP, SP or consonant,
-                    //it is a rest note
-                    bool isRest = phs.Length == 0 
-                        || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
-                    note_rest.Add(isRest);
-                    prevNoteRest = isRest;
+            bool prevNoteRest = true;
+            int phIndex = 0;
+            foreach(var note in phrase.notes) {
+                //Slur notes follow the previous note's rest status
+                if(note.lyric.StartsWith("+")) {
+                    note_rest.Add(prevNoteRest);
+                    continue;
                 }
+                //find all the phonemes in the note's time range
+                while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
+                    phIndex++;
+                }
+                var phs = phrase.phones
+                    .SkipWhile(ph => ph.end <= note.position + 1)
+                    .TakeWhile(ph => ph.position < note.end - 1)
+                    .ToArray();
+                //If all the phonemes in a note's time range are AP, SP or consonant,
+                //it is a rest note
+                bool isRest = phs.Length == 0
+                    || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
+                note_rest.Add(isRest);
+                prevNoteRest = isRest;
+            }
 
             var note_midi = phrase.notes
                 .Select(n=>(float)n.tone)

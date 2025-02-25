@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Editing {
 
         public QuantizeNotes(int quantize) {
             this.quantize = quantize;
-            name = $"pianoroll.menu.notes.quantize{quantize}";
+            name = $"pianoroll.menu.notes.quantize";
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
@@ -619,11 +619,7 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             //Clear MOD+ expressions for selected notes
-            foreach (var phoneme in part.phonemes) {
-                if (phoneme.Parent != null && notes.Contains(phoneme.Parent)) {
-                    docManager.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, phoneme, "mod+", null));
-                }
-            }
+            docManager.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, notes, "mod+", null));
             docManager.EndUndoGroup();
         }
     }

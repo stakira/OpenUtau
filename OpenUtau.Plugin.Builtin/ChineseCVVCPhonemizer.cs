@@ -75,7 +75,7 @@ namespace OpenUtau.Plugin.Builtin {
                     vcPhoneme = oto.Alias;
                 }
                 // prevDuration calculated on basis of previous note length
-                int prevDuration = prevNeighbour.Value.duration;
+                int prevDuration = notes[0].position - prevNeighbour.Value.position;
                 // vcLength depends on the Vel of the current base note
                 vcLen = Convert.ToInt32(Math.Min(prevDuration / 1.5, Math.Max(30, vcLen * (attr1.consonantStretchRatio ?? 1))));
             } else {

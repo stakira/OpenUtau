@@ -83,6 +83,12 @@ namespace OpenUtau.Core.Format
                 }
                 upart.Duration = upart.GetMinDurTick(uproject);
             }
+            if(uproject.tempos.Count == 0){
+                uproject.tempos.Add(new UTempo(0, 120));
+            }
+            if(uproject.tempos[0].position > 0){
+                uproject.tempos[0].position = 0;
+            }
             uproject.AfterLoad();
             uproject.ValidateFull();
             return uproject;
