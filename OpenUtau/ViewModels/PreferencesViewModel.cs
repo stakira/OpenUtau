@@ -75,6 +75,8 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
         }
 
+        [Reactive] public bool CheckForUpdateOnStart { get; set; }
+
         [Reactive] public bool Beta { get; set; }
 
         public class LyricsHelperOption {
@@ -152,6 +154,7 @@ namespace OpenUtau.App.ViewModels {
             ShowPortrait = Preferences.Default.ShowPortrait;
             ShowIcon = Preferences.Default.ShowIcon;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes;
+            CheckForUpdateOnStart = Preferences.Default.CheckForUpdateOnStart;
             Beta = Preferences.Default.Beta;
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets;
@@ -260,6 +263,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.ShowGhostNotes = showGhostNotes;
                     Preferences.Save();
                     MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+                });
+            this.WhenAnyValue(vm => vm.CheckForUpdateOnStart)
+                .Subscribe(checkForUpdateOnStart => {
+                    Preferences.Default.CheckForUpdateOnStart = checkForUpdateOnStart;
+                    Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Beta)
                 .Subscribe(beta => {
