@@ -4,7 +4,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Japanese VCV Phonemizer", "JA VCV", language: "JA")]
+    [Phonemizer("Japanese VCV Phonemizer (legacy)", "JA VCV", language: "JA")]
     public class JapaneseVCVPhonemizer : Phonemizer {
         /// <summary>
         /// The lookup table to convert a hiragana to its tail vowel.
