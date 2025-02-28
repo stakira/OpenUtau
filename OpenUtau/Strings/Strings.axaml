@@ -267,7 +267,8 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
-
+  
+  <system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>
   <system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
@@ -295,8 +296,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
@@ -317,6 +317,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
+  <system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
@@ -550,6 +551,7 @@ General
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
+  <system:String x:Key="tracks.singerdefault">(Singer default) </system:String>
   <system:String x:Key="tracks.solo">Solo</system:String>
   <system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>
   <system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>
