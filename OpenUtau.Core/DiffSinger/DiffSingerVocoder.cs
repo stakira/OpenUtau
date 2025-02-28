@@ -19,6 +19,7 @@ namespace OpenUtau.Core.DiffSinger {
         public double mel_fmax => config.mel_fmax;
         public string mel_base => config.mel_base;
         public string mel_scale => config.mel_scale;
+        public bool pitch_controllable => config.pitch_controllable;
 
         //Get vocoder by package name
         public DsVocoder(string name) {
@@ -72,5 +73,6 @@ namespace OpenUtau.Core.DiffSinger {
         public double mel_fmax = 16000;
         public string mel_base = "10";  // or "e"
         public string mel_scale = "slaney";  // or "htk"
+        public bool pitch_controllable = false;
     }
 }

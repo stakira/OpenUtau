@@ -424,7 +424,7 @@
   <system:String x:Key="prefs.rendering.prerender">預先算繪</system:String>
   <system:String x:Key="prefs.rendering.resampler">引擎</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-警告: Moresampler 尚未完整支援，可能導致使用速度緩慢並提高 CPU 使用率。若欲繼續，請遵循以下步驟:
+    警告: Moresampler 尚未完整支援，可能導致使用速度緩慢並提高 CPU 使用率。若欲繼續，請遵循以下步驟:
 1. 將 moreconfig.txt 中的 "resampler-compatibility" 設定值更改為 "on"。
 2. 將 moreconfig.txt 中的 "auto-update-llsm-mrq" 設定值更改為 "off"。
 3. 首次播放時，請稍等 Moresampler 產生 LLSM 檔案。
@@ -507,15 +507,12 @@
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <system:String x:Key="tip.aliasbox">覆寫別名</system:String>
-  <system:String x:Key="tip.exps">
-使用左鍵描繪: 設定表現
-使用右鍵描繪: 重設表現
-  </system:String>
+  <system:String x:Key="tip.exps">使用左鍵描繪: 設定表現
+使用右鍵描繪: 重設表現</system:String>
   <system:String x:Key="tip.exps.notsupported">此算繪器不支援表現</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一個音符</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一個音符</system:String>
-  <system:String x:Key="tip.notes.basics">
-選取工具
+  <system:String x:Key="tip.notes.basics">選取工具
     框選: 選取音符
     Ctrl + 框選: 選取更多音符
     上下鍵: 移調選取音符（一個半音）
@@ -529,8 +526,7 @@
     拖曳音符: 移動音符
     拖曳音符尾端: 調整音符長度
     Alt + 拖曳音符尾端: 調整相連音符長度
-    空白鍵: 播放
-  </system:String>
+    空白鍵: 播放</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ 捲動以橫向縮放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">捲動以縱向縮放 ▶</system:String>
 

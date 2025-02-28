@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS",language:"JA")]
+    [Phonemizer("Japanese CVVC Phonemizer (legacy)", "JA CVVC", "TUBS",language:"JA")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","を","ん","ン"};
         static readonly string[] nonVowels = new string[]{"息","吸","R","-","k","ky","g","gy",
