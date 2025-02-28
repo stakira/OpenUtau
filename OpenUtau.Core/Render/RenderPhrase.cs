@@ -299,6 +299,30 @@ namespace OpenUtau.Core.Render {
                     lastPoint = point;
                 }
             }
+            // Tuning
+            foreach (var note in uNotes) {
+                if (note.tuning == 0) {
+                    continue;
+                }
+                int startIndex = note == uNotes.First()? 0 : Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval) - 3);
+                int endIndex = note == uNotes.Last()? pitches.Length : Math.Min(pitches.Length, (int)Math.Ceiling((float)(note.End - pitchStart) / pitchInterval) + 3);
+
+                const int fade = 10;
+                double fadein = 0;
+                double fadeout = fade;
+
+                for (int i = startIndex; i < endIndex; i++) {
+                    if (note != uNotes.First() && i < startIndex + fade) {
+                        pitches[i] = pitches[i] + (float)Math.Round(note.tuning * fadein / fade);
+                        fadein++;
+                    } else if (note != uNotes.Last() && i > endIndex - fade) {
+                        fadeout--;
+                        pitches[i] = pitches[i] + (float)Math.Round(note.tuning * fadeout / fade);
+                    } else {
+                        pitches[i] = pitches[i] + note.tuning;
+                    }
+                }
+            }
             // Mod plus
             if (track.TryGetExpDescriptor(project, Format.Ustx.MODP, out var modp) && renderer.SupportsExpression(modp) && singer is ClassicSinger cSinger) {
                 foreach (var phoneme in phonemes) {

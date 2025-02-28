@@ -31,6 +31,13 @@
               <Label Content="{DynamicResource noteproperty.tone}" Grid.Column="0"/>
               <TextBox Text="{Binding Tone, Mode=OneWay}" Grid.Column="1" Tag="Tone" Margin="0"/>
             </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource noteproperty.tuning}" FontWeight="{Binding TuningFontWeight}"/>
+              <TextBox Grid.Column="2" Text="{Binding Tuning, Mode=OneWay}" Tag="Tuning" Margin="0"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding Tuning}" Minimum="-100" Maximum="100"
+                      TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
+                      Tag="Tuning"/>
+            </Grid>
           </StackPanel>
         </Expander>
 

@@ -20,6 +20,7 @@ namespace OpenUtau.Core.Ustx {
         public string lyric = NotePresets.Default.DefaultLyric;
         public UPitch pitch;
         public UVibrato vibrato;
+        public int tuning;
 
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
@@ -256,6 +257,7 @@ namespace OpenUtau.Core.Ustx {
                 lyric = lyric,
                 pitch = pitch.Clone(),
                 vibrato = vibrato.Clone(),
+                tuning = tuning,
                 phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
                 phonemeIndexes = (int[])phonemeIndexes.Clone()
