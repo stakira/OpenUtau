@@ -25,8 +25,8 @@
     <PackageReference Include="SharpCompress" Version="0.38.0" />
     <PackageReference Include="System.Buffers" Version="4.6.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.IO.Packaging" Version="9.0.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    <PackageReference Include="System.IO.Packaging" Version="9.0.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.2" />
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
     <PackageReference Include="Vortice.DXGI" Version="2.4.2" />
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
