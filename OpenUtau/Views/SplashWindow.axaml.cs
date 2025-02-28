@@ -21,14 +21,10 @@ namespace OpenUtau.App.Views {
             this.Opened += SplashWindow_Opened;
         }
 
-        private void SplashWindow_Opened(object? sender, System.EventArgs e) {
+        private void SplashWindow_Opened(object? sender, EventArgs e) {
             if (Screens.Primary == null) {
                 return;
             }
-            var wa = Screens.Primary.WorkingArea;
-            int x = wa.Size.Width / 2 - (int)Width / 2;
-            int y = wa.Size.Height / 2 - (int)Height / 2;
-            Position = new Avalonia.PixelPoint(x, y);
 
             Start();
         }
