@@ -519,7 +519,7 @@ namespace OpenUtau.App.Views {
                 if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
                     return;
-                } else if (!args.KeyModifiers.HasFlag(cmdKey)) {
+                } else if (args.KeyModifiers != cmdKey) {
                     if (ViewModel.NotesViewModel.DrawPitchTool) {
                         editState = new DrawPitchState(control, ViewModel, this);
                     } else if (ViewModel.NotesViewModel.DrawLinePitchTool) {
@@ -530,7 +530,7 @@ namespace OpenUtau.App.Views {
                     return;
                 }
             }
-            if (ViewModel.NotesViewModel.EraserTool && !args.KeyModifiers.HasFlag(cmdKey)) {
+            if (ViewModel.NotesViewModel.EraserTool && args.KeyModifiers != cmdKey) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Left);
                 Cursor = ViewConstants.cursorNo;
@@ -583,9 +583,9 @@ namespace OpenUtau.App.Views {
                         args.KeyModifiers == KeyModifiers.Alt,
                         fromStart: noteHitInfo.hitResizeAreaFromStart);
                     Cursor = ViewConstants.cursorSizeWE;
-                } else if (args.KeyModifiers.HasFlag(cmdKey)) {
+                } else if (args.KeyModifiers == cmdKey) {
                     ViewModel.NotesViewModel.ToggleSelectNote(noteHitInfo.note);
-                } else if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+                } else if (args.KeyModifiers == KeyModifiers.Shift) {
                     ViewModel.NotesViewModel.SelectNotesUntil(noteHitInfo.note);
                 } else if (ViewModel.NotesViewModel.KnifeTool) {
                     ViewModel.NotesViewModel.DeselectNotes();
@@ -597,7 +597,7 @@ namespace OpenUtau.App.Views {
                 }
                 return;
             }
-            if (ViewModel.NotesViewModel.CursorTool || args.KeyModifiers.HasFlag(cmdKey)) {
+            if (ViewModel.NotesViewModel.CursorTool || args.KeyModifiers == cmdKey) {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
@@ -605,7 +605,7 @@ namespace OpenUtau.App.Views {
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
-                if (args.KeyModifiers.HasFlag(cmdKey)) {
+                if (args.KeyModifiers == cmdKey) {
                     // Additional selection.
                     editState = new NoteSelectionEditState(control, ViewModel, this, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
@@ -742,7 +742,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if(((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && !args.KeyModifiers.HasFlag(cmdKey)) || ViewModel.NotesViewModel.EraserTool) {
+            if(((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
                 Cursor = null;
                 return;
             }
@@ -823,7 +823,7 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
                 ViewModel.NotesViewModel.OnYZoomed(position, 0.1 * args.Delta.Y);
-            } else if (args.KeyModifiers.HasFlag(cmdKey)) {
+            } else if (args.KeyModifiers == cmdKey) {
                 TimelinePointerWheelChanged(TimelineCanvas, args);
             }
             if (editState != null) {
@@ -927,7 +927,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                if (args.KeyModifiers.HasFlag(cmdKey)) {
+                if (args.KeyModifiers == cmdKey) {
                     var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(control));
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
