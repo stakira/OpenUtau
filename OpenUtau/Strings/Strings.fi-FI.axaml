@@ -511,15 +511,12 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
-  <system:String x:Key="tip.exps">
-Vasen hiiren klikkaus: Aseta äänen sävy
-Oikea hiiren klikkaus: Nollaa äänen sävy
-  </system:String>
+  <system:String x:Key="tip.exps">Vasen hiiren klikkaus: Aseta äänen sävy
+Oikea hiiren klikkaus: Nollaa äänen sävy</system:String>
   <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: Seuraava nuotti</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Edellinen nuotti</system:String>
-  <system:String x:Key="tip.notes.basics">
-Valintatyökalu
+  <system:String x:Key="tip.notes.basics">Valintatyökalu
     Maalaa: Valitse nuotteja
     Ctrl + Maalaa: Nuottien monivalinta
     Ylös/alas: Transponoi valitut nuotit
@@ -533,8 +530,7 @@ Yleiset
     Vedä nuottia: liikuta nuottia
     Vedä nuotin oikeaa reunaa: muuta nuotin pituutta
     Alt + vedä nuotin oikeaa reunaa: muunna viereisen nuotin pituutta
-    Välilyönti: Toista ääni
-  </system:String>
+    Välilyönti: Toista ääni</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Selaa tästä zoomataaksesi vaakatasossa ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Selaa tästä zoomataaksesi pystytasossa ▶</system:String>
 

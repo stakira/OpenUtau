@@ -174,7 +174,11 @@ namespace OpenUtau.Core {
     }
 
     public class SingersRefreshedNotification : UNotification {
+        public readonly USinger? singer;
         public SingersRefreshedNotification() { }
+        public SingersRefreshedNotification(USinger singer) {
+            this.singer = singer;
+        }
         public override string ToString() => "Singers refreshed.";
     }
 
