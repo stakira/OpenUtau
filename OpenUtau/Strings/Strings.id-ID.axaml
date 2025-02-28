@@ -348,13 +348,11 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
     Hold Ctrl to select
     Hold Alt to smoothen
   </system:String>-->
-  <system:String x:Key="pianoroll.tool.penplus">
-    Alat Pena Plus (Ctrl + 2)
+  <system:String x:Key="pianoroll.tool.penplus">Alat Pena Plus (Ctrl + 2)
     Klik kiri untuk menggambar
     Klik kanan untuk menghapus
     Tahan Ctrl untuk memilih</system:String>
-  <system:String x:Key="pianoroll.tool.penv2">
-    Alat Pena (2)
+  <system:String x:Key="pianoroll.tool.penv2">Alat Pena (2)
     Klik kiri untuk menggambar
     Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Alat Seleksi (1)</system:String>
@@ -430,7 +428,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pra-render</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
+    Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
 1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
 2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
 3. Tunggu sampai moresampler untuk menghasilkan file llsm yang hilang.
@@ -513,15 +511,12 @@ Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin melambat dan meny
   <system:String x:Key="singersetup.textfileencoding.prompt">Pilih pengkodean yang membuat konten berkas terlihat benar.</system:String>
 
   <system:String x:Key="tip.aliasbox">Timpa Alias</system:String>
-  <system:String x:Key="tip.exps">
-Tombol Kiri Tarik: Setel ekspresi
-Tombol Kanan Tarik: Setel ulang ekspresi
-  </system:String>
+  <system:String x:Key="tip.exps">Tombol Kiri Tarik: Setel ekspresi
+Tombol Kanan Tarik: Setel ulang ekspresi</system:String>
   <system:String x:Key="tip.exps.notsupported">Ekspresi tidak didukung oleh perender</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Not Berikutnya</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Not Sebelumnya</system:String>
-  <system:String x:Key="tip.notes.basics">
-Alat Seleksi
+  <system:String x:Key="tip.notes.basics">Alat Seleksi
     Kotak Pilih: Pilih not
     Ctrl + Kotak Pilih: Pilih lebih banyak not
     Atas/Bawah: Transpos not yang dipilih
@@ -535,13 +530,12 @@ Umum
     Seret Not: Memindahkan not
     Seret Ujung Not: Mengubah ukuran not
     Alt + Seret Ujung Not: Mengubah ukuran nada yang bersebelahan
-    Spasi: Memainkan
-  </system:String>
+    Spasi: Memainkan</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
   <system:String x:Key="tracks.duplicate">Duplikat Trek</system:String>
-  <system:String x:Key="tracks.duplicatesettings">Duplikat Pengaturan Trek </system:String>
+  <system:String x:Key="tracks.duplicatesettings">Duplikat Pengaturan Trek</system:String>
   <!--<system:String x:Key="tracks.installsinger">Install singer</system:String>-->
   <system:String x:Key="tracks.more">Lainnya</system:String>
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
