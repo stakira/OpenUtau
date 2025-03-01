@@ -12,6 +12,8 @@ namespace OpenUtau.Core.Render {
     public class RenderNote {
         public readonly string lyric;
         public readonly int tone;
+        public readonly int tuning;
+        public readonly float adjustedTone;
 
         public readonly int position;
         public readonly int duration;
@@ -24,6 +26,8 @@ namespace OpenUtau.Core.Render {
         public RenderNote(UProject project, UPart part, UNote note, int phrasePosition) {
             lyric = note.lyric;
             tone = note.tone;
+            tuning = note.tuning;
+            adjustedTone = note.AdjustedTone;
 
             position = part.position + note.position - phrasePosition;
             duration = note.duration;
@@ -236,7 +240,7 @@ namespace OpenUtau.Core.Render {
             // Create flat pitches
             foreach (var note in uNotes) {
                 while (pitchStart + index * pitchInterval < note.End && index < pitches.Length) {
-                    pitches[index] = note.tone * 100;
+                    pitches[index] = note.AdjustedTone * 100;
                     index++;
                 }
             }
@@ -267,13 +271,13 @@ namespace OpenUtau.Core.Render {
                         double nodePosMs = timeAxis.TickPosToMsPos(part.position + note.position);
                         return new PitchPoint(
                                timeAxis.MsPosToTickPos(nodePosMs + point.X) - part.position,
-                               point.Y * 10 + note.tone * 100,
+                               point.Y * 10 + note.AdjustedTone * 100,
                                point.shape);
                     })
                     .ToList();
                 if (pitchPoints.Count == 0) {
-                    pitchPoints.Add(new PitchPoint(note.position, note.tone * 100));
-                    pitchPoints.Add(new PitchPoint(note.End, note.tone * 100));
+                    pitchPoints.Add(new PitchPoint(note.position, note.AdjustedTone * 100));
+                    pitchPoints.Add(new PitchPoint(note.End, note.AdjustedTone * 100));
                 }
                 if (note == uNotes.First() && pitchPoints[0].X > pitchStart) {
                     pitchPoints.Insert(0, new PitchPoint(pitchStart, pitchPoints[0].Y));
@@ -290,37 +294,13 @@ namespace OpenUtau.Core.Render {
                     while (x < point.X && index < pitches.Length) {
                         float pitch = (float)MusicMath.InterpolateShape(lastPoint.X, point.X, lastPoint.Y, point.Y, x, lastPoint.shape);
                         float basePitch = note.Prev != null && x < note.Prev.End
-                            ? note.Prev.tone * 100
-                            : note.tone * 100;
+                            ? note.Prev.AdjustedTone * 100
+                            : note.AdjustedTone * 100;
                         pitches[index] += pitch - basePitch;
                         index++;
                         x += pitchInterval;
                     }
                     lastPoint = point;
-                }
-            }
-            // Tuning
-            foreach (var note in uNotes) {
-                if (note.tuning == 0) {
-                    continue;
-                }
-                int startIndex = note == uNotes.First()? 0 : Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval) - 3);
-                int endIndex = note == uNotes.Last()? pitches.Length : Math.Min(pitches.Length, (int)Math.Ceiling((float)(note.End - pitchStart) / pitchInterval) + 3);
-
-                const int fade = 10;
-                double fadein = 0;
-                double fadeout = fade;
-
-                for (int i = startIndex; i < endIndex; i++) {
-                    if (note != uNotes.First() && i < startIndex + fade) {
-                        pitches[i] = pitches[i] + (float)Math.Round(note.tuning * fadein / fade);
-                        fadein++;
-                    } else if (note != uNotes.Last() && i > endIndex - fade) {
-                        fadeout--;
-                        pitches[i] = pitches[i] + (float)Math.Round(note.tuning * fadeout / fade);
-                    } else {
-                        pitches[i] = pitches[i] + note.tuning;
-                    }
                 }
             }
             // Mod plus
