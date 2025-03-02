@@ -146,7 +146,8 @@ namespace OpenUtau.Classic {
             string resampPath = OS.IsLinux() ? ResolveResamplerExePathLinux(item.resampler.FilePath) : item.resampler.FilePath;
             writer.WriteLine($"@set resamp={ConvertIfNeeded(resampPath)}");
             writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo:G999} {Base64.Base64EncodeInt12(item.pitches)}");
-            writer.WriteLine($"@set flag=\"{item.GetFlagsString()}\"");
+            // fixed the commandline vulnerabilities that also exists in og utau
+            writer.WriteLine($"@set flag=\"{EscapeFlags(item.GetFlagsString())}\"");
             writer.WriteLine($"@set env={GetEnvelope(item)}");
             writer.WriteLine($"@set stp={item.skipOver}");
             writer.WriteLine($"@set vel={item.velocity}");
@@ -163,6 +164,22 @@ namespace OpenUtau.Classic {
             const int kWidth = 40;
             int fill = index * kWidth / total;
             return $"{new string('#', fill)}{new string('-', kWidth - fill)}({index}/{total})";
+        }
+
+        private static string EscapeFlags(string flag) {
+            return flag.Replace("&", "")
+                .Replace("/", "")
+                .Replace("\\", "")
+                .Replace("|", "")
+                .Replace("<", "")
+                .Replace(">", "")
+                .Replace("\"", "")
+                .Replace(":", "")
+                .Replace("#", "")
+                .Replace(".exe", "")
+                .Replace(".py", "")
+                .Replace(".app", "")
+                .Replace("https://", "");
         }
 
         string GetEnvelope(ResamplerItem item) {
