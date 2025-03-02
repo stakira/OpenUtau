@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,7 +8,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
 using Serilog;
-
+using System.Text.RegularExpressions;
 using System;
 
 namespace OpenUtau.Classic {
@@ -167,19 +167,27 @@ namespace OpenUtau.Classic {
         }
 
         private static string EscapeFlags(string flag) {
-            return flag.Replace("&", "")
-                .Replace("/", "")
-                .Replace("\\", "")
-                .Replace("|", "")
-                .Replace("<", "")
-                .Replace(">", "")
-                .Replace("\"", "")
-                .Replace(":", "")
-                .Replace("#", "")
-                .Replace(".exe", "")
-                .Replace(".py", "")
-                .Replace(".app", "")
-                .Replace("https://", "");
+            // Remove special characters
+            flag = Regex.Replace(flag, @"[&/\\|<>\""'!:#\n\t].", "");
+
+            // Remove specific file extensions (case-insensitive)
+            string[] extensions = {
+                ".exe", ".py", ".app", ".bat", ".cmd", ".sh", ".vbs", ".js", ".wsf", ".msi", ".com", ".pif",
+                ".scr", ".hta", ".cpl", ".jar", ".ps1", ".psm1", ".msh", ".msh1", ".msh2", ".mshxml", ".msh1xml", ".msh2xml"
+            };
+            foreach (var ext in extensions) {
+                if (flag.EndsWith(ext, StringComparison.OrdinalIgnoreCase)) {
+                    flag = flag.Substring(0, flag.Length - ext.Length);
+                }
+            }
+            // Remove "https://" case-insensitively
+            if (flag.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                flag = flag.Substring(8);
+            }
+            else if (flag.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) {
+                flag = flag.Substring(7);
+            }
+            return flag;
         }
 
         string GetEnvelope(ResamplerItem item) {
