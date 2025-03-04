@@ -211,24 +211,24 @@ namespace OpenUtau.App.Controls {
             Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
             var brush = selectedNotes.Contains(note)
                 ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
-                : (note.Error ? ThemeManager.AccentBrush1Semi : ThemeManager.AccentBrush1);
+                : (note.Error ? ThemeManager.AccentBrush1NoteSemi : ThemeManager.AccentBrush1Note);
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
             if (TrackHeight < 10 || note.lyric.Length == 0) {
                 return;
             }
             string displayLyric = note.lyric;
             int txtsize = 14;
-            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.Black, txtsize);
+            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
             if (txtsize > size.Height) {
                 return;
             }
             if (textLayout.Height + 5 < size.Height) {
                 txtsize = (int)(12 * (size.Height / textLayout.Height));
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.Black, txtsize);
+                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
             }
             if (textLayout.Width + 5 > size.Width) {
                 displayLyric = displayLyric[0] + "..";
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.Black, txtsize);
+                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
                 if (textLayout.Width + 5 > size.Width) {
                     return;
                 }

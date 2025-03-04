@@ -108,7 +108,7 @@ namespace OpenUtau.App.Controls {
                 double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
                 var lPen = ThemeManager.AccentPen1;
                 var lPen2 = ThemeManager.AccentPen1Thickness2;
-                var brush = ThemeManager.AccentBrush1;
+                var brush = ThemeManager.AccentBrush1Note;
                 if (curve == null) {
                     double x1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
                     double x2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);

@@ -191,7 +191,7 @@
   </Style>
 
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
-    <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
+    <Setter Property="Background" Value="{DynamicResource AccentBrush1Note}"/>
   </Style>
 
   <Style Selector="ComboBox">

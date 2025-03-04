@@ -24,8 +24,9 @@
 
   <Color x:Key="NeutralAccentColor">#FCFCFC</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#FCFCFC</Color>
-  <Color x:Key="AccentColor1">#A5A5A5</Color>
-  <Color x:Key="AccentColor2">#6F6F9F</Color>
+  <Color x:Key="AccentColor1">#E0E0E0</Color>
+  <Color x:Key="AccentColor1Note">#515182</Color>
+  <Color x:Key="AccentColor2">#7170C4</Color>
   <Color x:Key="AccentColor3">#FCFCFC</Color>
 
   <Color x:Key="TickLineColor">#111111</Color>
