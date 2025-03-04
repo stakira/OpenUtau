@@ -98,6 +98,10 @@
                    Color="{DynamicResource AccentColor1}" />
   <SolidColorBrush x:Key="AccentBrush1Semi"
                    Color="{DynamicResource AccentColor1}" Opacity="0.5" />
+  <SolidColorBrush x:Key="AccentBrush1Note"
+                 Color="{DynamicResource AccentColor1Note}" />
+  <SolidColorBrush x:Key="AccentBrush1NoteSemi"
+                   Color="{DynamicResource AccentColor1Note}" Opacity="0.5" />
   <SolidColorBrush x:Key="AccentBrush2"
                    Color="{DynamicResource AccentColor2}" />
   <SolidColorBrush x:Key="AccentBrush2Semi"

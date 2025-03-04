@@ -153,7 +153,7 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
-            var backgroundBrush = Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
+            var backgroundBrush = Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1Note;
             // Background
             context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 

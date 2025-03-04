@@ -24,6 +24,8 @@ namespace OpenUtau.App {
         public static IPen AccentPen1Thickness2 = new Pen(Brushes.White);
         public static IPen AccentPen1Thickness3 = new Pen(Brushes.White);
         public static IBrush AccentBrush1Semi = Brushes.Gray;
+        public static IBrush AccentBrush1Note = Brushes.White;
+        public static IBrush AccentBrush1NoteSemi = Brushes.Gray;
         public static IBrush AccentBrush2 = Brushes.Gray;
         public static IPen AccentPen2 = new Pen(Brushes.White);
         public static IPen AccentPen2Thickness2 = new Pen(Brushes.White);
@@ -107,6 +109,12 @@ namespace OpenUtau.App {
             }
             if (resDict.TryGetResource("AccentBrush1Semi", themeVariant, out outVar)) {
                 AccentBrush1Semi = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1Note", themeVariant, out outVar)) {
+                AccentBrush1Note = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1NoteSemi", themeVariant, out outVar)) {
+                AccentBrush1NoteSemi = (IBrush)outVar!;
             }
             if (resDict.TryGetResource("AccentBrush2", themeVariant, out outVar)) {
                 AccentBrush2 = (IBrush)outVar!;
