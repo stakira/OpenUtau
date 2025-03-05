@@ -32,7 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t,l,r".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
-        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr;a=aa;e=eh;i=iy;o=ao;u=uw;").Split(';')
+        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr;a=aa;e=eh;i=iy;o=ao;u=uw;j=jh;h=hh").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -277,6 +277,8 @@ namespace OpenUtau.Plugin.Builtin {
                         {
                             if (!HasOto($"{prevV} {v}", syllable.vowelTone) || !HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
                                 basePhoneme = AliasFormat(v, "vv", syllable.vowelTone, "");
+                            } else {
+                                basePhoneme = $"{prevV} {v}";
                             }
                         }
                     }
@@ -488,12 +490,16 @@ namespace OpenUtau.Plugin.Builtin {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                            } else {
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                             }
                         } else if (!c_cR.Contains(cc.Last())) {
                             if (HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone)) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                            } else {
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                             }
                         }
                         /// add additional c to those consonants on the top
@@ -507,11 +513,15 @@ namespace OpenUtau.Plugin.Builtin {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                         } else if (!(HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone)))) {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        } else {
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                         }
                     } else {
                         TryAddPhoneme(phonemes, ending.tone, vc);
                         if (vc.Contains(cc[0])) {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        } else {
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                         }
                     }
                 }
@@ -674,7 +684,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Check if the given type exists in the aliasFormats dictionary
             if (!aliasFormats.ContainsKey(type)) {
-                return "no alias found";
+                return alias;
             }
             // Get the array of possible alias formats for the specified type
             var formatsToTry = aliasFormats[type];
@@ -696,7 +706,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return alias;
                 }
             }
-            return "no alias found";
+            return alias;
         }
 
         protected override string ValidateAlias(string alias) {
