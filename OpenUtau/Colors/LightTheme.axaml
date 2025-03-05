@@ -28,6 +28,9 @@
   <Color x:Key="AccentColor1Note">#A9A6CD</Color>
   <Color x:Key="AccentColor2">#635EA6</Color>
   <Color x:Key="AccentColor3">#736DC1</Color>
+
+  <Color x:Key="NoteBorderColor">#000000</Color>
+  <Color x:Key="NoteBorderColorPressed">#00FF00</Color>
   
   <Color x:Key="TickLineColor">#C0C0CA</Color>
   <Color x:Key="BarNumberColor">#4F4F6E</Color>
