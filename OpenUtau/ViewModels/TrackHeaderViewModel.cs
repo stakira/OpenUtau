@@ -97,6 +97,7 @@ namespace OpenUtau.App.ViewModels {
                 if (track.Phonemizer.GetType() != factory.type) {
                     DocManager.Inst.StartUndoGroup();
                     var phonemizer = factory.Create();
+                    Log.Information($"Loading Phonemizer: {phonemizer.tag} {phonemizer.name}");
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
                     var name = phonemizer.GetType().FullName!;
