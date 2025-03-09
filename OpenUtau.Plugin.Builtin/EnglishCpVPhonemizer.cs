@@ -104,14 +104,56 @@ namespace OpenUtau.Plugin.Builtin {
                 {"el","l"},
                 {"ul","l"},
             };
-        private readonly Dictionary<string, string> DiphthongExceptions =
-            new Dictionary<string, string>() {
-                {"aw","w"},
-                {"ow","w"},
-                {"ay","y"},
-                {"ey","y"},
-                {"oy","y"},
-            };
+            
+        // Final consonants
+        private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
+
+        // Manually defined exceptions (Overrides auto-generated values)
+        private static readonly Dictionary<string, string> ManualOverrides = new Dictionary<string, string>() {
+            {"ea", "ea"},
+            {"ia", "ia"},
+            {"oa", "oa"},
+            {"ua", "ua"}
+        };
+
+        // Dictionary initialized dynamically
+        private static Dictionary<string, string> _diphthongExceptions;
+        private static readonly object diphthongLock = new object();
+        public static Dictionary<string, string> DiphthongExceptions {
+            get {
+                // Lazy initialization: only initialize once when it's accessed
+                if (_diphthongExceptions == null) {
+                    lock (diphthongLock) {
+                        if (_diphthongExceptions == null) {
+                            // Create an instance of the phonemizer to access instance-specific data
+                            var phonemizerInstance = new EnglishCpVPhonemizer();
+                            _diphthongExceptions = phonemizerInstance.GenerateDiphthongExceptions();
+                        }
+                    }
+                }
+                return _diphthongExceptions;
+            }
+        }
+
+        private Dictionary<string, string> GenerateDiphthongExceptions() {
+            var diphthongExceptions = new Dictionary<string, string>();
+
+            // Access instance-specific vowels here
+            foreach (string vowel in GetVowels()) {
+                foreach (string consonant in FinalConsonants) {
+                    if (vowel.EndsWith(consonant)) {
+                        diphthongExceptions[vowel] = consonant;
+                        break;
+                    }
+                }
+            }
+
+            // Apply manual overrides
+            foreach (var entry in ManualOverrides) {
+                diphthongExceptions[entry.Key] = entry.Value;
+            }
+            return diphthongExceptions;
+        }
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
@@ -163,31 +205,31 @@ namespace OpenUtau.Plugin.Builtin {
                     case var str when tr.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ch", s[1].ToString() });
                         break;
-                    case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when wh.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "hh", s[1].ToString() });
                         break;
-                    case var str when av_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when av_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "aa", s[1].ToString() });
                         break;
-                    case var str when ev_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ev_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "eh", s[1].ToString() });
                         break;
-                    case var str when iv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when iv_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "iy", s[1].ToString() });
                         break;
-                    case var str when ov_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ov_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ao", s[1].ToString() });
                         break;
-                    case var str when uv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when uv_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "uw", s[1].ToString() });
                         break;
-                    case var str when vowel3S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel3S.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s[2].ToString() });
                         break;
-                    case var str when vowel4S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel4S.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s.Substring(2, 2) });
                         break;
-                    case var str when ccv.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ccv.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                         break;
                     default:
