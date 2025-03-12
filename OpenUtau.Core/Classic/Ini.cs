@@ -53,20 +53,5 @@ namespace OpenUtau.Classic {
             }
             return blocks;
         }
-
-        public static bool TryGetLines(List<IniBlock> blocks, string header, out List<IniLine> lines) {
-            if (blocks.Any(block => block.header == header)) {
-                lines = blocks.Find(block => block.header == header).lines;
-                if (lines == null || lines.Count < 0) {
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                lines = null;
-                return false;
-            }
-
-        }
     }
 }

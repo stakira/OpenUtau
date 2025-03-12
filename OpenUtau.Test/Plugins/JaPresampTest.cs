@@ -1,10 +1,7 @@
-﻿using Avalonia.Controls.Shapes;
-using Ignore;
-using OpenUtau.Api;
+﻿using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugins {
     public class JaPresampTest : PhonemizerTestBase {
@@ -37,7 +34,7 @@ namespace OpenUtau.Plugins {
             ["- が", "a が", "a ヴ", "u ヴ"]);
         }
         [Fact]
-        public void JaPriorityTest() { // [PRIORITY] p,s
+        public void JaPriorityTest() { // [PRIORITY] p
             RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
                 new NoteParams { lyric = "ri", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
                 new NoteParams { lyric = "p", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
@@ -176,6 +173,9 @@ namespace OpenUtau.Plugins {
             RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
                 new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
                 new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
                 new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
                 new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
                 new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
@@ -184,7 +184,7 @@ namespace OpenUtau.Plugins {
                 new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
                 new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") }
             },
-            ["- あ", "a ・", "・ あ", "a k", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a k_CVVC_C4", "か_CVVC_C4", "a あ・_VCV_D4", "a た_VCV_D4", "a あ・_VCV_D4", "a R_VCV_D4"]);
+            ["- あ", "a ・", "・ あ", "a あ", "a ・", "・ あ", "a k", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a k_CVVC_C4", "か_CVVC_C4", "a あ・_VCV_D4", "a た_VCV_D4", "a あ・_VCV_D4", "a R_VCV_D4"]);
         }
 
         // VCV
@@ -261,7 +261,7 @@ namespace OpenUtau.Plugins {
                 new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
                 new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
             },
-            ["- あ", "a あ・", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a t_CVVC_C4", "- た_VCV_D4", "a あ・_VCV_D4", "a R"]);
+            ["- あ", "a あ・", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a た_VCV_D4", "a あ・_VCV_D4", "a R"]);
         }
 
         // X-SAMPA
