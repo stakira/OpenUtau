@@ -295,8 +295,7 @@
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">レンダリング済みピッチの読み込み</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">1オクターブ下げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize">グリッド幅にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">末尾の"R"を削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">編集したエイリアスをリセット</system:String>

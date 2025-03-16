@@ -296,7 +296,7 @@ namespace OpenUtau.Plugin.Builtin {
                     } else {
                         {
                             if (HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
-                                basePhoneme = AliasFormat($"{prevV} {v}", "dynMid", syllable.vowelTone, "");
+                                basePhoneme = AliasFormat($"{prevV} {v}", "dynMid_vv", syllable.vowelTone, "");
                             } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
                                 basePhoneme = v;
                             } else {
@@ -723,6 +723,7 @@ namespace OpenUtau.Plugin.Builtin {
             // Define alias formats for different types
                 { "dynStart", new string[] { "" } },
                 { "dynMid", new string[] { "" } },
+                { "dynMid_vv", new string[] { "" } },
                 { "dynEnd", new string[] { "" } },
                 { "startingV", new string[] { "-", "- ", "_", "" } },
                 { "vcEx", new string[] { $"{prevV} ", $"{prevV}" } },
@@ -788,6 +789,29 @@ namespace OpenUtau.Plugin.Builtin {
                 var dynamicVariations1 = new List<string> {
                     $"{consonant}{vowel}",    // "CV"
                     $"{consonant} {vowel}",    // "C V"
+                    $"{consonant}_{vowel}",    // "C_V"
+                };
+                // Check each dynamically generated format
+                foreach (var variation1 in dynamicVariations1) {
+                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
+                        return variation1;
+                    }
+                }
+            }
+
+            if (type.Contains("dynMid_vv")) {
+                string consonant = "";
+                string vowel = "";
+                if (alias.Contains(" ")) {
+                    var parts = alias.Split(' ');
+                    consonant = parts[0];
+                    vowel = parts[1];
+                } else {
+                    consonant = alias;
+                }
+                var dynamicVariations1 = new List<string> {
+                    $"{consonant} {vowel}",    // "C V"
+                    $"{consonant}{vowel}",    // "CV"
                     $"{consonant}_{vowel}",    // "C_V"
                 };
                 // Check each dynamically generated format
@@ -1589,7 +1613,7 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains(c) && !alias.Contains("- ") && alias.Contains($"{v} {c}")
                        && !alias.Contains("dx")) {
-                        return base.GetTransitionBasicLengthMs() * 2.0;
+                        return base.GetTransitionBasicLengthMs() * 1.4;
                     }
                 }
             }
@@ -1611,7 +1635,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in connectingGlides) {
                 foreach (var v in vowels.Except(excludedVowels)) {
                     if (alias.Contains($"{v} {c}") && !alias.Contains($"{c} -") && !alias.Contains($"{v} -")) {
-                        return base.GetTransitionBasicLengthMs() * 2.2;
+                        return base.GetTransitionBasicLengthMs() * 2.1;
                     }
                 }
             }
