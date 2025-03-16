@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using NAudio.Wave;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
@@ -44,6 +43,17 @@ namespace OpenUtau.App.Views {
             SingerMenu.Open();
         }
 
+        async void OnSetSingerConfig(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var dialog = new SingerConfigDialog();
+            dialog.DataContext = new SingerConfigViewModel(viewModel.Singer);
+            await dialog.ShowDialog(this);
+            viewModel.Refresh();
+        }
+
         void OnVisitWebsite(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {
@@ -56,58 +66,6 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnSetImage(object sender, RoutedEventArgs args) {
-            var viewModel = (DataContext as SingersViewModel)!;
-            if (viewModel.Singer == null) {
-                return;
-            }
-            var file = await FilePicker.OpenFile(
-                this, "singers.setimage",
-                viewModel.Singer.Location,
-                FilePickerFileTypes.ImageAll);
-            if (file == null) {
-                return;
-            }
-            try {
-                //If the image isn't inside the voicebank, copy it in.
-                if (!file.StartsWith(viewModel.Singer.Location)) {
-                    string newFile = Path.Combine(viewModel.Singer.Location, Path.GetFileName(file));
-                    File.Copy(file, newFile, true);
-                    file = newFile;
-                }
-                viewModel.SetImage(Path.GetRelativePath(viewModel.Singer.Location, file));
-            } catch (Exception e) {
-                Log.Error(e, "Failed to set image");
-                _ = await MessageBox.ShowError(this, e);
-            }
-        }
-
-        async void OnSetPortrait(object sender, RoutedEventArgs args) {
-            var viewModel = (DataContext as SingersViewModel)!;
-            if (viewModel.Singer == null) {
-                return;
-            }
-            var file = await FilePicker.OpenFile(
-                this, "singers.setportrait",
-                viewModel.Singer.Location,
-                FilePickerFileTypes.ImageAll);
-            if (file == null) {
-                return;
-            }
-            try {
-                //If the image isn't inside the voicebank, copy it in.
-                if (!file.StartsWith(viewModel.Singer.Location)) {
-                    string newFile = Path.Combine(viewModel.Singer.Location, Path.GetFileName(file));
-                    File.Copy(file, newFile, true);
-                    file = newFile;
-                }
-                viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, file));
-            } catch (Exception e) {
-                Log.Error(e, "Failed to set portrait");
-                _ = await MessageBox.ShowError(this, e);
-            }
-        }
-
         async void OnPublish(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {
@@ -116,11 +74,6 @@ namespace OpenUtau.App.Views {
             var dialog = new SingerPublishDialog();
             dialog.DataContext = new SingerPublishViewModel(viewModel.Singer);
             await dialog.ShowDialog(this);
-        }
-
-        void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
-            var viewModel = (DataContext as SingersViewModel)!;
-            viewModel.SetUseFilenameAsAlias();
         }
 
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
