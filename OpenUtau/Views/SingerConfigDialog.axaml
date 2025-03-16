@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.SingerConfigDialog"
         Icon="/Assets/open-utau.ico" Title="{DynamicResource singerconfig.title}"
-        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner">
+        SizeToContent="Width" MinHeight="500" WindowStartupLocation="CenterOwner">
   <Window.Styles>
     <Style Selector="StackPanel.menu" >
       <Setter Property="Orientation" Value="Horizontal" />
@@ -40,7 +40,7 @@
     </Style>
   </Window.Styles>
 
-  <ScrollViewer MaxHeight="500">
+  <ScrollViewer>
     <StackPanel Margin="20">
 
       <TextBlock Text="{DynamicResource singerconfig.header.utaucompatible}" Classes="header" Margin="0,0,0,10"/>
