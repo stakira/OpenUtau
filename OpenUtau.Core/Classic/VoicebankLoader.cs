@@ -178,8 +178,8 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Portrait)) {
                 bank.Portrait = bankConfig.Portrait;
-                bank.PortraitOpacity = bankConfig.PortraitOpacity;
-                bank.PortraitHeight = bankConfig.PortraitHeight;
+                bank.PortraitOpacity = bankConfig.PortraitOpacity ?? 0.67f;
+                bank.PortraitHeight = bankConfig.PortraitHeight ?? 0;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
                 bank.Author = bankConfig.Author;
@@ -195,6 +195,9 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Sample)) {
                 bank.Sample = bankConfig.Sample;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.OtherInfo)) {
+                bank.OtherInfo = bankConfig.OtherInfo;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.DefaultPhonemizer)) {
                 bank.DefaultPhonemizer = bankConfig.DefaultPhonemizer;
