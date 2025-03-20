@@ -67,43 +67,22 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isTimitPhonemes = false;
 
-        private readonly Dictionary<string, string> vvExceptions =
-            new Dictionary<string, string>() {
-                {"aw","w"},
-                {"ow","w"},
-                {"uw","w"},
-                {"uh","w"},
-                {"ay","y"},
-                {"ey","y"},
-                {"iy","y"},
-                {"oy","y"},
-                {"ih","y"},
-                {"er","r"},
-                {"aar","r"},
-                {"aen","n"},
-                {"aeng","ng"},
-                {"aor","r"},
-                {"ehr","r"},
-                {"ihng","ng"},
-                {"ihr","r"},
-                {"uwr","r"},
-                {"awn","n"},
-                {"awng","ng"},
-                {"ean","n"},
-                {"eam","m"},
-                {"eang","ng"},
-                // r-colored vowel and l
-                {"ar","r"},
-                {"or","r"},
-                {"air","r"},
-                {"ir","r"},
-                {"ur","r"},
-                {"al","l"},
-                {"ol","l"},
-                {"il","l"},
-                {"el","l"},
-                {"ul","l"},
-            };
+        private static readonly Dictionary<string, string> VVManualOverrides = new Dictionary<string, string>() {
+            {"aw","w"},
+            {"ow","w"},
+            {"uw","w"},
+            {"uh","w"},
+            {"ay","y"},
+            {"ey","y"},
+            {"iy","y"},
+            {"oy","y"},
+            {"ih","y"},
+            {"er","r"},
+            {"ea", "ea"},
+            {"ia", "ia"},
+            {"oa", "oa"},
+            {"ua", "ua"}
+        };
             
         // Final consonants
         private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
@@ -119,6 +98,8 @@ namespace OpenUtau.Plugin.Builtin {
         // Dictionary initialized dynamically
         private static Dictionary<string, string> _diphthongExceptions;
         private static readonly object diphthongLock = new object();
+        private static Dictionary<string, string> _vvExceptions;
+        private static readonly object vvLock = new object();
         public static Dictionary<string, string> DiphthongExceptions {
             get {
                 // Lazy initialization: only initialize once when it's accessed
@@ -153,6 +134,42 @@ namespace OpenUtau.Plugin.Builtin {
                 diphthongExceptions[entry.Key] = entry.Value;
             }
             return diphthongExceptions;
+        }
+
+        public static Dictionary<string, string> vvExceptions {
+            get {
+                // Lazy initialization: only initialize once when it's accessed
+                if (_vvExceptions == null) {
+                    lock (vvLock) {
+                        if (_vvExceptions == null) {
+                            // Create an instance of the phonemizer to access instance-specific data
+                            var phonemizerInstance = new EnglishCpVPhonemizer();
+                            _vvExceptions = phonemizerInstance.GenerateVVExceptions();
+                        }
+                    }
+                }
+                return _vvExceptions;
+            }
+        }
+
+        private Dictionary<string, string> GenerateVVExceptions() {
+            var vvExceptions = new Dictionary<string, string>();
+
+            // Access instance-specific vowels here
+            foreach (string vowel in GetVowels()) {
+                foreach (string consonant in FinalConsonants) {
+                    if (vowel.EndsWith(consonant)) {
+                        // only the final consonants are used
+                        vvExceptions[vowel] = consonant;
+                        break;
+                    }
+                }
+            }
+            // Apply manual overrides
+            foreach (var entry in VVManualOverrides) {
+                vvExceptions[entry.Key] = entry.Value;
+            }
+            return vvExceptions;
         }
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
