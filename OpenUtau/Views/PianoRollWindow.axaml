@@ -11,7 +11,7 @@
         Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         Focusable="True"
         TransparencyLevelHint="None"
-        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
+        Deactivated="WindowDeactivated">
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
