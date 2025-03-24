@@ -27,7 +27,7 @@ namespace OpenUtau.Core.Voicevox {
         public int frame_length;
 
     }
-    public class VoicevoxNotes {
+    public class VoicevoxSynthParams {
         public List<double> f0 = new List<double>();
         public List<double> volume = new List<double>();
         public List<Phonemes> phonemes = new List<Phonemes>();
@@ -140,18 +140,18 @@ namespace OpenUtau.Core.Voicevox {
         public static Dictionary_list dic = new Dictionary_list();
         public static Phoneme_list phoneme_List = new Phoneme_list();
 
-        public static VoicevoxNotes VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
+        public static VoicevoxSynthParams VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
-            VoicevoxNotes vvNotes;
+            VoicevoxSynthParams vvNotes;
             var jObj = JObject.Parse(response.Item1);
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
             } else {
-                vvNotes = jObj.ToObject<VoicevoxNotes>();
+                vvNotes = jObj.ToObject<VoicevoxSynthParams>();
                 return vvNotes;
             }
-            return new VoicevoxNotes();
+            return new VoicevoxSynthParams();
         }
 
         public static void Loaddic(VoicevoxSinger singer) {

@@ -32,9 +32,6 @@ namespace OpenUtau.Core.Voicevox {
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
 
-        //So that the renderer can distinguish between phonemizers.
-        public string Tag = "DEFAULT";
-
         public static VoicevoxConfig Load(USinger singer) {
             try {
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" });
