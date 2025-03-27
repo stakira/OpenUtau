@@ -13,6 +13,9 @@ namespace OpenUtau.Core.Ustx {
         public string Phonetic { get; private set; }
         public string Set { get; private set; }
         public USubbank[] Subbanks { get; private set; }
+        public string Color { get => string.Join(", ", Subbanks.Select(x => string.IsNullOrWhiteSpace(x.Color) ? "(main)" : x.Color)); }
+        public string Prefix { get => Subbanks.First().Prefix; }
+        public string Suffix { get => Subbanks.First().Suffix; }
         public string File { get; private set; }
         public string DisplayFile { get; private set; }
         public double Offset {
