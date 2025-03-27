@@ -1,5 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:global="clr-namespace:">
   <Style>
     <Style.Resources>
       <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
@@ -107,7 +108,7 @@
       </ControlTemplate>
     </Setter>
   </Style>
-  <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
+  <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed, global|FavouriteToggleButton:pressed">
     <Setter Property="RenderTransform" Value="scale(1)"/>
   </Style>
   <Style Selector="Button.clear">
@@ -434,6 +435,9 @@
   <Style Selector="Slider:pointerover /template/ RepeatButton#PART_DecreaseButton">
     <Setter Property="Background" Value="{DynamicResource AccentBrush1}" />
   </Style>
+    <Style Selector="Slider:disabled /template/ RepeatButton#PART_DecreaseButton,Slider:disabled /template/ RepeatButton#PART_IncreaseButton,Slider:disabled /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+    </Style>
   <Style Selector="Slider.fader /template/ Thumb">
     <Setter Property="Template">
       <Setter.Value>
