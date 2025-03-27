@@ -65,28 +65,6 @@
                 <Setter Property="ToolTip.Tip" Value="{Binding Location}"/>
                 <Setter Property="Height" Value="{Binding Height}"/>
               </Style>
-              
-              <Style Selector="ToggleButton">
-                <Setter Property="Padding" Value="0"/>
-                <Setter Property="Content" Value="♡"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Width" Value="20"/>
-                <Setter Property="Height" Value="20"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Style Selector="^:checked">
-                  <Setter Property="Content" Value="♥"/>
-                </Style>
-                <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
-                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
-                  <Setter Property="Background" Value="Transparent"/>
-                </Style>
-                <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                  <Setter Property="Foreground" Value="{DynamicResource AccentBrush3}" />
-                  <Setter Property="Background" Value="Transparent"/>
-                </Style>
-              </Style>
             </ContextMenu.Styles>
           </ContextMenu>
         </Button.ContextMenu>
