@@ -195,26 +195,45 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         //Synthesize with parameters of phoneme, F0, and volume. Under development
-        static VoicevoxSynthParams PhraseToVoicevoxNotes(RenderPhrase phrase, VoicevoxSynthParams vvNotes)  {
-
+        static VoicevoxSynthParams PhraseToVoicevoxNotes(RenderPhrase phrase, VoicevoxSynthParams vvNotes) {
             int headFrames = vvNotes.phonemes[0].frame_length;
             int tailFrames = vvNotes.phonemes[^1].frame_length;
+            List<double> f0s = new List<double>(vvNotes.f0.GetRange(0, headFrames));
+            List<double> vols = new List<double>(vvNotes.volume.GetRange(0, headFrames));
+            try {
+                for (int i = 0; i < phrase.phones.Length; i++) {
+                    vvNotes.phonemes[i + 1].phoneme = phrase.phones[i].phoneme;
+                    int old_length = vvNotes.phonemes[i + 1].frame_length;
+                    int new_length = (int)Math.Round((phrase.phones[i].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
+                    if (new_length < 2) {
+                        new_length = 2;
+                    }
+                    vvNotes.phonemes[i + 1].frame_length = new_length;
 
-            for (int i = 0;i< phrase.phones.Length; i++) {
-                vvNotes.phonemes[i+1].phoneme = phrase.phones[i].phoneme;
-                int old_length = vvNotes.phonemes[i + 1].frame_length;
-                int new_length = (int)Math.Round((phrase.phones[i].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
-                if(new_length < 2) {
-                    new_length = 2;
+                    var f0 = vvNotes.f0.Skip(vvNotes.phonemes[i].frame_length).Take(old_length).ToList();
+                    var scaleF0 = Enumerable.Range(0, new_length)
+                            .Select(index => f0[Math.Min((int)((double)index / new_length * f0.Count), f0.Count)]);
+                    f0s.AddRange(scaleF0);
+                    var volume = vvNotes.volume.Skip(vvNotes.phonemes[i].frame_length).Take(old_length).ToList();
+                    var scaleVolume = Enumerable.Range(0, new_length)
+                            .Select(index => volume[Math.Min((int)((double)index / new_length * volume.Count), volume.Count)]);
+                    vols.AddRange(scaleVolume);
                 }
-                var volume = vvNotes.volume.Skip(vvNotes.phonemes[i].frame_length).Take(old_length).ToList();
-                vvNotes.volume.RemoveRange(vvNotes.phonemes[i].frame_length, old_length);
-
-                var scaleVolume = Enumerable.Range(0, new_length)
-                        .Select(index => volume[Math.Min((int)((double)index / new_length * volume.Count), volume.Count)]);
-                vvNotes.volume.InsertRange(vvNotes.phonemes[i].frame_length, scaleVolume);
+            } catch (Exception e) {
+                Log.Error($"Failed to create a voice base.:{e}");
             }
 
+            int totalFrames = f0s.Count();
+            int ii = headFrames + tailFrames;
+
+            vvNotes.phonemes.ForEach(x => ii += x.frame_length);
+
+            f0s.InsertRange(0, vvNotes.f0.GetRange(0, headFrames));
+            f0s.InsertRange(totalFrames, vvNotes.f0.GetRange(totalFrames - tailFrames, tailFrames));
+            vols.InsertRange(0,vvNotes.volume.GetRange(0,headFrames));
+            vols.InsertRange(totalFrames, vvNotes.volume.GetRange(totalFrames - tailFrames, tailFrames));
+            vvNotes.f0 = f0s;
+            vvNotes.volume = vols;
             vvNotes.outputStereo = false;
             vvNotes.outputSamplingRate = 44100;
             vvNotes.volumeScale = 1;
