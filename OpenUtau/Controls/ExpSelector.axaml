@@ -1,7 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              x:Class="OpenUtau.App.Controls.ExpSelector">
   <Design.DataContext>
@@ -101,7 +99,7 @@
       </ComboBox.Styles>
     </ComboBox>
     <Viewbox Margin="20,0,0,0" Height="22" Width="40">
-      <TextBlock Height="22" MinWidth="36" Margin="0,0,4,0" Padding="0,3,0,3"
+      <TextBlock Height="22" MinWidth="36" Margin="0,0,4,2" Padding="0"
                  Foreground="{Binding TagBrush}"
                  TextAlignment="Right" Text="{Binding Header}"/>
     </Viewbox>
