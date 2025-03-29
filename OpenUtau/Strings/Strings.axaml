@@ -391,6 +391,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
   <system:String x:Key="prefs.editing">Editing</system:String>
+  <system:String x:Key="prefs.general">General</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
@@ -401,8 +402,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
+  <system:String x:Key="prefs.paths.open">Open</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
+  <system:String x:Key="prefs.paths.singer">Singer Path</system:String>
   <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
@@ -545,6 +548,7 @@ General
   <system:String x:Key="tracks.mute.allothers">Mute all others</system:String>
   <system:String x:Key="tracks.mute.only">Mute this only</system:String>
   <system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>
+  <system:String x:Key="tracks.nosinger">There is no singer</system:String>
   <system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>
   <system:String x:Key="tracks.opensingers">Open singers location</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
