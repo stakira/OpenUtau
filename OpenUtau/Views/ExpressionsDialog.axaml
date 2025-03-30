@@ -15,7 +15,7 @@
     <vm:ExpressionsViewModel/>
   </Design.DataContext>
   <Window.Styles>
-    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+    <StyleInclude Source="/Styles/Default/PianoRollStyles.axaml"/>
   </Window.Styles>
 
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">

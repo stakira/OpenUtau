@@ -99,7 +99,7 @@
       </ComboBox.Styles>
     </ComboBox>
     <Viewbox Margin="20,0,0,0" Height="22" Width="40">
-      <TextBlock Height="22" MinWidth="36" Margin="0,0,4,2" Padding="0"
+      <TextBlock Height="22" MinWidth="36"
                  Foreground="{Binding TagBrush}"
                  TextAlignment="Right" Text="{Binding Header}"/>
     </Viewbox>

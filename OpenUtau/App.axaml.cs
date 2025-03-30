@@ -110,5 +110,21 @@ namespace OpenUtau.App {
             }
             ThemeManager.LoadTheme();
         }
+
+        static void InitializeStyle() {
+            Log.Information("Initializing style.");
+            SetStyle();
+            Log.Information("Initialized style.");
+        }
+
+
+        public static void SetStyle() {
+            if (Current == null) {
+                return;
+            }
+            if (OS.IsMacOS()) {
+                StyleManager.SetAppStyles(2);
+            }
+        }
     }
 }

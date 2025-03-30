@@ -1,6 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:OpenUtau.App"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
              x:Class="OpenUtau.App.App" Name="OpenUtau">
   <Application.DataTemplates>
     <local:ViewLocator/>
@@ -30,12 +31,16 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Colors/Brushes.axaml"/>
       </ResourceDictionary.MergedDictionaries>
+      <System:String x:Key="Default_Styles">/Styles/Default/Styles.axaml</System:String>
+      <System:String x:Key="Default_PianoRollStyles">/Styles/Default/PianoRollStyles.axaml</System:String>
+      <System:String x:Key="MacOS_Styles">/Styles/Mac/Styles.axaml</System:String>
+      <System:String x:Key="MacOS_PianoRollStyles">/Styles/Mac/PianoRollStyles.axaml</System:String>
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
-    <StyleInclude Source="/Styles/Styles.axaml"/>
+    <StyleInclude Source="/Styles/Default/Styles.axaml"/>
   </Application.Styles>
   <NativeMenu.Menu>
     <NativeMenu/>

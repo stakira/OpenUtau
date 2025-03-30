@@ -10,6 +10,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml.Styling;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -42,6 +43,9 @@ namespace OpenUtau.App.Views {
         private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollWindow() {
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
             InitializeComponent();
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
