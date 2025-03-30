@@ -188,7 +188,8 @@ namespace OpenUtau.App.ViewModels {
                 }
                 foreach (var suggestion in suggestions) {
                     //Add if not already in the list
-                    if (!expressionsSource.Any(builder => builder.Abbr == suggestion.abbr)) {
+                    if (!expressionsSource.Any(builder => builder.Abbr == suggestion.abbr
+                        || suggestion.isFlag && suggestion.type == UExpressionType.Numerical && builder.Flag == suggestion.flag)) {
                         expressionsSource.Add(new ExpressionBuilder(suggestion));
                     }
                 }

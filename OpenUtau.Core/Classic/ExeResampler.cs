@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Util;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -24,12 +22,14 @@ namespace OpenUtau.Classic {
 
         public ResamplerManifest LoadManifest() {
             try {
-                var ManifestPath = Path.ChangeExtension(FilePath, ".yaml");
-                if (!File.Exists(ManifestPath)) {
-                    //TODO: Write Resampler Manifests shipped by OpenUtau
-                    return new ResamplerManifest();
+                var manifestPath = Path.ChangeExtension(FilePath, ".yaml");
+                if (!File.Exists(manifestPath)) {
+                    manifestPath = Path.Combine(PathManager.Inst.ManifestsPath, Path.GetFileName(manifestPath));
+                    if (!File.Exists(manifestPath)) {
+                        return new ResamplerManifest();
+                    }
                 }
-                return ResamplerManifest.Load(ManifestPath);
+                return ResamplerManifest.Load(manifestPath);
             } catch (Exception ex) {
                 Log.Error($"Failed loading resampler manifest for {_name}: {ex}");
                 return new ResamplerManifest();
