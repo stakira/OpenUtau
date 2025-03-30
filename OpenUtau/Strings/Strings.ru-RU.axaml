@@ -507,15 +507,12 @@
   <system:String x:Key="singersetup.textfileencoding.prompt">Выберите кодировку, в которой содержимое файла будет выглядеть правильно.</system:String>
 
   <system:String x:Key="tip.aliasbox">Заменить алиасы</system:String>
-  <system:String x:Key="tip.exps">
-    Рисование левой кнопкой мыши: установить выражения
-Рисование правой кнопкой мыши: сброс выражений
-  </system:String>
+  <system:String x:Key="tip.exps">Рисование левой кнопкой мыши: установить выражения
+Рисование правой кнопкой мыши: сброс выражений</system:String>
   <system:String x:Key="tip.exps.notsupported">Выражения не поддерживаются рендером</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: следующая нота</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: предыдущая нота</system:String>
-  <system:String x:Key="tip.notes.basics">
-Инструмент выбора
+  <system:String x:Key="tip.notes.basics">Инструмент выбора
     Рамка выбора: Выбор нот
     Ctrl + рамка выбора: Выбрать больше нот
     ↑/↓: Сместить выбранные ноты
@@ -529,8 +526,7 @@
     Перетаскивание ноты: Перемещение ноты
     Перетаскивание конца ноты: Изменение размера ноты
     Alt + перетаксивание конца ноты: Изменение размера соседних нот
-    Пробел: Воспроизведение
-  </system:String>
+    Пробел: Воспроизведение</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Прокрутите здесь для горизонтального масштабирования ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Прокрутите здесь для вертикального масштабирования ▶</system:String>
 

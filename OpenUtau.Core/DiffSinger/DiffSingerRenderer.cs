@@ -35,6 +35,7 @@ namespace OpenUtau.Core.DiffSinger {
             VELC,
             ENE,
             PEXP,
+            Format.Ustx.SHFC,
         };
 
         static readonly object lockObj = new object();
@@ -219,7 +220,9 @@ namespace OpenUtau.Core.DiffSinger {
             float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01))
                 .Select(f => (float)f).ToArray();
-            //toneShift isn't supported
+            float[] shiftedF0 = f0.Zip(DiffSingerUtils.SampleCurve(phrase, phrase.toneShift, 0, frameMs, totalFrames,
+                headFrames, tailFrames, x => x),
+                (x, d) => x * (float) Math.Pow(2, d / 1200)).ToArray();
 
             var acousticInputs = new List<NamedOnnxValue>();
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
@@ -228,9 +231,15 @@ namespace OpenUtau.Core.DiffSinger {
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("durations",
                 new DenseTensor<long>(durations.Select(x=>(long)x).ToArray(), new int[] { durations.Count }, false)
                 .Reshape(new int[] { 1, durations.Count })));
-            var f0tensor = new DenseTensor<float>(f0, new int[] { f0.Length })
+            var f0Tensor = new DenseTensor<float>(f0, new int[] { f0.Length })
                 .Reshape(new int[] { 1, f0.Length });
-            acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
+            if (vocoder.pitch_controllable) {
+                var shiftedF0Tensor = new DenseTensor<float>(shiftedF0, new int[] { shiftedF0.Length })
+                    .Reshape(new int[] { 1, shiftedF0.Length });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0", shiftedF0Tensor));
+            } else {
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0", f0Tensor));
+            }
 
             // sampling acceleration related
             if (singer.dsConfig.useContinuousAcceleration) {
@@ -283,7 +292,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                 var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
                 var negativeScale = (range[0]==0) ? 0 : (-12/range[0]/100);
-                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 
+                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender,
                     0, frameMs, totalFrames, headFrames, tailFrames,
                     x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
                     .Select(f => (float)f).ToArray();
@@ -293,7 +302,7 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //velocity
-            //Definition of VELC: logarithmic scale, Default value 100 = original speed, 
+            //Definition of VELC: logarithmic scale, Default value 100 = original speed,
             //each 100 increase means speed x2
             if (singer.dsConfig.useSpeedEmbed) {
                 var velocityCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == VELC);
@@ -342,7 +351,7 @@ namespace OpenUtau.Core.DiffSinger {
                     }
                     var predictedEnergy = DiffSingerUtils.ResampleCurve(varianceResult.energy, totalFrames);
                     var energy = predictedEnergy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
-                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
+                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
                         new DenseTensor<float>(energy, new int[] { energy.Length })
                         .Reshape(new int[] { 1, energy.Length })));
                 }
@@ -356,7 +365,7 @@ namespace OpenUtau.Core.DiffSinger {
                     }
                     var predictedBreathiness = DiffSingerUtils.ResampleCurve(varianceResult.breathiness, totalFrames);
                     var breathiness = predictedBreathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
-                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
+                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
                         new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
                         .Reshape(new int[] { 1, breathiness.Length })));
                 }
@@ -428,7 +437,7 @@ namespace OpenUtau.Core.DiffSinger {
             //waveform = session.run(['waveform'], {'mel': mel, 'f0': f0})[0]
             var vocoderInputs = new List<NamedOnnxValue>();
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
-            vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
+            vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0Tensor));
             var vocoderCache = Preferences.Default.DiffSingerTensorCache
                 ? new DiffSingerCache(vocoder.hash, vocoderInputs)
                 : null;

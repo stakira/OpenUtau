@@ -215,7 +215,7 @@
   <system:String x:Key="notedefaults.lyric">Parole</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">Parole par défaaut</system:String>
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
-  <system:String x:Key="notedefaults.portamento.length">Longueur </system:String>
+  <system:String x:Key="notedefaults.portamento.length">Longueur</system:String>
   <system:String x:Key="notedefaults.portamento.start">Début</system:String>
   <system:String x:Key="notedefaults.preset">Préréglage</system:String>
   <system:String x:Key="notedefaults.preset.namenew">Nouveau nom du préréglage</system:String>
@@ -424,7 +424,7 @@ Attention: cela va effacer le préréglage.</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pré-rendu</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être lent et entraîner une utilisation élevée du CPU. Si vous insistez, veuillez :
+    Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être lent et entraîner une utilisation élevée du CPU. Si vous insistez, veuillez :
 1. Définir "resampler-compatibility" sur "on" dans moreconfig.txt.
 2. Définir "auto-update-llsm-mrq" sur "off" dans moreconfig.txt.
 3. Attendez patiemment que moresampler génère les fichiers llsm manquants.
@@ -507,15 +507,12 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Remplacer l'alias</system:String>
-  <system:String x:Key="tip.exps">
-Clic gauche: Configurer les expressions
-Clic droit: Réinitialiser les expressions
-  </system:String>
+  <system:String x:Key="tip.exps">Clic gauche: Configurer les expressions
+Clic droit: Réinitialiser les expressions</system:String>
   <system:String x:Key="tip.exps.notsupported">Expression non supportée par le moteur de rendu</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Note Suivante</system:String>
   <system:String x:Key="tip.lyricbox.prev">Maj+Tab: Note Précédente</system:String>
-  <system:String x:Key="tip.notes.basics">
-Outil de sélection
+  <system:String x:Key="tip.notes.basics">Outil de sélection
     Glisser ou cliquer: sélectionner une ou plusieurs notes
     Ctrl + glisser ou Ctrl + cliquer: ajouter des notes à la sélection
     Haut/Bas: transposer les notes sélectionnées
@@ -529,8 +526,7 @@ Général
     Glisser la note pour la déplacer
     Glisser la fin d'une note pour la raccourcir ou rallonger
     Alt + Glisser à la fin d'une note pour changer sa longueur en prenant en compte les notes voisines
-    Barre d'espace: Jouer le projet
-  </system:String>
+    Barre d'espace: Jouer le projet</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroller ici pour zoomer horizontalement ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroller ici pour zoomer verticalement ▶</system:String>
 

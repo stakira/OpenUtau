@@ -1,10 +1,11 @@
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 using OpenUtau.Api;
+using OpenUtau.Classic;
 
 namespace OpenUtau.Core.DiffSinger
 {
@@ -35,7 +36,12 @@ namespace OpenUtau.Core.DiffSinger
         //vowels and consonants of BaseG2p
         protected virtual string[] GetBaseG2pVowels()=>new string[]{};
         protected virtual string[] GetBaseG2pConsonants()=>new string[]{};
-        
+
+        private Dictionary<string, bool> phonemeSymbols = new Dictionary<string, bool>();
+        protected bool HasPhoneme(string phoneme) {
+            return phonemeSymbols.ContainsKey(phoneme);
+        }
+
         protected override IG2p LoadG2p(string rootPath, bool useLangId = false) {
             //Each phonemizer has a delicated dictionary name, such as dsdict-en.yaml, dsdict-ru.yaml.
             //If this dictionary exists, load it.
@@ -54,6 +60,13 @@ namespace OpenUtau.Core.DiffSinger
                         var dictData = Yaml.DefaultDeserializer.Deserialize<DiffSingerG2pDictionaryData>(dictText);
                         g2pBuilder.Load(dictData);
                         replacements = dictData.replacementsDict();
+                        // Collect all symbols from the dictionary and add them to phonemeSymbols
+                        if (dictData.symbols != null) {
+                            foreach (var symbol in dictData.symbols) {
+                                phonemeSymbols[symbol.symbol.Trim()] = true;
+                            }
+                        }
+                        Log.Error("Loaded symbols: " + string.Join(", ", phonemeSymbols.Keys));
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {dictionaryPath}");
                     }
@@ -70,7 +83,6 @@ namespace OpenUtau.Core.DiffSinger
             if(baseG2p == null){
                 return new G2pFallbacks(g2ps.ToArray());
             }
-            var phonemeSymbols = new Dictionary<string, bool>();
             foreach(var v in GetBaseG2pVowels()){
                 phonemeSymbols[v]=true;
             }

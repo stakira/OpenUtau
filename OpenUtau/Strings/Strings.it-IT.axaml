@@ -29,7 +29,7 @@
 
   <system:String x:Key="dialogs.about.caption">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
+    OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Stai uscendo da OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">Questo progetto attuale ha dei cambiamenti non salvati. Vuoi salvare?</system:String>
@@ -80,7 +80,7 @@
   <!--<system:String x:Key="errors.failed.installsinger">Failed to install singer</system:String>-->
   <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
   <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
-  <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
+  <system:String x:Key="errors.failed.openfile">Apertura fallita</system:String>
   <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
   <!--<system:String x:Key="errors.failed.render">Failed to render</system:String>-->
   <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
@@ -428,13 +428,13 @@ Tieni premuto Ctrl per selezionare</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-renderizzazione</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-Attenzione: moresampler non è completamente supportato. Potrebbe causare rallentamenti ed alto utilizzo della CPU. Se vuoi:
+    Attenzione: moresampler non è completamente supportato. Potrebbe causare rallentamenti ed alto utilizzo della CPU. Se vuoi:
 1. Imposta "resampler-compatibility" su "on" nel file moreconfig.txt.
 2. Imposta "auto-update-llsm-mrq" su "off" nel file moreconfig.txt.
 3. Attendere che moresampler generi tutti i file llsm mancanti.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-		Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
+    Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
   </system:String>
   <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <system:String x:Key="prefs.rendering.threads.cpuwarn">
@@ -500,7 +500,7 @@ Attenzione: moresampler non è completamente supportato. Potrebbe causare rallen
   <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
   <system:String x:Key="singers.visitwebsite">Visita il sito web</system:String>
 
-  <system:String x:Key="singersetup.archivefileencoding">Codifica del File d'Archivio </system:String>
+  <system:String x:Key="singersetup.archivefileencoding">Codifica del File d'Archivio</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Seleziona la codifica corretta.</system:String>
   <system:String x:Key="singersetup.back">Indietro</system:String>
   <system:String x:Key="singersetup.install">Installa</system:String>
@@ -511,15 +511,12 @@ Attenzione: moresampler non è completamente supportato. Potrebbe causare rallen
   <system:String x:Key="singersetup.textfileencoding.prompt">Seleziona la codifica corretta.</system:String>
 
   <system:String x:Key="tip.aliasbox">Annulla Alias</system:String>
-  <system:String x:Key="tip.exps">
-Tieni premuto click sinistro: Imposta espressioni
-Tieni premuto click destro: Resetta espressioni
-  </system:String>
+  <system:String x:Key="tip.exps">Tieni premuto click sinistro: Imposta espressioni
+Tieni premuto click destro: Resetta espressioni</system:String>
   <system:String x:Key="tip.exps.notsupported">Questa espressione non è supportata dal renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nota successiva</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota precedente</system:String>
-  <system:String x:Key="tip.notes.basics">
-Strumenti Selezione
+  <system:String x:Key="tip.notes.basics">Strumenti Selezione
     Selezione: Seleziona note
     Ctrl + Selezione: Seleziona più note
     Su/Giù: Trasponi note selezionate
@@ -533,8 +530,7 @@ Generali
     Trascina nota: Muovi nota
     Trascina fine della nota: Ridimensiona nota
     Alt + Trascina fine della nota: Ridimensiona note confinanti
-    Spazio: Riproduci
-  </system:String>
+    Spazio: Riproduci</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scorri qui per zoomare orizzontalmente ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scorri qui per zoomare verticalmente ▶</system:String>
 

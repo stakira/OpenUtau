@@ -96,8 +96,6 @@ namespace OpenUtau.App.Views {
                 new RemoveTailNote("R", "pianoroll.menu.notes.removetailrest"),
                 new Transpose(12, "pianoroll.menu.notes.octaveup"),
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
-                new QuantizeNotes(15),
-                new QuantizeNotes(30),
                 new AutoLegato(),
                 new FixOverlap(),
                 new BakePitch(),
@@ -141,6 +139,12 @@ namespace OpenUtau.App.Views {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
+                })
+            });
+            ViewModel.NoteBatchEdits.Insert(8, new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
+                Command = ReactiveCommand.Create(() => {
+                    QuantizeNotes();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
@@ -356,6 +360,15 @@ namespace OpenUtau.App.Views {
             };
             dialog.SetText("br");
             dialog.ShowDialog(this);
+        }
+
+        void QuantizeNotes() {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
+            var edit = new QuantizeNotes(notesVM.Project.resolution * 4 / notesVM.SnapDiv);
+            edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
         }
 
         void LengthenCrossfade() {
@@ -1027,6 +1040,35 @@ namespace OpenUtau.App.Views {
             KeyMenu.Open();
         }
 
+        bool MoveToNextPart(bool next) {
+            var notesVm = ViewModel.NotesViewModel;
+            var playVm = ViewModel.PlaybackViewModel;
+            if (notesVm?.Part == null || playVm == null) {
+                return false;
+            }
+            // tick is the center of NotesCanvas
+            var tick = (int)(notesVm.TickOffset + notesVm.Bounds.Width / notesVm.TickWidth / 2 + notesVm.Part.position);
+            var parts = notesVm.Project.parts
+                .Where(part => part is UVoicePart && part.position <= tick && tick <= part.End)
+                .OfType<UVoicePart>()
+                .OrderBy(part => part.trackNo)
+                .ThenBy(part => part.position)
+                .ToArray();
+            if (parts.Length == 0) {
+                return false;
+            }
+            var index = Array.IndexOf(parts, notesVm.Part);
+            index = next ? index + 1 : index - 1;
+            if (parts.Length <= index) {
+                index = 0;
+            } else if (index < 0) {
+                index = parts.Length - 1;
+            }
+            DocManager.Inst.ExecuteCmd(new LoadPartNotification(parts[index], notesVm.Project, tick));
+            AttachExpressions();
+            return true;
+        }
+
         void OnKeyKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter && e.KeyModifiers == KeyModifiers.None) {
                 if (sender is ContextMenu menu && menu.SelectedItem is MenuItemViewModel item) {
@@ -1467,6 +1509,7 @@ namespace OpenUtau.App.Views {
                 case Key.End:
                     if (isNone) {
                         playVm.MovePlayPos(notesVm.Part.End);
+                        HScrollBar.Value = HScrollBar.Maximum;
                         return true;
                     }
                     if (isShift) {
@@ -1631,7 +1674,21 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
-                    #endregion
+                #endregion
+                #region move to the next track part
+                case Key.PageUp: {
+                        if (isNone) {
+                            return MoveToNextPart(false);
+                        }
+                    }
+                    break;
+                    case Key.PageDown: {
+                        if (isNone) {
+                            return MoveToNextPart(true);
+                        }
+                    }
+                    break;
+                #endregion
             }
             return false;
         }

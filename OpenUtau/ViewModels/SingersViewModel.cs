@@ -356,7 +356,7 @@ namespace OpenUtau.App.ViewModels {
             Otos.AddRange(Singer.Otos);
             LoadSubbanks();
 
-            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification(Singer));
             DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
             if (Otos.Count > 0) {
                 index = Math.Clamp(index, 0, Otos.Count - 1);

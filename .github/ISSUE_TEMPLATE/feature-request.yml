@@ -1,0 +1,26 @@
+name: '🚀 Feature Request / Idea'
+description: Suggest a new feature or improvement (this does not mean you have to implement it).
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Vague help requests are not efficiently handled here. Help requests are better handled in the Discord server or QQ group.
+        Before posting your idea, please read [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) and [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ) and other wiki pages to see if it is already implemented, and search within GitHub issues to see if it has been posted.
+  - type: checkboxes
+    attributes:
+      label: Acknowledgement
+      options:
+        - label: I have read Getting-Started and FAQ
+          required: true
+  - type: textarea
+    attributes:
+      label: Description of the new feature / enhancement
+      placeholder: |
+        A clear and concise description of what the problem is that the new feature would solve.
+        Describe why and how a user would use this new functionality (if applicable).
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed technical implementation details
+      placeholder: A clear and concise description of what you want to happen.

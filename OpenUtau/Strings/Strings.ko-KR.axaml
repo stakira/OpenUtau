@@ -38,9 +38,9 @@
   <system:String x:Key="dialogs.importtracks.caption">[불러오기] 트랙</system:String>
   <system:String x:Key="dialogs.importtracks.importtempo">불러온 프로젝트에 이 템포들이 포함되어 있어요. 사용할까요?</system:String>
   <system:String x:Key="dialogs.installdependency.caption">의존 요소를 설치하고 있어요</system:String>
-  <system:String x:Key="dialogs.installdependency.message">설치 중</system:String>
+  <system:String x:Key="dialogs.installdependency.message">설치 중 </system:String>
   <system:String x:Key="dialogs.installdll.caption">음소화기를 설치하고 있어요</system:String>
-  <system:String x:Key="dialogs.installdll.message">설치 중</system:String>
+  <system:String x:Key="dialogs.installdll.message">설치 중 </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">취소</system:String>
   <system:String x:Key="dialogs.messagebox.copy">오류 메시지 복사</system:String>
   <system:String x:Key="dialogs.messagebox.no">아니요</system:String>
@@ -48,14 +48,14 @@
   <system:String x:Key="dialogs.messagebox.yes">네</system:String>
   <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없어요</system:String>
   <system:String x:Key="dialogs.noresampler.message">리샘플러가 없어요! 'Resamplers' 폴더에 좋아하는 리샘플러의 exe나 dll을 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요!</system:String>
-  <system:String x:Key="dialogs.remaptimeaxis.message"> 노트들의 위치와 길이를 그대로 유지하면서, 프로젝트 전체의 템포를 변경해요 (초 단위 기준).
-  새 BPM 입력: </system:String>
+  <system:String x:Key="dialogs.remaptimeaxis.message">노트들의 위치와 길이를 그대로 유지하면서, 프로젝트 전체의 템포를 변경해요 (초 단위 기준).
+  새 BPM 입력:</system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
   <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
   <system:String x:Key="dialogs.tracksettings.renderer">렌더러</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">이 값을 기본값으로</system:String>
-  <system:String x:Key="dialogs.unsupportedfile.caption">지원하지 않는 파일 유형이에요: </system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">지원하지 않는 파일 유형이에요:</system:String>
   <system:String x:Key="dialogs.unsupportedfile.message">지원하지 않는 파일 유형이에요: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">음색 재배치</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">다음 트랙의 모든 노트에 적용됩니다.</system:String>
@@ -225,7 +225,7 @@
   <system:String x:Key="notedefaults.preset.save.tooltip">현재 세팅으로 새 프리셋 추가</system:String>
   <system:String x:Key="notedefaults.reset">사용자 설정 초기화</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">모든 설정 항목을 기본값으로 복구합니다.
-경고: 사용자 프리셋이 전부 사라져요. </system:String>
+경고: 사용자 프리셋이 전부 사라져요.</system:String>
   <system:String x:Key="notedefaults.vibrato">비브라토</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">최소 노트 길이</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">길이에 따른 자동 비브라토</system:String>
@@ -473,7 +473,7 @@
   <system:String x:Key="singers.publish.description">가수 배포를 위한 zip 파일을 만들어요.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">[파일 무시] 이 목록에 포함된 파일 유형들은 배포 파일에 포함되지 않아요. (gitignore 문법으로 작성):</system:String>
   <system:String x:Key="singers.publish.publish">배포하기</system:String>
-  <system:String x:Key="singers.publish.useignore">'파일 무시' 사용</system:String>
+  <system:String x:Key="singers.publish.useignore"> '파일 무시' 사용</system:String>
   <system:String x:Key="singers.readme">readme.txt 열기</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt를 찾지 못했어요.</system:String>
   <system:String x:Key="singers.refresh">새로고침</system:String>
@@ -530,8 +530,7 @@
     노트 위치 이동: 노트 드래그
     노트 길이 변경: 노트 끝 드래그
     이웃한 노트 길이까지 변경: Alt + 노트 끝 드래그
-    재생: 스페이스 바
-  </system:String>
+    재생: 스페이스 바</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ 수평 확대 시 여기서 스크롤 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">수직 확대 시 여기서 스크롤 ▶</system:String>
 
@@ -570,6 +569,6 @@
   <system:String x:Key="updater.update">업데이트</system:String>
 
   <system:String x:Key="warning">경고</system:String>
-  <system:String x:Key="warning.asciipath">OpenUtau 설치 경로 "{0}"에 비 ASCII 문자가 있어요. Exe 리샘플러가 작동하지 않을 수 있습니다. </system:String>
+  <system:String x:Key="warning.asciipath">OpenUtau 설치 경로 "{0}"에 비 ASCII 문자가 있어요. Exe 리샘플러가 작동하지 않을 수 있습니다.</system:String>
   <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다.</system:String>
 </ResourceDictionary>

@@ -525,32 +525,24 @@
                 <Path Classes="stroked" Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z"/>
               </Border>
             </ToggleButton>
-            <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnSnapDivMenuButton">
+            <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnSnapDivMenuButton"
+              ToolTip.Tip="{DynamicResource pianoroll.snapdiv}">
               <TextBlock Grid.Column="0" Text="{Binding NotesViewModel.SnapDivText}"
                          TextAlignment="Right" FontSize="10" FontFamily="monospace"
                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="SnapDivMenu" PlacementMode="BottomEdgeAlignedLeft" ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
-                  <ContextMenu.DataTemplates>
-                    <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                    </DataTemplate>
-                  </ContextMenu.DataTemplates>
-                </ContextMenu>
+                <ContextMenu Name="SnapDivMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
+                             ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown"/>
               </Button.ContextMenu>
             </Button>
-            <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnKeyMenuButton">
+            <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnKeyMenuButton"
+              ToolTip.Tip="{DynamicResource pianoroll.key}">
               <TextBlock Grid.Column="0" Text="{Binding NotesViewModel.KeyText}"
                           TextAlignment="Right" FontSize="10" FontFamily="monospace"
                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="KeyMenu" PlacementMode="BottomEdgeAlignedLeft" ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown">
-                  <ContextMenu.DataTemplates>
-                    <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                    </DataTemplate>
-                  </ContextMenu.DataTemplates>
-                </ContextMenu>
+                <ContextMenu Name="KeyMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
+                             ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown"/>
               </Button.ContextMenu>
             </Button>
           </StackPanel>
