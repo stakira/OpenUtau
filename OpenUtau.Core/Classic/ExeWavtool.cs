@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,7 +8,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
 using Serilog;
-
+using System.Text.RegularExpressions;
 using System;
 
 namespace OpenUtau.Classic {
@@ -146,7 +146,8 @@ namespace OpenUtau.Classic {
             string resampPath = OS.IsLinux() ? ResolveResamplerExePathLinux(item.resampler.FilePath) : item.resampler.FilePath;
             writer.WriteLine($"@set resamp={ConvertIfNeeded(resampPath)}");
             writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo:G999} {Base64.Base64EncodeInt12(item.pitches)}");
-            writer.WriteLine($"@set flag=\"{item.GetFlagsString()}\"");
+            // fixed the commandline vulnerabilities that also exists in og utau
+            writer.WriteLine($"@set flag=\"{EscapeFlags(item.GetFlagsString())}\"");
             writer.WriteLine($"@set env={GetEnvelope(item)}");
             writer.WriteLine($"@set stp={item.skipOver}");
             writer.WriteLine($"@set vel={item.velocity}");
@@ -163,6 +164,30 @@ namespace OpenUtau.Classic {
             const int kWidth = 40;
             int fill = index * kWidth / total;
             return $"{new string('#', fill)}{new string('-', kWidth - fill)}({index}/{total})";
+        }
+
+        private static string EscapeFlags(string flag) {
+            // Remove special characters
+            flag = Regex.Replace(flag, @"[&/\\|<>\""'!:#\n\t].", "");
+
+            // Remove specific file extensions (case-insensitive)
+            string[] extensions = {
+                ".exe", ".py", ".app", ".bat", ".cmd", ".sh", ".vbs", ".js", ".wsf", ".msi", ".com", ".pif",
+                ".scr", ".hta", ".cpl", ".jar", ".ps1", ".psm1", ".msh", ".msh1", ".msh2", ".mshxml", ".msh1xml", ".msh2xml"
+            };
+            foreach (var ext in extensions) {
+                if (flag.EndsWith(ext, StringComparison.OrdinalIgnoreCase)) {
+                    flag = flag.Substring(0, flag.Length - ext.Length);
+                }
+            }
+            // Remove "https://" case-insensitively
+            if (flag.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
+                flag = flag.Substring(8);
+            }
+            else if (flag.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) {
+                flag = flag.Substring(7);
+            }
+            return flag;
         }
 
         string GetEnvelope(ResamplerItem item) {
