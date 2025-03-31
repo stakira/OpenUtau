@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Format {
@@ -101,6 +102,9 @@ namespace OpenUtau.Core.Format {
                 File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
                 project.Saved = true;
                 project.AfterSave();
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
+                DocManager.Inst.Recovered = false;
             } catch (Exception ex) {
                 var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
@@ -113,6 +117,8 @@ namespace OpenUtau.Core.Format {
                 project.BeforeSave();
                 File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
                 project.AfterSave();
+                Preferences.Default.RecoveryPath = filePath;
+                Preferences.Save();
             } catch (Exception ex) {
                 Log.Error(ex, $"Failed to autosave: {filePath}");
             }
