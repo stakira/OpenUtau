@@ -840,7 +840,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
                     int minDurTick = Part.GetMinDurTick(Project);
                     if (Part.Duration < minDurTick) {
-                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick));
+                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick - Part.Duration, false));
                     }
                     DocManager.Inst.EndUndoGroup();
                     Selection.Select(notes);
