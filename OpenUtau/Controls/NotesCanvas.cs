@@ -204,7 +204,7 @@ namespace OpenUtau.App.Controls {
         }
 
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
-            Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
+            Point leftTop = viewModel.TickToneToPoint(note.position, note.AdjustedTone);
             leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
             Size size = viewModel.TickToneToSize(note.duration, 1);
             size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
@@ -245,7 +245,7 @@ namespace OpenUtau.App.Controls {
             double relativeSize = 0.5d;
             double height = TrackHeight * relativeSize;
             double yOffset = Math.Floor(height * 0.5f);
-            Point leftTop = viewModel.TickToneToPoint(partOffset + note.position, note.tone);
+            Point leftTop = viewModel.TickToneToPoint(partOffset + note.position, note.AdjustedTone);
             leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1 + yOffset));
 
             Size size = viewModel.TickToneToSize(note.duration, relativeSize);
@@ -263,7 +263,7 @@ namespace OpenUtau.App.Controls {
 
             var project = viewModel.Project;
             double p0Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[0].X) - viewModel.Part.position;
-            double p0Tone = note.tone + pts[0].Y / 10.0;
+            double p0Tone = note.AdjustedTone + pts[0].Y / 10.0;
             Point p0 = viewModel.TickToneToPoint(p0Tick, p0Tone - 0.5);
             points.Clear();
             points.Add(p0);
@@ -276,7 +276,7 @@ namespace OpenUtau.App.Controls {
 
             for (int i = 1; i < pts.Count; i++) {
                 double p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X) - viewModel.Part.position;
-                double p1Tone = note.tone + pts[i].Y / 10.0;
+                double p1Tone = note.AdjustedTone + pts[i].Y / 10.0;
                 Point p1 = viewModel.TickToneToPoint(p1Tick, p1Tone - 0.5);
 
                 // Draw arc
