@@ -10,8 +10,7 @@
         Title="{Binding Title}" MinWidth="300" MinHeight="200"
         KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
         Focusable="True"
-        TransparencyLevelHint="None"
-        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
+        TransparencyLevelHint="None">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
       <Setter Property="Focusable" Value="False"/>
