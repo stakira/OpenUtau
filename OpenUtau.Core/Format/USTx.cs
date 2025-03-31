@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OpenUtau.Core.Format {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 6);
+        public static readonly Version kUstxVersion = new Version(0, 7);
 
         public const string DYN = "dyn";
         public const string PITD = "pitd";
@@ -171,6 +171,15 @@ namespace OpenUtau.Core.Format {
                 project.tempos = new List<UTempo> { new UTempo(0, project.bpm) };
 #pragma warning restore CS0612 // Type or member is obsolete
                 project.ValidateFull();
+            }
+            if (project.ustxVersion < new Version(0, 7)) {
+                var expSelectors = new UProject().expSelectors;
+                if (project.expSelectors.Length < expSelectors.Length) {
+                    for (int i = 0; i < project.expSelectors.Length; i++) {
+                        expSelectors[i] = project.expSelectors[i];
+                    }
+                    project.expSelectors = expSelectors;
+                }
             }
             project.ustxVersion = kUstxVersion;
             return project;
