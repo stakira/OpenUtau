@@ -101,7 +101,7 @@ namespace OpenUtau.Core.G2p.Data {
         }
         
         /// <summary>
-        ///   查找 System.Byte[] 类型的本地化资源。
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] g2p_fr {
             get {
@@ -156,6 +156,16 @@ namespace OpenUtau.Core.G2p.Data {
         internal static byte[] g2p_ru {
             get {
                 object obj = ResourceManager.GetObject("g2p-ru", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] g2p_th {
+            get {
+                object obj = ResourceManager.GetObject("g2p-th", resourceCulture);
                 return ((byte[])(obj));
             }
         }
