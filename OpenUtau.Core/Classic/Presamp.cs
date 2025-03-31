@@ -63,22 +63,21 @@ namespace Classic {
                         blocks = Ini.ReadBlocks(reader, iniPath, @"\[\w+\]", false);
                     }
 
-                    if (Ini.TryGetLines(blocks, "[VOWEL]", out List<IniLine> vowelLines)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[VOWEL]", out List<IniLine> vowelLines)) {
                         SetVowels(vowelLines.Select(l => l.line).ToList());
                     }
 
-                    if (Ini.TryGetLines(blocks, "[CONSONANT]", out List<IniLine> consonantLines)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[CONSONANT]", out List<IniLine> consonantLines)) {
                         SetConsonants(consonantLines.Select(l => l.line).ToList());
                     }
-
-                    if (Ini.TryGetLines(blocks, "[PRIORITY]", out List<IniLine> priority)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[PRIORITY]", out List<IniLine> priority)) {
                         Priorities.Clear();
                         if (priority.Count > 0) {
                             Priorities.AddRange(priority[0].line.Split(','));
                         }
                     }
 
-                    if (Ini.TryGetLines(blocks, "[REPLACE]", out List<IniLine> replace)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[REPLACE]", out List<IniLine> replace)) {
                         Replace.Clear();
                         replace.ForEach(r => {
                             var s = r.line.Split('=');
@@ -87,7 +86,7 @@ namespace Classic {
                     }
 
                     // AliasRules
-                    if (Ini.TryGetLines(blocks, "[ALIAS]", out List<IniLine> alias)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ALIAS]", out List<IniLine> alias)) {
                         foreach (IniLine line in alias) {
                             var parts = line.line.Split('=');
                             switch (parts[0]) {
@@ -127,23 +126,22 @@ namespace Classic {
                             }
                         }
                     }
-                    if (Ini.TryGetLines(blocks, "[ENDTYPE]", out List<IniLine> endtype)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ENDTYPE]", out List<IniLine> endtype) && endtype.Count > 0) {
                         AliasRules.ENDING1 = endtype[0].line;
                     }
-                    if (Ini.TryGetLines(blocks, "[ENDTYPE1]", out List<IniLine> endtype1)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ENDTYPE1]", out List<IniLine> endtype1) && endtype1.Count > 0) {
                         AliasRules.ENDING1 = endtype1[0].line;
                     }
-                    if (Ini.TryGetLines(blocks, "[ENDTYPE2]", out List<IniLine> endtype2)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ENDTYPE2]", out List<IniLine> endtype2) && endtype2.Count > 0) {
                         AliasRules.ENDING2 = endtype2[0].line;
                     }
                     // Ignore [VCPAD] block as it was not used.
 
-
-                    if (Ini.TryGetLines(blocks, "[PRE]", out List<IniLine> pre)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[PRE]", out List<IniLine> pre)) {
                         Prefixs.Clear();
                         pre.ForEach(p => { Prefixs.Add(p.line); });
                     }
-                    if (Ini.TryGetLines(blocks, "[SU]", out List<IniLine> su)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[SU]", out List<IniLine> su) && su.Count > 0) {
                         SuffixOrder.Clear();
                         string str = su[0].line;
                         for (int i = 1; i < 3 && str != ""; i++) {
@@ -163,7 +161,7 @@ namespace Classic {
                     }
 
                     // think about @UNDERBAR@ @NOREPEAT@ when you need it.
-                    if (Ini.TryGetLines(blocks, "[NUM]", out List<IniLine> num)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[NUM]", out List<IniLine> num)) {
                         Nums.Clear();
                         foreach (var n in num) {
                             if (!Regex.IsMatch(n.line, "^@.+@$")) {
@@ -171,7 +169,7 @@ namespace Classic {
                             }
                         }
                     }
-                    if (Ini.TryGetLines(blocks, "[APPEND]", out List<IniLine> append)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[APPEND]", out List<IniLine> append)) {
                         Appends.Clear();
                         foreach (var a in append) {
                             if (!Regex.IsMatch(a.line, "^@.+@$")) {
@@ -179,7 +177,7 @@ namespace Classic {
                             }
                         }
                     }
-                    if (Ini.TryGetLines(blocks, "[PITCH]", out List<IniLine> pitch)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[PITCH]", out List<IniLine> pitch)) {
                         Pitches.Clear();
                         foreach (var p in pitch) {
                             if (!Regex.IsMatch(p.line, "^@.+@$")) {
@@ -188,40 +186,38 @@ namespace Classic {
                         }
                     }
 
-
                     // ALIAS_PRIORITY
-                    if (Ini.TryGetLines(blocks, "[ALIAS_PRIORITY]", out List<IniLine> ap1)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ALIAS_PRIORITY]", out List<IniLine> ap1)) {
                         AliasPriorityDefault.Clear();
                         ap1.ForEach(a => AliasPriorityDefault.Add(a.line));
                     }
-                    if (Ini.TryGetLines(blocks, "[ALIAS_PRIORITY_DIFAPPEND]", out List<IniLine> ap2)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ALIAS_PRIORITY_DIFAPPEND]", out List<IniLine> ap2)) {
                         AliasPriorityDifAppend.Clear();
                         ap2.ForEach(a => AliasPriorityDifAppend.Add(a.line));
                     }
-                    if (Ini.TryGetLines(blocks, "[ALIAS_PRIORITY_DIFPITCH]", out List<IniLine> ap3)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ALIAS_PRIORITY_DIFPITCH]", out List<IniLine> ap3)) {
                         AliasPriorityDifPitch.Clear();
                         ap3.ForEach(a => AliasPriorityDifPitch.Add(a.line));
                     }
 
-
-                    if (Ini.TryGetLines(blocks, "[SPLIT]", out List<IniLine> split)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[SPLIT]", out List<IniLine> split) && split.Count > 0) {
                         if (split[0].line == "0") {
                             Split = false;
                         } else if (split[0].line == "1") {
                             Split = true;
                         }
                     }
-                    if (Ini.TryGetLines(blocks, "[MUSTVC]", out List<IniLine> mustVC)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[MUSTVC]", out List<IniLine> mustVC) && mustVC.Count > 0) {
                         if (mustVC[0].line == "0") {
                             MustVC = false;
                         } else if (mustVC[0].line == "1") {
                             MustVC = true;
                         }
                     }
-                    if (Ini.TryGetLines(blocks, "[CFLAGS]", out List<IniLine> cflags)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[CFLAGS]", out List<IniLine> cflags) && cflags.Count > 0) {
                         CFlags = cflags[0].line;
                     }
-                    if (Ini.TryGetLines(blocks, "[VCLENGTH]", out List<IniLine> vcLength)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[VCLENGTH]", out List<IniLine> vcLength) && vcLength.Count > 0) {
                         if (vcLength[0].line == "0") {
                             VCLengthFromCV = true;
                         } else if (vcLength[0].line == "1") {
@@ -229,7 +225,7 @@ namespace Classic {
                         }
                     }
 
-                    if (Ini.TryGetLines(blocks, "[ENDFLAG]", out List<IniLine> endflag)) {
+                    if (TryGetLinesFromIniBrocks(blocks, "[ENDFLAG]", out List<IniLine> endflag) && endflag.Count > 0) {
                         if (int.TryParse(endflag[0].line, out int result)) {
                             AddEnding = result;
                         }
@@ -241,6 +237,16 @@ namespace Classic {
             }
 
             MakePhonemeList();
+        }
+
+        public bool TryGetLinesFromIniBrocks(List<IniBlock> blocks, string header, out List<IniLine> lines) {
+            if (blocks.Any(block => block.header == header)) {
+                lines = blocks.Find(block => block.header == header).lines; // Count could be zero
+                return true;
+            } else {
+                lines = null;
+                return false;
+            }
         }
 
         private void MakePhonemeList() {
