@@ -10,8 +10,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource prefs.caption}"
         WindowStartupLocation="CenterScreen"
-        Width="800" Height="400"
-        ExtendClientAreaToDecorationsHint="False">
+        Width="800" Height="400">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
