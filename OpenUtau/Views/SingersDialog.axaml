@@ -9,8 +9,7 @@
         x:Class="OpenUtau.App.Views.SingersDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource singers.caption}" Width="1050" MinWidth="1050" MinHeight="640"
-        WindowStartupLocation="CenterScreen"
-        ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
+        WindowStartupLocation="CenterScreen" KeyDown="OnKeyDown">
   <Design.DataContext>
     <vm:SingersViewModel/>
   </Design.DataContext>
