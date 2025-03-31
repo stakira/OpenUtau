@@ -65,8 +65,8 @@ elif sys.platform == 'darwin':
     os.system("rm LICENSE.txt")
     os.system(
         "sed -i '' \"s/0.0.0/%s/g\" OpenUtau/OpenUtau.csproj" % (appcast_ver))
-    os.system("dotnet restore OpenUtau -r osx.10.14-x64")
-    os.system("dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=osx.10.14-x64 -p:UseAppHost=true -p:OutputPath=../bin/osx-x64/")
+    os.system("dotnet restore OpenUtau -r osx-x64")
+    os.system("dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=osx-x64 -p:UseAppHost=true -p:OutputPath=../bin/osx-x64/")
     os.system(
         "cp OpenUtau/Assets/OpenUtau.icns bin/osx-x64/publish/OpenUtau.app/Contents/Resources/")
     os.system("rm *.dmg")
