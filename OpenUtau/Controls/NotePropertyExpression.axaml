@@ -13,6 +13,7 @@
             Name="slider"/>
     <ComboBox Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"
               SelectedIndex="{Binding SelectedOption}" MinWidth="120" IsVisible="{Binding IsOptions}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"
-              IsDropDownOpen="{Binding DropDownOpen, Mode=OneWayToSource}"/>
+              IsDropDownOpen="{Binding DropDownOpen, Mode=OneWayToSource}"
+              Name="comboBox"/>
   </Grid>
 </UserControl>
