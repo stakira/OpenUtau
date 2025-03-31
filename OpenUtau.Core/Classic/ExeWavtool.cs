@@ -157,7 +157,11 @@ namespace OpenUtau.Classic {
             string dur = $"{item.phone.duration:G999}@{item.phone.adjustedTempo:G999}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
             string relInputTemp = Path.GetRelativePath(PathManager.Inst.CachePath, item.inputTemp);
             writer.WriteLine($"@echo {MakeProgressBar(index + 1, total)}");
-            writer.WriteLine($"@call %helper% \"%oto%\\{ConvertIfNeeded(relInputTemp)}\" {toneName} {dur} {item.preutter} {item.offset} {item.durRequired} {item.consonant} {item.cutoff} {index}");
+            if(item.phone.direct){
+                writer.WriteLine($"@\"%tool%\" \"%output%\" \"%oto%\\{ConvertIfNeeded(relInputTemp)}\" {item.offset} {item.phone.durationMs:F1} %env%");
+            } else {
+                writer.WriteLine($"@call %helper% \"%oto%\\{ConvertIfNeeded(relInputTemp)}\" {toneName} {dur} {item.preutter} {item.offset} {item.durRequired} {item.consonant} {item.cutoff} {index}");
+            }
         }
 
         string MakeProgressBar(int index, int total) {
