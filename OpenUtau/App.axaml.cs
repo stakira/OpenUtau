@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
 using OpenUtau.App.Views;
-using OpenUtau.Classic;
-using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using Serilog;
-using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.App {
     public class App : Application {
         public override void Initialize() {
             Log.Information("Initializing application.");
             AvaloniaXamlLoader.Load(this);
+            InitializeStyle();
             InitializeCulture();
             InitializeTheme();
             Log.Information("Initialized application.");
@@ -38,14 +34,14 @@ namespace OpenUtau.App {
         public void InitializeCulture() {
             Log.Information("Initializing culture.");
             string sysLang = CultureInfo.InstalledUICulture.Name;
-            string prefLang = Core.Util.Preferences.Default.Language;
+            string prefLang = Preferences.Default.Language;
             var languages = GetLanguages();
             if (languages.ContainsKey(prefLang)) {
                 SetLanguage(prefLang);
             } else if (languages.ContainsKey(sysLang)) {
                 SetLanguage(sysLang);
-                Core.Util.Preferences.Default.Language = sysLang;
-                Core.Util.Preferences.Save();
+                Preferences.Default.Language = sysLang;
+                Preferences.Save();
             } else {
                 SetLanguage("en-US");
             }
@@ -101,7 +97,7 @@ namespace OpenUtau.App {
             var dark = (IResourceProvider)Current.Resources["themes-dark"]!;
             Current.Resources.MergedDictionaries.Remove(light);
             Current.Resources.MergedDictionaries.Remove(dark);
-            if (Core.Util.Preferences.Default.Theme == 0) {
+            if (Preferences.Default.Theme == 0) {
                 Current.Resources.MergedDictionaries.Add(light);
                 Current.RequestedThemeVariant = ThemeVariant.Light;
             } else {

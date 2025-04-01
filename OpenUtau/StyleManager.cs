@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Styling;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau {
@@ -21,14 +17,25 @@ namespace OpenUtau {
 
         public static void SetAppStyles(int i) {
             if (Application.Current == null) {
-                return; // macOSでない場合やApplicationがnullの場合は処理をスキップ
+                return;
             }
 
             if (StyleTypeNames.TryGetValue(i, out var uriKey) &&
                 Application.Current.Resources.TryGetValue(uriKey, out var obj) &&
                 obj is string styleUrl &&
                 !string.IsNullOrEmpty(styleUrl)) {
-                Application.Current.Styles.Add(new StyleInclude(new Uri(styleUrl)));
+
+                Log.Debug($"Loading style: {styleUrl}");
+
+                try {
+                    var fullUri = new Uri(styleUrl, UriKind.Absolute);
+                    var styleInclude = new StyleInclude(fullUri) { Source = fullUri };
+                    Application.Current.Styles.Add(styleInclude);
+                    Log.Debug($"Successfully added style: {fullUri}");
+                } catch (Exception ex) {
+                    Log.Error($"Failed to load style '{styleUrl}': {ex.Message}");
+                }
+
             } else {
                 Log.Error($"Style with key '{i}' does not exist or is invalid in Application.Resources.");
             }
@@ -36,14 +43,25 @@ namespace OpenUtau {
 
         public static void SetStyles(Window window, int i) {
             if (Application.Current == null) {
-                return; // macOSでない場合やApplicationがnullの場合は処理をスキップ
+                return;
             }
-
             if (StyleTypeNames.TryGetValue(i, out var uriKey) &&
                 Application.Current.Resources.TryGetValue(uriKey, out var obj) &&
                 obj is string styleUrl &&
                 !string.IsNullOrEmpty(styleUrl)) {
-                window.Styles.Add(new StyleInclude(new Uri(styleUrl)));
+
+                Log.Debug($"Loading style: {styleUrl}");
+
+                try {
+                    var fullUri = new Uri(styleUrl, UriKind.Absolute);
+                    var styleInclude = new StyleInclude(fullUri) { Source = fullUri };
+
+                    window.Styles.Add(styleInclude);
+                    Log.Debug($"Successfully added style: {fullUri}");
+                } catch (Exception ex) {
+                    Log.Error($"Failed to load style '{styleUrl}': {ex.Message}");
+                }
+
             } else {
                 Log.Error($"Style with key '{i}' does not exist or is invalid in Application.Resources.");
             }

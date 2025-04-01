@@ -31,10 +31,10 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Colors/Brushes.axaml"/>
       </ResourceDictionary.MergedDictionaries>
-      <System:String x:Key="Default_Styles">/Styles/Default/Styles.axaml</System:String>
-      <System:String x:Key="Default_PianoRollStyles">/Styles/Default/PianoRollStyles.axaml</System:String>
-      <System:String x:Key="MacOS_Styles">/Styles/Mac/Styles.axaml</System:String>
-      <System:String x:Key="MacOS_PianoRollStyles">/Styles/Mac/PianoRollStyles.axaml</System:String>
+      <System:String x:Key="Default_Styles">avares://OpenUtau/Styles/Default/Styles.axaml</System:String>
+      <System:String x:Key="Default_PianoRollStyles">avares://OpenUtau/Styles/Default/PianoRollStyles.axaml</System:String>
+      <System:String x:Key="MacOS_Styles">avares://OpenUtau/Styles/Mac/Styles.axaml</System:String>
+      <System:String x:Key="MacOS_PianoRollStyles">avares://OpenUtau/Styles/Mac/PianoRollStyles.axaml</System:String>
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>

@@ -11,7 +11,7 @@ public class FavouriteToggleButton : ToggleButton
     {
         this.Height = 20;
         this.Width = 20;
-        // アイコンのPathを作成
+        // Create icon Path.
         _iconPath = new Path
         {
             Fill = null,
@@ -21,10 +21,9 @@ public class FavouriteToggleButton : ToggleButton
             RenderTransform = new ScaleTransform { ScaleX = 0.55,ScaleY = 0.55}
         };
 
-        // ToggleButtonのコンテンツにアイコンをセット
         this.Content = _iconPath;
 
-        // クリック時にアイコンを変更
+        // Change icon on click.
         this.PropertyChanged += (sender, e) =>
         {
             if (e.Property == IsCheckedProperty)
