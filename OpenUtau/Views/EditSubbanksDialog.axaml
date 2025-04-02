@@ -7,8 +7,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource singers.subbanks.edit}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="600" Width="600" Height="600"
-        ExtendClientAreaToDecorationsHint="False">
+        MinWidth="600" MinHeight="600" Width="600" Height="600">
   <Grid ColumnDefinitions="*,10,160" Margin="10">
     <DataGrid Name="SuffixGrid" Grid.Column="0" SelectionMode="Extended" IsReadOnly="True"
               CanUserReorderColumns="False" CanUserSortColumns="False" AutoGenerateColumns="False"
