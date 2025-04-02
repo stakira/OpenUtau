@@ -1,0 +1,79 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OpenUtau.App.Controls"
+        xmlns:views="clr-namespace:OpenUtau.App.Views">
+  <Style Selector="TextBlock">
+    <Setter Property="FontSize" Value="12"/>
+  </Style>
+  <Style Selector="Label">
+    <Setter Property="FontSize" Value="12"/>
+  </Style>
+  <Style Selector="TextBox">
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="4,0"/>
+    <Setter Property="Margin" Value="0,0,0,4"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+    <Style Selector="Button,Button.clear">
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+  <Style Selector="ToggleButton.normal">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+  </Style>
+
+  <Style Selector="ToggleButton.toolbar">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,0"/>
+  </Style>
+
+  <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
+  </Style>
+
+  <Style Selector="ComboBox">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Margin" Value="0,0,0,4"/>
+    <Setter Property="Padding" Value="4,0,0,0"/>
+  </Style>
+  <Style Selector="ComboBoxItem">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Padding" Value="4,0,0,0"/>
+  </Style>
+
+  <Style Selector="ListBoxItem">
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="4,0,0,0"/>
+    <Setter Property="Margin" Value="0"/>
+  </Style>
+  
+  <Style Selector="controls|LyricBox TextBlock">
+    <Setter Property="Margin" Value="4,0"/>
+  </Style>
+
+  <Style Selector="controls|LyricBox TextBox">
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Padding" Value="4,0"/>
+  </Style>
+
+  <Style Selector="controls|ExpSelector Viewbox TextBlock">
+    <Setter Property="Margin" Value="0,0,4,2"/>
+    <Setter Property="Padding" Value="0"/>
+  </Style>
+    <Style Selector="views|SingersDialog StackPanel">
+        <Setter Property="Height" Value="24"/>
+    </Style>
+    
+</Styles>

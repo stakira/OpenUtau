@@ -9,7 +9,7 @@
         KeyDown="OnKeyDown"
         Opened="OnOpened">
   <Window.Styles>
-    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+    <StyleInclude Source="/Styles/Default/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid Margin="10,10,10,4" RowDefinitions="*,6,Auto,4,Auto">
     <TextBox Name="DIALOG_Box" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
