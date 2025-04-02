@@ -16,6 +16,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.Integrations;
 using ReactiveUI;
 using Serilog;
 
@@ -43,6 +44,9 @@ namespace OpenUtau.App.Views {
 
         public PianoRollWindow() {
             InitializeComponent();
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
 
@@ -51,7 +55,7 @@ namespace OpenUtau.App.Views {
                 if (NotesVm == null || NotesVm.Part == null) {
                     return;
                 }
-                try{
+                try {
                     if (edit.IsAsync) {
                         var mainWindow =
                             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
@@ -66,10 +70,10 @@ namespace OpenUtau.App.Views {
                                         messageBox.SetText($"{name}: {current} / {total}");
                                     }, cancellationToken);
                             },
-                            (Task t)=>{
-                                var e=t.Exception;
-                                if(t.IsFaulted && e != null){
-                                    if(e!=null){
+                            (Task t) => {
+                                var e = t.Exception;
+                                if (t.IsFaulted && e != null) {
+                                    if (e != null) {
                                         Log.Error(e, $"Failed to run Editing Macro");
                                         var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
                                         DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -271,7 +275,7 @@ namespace OpenUtau.App.Views {
                 UOto? oto = null;
                 if (ViewModel.NotesViewModel.Part != null) {
                     singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
-                    if(!ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
+                    if (!ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
                         oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
                     }
                 }
@@ -348,7 +352,7 @@ namespace OpenUtau.App.Views {
                 Title = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 onFinish = value => {
                     if (!string.IsNullOrWhiteSpace(value)) {
-                        var edit = new Core.Editing.AddBreathNote(value);
+                        var edit = new AddBreathNote(value);
                         try {
                             edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                         } catch (Exception e) {
@@ -386,7 +390,7 @@ namespace OpenUtau.App.Views {
             }
             var dialog = new SliderDialog(ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"), 0.5, 0, 1, 0.1);
             dialog.onFinish = value => {
-                var edit = new Core.Editing.LengthenCrossfade(value);
+                var edit = new LengthenCrossfade(value);
                 try {
                     edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                 } catch (Exception e) {
@@ -749,7 +753,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if(((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
+            if (((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
                 Cursor = null;
                 return;
             }
@@ -939,7 +943,7 @@ namespace OpenUtau.App.Views {
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
                         if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
-                            Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
+                            VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
                             MainWindow?.OpenSingersWindow();
                             this.Activate();
@@ -1133,7 +1137,7 @@ namespace OpenUtau.App.Views {
             if (notesVm?.Part == null || playVm == null) {
                 return false;
             }
-            var project = Core.DocManager.Inst.Project;
+            var project = DocManager.Inst.Project;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
             int deltaTicks = notesVm.IsSnapOn ? snapUnit : 15;
 
@@ -1269,6 +1273,36 @@ namespace OpenUtau.App.Views {
                     }
                     if (isAlt) {
                         expSelector5?.SelectExp();
+                        return true;
+                    }
+                    break;
+                case Key.D6:
+                    if (isAlt) {
+                        expSelector6?.SelectExp();
+                        return true;
+                    }
+                    break;
+                case Key.D7:
+                    if (isAlt) {
+                        expSelector7?.SelectExp();
+                        return true;
+                    }
+                    break;
+                case Key.D8:
+                    if (isAlt) {
+                        expSelector8?.SelectExp();
+                        return true;
+                    }
+                    break;
+                case Key.D9:
+                    if (isAlt) {
+                        expSelector9?.SelectExp();
+                        return true;
+                    }
+                    break;
+                case Key.D0:
+                    if (isAlt) {
+                        expSelector10?.SelectExp();
                         return true;
                     }
                     break;
@@ -1580,7 +1614,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     // solo
-                    if(isShift) {
+                    if (isShift) {
                         var track = project.tracks[notesVm.Part.trackNo];
                         MessageBus.Current.SendMessage(new TracksSoloEvent(notesVm.Part.trackNo, !track.Solo, false));
                         return true;
@@ -1667,7 +1701,7 @@ namespace OpenUtau.App.Views {
             if (expSelector1 == null) {
                 return;
             }
-            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
+            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5, expSelector6, expSelector7, expSelector8, expSelector9, expSelector10 };
             exps[DocManager.Inst.Project.expSecondary].SelectExp();
             exps[DocManager.Inst.Project.expPrimary].SelectExp();
         }

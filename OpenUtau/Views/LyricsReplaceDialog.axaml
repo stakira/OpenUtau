@@ -7,7 +7,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource lyricsreplace.replace}">
   <Window.Styles>
-    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+    <StyleInclude Source="/Styles/Default/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid Margin="10" RowDefinitions="auto,10,Auto,10,Auto,10,*,10,Auto">
     <StackPanel Orientation="Horizontal" Grid.Row="0">

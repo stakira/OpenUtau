@@ -46,6 +46,15 @@
         <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
       </Style>
     </Style>
+
+    <!--<Style Selector="^:disabled">
+        <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+            <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+        </Style>
+        <Style Selector="^ /template/ Thumb">
+            <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+        </Style>
+    </Style>-->
   </Style>
 
   <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
