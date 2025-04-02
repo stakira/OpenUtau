@@ -2,13 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:OpenUtau.App.ViewModels"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.EditSubbanksDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource singers.subbanks.edit}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="500" MinHeight="600" Width="500" Height="600"
+        MinWidth="600" MinHeight="600" Width="600" Height="600"
         ExtendClientAreaToDecorationsHint="False">
   <Grid ColumnDefinitions="*,10,160" Margin="10">
     <DataGrid Name="SuffixGrid" Grid.Column="0" SelectionMode="Extended" IsReadOnly="True"

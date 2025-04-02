@@ -1,14 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource singers.caption}" Width="1050" MinWidth="1050" MinHeight="640"
+        Title="{DynamicResource singers.caption}" Width="1100" MinWidth="1100" MinHeight="650"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
   <Design.DataContext>
@@ -56,7 +55,7 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Margin="10,0,0,0"
                 Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
       <Button Content="{DynamicResource singers.location}" Margin="0" Width="100"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
@@ -142,12 +141,12 @@
       <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
                MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding UseSearchAlias}" />
     </StackPanel>
-    <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0" Height="20"
+    <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0"
             Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
       <Button Margin="0" Content="{DynamicResource singers.playsample}" Click="OnPlaySample"/>
     </StackPanel>
-    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="5" Margin="0" Height="20"
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="5" Margin="0"
                 Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.editoto.reset}" Command="{Binding RefreshSinger}"
               IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>
@@ -158,7 +157,7 @@
       <!-- <Button Margin="0" Content="{DynamicResource singers.editoto.editinsetparam}"
               IsVisible="{Binding IsClassic}" Click="OnEditInSetParam"/>-->
     </StackPanel>
-    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0" Height="20"
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0"
                 Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.subbanks.edit}" Click="OnEditSubbanksButton"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"/>

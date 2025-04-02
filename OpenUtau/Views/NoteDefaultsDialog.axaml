@@ -4,12 +4,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="using:OpenUtau.Controls"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="500"
         x:Class="OpenUtau.App.Views.NoteDefaultsDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource notedefaults.caption}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="500" Width="600" Height="500"
+        MinWidth="650" MinHeight="500" Width="650" Height="500"
         ExtendClientAreaToDecorationsHint="False">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
@@ -86,13 +86,13 @@
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                   </Grid>
                   <Grid ColumnDefinitions="*,20,*">
-                      <Grid Grid.Column="0" ColumnDefinitions="70,10,40,20,*">
+                      <Grid Grid.Column="0" ColumnDefinitions="*,10,40,20,*">
                           <Label Content="{DynamicResource notedefaults.vibrato.in}"/>
                           <c:FloatEditor Grid.Column="2" Value="{Binding CurrentVibratoIn}" />
                           <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoIn}" Minimum="0" Maximum="100"
                           TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                       </Grid>
-                      <Grid Grid.Column="2" ColumnDefinitions="70,10,40,20,*">
+                      <Grid Grid.Column="2" ColumnDefinitions="*,10,40,20,*">
                           <Label Content="{DynamicResource notedefaults.vibrato.out}"/>
                           <c:FloatEditor Grid.Column="2" Value="{Binding CurrentVibratoOut}" />
                           <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoOut}" Minimum="0" Maximum="100"
