@@ -7,10 +7,10 @@ using OpenUtau.App.ViewModels;
 namespace OpenUtau.App.Views {
     public partial class LyricsDialog : Window {
         public LyricsDialog() {
+            InitializeComponent();
             if (OS.IsMacOS()) {
                 StyleManager.SetStyles(this, 3);
             }
-            InitializeComponent();
         }
 
         void OnOpened(object? sender, EventArgs e) {
