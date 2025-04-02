@@ -14,7 +14,7 @@
     </Style>
     <Style Selector="Slider.fader">
       <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
-
+      
       <Style Selector="^:pointerover">
         <!--<Style Selector="^ /template/ Thumb">
           <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
@@ -65,7 +65,7 @@
                 <Setter Property="ToolTip.Tip" Value="{Binding Location}"/>
                 <Setter Property="Height" Value="{Binding Height}"/>
               </Style>
-
+              
               <Style Selector="ToggleButton">
                 <Setter Property="Padding" Value="0"/>
                 <Setter Property="Content" Value="♡"/>
