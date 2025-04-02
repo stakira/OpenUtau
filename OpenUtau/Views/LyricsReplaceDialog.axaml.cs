@@ -7,6 +7,9 @@ namespace OpenUtau.App.Views {
     public partial class LyricsReplaceDialog : Window {
         public LyricsReplaceDialog() {
             InitializeComponent();
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
         }
 
         void OnCancel(object? sender, RoutedEventArgs e) {

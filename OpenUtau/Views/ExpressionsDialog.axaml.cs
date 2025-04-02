@@ -8,6 +8,9 @@ namespace OpenUtau.App.Views {
     public partial class ExpressionsDialog : Window {
         public ExpressionsDialog() {
             InitializeComponent();
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
         }
 
         private void ApplyButtonClicked(object sender, RoutedEventArgs _) {

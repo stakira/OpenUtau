@@ -2,8 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:OpenUtau.App.ViewModels"
-        xmlns:api="using:OpenUtau.Api"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
@@ -11,9 +9,9 @@
         Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         Focusable="True"
         TransparencyLevelHint="None"
-        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
+        Deactivated="WindowDeactivated">
   <Window.Styles>
-    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+    <StyleInclude Source="/Styles/Default/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Border Grid.Row="1">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
@@ -64,18 +62,36 @@
                          PointerPressed="KeyboardPointerPressed"
                          PointerMoved="KeyboardPointerMoved"
                          PointerReleased="KeyboardPointerReleased"/>
-      <Grid Grid.Column="0" Grid.Row="5">
-        <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="0" Margin="0,0,0,0" ToolTip.Tip="Alt + 1"/>
-        <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="1" Margin="0,22,0,0" ToolTip.Tip="Alt + 2"/>
-        <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="2" Margin="0,44,0,0" ToolTip.Tip="Alt + 3"/>
-        <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="3" Margin="0,66,0,0" ToolTip.Tip="Alt + 4"/>
-        <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                       Index="4" Margin="0,88,0,0" ToolTip.Tip="Alt + 5"/>
-        <Button VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20" Margin="0" Background="Transparent" Click="OnExpButtonClick">
+      <Grid  Grid.Column="0" Grid.Row="5">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
+          <StackPanel >
+            <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="0" ToolTip.Tip="Alt + 1"/>
+            <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="1" ToolTip.Tip="Alt + 2"/>
+            <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="2" ToolTip.Tip="Alt + 3"/>
+            <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="3" ToolTip.Tip="Alt + 4"/>
+            <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="4" ToolTip.Tip="Alt + 5"/>
+            <c:ExpSelector Name="expSelector6" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="5" ToolTip.Tip="Alt + 6"/>
+            <c:ExpSelector Name="expSelector7" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="6" ToolTip.Tip="Alt + 7"/>
+            <c:ExpSelector Name="expSelector8" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="7" ToolTip.Tip="Alt + 8"/>
+            <c:ExpSelector Name="expSelector9" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="8" ToolTip.Tip="Alt + 9"/>
+            <c:ExpSelector Name="expSelector10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                           Index="9" ToolTip.Tip="Alt + 0"/>
+          </StackPanel >
+        </ScrollViewer>
+        <Button Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20" Margin="0" Background="Transparent" Click="OnExpButtonClick">
           <Path Classes="clear" Width="24" Height="24"
                 Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
                 Fill="{StaticResource NeutralAccentBrush}">
@@ -87,7 +103,7 @@
             </Path.RenderTransform>
           </Path>
         </Button>
-      </Grid>
+      </Grid >
       <Canvas Name="TimelineCanvas" Grid.Row="2" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
@@ -419,7 +435,7 @@
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4++"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.drawlinepitch}">
               <Grid Width="18" Height="18">
-                <Path Classes="filled" Data="m 1.9654432,15.883124 a 0.74547489,0.74547489 0 0 0 -0.00284,1.052361 l 4.9071522,4.946703 a 0.74547489,0.74547489 0 0 0 1.0555507,0.0035 L 22.513776,7.3542255 a 0.74547489,0.74547489 0 0 0 0.0024,-1.053823 L 17.585453,1.3481852 a 0.74547489,0.74547489 0 0 0 -1.05524,-0.00189 L 13.795097,4.077798 a 0.74547489,0.74547489 0 0 0 -0.01235,0.00583 l -2.970023,2.9664092 a 0.74547489,0.74547489 0 0 0 -0.0019,0.00148 L 7.8078572,10.05092 a 0.74547489,0.74547489 0 0 0 -4.549e-4,7.9e-5 l -2.9880739,2.98446 a 0.74547489,0.74547489 0 0 0 5.6e-5,3.19e-4 0.74547489,0.74547489 0 0 0 -8.034e-4,2.32e-4 z  m 1.5792305,0.530266 1.8022733,-1.799373 1.4875429,1.472969 9.4e-5,9.4e-5 a 0.74547489,0.74547489 0 0 0 1.0491324,-1.059188 l -1.879e-4,-1.87e-4 -0.00182,-0.0019 -1.4792147,-1.465706 1.9335572,-1.930656 1.5071022,1.492572 A 0.74547489,0.74547489 0 0 0 10.89214,12.062682 l -1.5009923,-1.48671 1.9421273,-1.9392277 1.470447,1.4883567 0.0033,0 2.85e-4,2.87e-4 A 0.74547489,0.74547489 0 0 0 13.868294,9.0814325 L 13.868009,9.0811469 12.38859,7.5827533 14.310718,5.6635241 15.799339,7.1434007 A 0.74547489,0.74547489 0 0 0 16.85022,6.0859614 l -1.480921,-1.472178 1.687093,-1.6841938 3.878195,3.89507 L 7.4011867,20.301022 Z" >
+                <Path Classes="filled" Data="M1.97,15.88A0.75,0.75,0,0,0,1.97,16.93L6.88,21.88A0.75,0.75,0,0,0,7.94,21.88L22.51,7.35A0.75,0.75,0,0,0,22.51,6.3L17.59,1.35A0.75,0.75,0,0,0,16.53,1.35L13.8,4.08A0.75,0.75,0,0,0,13.79,4.09L10.82,7.06A0.75,0.75,0,0,0,10.82,7.06L7.81,10.05A0.75,0.75,0,0,0,7.81,10.05L4.82,13.03A0.75,0.75,0,0,0,4.82,13.03A0.75,0.75,0,0,0,4.82,13.03ZM3.55,16.41L5.35,14.61L6.84,16.08L6.84,16.08A0.75,0.75,0,0,0,7.89,15.02L7.89,15.02L7.89,15.02L6.41,13.55L8.34,11.62L9.85,13.11A0.75,0.75,0,0,0,10.89,12.06L9.39,10.57L11.33,8.63L12.8,10.12L12.8,10.12L12.8,10.12A0.75,0.75,0,0,0,13.87,9.08L13.87,9.08L12.39,7.58L14.31,5.66L15.8,7.14A0.75,0.75,0,0,0,16.85,6.09L15.37,4.62L17.06,2.94L20.94,6.84L7.4,20.3Z" >
                   <Path.RenderTransform>
                     <TransformGroup>
                       <ScaleTransform ScaleX=".7" ScaleY=".7" />
@@ -597,8 +613,7 @@
                           Key="{Binding NotesViewModel.PrimaryKey}"
                           PointerPressed="ExpCanvasPointerPressed"
                           PointerMoved="ExpCanvasPointerMoved"
-                          PointerReleased="ExpCanvasPointerReleased">
-      </c:ExpressionCanvas>
+                          PointerReleased="ExpCanvasPointerReleased" />
       <TextBlock Classes="tips" Grid.Row="5" Grid.Column="1"
                  IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
                  IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
