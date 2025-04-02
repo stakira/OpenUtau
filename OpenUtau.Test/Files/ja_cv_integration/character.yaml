@@ -1,0 +1,37 @@
+﻿text_file_encoding: shift_jis
+subbanks:
+- color: ""
+  prefix: ""
+  suffix: ""
+  tone_ranges:
+  - C1-B7
+- color: cv
+  prefix: ""
+  suffix: _CV_G4
+  tone_ranges:
+  - G4-B7
+- color: cv
+  prefix: ""
+  suffix: _CV_C4
+  tone_ranges:
+  - C1-F#4
+- color: cvvc
+  prefix: ""
+  suffix: _CVVC_F4
+  tone_ranges:
+  - F4-B7
+- color: cvvc
+  prefix: ""
+  suffix: _CVVC_C4
+  tone_ranges:
+  - C1-E4
+- color: vcv
+  prefix: ""
+  suffix: _VCV_G4
+  tone_ranges:
+  - G4-B7
+- color: vcv
+  prefix: ""
+  suffix: _VCV_D4
+  tone_ranges:
+  - C1-F#4
