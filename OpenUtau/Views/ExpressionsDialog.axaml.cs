@@ -7,6 +7,9 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.App.Views {
     public partial class ExpressionsDialog : Window {
         public ExpressionsDialog() {
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this,3);
+            }
             InitializeComponent();
             if (OS.IsMacOS()) {
                 StyleManager.SetStyles(this, 3);
