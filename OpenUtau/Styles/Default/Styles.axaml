@@ -1,5 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OpenUtau.App.Controls"
+        xmlns:views="clr-namespace:OpenUtau.App.Views">
   <Style>
     <Style.Resources>
       <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
@@ -44,26 +46,22 @@
     <Setter Property="Margin" Value="2,0" />
     <Setter Property="Height" Value="1" />
   </Style>
-
   <Style Selector="MenuItem.MenuItemWithSubMenu MenuItem">
     <Setter Property="Header" Value="{Binding Header}"/>
     <Setter Property="Command" Value="{Binding Command}"/>
     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
     <Setter Property="Height" Value="{Binding Height}"/>
   </Style>
-
   <Style Selector="ContextMenu MenuItem">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Padding" Value="4,2,4,2"/>
   </Style>
-
   <Style Selector="ContextMenu.WithCommand MenuItem">
     <Setter Property="Header" Value="{Binding Header}"/>
     <Setter Property="Command" Value="{Binding Command}"/>
     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
   </Style>
-
   <Style Selector="TextBlock">
     <Setter Property="FontSize" Value="12"/>
   </Style>
@@ -82,7 +80,6 @@
   <Style Selector="TextBox:disabled">
     <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
   </Style>
-
   <Style Selector="Button">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -123,7 +120,6 @@
   <Style Selector="Button.clear:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource BackgroundColorPointerOver}"/>
   </Style>
-
   <Style Selector="ToggleButton.normal">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -133,7 +129,6 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
-
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
     </Style>
@@ -150,7 +145,6 @@
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
     </Style>
   </Style>
-
   <Style Selector="ToggleButton.toolbar">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -160,7 +154,6 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
-
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
     </Style>
@@ -176,7 +169,6 @@
     <Style Selector="^:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
     </Style>
-
     <Style Selector="^ Path.filled">
       <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
     </Style>
@@ -189,11 +181,9 @@
       <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
     </Style>
   </Style>
-
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
     <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
   </Style>
-
   <Style Selector="ComboBox">
     <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}"/>
     <Setter Property="FontSize" Value="12"/>
@@ -212,7 +202,6 @@
   <Style Selector="ComboBox /template/ Path#DropDownGlyph">
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
-
   <Style Selector="ListBoxItem">
     <Setter Property="MinHeight" Value="24"/>
     <Setter Property="Height" Value="24"/>
@@ -434,6 +423,9 @@
   <Style Selector="Slider:pointerover /template/ RepeatButton#PART_DecreaseButton">
     <Setter Property="Background" Value="{DynamicResource AccentBrush1}" />
   </Style>
+    <Style Selector="Slider:disabled /template/ RepeatButton#PART_DecreaseButton,Slider:disabled /template/ RepeatButton#PART_IncreaseButton,Slider:disabled /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+    </Style>
   <Style Selector="Slider.fader /template/ Thumb">
     <Setter Property="Template">
       <Setter.Value>
@@ -463,4 +455,29 @@
       <Setter Property="Margin" Value="7,0,0,0"/>
     </Style>
   </Style>
+
+  <Style Selector="ListBoxItem">
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="4,0,0,0"/>
+    <Setter Property="Margin" Value="0"/>
+  </Style>
+
+  <Style Selector="controls|LyricBox TextBlock">
+    <Setter Property="Margin" Value="4,0"/>
+  </Style>
+
+  <Style Selector="controls|LyricBox TextBox">
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Padding" Value="4,0"/>
+  </Style>
+
+  <Style Selector="controls|ExpSelector Viewbox TextBlock">
+    <Setter Property="Margin" Value="0,0,4,0"/>
+    <Setter Property="Padding" Value="0,3,0,3"/>
+  </Style>
+    
+    <Style Selector="views|SingersDialog StackPanel">
+        <Setter Property="Height" Value="20"/>
+    </Style>
 </Styles>

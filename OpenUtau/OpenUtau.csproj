@@ -51,6 +51,14 @@
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
+    <AvaloniaXaml Remove="Styles\Default\PianoRollStyles.axaml" />
+    <AvaloniaResource Include="Styles\Default\PianoRollStyles.axaml" />
+    <AvaloniaXaml Remove="Styles\Default\Styles.axaml" />
+    <AvaloniaResource Include="Styles\Default\Styles.axaml" />
+    <AvaloniaXaml Remove="Styles\Mac\PianoRollStyles.axaml" />
+    <AvaloniaResource Include="Styles\Mac\PianoRollStyles.axaml" />
+    <AvaloniaXaml Remove="Styles\Mac\Styles.axaml" />
+    <AvaloniaResource Include="Styles\Mac\Styles.axaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.4" />
