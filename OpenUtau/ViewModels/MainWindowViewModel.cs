@@ -38,11 +38,11 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<MenuItemViewModel> TimelineContextMenuItems { get; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
-        [Reactive] public string ClearCacheHeader { get; set; }
+        [Reactive] public string ClearCacheHeader { get; set; } = string.Empty;
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         [Reactive] public double Progress { get; set; }
-        [Reactive] public string ProgressText { get; set; }
+        [Reactive] public string ProgressText { get; set; } = string.Empty;
         public ReactiveCommand<UPart, Unit> PartDeleteCommand { get; set; }
         public ReactiveCommand<int, Unit>? AddTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
@@ -57,8 +57,6 @@ namespace OpenUtau.App.ViewModels {
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
-            ClearCacheHeader = string.Empty;
-            ProgressText = string.Empty;
             OpenRecentCommand = ReactiveCommand.Create<string>(file => {
                 try {
                     OpenProject(new[] { file });
