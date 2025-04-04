@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using NAudio.CoreAudioApi;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -18,6 +19,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.App.ViewModels {
     public class NotesRefreshEvent { }
@@ -919,6 +921,16 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, vibrato.length == 0 ? NotePresets.Default.DefaultVibrato.VibratoLength : 0));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        public void ClearPhraseCache() {
+            if (Part != null && !Selection.IsEmpty) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
+                var selectedNotes = Selection.ToList();
+                var phrases = Part.renderPhrases.Where(phrase => selectedNotes.Any(note => phrase.notes.Any(rnote => rnote.position == Part.position + note.position - phrase.position && rnote.duration == note.duration)));
+                phrases.ForEach(phrase => phrase.DeleteCacheFiles());
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
+            }
         }
 
         private void SetPlayPos(int tick, bool waitingRendering) {
