@@ -93,6 +93,7 @@ namespace OpenUtau.Core.DiffSinger {
                     }
                     var wavName = $"ds-{phrase.hash:x16}-depth{depth:f2}-steps{steps}.wav";
                     var wavPath = Path.Join(PathManager.Inst.CachePath, wavName);
+                    phrase.AddCacheFile(wavPath);
                     string progressInfo = $"Track {trackNo + 1}: {this} depth={depth:f2} steps={steps} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
                         try {
