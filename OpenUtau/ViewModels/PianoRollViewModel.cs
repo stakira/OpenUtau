@@ -77,7 +77,6 @@ namespace OpenUtau.App.ViewModels {
             = new Dictionary<Key, MenuItemViewModel>();
 
         [Reactive] public double Progress { get; set; }
-        [Reactive] public string ProgressText { get; set; } = string.Empty;
 
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
@@ -228,7 +227,6 @@ namespace OpenUtau.App.ViewModels {
             if (cmd is ProgressBarNotification progressBarNotification) {
                 Dispatcher.UIThread.InvokeAsync(() => {
                     Progress = progressBarNotification.Progress;
-                    ProgressText = progressBarNotification.Info;
                 });
             }
         }
