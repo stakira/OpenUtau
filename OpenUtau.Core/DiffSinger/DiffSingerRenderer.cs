@@ -412,6 +412,7 @@ namespace OpenUtau.Core.DiffSinger {
                     acousticOutputs = acousticModel.Run(acousticInputs).Cast<NamedOnnxValue>().ToList();
                 }
                 acousticCache?.Save(acousticOutputs);
+                phrase.AddCacheFile(acousticCache?.Filename);
             }
             Tensor<float> mel = acousticOutputs.First().AsTensor<float>().Clone();
             //mel transforms for different mel base
@@ -451,6 +452,7 @@ namespace OpenUtau.Core.DiffSinger {
                     vocoderOutputs = vocoder.session.Run(vocoderInputs).Cast<NamedOnnxValue>().ToList();
                 }
                 vocoderCache?.Save(vocoderOutputs);
+                phrase.AddCacheFile(vocoderCache?.Filename);
             }
             Tensor<float> samplesTensor = vocoderOutputs.First().AsTensor<float>();
             //Check the size of samplesTensor
