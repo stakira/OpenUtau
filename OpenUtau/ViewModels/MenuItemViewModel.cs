@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
-using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
 using OpenUtau.Core.Ustx;
@@ -35,8 +34,9 @@ namespace OpenUtau.App.ViewModels {
             get {
                 if(_icon == null) {
                     if (CommandParameter is USinger) {
-                        _icon = new ToggleButton() {
-                            [!ToggleButton.IsCheckedProperty] = new Binding("IsFavourite")
+                        _icon = new FavouriteToggleButton() {
+                            [!FavouriteToggleButton.IsCheckedProperty] = new Binding("IsFavourite")
+                            
                         };
                     }
                 }
