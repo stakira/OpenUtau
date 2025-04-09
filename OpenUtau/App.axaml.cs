@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -99,13 +100,18 @@ namespace OpenUtau.App {
             }
             var light = (IResourceProvider)Current.Resources["themes-light"]!;
             var dark = (IResourceProvider)Current.Resources["themes-dark"]!;
+            var highContrast = (IResourceProvider)Current.Resources["themes-high-contrast"]!;
             Current.Resources.MergedDictionaries.Remove(light);
             Current.Resources.MergedDictionaries.Remove(dark);
+            Current.Resources.MergedDictionaries.Remove(highContrast);
             if (Core.Util.Preferences.Default.Theme == 0) {
                 Current.Resources.MergedDictionaries.Add(light);
                 Current.RequestedThemeVariant = ThemeVariant.Light;
+            } else if (Core.Util.Preferences.Default.Theme == 1) {
+                Current.Resources.MergedDictionaries.Add(light);
+                Current.RequestedThemeVariant = ThemeVariant.Light;
             } else {
-                Current.Resources.MergedDictionaries.Add(dark);
+                Current.Resources.MergedDictionaries.Add(highContrast);
                 Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             ThemeManager.LoadTheme();
