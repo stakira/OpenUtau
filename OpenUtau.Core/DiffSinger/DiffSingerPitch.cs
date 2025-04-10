@@ -284,7 +284,7 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, retake.Length })));
-            var steps = Preferences.Default.DiffSingerSteps;
+            var steps = Preferences.Default.DiffSingerStepsPitch;
             if (dsConfig.useContinuousAcceleration) {
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
                     new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
