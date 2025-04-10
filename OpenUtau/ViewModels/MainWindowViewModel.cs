@@ -9,6 +9,7 @@ using DynamicData.Binding;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -25,7 +26,6 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
-        public bool ExtendToFrame => OS.IsMacOS();
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
@@ -90,19 +90,38 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
-        public void InitProject() {
+        public async void InitProject(MainWindow window) {
+            var recPath = Preferences.Default.RecoveryPath;
+            if (!string.IsNullOrWhiteSpace(recPath) && File.Exists(recPath)) {
+                var result = await MessageBox.Show(
+                    window,
+                    $"{ThemeManager.GetString("dialogs.recovery")}\n{recPath}",
+                    ThemeManager.GetString("dialogs.recovery.caption"),
+                    MessageBox.MessageBoxButtons.YesNo);
+                if (result == MessageBox.MessageBoxResult.Yes) {
+                    DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
+                    try {
+                        Core.Format.Formats.RecoveryProject(new string[] { recPath });
+                        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                        DocManager.Inst.Recovered = true;
+                        this.RaisePropertyChanged(nameof(Title));
+                    } finally {
+                        DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
+                    }
+                    return;
+                }
+            }
+          
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-                    return;
                 } catch (Exception e) {
                     var customEx = new MessageCustomizableException($"Failed to open file {args[1]}", $"<translate:errors.failed.openfile>: {args[1]}", e);
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             }
-            NewProject();
         }
 
         public void NewProject() {
@@ -119,6 +138,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
+            DocManager.Inst.Recovered = false;
         }
 
         public void OpenProject(string[] files) {
@@ -133,6 +153,7 @@ namespace OpenUtau.App.ViewModels {
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
             }
+            DocManager.Inst.Recovered = false;
         }
 
         public void SaveProject(string file = "") {
@@ -142,7 +163,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
             this.RaisePropertyChanged(nameof(Title));
         }
-        
+
         public void ImportTracks(UProject[] loadedProjects, bool importTempo){
             if (loadedProjects == null || loadedProjects.Length < 1) {
                 return;
