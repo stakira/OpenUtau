@@ -143,8 +143,8 @@ namespace OpenUtau.Core.Util {
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
             public double DiffSingerDepth = 1.0;
-            public int DiffSingerSteps = 30;
-            public int DiffSingerStepsVariance = 10;
+            public int DiffSingerSteps = 20;
+            public int DiffSingerStepsVariance = 20;
             public int DiffSingerStepsPitch = 5;
             public bool DiffSingerTensorCache = true;
             public bool SkipRenderingMutedTracks = true;
@@ -166,7 +166,7 @@ namespace OpenUtau.Core.Util {
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
-            public bool ShowPortrait = false;
+            public bool ShowPortrait = true;
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
             public bool PlayTone = false;
