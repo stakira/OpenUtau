@@ -16,17 +16,17 @@
   <Color x:Key="BorderColor">#A4A4A4</Color>
   <Color x:Key="BorderColorPointerOver">#EEEEEE</Color>
 
-  <Color x:Key="SystemAccentColor">#758FFF</Color>
-  <!-- PointerOver -->
+  <Color x:Key="SystemAccentColor">#00A6FF</Color>
+
   <Color x:Key="SystemAccentColorLight1">#FFFFFF</Color>
-  <!-- Pressed -->
-  <Color x:Key="SystemAccentColorDark1">#004a8b</Color>
+
+  <Color x:Key="SystemAccentColorDark1">#00669C</Color>
 
   <Color x:Key="NeutralAccentColor">#808080</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#A0A0A0</Color>
-  <Color x:Key="AccentColor1">#758FFF</Color>
-  <Color x:Key="AccentColor2">#AF174D</Color>
-  <Color x:Key="AccentColor3">#B80040</Color>
+  <Color x:Key="AccentColor1">#00A6FF</Color>
+  <Color x:Key="AccentColor2">#FF3079</Color>
+  <Color x:Key="AccentColor3">#FF0055</Color>
 
   <Color x:Key="TickLineColor">#737373</Color>
   <Color x:Key="BarNumberColor">#FFFFFF</Color>
@@ -34,13 +34,13 @@
   <Color x:Key="TrackBackgroundAltColor">#303030</Color>
 
   <!--Keyboard Background-->
-  <Color x:Key="WhiteKeyColorLeft">#fc1465</Color>
-  <Color x:Key="WhiteKeyColorRight">#ff194c</Color>
+  <Color x:Key="WhiteKeyColorLeft">#FF3079</Color>
+  <Color x:Key="WhiteKeyColorRight">#FF3079</Color>
   <Color x:Key="WhiteKeyNameColor">#FFFFFF</Color>
 
-  <Color x:Key="CenterKeyColorLeft">#e65a81</Color>
-  <Color x:Key="CenterKeyColorRight">#ff4d7f</Color>
-  <Color x:Key="CenterKeyNameColor">#ff194c</Color>
+  <Color x:Key="CenterKeyColorLeft">#FFFFFF</Color>
+  <Color x:Key="CenterKeyColorRight">#FFFFFF</Color>
+  <Color x:Key="CenterKeyNameColor">#FF005A</Color>
 
   <Color x:Key="BlackKeyColorLeft">Transparent</Color>
   <Color x:Key="BlackKeyColorRight">Transparent</Color>
