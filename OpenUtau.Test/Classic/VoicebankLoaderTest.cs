@@ -25,7 +25,7 @@ aoieu.wav=i e,,100,150,,,
 aoieu.wav=e u,20,
 aoieu.wav=u R,5,,33,44,,
 ".Replace("\r\n", "\n");
-            string expected = @"a.wav=,,,,,
+            string expected = @"a.wav=a,,,,,
 a.wav=- a,,,,,
 a.wav=a R,500,,,,
 !@#$!@#$
