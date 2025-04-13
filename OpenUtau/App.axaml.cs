@@ -108,8 +108,8 @@ namespace OpenUtau.App {
                 Current.Resources.MergedDictionaries.Add(light);
                 Current.RequestedThemeVariant = ThemeVariant.Light;
             } else if (Core.Util.Preferences.Default.Theme == 1) {
-                Current.Resources.MergedDictionaries.Add(light);
-                Current.RequestedThemeVariant = ThemeVariant.Light;
+                Current.Resources.MergedDictionaries.Add(dark);
+                Current.RequestedThemeVariant = ThemeVariant.Dark;
             } else {
                 Current.Resources.MergedDictionaries.Add(highContrast);
                 Current.RequestedThemeVariant = ThemeVariant.Dark;
