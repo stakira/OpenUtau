@@ -21,23 +21,40 @@ namespace OpenUtau.App {
         public static IPen NeutralAccentPenSemi = new Pen(Brushes.Black);
         public static IBrush AccentBrush1 = Brushes.White;
         public static IPen AccentPen1 = new Pen(Brushes.White);
+        public static IPen AccentPen1Dark = new Pen(Brushes.White);
         public static IPen AccentPen1Thickness2 = new Pen(Brushes.White);
         public static IPen AccentPen1Thickness3 = new Pen(Brushes.White);
         public static IBrush AccentBrush1Semi = Brushes.Gray;
+        public static IBrush AccentBrush1Note = Brushes.White;
+        public static IBrush AccentBrush1NoteDark = Brushes.White;
+        public static IBrush AccentBrush1NoteSemi = Brushes.Gray;
+        public static IBrush AccentBrushLightSemi = Brushes.Gray;
+        public static IBrush AccentBrushLight = Brushes.Gray;
+        public static IBrush AccentBrush1NoteDarkSemi = Brushes.Gray;
+        public static IBrush AccentBrush1PartSemi = Brushes.White;
         public static IBrush AccentBrush2 = Brushes.Gray;
         public static IPen AccentPen2 = new Pen(Brushes.White);
+        public static IPen AccentPen2Dark = new Pen(Brushes.White);
         public static IPen AccentPen2Thickness2 = new Pen(Brushes.White);
         public static IPen AccentPen2Thickness3 = new Pen(Brushes.White);
+        public static IPen AccentPen2Light = new Pen(Brushes.White);
+        public static IPen AccentPen2Thickness2Light = new Pen(Brushes.White);
+        public static IPen AccentPen2Thickness3Light = new Pen(Brushes.White);
         public static IBrush AccentBrush2Semi = Brushes.Gray;
         public static IBrush AccentBrush3 = Brushes.Gray;
         public static IPen AccentPen3 = new Pen(Brushes.White);
         public static IPen AccentPen3Thick = new Pen(Brushes.White);
+        public static IPen AccentPen3SemiThick = new Pen(Brushes.White);
         public static IBrush AccentBrush3Semi = Brushes.Gray;
+        public static IPen NoteBorderPen = new Pen(Brushes.White, 1);
+        public static IPen NoteBorderPenPressed = new Pen(Brushes.White, 1);
         public static IBrush TickLineBrushLow = Brushes.Black;
         public static IBrush BarNumberBrush = Brushes.Black;
         public static IPen BarNumberPen = new Pen(Brushes.White);
         public static IBrush FinalPitchBrush = Brushes.Gray;
         public static IPen FinalPitchPen = new Pen(Brushes.Gray);
+        public static IPen FinalPitchPenThick = new Pen(Brushes.Gray);
+        public static IPen FinalPitchPenTransparent = new Pen(Brushes.White, 1);
         public static IBrush WhiteKeyBrush = Brushes.White;
         public static IBrush WhiteKeyNameBrush = Brushes.Black;
         public static IBrush CenterKeyBrush = Brushes.White;
@@ -70,6 +87,46 @@ namespace OpenUtau.App {
                 new TrackColor("Light Blue2", "#1976D2", "#0D47A1", "#2196F3", "#90CBF9"),
                 new TrackColor("Blue2", "#3949AB", "#283593", "#5C6BC0", "#AEB5E0"),
                 new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#AB47BC", "#D5A3DE"),
+                // New 18 colors below + dark counterparts:
+                new TrackColor("Rose", "#DB5C8B", "#F06292", "#F8BBD0", "#FCE4EC"),
+                new TrackColor("Red3", "#FF5252", "#E53935", "#FF8A80", "#FFCDD2"),
+                new TrackColor("Coral", "#FF8A80", "#FF5252", "#FFAB91", "#FFCDD2"),
+                new TrackColor("Amber", "#FFC107", "#FFA000", "#FFD54F", "#FFE082"),
+                new TrackColor("Lime", "#D4E157", "#C0CA33", "#E6EE9C", "#F0F4C3"),
+                new TrackColor("Moss", "#9CCC65", "#7CB342", "#C5E1A5", "#E6EE9C"),
+                new TrackColor("Mint", "#80CBC4", "#4DB6AC", "#B2DFDB", "#E0F2F1"),
+                new TrackColor("Teal", "#26A69A", "#00897B", "#4DB6AC", "#B2DFDB"),
+                new TrackColor("Cyan", "#00BCD4", "#0097A7", "#4DD0E1", "#B2EBF2"),
+                // first dark
+                new TrackColor("Dark Rose", "#AD1457", "#880E4F", "#C2185B", "#E91E63"),
+                new TrackColor("Crimson", "#B71C1C", "#7F0000", "#D32F2F", "#EF5350"),
+                new TrackColor("Deep Coral", "#C62828", "#AD1457", "#E53935", "#FF8A65"),
+                new TrackColor("Dark Amber", "#FF8F00", "#EF6C00", "#FFB300", "#FFCA28"),
+                new TrackColor("Dark Lime", "#AFB42B", "#9E9D24", "#C0CA33", "#D4E157"),
+                new TrackColor("Dark Moss", "#689F38", "#558B2F", "#8BC34A", "#AED581"),
+                new TrackColor("Dark Mint", "#00796B", "#004D40", "#26A69A", "#80CBC4"),
+                new TrackColor("Dark Teal", "#00695C", "#004D40", "#00796B", "#26A69A"),
+                new TrackColor("Dark Cyan", "#00838F", "#006064", "#00ACC1", "#4DD0E1"),
+
+                new TrackColor("Sky", "#81D4FA", "#29B6F6", "#B3E5FC", "#E1F5FE"),
+                new TrackColor("Indigo", "#5C6BC0", "#3F51B5", "#9FA8DA", "#C5CAE9"),
+                new TrackColor("Deep Purple", "#673AB7", "#512DA8", "#9575CD", "#D1C4E9"),
+                new TrackColor("Plum", "#9575CD", "#7E57C2", "#B39DDB", "#D7CDE8"),
+                new TrackColor("Lavender", "#B39DDB", "#9575CD", "#D1C4E9", "#F3E5F5"),
+                new TrackColor("Brown", "#8D6E63", "#6D4C41", "#BCAAA4", "#D7CCC8"),
+                new TrackColor("Gray", "#90A4AE", "#607D8B", "#B0BEC5", "#CFD8DC"),
+                new TrackColor("Steel", "#607D8B", "#455A64", "#90A4AE", "#CFD8DC"),
+                new TrackColor("Slate", "#78909C", "#546E7A", "#B0BEC5", "#ECEFF1"),
+                // 2nds dark
+                new TrackColor("Dark Sky", "#0288D1", "#0277BD", "#03A9F4", "#81D4FA"),
+                new TrackColor("Dark Indigo", "#303F9F", "#1A237E", "#3949AB", "#5C6BC0"),
+                new TrackColor("Dark Deep Purple", "#4527A0", "#311B92", "#673AB7", "#9575CD"),
+                new TrackColor("Dark Plum", "#512DA8", "#4527A0", "#7E57C2", "#9575CD"),
+                new TrackColor("Dark Lavender", "#7E57C2", "#673AB7", "#9575CD", "#B39DDB"),
+                new TrackColor("Dark Brown", "#5D4037", "#3E2723", "#8D6E63", "#A1887F"),
+                new TrackColor("Dark Gray", "#455A64", "#263238", "#78909C", "#90A4AE"),
+                new TrackColor("Dark Steel", "#37474F", "#263238", "#546E7A", "#78909C"),
+                new TrackColor("Dark Slate", "#455A64", "#37474F", "#607D8B", "#90A4AE"),
             };
 
         public static void LoadTheme() {
@@ -101,12 +158,28 @@ namespace OpenUtau.App {
             }
             if (resDict.TryGetResource("AccentBrush1", themeVariant, out outVar)) {
                 AccentBrush1 = (IBrush)outVar!;
-                AccentPen1 = new Pen(AccentBrush1);
-                AccentPen1Thickness2 = new Pen(AccentBrush1, 2);
-                AccentPen1Thickness3 = new Pen(AccentBrush1, 3);
+                
             }
             if (resDict.TryGetResource("AccentBrush1Semi", themeVariant, out outVar)) {
                 AccentBrush1Semi = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1Note", themeVariant, out outVar)) {
+                AccentBrush1Note = (IBrush)outVar!;
+                AccentPen1 = new Pen(AccentBrush1Note);
+                AccentPen1Thickness2 = new Pen(AccentBrush1Note, 2);
+                AccentPen1Thickness3 = new Pen(AccentBrush1Note, 3);
+            }
+            if (resDict.TryGetResource("AccentBrush1NoteSemi", themeVariant, out outVar)) {
+                AccentBrush1NoteSemi = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1NoteDark", themeVariant, out outVar)) {
+                AccentBrush1NoteDark = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1NoteDarkSemi", themeVariant, out outVar)) {
+                AccentBrush1NoteDarkSemi = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("AccentBrush1PartSemi", themeVariant, out outVar)) {
+                AccentBrush1PartSemi = (IBrush)outVar!;
             }
             if (resDict.TryGetResource("AccentBrush2", themeVariant, out outVar)) {
                 AccentBrush2 = (IBrush)outVar!;
@@ -121,9 +194,19 @@ namespace OpenUtau.App {
                 AccentBrush3 = (IBrush)outVar!;
                 AccentPen3 = new Pen(AccentBrush3, 1);
                 AccentPen3Thick = new Pen(AccentBrush3, 3);
+                AccentPen3SemiThick = new Pen(AccentBrush3, 2);
             }
             if (resDict.TryGetResource("AccentBrush3Semi", themeVariant, out outVar)) {
                 AccentBrush3Semi = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("NoteBorderBrush", themeVariant, out outVar)) {
+                NoteBorderPen = new Pen((IBrush)outVar!, 1);
+            }
+            if (resDict.TryGetResource("NoteBorderBrushPressed", themeVariant, out outVar)) {
+                NoteBorderPenPressed = new Pen((IBrush)outVar!, 1);
+            }
+            if (resDict.TryGetResource("FinalPitchBrushTransparent", themeVariant, out outVar)) {
+                FinalPitchPenTransparent = new Pen((IBrush)outVar!, 1);
             }
             if (resDict.TryGetResource("TickLineBrushLow", themeVariant, out outVar)) {
                 TickLineBrushLow = (IBrush)outVar!;
@@ -135,7 +218,10 @@ namespace OpenUtau.App {
             if (resDict.TryGetResource("FinalPitchBrush", themeVariant, out outVar)) {
                 FinalPitchBrush = (IBrush)outVar!;
                 FinalPitchPen = new Pen(FinalPitchBrush, 1);
+                FinalPitchPenThick = new Pen(FinalPitchBrush, 1.5);
+                
             }
+            
             SetKeyboardBrush();
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
@@ -148,17 +234,39 @@ namespace OpenUtau.App {
             try {
                 IResourceDictionary resDict = Application.Current.Resources;
                 TrackColor tcolor = GetTrackColor(color);
-                
                 resDict["SelectedTrackAccentBrush"] = tcolor.AccentColor;
                 resDict["SelectedTrackAccentLightBrush"] = tcolor.AccentColorLight;
                 resDict["SelectedTrackAccentLightBrushSemi"] = tcolor.AccentColorLightSemi;
+                resDict["SelectedTrackAccentDarkBrushSemi"] = tcolor.AccentColorDarkSemi;
                 resDict["SelectedTrackAccentDarkBrush"] = tcolor.AccentColorDark;
                 resDict["SelectedTrackCenterKeyBrush"] = tcolor.AccentColorCenterKey;
 
+                AccentBrush1Note = tcolor.AccentColor;
+                AccentBrush1NoteDark = tcolor.AccentColorDark;
+                AccentBrush1NoteSemi = tcolor.AccentColorSemi;
+                AccentBrushLightSemi = tcolor.AccentColorLightSemi;
+                AccentBrushLight = tcolor.AccentColorLight;
+                AccentBrush1NoteDarkSemi = tcolor.AccentColorDarkSemi;
+                AccentBrush1PartSemi = tcolor.AccentPartColor;
+                // pen
+                AccentPen1 = new Pen(AccentBrush1Note, 1);
+                AccentPen1Dark = new Pen(tcolor.AccentColorDark, 1);
+                AccentPen1Thickness2 = new Pen(AccentBrush1Note, 2);
+                AccentPen1Thickness3 = new Pen(AccentBrush1Note, 3);
+                AccentPen2 = new Pen(AccentBrush2, 1);
+                AccentPen2Dark = new Pen(AccentBrush2, 1);
+                AccentPen2Thickness2 = new Pen(AccentBrush2, 2);
+                AccentPen2Thickness3 = new Pen(AccentBrush2, 3);
+                AccentPen2Light = new Pen(AccentBrushLight, 1);
+                AccentPen2Thickness2Light = new Pen(AccentBrushLight, 2);
+                AccentPen2Thickness3Light = new Pen(AccentBrushLight, 3);
+                NoteBorderPen = new Pen(tcolor.AccentColorDark, 2);
                 SetKeyboardBrush();
-            } catch { }
+            } catch {
+            }
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
         }
+
         private static void SetKeyboardBrush() {
             if (Application.Current == null) {
                 return;
@@ -286,19 +394,29 @@ namespace OpenUtau.App {
     public class TrackColor {
         public string Name { get; set; } = "";
         public SolidColorBrush AccentColor { get; set; }
+        public SolidColorBrush AccentColorSemi { get; set; }
         public SolidColorBrush AccentColorDark { get; set; } // Pressed
+        public SolidColorBrush AccentColorDarkSemi { get; set; }
         public SolidColorBrush AccentColorLight { get; set; } // PointerOver
         public SolidColorBrush AccentColorLightSemi { get; set; } // BackGround
         public SolidColorBrush AccentColorCenterKey { get; set; } // Keyboard
+        public SolidColorBrush AccentPartColor { get; set; } // Part Color
+
 
         public TrackColor(string name, string accentColor, string darkColor, string lightColor, string centerKey) {
             Name = name;
             AccentColor = SolidColorBrush.Parse(accentColor);
+            AccentColorSemi = SolidColorBrush.Parse(accentColor);
+            AccentColorSemi.Opacity = 0.5;
             AccentColorDark = SolidColorBrush.Parse(darkColor);
             AccentColorLight = SolidColorBrush.Parse(lightColor);
             AccentColorLightSemi = SolidColorBrush.Parse(lightColor);
             AccentColorLightSemi.Opacity = 0.5;
+            AccentColorDarkSemi = SolidColorBrush.Parse(darkColor);
+            AccentColorDarkSemi.Opacity = 0.3;
             AccentColorCenterKey = SolidColorBrush.Parse(centerKey);
+            AccentPartColor = SolidColorBrush.Parse(accentColor);
+            AccentPartColor.Opacity = 0.8;
         }
     }
 }

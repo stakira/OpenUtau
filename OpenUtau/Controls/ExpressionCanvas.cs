@@ -108,7 +108,7 @@ namespace OpenUtau.App.Controls {
                 double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
                 var lPen = ThemeManager.AccentPen1;
                 var lPen2 = ThemeManager.AccentPen1Thickness2;
-                var brush = ThemeManager.AccentBrush1;
+                var brush = ThemeManager.AccentBrush1Note;
                 if (curve == null) {
                     double x1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
                     double x2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
@@ -155,7 +155,7 @@ namespace OpenUtau.App.Controls {
                 var note = phoneme.Parent;
                 var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
                 var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
-                var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
+                var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1Note;
                 var (value, overriden) = phoneme.GetExpression(project, track, Key);
                 double x1 = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X);
                 double x2 = Math.Round(viewModel.TickToneToPoint(phoneme.End, 0).X);

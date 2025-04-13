@@ -98,14 +98,30 @@
                    Color="{DynamicResource AccentColor1}" />
   <SolidColorBrush x:Key="AccentBrush1Semi"
                    Color="{DynamicResource AccentColor1}" Opacity="0.5" />
+  <SolidColorBrush x:Key="AccentBrush1Note"
+                   Color="{DynamicResource AccentColor1Note}"/>
+  <SolidColorBrush x:Key="AccentBrush1NoteDark"
+                   Color="{DynamicResource AccentColor1Note}"/>
+  <SolidColorBrush x:Key="AccentBrush1NoteSemi"
+                   Color="{DynamicResource AccentColor1Note}" Opacity="0.8" />
+  <SolidColorBrush x:Key="AccentBrush1NoteDarkSemi"
+                   Color="{DynamicResource AccentColor1Note}" Opacity="0.5" />
+  <SolidColorBrush x:Key="AccentBrush1PartSemi"
+                   Color="{DynamicResource AccentColor1Note}" Opacity="0.8" />
   <SolidColorBrush x:Key="AccentBrush2"
                    Color="{DynamicResource AccentColor2}" />
   <SolidColorBrush x:Key="AccentBrush2Semi"
-                   Color="{DynamicResource AccentColor2}" Opacity="0.5" />
+                   Color="{DynamicResource AccentColor2}" Opacity="0.7" />
   <SolidColorBrush x:Key="AccentBrush3"
                    Color="{DynamicResource AccentColor3}" />
   <SolidColorBrush x:Key="AccentBrush3Semi"
-                   Color="{DynamicResource AccentColor3}" Opacity="0.5" />
+                   Color="{DynamicResource AccentColor3}"/>
+  <SolidColorBrush x:Key="NoteBorderBrush"
+                   Color="{DynamicResource AccentColor1Note}" />
+  <SolidColorBrush x:Key="NoteBorderBrushPressed"
+                   Color="{DynamicResource AccentColor2}" />
+  <SolidColorBrush x:Key="FinalPitchBrushTransparent"
+                   Color="{DynamicResource FinalPitchColorTransparent}" />
   <SolidColorBrush x:Key="SelectedTrackAccentBrush"
                    Color="#4EA6EA" />
   <SolidColorBrush x:Key="SelectedTrackAccentLightBrush"
