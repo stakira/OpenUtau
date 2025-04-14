@@ -165,16 +165,16 @@ namespace OpenUtau.App.Controls {
                     double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
                     double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
                     // fill rect
-                    double rectX = x1 + 3;
+                    double rectX = x1;
                     double rectY = Math.Min(zeroHeight, valueHeight);
                     double rectHeight = Math.Abs(zeroHeight - valueHeight);
-                    double rectWidth = Math.Max(x1 + 2, x2 - 3) - rectX;
+                    double rectWidth = Math.Max(x1, x2) - rectX;
                     var fillRect = new Rect(rectX, rectY, rectWidth, rectHeight);
                     var fillBrush = overriden ? recBrushlight : recBrush;
                     context.DrawRectangle(fillBrush, null, fillRect);
                     // vertical and horizontal lines
                     context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2), valueHeight));
                     
                     using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
                         context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
