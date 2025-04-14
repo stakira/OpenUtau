@@ -220,17 +220,18 @@ namespace OpenUtau.App.Controls {
             }
             string displayLyric = note.lyric;
             int txtsize = 14;
-            var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+            var TextPen = selectedNotes.Contains(note) ?  Brushes.White: ThemeManager.NoteTextBrush;
+            var textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
             if (txtsize > size.Height) {
                 return;
             }
             if (textLayout.Height + 5 < size.Height) {
                 txtsize = (int)(12 * (size.Height / textLayout.Height));
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+                textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
             }
             if (textLayout.Width + 5 > size.Width) {
                 displayLyric = displayLyric[0] + "..";
-                textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, txtsize);
+                textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
                 if (textLayout.Width + 5 > size.Width) {
                     return;
                 }

@@ -34,7 +34,7 @@
     </Style>
   </UserControl.Styles>
   <Border Margin="3,1,3,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="5,5,5,5">
-    <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
+    <Grid Background="{DynamicResource NeutralAccentBrushSemi3}" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
       <Grid Grid.Row="0" Grid.RowSpan="6" Grid.Column="0" VerticalAlignment="Top">
         <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="5,1,1,5"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">

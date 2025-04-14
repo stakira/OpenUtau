@@ -27,6 +27,7 @@
   <Color x:Key="AccentColor1">#4EA6EA</Color>
   <Color x:Key="AccentColor2">#FF679D</Color>
   <Color x:Key="AccentColor3">#E62E6E</Color>
+  <Color x:Key="AccentColor4">#4FC3F7</Color>
   <Color x:Key="AccentColor1Note">#4EA6EA</Color>
   <Color x:Key="AccentColor2Pitch">#FFFFFF</Color>
   <Color x:Key="FinalPitchColorTransparent">#eaeaea</Color>

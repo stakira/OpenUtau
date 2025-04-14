@@ -5,8 +5,8 @@
       <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
       <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
       <x:Double x:Key="MenuFlyoutThemeMinHeight">20</x:Double>
-      <Thickness x:Key="MenuFlyoutScrollerMargin">1</Thickness>
-      <Thickness x:Key="ComboBoxDropdownContentMargin">1</Thickness>
+      <Thickness x:Key="MenuFlyoutScrollerMargin">3</Thickness>
+      <Thickness x:Key="ComboBoxDropdownContentMargin">3</Thickness>
     </Style.Resources>
   </Style>
   <Style Selector="Window">
@@ -77,7 +77,7 @@
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
-    <Setter Property="SelectionForegroundBrush" Value="Black"/>
+    <Setter Property="SelectionForegroundBrush" Value="White"/>
   </Style>
   <Style Selector="TextBox:disabled">
     <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
