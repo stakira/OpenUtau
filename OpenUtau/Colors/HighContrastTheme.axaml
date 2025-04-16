@@ -17,9 +17,9 @@
   <Color x:Key="BorderColorPointerOver">#EEEEEE</Color>
 
   <Color x:Key="SystemAccentColor">#00A6FF</Color>
-
+  <!-- PointerOver -->
   <Color x:Key="SystemAccentColorLight1">#FFFFFF</Color>
-
+  <!-- Pressed -->
   <Color x:Key="SystemAccentColorDark1">#00669C</Color>
 
   <Color x:Key="NeutralAccentColor">#808080</Color>
@@ -27,6 +27,10 @@
   <Color x:Key="AccentColor1">#00A6FF</Color>
   <Color x:Key="AccentColor2">#FF3079</Color>
   <Color x:Key="AccentColor3">#FF0055</Color>
+  <Color x:Key="AccentColor4">#00ABF7</Color>
+  <Color x:Key="AccentColor1Note">#0084EA</Color>
+  <Color x:Key="AccentColor2Pitch">#FFFFFF</Color>
+  <Color x:Key="FinalPitchColorTransparent">#EAEAEA</Color>
 
   <Color x:Key="TickLineColor">#737373</Color>
   <Color x:Key="BarNumberColor">#FFFFFF</Color>
