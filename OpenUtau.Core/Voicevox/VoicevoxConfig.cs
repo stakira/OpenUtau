@@ -42,14 +42,14 @@ namespace OpenUtau.Core.Voicevox {
                 if (jObj.ContainsKey("detail")) {
                     var errorMessage = $"Response was incorrect. : {jObj}";
                     Log.Error(errorMessage);
-                    throw new Exception(errorMessage);
+                    throw new VoicevoxException(errorMessage);
                 }
                 var manifest = jObj.ToObject<Engine_manifest>();
                 manifest.SaveLicenses(singer.Location);
             } catch(Exception e) {
                 var errorMessage = $"Could not load Licenses.:{e}";
                 Log.Error(errorMessage);
-                throw new Exception(errorMessage);
+                throw new VoicevoxException(errorMessage);
             }
             try {
 
@@ -58,7 +58,7 @@ namespace OpenUtau.Core.Voicevox {
                 if (jObj.ContainsKey("detail")) {
                     var errorMessage = $"Response was incorrect. : {jObj}";
                     Log.Error(errorMessage);
-                    throw new Exception(errorMessage);
+                    throw new VoicevoxException(errorMessage);
                 }
                 var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
                 var parentDirectory = Directory.GetParent(singer.Location).ToString();
@@ -90,7 +90,7 @@ namespace OpenUtau.Core.Voicevox {
             } catch {
                 var errorMessage = "Could not load VOICEVOX singer.";
                 Log.Error(errorMessage);
-                throw new Exception(errorMessage);
+                throw new VoicevoxException(errorMessage);
             }
 
             return new VoicevoxConfig();
