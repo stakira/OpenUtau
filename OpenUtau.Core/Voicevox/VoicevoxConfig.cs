@@ -49,8 +49,7 @@ namespace OpenUtau.Core.Voicevox {
             } catch(Exception e) {
                 var errorMessage = $"Could not load Licenses.:{e}";
                 Log.Error(errorMessage);
-                throw new VoicevoxException(errorMessage);
-            }
+                throw new VoicevoxException(errorMessage, e);
             try {
 
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
