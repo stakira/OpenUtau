@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-android34.0</TargetFramework>
+    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ApplicationId>com.OpenUtau</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidEnableProfiledAot>False</AndroidEnableProfiledAot>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidResource Include="Icon.png">
+      <Link>Resources\drawable\Icon.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" Version="11.2.4" />
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenUtau\OpenUtau.App.csproj" />
+    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android34.0'">
+    <AndroidNativeLibrary Include="src/main/jniLibs/arm64-v8a/libworldline.so" />
+    <!--<AndroidNativeLibrary Include="src/main/jniLibs/armeabi-v7a/libworldline.so" />-->
+    <!--<AndroidNativeLibrary Include="src/main/jniLibs/x86/libworldline.so" />-->
+    <AndroidNativeLibrary Include="src/main/jniLibs/x86_64/libworldline.so" />
+  </ItemGroup>
+</Project>

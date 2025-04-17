@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Headless;
 using Avalonia.Styling;
 using OpenUtau.App;
+using OpenUtau.Desktop;
 
 [assembly: AvaloniaTestApplication(typeof(TestAppBuilder))]
 

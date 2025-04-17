@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net8.0-android34.0;</TargetFrameworks>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
@@ -70,6 +70,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>VogenRes.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-android34.0'">
+    <PackageReference Include="Xamarin.AndroidX.Core">
+      <Version>1.15.0.2</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <DefineConstants>WINDOWS</DefineConstants>
