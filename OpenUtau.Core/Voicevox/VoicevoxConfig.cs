@@ -40,19 +40,25 @@ namespace OpenUtau.Core.Voicevox {
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Response was incorrect. : {jObj}");
+                    var errorMessage = $"Response was incorrect. : {jObj}";
+                    Log.Error(errorMessage);
+                    throw new Exception(errorMessage);
                 }
                 var manifest = jObj.ToObject<Engine_manifest>();
                 manifest.SaveLicenses(singer.Location);
             } catch(Exception e) {
-                Log.Error($"Could not load Licenses.:{e}");
+                var errorMessage = $"Could not load Licenses.:{e}";
+                Log.Error(errorMessage);
+                throw new Exception(errorMessage);
             }
             try {
 
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Response was incorrect. : {jObj}");
+                    var errorMessage = $"Response was incorrect. : {jObj}";
+                    Log.Error(errorMessage);
+                    throw new Exception(errorMessage);
                 }
                 var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
                 var parentDirectory = Directory.GetParent(singer.Location).ToString();
@@ -82,7 +88,9 @@ namespace OpenUtau.Core.Voicevox {
                 }
                 return vvList.Where(vv => vv.name.Equals(singer.Name)).ToList()[0];
             } catch {
-                Log.Error("Could not load VOICEVOX singer.");
+                var errorMessage = "Could not load VOICEVOX singer.";
+                Log.Error(errorMessage);
+                throw new Exception(errorMessage);
             }
 
             return new VoicevoxConfig();
