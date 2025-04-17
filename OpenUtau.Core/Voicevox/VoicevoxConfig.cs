@@ -46,10 +46,11 @@ namespace OpenUtau.Core.Voicevox {
                 }
                 var manifest = jObj.ToObject<Engine_manifest>();
                 manifest.SaveLicenses(singer.Location);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 var errorMessage = $"Could not load Licenses.:{e}";
                 Log.Error(errorMessage);
                 throw new VoicevoxException(errorMessage, e);
+            }
             try {
 
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
@@ -86,10 +87,10 @@ namespace OpenUtau.Core.Voicevox {
                     vvList.Add(voicevoxConfig);
                 }
                 return vvList.Where(vv => vv.name.Equals(singer.Name)).ToList()[0];
-            } catch {
+            } catch (Exception e) {
                 var errorMessage = "Could not load VOICEVOX singer.";
                 Log.Error(errorMessage);
-                throw new VoicevoxException(errorMessage);
+                throw new VoicevoxException(errorMessage, e);
             }
 
             return new VoicevoxConfig();
