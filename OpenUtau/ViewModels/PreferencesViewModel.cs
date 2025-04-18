@@ -96,6 +96,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberUst{ get; set; }
         [Reactive] public bool RememberVsqx{ get; set; }
         [Reactive] public int ImportTempo{ get; set; }
+        [Reactive] public int Channel { get; set; }
+        [Reactive] public int SamplingRate { get; set; }
+        public List<int> SamplingRateOptions { get; } = new List<int> { 44100, 48000 };
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -160,6 +163,8 @@ namespace OpenUtau.App.ViewModels {
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
             ImportTempo = Preferences.Default.ImportTempo;
+            Channel = Preferences.Default.Channel;
+            SamplingRate = SamplingRateOptions.FirstOrDefault(x => x == Preferences.Default.SamplingRate, SamplingRateOptions[0]);
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -321,6 +326,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ImportTempo)
                 .Subscribe(index => {
                     Preferences.Default.ImportTempo = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.Channel)
+                .Subscribe(index => {
+                    Preferences.Default.Channel = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.SamplingRate)
+                .Subscribe(samplingRate => {
+                    Preferences.Default.SamplingRate = samplingRate;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.ClearCacheOnQuit)

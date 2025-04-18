@@ -186,6 +186,8 @@ namespace OpenUtau.Core.Util {
             public bool RememberUst = true;
             public bool RememberVsqx = true;
             public int ImportTempo = 0;
+            public int Channel = 1;
+            public int SamplingRate = 44100;
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
