@@ -119,7 +119,6 @@ namespace OpenUtau.App.Controls {
                     context.DrawLine(lPen, new Point(x1, defaultHeight), new Point(x2, defaultHeight));
                     return;
                 }
-
                 int lTick = (int)Math.Floor(leftTick / 5) * 5;
                 int rTick = (int)Math.Ceiling(rightTick / 5) * 5;
                 int index = curve.xs.BinarySearch(lTick);
@@ -145,7 +144,7 @@ namespace OpenUtau.App.Controls {
                     if (tick2 >= rTick) {
                         break;
                     }
-                } 
+                }
                 return;
             }
             foreach (var phoneme in Part.phonemes) {
