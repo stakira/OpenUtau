@@ -159,7 +159,9 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);
-                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix));
+                    int channels = Preferences.Default.Channel == 0 ? 2 : 1;
+                    int samplingRate = Preferences.Default.SamplingRate;
+                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix,channels,samplingRate));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);

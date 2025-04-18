@@ -7,6 +7,7 @@ using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.Core.Render {
     public class Progress {
@@ -144,18 +145,25 @@ namespace OpenUtau.Core.Render {
             if (requests.Length == 0) {
                 return trackMixes;
             }
-            Enumerable.Range(0, requests.Max(req => req.trackNo) + 1)
-                .Select(trackNo => requests.Where(req => req.trackNo == trackNo).ToArray())
-                .ToList()
-                .ForEach(trackRequests => {
-                    if (trackRequests.Length == 0) {
-                        trackMixes.Add(null);
-                    } else {
-                        RenderRequests(trackRequests, newCancellation);
-                        var mix = new WaveMix(trackRequests.Select(req => req.mix).ToArray());
-                        trackMixes.Add(mix);
-                    }
-                });
+            for (int i = 0; i < requests.Max(req => req.trackNo) + 1; i++)
+            {
+                var trackRequests = requests.Where(req => req.trackNo == i).ToArray();
+                if (trackRequests.Length == 0)
+                {
+                    trackMixes.Add(null);
+                }
+                else
+                {
+                    RenderRequests(trackRequests, newCancellation);
+                    var mix = new WaveMix(trackRequests.Select(req => req.mix).ToArray());
+                    var track = project.tracks[i];
+                    var fader = new Fader(mix);
+                    fader.Scale = PlaybackManager.DecibelToVolume(track.Muted ? -24 : track.Volume);
+                    fader.Pan = (float)track.Pan;
+                    fader.SetScaleToTarget();
+                    trackMixes.Add(new WaveMix(new List<Fader>() {fader}));
+                }
+            }
             return trackMixes;
         }
 
