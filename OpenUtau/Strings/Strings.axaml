@@ -360,6 +360,9 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.channel">Output Audio Channel</system:String>
+  <system:String x:Key="prefs.advanced.channel.stereo">Stereo</system:String>
+  <system:String x:Key="prefs.advanced.channel.monaural">Monaural</system:String>
   <system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
   <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
@@ -369,6 +372,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
+  <system:String x:Key="prefs.advanced.samplingrate">Output Audio SamplingRate</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>

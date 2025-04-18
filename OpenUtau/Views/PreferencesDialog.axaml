@@ -289,6 +289,13 @@
             <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.never}"/>
             <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.ask}"/>
           </ComboBox>
+          <TextBlock Text="{DynamicResource prefs.advanced.channel}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Channel}">
+            <ComboBoxItem Content="{DynamicResource prefs.advanced.channel.stereo}"/>
+            <ComboBoxItem Content="{DynamicResource prefs.advanced.channel.monaural}"/>
+          </ComboBox>
+          <TextBlock Text="{DynamicResource prefs.advanced.samplingrate}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding SamplingRateOptions}" SelectedItem="{Binding SamplingRate}"/>
         </StackPanel>
       </Carousel>
     </ScrollViewer>

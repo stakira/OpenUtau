@@ -1,5 +1,6 @@
 ﻿using System;
 using NAudio.Wave;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.SignalChain {
     class ExportAdapter : ISampleProvider {
@@ -11,6 +12,11 @@ namespace OpenUtau.Core.SignalChain {
 
         public ExportAdapter(ISignalSource source) {
             waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
+            this.source = source;
+        }
+
+        public ExportAdapter(ISignalSource source, int channels, int samplingRate) {
+            waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(samplingRate, channels);
             this.source = source;
         }
 
