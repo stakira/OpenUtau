@@ -161,16 +161,22 @@ namespace OpenUtau.Core {
                     CheckFileWritable(exportPath);
                     int samplingRate = Preferences.Default.MixdownSamplingRate;
                     var exportAdapter = new ExportAdapter(projectMix);
-                    SampleToWaveProvider waveProvider;
-                    if (Preferences.Default.ParallelChannel == 0) {
-                        waveProvider = new SampleToWaveProvider(exportAdapter);
+                    SampleToWaveProvider16 waveProvider;
+                    if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                        WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
+                        if (Preferences.Default.MixdownChannel == 0) {
+                            waveProvider = new SampleToWaveProvider16(resampAdapter);
+                        } else {
+                            waveProvider = new SampleToWaveProvider16(resampAdapter.ToMono());
+                        }
                     } else {
-                        waveProvider = new SampleToWaveProvider(exportAdapter.ToMono(1, 0));
+                        if (Preferences.Default.MixdownChannel == 0) {
+                            waveProvider = new SampleToWaveProvider16(exportAdapter);
+                        } else {
+                            waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono());
+                        }
                     }
-                    using (var resampler = new MediaFoundationResampler(waveProvider, samplingRate)) {
-                        resampler.ResamplerQuality = 60;
-                        WaveFileWriter.CreateWaveFile(exportPath, resampler);
-                    }
+                    WaveFileWriter.CreateWaveFile(exportPath, waveProvider);
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);
@@ -199,23 +205,25 @@ namespace OpenUtau.Core {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
 
                         CheckFileWritable(file);
+                        int samplingRate = Preferences.Default.ParallelSamplingRate;
                         var exportAdapter = new ExportAdapter(trackMixes[i]);
                         SampleToWaveProvider16 waveProvider;
-                        if (Preferences.Default.ParallelChannel == 0) {
-                            waveProvider = new SampleToWaveProvider16(exportAdapter);
+                        if(exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                            WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
+                            if (Preferences.Default.ParallelChannel == 0) {
+                                waveProvider = new SampleToWaveProvider16(resampAdapter);
+                            } else {
+                                waveProvider = new SampleToWaveProvider16(resampAdapter.ToMono());
+                            }
                         } else {
-                            waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono(1, 0));
-                        }
-                        int samplingRate = Preferences.Default.ParallelSamplingRate;
-                        if (samplingRate == waveProvider.WaveFormat.SampleRate) {
-                            WaveFileWriter.CreateWaveFile(file, waveProvider);
-                        } else {
-                            using (var resampler = new MediaFoundationResampler(waveProvider, samplingRate)) {
-                                resampler.ResamplerQuality = 60;
-                                WaveFileWriter.CreateWaveFile(file, resampler);
+                            if (Preferences.Default.ParallelChannel == 0) {
+                                waveProvider = new SampleToWaveProvider16(exportAdapter);
+                            } else {
+                                waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono());
                             }
                         }
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                        WaveFileWriter.CreateWaveFile(file, waveProvider);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {file}.", $"<translate:errors.failed.export>: {file}", ioe);
