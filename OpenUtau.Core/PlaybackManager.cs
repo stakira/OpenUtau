@@ -159,9 +159,18 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);
-                    int channels = Preferences.Default.Channel == 0 ? 2 : 1;
-                    int samplingRate = Preferences.Default.SamplingRate;
-                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix,channels,samplingRate));
+                    int samplingRate = Preferences.Default.MixdownSamplingRate;
+                    var exportAdapter = new ExportAdapter(projectMix);
+                    SampleToWaveProvider waveProvider;
+                    if (Preferences.Default.ParallelChannel == 0) {
+                        waveProvider = new SampleToWaveProvider(exportAdapter);
+                    } else {
+                        waveProvider = new SampleToWaveProvider(exportAdapter.ToMono(1, 0));
+                    }
+                    using (var resampler = new MediaFoundationResampler(waveProvider, samplingRate)) {
+                        resampler.ResamplerQuality = 60;
+                        WaveFileWriter.CreateWaveFile(exportPath, resampler);
+                    }
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);
@@ -190,10 +199,23 @@ namespace OpenUtau.Core {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
 
                         CheckFileWritable(file);
-                        int channels = Preferences.Default.Channel == 0 ? 2 : 1;
-                        int samplingRate = Preferences.Default.SamplingRate;
-                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i],channels, samplingRate));
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                        var exportAdapter = new ExportAdapter(trackMixes[i]);
+                        SampleToWaveProvider16 waveProvider;
+                        if (Preferences.Default.ParallelChannel == 0) {
+                            waveProvider = new SampleToWaveProvider16(exportAdapter);
+                        } else {
+                            waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono(1, 0));
+                        }
+                        int samplingRate = Preferences.Default.ParallelSamplingRate;
+                        if (samplingRate == waveProvider.WaveFormat.SampleRate) {
+                            WaveFileWriter.CreateWaveFile(file, waveProvider);
+                        } else {
+                            using (var resampler = new MediaFoundationResampler(waveProvider, samplingRate)) {
+                                resampler.ResamplerQuality = 60;
+                                WaveFileWriter.CreateWaveFile(file, resampler);
+                            }
+                        }
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {file}.", $"<translate:errors.failed.export>: {file}", ioe);

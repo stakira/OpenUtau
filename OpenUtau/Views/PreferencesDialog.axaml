@@ -50,6 +50,7 @@
       <ListBoxItem Content="{DynamicResource prefs.paths}"/>
       <ListBoxItem Content="{DynamicResource prefs.editing}"/>
       <ListBoxItem Content="{DynamicResource prefs.rendering}"/>
+      <ListBoxItem Content="{DynamicResource prefs.export}"/>
       <ListBoxItem Content="{DynamicResource prefs.appearance}"/>
       <ListBoxItem Content="{DynamicResource prefs.utau}"/>
       <ListBoxItem Content="{DynamicResource prefs.diffsinger}"/>
@@ -166,6 +167,24 @@
           <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" Margin="0,10,0,0"/>
           <ComboBox ItemsSource="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
           <TextBlock Classes="restart"/>
+        </StackPanel>
+
+        <!-- Export  -->
+        <StackPanel>
+          <TextBlock Text="{DynamicResource prefs.export.mixdown}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding MixdownChannel}">
+            <ComboBoxItem Content="{DynamicResource prefs.export.channel.stereo}"/>
+            <ComboBoxItem Content="{DynamicResource prefs.export.channel.monaural}"/>
+          </ComboBox>
+          <TextBlock Text="{DynamicResource prefs.export.mixdown.samplingrate}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding SamplingRateOptions}" SelectedItem="{Binding MixdownSamplingRate}"/>
+          <TextBlock Text="{DynamicResource prefs.export.parallel}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ParallelChannel}">
+            <ComboBoxItem Content="{DynamicResource prefs.export.channel.stereo}"/>
+            <ComboBoxItem Content="{DynamicResource prefs.export.channel.monaural}"/>
+          </ComboBox>
+          <TextBlock Text="{DynamicResource prefs.export.parallel.samplingrate}" HorizontalAlignment="Left"/>
+          <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding SamplingRateOptions}" SelectedItem="{Binding ParallelSamplingRate}"/>
         </StackPanel>
 
         <!-- Appearance -->
@@ -289,13 +308,6 @@
             <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.never}"/>
             <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.ask}"/>
           </ComboBox>
-          <TextBlock Text="{DynamicResource prefs.advanced.channel}" HorizontalAlignment="Left"/>
-          <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Channel}">
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.channel.stereo}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.channel.monaural}"/>
-          </ComboBox>
-          <TextBlock Text="{DynamicResource prefs.advanced.samplingrate}" HorizontalAlignment="Left"/>
-          <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding SamplingRateOptions}" SelectedItem="{Binding SamplingRate}"/>
         </StackPanel>
       </Carousel>
     </ScrollViewer>

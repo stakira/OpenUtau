@@ -15,11 +15,6 @@ namespace OpenUtau.Core.SignalChain {
             this.source = source;
         }
 
-        public ExportAdapter(ISignalSource source, int channels, int samplingRate) {
-            waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(samplingRate, channels);
-            this.source = source;
-        }
-
         public int Read(float[] buffer, int offset, int count) {
             for (int i = offset; i < offset + count; ++i) {
                 buffer[i] = 0;
