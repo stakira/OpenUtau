@@ -182,6 +182,30 @@ namespace OpenUtau.Core {
         };
     }
 
+    public class SetVibratoCommand : VibratoCommand {
+        readonly UNote note;
+        readonly UVibrato newVibrato;
+        readonly UVibrato oldVibrato;
+        public SetVibratoCommand(UVoicePart part, UNote note, UVibrato vibrato) : base(part, note) {
+            this.note = note;
+            newVibrato = vibrato;
+            oldVibrato = note.vibrato;
+        }
+        public override string ToString() {
+            return "Change vibrato";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato = newVibrato;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato = oldVibrato;
+            }
+        }
+    }
+
     public class VibratoLengthCommand : VibratoCommand {
         readonly UNote note;
         readonly float newLength;
