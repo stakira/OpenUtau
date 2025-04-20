@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="24" d:DesignHeight="24"
+             x:Class="OpenUtau.App.Controls.WelcomePage"
+             IsVisible="{Binding IsVisible}" IsEnabled="{Binding IsVisible}">
+    <StackPanel Grid.ColumnSpan="2" Margin="32" Spacing="8"
+        Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+        <!-- Startup warnings -->
+        <!--<Border Grid.Row="2" Grid.ColumnSpan="2" Background="#FFF8E1" CornerRadius="5" 
+                Padding="10" Margin="0,20,0,0">
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="⚠️ 警告: "/>
+                <Run Text="请不要将软件安装在包含中文或其他非ASCII字符的路径中，否则可能导致功能异常。"/>
+            </TextBlock>
+        </Border>-->
+
+        <!-- 备份恢复相关按钮 -->
+        <!--<StackPanel x:Name="BackupPanel" Spacing="10" Margin="0,20,0,0" IsVisible="False">
+            <TextBlock Text="检测到上次未正常关闭" FontSize="14" Foreground="Red"/>
+            <Button x:Name="RecoverButton" Content="恢复备份" FontSize="14" Padding="10"
+                    Background="#FFDDDD" Foreground="Red"/>
+            <Button x:Name="ContinueButton" Content="继续而不恢复" FontSize="14" Padding="10"/>
+        </StackPanel>-->
+
+        <!--Create new project or open existing project-->
+        <TextBlock Text="Start Editing"/>
+        <WrapPanel Margin="-4" Orientation="Horizontal">
+            <Button Margin="4" Content="New" Click="OnNew">
+                <!--<OptionsDisplayItem.Icon>
+                    <icons:SymbolIcon Symbol="New" />
+                </OptionsDisplayItem.Icon>-->
+            </Button>
+
+            <Button Margin="4" Content="Open">
+                <!--<OptionsDisplayItem.Icon>
+                    <icons:SymbolIcon Symbol="Open" />
+                </OptionsDisplayItem.Icon>-->
+            </Button>
+        </WrapPanel>
+        
+        <!-- Recent files -->
+        <TextBlock Text="Recently" Theme="{StaticResource SubtitleTextBlockStyle}" />
+        <ListBox ItemsSource="{Binding RecentFiles}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="0,4">
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock FontSize="12" Text="{Binding DirectoryName}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</UserControl>

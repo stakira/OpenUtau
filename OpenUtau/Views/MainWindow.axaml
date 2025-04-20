@@ -255,6 +255,7 @@
         </Border>
         <TextBlock Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
         <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
+        <c:WelcomePage Name="WelcomePage" Grid.Row="1" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
       </Grid>
     </Grid>
   </Grid>

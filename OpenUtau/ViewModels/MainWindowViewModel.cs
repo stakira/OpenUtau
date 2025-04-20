@@ -43,6 +43,7 @@ namespace OpenUtau.App.ViewModels {
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         [Reactive] public double Progress { get; set; }
         [Reactive] public string ProgressText { get; set; }
+        [Reactive] public bool ShowWelcomePage { get; set; } = true;
         public ReactiveCommand<UPart, Unit> PartDeleteCommand { get; set; }
         public ReactiveCommand<int, Unit>? AddTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
@@ -114,6 +115,7 @@ namespace OpenUtau.App.ViewModels {
           
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
+                ShowWelcomePage = false;
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));

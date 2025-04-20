@@ -89,6 +89,9 @@ namespace OpenUtau.App.Views {
 
         public void InitProject() {
             viewModel.InitProject(this);
+            if(viewModel.ShowWelcomePage) {
+                WelcomePage?.Show();
+            }
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
