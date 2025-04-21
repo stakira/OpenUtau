@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using OpenUtau.Core.Ustx;
+using Vortice;
 
 namespace OpenUtau.Core.Enunu {
     class EnunuConfig {
@@ -11,6 +13,7 @@ namespace OpenUtau.Core.Enunu {
         public string questionPath = string.Empty;
         public int sampleRate;
         public double framePeriod;
+        public bool unLoadSubBanks = false;
         public EnunuExtensions extensions;
 
         public static EnunuConfig Load(USinger singer) {
@@ -50,6 +53,15 @@ namespace OpenUtau.Core.Enunu {
         }
     }
 
+    public class ExpressionDetail {
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public float Min { get; set; }
+        public float Max { get; set; }
+        public float Default_Value { get; set; }
+        public string Flag { get; set; }
+    }
+
     class EnunuExtensions {
         public List<string> ust_editor = new List<string>();
         public List<string> ust_converter = new List<string>();
@@ -60,6 +72,8 @@ namespace OpenUtau.Core.Enunu {
         public List<string> acoustic_editor = new List<string>();
         public List<string> wav_synthesizer = new List<string>();
         public List<string> wav_editor = new List<string>();
+        public Dictionary<string, Dictionary<string, string>> style_format = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, ExpressionDetail> styles = new Dictionary<string, ExpressionDetail>();
     }
 
     class RawEnunuExtensions {
@@ -72,6 +86,8 @@ namespace OpenUtau.Core.Enunu {
         public object acoustic_editor;
         public object wav_synthesizer;
         public object wav_editor;
+        public object style_format;
+        public object styles;
     }
 
     class RawEnunuConfig {
@@ -81,6 +97,7 @@ namespace OpenUtau.Core.Enunu {
         public string questionPath = string.Empty;
         public int sampleRate;
         public double framePeriod;
+        public bool unload_subbanks;
         public RawEnunuExtensions extensions;
 
         public EnunuConfig Convert() {
@@ -92,6 +109,7 @@ namespace OpenUtau.Core.Enunu {
             enunuConfig.questionPath = this.questionPath;
             enunuConfig.sampleRate = this.sampleRate;
             enunuConfig.framePeriod = this.framePeriod;
+            enunuConfig.unLoadSubBanks = this.unload_subbanks;
             enunuConfig.extensions = new EnunuExtensions();
             if (this.extensions != null) {
                 ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
@@ -103,6 +121,8 @@ namespace OpenUtau.Core.Enunu {
                 ParseEnunuExtension(enunuConfig.extensions.acoustic_editor, this.extensions.acoustic_editor);
                 ParseEnunuExtension(enunuConfig.extensions.wav_synthesizer, this.extensions.wav_synthesizer);
                 ParseEnunuExtension(enunuConfig.extensions.wav_editor, this.extensions.wav_editor);
+                ParseEnunuStyleFormat(enunuConfig.extensions.style_format, this.extensions.style_format);
+                ParseEnunuStyles(enunuConfig.extensions.styles, this.extensions.styles);
             }
             return enunuConfig;
         }
@@ -114,6 +134,69 @@ namespace OpenUtau.Core.Enunu {
                 foreach (object o in list) {
                     if (o is string s) {
                         enunuExtension.Add(s);
+                    }
+                }
+            }
+        }
+
+        private void ParseEnunuStyles(Dictionary<string, ExpressionDetail> enunuStyles, object rawEnunuStyle) {
+            if (rawEnunuStyle is Dictionary<object, object> rawDict) {
+                foreach (var kvp in rawDict) {
+                    if (kvp.Key is string key && kvp.Value is Dictionary<object, object> innerDict) {
+                        var exp = new ExpressionDetail();
+                        foreach (var innerKvp in innerDict) {
+                            if (innerKvp.Key is string innerKey && innerKvp.Value is string innerValue) {
+                                switch (innerKey) {
+                                    case "name":
+                                        exp.Name = innerValue;
+                                        break;
+                                    case "type":
+                                        exp.Type = innerValue;
+                                        break;
+                                    case "min":
+                                        if (float.TryParse(innerValue, out var min)) {
+                                            exp.Min = min;
+                                        }
+                                        break;
+                                    case "max":
+                                        if (float.TryParse(innerValue, out var max)) {
+                                            exp.Max = max;
+                                        }
+                                        break;
+                                    case "default_value":
+                                        if (float.TryParse(innerValue, out var defaultValue)) {
+                                            exp.Default_Value = defaultValue;
+                                        }
+                                        break;
+                                    case "flag":
+                                        exp.Flag = innerValue;
+                                        break;
+                                }
+                            }
+                        }
+                        enunuStyles.Add(key, exp);
+                    }
+                }
+            }
+        }
+
+        private void ParseEnunuStyleFormat(Dictionary<string, Dictionary<string, string>> enunuStyleFormat, object rawEnunuStyleFormat)
+        {
+            if (rawEnunuStyleFormat is Dictionary<object, object> rawDict)
+            {
+                foreach (var kvp in rawDict)
+                {
+                    if (kvp.Key is string key && kvp.Value is Dictionary<object, object> innerDict)
+                    {
+                        var innerFormattedDict = new Dictionary<string, string>();
+                        foreach (var innerKvp in innerDict)
+                        {
+                            if (innerKvp.Key is string innerKey && innerKvp.Value is string innerValue)
+                            {
+                                innerFormattedDict.Add(innerKey, innerValue);
+                            }
+                        }
+                        enunuStyleFormat.Add(key, innerFormattedDict);
                     }
                 }
             }

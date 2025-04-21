@@ -30,7 +30,6 @@ namespace OpenUtau.Core.Enunu {
             Format.Ustx.VOIC,
             Format.Ustx.VEL,
             Format.Ustx.SHFT
-
         };
 
         struct AcousticResult {
@@ -102,7 +101,7 @@ namespace OpenUtau.Core.Enunu {
                             var vuvPath = Path.Join(enutmpPath, "vuv.npy");
                             if (!File.Exists(f0Path) || !File.Exists(melPath) || !File.Exists(vuvPath)) {
                                 Log.Information($"Starting enunu synthesis \"{ustPath}\"");
-                                var enunuNotes = PhraseToEnunuNotes(phrase);
+                                var enunuNotes = PhraseToEnunuNotes(phrase, config);
                                 // TODO: using first note tempo as ust tempo.
                                 EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
                                 var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600" }, port);
@@ -129,7 +128,7 @@ namespace OpenUtau.Core.Enunu {
                             var apPath = Path.Join(enutmpPath, "aperiodicity.npy");
                             if (!File.Exists(f0Path) || !File.Exists(spPath) || !File.Exists(apPath)) {
                                 Log.Information($"Starting enunu acoustic \"{ustPath}\"");
-                                var enunuNotes = PhraseToEnunuNotes(phrase);
+                                var enunuNotes = PhraseToEnunuNotes(phrase, config);
                                 // TODO: using first note tempo as ust tempo.
                                 EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
                                 var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600"}, port);
@@ -237,20 +236,55 @@ namespace OpenUtau.Core.Enunu {
             return result;
         }
 
-        static EnunuNote[] PhraseToEnunuNotes(RenderPhrase phrase) {
+        static EnunuNote[] PhraseToEnunuNotes(RenderPhrase phrase,EnunuConfig config) {
             var notes = new List<EnunuNote>();
             notes.Add(new EnunuNote {
                 lyric = "R",
                 length = headTicks,
                 noteNum = phrase.phones[0].tone,
             });
+            string timbre = string.Empty;
             foreach (var phone in phrase.phones) {
+                if (!string.IsNullOrEmpty(phone.suffix)) {
+                    timbre = phone.suffix + "/";
+                }
+                string result = string.Empty;
+
+                foreach (var formatEntry in config.extensions.style_format) {
+                    string key = formatEntry.Key;
+                    var styleFormats = formatEntry.Value;
+                    string part = key + ":";
+
+                    bool hasMatch = false;
+
+                    foreach (var style in styleFormats) {
+                        string styleName = style.Key;
+                        string styleFormat = style.Value;
+
+                        var matchingFlag = phone.flags.FirstOrDefault(f =>
+                        {
+                            var nameParts = f.Item1.Split('/');
+                            return nameParts.Length > 1 && nameParts[0] == key && f.Item3 == styleName;
+                        });
+
+                        if (matchingFlag != default) {
+                            hasMatch = true;
+                            part += String.Format(styleFormat, matchingFlag.Item2);
+                        }
+                    }
+
+                    if (hasMatch) {
+                        result += part + "/";
+                    }
+                }
+                timbre += result;
+                timbre = timbre.TrimEnd('/');
                 notes.Add(new EnunuNote {
                     lyric = phone.phoneme,
                     length = phone.duration,
                     noteNum = phone.tone,
                     style_shift = phone.toneShift,
-                    timbre = phone.suffix,
+                    timbre = timbre,
                     velocity = (int)phone.velocity * 100,
                 });
             }
@@ -263,7 +297,19 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            return new UExpressionDescriptor[] { };
+            if(config == null) {
+                EnunuSinger? ensinger = singer as EnunuSinger;
+                if (ensinger == null) {
+                    return null;
+                }
+                config = EnunuConfig.Load(ensinger);
+            }
+            var result = new List<UExpressionDescriptor>();
+            foreach (var exp in config.extensions.styles) {
+                result.Add(new UExpressionDescriptor(exp.Value.Name,exp.Key,exp.Value.Min,exp.Value.Max,exp.Value.Default_Value,exp.Value.Flag + "/"+ exp.Key));
+            }
+
+            return result.ToArray();
         }
 
         public override string ToString() => Renderers.ENUNU;
