@@ -93,6 +93,18 @@ namespace OpenUtau.Plugin.Builtin {
                 {"ey","eh"},
                 {"oy","ao"},
             };
+        
+        private readonly Dictionary<string, string> vvExceptions =
+            new Dictionary<string, string>() {
+                {"aw","w"},
+                {"ow","w"},
+                {"uw","w"},
+                {"ay","y"},
+                {"ey","y"},
+                {"oy","y"},
+                {"iy","y"},
+                {"er","r"},
+            };
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
@@ -183,7 +195,7 @@ namespace OpenUtau.Plugin.Builtin {
                 File.WriteAllBytes(path, Data.Resources.arpasing_template);
             }
             // LOAD DICTIONARY FROM SINGER FOLDER
-            if (singer != null || singer.Found || singer.Loaded) {
+            if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {
@@ -281,42 +293,6 @@ namespace OpenUtau.Plugin.Builtin {
                 public string to { get; set; }
             }
         }
-
-        // Dictionary initialized dynamically
-        private Dictionary<string, string> _vvExceptions;
-        private readonly object vvLock = new object();
-        public Dictionary<string, string> vvExceptions {
-            get {
-                // Lazy initialization: only initialize once when it's accessed
-                if (_vvExceptions == null) {
-                    lock (vvLock) {
-                        if (_vvExceptions == null) {
-                            // Create an instance of the phonemizer to access instance-specific data
-                            var phonemizerInstance = new ArpasingPlusPhonemizer();
-                            phonemizerInstance.SetSinger(singer);
-                            _vvExceptions = phonemizerInstance.GenerateVVExceptions();
-                        }
-                    }
-                }
-                return _vvExceptions;
-            }
-        }
-
-        private Dictionary<string, string> GenerateVVExceptions() {
-            var diphthongExceptions = new Dictionary<string, string>();
-
-            // Access instance-specific vowels here
-            foreach (string vowel in GetVowels()) {
-                foreach (string consonant in FinalConsonants) {
-                    if (vowel.EndsWith(consonant)) {
-                        diphthongExceptions[vowel] = consonant;
-                        break;
-                    }
-                }
-            }
-            return diphthongExceptions;
-        }
-
         protected override List<string> ProcessSyllable(Syllable syllable) {
             syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
             var prevV = syllable.prevV == "" ? "" : $"{syllable.prevV}";
