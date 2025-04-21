@@ -216,7 +216,7 @@ namespace OpenUtau.Plugin.Builtin {
                     file = Path.Combine(singer.Location, "arpasing.yaml");
                     if (!File.Exists(file)) {
                         try {
-                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
+                            File.WriteAllBytes(file, Data.Resources.arpasing_template);
                         } catch (Exception e) {
                             Log.Error(e, $"Failed to write 'arpasing.yaml' to singer folder at {file}");
                         }
