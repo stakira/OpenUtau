@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using OpenUtau.Core.Ustx;
-using Vortice;
 
 namespace OpenUtau.Core.Enunu {
     class EnunuConfig {
