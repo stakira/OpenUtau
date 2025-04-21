@@ -18,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
     // all ARPAsing banks
     // Help are highly appreciated
     public class ArpasingPlusPhonemizer : SyllableBasedPhonemizer {
-        private readonly string[] vowels = {
+        private string[] vowels = {
         "aa", "ax", "ae", "ah", "ao", "aw", "ay", "eh", "er", "ey", "ih", "iy", "ow", "oy", "uh", "uw", "a", "e", "i", "o", "u", "ai", "ei", "oi", "au", "ou", "ix", "ux",
         "aar", "ar", "axr", "aer", "ahr", "aor", "or", "awr", "aur", "ayr", "air", "ehr", "eyr", "eir", "ihr", "iyr", "ir", "owr", "our", "oyr", "oir", "uhr", "uwr", "ur",
         "aal", "al", "axl", "ael", "ahl", "aol", "ol", "awl", "aul", "ayl", "ail", "ehl", "el", "eyl", "eil", "ihl", "iyl", "il", "owl", "oul", "oyl", "oil", "uhl", "uwl", "ul",
@@ -36,14 +36,10 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t,l,r".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
-        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr").Split(';')
-                .Select(entry => entry.Split('='))
-                .Where(parts => parts.Length == 2)
-                .Where(parts => parts[0] != parts[1])
-                .ToDictionary(parts => parts[0], parts => parts[1]);
+        private Dictionary<string, string> dictionaryReplacements;
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionaryName() => "cmudict-0_7b.txt";
+        protected override string GetDictionaryName() => "";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
 
@@ -64,7 +60,7 @@ namespace OpenUtau.Plugin.Builtin {
         private bool isMissingCPhonemes = false;
 
         // TIMIT symbols
-        private readonly Dictionary<string, string> timitphonemes = "axh=ax,bcl=b,dcl=d,eng=ng,gcl=g,hv=hh,kcl=k,pcl=p,tcl=t".Split(',')
+        private readonly Dictionary<string, string> timitphonemes = "axh=ax,bcl=b,dcl=d,eng=ng,gcl=g,hv=hh,kcl=k,pcl=p,tcl=t,sil=-".Split(',')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -88,43 +84,6 @@ namespace OpenUtau.Plugin.Builtin {
                 //{"er","ah"},
             };
 
-        private readonly Dictionary<string, string> vvExceptions =
-            new Dictionary<string, string>() {
-                {"aw","w"},
-                {"ow","w"},
-                {"uw","w"},
-                {"uh","w"},
-                {"ay","y"},
-                {"ey","y"},
-                {"iy","y"},
-                {"oy","y"},
-                {"ih","y"},
-                {"er","r"},
-                {"aar","r"},
-                {"aen","n"},
-                {"aeng","ng"},
-                {"aor","r"},
-                {"ehr","r"},
-                {"ihng","ng"},
-                {"ihr","r"},
-                {"uwr","r"},
-                {"awn","n"},
-                {"awng","ng"},
-                {"ean","n"},
-                {"eam","m"},
-                {"eang","ng"},
-                // r-colored vowel and l
-                {"ar","r"},
-                {"or","r"},
-                {"air","r"},
-                {"ir","r"},
-                {"ur","r"},
-                {"al","l"},
-                {"ol","l"},
-                {"il","l"},
-                {"el","l"},
-                {"ul","l"},
-            };
         private readonly Dictionary<string, string> vvDiphthongExceptions =
             new Dictionary<string, string>() {
                 {"aw","ah"},
@@ -137,6 +96,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
+        private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
         private string[] tails = "-,R".Split(',');
 
         protected override string[] GetSymbols(Note note) {
@@ -223,7 +183,7 @@ namespace OpenUtau.Plugin.Builtin {
                 File.WriteAllBytes(path, Data.Resources.arpasing_template);
             }
             // LOAD DICTIONARY FROM SINGER FOLDER
-            if (singer != null && singer.Found && singer.Loaded) {
+            if (singer != null || singer.Found || singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {
@@ -237,6 +197,126 @@ namespace OpenUtau.Plugin.Builtin {
             g2ps.Add(new ArpabetPlusG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
+        public override void SetSinger(USinger singer) {
+            if (this.singer != singer) {
+                string file;
+                if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
+                    file = Path.Combine(singer.Location, "arpasing.yaml");
+                    if (!File.Exists(file)) {
+                        try {
+                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
+                        } catch (Exception e) {
+                            Log.Error(e, $"Failed to write 'arpasing.yaml' to singer folder at {file}");
+                        }
+                    }
+                } else if (!string.IsNullOrEmpty(PluginDir)) {
+                    file = Path.Combine(PluginDir, "arpasing.yaml");
+                } else {
+                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'arpasing.yaml'.");
+                    return; // Exit early to avoid null file issues
+                }
+
+                if (File.Exists(file)) {
+                    try {
+                        var data = Core.Yaml.DefaultDeserializer.Deserialize<ArpabetYAMLData>(File.ReadAllText(file));
+
+                        // Load vowels
+                        try {
+                            var loadVowels = data.symbols
+                                ?.Where(s => s.type == "vowel")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            vowels = vowels.Concat(loadVowels).Distinct().ToArray();
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load vowels from arpasing.yaml: {ex.Message}");
+                        }
+                        // Load replacements
+                        try {
+                            if (data?.replacements?.Any() == true) {
+                                dictionaryReplacements = data.replacements
+                                    .Where(r => !string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to))
+                                    .ToDictionary(r => r.from, r => r.to);
+                            } else {
+                                dictionaryReplacements = new Dictionary<string, string>(); // Prevent null reference
+                            }
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load replacements from arpasing.yaml: {ex.Message}");
+                        }
+                        // load fallbacks
+                        try {
+                            if (data?.fallbacks?.Any() == true) {
+                                foreach (var df in data.fallbacks) {
+                                    if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
+                                        if (!missingVphonemes.ContainsKey(df.from)) {
+                                            missingVphonemes[df.from] = df.to;
+                                        } else {
+                                            Log.Error($"Skipped fallback '{df.from}' from YAML because it already exists.");
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load fallbacks from arpasing.yaml: {ex.Message}");
+                        }
+                    } catch (Exception ex) {
+                       Log.Error($"Failed to parse arpasing.yaml: {ex.Message}");
+                    }
+                }
+                ReadDictionaryAndInit();
+                this.singer = singer;
+            }
+        }
+        public class ArpabetYAMLData {
+            public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
+            public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
+            public Replacement[] fallbacks { get; set; } = Array.Empty<Replacement>();
+
+            public struct SymbolData {
+                public string symbol { get; set; }
+                public string type { get; set; }
+            }
+            public struct Replacement {
+                public string from { get; set; }
+                public string to { get; set; }
+            }
+        }
+
+        // Dictionary initialized dynamically
+        private Dictionary<string, string> _vvExceptions;
+        private readonly object vvLock = new object();
+        public Dictionary<string, string> vvExceptions {
+            get {
+                // Lazy initialization: only initialize once when it's accessed
+                if (_vvExceptions == null) {
+                    lock (vvLock) {
+                        if (_vvExceptions == null) {
+                            // Create an instance of the phonemizer to access instance-specific data
+                            var phonemizerInstance = new ArpasingPlusPhonemizer();
+                            phonemizerInstance.SetSinger(singer);
+                            _vvExceptions = phonemizerInstance.GenerateVVExceptions();
+                        }
+                    }
+                }
+                return _vvExceptions;
+            }
+        }
+
+        private Dictionary<string, string> GenerateVVExceptions() {
+            var diphthongExceptions = new Dictionary<string, string>();
+
+            // Access instance-specific vowels here
+            foreach (string vowel in GetVowels()) {
+                foreach (string consonant in FinalConsonants) {
+                    if (vowel.EndsWith(consonant)) {
+                        diphthongExceptions[vowel] = consonant;
+                        break;
+                    }
+                }
+            }
+            return diphthongExceptions;
+        }
+
         protected override List<string> ProcessSyllable(Syllable syllable) {
             syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
             var prevV = syllable.prevV == "" ? "" : $"{syllable.prevV}";
@@ -302,9 +382,8 @@ namespace OpenUtau.Plugin.Builtin {
                             } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
                                 basePhoneme = v;
                             } else {
-                                // MAKE THEM A GLOTTAL STOP INSTEAD
-                                basePhoneme = AliasFormat($"q {v}", "dynMid", syllable.vowelTone, "");
-                                phonemes.Add(AliasFormat($"{prevV} q", "dynMid", syllable.vowelTone, ""));
+                                basePhoneme = AliasFormat($"- {v}", "dynMid", syllable.vowelTone, "");
+                                phonemes.Add(AliasFormat($"{prevV} -", "dynMid", syllable.vowelTone, ""));
                             }
                         }
                     }
@@ -324,10 +403,10 @@ namespace OpenUtau.Plugin.Builtin {
                 var rcv1 = $"- {cc[0]}{v}";
                 var crv = $"{cc[0]} {v}";
                 /// - CV
-                if ((HasOto(rcv, syllable.vowelTone) || HasOto(ValidateAlias(rcv), syllable.vowelTone)) || (HasOto(rcv1, syllable.vowelTone) || HasOto(ValidateAlias(rcv1), syllable.vowelTone))) {
+                if (HasOto(rcv, syllable.vowelTone) || HasOto(ValidateAlias(rcv), syllable.vowelTone) || (HasOto(rcv1, syllable.vowelTone) || HasOto(ValidateAlias(rcv1), syllable.vowelTone))) {
                     basePhoneme = AliasFormat($"{cc[0]} {v}", "dynStart", syllable.vowelTone, "");
                     /// CV
-                } else if ((HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
+                } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                     basePhoneme = AliasFormat($"{cc[0]} {v}", "dynMid", syllable.vowelTone, "");
                     TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""));
                 } else {
@@ -391,7 +470,7 @@ namespace OpenUtau.Plugin.Builtin {
                             lastC = i;
                             break;
                         }
-                        /// C-Last V
+                        /// C-Last
                     } else if (syllable.CurrentWordCc.Length == 1 && syllable.PreviousWordCc.Length == 1) {
                         if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone) || HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) {
                             basePhoneme = AliasFormat($"{cc.Last()} {v}", "dynMid", syllable.vowelTone, "");
@@ -413,6 +492,7 @@ namespace OpenUtau.Plugin.Builtin {
                             CCV = true;
                         }
                     }
+
                     if (i == 0 && (HasOto(vr, syllable.tone) || HasOto(ValidateAlias(vr), syllable.tone)) && !HasOto(vc, syllable.tone)) {
                         phonemes.Add(vr);
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""));
@@ -654,6 +734,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc2, ending.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
+
                         if (!HasOto(cc2, ending.tone) && !HasOto($"{cc[i + 1]} {cc[i + 2]}", ending.tone)) {
                             // [C1 -] [- C2]
                             cc2 = AliasFormat($"{cc[i + 2]}", "cc_start", ending.tone, "");
@@ -1563,7 +1644,6 @@ namespace OpenUtau.Plugin.Builtin {
             var NormVCCons = new List<string> { $"{excludedVowels} {connectingNormCons}" };
             var arpabetFirstVDiphthong = new List<string> { "a", "e", "i", "o", "u" };
             var excludedEndings = new List<string> { $"{arpabetFirstVDiphthong}y -", $"{arpabetFirstVDiphthong}w -", $"{arpabetFirstVDiphthong}r -", };
-            var numbers = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
             foreach (var c in longConsonants) {
                 if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -")) {
@@ -1651,15 +1731,15 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // Check if the alias ends with a consonant or vowel
-            foreach (var c in consonants) {
-                if (alias.Contains(c) && alias.Contains('-') && alias.Contains($"{c} -")) {
+            foreach (var c in GetConsonants()) {
+                if (alias.Contains(c) || alias.EndsWith('-') || alias.EndsWith('R')) {
                     isEndingConsonant = true;
                     break;
                 }
             }
 
-            foreach (var v in vowels) {
-                if (alias.Contains(v) && alias.Contains('-') && alias.Contains($"{v} -")) {
+            foreach (var v in GetVowels()) {
+                if (alias.Contains(v) || alias.EndsWith('-') || alias.EndsWith('R')) {
                     isEndingVowel = true;
                     break;
                 }
