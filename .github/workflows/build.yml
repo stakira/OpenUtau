@@ -123,10 +123,6 @@ jobs:
             OpenUtau-${{ matrix.arch.name }}.pkg
         if: ${{ matrix.arch.os == 'osx' }}
 
-        # 署名（必要なら）
-        # codesign -s "Developer ID Installer: Your Name" --timestamp OpenUtau-${{ matrix.arch.name }}.pkg
-
-
       # Upload Artifacts
       - uses: actions/upload-artifact@v4
         with:
@@ -146,6 +142,12 @@ jobs:
           path: OpenUtau-osx-${{ matrix.arch.name }}.dmg
         if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-osx-${{ matrix.arch.name }}.pkg
+          path: OpenUtau-osx-${{ matrix.arch.name }}.pkg
+        if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
+
       # Appcast
       - name: Appcast Windows
         shell: cmd
@@ -157,6 +159,7 @@ jobs:
       - name: Appcast MacOS
         run: |
           python appcast.py -v=${{ inputs.version }} -o=macos -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.dmg
+          python appcast.py -v=${{ inputs.version }} -o=macos -r=${{ matrix.arch.name }}-installer  -f=OpenUtau-${{ matrix.arch.name }}.pkg
         if: ${{ inputs.release && matrix.arch.os == 'osx' }}
 
       - name: Appcast Linux
