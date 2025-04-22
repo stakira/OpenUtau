@@ -323,24 +323,24 @@ namespace OpenUtau.Plugin.Builtin {
                                 dictionaryReplacements = new Dictionary<string, string>(); // Prevent null reference
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from en-cPv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load replacements from YAML: {ex.Message}");
                         }
-                        // load fallbacks
+                        // Load fallbacks
                         try {
                             if (data?.fallbacks?.Any() == true) {
                                 foreach (var df in data.fallbacks) {
                                     if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
-                                        if (!missingVphonemes.ContainsKey(df.from)) {
-                                            missingVphonemes[df.from] = df.to;
-                                        } else {
-                                            Log.Error($"Skipped fallback '{df.from}' from YAML because it already exists.");
-                                        }
+                                        // Overwrite or add
+                                        missingVphonemes[df.from] = df.to;
+                                    } else {
+                                        Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
                                     }
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load fallbacks from en-cPv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load fallbacks from YAML: {ex.Message}");
                         }
+
                     } catch (Exception ex) {
                        Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}");
                     }
@@ -364,17 +364,25 @@ namespace OpenUtau.Plugin.Builtin {
                 public string to { get; set; }
             }
         }
-
+        // prioritize yaml replacements over dictionary replacements
+        private string ReplacePhoneme(string phoneme) {
+            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
+                return replaced;
+            }
+            return phoneme;
+        }
         protected override List<string> ProcessSyllable(Syllable syllable) {
             syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
             var prevV = syllable.prevV == "" ? "" : $"{syllable.prevV}";
-            //string prevV = syllable.prevV;
-            string[] cc = syllable.cc;
-            string v = syllable.v;
+            string[] cc = syllable.cc.Select(c => ReplacePhoneme(c)).ToArray();
+            string v = ReplacePhoneme(syllable.v);
             string basePhoneme;
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
+            int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
 
             // Check for missing vowel phonemes
             foreach (var entry in missingVphonemes) {
@@ -585,9 +593,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string prevV = ending.prevV;
-            string[] cc = ending.cc;
-            string v = ending.prevV;
+            string prevV = ReplacePhoneme(ending.prevV);
+            string[] cc = ending.cc.Select(c => ReplacePhoneme(c)).ToArray();
+            string v = ReplacePhoneme(ending.prevV);
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
