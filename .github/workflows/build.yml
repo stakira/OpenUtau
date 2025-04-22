@@ -110,6 +110,23 @@ jobs:
           codesign -fvs - OpenUtau-${{ matrix.arch.name }}.dmg
         if: ${{ matrix.arch.os == 'osx' }}
 
+      # Create Pkg
+      - name: Create Pkg
+        run: |
+          mkdir -p pkgroot/Applications
+          cp -R bin/${{ matrix.arch.name }}/publish/OpenUtau.app pkgroot/Applications/
+
+          pkgbuild \
+            --root pkgroot \
+            --identifier com.openutau.installer \
+            --install-location / \
+            OpenUtau-${{ matrix.arch.name }}.pkg
+        if: ${{ matrix.arch.os == 'osx' }}
+
+        # 署名（必要なら）
+        # codesign -s "Developer ID Installer: Your Name" --timestamp OpenUtau-${{ matrix.arch.name }}.pkg
+
+
       # Upload Artifacts
       - uses: actions/upload-artifact@v4
         with:
