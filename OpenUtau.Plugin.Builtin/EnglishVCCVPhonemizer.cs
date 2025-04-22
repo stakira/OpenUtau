@@ -235,14 +235,22 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
 
+        // prioritize yaml replacements over dictionary replacements
+        private string ReplacePhoneme(string phoneme) {
+            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
+                return replaced;
+            }
+            return phoneme;
+        }
+
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            string prevV = syllable.prevV;
-            string[] cc = syllable.cc;
-            string[] PreviousWordCc = syllable.PreviousWordCc;
-            string[] CurrentWordCc = syllable.CurrentWordCc;
-            string v = syllable.v;
-            var lastC = cc.Length - 1;
-            var lastCPrevWord = syllable.prevWordConsonantsCount;
+            string prevV = ReplacePhoneme(syllable.prevV);
+            string v = ReplacePhoneme(syllable.v);
+            string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
+            int lastC = cc.Length - 1;
+            int lastCPrevWord = syllable.prevWordConsonantsCount;
 
             foreach (var entry in replacements) {
                 if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
@@ -661,9 +669,9 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string[] cc = ending.cc;
-            string v = ending.prevV;
-            var lastC = cc.Length - 1;
+            string[] cc = ending.cc.Select(ReplacePhoneme).ToArray();
+            string v = ReplacePhoneme(ending.prevV);
+            int lastC = cc.Length - 1;
 
             var phonemes = new List<string>();
             // --------------------------- ENDING V ------------------------------- //
