@@ -18,7 +18,7 @@ namespace OpenUtau.Core.Enunu {
         public const int headTicks = 240;
         public const int tailTicks = 240;
         protected string port;
-        private EnunuConfig config;
+        //private EnunuConfig config;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
@@ -88,7 +88,7 @@ namespace OpenUtau.Core.Enunu {
                     var enutmpPath = tmpPath + "_enutemp";
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{(phrase.hash+ hash):x16}.wav");
                     var voicebankNameHash = $"{(phrase.singer as EnunuSinger).voicebankNameHash:x16}";
-                    config = EnunuConfig.Load(phrase.singer);
+                    var config = EnunuConfig.Load(phrase.singer);
                     if (port == null) {
                         port = EnunuUtils.SetPortNum();
                     }
@@ -297,13 +297,11 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            if(config == null) {
-                EnunuSinger? ensinger = singer as EnunuSinger;
-                if (ensinger == null) {
-                    return null;
-                }
-                config = EnunuConfig.Load(ensinger);
+            EnunuSinger? ensinger = singer as EnunuSinger;
+            if (ensinger == null) {
+                return null;
             }
+            var config = EnunuConfig.Load(ensinger);
             var result = new List<UExpressionDescriptor>();
             foreach (var exp in config.extensions.styles) {
                 result.Add(new UExpressionDescriptor(exp.Value.Name,exp.Key,exp.Value.Min,exp.Value.Max,exp.Value.Default_Value,exp.Value.Flag + "/"+ exp.Key));
