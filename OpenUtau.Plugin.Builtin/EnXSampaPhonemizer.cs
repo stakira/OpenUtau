@@ -40,6 +40,11 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
+        protected override string[] GetVowels() => vowels;
+        protected override string[] GetConsonants() => consonants; 
+        protected override string GetDictionaryName() => "";
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
+
         // For banks aliased with VOCALOID-style phonemes
         private readonly Dictionary<string, string> vocaSampa = "A=Q;E=e;i=i:;u=u:;O=O:;3=@r;oU=@U;Ar=Q@;Qr=Q@;Er=e@;er=e@;Ir=I@;ir=I@;i:r=I@;Or=O@;O:r=O@;Ur=U@;ur=U@;u:r=U@".Split(';')
                 .Select(entry => entry.Split('='))
@@ -54,6 +59,13 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isReplacements = false;
+
+        private readonly Dictionary<string, string> fallbacks = "".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+        private bool isfallbacks = false;
 
         // For banks with slightly fewer vowels
         private readonly Dictionary<string, string> simpleDelta = "E=e;V=@;o=O".Split(';')
@@ -173,11 +185,6 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@u","u"},
                 {"3", "r"}
             };
-        protected override string[] GetVowels() => vowels;
-        protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionaryName() => "";
-        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
-
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -263,13 +270,10 @@ namespace OpenUtau.Plugin.Builtin {
                         if (data?.replacements?.Any() == true) {
                             foreach (var r in data.replacements) {
                                 if (!string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to)) {
-                                    if (!dictionaryReplacements.ContainsKey(r.from)) {
-                                        dictionaryReplacements[r.from] = r.to;
-                                    } else {
-                                        Log.Warning($"Skipped duplicate replacement from YAML: '{r.from}' already exists.");
-                                    }
+                                    // Always override default values if YAML has a matching 'from' key
+                                    dictionaryReplacements[r.from] = r.to;
                                 } else {
-                                    Log.Warning("Ignored YAML replacement with missing 'from' or 'to' value.");
+                                    Log.Error("Ignored YAML replacement with missing 'from' or 'to' value.");
                                 }
                             }
                         }
@@ -281,11 +285,10 @@ namespace OpenUtau.Plugin.Builtin {
                         if (data?.fallbacks?.Any() == true) {
                             foreach (var df in data.fallbacks) {
                                 if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
-                                    if (!replacements.ContainsKey(df.from)) {
-                                        replacements[df.from] = df.to;
-                                    } else {
-                                        Log.Warning($"Skipped fallback '{df.from}' from YAML because it already exists.");
-                                    }
+                                    // Overwrite or add
+                                    fallbacks[df.from] = df.to;
+                                } else {
+                                    Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
                                 }
                             }
                         }
@@ -334,14 +337,21 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return modified.ToArray();
         }
+        // prioritize yaml replacements over dictionary replacements
+        private string ReplacePhoneme(string phoneme) {
+            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
+                return replaced;
+            }
+            return phoneme;
+        }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            string prevV = syllable.prevV;
-            string[] cc = syllable.cc;
-            string v = syllable.v;
+            string prevV = ReplacePhoneme(syllable.prevV);
+            string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
+            string v = ReplacePhoneme(syllable.v);
 
-            string[] CurrentWordCc = syllable.CurrentWordCc;
-            string[] PreviousWordCc = syllable.PreviousWordCc;
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
             int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
 
             string basePhoneme;
@@ -349,52 +359,56 @@ namespace OpenUtau.Plugin.Builtin {
             var lastC = cc.Length - 1;
             var firstC = 0;
             var rv = $"- {v}";
-
+            
             // Switch between phonetic systems, depending on certain aliases in the bank
-            if (HasOto($"- i:", syllable.tone) || HasOto($"i:", syllable.tone) || (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone))) {
-                isVocaSampa = true;
-            }
+            if (replacements.ContainsKey(syllable.v) || replacements.ContainsKey(syllable.prevV)) {
+                isReplacements = true;
+            } else {
+                if (HasOto($"- i:", syllable.tone) || HasOto($"i:", syllable.tone) || (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone))) {
+                    isVocaSampa = true;
+                }
 
-            if (!HasOto($"- VI", syllable.tone) || HasOto($"VI", syllable.tone) || (!HasOto($"- VU", syllable.tone) && !HasOto($"VU", syllable.tone))) {
-                isMissingCanadianRaising = true;
-            }
+                if (!HasOto($"- VI", syllable.tone) || HasOto($"VI", syllable.tone) || (!HasOto($"- VU", syllable.tone) && !HasOto($"VU", syllable.tone))) {
+                    isMissingCanadianRaising = true;
+                }
 
-            if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone)) {
-                isSimpleDelta = true;
-            }
+                if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone)) {
+                    isSimpleDelta = true;
+                }
 
-            if (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone)) {
-                isTetoException = true;
-            }
+                if (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone)) {
+                    isTetoException = true;
+                }
 
-            if ((!HasOto($"- I", syllable.vowelTone) && !HasOto($"I", syllable.vowelTone)) || (!HasOto($"- U", syllable.vowelTone) && !HasOto($"U", syllable.vowelTone))) {
-                isMiniDelta = true;
-            }
+                if ((!HasOto($"- I", syllable.vowelTone) && !HasOto($"I", syllable.vowelTone)) || (!HasOto($"- U", syllable.vowelTone) && !HasOto($"U", syllable.vowelTone))) {
+                    isMiniDelta = true;
+                }
 
-            if (HasOto("あ", syllable.vowelTone) || HasOto("- あ", syllable.vowelTone)) {
-                isEnPlusJa = true;
-            }
+                if (HasOto("あ", syllable.vowelTone) || HasOto("- あ", syllable.vowelTone)) {
+                    isEnPlusJa = true;
+                }
 
-            if (HasOto($"{prevV} r\\", syllable.tone)) {
-                isTrueXSampa = true;
-            }
+                if (HasOto($"{prevV} r\\", syllable.tone)) {
+                    isTrueXSampa = true;
+                }
 
-            if (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone) && !HasOto($"- @`", syllable.tone) && !HasOto($"@`", syllable.tone)) {
-                isSalemList = true;
-            }
+                if (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone) && !HasOto($"- @`", syllable.tone) && !HasOto($"@`", syllable.tone)) {
+                    isSalemList = true;
+                }
 
-            if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
-                isVelarNasalFallback = true;
-            }
+                if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
+                    isVelarNasalFallback = true;
+                }
 
-            if (HasOto("@5", syllable.vowelTone) || HasOto("u5", syllable.vowelTone) || HasOto("O5", syllable.vowelTone) || HasOto("A5", syllable.vowelTone) || HasOto("E5", syllable.vowelTone) || HasOto("I5", syllable.vowelTone) || HasOto("i5", syllable.vowelTone) || HasOto("- @5", syllable.vowelTone) || HasOto("- u5", syllable.vowelTone) || HasOto("- O5", syllable.vowelTone) || HasOto("- A5", syllable.vowelTone) || HasOto("- E5", syllable.vowelTone) || HasOto("- I5", syllable.vowelTone) || HasOto("- i5", syllable.vowelTone)) {
-                isDarkLVowel = true;
-            }
+                if (HasOto("@5", syllable.vowelTone) || HasOto("u5", syllable.vowelTone) || HasOto("O5", syllable.vowelTone) || HasOto("A5", syllable.vowelTone) || HasOto("E5", syllable.vowelTone) || HasOto("I5", syllable.vowelTone) || HasOto("i5", syllable.vowelTone) || HasOto("- @5", syllable.vowelTone) || HasOto("- u5", syllable.vowelTone) || HasOto("- O5", syllable.vowelTone) || HasOto("- A5", syllable.vowelTone) || HasOto("- E5", syllable.vowelTone) || HasOto("- I5", syllable.vowelTone) || HasOto("- i5", syllable.vowelTone)) {
+                    isDarkLVowel = true;
+                }
 
-            foreach (var entry in replacements) {
-                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
-                    isReplacements = true;
-                    break;
+                foreach (var entry in fallbacks) {
+                    if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
+                        isfallbacks = true;
+                        break;
+                    }
                 }
             }
 
@@ -674,8 +688,8 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string[] cc = ending.cc;
-            string v = ending.prevV;
+            string[] cc = ending.cc.Select(c => ReplacePhoneme(c)).ToArray();
+            string v = ReplacePhoneme(ending.prevV);
 
             var phonemes = new List<string>();
             var vr = $"{v} -";
@@ -893,6 +907,12 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (isReplacements) {
                 foreach (var syllable in replacements) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
+            if (isfallbacks) {
+                foreach (var syllable in fallbacks) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }

@@ -185,35 +185,33 @@ namespace OpenUtau.Plugin.Builtin {
                             if (data?.replacements?.Any() == true) {
                                 foreach (var r in data.replacements) {
                                     if (!string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to)) {
-                                        if (!dictionaryReplacements.ContainsKey(r.from)) {
-                                            dictionaryReplacements[r.from] = r.to;
-                                        } else {
-                                            Log.Warning($"Skipped duplicate replacement from YAML: '{r.from}' already exists.");
-                                        }
+                                        // Overwrite or add
+                                        dictionaryReplacements[r.from] = r.to;
                                     } else {
                                         Log.Warning("Ignored YAML replacement with missing 'from' or 'to' value.");
                                     }
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from envccv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load replacements from YAML: {ex.Message}");
                         }
-                        // load fallbacks
+
+                        // Load fallbacks
                         try {
                             if (data?.fallbacks?.Any() == true) {
                                 foreach (var df in data.fallbacks) {
                                     if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
-                                        if (!replacements.ContainsKey(df.from)) {
-                                            replacements[df.from] = df.to;
-                                        } else {
-                                            Log.Error($"Skipped fallback '{df.from}' from YAML because it already exists.");
-                                        }
+                                        // Overwrite or add
+                                        replacements[df.from] = df.to;
+                                    } else {
+                                        Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
                                     }
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load fallbacks from envccv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load fallbacks from YAML: {ex.Message}");
                         }
+
                     } catch (Exception ex) {
                        Log.Error($"Failed to parse envccv.yaml: {ex.Message}");
                     }
