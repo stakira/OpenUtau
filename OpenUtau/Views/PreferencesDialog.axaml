@@ -282,6 +282,11 @@
             <CheckBox IsChecked="{Binding RememberVsqx}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
             <TextBlock Text=" .vsqx" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
           </Grid>
+          <TextBlock Text="{DynamicResource prefs.advanced.launch}" Margin="0,10,0,0"/>
+          <ComboBox SelectedIndex="{Binding LaunchBehaviour}">
+            <ComboBoxItem Content="{DynamicResource prefs.advanced.launch.welcome}"/>
+            <ComboBoxItem Content="{DynamicResource prefs.advanced.launch.newproject}"/>
+          </ComboBox>
           <TextBlock Text="{DynamicResource prefs.advanced.importtempo}" Margin="0,10,0,0"/>
           <ComboBox SelectedIndex="{Binding ImportTempo}">
             <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.always}"/>

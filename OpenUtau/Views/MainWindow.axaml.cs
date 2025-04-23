@@ -1238,6 +1238,21 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is OpenUtau.App.ViewModels.FileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
+                }
+                viewModel.Page = 1;
+                try{
+                    viewModel.OpenProject(new string[] { fileInfo.DirectoryName });
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to open file { fileInfo.DirectoryName }");
+                }
+            }
+        }
+
         async void ValidateTracksVoiceColor() {
             DocManager.Inst.StartUndoGroup();
             foreach (var track in DocManager.Inst.Project.tracks) {

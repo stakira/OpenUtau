@@ -44,8 +44,9 @@ namespace OpenUtau.App.ViewModels {
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
         
-        //0: welcome page
-        //1: tracks page
+        /// <summary>
+        ///0: welcome page, 1: tracks page
+        /// </summary>
         [Reactive] public int Page { get; set; } = 0;
         ObservableCollectionExtended<FileInfo> RecentFiles { get; } = new ObservableCollectionExtended<FileInfo>();
 
@@ -75,6 +76,9 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
         public MainWindowViewModel() {
+            if(Preferences.Default.LaunchBehaviour == 1){
+                Page = 1;
+            }
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
             ClearCacheHeader = string.Empty;
@@ -139,6 +143,7 @@ namespace OpenUtau.App.ViewModels {
           
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
+                Page = 1;
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
