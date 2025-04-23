@@ -25,10 +25,30 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
+    public class FileInfo {
+        public string Name { get; }
+        public string DirectoryName { get; }
+        public DateTime LastWriteTime { get; }
+        public string LastWriteTimeStr { get; }
+
+        public FileInfo(string directoryName) {
+            DirectoryName = directoryName;
+            Name = System.IO.Path.GetFileName(directoryName);
+            LastWriteTime = System.IO.File.GetLastWriteTime(directoryName);
+            LastWriteTimeStr = LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+    }
+
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+        
+        //0: welcome page
+        //1: tracks page
+        [Reactive] public int Page { get; set; } = 0;
+        ObservableCollectionExtended<FileInfo> RecentFiles { get; } = new ObservableCollectionExtended<FileInfo>();
+
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -43,7 +63,6 @@ namespace OpenUtau.App.ViewModels {
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         [Reactive] public double Progress { get; set; }
         [Reactive] public string ProgressText { get; set; }
-        [Reactive] public bool ShowWelcomePage { get; set; } = true;
         public ReactiveCommand<UPart, Unit> PartDeleteCommand { get; set; }
         public ReactiveCommand<int, Unit>? AddTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
@@ -60,7 +79,12 @@ namespace OpenUtau.App.ViewModels {
             TracksViewModel = new TracksViewModel();
             ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
+            RecentFiles.Clear();
+            RecentFiles.AddRange(Preferences.Default.RecentFiles
+                .Select(file => new FileInfo(file))
+                .OrderByDescending(f => f.LastWriteTime));
             OpenRecentCommand = ReactiveCommand.Create<string>(file => {
+                Page = 1;
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
@@ -115,7 +139,6 @@ namespace OpenUtau.App.ViewModels {
           
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                ShowWelcomePage = false;
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
