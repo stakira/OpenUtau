@@ -118,8 +118,9 @@ jobs:
 
           pkgbuild \
             --root pkgroot \
-            --identifier com.openutau.installer \
+            --identifier com.openutau.app \
             --install-location / \
+            --version ${{ inputs.version }} \
             OpenUtau-${{ matrix.arch.name }}.pkg
         if: ${{ matrix.arch.os == 'osx' }}
 
