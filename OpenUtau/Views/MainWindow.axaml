@@ -90,12 +90,8 @@
         <!--Welcome page-->
         <ScrollViewer>
           <StackPanel Margin="60" Spacing="8">
-            <!-- Startup warnings -->
-
-            <!-- Backup -->
-
             <!--Create new project or open existing project-->
-            <TextBlock Text="Start" FontSize="20"/>
+            <TextBlock Text="{DynamicResource welcome.start}" FontSize="20"/>
             <WrapPanel Margin="-4" Orientation="Horizontal">
               <Button Margin="4" Click="OnMenuNew" Height="60" Padding="12">
                 <Grid ColumnDefinitions="Auto,*">
@@ -116,13 +112,13 @@
                     Margin="0,0,8,0">
 
                     <TextBlock HorizontalAlignment="Stretch"
-                      Text="New"
+                      Text="{DynamicResource welcome.new}"
                       FontSize="14"
                       FontWeight="Normal"
                       TextWrapping="Wrap" />
 
                     <TextBlock HorizontalAlignment="Stretch"
-                      Text="Create a new project"
+                      Text="{DynamicResource welcome.new.description}"
                       FontSize="12"
                       FontWeight="Normal"
                       TextWrapping="Wrap" />
@@ -137,9 +133,9 @@
                     Width="24"
                     Height="24"
                     Margin="8,4,12,4">
-                    <!--From https://github.com/microsoft/vscode-icons/blob/main/icons/light/new-file.svg-->
+                    <!--From https://github.com/microsoft/vscode-icons/blob/main/icons/dark/go-to-file.svg-->
                     <Path Classes="clear" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
-                      Data="M4.00024 7H3.00024V4H0.000244141V3H3.00024V0H4.00024V3H7.00024V4H4.00024V7ZM10.5002 1.09998L13.9003 4.59998L14.0002 5V13.5L13.5002 14H3.50024L3.00024 13.5V8H4.00024V13H13.0002V6H9.00024V2H5.00024V1H10.2002L10.5002 1.09998ZM10.0002 2V5H12.9003L10.0002 2Z"
+                      Data="M6 5.9142L8.06065 3.85356L8.06065 3.14645L5.91421 1L5.2071 1.70711L5.25 1.75L5.24998 1.75002L5.49997 2H5.5L6.49999 3H3.5C2.83696 3 2.20107 3.2634 1.73223 3.73224C1.26339 4.20108 1 4.83696 1 5.5C1 6.16305 1.26339 6.79893 1.73223 7.26777C2.20107 7.73661 2.83696 8 3.5 8H4V7H3.5C3.10218 7 2.72064 6.84197 2.43934 6.56066C2.15804 6.27936 2 5.89783 2 5.5C2 5.10218 2.15804 4.72065 2.43934 4.43934C2.72064 4.15804 3.10218 4 3.5 4H5V4.00003H5.49996L5.49999 4H6.49999L5.2071 5.29289L5.20711 5.29291L5.2071 5.29292L5.91421 6.00003L6 5.91423V5.9142ZM11 2H8.32838L7.32839 1H12L12.71 1.29L15.71 4.29L16 5V14L15 15H6L5 14V9.00003V6.50003L6 7.34699V14H15V6H11V2ZM12 2V5H15L12 2Z"
                       Fill="{StaticResource NeutralAccentBrush}"/>
                   </Viewbox>
 
@@ -149,13 +145,13 @@
                     Margin="0,0,8,0">
 
                     <TextBlock HorizontalAlignment="Stretch"
-                      Text="Open"
+                      Text="{DynamicResource welcome.open}"
                       FontSize="14"
                       FontWeight="Normal"
                       TextWrapping="Wrap" />
 
                     <TextBlock HorizontalAlignment="Stretch"
-                      Text="Open a local project"
+                      Text="{DynamicResource welcome.open.description}"
                       FontSize="12"
                       FontWeight="Normal"
                       TextWrapping="Wrap" />
@@ -165,7 +161,7 @@
             </WrapPanel>
             
             <!-- Recent files -->
-            <TextBlock Margin="0,24,0,0" Text="Recent" FontSize="20"/>
+            <TextBlock Margin="0,24,0,0" Text="{DynamicResource welcome.recent}" FontSize="20"/>
             <ListBox ItemsSource="{Binding RecentFiles}">
               <ListBox.Styles>
                 <Style Selector="ListBoxItem">
