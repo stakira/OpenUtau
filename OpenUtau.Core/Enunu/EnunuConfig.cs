@@ -51,13 +51,18 @@ namespace OpenUtau.Core.Enunu {
         }
     }
 
+    public class StyleFormatEntry {
+        public string format = string.Empty;
+        public List<string> index = new List<string>();
+    }
+
     public class ExpressionDetail {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public float Min { get; set; }
-        public float Max { get; set; }
-        public float Default_Value { get; set; }
-        public string Flag { get; set; }
+        public string name = string.Empty;
+        public string type = string.Empty;
+        public float min = 0;
+        public float max = 0;
+        public float default_value = 0;
+        public string flag = string.Empty;
     }
 
     class EnunuExtensions {
@@ -70,7 +75,7 @@ namespace OpenUtau.Core.Enunu {
         public List<string> acoustic_editor = new List<string>();
         public List<string> wav_synthesizer = new List<string>();
         public List<string> wav_editor = new List<string>();
-        public Dictionary<string, Dictionary<string, string>> style_format = new Dictionary<string, Dictionary<string, string>>();
+        public Dictionary<string, StyleFormatEntry> style_format = new Dictionary<string, StyleFormatEntry>();
         public Dictionary<string, ExpressionDetail> styles = new Dictionary<string, ExpressionDetail>();
     }
 
@@ -146,28 +151,28 @@ namespace OpenUtau.Core.Enunu {
                             if (innerKvp.Key is string innerKey && innerKvp.Value is string innerValue) {
                                 switch (innerKey) {
                                     case "name":
-                                        exp.Name = innerValue;
+                                        exp.name = innerValue;
                                         break;
                                     case "type":
-                                        exp.Type = innerValue;
+                                        exp.type = innerValue;
                                         break;
                                     case "min":
                                         if (float.TryParse(innerValue, out var min)) {
-                                            exp.Min = min;
+                                            exp.min = min;
                                         }
                                         break;
                                     case "max":
                                         if (float.TryParse(innerValue, out var max)) {
-                                            exp.Max = max;
+                                            exp.max = max;
                                         }
                                         break;
                                     case "default_value":
                                         if (float.TryParse(innerValue, out var defaultValue)) {
-                                            exp.Default_Value = defaultValue;
+                                            exp.default_value = defaultValue;
                                         }
                                         break;
                                     case "flag":
-                                        exp.Flag = innerValue;
+                                        exp.flag = innerValue;
                                         break;
                                 }
                             }
@@ -178,23 +183,34 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        private void ParseEnunuStyleFormat(Dictionary<string, Dictionary<string, string>> enunuStyleFormat, object rawEnunuStyleFormat)
-        {
-            if (rawEnunuStyleFormat is Dictionary<object, object> rawDict)
-            {
-                foreach (var kvp in rawDict)
-                {
-                    if (kvp.Key is string key && kvp.Value is Dictionary<object, object> innerDict)
-                    {
-                        var innerFormattedDict = new Dictionary<string, string>();
-                        foreach (var innerKvp in innerDict)
-                        {
-                            if (innerKvp.Key is string innerKey && innerKvp.Value is string innerValue)
-                            {
-                                innerFormattedDict.Add(innerKey, innerValue);
+        private void ParseEnunuStyleFormat(Dictionary<string, StyleFormatEntry> enunuStyleFormat, object rawEnunuStyleFormat) {
+            if (rawEnunuStyleFormat is Dictionary<object, object> rawDict) {
+                foreach (var kvp in rawDict) {
+                    var dict = new StyleFormatEntry();
+                    var flag = false;
+                    if (kvp.Key is string key) {
+                        if (kvp.Value is Dictionary<object, object> innerDict) {
+                            foreach (var item in innerDict) {
+                                if(item.Key is string key2) {
+                                    if (key2.Equals("format") && item.Value is string format) {
+                                        dict.format = format;
+                                        flag = true;
+                                    } else if (key2.Equals("index") && item.Value is List<object> innerDict2) {
+                                        foreach (var item2 in innerDict2) {
+                                            if (item2 is string value) {
+                                                dict.index.Add(value);
+                                                flag = true;
+                                            }
+                                        }
+                                    } else {
+                                        flag = false;
+                                    }
+                                }
                             }
                         }
-                        enunuStyleFormat.Add(key, innerFormattedDict);
+                        if (flag) {
+                            enunuStyleFormat.Add(key, dict);
+                        }
                     }
                 }
             }

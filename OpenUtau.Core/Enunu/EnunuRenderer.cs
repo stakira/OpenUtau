@@ -86,7 +86,7 @@ namespace OpenUtau.Core.Enunu {
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{hash:x16}");
                     var ustPath = tmpPath + ".tmp";
                     var enutmpPath = tmpPath + "_enutemp";
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{(phrase.hash+ hash):x16}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{(phrase.hash + hash):x16}.wav");
                     var voicebankNameHash = $"{(phrase.singer as EnunuSinger).voicebankNameHash:x16}";
                     var config = EnunuConfig.Load(phrase.singer);
                     if (port == null) {
@@ -131,7 +131,7 @@ namespace OpenUtau.Core.Enunu {
                                 var enunuNotes = PhraseToEnunuNotes(phrase, config);
                                 // TODO: using first note tempo as ust tempo.
                                 EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
-                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600"}, port);
+                                var ac_response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath, "", voicebankNameHash, "600" }, port);
                                 if (ac_response.error != null) {
                                     throw new Exception(ac_response.error);
                                 }
@@ -236,15 +236,15 @@ namespace OpenUtau.Core.Enunu {
             return result;
         }
 
-        static EnunuNote[] PhraseToEnunuNotes(RenderPhrase phrase,EnunuConfig config) {
+        static EnunuNote[] PhraseToEnunuNotes(RenderPhrase phrase, EnunuConfig config) {
             var notes = new List<EnunuNote>();
             notes.Add(new EnunuNote {
                 lyric = "R",
                 length = headTicks,
                 noteNum = phrase.phones[0].tone,
             });
-            string timbre = string.Empty;
             foreach (var phone in phrase.phones) {
+                string timbre = string.Empty;
                 if (!string.IsNullOrEmpty(phone.suffix)) {
                     timbre = phone.suffix + "/";
                 }
@@ -253,24 +253,28 @@ namespace OpenUtau.Core.Enunu {
                 foreach (var formatEntry in config.extensions.style_format) {
                     string key = formatEntry.Key;
                     var styleFormats = formatEntry.Value;
+                    List<string> datas = new List<string>();
                     string part = key + ":";
 
                     bool hasMatch = false;
+                    int i = styleFormats.format.Split("}").Length;
 
-                    foreach (var style in styleFormats) {
-                        string styleName = style.Key;
-                        string styleFormat = style.Value;
+                    foreach (var styleName in styleFormats.index) {
 
-                        var matchingFlag = phone.flags.FirstOrDefault(f =>
-                        {
+                        var matchingFlag = phone.flags.FirstOrDefault(f => {
                             var nameParts = f.Item1.Split('/');
-                            return nameParts.Length > 1 && nameParts[0] == key && f.Item3 == styleName;
+                            return nameParts.Length > 1 && nameParts[0] == key && f.Item3 == styleName.ToLower();
                         });
 
                         if (matchingFlag != default) {
                             hasMatch = true;
-                            part += String.Format(styleFormat, matchingFlag.Item2);
+                            datas.Add(matchingFlag.Item2.ToString());
                         }
+                    }
+                    if (i > 2 && datas.Count == (i-1)) {
+                        part = String.Format(styleFormats.format, datas.ToArray());
+                    } else {
+                        Log.Warning($"Invalid format for {key}: {styleFormats.format}");
                     }
 
                     if (hasMatch) {
@@ -304,7 +308,7 @@ namespace OpenUtau.Core.Enunu {
             var config = EnunuConfig.Load(ensinger);
             var result = new List<UExpressionDescriptor>();
             foreach (var exp in config.extensions.styles) {
-                result.Add(new UExpressionDescriptor(exp.Value.Name,exp.Key,exp.Value.Min,exp.Value.Max,exp.Value.Default_Value,exp.Value.Flag + "/"+ exp.Key));
+                result.Add(new UExpressionDescriptor(exp.Value.name, exp.Key, exp.Value.min, exp.Value.max, exp.Value.default_value, exp.Value.flag + "/" + exp.Key));
             }
 
             return result.ToArray();
