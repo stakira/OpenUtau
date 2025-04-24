@@ -27,6 +27,56 @@ namespace OpenUtau.Core {
                         Directory.Delete(oldCache, true);
                     }
                 } catch { }
+                string command = "pkgutil --pkg-info=com.openutau.app";
+
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "/bin/bash",
+                        Arguments = $"-c \"{command}\"",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+
+                
+                string appVersion = Assembly.GetEntryAssembly()?.GetName().Version.ToString();
+                try
+                {
+                    process.Start();
+
+                    string output = process.StandardOutput.ReadToEnd();
+                    string error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    if (!string.IsNullOrWhiteSpace(error))
+                    {
+                        Log.Error(error);
+                        return;
+                    }
+
+                    Log.Information(output);
+
+                    foreach (var line in output.Split('\n'))
+                    {
+                        if (line.Trim().StartsWith("version:"))
+                        {
+                            string version = line.Split(':')[1].Trim();
+                            if (version.Equals(appVersion)) {
+                                IsInstalled = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    Log.Error(e, $"Installation status check failed.");
+                    Log.Error("Could not confirm that it was installed from the package.");
+                    IsInstalled = false;
+                }
             } else if (OS.IsLinux()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
