@@ -25,15 +25,17 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
-    public class FileInfo {
+    public class RecentFileInfo {
         public string Name { get; }
-        public string DirectoryName { get; }
+        public string PathName { get; }
+        public string Directory { get; }
         public DateTime LastWriteTime { get; }
         public string LastWriteTimeStr { get; }
 
-        public FileInfo(string directoryName) {
-            DirectoryName = directoryName;
-            Name = System.IO.Path.GetFileName(directoryName);
+        public RecentFileInfo(string directoryName) {
+            PathName = directoryName;
+            Name = Path.GetFileName(directoryName);
+            Directory = Path.GetDirectoryName(directoryName) ?? string.Empty;
             LastWriteTime = System.IO.File.GetLastWriteTime(directoryName);
             LastWriteTimeStr = LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
@@ -48,7 +50,7 @@ namespace OpenUtau.App.ViewModels {
         ///0: welcome page, 1: tracks page
         /// </summary>
         [Reactive] public int Page { get; set; } = 0;
-        ObservableCollectionExtended<FileInfo> RecentFiles { get; } = new ObservableCollectionExtended<FileInfo>();
+        ObservableCollectionExtended<RecentFileInfo> RecentFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
 
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
@@ -85,7 +87,7 @@ namespace OpenUtau.App.ViewModels {
             ProgressText = string.Empty;
             RecentFiles.Clear();
             RecentFiles.AddRange(Preferences.Default.RecentFiles
-                .Select(file => new FileInfo(file))
+                .Select(file => new RecentFileInfo(file))
                 .OrderByDescending(f => f.LastWriteTime));
             OpenRecentCommand = ReactiveCommand.Create<string>(file => {
                 Page = 1;

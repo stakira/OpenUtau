@@ -1240,15 +1240,15 @@ namespace OpenUtau.App.Views {
 
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
             if (sender is StackPanel panel &&
-                panel.DataContext is OpenUtau.App.ViewModels.FileInfo fileInfo) {
+                panel.DataContext is RecentFileInfo fileInfo) {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
                 viewModel.Page = 1;
                 try{
-                    viewModel.OpenProject(new string[] { fileInfo.DirectoryName });
+                    viewModel.OpenProject(new string[] { fileInfo.PathName });
                 } catch (Exception e) {
-                    Log.Error(e, $"Failed to open file { fileInfo.DirectoryName }");
+                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
                 }
             }
         }

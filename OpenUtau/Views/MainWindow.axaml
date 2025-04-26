@@ -171,10 +171,10 @@
                 </Style>
               </ListBox.Styles>
               <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="vm:FileInfo">
+                <DataTemplate x:DataType="vm:RecentFileInfo">
                   <StackPanel Margin="0,4" PointerPressed="OnWelcomeRecent" Background="Transparent">
-                    <TextBlock FontSize="14" Text="{Binding Name}"/>
-                    <TextBlock FontSize="12" Text="{Binding DirectoryName}"/>
+                    <TextBlock FontSize="16" Text="{Binding Name}"/>
+                    <TextBlock FontSize="12" Text="{Binding Directory}"/>
                   </StackPanel>
                 </DataTemplate>
               </ListBox.ItemTemplate>
