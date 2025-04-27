@@ -127,6 +127,7 @@ namespace OpenUtau.Core.Enunu {
                             var spPath = Path.Join(enutmpPath, "spectrogram.npy");
                             var apPath = Path.Join(enutmpPath, "aperiodicity.npy");
                             if (!File.Exists(f0Path) || !File.Exists(spPath) || !File.Exists(apPath)) {
+                                Log.Information((phrase.singer as EnunuSinger).Name + ":" + voicebankNameHash);
                                 Log.Information($"Starting enunu acoustic \"{ustPath}\"");
                                 var enunuNotes = PhraseToEnunuNotes(phrase, config);
                                 // TODO: using first note tempo as ust tempo.
