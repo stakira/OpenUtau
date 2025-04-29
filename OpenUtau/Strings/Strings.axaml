@@ -402,6 +402,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
+  <system:String x:Key="prefs.paths.datapath">OpenUtau Data Path</system:String>
+  <system:String x:Key="prefs.paths.datapath.note">Note: This folder contains folders such as Logs, Backups, Singers, Resamplers, Plugins, etc.</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>

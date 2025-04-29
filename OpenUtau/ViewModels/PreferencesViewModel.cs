@@ -27,6 +27,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         [Reactive] public int LockStartTime { get; set; }
+        public string DataPath => PathManager.Inst.DataPath;
         public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath)? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool LoadDeepFolders { get; set; }
@@ -364,6 +365,15 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public void SetCustomDataPath(string path) {
+            try {
+                PathManager.Inst.SetCustomDataPath(path);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to set data path; cannot access {path}", e));
+            }
+            this.RaisePropertyChanged(nameof(DataPath));
+        }
+        
         public void SetAddlSingersPath(string path) {
             Preferences.Default.AdditionalSingerPath = path;
             Preferences.Save();

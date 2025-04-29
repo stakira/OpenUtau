@@ -96,6 +96,16 @@
 
         <!-- Paths -->
         <StackPanel>
+          <TextBlock Text="{DynamicResource prefs.paths.datapath}"/>
+          <TextBlock Classes="restart" Text="{DynamicResource prefs.paths.datapath.note}"/>
+          <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                      TextWrapping="Wrap" FontSize="11" Text="{Binding DataPath}"/>
+          <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*,10,*">
+            <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                    HorizontalAlignment="Stretch" Click="ResetCustomDataPath"/>
+            <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                    HorizontalAlignment="Stretch" Click="SelectCustomDataPath"/>
+          </Grid>
           <TextBlock Text="{DynamicResource prefs.paths.addlsinger}"/>
           <TextBlock HorizontalAlignment="Stretch" Margin="4"
                       TextWrapping="Wrap" FontSize="11" Text="{Binding AdditionalSingersPath}"/>
