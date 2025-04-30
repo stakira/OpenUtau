@@ -32,7 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t,l,r".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
-        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr;a=aa;e=eh;i=iy;o=ao;u=uw;").Split(';')
+        private readonly Dictionary<string, string> dictionaryReplacements = ("dx=dx;dr=dr;tr=tr;a=aa;e=eh;i=iy;o=ao;u=uw;j=jh;h=hh").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -67,51 +67,110 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isTimitPhonemes = false;
 
-        private readonly Dictionary<string, string> vvExceptions =
-            new Dictionary<string, string>() {
-                {"aw","w"},
-                {"ow","w"},
-                {"uw","w"},
-                {"uh","w"},
-                {"ay","y"},
-                {"ey","y"},
-                {"iy","y"},
-                {"oy","y"},
-                {"ih","y"},
-                {"er","r"},
-                {"aar","r"},
-                {"aen","n"},
-                {"aeng","ng"},
-                {"aor","r"},
-                {"ehr","r"},
-                {"ihng","ng"},
-                {"ihr","r"},
-                {"uwr","r"},
-                {"awn","n"},
-                {"awng","ng"},
-                {"ean","n"},
-                {"eam","m"},
-                {"eang","ng"},
-                // r-colored vowel and l
-                {"ar","r"},
-                {"or","r"},
-                {"air","r"},
-                {"ir","r"},
-                {"ur","r"},
-                {"al","l"},
-                {"ol","l"},
-                {"il","l"},
-                {"el","l"},
-                {"ul","l"},
-            };
-        private readonly Dictionary<string, string> DiphthongExceptions =
-            new Dictionary<string, string>() {
-                {"aw","w"},
-                {"ow","w"},
-                {"ay","y"},
-                {"ey","y"},
-                {"oy","y"},
-            };
+        private static readonly Dictionary<string, string> VVManualOverrides = new Dictionary<string, string>() {
+            {"aw","w"},
+            {"ow","w"},
+            {"uw","w"},
+            {"uh","w"},
+            {"ay","y"},
+            {"ey","y"},
+            {"iy","y"},
+            {"oy","y"},
+            {"ih","y"},
+            {"er","r"},
+            {"ea", "ea"},
+            {"ia", "ia"},
+            {"oa", "oa"},
+            {"ua", "ua"}
+        };
+            
+        // Final consonants
+        private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
+
+        // Manually defined exceptions (Overrides auto-generated values)
+        private static readonly Dictionary<string, string> ManualOverrides = new Dictionary<string, string>() {
+            {"ea", "ea"},
+            {"ia", "ia"},
+            {"oa", "oa"},
+            {"ua", "ua"}
+        };
+
+        // Dictionary initialized dynamically
+        private static Dictionary<string, string> _diphthongExceptions;
+        private static readonly object diphthongLock = new object();
+        private static Dictionary<string, string> _vvExceptions;
+        private static readonly object vvLock = new object();
+        public static Dictionary<string, string> DiphthongExceptions {
+            get {
+                // Lazy initialization: only initialize once when it's accessed
+                if (_diphthongExceptions == null) {
+                    lock (diphthongLock) {
+                        if (_diphthongExceptions == null) {
+                            // Create an instance of the phonemizer to access instance-specific data
+                            var phonemizerInstance = new EnglishCpVPhonemizer();
+                            _diphthongExceptions = phonemizerInstance.GenerateDiphthongExceptions();
+                        }
+                    }
+                }
+                return _diphthongExceptions;
+            }
+        }
+
+        private Dictionary<string, string> GenerateDiphthongExceptions() {
+            var diphthongExceptions = new Dictionary<string, string>();
+
+            // Access instance-specific vowels here
+            foreach (string vowel in GetVowels()) {
+                foreach (string consonant in FinalConsonants) {
+                    if (vowel.EndsWith(consonant)) {
+                        diphthongExceptions[vowel] = consonant;
+                        break;
+                    }
+                }
+            }
+
+            // Apply manual overrides
+            foreach (var entry in ManualOverrides) {
+                diphthongExceptions[entry.Key] = entry.Value;
+            }
+            return diphthongExceptions;
+        }
+
+        public static Dictionary<string, string> vvExceptions {
+            get {
+                // Lazy initialization: only initialize once when it's accessed
+                if (_vvExceptions == null) {
+                    lock (vvLock) {
+                        if (_vvExceptions == null) {
+                            // Create an instance of the phonemizer to access instance-specific data
+                            var phonemizerInstance = new EnglishCpVPhonemizer();
+                            _vvExceptions = phonemizerInstance.GenerateVVExceptions();
+                        }
+                    }
+                }
+                return _vvExceptions;
+            }
+        }
+
+        private Dictionary<string, string> GenerateVVExceptions() {
+            var vvExceptions = new Dictionary<string, string>();
+
+            // Access instance-specific vowels here
+            foreach (string vowel in GetVowels()) {
+                foreach (string consonant in FinalConsonants) {
+                    if (vowel.EndsWith(consonant)) {
+                        // only the final consonants are used
+                        vvExceptions[vowel] = consonant;
+                        break;
+                    }
+                }
+            }
+            // Apply manual overrides
+            foreach (var entry in VVManualOverrides) {
+                vvExceptions[entry.Key] = entry.Value;
+            }
+            return vvExceptions;
+        }
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
@@ -163,31 +222,31 @@ namespace OpenUtau.Plugin.Builtin {
                     case var str when tr.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ch", s[1].ToString() });
                         break;
-                    case var str when wh.Contains(str) && !HasOto($"{str} {vowels}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when wh.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "hh", s[1].ToString() });
                         break;
-                    case var str when av_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when av_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "aa", s[1].ToString() });
                         break;
-                    case var str when ev_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ev_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "eh", s[1].ToString() });
                         break;
-                    case var str when iv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when iv_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "iy", s[1].ToString() });
                         break;
-                    case var str when ov_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ov_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "ao", s[1].ToString() });
                         break;
-                    case var str when uv_c.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when uv_c.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { "uw", s[1].ToString() });
                         break;
-                    case var str when vowel3S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel3S.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s[2].ToString() });
                         break;
-                    case var str when vowel4S.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when vowel4S.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s.Substring(0, 2), s.Substring(2, 2) });
                         break;
-                    case var str when ccv.Contains(str) && !HasOto(ValidateAlias(str), note.tone):
+                    case var str when ccv.Contains(str) && !HasOto($"{str}", note.tone) && !HasOto(ValidateAlias(str), note.tone):
                         modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                         break;
                     default:
@@ -277,6 +336,8 @@ namespace OpenUtau.Plugin.Builtin {
                         {
                             if (!HasOto($"{prevV} {v}", syllable.vowelTone) || !HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
                                 basePhoneme = AliasFormat(v, "vv", syllable.vowelTone, "");
+                            } else {
+                                basePhoneme = $"{prevV} {v}";
                             }
                         }
                     }
@@ -488,12 +549,16 @@ namespace OpenUtau.Plugin.Builtin {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                            } else {
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                             }
                         } else if (!c_cR.Contains(cc.Last())) {
                             if (HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone)) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
                                 TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                            } else {
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                             }
                         }
                         /// add additional c to those consonants on the top
@@ -507,11 +572,15 @@ namespace OpenUtau.Plugin.Builtin {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
                         } else if (!(HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone)))) {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        } else {
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                         }
                     } else {
                         TryAddPhoneme(phonemes, ending.tone, vc);
                         if (vc.Contains(cc[0])) {
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        } else {
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
                         }
                     }
                 }
@@ -674,7 +743,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Check if the given type exists in the aliasFormats dictionary
             if (!aliasFormats.ContainsKey(type)) {
-                return "no alias found";
+                return alias;
             }
             // Get the array of possible alias formats for the specified type
             var formatsToTry = aliasFormats[type];
@@ -696,7 +765,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return alias;
                 }
             }
-            return "no alias found";
+            return alias;
         }
 
         protected override string ValidateAlias(string alias) {
