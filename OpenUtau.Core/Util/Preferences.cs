@@ -137,6 +137,7 @@ namespace OpenUtau.Core.Util {
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = false;
+            public bool UseSolidPlaybackLine = false;
             public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
