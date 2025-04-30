@@ -721,10 +721,11 @@ namespace OpenUtau.App.Views {
         void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
 
         private void LayoutSplit(double? x, double? y) {
-            if (Screens.Primary == null) {
+            var mainScreen = Screens.Primary != null ? Screens.Primary : Screens.All[0];
+            if (mainScreen == null) {
                 return;
             }
-            var wa = Screens.Primary.WorkingArea;
+            var wa = mainScreen.WorkingArea;
             WindowState = WindowState.Normal;
             double titleBarHeight = 20;
             if (FrameSize != null) {
