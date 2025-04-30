@@ -135,6 +135,7 @@ namespace OpenUtau.Core.Util {
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
+            public bool UseSolidPlaybackLine = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
             public int NumRenderThreads = 2;

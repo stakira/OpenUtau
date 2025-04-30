@@ -76,6 +76,9 @@ namespace OpenUtau.App.ViewModels {
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
             = new Dictionary<Key, MenuItemViewModel>();
 
+        [Reactive] public bool UseSolidPlaybackLine { get; set; }
+        public ReactiveCommand<Unit, Unit> TogglePlaybackLineCommand { get; set; }
+
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
@@ -139,6 +142,9 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
+            });
+            TogglePlaybackLineCommand = ReactiveCommand.Create(() => {
+                UseSolidPlaybackLine = !UseSolidPlaybackLine;
             });
 
             legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(plugin => {

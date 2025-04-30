@@ -525,6 +525,14 @@
                 <Path Classes="stroked" Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z"/>
               </Border>
             </ToggleButton>
+            <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.UseSolidPlaybackLine, Mode=OneWay}"
+                          Command="{Binding NotesViewModel.TogglePlaybackLineCommand}"
+                          ToolTip.Tip="Toggle playback line">
+              <Grid Width="18" Height="18">
+                  <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="⇣"
+                             Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+              </Grid>
+            </ToggleButton>
             <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnSnapDivMenuButton"
               ToolTip.Tip="{DynamicResource pianoroll.snapdiv}">
               <TextBlock Grid.Column="0" Text="{Binding NotesViewModel.SnapDivText}"
