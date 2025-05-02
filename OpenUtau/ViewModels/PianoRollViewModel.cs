@@ -77,6 +77,7 @@ namespace OpenUtau.App.ViewModels {
             = new Dictionary<Key, MenuItemViewModel>();
 
         [Reactive] public double Progress { get; set; }
+
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> ClearPhraseCacheCommand { get; set; }
@@ -170,6 +171,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             LoadLegacyPlugins();
+            DocManager.Inst.AddSubscriber(this);
         }
 
         private void LoadLegacyPlugins() {
