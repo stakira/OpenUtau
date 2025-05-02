@@ -26,6 +26,25 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau", "OpenUtau\OpenUt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Plugin.Builtin", "OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj", "{D24740E1-CC43-4226-A573-59C013FE50A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Android", "OpenUtau.Android\OpenUtau.Android.csproj", "{8996ACC5-042B-1893-CC63-4761F40DEA72}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5} = {7793257C-054C-4935-A1EF-CAB345E9F6C5}
+		{9535E26C-4584-4126-B6F7-B91B41113196} = {9535E26C-4584-4126-B6F7-B91B41113196}
+		{D24740E1-CC43-4226-A573-59C013FE50A2} = {D24740E1-CC43-4226-A573-59C013FE50A2}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.iOS", "OpenUtau.iOS\OpenUtau.iOS.csproj", "{B63CF9DC-06BF-0BDB-0FC9-BF2324897EBE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5} = {7793257C-054C-4935-A1EF-CAB345E9F6C5}
+		{9535E26C-4584-4126-B6F7-B91B41113196} = {9535E26C-4584-4126-B6F7-B91B41113196}
+		{D24740E1-CC43-4226-A573-59C013FE50A2} = {D24740E1-CC43-4226-A573-59C013FE50A2}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Desktop", "OpenUtau.Desktop\OpenUtau.Desktop.csproj", "{8AEE1144-C8A4-5E94-860F-F57DA39C6D3E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9535E26C-4584-4126-B6F7-B91B41113196} = {9535E26C-4584-4126-B6F7-B91B41113196}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +67,18 @@ Global
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8996ACC5-042B-1893-CC63-4761F40DEA72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8996ACC5-042B-1893-CC63-4761F40DEA72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8996ACC5-042B-1893-CC63-4761F40DEA72}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8996ACC5-042B-1893-CC63-4761F40DEA72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8996ACC5-042B-1893-CC63-4761F40DEA72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B63CF9DC-06BF-0BDB-0FC9-BF2324897EBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B63CF9DC-06BF-0BDB-0FC9-BF2324897EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B63CF9DC-06BF-0BDB-0FC9-BF2324897EBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AEE1144-C8A4-5E94-860F-F57DA39C6D3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AEE1144-C8A4-5E94-860F-F57DA39C6D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AEE1144-C8A4-5E94-860F-F57DA39C6D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AEE1144-C8A4-5E94-860F-F57DA39C6D3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

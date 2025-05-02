@@ -13,6 +13,7 @@ using Avalonia.Styling;
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Views;
 using Serilog;
 using YamlDotNet.Core.Tokens;
 
@@ -30,6 +31,8 @@ namespace OpenUtau.App {
             Log.Information("Framework initialization completed.");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.MainWindow = new SplashWindow();
+            } else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform) {
+                singleViewPlatform.MainView = new MainView();
             }
 
             base.OnFrameworkInitializationCompleted();

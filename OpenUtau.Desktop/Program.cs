@@ -9,11 +9,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using OpenUtau.App;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
 
-namespace OpenUtau.App {
+namespace OpenUtau.Desktop {
     public class Program {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -22,7 +23,7 @@ namespace OpenUtau.App {
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
-            string processName = Process.GetCurrentProcess().ProcessName;
+            var processName = Process.GetCurrentProcess().ProcessName;
             if (processName != "dotnet") {
                 var exists = Process.GetProcessesByName(processName).Count() > 1;
                 if (exists) {
@@ -54,20 +55,20 @@ namespace OpenUtau.App {
         public static AppBuilder BuildAvaloniaApp() {
             FontManagerOptions fontOptions = new();
             if (OS.IsLinux()) {
-                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
+                using var process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
                 {
                     ArgumentList = { "-f", "%{family}" },
                     RedirectStandardOutput = true
                 })!;
                 process.WaitForExit();
 
-                string fontFamily = process.StandardOutput.ReadToEnd();
+                var fontFamily = process.StandardOutput.ReadToEnd();
                 if (!string.IsNullOrEmpty(fontFamily)) {
-                    string [] fontFamilies = fontFamily.Split(',');
+                    var fontFamilies = fontFamily.Split(',');
                     fontOptions.DefaultFamilyName = fontFamilies[0];
                 }
             }
-            return AppBuilder.Configure<App>()
+            return AppBuilder.Configure<OpenUtau.App.App>()
                 .UsePlatformDetect()
                 .LogToTrace()
                 .UseReactiveUI()
