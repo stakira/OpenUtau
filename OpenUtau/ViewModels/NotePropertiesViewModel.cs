@@ -189,7 +189,7 @@ namespace OpenUtau.App.ViewModels {
 
                     foreach (NotePropertyExpViewModel exp in Expressions) {
                         exp.IsNoteSelected = true;
-                        var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == exp.abbr);
+                        var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == exp.abbr && e.index == 0);
                         if (phonemeExpression != null) {
                             if (exp.IsNumerical) {
                                 exp.Value = phonemeExpression.value;
@@ -470,12 +470,18 @@ namespace OpenUtau.App.ViewModels {
         public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                    value = null;
+                }
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
             }
         }
         public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                    value = null;
+                }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
                 DocManager.Inst.EndUndoGroup();

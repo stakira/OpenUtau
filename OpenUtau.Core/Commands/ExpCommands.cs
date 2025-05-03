@@ -21,10 +21,20 @@ namespace OpenUtau.Core {
     }
 
     public class SetNoteExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT, Format.Ustx.VEL
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly float?[] newValue;
         public readonly float?[] oldValue;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
+            };
         public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float?[] values) : base(part) {
             this.project = project;
             this.track = track;
@@ -39,11 +49,21 @@ namespace OpenUtau.Core {
     }
 
     public class SetNotesSameExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT, Format.Ustx.VEL
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly UNote[] notes;
         public readonly float? newValue;
         public readonly float?[][] oldValue;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
+            };
         public SetNotesSameExpressionCommand(UProject project, UTrack track, UVoicePart part, IEnumerable<UNote> notes, string abbr, float? value) : base(part) {
             this.project = project;
             this.track = track;

@@ -89,6 +89,8 @@ namespace OpenUtau.Core.Enunu {
                     var enutmpPath = tmpPath + "_enutemp";
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{(phrase.hash+ hash):x16}.wav");
                     var voicebankNameHash = $"{(phrase.singer as EnunuSinger).voicebankNameHash:x16}";
+                    phrase.AddCacheFile(tmpPath);
+                    phrase.AddCacheFile(wavPath);
                     config = EnunuConfig.Load(phrase.singer);
                     if (port == null) {
                         port = EnunuUtils.SetPortNum();
