@@ -655,9 +655,9 @@ namespace OpenUtau.App.Views {
 
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Cache cleared."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
             });
         }
 
