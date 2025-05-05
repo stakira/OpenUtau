@@ -104,9 +104,7 @@ namespace OpenUtau.App.Controls {
             int trackNo = Part.trackNo;
             var track = DocManager.Inst.Project.tracks[trackNo];
             string langCode = "";
-            if (track.Phonemizer is DiffSingerG2pPhonemizer g2pPhonemizer) {
-                langCode = g2pPhonemizer.GetLangCode();
-            } else if (track.Phonemizer is DiffSingerBasePhonemizer basePhonemizer) {
+            if (track.Phonemizer is DiffSingerBasePhonemizer basePhonemizer) {
                 langCode = basePhonemizer.GetLangCode();
             }
             var viewModel = ((PianoRollViewModel?)DataContext)?.NotesViewModel;
