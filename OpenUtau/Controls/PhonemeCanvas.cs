@@ -99,9 +99,6 @@ namespace OpenUtau.App.Controls {
             if (Part == null || !ShowPhoneme) {
                 return;
             }
-            //DiffSinger specific phoneme trunctation for QOL improvement
-            int trackNo = Part.trackNo;
-            var track = DocManager.Inst.Project.tracks[trackNo];
             string langCode = PhonemeUIRender.getLangCode(Part);
             var viewModel = ((PianoRollViewModel?)DataContext)?.NotesViewModel;
             if (viewModel == null) {
