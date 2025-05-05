@@ -26,7 +26,7 @@ namespace OpenUtau.App.Controls {
             AliasPosition(NotesViewModel viewModel, UPhoneme phoneme, string? langCode, ref double lastTextEndX, ref bool raiseText){
 
             string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
-            if (Preferences.Default.DiffSingerLangCodeHide && !string.IsNullOrEmpty(langCode) && phonemeText.StartsWith(langCode)) {
+            if (Preferences.Default.DiffSingerLangCodeHide && !string.IsNullOrEmpty(langCode) && phonemeText.StartsWith(langCode+"/")) {
                 phonemeText = phonemeText.Substring(langCode.Length + 1);
             }
             var x = viewModel.TickToneToPoint(phoneme.position, 0).X;
