@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Render;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -31,10 +29,20 @@ namespace OpenUtau.Core.Voicevox {
         public List<double> f0 = new List<double>();
         public List<double> volume = new List<double>();
         public List<Phonemes> phonemes = new List<Phonemes>();
-        public int volumeScale;
-        public int outputSamplingRate;
-        public bool outputStereo;
+        public int volumeScale = 1;
+        public int outputSamplingRate = 24000;
+        public bool outputStereo = false;
 
+        public VoicevoxSynthParams Clone() {
+            return new VoicevoxSynthParams() {
+                f0 = new List<double>(f0),
+                volume = new List<double>(volume),
+                phonemes = new List<Phonemes>(phonemes),
+                volumeScale = volumeScale,
+                outputSamplingRate = outputSamplingRate,
+                outputStereo = outputStereo
+            };
+        }
     }
 
     public class VoicevoxQueryNotes {
@@ -48,6 +56,12 @@ namespace OpenUtau.Core.Voicevox {
     public class VoicevoxQueryMain {
         public List<VoicevoxQueryNotes> notes = new List<VoicevoxQueryNotes>();
     }
+
+    public class VoicevoxQueryParams {
+        public VoicevoxQueryMain score = new VoicevoxQueryMain();
+        public VoicevoxSynthParams frame_audio_query = new VoicevoxSynthParams();
+    }
+
     public class Phoneme_list {
         public string[] vowels = "a i u e o A I U E O N pau cl".Split();
         public string[] consonants = "b by ch d dy f g gw gy h hy j k kw ky m my n ny p py r ry s sh t ts ty v w y z".Split();
@@ -133,6 +147,10 @@ namespace OpenUtau.Core.Voicevox {
 
     public static class VoicevoxUtils {
         public const string VOLC = "volc";
+        public const string REPM = "repm";
+        public const string PEXP = "pexp";
+        public const string REPLACE = "replace";
+        public const string OVERWRITE = "overwrite";
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
@@ -158,43 +176,43 @@ namespace OpenUtau.Core.Voicevox {
             dic.Loaddic(singer.Location);
         }
 
-        public static VoicevoxQueryMain NoteGroupsToVoicevox(VoicevoxNote[] notes, TimeAxis timeAxis) {
-            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
+        public static VoicevoxQueryMain NoteGroupsToVQuery(VoicevoxNote[] vNotes, TimeAxis timeAxis) {
+            VoicevoxQueryMain vqMain = new VoicevoxQueryMain();
             int index = 0;
             double durationMs = 0;
             try {
-                qnotes.notes.Add(new VoicevoxQueryNotes() {
+                vqMain.notes.Add(new VoicevoxQueryNotes() {
                     lyric = "",
                     frame_length = (int)Math.Round((headS * fps), MidpointRounding.AwayFromZero),
                     key = null,
                     vqnindex = -1
                 });
-                durationMs = notes[index].positionMs + notes[index].durationMs;
-                while (index < notes.Length) {
-                    string lyric = dic.Notetodic(notes, index);
-                    int length = (int)Math.Round((notes[index].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
+                durationMs = vNotes[index].positionMs + vNotes[index].durationMs;
+                while (index < vNotes.Length) {
+                    string lyric = dic.Notetodic(vNotes, index);
+                    int length = (int)Math.Round((vNotes[index].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
                     if (length < 2) {
                         length = 2;
                     }
                     int? tone = null;
                     if (!string.IsNullOrEmpty(lyric)) {
-                        tone = notes[index].tone;
+                        tone = vNotes[index].tone;
                     } else {
                         lyric = "";
                     }
-                    qnotes.notes.Add(new VoicevoxQueryNotes {
+                    vqMain.notes.Add(new VoicevoxQueryNotes {
                         lyric = lyric,
                         frame_length = length,
                         key = tone,
                         vqnindex = index
                     });
-                    durationMs += notes[index].durationMs;
+                    durationMs += vNotes[index].durationMs;
                     index++;
                 }
-                qnotes.notes.Add(new VoicevoxQueryNotes {
+                vqMain.notes.Add(new VoicevoxQueryNotes {
                     lyric = "",
-                    frame_length = (int)(tailS * fps),
+                    frame_length = (int)Math.Round((tailS * fps), MidpointRounding.AwayFromZero),
                     key = null,
                     vqnindex = index
                 });
@@ -202,7 +220,35 @@ namespace OpenUtau.Core.Voicevox {
             } catch (Exception e) {
                 Log.Error($"VoicevoxQueryNotes setup error.");
             }
-            return qnotes;
+            return vqMain;
+        }
+
+        public static List<double> QueryToF0(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
+            VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams }; 
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_f0", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var response = VoicevoxClient.Inst.SendRequest(queryurl);
+            List<double> f0s = new List<double>();
+            var jObj = JObject.Parse(response.Item1);
+            if (jObj.ContainsKey("detail")) {
+                Log.Error($"Response was incorrect. : {jObj}");
+            } else {
+                f0s = jObj["json"].ToObject<List<double>>();
+            }
+            return f0s;
+        }
+
+        public static List<double> QueryToVolume(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
+            VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams };
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_volume", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var response = VoicevoxClient.Inst.SendRequest(queryurl);
+            List<double> volumes = new List<double>();
+            var jObj = JObject.Parse(response.Item1);
+            if (jObj.ContainsKey("detail")) {
+                Log.Error($"Response was incorrect. : {jObj}");
+            } else {
+                volumes = jObj["json"].ToObject<List<double>>();
+            }
+            return volumes;
         }
 
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double offset, Func<double, double> convert) {
@@ -251,6 +297,37 @@ namespace OpenUtau.Core.Voicevox {
                 }
             }
             return defaultID;
+        }
+
+        public static double[] SmoothPitch(double[] pitchArray, double[] pitchExpressivenessArray) {
+            if (pitchArray.Length != pitchExpressivenessArray.Length) {
+                Log.Error("Pitch array and expressiveness array lengths do not match.");
+                return pitchArray;
+            }
+
+            int len = pitchArray.Length;
+            double[] result = new double[len];
+
+            // Initial values remain unchanged.
+            result[0] = pitchArray[0];
+
+            for (int i = 1; i < len; i++) {
+                // Normalised expressivity (0-100) from 0.0 to 1.0
+                double expressiveness = Math.Clamp(pitchExpressivenessArray[i], 0.0, 1.0);
+
+                // Smoothing coefficient α (the higher the expressiveness, the higher the α)
+                double alpha = Math.Clamp(expressiveness, 0.01, 1.0); // Minimum 0.01 to prevent excessive smoothing.
+
+                // one-pole filter
+                result[i] = alpha * pitchArray[i] + (1.0 - alpha) * result[i - 1];
+            }
+
+            return result;
+        }
+
+
+        public static bool IsSyllableVowelExtensionNote(string lyric) {
+            return lyric.StartsWith("+~") || lyric.StartsWith("+*") || lyric.StartsWith("+") || lyric.StartsWith("-");
         }
     }
 }

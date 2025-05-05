@@ -18,34 +18,34 @@ namespace OpenUtau.Core.Voicevox {
 
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
-            VoicevoxNote[] vnotes = new VoicevoxNote[notes.Length];
+            VoicevoxNote[] vNotes = new VoicevoxNote[notes.Length];
             for (int i = 0; i < notes.Length; i++) {
                 string lyric = notes[i][0].lyric.Normalize();
                 var lyricList = lyric.Split(" ");
-                vnotes[i] = new VoicevoxNote() {
+                vNotes[i] = new VoicevoxNote() {
                     lyric = lyricList[^1],
                     positionMs = timeAxis.TickPosToMsPos(notes[i][0].position),
                     durationMs = timeAxis.TickPosToMsPos(notes[i][0].duration),
                     tone = (int)(notes[i][0].tone + (notes[i][0].phonemeAttributes.Length > 0 ? notes[i][0].phonemeAttributes[0].toneShift : 0))
                 };
             }
-            var qNotes = VoicevoxUtils.NoteGroupsToVoicevox(vnotes, timeAxis);
-            var vvNotes = new VoicevoxSynthParams();
+            VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vNotes, timeAxis);
+            VoicevoxSynthParams vsParams = new VoicevoxSynthParams();
             string singerID = VoicevoxUtils.defaultID;
             if (this.singer.voicevoxConfig.base_singer_style != null) {
                 foreach (var s in this.singer.voicevoxConfig.base_singer_style) {
                     if (s.name.Equals(this.singer.voicevoxConfig.base_singer_name)) {
-                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, s.styles.id.ToString());
+                        vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, s.styles.id.ToString());
                         if (s.styles.name.Equals(this.singer.voicevoxConfig.base_singer_style_name)) {
                             break;
                         }
                     } else {
-                        vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
+                        vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, singerID);
                         break;
                     }
                 }
             } else {
-                vvNotes = VoicevoxUtils.VoicevoxVoiceBase(qNotes, singerID);
+                vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, singerID);
             }
 
             var parentDirectory = Directory.GetParent(singer.Location).ToString();
@@ -53,8 +53,8 @@ namespace OpenUtau.Core.Voicevox {
             var yamlTxt = File.ReadAllText(yamlPath);
             var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
 
-            var list = new List<Phonemes>(vvNotes.phonemes);
-            foreach (var note in qNotes.notes) {
+            var list = new List<Phonemes>(vsParams.phonemes);
+            foreach (var note in vqMain.notes) {
                 if (note.vqnindex < 0) {
                     list.Remove(list[0]);
                     continue;
