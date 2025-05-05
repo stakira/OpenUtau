@@ -43,6 +43,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public int DiffSingerSteps { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
+        [Reactive] public bool DiffSingerLangCodeHide { get; set; }
         [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
@@ -144,6 +145,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
             DiffSingerSteps = Preferences.Default.DiffSingerSteps;
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
+            DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
@@ -341,6 +343,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerTensorCache)
                 .Subscribe(useCache => {
                     Preferences.Default.DiffSingerTensorCache = useCache;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerLangCodeHide)
+                .Subscribe(useCache => {
+                    Preferences.Default.DiffSingerLangCodeHide = useCache;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)

@@ -4,7 +4,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -97,6 +100,15 @@ namespace OpenUtau.App.Controls {
             if (Part == null || !ShowPhoneme) {
                 return;
             }
+            //DiffSinger specific phoneme trunctation for QOL improvement
+            int trackNo = Part.trackNo;
+            var track = DocManager.Inst.Project.tracks[trackNo];
+            string langCode = "";
+            if (track.Phonemizer is DiffSingerG2pPhonemizer g2pPhonemizer) {
+                langCode = g2pPhonemizer.GetLangCode();
+            } else if (track.Phonemizer is DiffSingerBasePhonemizer basePhonemizer) {
+                langCode = basePhonemizer.GetLangCode();
+            }
             var viewModel = ((PianoRollViewModel?)DataContext)?.NotesViewModel;
             if (viewModel == null) {
                 return;
@@ -160,6 +172,9 @@ namespace OpenUtau.App.Controls {
                 // FIXME: Changing code below may break `HitTestAlias`.
                 if (viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
                     string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
+                    if (Preferences.Default.DiffSingerLangCodeHide && !string.IsNullOrEmpty(langCode) && phonemeText.StartsWith(langCode)) {
+                        phonemeText = phonemeText.Substring(langCode.Length + 1);
+                    }
                     if (!string.IsNullOrEmpty(phonemeText)) {
                         var bold = phoneme.rawPhoneme != phoneme.phoneme;
                         var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
