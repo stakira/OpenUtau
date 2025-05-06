@@ -330,9 +330,8 @@
   <system:String x:Key="pianoroll.toggle.tone">ガイド音を有効化 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">ビブラートを表示 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">波形を表示 (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    ラインピッチ描画ツール (Shift + 4)
-    左クリックで描画（直線を描きます）
+  <system:String x:Key="pianoroll.tool.drawlinepitch">ラインピッチ描画ツール (Shift + 4)
+    左クリックで直線を描画
     右クリックでリセット
     Ctrl長押しで選択
     Alt長押しで線をなめらかにする
@@ -538,6 +537,7 @@
 
   <system:String x:Key="tracks.duplicate">トラックを複製</system:String>
   <system:String x:Key="tracks.duplicatesettings">トラック設定を複製</system:String>
+  <system:String x:Key="tracks.favorite">お気に入り</system:String>
   <system:String x:Key="tracks.installsinger">シンガーをインストール</system:String>
   <system:String x:Key="tracks.more">さらに表示</system:String>
   <system:String x:Key="tracks.movedown">下へ</system:String>
