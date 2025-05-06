@@ -45,14 +45,24 @@ namespace OpenUtau.Classic {
             var phrase = resamplerItems[0].phrase;
             var segments = new List<Segment>();
             foreach (var item in resamplerItems) {
-                if (!File.Exists(item.outputFile)) {
-                    continue;
-                }
                 var segment = new Segment();
-                segments.Add(segment);
-                using (var waveStream = Wave.OpenFile(item.outputFile)) {
-                    segment.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                if(item.phone.direct){
+                    using (var waveStream = Wave.OpenFile(item.inputFile)) {
+                        float[] samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                        int offset = (int)(item.phone.oto.Offset / 1000 * 44100);
+                        int cutoff = (int)(item.phone.oto.Cutoff / 1000 * 44100);
+                        int length = cutoff >= 0 ? (samples.Length - offset - cutoff) : -cutoff;
+                        segment.samples = samples.Skip(offset).Take(length).ToArray();
+                    }
+                } else { 
+                    if (!File.Exists(item.outputFile)) {
+                        continue;
+                    }
+                    using (var waveStream = Wave.OpenFile(item.outputFile)) {
+                        segment.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                    }
                 }
+                segments.Add(segment);
                 segment.posMs = item.phone.positionMs - item.phone.leadingMs - (phrase.positionMs - phrase.leadingMs);
                 segment.posSamples = (int)Math.Round(segment.posMs * 44100 / 1000);
                 segment.skipSamples = (int)Math.Round(item.skipOver * 44100 / 1000);

@@ -1481,13 +1481,13 @@ entries:
   - grapheme: ほ
     phonemes: [h, o]
   - grapheme: ひゃ
-    phonemes: [hy, a]
+    phonemes: [hh, y, a]
   - grapheme: ひゅ
-    phonemes: [hy, u]
+    phonemes: [hh, y, u]
   - grapheme: ひぇ
-    phonemes: [hy, e]
+    phonemes: [hh, y, e]
   - grapheme: ひょ
-    phonemes: [hy, o]
+    phonemes: [hh, y, o]
   - grapheme: ふぁ
     phonemes: [f, a]
   - grapheme: ふぃ
@@ -1515,13 +1515,13 @@ entries:
   - grapheme: ほん
     phonemes: [h, o, n]
   - grapheme: ひゃん
-    phonemes: [hy, a, n]
+    phonemes: [hh, y, a, n]
   - grapheme: ひゅん
-    phonemes: [hy, u, n]
+    phonemes: [hh, y, u, n]
   - grapheme: ひぇん
-    phonemes: [hy, e, n]
+    phonemes: [hh, y, e, n]
   - grapheme: ひょん
-    phonemes: [hy, o, n]
+    phonemes: [hh, y, o, n]
   - grapheme: ふぁん
     phonemes: [f, a, n]
   - grapheme: ふぃん
@@ -1549,13 +1549,13 @@ entries:
   - grapheme: ほい
     phonemes: [h, o, i]
   - grapheme: ひゃい
-    phonemes: [hy, a, i]
+    phonemes: [hh, y, a, i]
   - grapheme: ひゅい
-    phonemes: [hy, u, i]
+    phonemes: [hh, y, u, i]
   - grapheme: ひぇい
-    phonemes: [hy, e, i]
+    phonemes: [hh, y, e, i]
   - grapheme: ひょい
-    phonemes: [hy, o, i]
+    phonemes: [hh, y, o, i]
   - grapheme: ふぁい
     phonemes: [f, a, i]
   - grapheme: ふぃい
@@ -1581,13 +1581,13 @@ entries:
   - grapheme: ほえ
     phonemes: [h, o, e]
   - grapheme: ひゃえ
-    phonemes: [hy, a, e]
+    phonemes: [hh, y, a, e]
   - grapheme: ひゅえ
-    phonemes: [hy, u, e]
+    phonemes: [hh, y, u, e]
   - grapheme: ひぇえ
-    phonemes: [hy, e, e]
+    phonemes: [hh, y, e, e]
   - grapheme: ひょえ
-    phonemes: [hy, o, e]
+    phonemes: [hh, y, o, e]
   - grapheme: ふぁえ
     phonemes: [f, a, e]
   - grapheme: ふぃえ
@@ -1611,11 +1611,11 @@ entries:
   - grapheme: へお
     phonemes: [h, e, o]
   - grapheme: ひゃお
-    phonemes: [hy, a, o]
+    phonemes: [hh, y, a, o]
   - grapheme: ひゅお
-    phonemes: [hy, u, o]
+    phonemes: [hh, y, u, o]
   - grapheme: ひぇお
-    phonemes: [hy, e, o]
+    phonemes: [hh, y, e, o]
   - grapheme: ふぁお
     phonemes: [f, a, o]
   - grapheme: ふぃお
@@ -2141,99 +2141,99 @@ entries:
   - grapheme: よう
     phonemes: [y, o, u]
   - grapheme: ら
-    phonemes: [r, a]
-  - grapheme: り
-    phonemes: [r, i]
+    phonemes: [dx, a]
   - grapheme: る
-    phonemes: [r, u]
+    phonemes: [dx, u]
   - grapheme: れ
-    phonemes: [r, e]
+    phonemes: [dx, e]
   - grapheme: ろ
-    phonemes: [r, o]
+    phonemes: [dx, o]
   - grapheme: りゃ
-    phonemes: [ry, a]
+    phonemes: [dx, y, a]
+  - grapheme: り
+    phonemes: [dx, i]
   - grapheme: りゅ
-    phonemes: [ry, u]
+    phonemes: [dx, y, u]
   - grapheme: りぇ
-    phonemes: [ry, e]
+    phonemes: [dx, y, e]
   - grapheme: りょ
-    phonemes: [ry, o]
+    phonemes: [dx, y, o]
   - grapheme: らん
-    phonemes: [r, a, n]
+    phonemes: [dx, a, n]
   - grapheme: りん
-    phonemes: [r, i, n]
+    phonemes: [dx, i, n]
   - grapheme: るん
-    phonemes: [r, u, n]
+    phonemes: [dx, u, n]
   - grapheme: れん
-    phonemes: [r, e, n]
+    phonemes: [dx, e, n]
   - grapheme: ろん
-    phonemes: [r, o, n]
+    phonemes: [dx, o, n]
   - grapheme: りゃん
-    phonemes: [ry, a, n]
+    phonemes: [dx, y, a, n]
   - grapheme: りゅん
-    phonemes: [ry, u, n]
+    phonemes: [dx, y, u, n]
   - grapheme: りぇん
-    phonemes: [ry, e, n]
+    phonemes: [dx, y, e, n]
   - grapheme: りょん
-    phonemes: [ry, o, n]
+    phonemes: [dx, y, o, n]
   - grapheme: らい
-    phonemes: [r, a, i]
+    phonemes: [dx, a, i]
   - grapheme: るい
-    phonemes: [r, u, i]
+    phonemes: [dx, u, i]
   - grapheme: れい
-    phonemes: [r, e, i]
+    phonemes: [dx, e, i]
   - grapheme: ろい
-    phonemes: [r, o, i]
+    phonemes: [dx, o, i]
   - grapheme: りゃい
-    phonemes: [ry, a, i]
+    phonemes: [dx, y, a, i]
   - grapheme: りゅい
-    phonemes: [ry, u, i]
+    phonemes: [dx, y, u, i]
   - grapheme: りぇい
-    phonemes: [ry, e, i]
+    phonemes: [dx, y, e, i]
   - grapheme: りょい
-    phonemes: [ry, o, i]
+    phonemes: [dx, y, o, i]
   - grapheme: らえ
-    phonemes: [r, a, e]
+    phonemes: [dx, a, e]
   - grapheme: りえ
-    phonemes: [r, i, e]
+    phonemes: [dx, i, e]
   - grapheme: るえ
-    phonemes: [r, u, e]
+    phonemes: [dx, u, e]
   - grapheme: ろえ
-    phonemes: [r, o, e]
+    phonemes: [dx, o, e]
   - grapheme: りゃえ
-    phonemes: [ry, a, e]
+    phonemes: [dx, y, a, e]
   - grapheme: りゅえ
-    phonemes: [ry, u, e]
+    phonemes: [dx, y, u, e]
   - grapheme: りょえ
-    phonemes: [ry, o, e]
+    phonemes: [dx, y, o, e]
   - grapheme: らお
-    phonemes: [r, a, o]
+    phonemes: [dx, a, o]
   - grapheme: りお
-    phonemes: [r, i, o]
+    phonemes: [dx, i, o]
   - grapheme: るお
-    phonemes: [r, u, o]
+    phonemes: [dx, u, o]
   - grapheme: れお
-    phonemes: [r, e, o]
+    phonemes: [dx, e, o]
   - grapheme: りゃお
-    phonemes: [ry, a, o]
+    phonemes: [dx, y, a, o]
   - grapheme: りゅお
-    phonemes: [ry, u, o]
+    phonemes: [dx, y, u, o]
   - grapheme: りぇお
-    phonemes: [ry, e, o]
+    phonemes: [dx, y, e, o]
   - grapheme: らう
-    phonemes: [r, a, u]
+    phonemes: [dx, a, u]
   - grapheme: りう
-    phonemes: [r, i, u]
+    phonemes: [dx, i, u]
   - grapheme: れう
-    phonemes: [r, e, u]
+    phonemes: [dx, e, u]
   - grapheme: ろう
-    phonemes: [r, o, u]
+    phonemes: [dx, o, u]
   - grapheme: りゃう
-    phonemes: [ry, a, u]
+    phonemes: [dx, y, a, u]
   - grapheme: りぇう
-    phonemes: [ry, e, u]
+    phonemes: [dx, y, e, u]
   - grapheme: りょう
-    phonemes: [ry, o, u]
+    phonemes: [dx, y, o, u]
   - grapheme: わ
     phonemes: [w, a]
   - grapheme: うぃ
@@ -2359,13 +2359,13 @@ entries:
   - grapheme: ニョ1
     phonemes: [ny, o]
   - grapheme: ヒャ1
-    phonemes: [hy, a]
+    phonemes: [hh, y, a]
   - grapheme: ヒュ1
-    phonemes: [hy, u]
+    phonemes: [hh, y, u]
   - grapheme: ヒェ1
-    phonemes: [hy, e]
+    phonemes: [hh, y, e]
   - grapheme: ヒョ1
-    phonemes: [hy, o]
+    phonemes: [hh, y, o]
   - grapheme: ピャ1
     phonemes: [py, a]
   - grapheme: ピュ1
@@ -2393,13 +2393,13 @@ entries:
   - grapheme: イェ1
     phonemes: [y, e]
   - grapheme: リャ1
-    phonemes: [ry, a]
+    phonemes: [dx, y, a]
   - grapheme: リュ1
-    phonemes: [ry, u]
+    phonemes: [dx, y, u]
   - grapheme: リェ1
-    phonemes: [ry, e]
+    phonemes: [dx, y, e]
   - grapheme: リョ1
-    phonemes: [ry, o]
+    phonemes: [dx, y, o]
   - grapheme: ティ1
     phonemes: [t, i]
   - grapheme: トゥ1
@@ -2505,15 +2505,15 @@ entries:
   - grapheme: ヨ1
     phonemes: [y, o]
   - grapheme: ラ1
-    phonemes: [r, a]
+    phonemes: [dx, a]
   - grapheme: リ1
-    phonemes: [r, i]
+    phonemes: [dx, i]
   - grapheme: ル1
-    phonemes: [r, u]
+    phonemes: [dx, u]
   - grapheme: レ1
-    phonemes: [r, e]
+    phonemes: [dx, e]
   - grapheme: ロ1
-    phonemes: [r, o]
+    phonemes: [dx, o]
   - grapheme: l a1
     phonemes: [l, a]
   - grapheme: l i1
@@ -2639,13 +2639,13 @@ entries:
   - grapheme: ニョ
     phonemes: [ny]
   - grapheme: ヒャ
-    phonemes: [hy]
+    phonemes: [hh, y]
   - grapheme: ヒュ
-    phonemes: [hy]
+    phonemes: [hh, y]
   - grapheme: ヒェ
-    phonemes: [hy]
+    phonemes: [hh, y]
   - grapheme: ヒョ
-    phonemes: [hy]
+    phonemes: [hh, y]
   - grapheme: ピャ
     phonemes: [py]
   - grapheme: ピュ
@@ -2673,13 +2673,13 @@ entries:
   - grapheme: イェ
     phonemes: [y]
   - grapheme: リャ
-    phonemes: [ry]
+    phonemes: [dx, y]
   - grapheme: リュ
-    phonemes: [ry]
+    phonemes: [dx, y]
   - grapheme: リェ
-    phonemes: [ry]
+    phonemes: [dx, y]
   - grapheme: リョ
-    phonemes: [ry]
+    phonemes: [dx, y]
   - grapheme: ティ
     phonemes: [t]
   - grapheme: トゥ

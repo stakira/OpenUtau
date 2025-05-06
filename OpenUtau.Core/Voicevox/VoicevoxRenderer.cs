@@ -67,6 +67,7 @@ namespace OpenUtau.Core.Voicevox {
                     progress.Complete(0, progressInfo);
                     ulong hash = HashPhraseGroups(phrase);
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
+                    phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var singer = phrase.singer as VoicevoxSinger;

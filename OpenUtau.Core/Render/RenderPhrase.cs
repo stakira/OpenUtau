@@ -190,6 +190,8 @@ namespace OpenUtau.Core.Render {
         internal readonly IRenderer renderer;
         public readonly string wavtool;
 
+        private List<string> cacheFiles = new List<string>();
+
         // voicevox args
         public readonly string phonemizerTag;
 
@@ -511,6 +513,28 @@ namespace OpenUtau.Core.Render {
                 phrasePhonemes.Clear();
             }
             return phrases;
+        }
+
+        public void AddCacheFile(string file) {
+            if (string.IsNullOrWhiteSpace(file)) return;
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (!cacheFiles.Contains(filename)) {
+                cacheFiles.Add(filename);
+            }
+        }
+
+        public void DeleteCacheFiles() {
+            foreach (var filename in cacheFiles) {
+                var files = Directory.EnumerateFiles(PathManager.Inst.CachePath, $"{filename}*");
+                foreach (var file in files) {
+                    try {
+                        File.Delete(file);
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to delete file {file}");
+                    }
+                }
+            }
+            cacheFiles.Clear();
         }
     }
 }
