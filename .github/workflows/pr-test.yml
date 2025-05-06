@@ -26,8 +26,11 @@ jobs:
           6.0.x
           8.0.x
 
+    - name: install android workload
+      run: dotnet workload install android
+
     - name: restore
-      run: dotnet restore OpenUtau -r ${{ matrix.os.arch }}
+      run: dotnet restore OpenUtau.Desktop -r ${{ matrix.os.arch }}
 
     - name: test
       run: dotnet test OpenUtau.Test
