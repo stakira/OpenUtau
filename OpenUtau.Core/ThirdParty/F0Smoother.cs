@@ -5,6 +5,19 @@ using System.Text;
 using Serilog;
 
 namespace ThirdParty {
+    /// <summary>
+    /// F0Smoother is a class that provides methods to smoothen and repair F0 (fundamental frequency) values in a list.
+    /// <para>
+    /// This is a C# implementation of SimpleEnunu's f0_smoother.py, modified for OpenUtau.
+    /// </para>
+    /// <para>
+    /// Original Python implementation:
+    /// https://github.com/oatsu-gh/SimpleEnunu/blob/main/extensions/f0_smoother.py
+    /// </para>
+    /// <para>
+    /// Copyright (c) 2022 oatsu
+    /// </para>
+    /// </summary>
     public class F0Smoother {
         private const int SmoothenWidth = 6;
         private const double DetectThreshold = 0.6;

@@ -304,33 +304,6 @@ namespace OpenUtau.Core.Voicevox {
             return defaultID;
         }
 
-        public static double[] SmoothPitch(double[] pitchArray, double[] pitchExpressivenessArray) {
-            if (pitchArray.Length != pitchExpressivenessArray.Length) {
-                Log.Error("Pitch array and expressiveness array lengths do not match.");
-                return pitchArray;
-            }
-
-            int len = pitchArray.Length;
-            double[] result = new double[len];
-
-            // Initial values remain unchanged.
-            result[0] = pitchArray[0];
-
-            for (int i = 1; i < len; i++) {
-                // Normalised expressivity (0-100) from 0.0 to 1.0
-                double expressiveness = Math.Clamp(pitchExpressivenessArray[i], 0.0, 1.0);
-
-                // Smoothing coefficient α (the higher the expressiveness, the higher the α)
-                double alpha = Math.Clamp(expressiveness, 0.01, 1.0); // Minimum 0.01 to prevent excessive smoothing.
-
-                // one-pole filter
-                result[i] = alpha * pitchArray[i] + (1.0 - alpha) * result[i - 1];
-            }
-
-            return result;
-        }
-
-
         public static bool IsSyllableVowelExtensionNote(string lyric) {
             return lyric.StartsWith("+~") || lyric.StartsWith("+*") || lyric.StartsWith("+") || lyric.StartsWith("-");
         }
