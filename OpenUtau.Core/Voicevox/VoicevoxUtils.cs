@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Render;
@@ -214,7 +215,7 @@ namespace OpenUtau.Core.Voicevox {
                     lyric = "",
                     frame_length = (int)Math.Round((tailS * fps), MidpointRounding.AwayFromZero),
                     key = null,
-                    vqnindex = index
+                    vqnindex = -1
                 });
 
             } catch (Exception e) {
@@ -275,6 +276,10 @@ namespace OpenUtau.Core.Voicevox {
                 Log.Error($"SampleCurve:{e}");
             }
             return result;
+        }
+
+        public static bool IsVowel(string s) {
+            return phoneme_List.vowels.Contains(s);
         }
 
         public static bool IsPau(string s) {

@@ -76,7 +76,7 @@ namespace OpenUtau.Core.Voicevox {
                             }
                             try {
                                 Log.Information($"Starting Voicevox synthesis");
-                                VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase,phrase.singer as VoicevoxSinger);
+                                VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase, phrase.singer as VoicevoxSinger);
 
                                 int vvTotalFrames = 0;
                                 double frameMs = (1000d / VoicevoxUtils.fps);
@@ -84,7 +84,7 @@ namespace OpenUtau.Core.Voicevox {
                                 if (!phrase.phones[0].direct) {
                                     vsParams.f0 = VoicevoxUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, 0, x => MusicMath.ToneToFreq(x * 0.01)).ToList();
                                 } else {
-                                    vsParams.f0 = ToneShift(phrase,vsParams);
+                                    vsParams.f0 = ToneShift(phrase, vsParams);
                                 }
 
                                 var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
@@ -191,10 +191,22 @@ namespace OpenUtau.Core.Voicevox {
             } else {
                 VoicevoxNote[] vnotes = new VoicevoxNote[phrase.notes.Length];
                 for (int i = 0; i < vnotes.Length; i++) {
-                    string lyric = phrase.notes[i].lyric.Normalize();
-                    var lyricList = lyric.Split(" ");
+                    var currentLyric = phrase.notes[i].lyric.Normalize();
+                    var lyricList = currentLyric.Split(" ");
+                    if (lyricList.Length > 1) {
+                        currentLyric = lyricList[1];
+                    }
+                    if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
+                        if (VoicevoxUtils.IsPau(currentLyric)) {
+                            currentLyric = string.Empty;
+                        } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
+                            currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
+                        } else if (!VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
+                            currentLyric = string.Empty;
+                        }
+                    }
                     vnotes[i] = new VoicevoxNote() {
-                        lyric = lyricList[^1],
+                        lyric = currentLyric,
                         positionMs = phrase.notes[i].positionMs,
                         durationMs = phrase.notes[i].durationMs,
                         tone = (int)(phrase.notes[i].tone + (phrase.phones[i] != null ? phrase.phones[i].toneShift : 0))
@@ -208,12 +220,30 @@ namespace OpenUtau.Core.Voicevox {
                 //Create parameters for the update destination.
                 vsParams = PhonemeToVoicevoxSynthParams(phrase);
                 VoicevoxSynthParams vsParams_2 = vsParams.Clone();
-                vsParams = PhonemeReplace(phrase, vsParams_1);
+
+
+                if (vsParams.phonemes.Count == vsParams_1.phonemes.Count) {
+                    for (int i = 0; i < vsParams_1.phonemes.Count; i++) {
+                        //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
+                        //if (flag != null && flag.Item2.HasValue) {
+                        //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
+                                vsParams.phonemes[i].phoneme = vsParams_1.phonemes[i].phoneme;
+                        //    }
+                        //}
+                    }
+                }
                 //Update F0 and volume
                 vsParams.f0 = VoicevoxUtils.QueryToF0(vqMain, vsParams, baseSingerID);
                 vsParams.volume = VoicevoxUtils.QueryToVolume(vqMain, vsParams, baseSingerID);
                 //Update phoneme
-                vsParams = PhonemeReplace(phrase, vsParams_1, vsParams_2, true);
+                for (int i = 0; i < vsParams_2.phonemes.Count; i++) {
+                    //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
+                    //if (flag != null && flag.Item2.HasValue) {
+                    //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
+                            vsParams.phonemes[i].phoneme = vsParams_2.phonemes[i].phoneme;
+                    //    }
+                    //}
+                }
             }
             return vsParams;
         }
@@ -253,47 +283,38 @@ namespace OpenUtau.Core.Voicevox {
             return vsParams;
         }
 
-        private VoicevoxSynthParams PhonemeReplace(RenderPhrase phrase, VoicevoxSynthParams vsParams) {
-            VoicevoxSynthParams vsParams_ = new VoicevoxSynthParams();
-            return PhonemeReplace(phrase, vsParams, vsParams_, false);
-        }
-
-        private VoicevoxSynthParams PhonemeReplace(RenderPhrase phrase, VoicevoxSynthParams vsParams_1, VoicevoxSynthParams vsParams_2, bool return_f) {
-            List<string> phonemes = new List<string>();
-            phonemes.Add("pau");
-            phonemes.AddRange(phrase.phones.Select(p => p.phoneme));
-            phonemes.Add("pau");
-            if (phonemes.Count == phrase.phones.Length) {
-                for (int i = 0; i < phonemes.Count; i++) {
-                    var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
-                    if (flag != null && flag.Item2.HasValue) {
-                        if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
-                            if (return_f) {
-                                vsParams_1.phonemes[i].phoneme = phonemes[i];
-                            } else {
-                                vsParams_1.phonemes[i].phoneme = vsParams_2.phonemes[i].phoneme;
-                            }
-                        }
-                    }
-                }
-            }
-            return vsParams_1;
-        }
-
         private List<double> ToneShift(RenderPhrase phrase, VoicevoxSynthParams vsParams) {
             //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
             List<double> result = new List<double>();
-            int headFrames = vsParams.phonemes[0].frame_length;
-            int tailFrames = vsParams.phonemes[^1].frame_length;
-            int totalFrames = headFrames;
-            result.AddRange(vsParams.f0.GetRange(0, headFrames));
-            for (int i = 0; i < phrase.phones.Length; i++) {
-                var f0 = vsParams.f0.GetRange(totalFrames, vsParams.phonemes[i].frame_length);
-                f0.Select(f => f * Math.Pow(2, ((phrase.phones[i].toneShift * -1) / 12d)));
-                result.AddRange(f0);
-                totalFrames += vsParams.phonemes[i].frame_length;
+            if (!phrase.phonemizerTag.Equals("VOICEVOX JA")) {
+                List<int> shifts = new List<int>() { 0 };
+                shifts.AddRange(phrase.phones.Select(x => x.toneShift).ToList());
+                shifts.Add(0);
+                int totalFrames = 0;
+                int shiftidx = 0;
+                for (int i = 0; i <= vsParams.phonemes.Count - 1; i++) {
+                    var f0 = vsParams.f0.GetRange(totalFrames, vsParams.phonemes[i].frame_length);
+                    f0 = f0.Select(f0 => f0 = f0 * Math.Pow(2, ((shifts[shiftidx] * -1) / 12d))).ToList();
+                    result.AddRange(f0);
+                    totalFrames += vsParams.phonemes[i].frame_length;
+                    if (VoicevoxUtils.IsVowel(vsParams.phonemes[i].phoneme) && shiftidx <= shifts.Count) {
+                        shiftidx += 1;
+                    }
+                }
+                Log.Debug($"ToneShift_Count: {shifts.Count},Phonemes_Count: {vsParams.phonemes.Count},vsParams_length: {vsParams.volume.Count},totalFrames: {totalFrames}");
+            } else {
+                List<int> shifts = new List<int>() { 0 };
+                shifts.AddRange(phrase.phones.Select(x => x.toneShift).ToList());
+                shifts.Add(0);
+                int totalFrames = 0;
+                for (int i = 0; i <= Math.Min(vsParams.phonemes.Count, shifts.Count) - 1; i++) {
+                    var f0 = vsParams.f0.GetRange(totalFrames, vsParams.phonemes[i].frame_length);
+                    f0 = f0.Select(f0 => f0 = f0 * Math.Pow(2, ((shifts[i] * -1) / 12d))).ToList();
+                    result.AddRange(f0);
+                    totalFrames += vsParams.phonemes[i].frame_length;
+                }
+                Log.Debug($"ToneShift_Count: {shifts.Count},Phonemes_Count: {vsParams.phonemes.Count},vsParams_length: {vsParams.volume.Count},totalFrames: {totalFrames}");
             }
-            result.AddRange(vsParams.f0.GetRange(totalFrames, tailFrames));
             return result;
         }
 
@@ -311,12 +332,12 @@ namespace OpenUtau.Core.Voicevox {
                     isFlag=false,
                 },
                 //replace mode
-                new UExpressionDescriptor{
-                    name="replace mode",
-                    abbr=REPM,
-                    options = new string[] { VoicevoxUtils.REPLACE, VoicevoxUtils.OVERWRITE},
-                    isFlag=true,
-                },
+                //new UExpressionDescriptor{
+                //    name="replace mode",
+                //    abbr=REPM,
+                //    options = new string[] { VoicevoxUtils.REPLACE, VoicevoxUtils.OVERWRITE},
+                //    isFlag=true,
+                //},
                 //expressiveness
                 new UExpressionDescriptor {
                     name = "pitch smoothened (curve)",
@@ -345,7 +366,7 @@ namespace OpenUtau.Core.Voicevox {
                     int vvTotalFrames = 0;
                     vsParams.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
                     vsParams.f0 = ToneShift(phrase, vsParams);
-                    List<double> f0 = vsParams.f0.GetRange(vsParams.phonemes[0].frame_length, vvTotalFrames - vsParams.phonemes[0].frame_length);
+                    List<double> f0 = vsParams.f0;
 
 
                     var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
@@ -356,9 +377,8 @@ namespace OpenUtau.Core.Voicevox {
                         f0 = f0S.GetSmoothenedF0List(f0);
                     }
 
-                    var result = new RenderPitchResult
-                    {
-                        tones = f0.Select(value => (float)value).ToArray(),
+                    var result = new RenderPitchResult {
+                        tones = f0.Select(value => (float)MusicMath.FreqToTone(value)).ToArray(),
                         ticks = new float[vvTotalFrames]
                     };
                     var layout = Layout(phrase);
@@ -369,7 +389,8 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     return result;
                 }
-            } catch {
+            } catch( Exception e) {
+                Log.Error(e.Message);
             }
             return null;
         }

@@ -20,10 +20,22 @@ namespace OpenUtau.Core.Voicevox {
             partResult.Clear();
             VoicevoxNote[] vNotes = new VoicevoxNote[notes.Length];
             for (int i = 0; i < notes.Length; i++) {
-                string lyric = notes[i][0].lyric.Normalize();
-                var lyricList = lyric.Split(" ");
+                var currentLyric = notes[i][0].lyric.Normalize();
+                var lyricList = currentLyric.Split(" ");
+                if (lyricList.Length > 1) {
+                    currentLyric = lyricList[1];
+                }
+                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
+                    if (VoicevoxUtils.IsPau(currentLyric)) {
+                        currentLyric = string.Empty;
+                    } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
+                        currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
+                    } else if (!VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
+                        currentLyric = string.Empty;
+                    }
+                }
                 vNotes[i] = new VoicevoxNote() {
-                    lyric = lyricList[^1],
+                    lyric = currentLyric,
                     positionMs = timeAxis.TickPosToMsPos(notes[i][0].position),
                     durationMs = timeAxis.TickPosToMsPos(notes[i][0].duration),
                     tone = (int)(notes[i][0].tone + (notes[i][0].phonemeAttributes.Length > 0 ? notes[i][0].phonemeAttributes[0].toneShift : 0))
@@ -68,7 +80,7 @@ namespace OpenUtau.Core.Voicevox {
                         index++;
                         list.Remove(list[0]);
                         break;
-                    }else if (phonemes_list.consonants.Contains(list[0].phoneme)) {
+                    } else if (phonemes_list.consonants.Contains(list[0].phoneme)) {
                         phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position - (int)timeAxis.MsPosToTickPos((list[0].frame_length / VoicevoxUtils.fps) * 1000) });
                     }
                     list.Remove(list[0]);
