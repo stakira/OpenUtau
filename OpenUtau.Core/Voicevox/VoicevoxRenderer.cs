@@ -13,6 +13,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using SharpCompress;
+using ThirdParty;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -23,7 +24,7 @@ namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
         const string VOLC = VoicevoxUtils.VOLC;
         const string REPM = VoicevoxUtils.REPM;
-        const string PEXP = VoicevoxUtils.PEXP;
+        const string SMOC = VoicevoxUtils.SMOC;
         const string PITD = Format.Ustx.PITD;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -33,7 +34,7 @@ namespace OpenUtau.Core.Voicevox {
             Format.Ustx.VOL,
             VOLC,
             REPM,
-            PEXP,
+            SMOC,
             //Format.Ustx.SHFC,
             Format.Ustx.SHFT
         };
@@ -86,10 +87,12 @@ namespace OpenUtau.Core.Voicevox {
                                     vsParams.f0 = ToneShift(phrase,vsParams);
                                 }
 
-                                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == PEXP);
+                                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
                                 if (exprCurve != null) {
-                                    var exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x / 100.0);
-                                    vsParams.f0 = VoicevoxUtils.SmoothPitch(vsParams.f0.ToArray(), exprs).ToList();
+                                    List<int> exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x).Select(x => (int)x).ToList();
+                                    var f0S = new F0Smoother(vsParams.f0);
+                                    f0S.SmoothenWidthList = exprs;
+                                    vsParams.f0 = f0S.GetSmoothenedF0List(vsParams.f0);
                                 }
 
                                 //Volume parameter for synthesis. Scheduled to be revised
@@ -316,12 +319,12 @@ namespace OpenUtau.Core.Voicevox {
                 },
                 //expressiveness
                 new UExpressionDescriptor {
-                    name = "pitch expressiveness (curve)",
-                    abbr = PEXP,
+                    name = "pitch smoothened (curve)",
+                    abbr = SMOC,
                     type = UExpressionType.Curve,
                     min = 0,
-                    max = 100,
-                    defaultValue = 100,
+                    max = 10,
+                    defaultValue = 6,
                     isFlag = false
                 },
             };
@@ -342,13 +345,15 @@ namespace OpenUtau.Core.Voicevox {
                     int vvTotalFrames = 0;
                     vsParams.phonemes.ForEach(x => vvTotalFrames += x.frame_length);
                     vsParams.f0 = ToneShift(phrase, vsParams);
-                    double[] f0 = vsParams.f0.GetRange(vsParams.phonemes[0].frame_length, vvTotalFrames - vsParams.phonemes[0].frame_length).ToArray();
+                    List<double> f0 = vsParams.f0.GetRange(vsParams.phonemes[0].frame_length, vvTotalFrames - vsParams.phonemes[0].frame_length);
 
 
-                    var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == PEXP);
+                    var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
                     if (exprCurve != null) {
-                        var exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x / 100.0);
-                        f0 = VoicevoxUtils.SmoothPitch(f0, exprs);
+                        List<int> exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x).Select(x => (int)x).ToList();
+                        var f0S = new F0Smoother(f0);
+                        f0S.SmoothenWidthList = exprs;
+                        f0 = f0S.GetSmoothenedF0List(f0);
                     }
 
                     var result = new RenderPitchResult

@@ -148,7 +148,7 @@ namespace OpenUtau.Core.Voicevox {
     public static class VoicevoxUtils {
         public const string VOLC = "volc";
         public const string REPM = "repm";
-        public const string PEXP = "pexp";
+        public const string SMOC = "smoc";
         public const string REPLACE = "replace";
         public const string OVERWRITE = "overwrite";
         public const int headS = 1;
