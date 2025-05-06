@@ -7,8 +7,7 @@
         x:Class="OpenUtau.App.Views.SingerSetupDialog"
         Icon="/Assets/open-utau.ico"
         Title="Singer Setup"
-        WindowStartupLocation="CenterScreen"
-        ExtendClientAreaToDecorationsHint="False">
+        WindowStartupLocation="CenterScreen">
   <Window.Resources>
     <vm:EncodingNameConverter x:Key="encodingNameConverter"/>
   </Window.Resources>

@@ -52,7 +52,7 @@ namespace OpenUtau.App.Views {
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
 
-            viewModel.InitProject();
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -86,6 +86,10 @@ namespace OpenUtau.App.Views {
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
             this.Cursor = null;
+        }
+
+        public void InitProject() {
+            viewModel.InitProject(this);
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
@@ -649,9 +653,9 @@ namespace OpenUtau.App.Views {
 
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Cache cleared."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
             });
         }
 
@@ -1298,6 +1302,8 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
                 return;
             }
             e.Cancel = true;

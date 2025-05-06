@@ -3,6 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.note.copy">音符をコピー</system:String>
+  <system:String x:Key="context.note.clearcache">フレーズのキャッシュをクリア</system:String>
   <system:String x:Key="context.note.delete">音符を削除</system:String>
   <system:String x:Key="context.note.pasteparameters">パラメータを選択して貼り付け</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
@@ -48,6 +49,8 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
+  <system:String x:Key="dialogs.recovery">前回異常終了しました。復旧しますか？</system:String>
+  <system:String x:Key="dialogs.recovery.caption">プロジェクトの復旧</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">このツールでは、音符の実際の位置と長さ（秒単位）を変えずに、プロジェクトのテンポを変更します。
 新しいBPM：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
@@ -444,6 +447,8 @@
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <system:String x:Key="progress.cachecleared">キャッシュをクリアしました。</system:String>
+  <system:String x:Key="progress.clearingcache">キャッシュをクリア中...</system:String>
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>

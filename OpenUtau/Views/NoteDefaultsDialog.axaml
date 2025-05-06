@@ -9,8 +9,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource pianoroll.menu.notedefaults}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="530" Width="600" Height="530"
-        ExtendClientAreaToDecorationsHint="False">
+        MinWidth="600" MinHeight="530" Width="600" Height="530">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
