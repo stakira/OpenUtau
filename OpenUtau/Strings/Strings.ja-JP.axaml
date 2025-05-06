@@ -3,6 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.note.copy">音符をコピー</system:String>
+  <system:String x:Key="context.note.clearcache">フレーズのキャッシュをクリア</system:String>
   <system:String x:Key="context.note.delete">音符を削除</system:String>
   <system:String x:Key="context.note.pasteparameters">パラメータを選択して貼り付け</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
@@ -447,6 +448,8 @@
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <system:String x:Key="progress.cachecleared">キャッシュをクリアしました。</system:String>
+  <system:String x:Key="progress.clearingcache">キャッシュをクリア中...</system:String>
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>

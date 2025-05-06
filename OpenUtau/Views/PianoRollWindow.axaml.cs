@@ -725,6 +725,10 @@ namespace OpenUtau.App.Views {
                             Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),
                             Command = noteDefaultsCommand,
                         });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.note.clearcache"),
+                            Command = ViewModel.ClearPhraseCacheCommand,
+                        });
                         shouldOpenNotesContextMenu = true;
                         return;
                     }
