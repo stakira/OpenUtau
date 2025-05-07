@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Editing {
@@ -314,7 +315,11 @@ namespace OpenUtau.Core.Editing {
             Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
             var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
             if (renderer == null || !renderer.SupportsRenderPitch) {
-                docManager.ExecuteCmd(new ErrorMessageNotification("Not supported"));
+                var e = new MessageCustomizableException(
+                    "Current renderer doesn't support generating pitch curve", 
+                    $"<translate:errors.editing.autopitch.unsupported>",
+                    new Exception());
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 return;
             }
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
