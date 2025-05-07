@@ -217,7 +217,8 @@
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>
+  <system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>
+  <system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>
   <system:String x:Key="notedefaults.portamento">Portamento</system:String>
   <system:String x:Key="notedefaults.portamento.length">Length</system:String>
   <system:String x:Key="notedefaults.portamento.start">Start</system:String>

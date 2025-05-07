@@ -216,7 +216,8 @@
   <system:String x:Key="menu.view">表示</system:String>
 
   <system:String x:Key="notedefaults.lyric">歌詞</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">デフォルト</system:String>
+  <system:String x:Key="notedefaults.lyric.enter">入力時</system:String>
+  <system:String x:Key="notedefaults.lyric.knife">ナイフツール時</system:String>
   <system:String x:Key="notedefaults.portamento">ポルタメント</system:String>
   <system:String x:Key="notedefaults.portamento.length">長さ</system:String>
   <system:String x:Key="notedefaults.portamento.start">開始</system:String>
