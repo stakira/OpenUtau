@@ -65,6 +65,7 @@
 
   <system:String x:Key="errors.caption">エラー</system:String>
   <system:String x:Key="errors.details">エラーの詳細</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder">ボコーダー "{0}" のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください：{1}</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">ボコーダー </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください: </system:String>
   <system:String x:Key="errors.encryptedarchive">暗号化されたアーカイブファイルはサポートされていません。アーカイブファイルを手動で解凍してください。</system:String>
@@ -85,7 +86,7 @@
   <system:String x:Key="errors.failed.loadprefs">環境設定の読み込みに失敗しました。設定を初期化します。</system:String>
   <system:String x:Key="errors.failed.openfile">読み込みに失敗しました</system:String>
   <system:String x:Key="errors.failed.openlocation">フォルダを開けませんでした</system:String>
-  <system:String x:Key="errors.failed.render">レンダリングに失敗しました</system:String>
+  <system:String x:Key="errors.failed.render">レンダリングに失敗しました。</system:String>
   <system:String x:Key="errors.failed.runeditingmacro">一括処理に失敗しました</system:String>
   <system:String x:Key="errors.failed.save">保存に失敗しました</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">シンガー設定の保存に失敗しました</system:String>
@@ -331,9 +332,8 @@
   <system:String x:Key="pianoroll.toggle.tone">ガイド音を有効化 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">ビブラートを表示 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">波形を表示 (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    ラインピッチ描画ツール (Shift + 4)
-    左クリックで描画（直線を描きます）
+  <system:String x:Key="pianoroll.tool.drawlinepitch">ラインピッチ描画ツール (Shift + 4)
+    左クリックで直線を描画
     右クリックでリセット
     Ctrl長押しで選択
     Alt長押しで線をなめらかにする
@@ -541,6 +541,7 @@
 
   <system:String x:Key="tracks.duplicate">トラックを複製</system:String>
   <system:String x:Key="tracks.duplicatesettings">トラック設定を複製</system:String>
+  <system:String x:Key="tracks.favorite">お気に入り</system:String>
   <system:String x:Key="tracks.installsinger">シンガーをインストール</system:String>
   <system:String x:Key="tracks.more">さらに表示</system:String>
   <system:String x:Key="tracks.movedown">下へ</system:String>
