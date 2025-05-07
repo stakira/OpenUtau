@@ -246,10 +246,10 @@ namespace OpenUtau.Core.Enunu {
             });
             foreach (var phone in phrase.phones) {
                 string timbre = string.Empty;
+                string result = string.Empty;
                 if (!string.IsNullOrEmpty(phone.suffix)) {
                     timbre = phone.suffix + "/";
                 }
-                string result = string.Empty;
 
                 foreach (var formatEntry in config.extensions.style_format) {
                     string key = formatEntry.Key;
