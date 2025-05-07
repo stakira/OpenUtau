@@ -8,6 +8,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.Classic {
     public class FileTrace {
@@ -390,9 +391,18 @@ namespace OpenUtau.Classic {
 
         static void CheckWavExist(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
+            var dir = Path.GetDirectoryName(otoSet.File);
+            var NFDFiles = Directory.GetFiles(dir, "*.wav").Where(file => !file.IsNormalized());
+
             foreach (var group in wavGroups) {
-                string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
+                string path = Path.Combine(dir, group.Key);
                 if (!File.Exists(path)) {
+                    foreach (var file in NFDFiles) {
+                        if (group.Key.Normalize() == Path.GetFileName(file).Normalize()) {
+                            group.ForEach(oto => oto.Wav = Path.GetFileName(file));
+                            goto LOOPEND;
+                        }
+                    }
                     Log.Error($"Sound file missing. {path}");
                     foreach (Oto oto in group) {
                         if (string.IsNullOrEmpty(oto.Error)) {
@@ -401,6 +411,7 @@ namespace OpenUtau.Classic {
                         oto.IsValid = false;
                     }
                 }
+LOOPEND: ;
             }
         }
 
