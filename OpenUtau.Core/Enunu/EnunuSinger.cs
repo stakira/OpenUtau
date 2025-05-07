@@ -105,7 +105,8 @@ namespace OpenUtau.Core.Enunu {
 
             subbanks.Clear();
             if (voicebank.Subbanks == null || voicebank.Subbanks.Count == 0 ||
-                voicebank.Subbanks.Count == 1 && string.IsNullOrEmpty(voicebank.Subbanks[0].Color)) {
+                voicebank.Subbanks.Count == 1 && string.IsNullOrEmpty(voicebank.Subbanks[0].Color) 
+                && !enuconfig.unLoadSubBanks) {
                 subbanks.Add(new USubbank(new Subbank() {
                     Prefix = string.Empty,
                     Suffix = string.Empty,
