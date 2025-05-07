@@ -100,7 +100,9 @@ namespace OpenUtau.App.Controls {
                                 float max = 0.5f + segment.Max() * 0.5f;
                                 float yMax = Math.Clamp(max * bitmap.PixelSize.Height, 0, bitmap.PixelSize.Height - 1);
                                 float yMin = Math.Clamp(min * bitmap.PixelSize.Height, 0, bitmap.PixelSize.Height - 1);
-                                DrawPeak(bitmapData, bitmap.PixelSize.Width, i, (int)Math.Round(yMin), (int)Math.Round(yMax));
+                                if (Math.Abs(yMax - yMin) > 0.01) {
+                                    DrawPeak(bitmapData, bitmap.PixelSize.Width, i, (int)Math.Round(yMin), (int)Math.Round(yMax));
+                                }
                             }
                             startSample = endSample;
                         }
@@ -143,9 +145,10 @@ namespace OpenUtau.App.Controls {
                 y2 = y1;
                 y1 = temp;
             }
-            for (var y = y1; y <= y2; ++y) {
-                data[x + width * y] = color;
-            }
+            if (y2 - y1 > 0.01) {
+                 for (var y = y1; y <= y2; ++y) {
+                     data[x + width * y] = color;
+                 }
         }
     }
 }
