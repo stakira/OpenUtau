@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -183,6 +183,7 @@ namespace OpenUtau.Core.Util {
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
             public string SetParamPath = string.Empty;
+            public bool CheckForUpdateOnStart = true;
             public bool Beta = false;
             public bool RememberMid = false;
             public bool RememberUst = true;
