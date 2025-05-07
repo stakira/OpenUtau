@@ -237,36 +237,45 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is MoveNoteCommand) {
                     Tone = MusicMath.GetToneName(note.tone);
                     this.RaisePropertyChanged(nameof(Tone));
-                } else if (cmd is VibratoLengthCommand) {
-                    if (note.vibrato.length > 0) {
-                        VibratoEnable = true;
-                    } else {
-                        VibratoEnable = false;
+                } else if (cmd is VibratoCommand) {
+                    if (cmd is VibratoLengthCommand || cmd is SetVibratoCommand) {
+                        if (note.vibrato.length > 0) {
+                            VibratoEnable = true;
+                        } else {
+                            VibratoEnable = false;
+                        }
+                        VibratoLength = note.vibrato.length;
+                        this.RaisePropertyChanged(nameof(VibratoEnable));
+                        this.RaisePropertyChanged(nameof(VibratoLength));
                     }
-                    VibratoLength = note.vibrato.length;
-                    this.RaisePropertyChanged(nameof(VibratoEnable));
-                    this.RaisePropertyChanged(nameof(VibratoLength));
-                } else if (cmd is VibratoFadeInCommand) {
-                    VibratoIn = note.vibrato.@in;
-                    this.RaisePropertyChanged(nameof(VibratoIn));
-                } else if (cmd is VibratoFadeOutCommand) {
-                    VibratoOut = note.vibrato.@out;
-                    this.RaisePropertyChanged(nameof(VibratoOut));
-                } else if (cmd is VibratoDepthCommand) {
-                    VibratoDepth = note.vibrato.depth;
-                    this.RaisePropertyChanged(nameof(VibratoDepth));
-                } else if (cmd is VibratoPeriodCommand) {
-                    VibratoPeriod = note.vibrato.period;
-                    this.RaisePropertyChanged(nameof(VibratoPeriod));
-                } else if (cmd is VibratoShiftCommand) {
-                    VibratoShift = note.vibrato.shift;
-                    this.RaisePropertyChanged(nameof(VibratoShift));
-                } else if (cmd is VibratoDriftCommand) {
-                    VibratoDrift = note.vibrato.drift;
-                    this.RaisePropertyChanged(nameof(VibratoDrift));
-                } else if (cmd is VibratoVolumeLinkCommand) {
-                    VibratoVolLink = note.vibrato.volLink;
-                    this.RaisePropertyChanged(nameof(VibratoVolLink));
+                    if (cmd is VibratoFadeInCommand || cmd is SetVibratoCommand) {
+                        VibratoIn = note.vibrato.@in;
+                        this.RaisePropertyChanged(nameof(VibratoIn));
+                    }
+                    if (cmd is VibratoFadeOutCommand || cmd is SetVibratoCommand) {
+                        VibratoOut = note.vibrato.@out;
+                        this.RaisePropertyChanged(nameof(VibratoOut));
+                    }
+                    if (cmd is VibratoDepthCommand || cmd is SetVibratoCommand) {
+                        VibratoDepth = note.vibrato.depth;
+                        this.RaisePropertyChanged(nameof(VibratoDepth));
+                    }
+                    if (cmd is VibratoPeriodCommand || cmd is SetVibratoCommand) {
+                        VibratoPeriod = note.vibrato.period;
+                        this.RaisePropertyChanged(nameof(VibratoPeriod));
+                    }
+                    if (cmd is VibratoShiftCommand || cmd is SetVibratoCommand) {
+                        VibratoShift = note.vibrato.shift;
+                        this.RaisePropertyChanged(nameof(VibratoShift));
+                    }
+                    if (cmd is VibratoDriftCommand || cmd is SetVibratoCommand) {
+                        VibratoDrift = note.vibrato.drift;
+                        this.RaisePropertyChanged(nameof(VibratoDrift));
+                    }
+                    if (cmd is VibratoVolumeLinkCommand || cmd is SetVibratoCommand) {
+                        VibratoVolLink = note.vibrato.volLink;
+                        this.RaisePropertyChanged(nameof(VibratoVolLink));
+                    }
                 }
             } else if (cmd is ExpCommand) {
                 if (cmd is PitchExpCommand) {
