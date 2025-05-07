@@ -18,7 +18,6 @@ namespace OpenUtau.Core.Enunu {
         public const int headTicks = 240;
         public const int tailTicks = 240;
         protected string port;
-        //private EnunuConfig config;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
