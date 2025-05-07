@@ -124,6 +124,7 @@
   <system:String x:Key="languages.pt">Portuguese</system:String>
   <system:String x:Key="languages.ru">Russian</system:String>
   <system:String x:Key="languages.th">Thai</system:String>
+  <system:String x:Key="languages.tr">Turkish</system:String>
   <system:String x:Key="languages.vi">Vietnamese</system:String>
   <system:String x:Key="languages.zh">Chinese</system:String>
   <system:String x:Key="languages.zh-yue">Cantonese</system:String>
