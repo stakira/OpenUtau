@@ -9,7 +9,7 @@ namespace OpenUtau.Core.DiffSinger
     public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer
     {
         protected override string GetDictionaryName()=>"dsdict-ko.yaml";
-        protected override string GetLangCode()=>"ko";
+        public override string GetLangCode()=>"ko";
 
         public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             if (groups.Length == 0) {
