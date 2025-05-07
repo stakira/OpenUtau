@@ -12,6 +12,20 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
+        void ResetCustomDataPath(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).SetCustomDataPath(string.Empty);
+        }
+
+        async void SelectCustomDataPath(object sender, RoutedEventArgs e) {
+            var path = await FilePicker.OpenFolder(this, "prefs.paths.datapath", PathManager.Inst.DataPath);
+            if (string.IsNullOrEmpty(path)) {
+                return;
+            }
+            if (Directory.Exists(path)) {
+                ((PreferencesViewModel)DataContext!).SetCustomDataPath(path);
+            }
+        }
+
         void ResetAddlSingersPath(object sender, RoutedEventArgs e) {
             ((PreferencesViewModel)DataContext!).SetAddlSingersPath(string.Empty);
         }
