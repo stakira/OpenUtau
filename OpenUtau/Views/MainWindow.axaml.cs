@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -53,7 +52,7 @@ namespace OpenUtau.App.Views {
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
 
-            viewModel.InitProject();
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -86,6 +85,10 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+        }
+
+        public void InitProject() {
+            viewModel.InitProject(this);
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
@@ -649,9 +652,9 @@ namespace OpenUtau.App.Views {
 
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Cache cleared."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
             });
         }
 
@@ -718,10 +721,11 @@ namespace OpenUtau.App.Views {
         void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
 
         private void LayoutSplit(double? x, double? y) {
-            if (Screens.Primary == null) {
+            var mainScreen = Screens.Primary != null ? Screens.Primary : Screens.All[0];
+            if (mainScreen == null) {
                 return;
             }
-            var wa = Screens.Primary.WorkingArea;
+            var wa = mainScreen.WorkingArea;
             WindowState = WindowState.Normal;
             double titleBarHeight = 20;
             if (FrameSize != null) {
@@ -1298,6 +1302,8 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
                 return;
             }
             e.Cancel = true;

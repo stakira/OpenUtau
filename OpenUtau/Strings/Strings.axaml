@@ -3,6 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.note.copy">Copy note</system:String>
+  <system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>
   <system:String x:Key="context.note.delete">Delete note</system:String>
   <system:String x:Key="context.note.pasteparameters">Select and paste parameters</system:String>
   <system:String x:Key="context.part.delete">Delete part</system:String>
@@ -48,6 +49,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
+  <system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>
+  <system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
   New BPM:</system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
@@ -64,6 +67,7 @@
   <system:String x:Key="errors.details">Error Details</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
+  <system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>
   <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
@@ -213,7 +217,8 @@
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>
+  <system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>
+  <system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>
   <system:String x:Key="notedefaults.portamento">Portamento</system:String>
   <system:String x:Key="notedefaults.portamento.length">Length</system:String>
   <system:String x:Key="notedefaults.portamento.start">Start</system:String>
@@ -429,7 +434,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
@@ -452,6 +459,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
   <system:String x:Key="prefs.utau">UTAU</system:String>
 
+  <system:String x:Key="progress.cachecleared">Cache cleared.</system:String>
+  <system:String x:Key="progress.clearingcache">Clearing cache...</system:String>
   <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>

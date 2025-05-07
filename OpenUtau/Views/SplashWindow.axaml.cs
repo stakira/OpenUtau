@@ -22,7 +22,7 @@ namespace OpenUtau.App.Views {
         }
 
         private void SplashWindow_Opened(object? sender, EventArgs e) {
-            if (Screens.Primary == null) {
+            if (Screens.Primary == null && Screens.ScreenCount == 0) {
                 return;
             }
 
@@ -50,6 +50,7 @@ namespace OpenUtau.App.Views {
                     var mainWindow = new MainWindow();
                     mainWindow.Show();
                     desktop.MainWindow = mainWindow;
+                    mainWindow.InitProject();
                     Close();
                 }
             }, CancellationToken.None, TaskContinuationOptions.None, mainScheduler);

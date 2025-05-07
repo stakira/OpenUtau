@@ -11,7 +11,7 @@ namespace Voicevox {
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
-            if (this.singer != null) {
+            if (this.singer != null && this.singer.voicevoxConfig != null) {
                 this.singer.voicevoxConfig.Tag = this.Tag;
                 VoicevoxUtils.Loaddic(this.singer);
             }

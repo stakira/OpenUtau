@@ -6,8 +6,7 @@
         x:Class="OpenUtau.App.Views.MessageBox" SizeToContent="WidthAndHeight" CanResize="False"
         Icon="/Assets/open-utau.ico"
         Title="MessageBox" MinWidth="300" MinHeight="150"
-        WindowStartupLocation="CenterScreen"
-        ExtendClientAreaToDecorationsHint="False">
+        WindowStartupLocation="CenterScreen">
   <ScrollViewer MaxHeight="700" VerticalScrollBarVisibility="Auto">
     <Grid Margin="{Binding $parent.WindowDecorationMargin}">
       <Grid.RowDefinitions>
