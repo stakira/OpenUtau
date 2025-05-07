@@ -170,6 +170,8 @@
   <system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>
   <system:String x:Key="menu.file.exportproject">Export Project</system:String>
+  <system:String x:Key="menu.file.exportroughmix">RoughMix To Wav Files</system:String>
+  <system:String x:Key="menu.file.exportroughmixto">RoughMix To Wav Files To...</system:String>
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>
   <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>

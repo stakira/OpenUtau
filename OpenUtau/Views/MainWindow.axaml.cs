@@ -408,6 +408,25 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuExportRoughMix(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                var name = Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = Path.GetDirectoryName(project.FilePath);
+                path = Path.Combine(path!, "Export", $"{name}.wav");
+                await PlaybackManager.Inst.RenderRoughMix(project, path);
+            }
+        }
+
+        async void OnMenuExportRoughMixTo(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var file = await FilePicker.SaveFileAboutProject(
+                this, "menu.file.exportwavto", FilePicker.WAV);
+            if (!string.IsNullOrEmpty(file)) {
+                await PlaybackManager.Inst.RenderRoughMix(project, file);
+            }
+        }
+
         async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             var file = await FilePicker.SaveFileAboutProject(

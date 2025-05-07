@@ -205,10 +205,40 @@ namespace OpenUtau.Core {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
 
                         CheckFileWritable(file);
+                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                    }
+                } catch (IOException ioe) {
+                    var customEx = new MessageCustomizableException($"Failed to export {file}.", $"<translate:errors.failed.export>: {file}", ioe);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {file}."));
+                } catch (Exception e) {
+                    var customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
+                }
+            });
+        }
+
+        // Exporting each tracks
+        public async Task RenderRoughMix(UProject project, string exportPath) {
+            await Task.Run(() => {
+                string file = "";
+                try {
+                    RenderEngine engine = new RenderEngine(project);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    for (int i = 0; i < trackMixes.Count; ++i) {
+                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
+                            continue;
+                        }
+                        file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
+
+                        CheckFileWritable(file);
                         int samplingRate = Preferences.Default.ParallelSamplingRate;
                         var exportAdapter = new ExportAdapter(trackMixes[i]);
                         SampleToWaveProvider16 waveProvider;
-                        if(exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                        if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
                             WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
                             if (Preferences.Default.ParallelChannel == 0) {
                                 waveProvider = new SampleToWaveProvider16(resampAdapter);
