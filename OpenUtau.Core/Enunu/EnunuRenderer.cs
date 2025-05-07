@@ -257,7 +257,7 @@ namespace OpenUtau.Core.Enunu {
                     string part = key + ":";
 
                     bool hasMatch = false;
-                    int i = styleFormats.format.Split("}").Length;
+                    int i = System.Text.RegularExpressions.Regex.Matches(styleFormats.format, @"\{[^}]*\}").Count + 1;
 
                     foreach (var styleName in styleFormats.index) {
 
