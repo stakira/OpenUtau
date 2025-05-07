@@ -8,6 +8,9 @@ namespace OpenUtau.App.Views {
     public partial class LyricsDialog : Window {
         public LyricsDialog() {
             InitializeComponent();
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
         }
 
         void OnOpened(object? sender, EventArgs e) {

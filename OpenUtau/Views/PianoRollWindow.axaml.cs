@@ -16,6 +16,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.Integrations;
 using ReactiveUI;
 using Serilog;
 
@@ -43,6 +44,9 @@ namespace OpenUtau.App.Views {
 
         public PianoRollWindow() {
             InitializeComponent();
+            if (OS.IsMacOS()) {
+                StyleManager.SetStyles(this, 3);
+            }
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
 
@@ -348,7 +352,7 @@ namespace OpenUtau.App.Views {
                 Title = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 onFinish = value => {
                     if (!string.IsNullOrWhiteSpace(value)) {
-                        var edit = new Core.Editing.AddBreathNote(value);
+                        var edit = new AddBreathNote(value);
                         try {
                             edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                         } catch (Exception e) {
@@ -386,7 +390,7 @@ namespace OpenUtau.App.Views {
             }
             var dialog = new SliderDialog(ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"), 0.5, 0, 1, 0.1);
             dialog.onFinish = value => {
-                var edit = new Core.Editing.LengthenCrossfade(value);
+                var edit = new LengthenCrossfade(value);
                 try {
                     edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
                 } catch (Exception e) {
@@ -936,7 +940,7 @@ namespace OpenUtau.App.Views {
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
                         if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
-                            Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
+                            VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
                             MainWindow?.OpenSingersWindow();
                             this.Activate();
@@ -1130,7 +1134,7 @@ namespace OpenUtau.App.Views {
             if (notesVm?.Part == null || playVm == null) {
                 return false;
             }
-            var project = Core.DocManager.Inst.Project;
+            var project = DocManager.Inst.Project;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
             int deltaTicks = notesVm.IsSnapOn ? snapUnit : 15;
 
