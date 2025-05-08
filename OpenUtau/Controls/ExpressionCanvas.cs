@@ -108,7 +108,11 @@ namespace OpenUtau.App.Controls {
                 double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
                 var lPen = ThemeManager.AccentPen1;
                 var lPen2 = ThemeManager.AccentPen1Thickness2;
+                var lPen3 = new Pen(ThemeManager.NeutralAccentBrush, 1, new DashStyle(new double[] { 4, 4 }, 0));
                 var brush = ThemeManager.AccentBrush1Note;
+                double x3 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                double x4 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                context.DrawLine(lPen3, new Point(x3, defaultHeight), new Point(x4, defaultHeight));
                 if (curve == null) {
                     double x1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
                     double x2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
@@ -175,6 +179,12 @@ namespace OpenUtau.App.Controls {
                     // vertical and horizontal lines
                     context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                     context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2), valueHeight));
+
+                    double p1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                    double p2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                    var dashedPen = new Pen(ThemeManager.NeutralAccentBrushSemi, 1, new DashStyle(new double[] { 4, 4 }, 0));
+                    double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+                    context.DrawLine(dashedPen, new Point(p1, defaultHeight), new Point(p2, defaultHeight));
                     
                     using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
                         context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
