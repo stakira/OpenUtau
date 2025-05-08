@@ -1129,9 +1129,7 @@ namespace OpenUtau.App.Views {
                 var selectedNotes = notesVm.Selection.ToList();
 
                 if (part != null && selectedNotes.Count > 0) {
-                    var docManager = DocManager.Inst;
-                    var batchEdit = new LoadRenderedPitch();
-                    batchEdit.Run(project, part, selectedNotes, docManager);
+                    noteBatchEditCommand.Execute(new LoadRenderedPitch()).Subscribe();
                 }
 
                 args.Handled = true;
