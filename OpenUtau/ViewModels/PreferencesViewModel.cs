@@ -340,10 +340,10 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.DiffSingerStepsVariance)
-                .Subscribe(index => {
+                 .Subscribe(index => {
                     Preferences.Default.DiffSingerStepsVariance = index;
                     Preferences.Save();
-                });
+                 });
             this.WhenAnyValue(vm => vm.DiffSingerStepsPitch)
                 .Subscribe(index => {
                     Preferences.Default.DiffSingerStepsPitch = index;

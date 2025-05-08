@@ -18,6 +18,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.App.ViewModels {
     public class NotesRefreshEvent { }
@@ -930,13 +931,23 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        public void ClearPhraseCache() {
+            if (Part != null && !Selection.IsEmpty) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
+                var selectedNotes = Selection.ToList();
+                var phrases = Part.renderPhrases.Where(phrase => selectedNotes.Any(note => phrase.notes.Any(rnote => rnote.position == Part.position + note.position - phrase.position && rnote.duration == note.duration)));
+                phrases.ForEach(phrase => phrase.DeleteCacheFiles());
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
+            }
+        }
+
         public class PlaybackLineModeChangedEvent {
             public readonly bool UseSolidLine;
             public PlaybackLineModeChangedEvent(bool useSolidLine) {
                 UseSolidLine = useSolidLine;
             }
         }
-
+        
         private void SetPlayPos(int tick, bool waitingRendering) {
             PlayPosWaitingRendering = waitingRendering;
             if (waitingRendering) {

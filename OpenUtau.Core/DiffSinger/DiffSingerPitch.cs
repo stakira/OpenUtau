@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -181,6 +181,7 @@ namespace OpenUtau.Core.DiffSinger
             if (linguisticOutputs is null) {
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
+                phrase.AddCacheFile(linguisticCache?.Filename);
             }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")

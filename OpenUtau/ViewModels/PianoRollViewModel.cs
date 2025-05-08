@@ -82,6 +82,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
+        public ReactiveCommand<NoteHitInfo, Unit> ClearPhraseCacheCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -103,6 +104,9 @@ namespace OpenUtau.App.ViewModels {
             });
             TogglePlaybackLineCommand = ReactiveCommand.Create(() => {
                 UseSolidPlaybackLine = !UseSolidPlaybackLine;
+            });
+            ClearPhraseCacheCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
+                NotesViewModel.ClearPhraseCache();
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }

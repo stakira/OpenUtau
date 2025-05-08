@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using Classic;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
+using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -22,12 +27,12 @@ namespace OpenUtau.Plugin.Builtin {
     /// </summary>
     [Phonemizer("English X-SAMPA phonemizer", "EN X-SAMPA", "Lotte V", language: "UTAU")]
     public class EnXSampaPhonemizer : SyllableBasedPhonemizer {
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,ai,ei,Oi,au,ou,Ou,@u,i:,u:,O:,e@0,E~,e~,3r,ar,or,{l,Al,al,El,Il,il,ol,ul,Ul,oUl,@5,u5,O5,A5,E5,I5,i5,mm,nn,ll,NN".Split(',');
+        private string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,ai,ei,Oi,au,ou,Ou,@u,i:,u:,O:,e@0,E~,e~,3r,ar,or,{l,Al,al,El,Il,il,ol,ul,Ul,oUl,@5,u5,O5,A5,E5,I5,i5,mm,nn,ll,NN".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
         private readonly string[] longConsonants = "tS,f,dZ,k,p,s,S,t,T,t_},t}".Split(",");
-        private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
+        private Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
             "b=b;ch=tS;d=d;dh=D;" + "dx=4;eh=E;el=@l;em=@m;en=@n;eng=@N;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
             "p=p;q=・;r=r;s=s;sh=S;t=t;th=T;" + "uh=U;uw=u;v=v;w=w;" + "y=j;z=z;zh=Z").Split(';')
                 .Select(entry => entry.Split('='))
@@ -35,14 +40,32 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
+        protected override string[] GetVowels() => vowels;
+        protected override string[] GetConsonants() => consonants; 
+        protected override string GetDictionaryName() => "";
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
+
         // For banks aliased with VOCALOID-style phonemes
         private readonly Dictionary<string, string> vocaSampa = "A=Q;E=e;i=i:;u=u:;O=O:;3=@r;oU=@U;Ar=Q@;Qr=Q@;Er=e@;er=e@;Ir=I@;ir=I@;i:r=I@;Or=O@;O:r=O@;Ur=U@;ur=U@;u:r=U@".Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
-
         private bool isVocaSampa = false;
+
+        private readonly Dictionary<string, string> replacements = "".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+        private bool isReplacements = false;
+
+        private readonly Dictionary<string, string> fallbacks = "".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+        private bool isfallbacks = false;
 
         // For banks with slightly fewer vowels
         private readonly Dictionary<string, string> simpleDelta = "E=e;V=@;o=O".Split(';')
@@ -162,11 +185,6 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@u","u"},
                 {"3", "r"}
             };
-        protected override string[] GetVowels() => vowels;
-        protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionaryName() => "cmudict-0_7b.txt";
-        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
-
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -199,6 +217,105 @@ namespace OpenUtau.Plugin.Builtin {
             g2ps.Add(new ArpabetG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
+        public override void SetSinger(USinger singer) {
+            if (this.singer == singer) return;
+
+            this.singer = singer;
+            string file = null;
+
+            // Resolve path priority: en-xsampa.yaml > xsampa.yaml > write en-xsampa.yaml
+            string baseDir = (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location))
+                ? singer.Location
+                : PluginDir;
+
+            if (!string.IsNullOrEmpty(baseDir)) {
+                string enXsampaPath = Path.Combine(baseDir, "en-xsampa.yaml");
+                string fallbackXsampaPath = Path.Combine(baseDir, "xsampa.yaml");
+
+                if (File.Exists(enXsampaPath)) {
+                    file = enXsampaPath;
+                } else if (File.Exists(fallbackXsampaPath)) {
+                    file = fallbackXsampaPath;
+                } else {
+                    try {
+                        File.WriteAllBytes(enXsampaPath, Data.Resources.en_xsampa_template);
+                        file = enXsampaPath;
+                        Log.Error($"Wrote default 'en-xsampa.yaml' to {enXsampaPath}");
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to write 'en-xsampa.yaml' to {enXsampaPath}");
+                        return;
+                    }
+                }
+            } else {
+                Log.Error("Singer location and PluginDir are both null or empty. Cannot locate or write xsampa YAML.");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(file) && File.Exists(file)) {
+                try {
+                    var data = Core.Yaml.DefaultDeserializer.Deserialize<XsampaYAMLData>(File.ReadAllText(file));
+                    // Load vowels
+                    try {
+                        var loadVowels = data.symbols?
+                            .Where(s => s.type == "vowel")
+                            .Select(s => s.symbol)
+                            .ToList() ?? new List<string>();
+
+                        vowels = vowels.Concat(loadVowels).Distinct().ToArray();
+                    } catch (Exception ex) {
+                        Log.Error($"Failed to load vowels from YAML: {ex.Message}");
+                    }
+                    // Load replacements
+                    try {
+                        if (data?.replacements?.Any() == true) {
+                            foreach (var r in data.replacements) {
+                                if (!string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to)) {
+                                    // Always override default values if YAML has a matching 'from' key
+                                    dictionaryReplacements[r.from] = r.to;
+                                } else {
+                                    Log.Error("Ignored YAML replacement with missing 'from' or 'to' value.");
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        Log.Error($"Failed to load replacements from YAML: {ex.Message}");
+                    }
+                    // Load fallbacks
+                    try {
+                        if (data?.fallbacks?.Any() == true) {
+                            foreach (var df in data.fallbacks) {
+                                if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
+                                    // Overwrite or add
+                                    fallbacks[df.from] = df.to;
+                                } else {
+                                    Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        Log.Error($"Failed to load fallbacks from YAML: {ex.Message}");
+                    }
+                } catch (Exception ex) {
+                    Log.Error($"Failed to parse YAML file '{file}': {ex.Message}");
+                }
+            }
+            ReadDictionaryAndInit();
+        }
+
+        public class XsampaYAMLData {
+            public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
+            public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
+            public Replacement[] fallbacks { get; set; } = Array.Empty<Replacement>();
+
+            public struct SymbolData {
+                public string symbol { get; set; }
+                public string type { get; set; }
+            }
+            public struct Replacement {
+                public string from { get; set; }
+                public string to { get; set; }
+            }
+        }
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
@@ -220,14 +337,21 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return modified.ToArray();
         }
+        // prioritize yaml replacements over dictionary replacements
+        private string ReplacePhoneme(string phoneme) {
+            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
+                return replaced;
+            }
+            return phoneme;
+        }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            string prevV = syllable.prevV;
-            string[] cc = syllable.cc;
-            string v = syllable.v;
+            string prevV = ReplacePhoneme(syllable.prevV);
+            string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
+            string v = ReplacePhoneme(syllable.v);
 
-            string[] CurrentWordCc = syllable.CurrentWordCc;
-            string[] PreviousWordCc = syllable.PreviousWordCc;
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
             int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
 
             string basePhoneme;
@@ -235,46 +359,57 @@ namespace OpenUtau.Plugin.Builtin {
             var lastC = cc.Length - 1;
             var firstC = 0;
             var rv = $"- {v}";
-
+            
             // Switch between phonetic systems, depending on certain aliases in the bank
-            if (HasOto($"- i:", syllable.tone) || HasOto($"i:", syllable.tone) || (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone))) {
-                isVocaSampa = true;
-            }
+            if (replacements.ContainsKey(syllable.v) || replacements.ContainsKey(syllable.prevV)) {
+                isReplacements = true;
+            } else {
+                if (HasOto($"- i:", syllable.tone) || HasOto($"i:", syllable.tone) || (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone))) {
+                    isVocaSampa = true;
+                }
 
-            if (!HasOto($"- VI", syllable.tone) || HasOto($"VI", syllable.tone) || (!HasOto($"- VU", syllable.tone) && !HasOto($"VU", syllable.tone))) {
-                isMissingCanadianRaising = true;
-            }
+                if (!HasOto($"- VI", syllable.tone) || HasOto($"VI", syllable.tone) || (!HasOto($"- VU", syllable.tone) && !HasOto($"VU", syllable.tone))) {
+                    isMissingCanadianRaising = true;
+                }
 
-            if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone)) {
-                isSimpleDelta = true;
-            }
+                if (!HasOto($"- V", syllable.vowelTone) && !HasOto($"V", syllable.vowelTone)) {
+                    isSimpleDelta = true;
+                }
 
-            if (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone)) {
-                isTetoException = true;
-            }
+                if (!HasOto($"- bV", syllable.vowelTone) && !HasOto($"bV", syllable.vowelTone)) {
+                    isTetoException = true;
+                }
 
-            if ((!HasOto($"- I", syllable.vowelTone) && !HasOto($"I", syllable.vowelTone)) || (!HasOto($"- U", syllable.vowelTone) && !HasOto($"U", syllable.vowelTone))) {
-                isMiniDelta = true;
-            }
+                if ((!HasOto($"- I", syllable.vowelTone) && !HasOto($"I", syllable.vowelTone)) || (!HasOto($"- U", syllable.vowelTone) && !HasOto($"U", syllable.vowelTone))) {
+                    isMiniDelta = true;
+                }
 
-            if (HasOto("あ", syllable.vowelTone) || HasOto("- あ", syllable.vowelTone)) {
-                isEnPlusJa = true;
-            }
+                if (HasOto("あ", syllable.vowelTone) || HasOto("- あ", syllable.vowelTone)) {
+                    isEnPlusJa = true;
+                }
 
-            if (HasOto($"{prevV} r\\", syllable.tone)) {
-                isTrueXSampa = true;
-            }
+                if (HasOto($"{prevV} r\\", syllable.tone)) {
+                    isTrueXSampa = true;
+                }
 
-            if (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone) && !HasOto($"- @`", syllable.tone) && !HasOto($"@`", syllable.tone)) {
-                isSalemList = true;
-            }
+                if (!HasOto($"- 3", syllable.tone) && !HasOto($"3", syllable.tone) && !HasOto($"- @`", syllable.tone) && !HasOto($"@`", syllable.tone)) {
+                    isSalemList = true;
+                }
 
-            if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
-                isVelarNasalFallback = true;
-            }
+                if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
+                    isVelarNasalFallback = true;
+                }
 
-            if (HasOto("@5", syllable.vowelTone) || HasOto("u5", syllable.vowelTone) || HasOto("O5", syllable.vowelTone) || HasOto("A5", syllable.vowelTone) || HasOto("E5", syllable.vowelTone) || HasOto("I5", syllable.vowelTone) || HasOto("i5", syllable.vowelTone) || HasOto("- @5", syllable.vowelTone) || HasOto("- u5", syllable.vowelTone) || HasOto("- O5", syllable.vowelTone) || HasOto("- A5", syllable.vowelTone) || HasOto("- E5", syllable.vowelTone) || HasOto("- I5", syllable.vowelTone) || HasOto("- i5", syllable.vowelTone)) {
-                isDarkLVowel = true;
+                if (HasOto("@5", syllable.vowelTone) || HasOto("u5", syllable.vowelTone) || HasOto("O5", syllable.vowelTone) || HasOto("A5", syllable.vowelTone) || HasOto("E5", syllable.vowelTone) || HasOto("I5", syllable.vowelTone) || HasOto("i5", syllable.vowelTone) || HasOto("- @5", syllable.vowelTone) || HasOto("- u5", syllable.vowelTone) || HasOto("- O5", syllable.vowelTone) || HasOto("- A5", syllable.vowelTone) || HasOto("- E5", syllable.vowelTone) || HasOto("- I5", syllable.vowelTone) || HasOto("- i5", syllable.vowelTone)) {
+                    isDarkLVowel = true;
+                }
+
+                foreach (var entry in fallbacks) {
+                    if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
+                        isfallbacks = true;
+                        break;
+                    }
+                }
             }
 
             if (syllable.IsStartingV) {
@@ -553,8 +688,8 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string[] cc = ending.cc;
-            string v = ending.prevV;
+            string[] cc = ending.cc.Select(c => ReplacePhoneme(c)).ToArray();
+            string v = ReplacePhoneme(ending.prevV);
 
             var phonemes = new List<string>();
             var vr = $"{v} -";
@@ -766,6 +901,18 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (isDarkLVowel) {
                 foreach (var syllable in darkLVowel) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
+            if (isReplacements) {
+                foreach (var syllable in replacements) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
+            if (isfallbacks) {
+                foreach (var syllable in fallbacks) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
