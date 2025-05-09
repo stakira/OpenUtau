@@ -24,7 +24,7 @@ namespace OpenUtau.App.Views {
         }
 
         private void SplashWindow_Opened(object? sender, EventArgs e) {
-            if (Screens.Primary == null) {
+            if (Screens.Primary == null && Screens.ScreenCount == 0) {
                 return;
             }
 
