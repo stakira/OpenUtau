@@ -85,6 +85,7 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+            this.Cursor = null;
         }
 
         public void InitProject() {

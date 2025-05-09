@@ -16,7 +16,8 @@
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Border Grid.Row="1">
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}"
+          PointerMoved="BackgroundPointerMoved">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>

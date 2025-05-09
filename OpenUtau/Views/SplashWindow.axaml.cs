@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
@@ -18,6 +19,7 @@ namespace OpenUtau.App.Views {
                 LogoTypeLight.IsVisible = true;
                 LogoTypeDark.IsVisible = false;
             }
+            this.Cursor = new Cursor(StandardCursorType.AppStarting);
             this.Opened += SplashWindow_Opened;
         }
 

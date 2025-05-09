@@ -736,6 +736,7 @@ namespace OpenUtau.App.Views {
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            args.Handled = true;
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
@@ -746,7 +747,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if (((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
+            if((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.EraserTool) && args.KeyModifiers != cmdKey) {
                 Cursor = null;
                 return;
             }
@@ -769,6 +770,10 @@ namespace OpenUtau.App.Views {
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
             if (noteHitInfo.hitResizeArea) {
                 Cursor = ViewConstants.cursorSizeWE;
+                return;
+            }
+            if (!noteHitInfo.hitBody && (ViewModel.NotesViewModel.CursorTool || args.KeyModifiers == cmdKey)) {
+                Cursor = ViewConstants.cursorCross;
                 return;
             }
             Cursor = null;
@@ -873,6 +878,7 @@ namespace OpenUtau.App.Views {
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            args.Handled = true;
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
@@ -972,6 +978,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PhonemeCanvasPointerMoved(object sender, PointerEventArgs args) {
+            args.Handled = true;
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
@@ -1013,6 +1020,11 @@ namespace OpenUtau.App.Views {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+        }
+
+        public void BackgroundPointerMoved(object sender, PointerEventArgs args) {
+            Cursor = null;
+            args.Handled = true;
         }
 
         private bool IsLockedEdit(bool locked, UNote note) {
