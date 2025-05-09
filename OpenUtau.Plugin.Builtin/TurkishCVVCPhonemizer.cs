@@ -5,15 +5,13 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Turkish CVVC Phonemizer", "TR CVVC", "IsE & comorybxto", language: "TR")]
+    [Phonemizer("Turkish CVVC Phonemizer", "TR CVVC", "ise", language: "TR")]
+    // Contributed by ise with the help of Japanese CVVC phonemizer by TUBS
     public class TurkishCVVCPhonemizer : Phonemizer {
         static readonly string[] glottalStops = new string[] { "?", "q" };
         static readonly string[] vowels = new string[] { "a", "e", "ae", "eu", "i", "o", "oe", "u", "ue" };
         static readonly string[] sustainedConsonants = new string[] { "Y", "L", "LY", "M", "N", "NG" };
         static readonly string[] consonants = "9,b,c,ch,d,f,g,h,j,k,l,m,n,ng,p,r,rr,r',s,sh,t,v,w,y,z,by,dy,gy,hy,ky,ly,my,ny,py,ry,ty,Y,L,LY,M,N,NG,-,?,q".Split(',');
-
-        static TurkishCVVCPhonemizer() {
-        }
 
         // Store singer in field, will try reading presamp.ini later
         private USinger singer;
@@ -93,8 +91,6 @@ namespace OpenUtau.Plugin.Builtin {
                 return new string[] { v_ + current.EndC1 };
 
             if (hasNext) {
-                //if (sustainedConsonants.Contains(current.EndC1.ToUpper()))
-                //    return new string[] { v_ + current.EndC1.ToUpper() };
                 if (current.EndC1 != "" && current.EndC1 == next.StartC1)
                     return new string[] { v_ + getAlternativeConsonant(current.EndC1, current.Vow) };
 
@@ -122,7 +118,7 @@ namespace OpenUtau.Plugin.Builtin {
                 v_ + current.EndC1 };
         }
 
-        private string getIfPChTK(string c) {
+        private string checkPChTK(string c) {
             if (c == "p" || c == "ch" || c == "t" || c == "k") {
                 return "";
             }
@@ -217,18 +213,6 @@ namespace OpenUtau.Plugin.Builtin {
             var note = notes[0];
             var currentLyric = note.lyric.Normalize();
 
-            /*
-            if (currentLyric[0] == ',')
-                basicMode = !basicMode;
-            if (basicMode) {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = currentLyric,
-                            }
-                    },
-                };
-            }*/
             if (currentLyric[0] == '.') {
                 return new Result {
                     phonemes = new Phoneme[] {
@@ -255,7 +239,7 @@ namespace OpenUtau.Plugin.Builtin {
             string noteStart = "", noteEnd = "", noteEndCC = "";
 
             if (phonemesCurrent.EndC2 != "") { // + VCC
-                noteEndInput = new string[] { phonemesCurrent.Vow + " " + phonemesCurrent.EndC1 + getIfPChTK(phonemesCurrent.EndC1) };
+                noteEndInput = new string[] { phonemesCurrent.Vow + " " + phonemesCurrent.EndC1 + checkPChTK(phonemesCurrent.EndC1) };
                 noteEndCC = phonemesCurrent.EndC1 + phonemesCurrent.EndC2 + " -";
             }
 
