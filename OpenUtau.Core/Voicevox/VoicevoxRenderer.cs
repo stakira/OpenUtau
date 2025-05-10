@@ -23,8 +23,9 @@ using ThirdParty;
 namespace OpenUtau.Core.Voicevox {
     public class VoicevoxRenderer : IRenderer {
         const string VOLC = VoicevoxUtils.VOLC;
-        const string REPM = VoicevoxUtils.REPM;
         const string SMOC = VoicevoxUtils.SMOC;
+        const string REPM = VoicevoxUtils.REPM;
+        const string DUCM = VoicevoxUtils.DUCM;
         const string PITD = Format.Ustx.PITD;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -32,11 +33,12 @@ namespace OpenUtau.Core.Voicevox {
             PITD,
             Format.Ustx.CLR,
             Format.Ustx.VOL,
-            VOLC,
-            REPM,
-            SMOC,
             //Format.Ustx.SHFC,
-            Format.Ustx.SHFT
+            Format.Ustx.SHFT,
+            VOLC,
+            SMOC,
+            REPM,
+            DUCM
         };
 
         static readonly object lockObj = new object();
@@ -227,7 +229,7 @@ namespace OpenUtau.Core.Voicevox {
                         //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
                         //if (flag != null) {
                         //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
-                                vsParams.phonemes[i].phoneme = vsParams_1.phonemes[i].phoneme;
+                        vsParams.phonemes[i].phoneme = vsParams_1.phonemes[i].phoneme;
                         //    }
                         //}
                     }
@@ -240,7 +242,7 @@ namespace OpenUtau.Core.Voicevox {
                     //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
                     //if (flag != null) {
                     //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
-                            vsParams.phonemes[i].phoneme = vsParams_2.phonemes[i].phoneme;
+                    vsParams.phonemes[i].phoneme = vsParams_2.phonemes[i].phoneme;
                     //    }
                     //}
                 }
@@ -257,11 +259,36 @@ namespace OpenUtau.Core.Voicevox {
                     phoneme = "pau",
                     frame_length = headFrames
                 });
+                int short_length_count = 0;
                 for (int i = 0; i < phrase.phones.Length; i++) {
                     double durationMs = phrase.phones[i].durationMs;
                     int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     if (length < 2) {
                         length = 2;
+                    }
+                    int correction = 0;
+                    var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item3.Equals(DUCM));
+                    if (flag != null) {
+                        switch (flag.Item1) {
+                            case VoicevoxUtils.ON:
+                                correction = 1;
+                                break;
+                            case VoicevoxUtils.OFF:
+                                correction = 2;
+                                break;
+                        }
+                    }
+                    if (correction != 2) {
+                        if (durationMs > (length / VoicevoxUtils.fps) * 1000f) {
+                            if (short_length_count >= 2) {
+                                length += 1;
+                                short_length_count = 0;
+                            } else {
+                                short_length_count += 1;
+                            }
+                        } else if (correction == 1) {
+                            length += 1;
+                        }
                     }
                     vsParams.phonemes.Add(new Phonemes() {
                         phoneme = phrase.phones[i].phoneme,
@@ -332,13 +359,6 @@ namespace OpenUtau.Core.Voicevox {
                     defaultValue=100,
                     isFlag = false,
                 },
-                //replace mode
-                //new UExpressionDescriptor{
-                //    name="replace mode",
-                //    abbr=REPM,
-                //    options = new string[] { VoicevoxUtils.REPLACE, VoicevoxUtils.OVERWRITE},
-                //    isFlag=true,
-                //},
                 //expressiveness
                 new UExpressionDescriptor {
                     name = "pitch smoothened (curve)",
@@ -348,6 +368,22 @@ namespace OpenUtau.Core.Voicevox {
                     max = 10,
                     defaultValue = 0,
                     isFlag = false
+                },
+                //phoneme replace mode
+                //new UExpressionDescriptor{
+                //    name = "phoneme replace mode",
+                //    abbr = REPM,
+                //    type = UExpressionType.Options,
+                //    options = new string[] { VoicevoxUtils.REPLACE, VoicevoxUtils.OVERWRITE},
+                //    isFlag = false,
+                //},
+                //duration correction mode
+                new UExpressionDescriptor{
+                    name = "duration correction mode",
+                    abbr = DUCM,
+                    type = UExpressionType.Options,
+                    options = new string[] { VoicevoxUtils.AUTO, VoicevoxUtils.ON, VoicevoxUtils.OFF},
+                    isFlag = true,
                 },
             };
 

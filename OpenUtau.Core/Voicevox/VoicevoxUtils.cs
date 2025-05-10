@@ -30,7 +30,7 @@ namespace OpenUtau.Core.Voicevox {
                 phoneme = this.phoneme,
                 frame_length = this.frame_length
             };
-    }
+        }
     }
     public class VoicevoxSynthParams {
         public List<double> f0 = new List<double>();
@@ -153,15 +153,24 @@ namespace OpenUtau.Core.Voicevox {
 
 
     public static class VoicevoxUtils {
+        // expression addr
         public const string VOLC = "volc";
         public const string REPM = "repm";
         public const string SMOC = "smoc";
+        public const string DUCM = "ducm";
+        // phoneme replace mode
         public const string REPLACE = "replace";
         public const string OVERWRITE = "overwrite";
+        // duration correction mode
+        public const string AUTO = "auto";
+        public const string ON = "on";
+        public const string OFF = "off";
+        // VOICEVOX constants
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
+        // Phonemes and dictionaries
         public static Dictionary_list dic = new Dictionary_list();
         public static Phoneme_list phoneme_List = new Phoneme_list();
 
@@ -186,7 +195,6 @@ namespace OpenUtau.Core.Voicevox {
         public static VoicevoxQueryMain NoteGroupsToVQuery(VoicevoxNote[] vNotes, TimeAxis timeAxis) {
             VoicevoxQueryMain vqMain = new VoicevoxQueryMain();
             int index = 0;
-            double durationMs = 0;
             try {
                 vqMain.notes.Add(new VoicevoxQueryNotes() {
                     lyric = "",
@@ -194,13 +202,22 @@ namespace OpenUtau.Core.Voicevox {
                     key = null,
                     vqnindex = -1
                 });
-                durationMs = vNotes[index].positionMs + vNotes[index].durationMs;
+                int short_length_count = 0;
                 while (index < vNotes.Length) {
                     string lyric = dic.Notetodic(vNotes, index);
-                    int length = (int)Math.Round((vNotes[index].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
+                    double durationMs = vNotes[index].durationMs;
+                    int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     if (length < 2) {
                         length = 2;
+                    }
+                    if (durationMs > (length / VoicevoxUtils.fps) * 1000f) {
+                        if (short_length_count >= 2) {
+                            length += 1;
+                            short_length_count = 0;
+                        } else {
+                            short_length_count += 1;
+                        }
                     }
                     int? tone = null;
                     if (!string.IsNullOrEmpty(lyric)) {
@@ -214,7 +231,6 @@ namespace OpenUtau.Core.Voicevox {
                         key = tone,
                         vqnindex = index
                     });
-                    durationMs += vNotes[index].durationMs;
                     index++;
                 }
                 vqMain.notes.Add(new VoicevoxQueryNotes {
