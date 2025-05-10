@@ -319,10 +319,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>
   <system:String x:Key="pianoroll.menu.reset">Reset</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>
   <system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
