@@ -166,8 +166,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
             DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
-            
-          = Preferences.Default.SkipRenderingMutedTracks;
+            SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
