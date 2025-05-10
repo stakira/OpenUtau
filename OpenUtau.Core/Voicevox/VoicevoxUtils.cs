@@ -25,6 +25,12 @@ namespace OpenUtau.Core.Voicevox {
         public string phoneme;
         public int frame_length;
 
+        public Phonemes Clone() {
+            return new Phonemes {
+                phoneme = this.phoneme,
+                frame_length = this.frame_length
+            };
+    }
     }
     public class VoicevoxSynthParams {
         public List<double> f0 = new List<double>();
@@ -36,12 +42,12 @@ namespace OpenUtau.Core.Voicevox {
 
         public VoicevoxSynthParams Clone() {
             return new VoicevoxSynthParams() {
-                f0 = new List<double>(f0),
-                volume = new List<double>(volume),
-                phonemes = new List<Phonemes>(phonemes),
-                volumeScale = volumeScale,
-                outputSamplingRate = outputSamplingRate,
-                outputStereo = outputStereo
+                f0 = new List<double>(this.f0),
+                volume = new List<double>(this.volume),
+                phonemes = this.phonemes.Select(p => p.Clone()).ToList(),
+                volumeScale = this.volumeScale,
+                outputSamplingRate = this.outputSamplingRate,
+                outputStereo = this.outputStereo
             };
         }
     }
