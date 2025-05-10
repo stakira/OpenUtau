@@ -9,7 +9,9 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     class SearchNoteViewModel : ViewModelBase {
+        [Reactive] public bool NoteMode { get; set; }
         [Reactive] public string SearchWord { get; set; } = "";
+        public string Watermark { get => ThemeManager.GetString(NoteMode ? "pianoroll.menu.searchnote" : "pianoroll.menu.searchnote.searchalias"); }
         [Reactive] public int Count { get; private set; }
         public ReactiveCommand<string, Unit> SelectCommand { get; }
 
@@ -17,18 +19,22 @@ namespace OpenUtau.App.ViewModels {
         List<UNote> notes = new List<UNote>();
         int selection = -1;
         [Reactive]public string ResultCount { get; private set; } = "";
-        static string searchWord = "";
         bool CaseSensitive{ get; set; } = true;
         bool WholeWord{ get; set; } = false;
 
         public SearchNoteViewModel(NotesViewModel notesViewModel) {
             this.notesViewModel = notesViewModel;
-            SearchWord = searchWord;
 
             this.WhenAnyValue(x => x.SearchWord)
                 .Subscribe(s => {
                     Search();
                 });
+            this.WhenAnyValue(x => x.NoteMode)
+                .Subscribe(s => {
+                    this.RaisePropertyChanged(nameof(Watermark));
+                    Search();
+                });
+
             SelectCommand = ReactiveCommand.Create<string>(select => {
                 switch (select) {
                     case "prev":
@@ -44,10 +50,10 @@ namespace OpenUtau.App.ViewModels {
             });
         }
 
-        bool IsMatch(UNote note){
-            string noteStr = CaseSensitive ? note.lyric : note.lyric.ToLower();
+        bool IsMatch(string lyric) {
+            string noteStr = CaseSensitive ? lyric : lyric.ToLower();
             string matchStr = CaseSensitive ? SearchWord : SearchWord.ToLower();
-            if(WholeWord){
+            if (WholeWord) {
                 return noteStr == matchStr;
             } else {
                 return noteStr.Contains(matchStr);
@@ -56,7 +62,11 @@ namespace OpenUtau.App.ViewModels {
 
         void Search() {
             if (!string.IsNullOrEmpty(SearchWord) && notesViewModel.Part != null) {
-                notes = notesViewModel.Part.notes.Where(IsMatch).ToList();
+                if (NoteMode) {
+                    notes = notesViewModel.Part.notes.Where(n => IsMatch(n.lyric)).ToList();
+                } else {
+                    notes = notesViewModel.Part.phonemes.Where(p => IsMatch(p.phoneme)).Select(p => p.Parent).Distinct().ToList();
+                }
                 Count = notes.Count();
             } else {
                 notes.Clear();
@@ -120,10 +130,6 @@ namespace OpenUtau.App.ViewModels {
             }else{
                 ResultCount = $"{Count}";
             }
-        }
-
-        public void OnClose() {
-            searchWord = SearchWord;
         }
     }
 }
