@@ -5,6 +5,8 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core;
+using Serilog;
 
 namespace OpenUtau.Core.Format {
     public static class SVP {
@@ -13,7 +15,6 @@ namespace OpenUtau.Core.Format {
                 var settings = new JsonSerializerSettings {
                     Converters = new List<JsonConverter> { new AttributeDictionaryConverter() },
                     Error = (sender, args) => {
-                        // Handle parsing errors
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -32,29 +33,25 @@ namespace OpenUtau.Core.Format {
         }
 
         private static UProject ConvertToUstx(SynthVProject svpProject, string filePath) {
-            var project = new UProject {
-                name = Path.GetFileNameWithoutExtension(filePath),
-                ustxVersion = new Version(0, 6),
-                resolution = 480,
-                FilePath = filePath,
-                Saved = false
-            };
+            var project = new UProject {};
             Ustx.AddDefaultExpressions(project);
 
-            // Extract singer's name from the database section
-            //string singerName = svpProject.database?.name ?? "Select Singer";
-
-            // Convert time signatures
-            project.timeSignatures = svpProject.time?.meter?.ConvertAll(m => 
-                new UTimeSignature(m.index, m.numerator, m.denominator)) 
+            // 1. Use SVP's time signature and tempo data directly
+            project.timeSignatures = svpProject.time?.meter?.ConvertAll(m =>
+                new UTimeSignature(m.index, m.numerator, m.denominator))
                 ?? new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
 
-            // Convert tempos
-            project.tempos = svpProject.time?.tempo?.ConvertAll(t => 
-                new UTempo(ConvertTimeToTicks(t.position, t.bpm), t.bpm))
-                ?? new List<UTempo> { new UTempo(0, 120) };
+            project.tempos = svpProject.time?.tempo?.Select(t =>
+                new UTempo(
+                    (int)Math.Round(t.position / 1_042_230.0), // convert to ms
+                    t.bpm)
+            ).ToList() ?? new List<UTempo>();
 
-            // Convert tracks
+            // 2. Build final TimeAxis using actual tempo map
+            var timeAxis = new TimeAxis();
+            timeAxis.BuildSegments(project);
+
+            // Convert tracks using final TimeAxis
             foreach (var svpTrack in svpProject.tracks ?? new List<SynthVTrack>()) {
                 if (svpTrack.mainGroup?.notes == null || svpTrack.mainGroup.notes.Count == 0) {
                     continue;
@@ -74,13 +71,15 @@ namespace OpenUtau.Core.Format {
                     if (svpNote.musicalType != "singing") {
                         continue;
                     }
-                    
-                    int rawTickOn = ConvertTimeToTicks(svpNote.onset, GetBpmAtTime(svpProject, svpNote.onset));
-                    int rawDuration = ConvertTimeToTicks(svpNote.duration, GetBpmAtTime(svpProject, svpNote.onset));
+                    // nanoseconds to milliseconds
+                    double onsetMs = svpNote.onset / 1_468_750.0;
+                    double durationMs = svpNote.duration / 1_468_750.0;
+                    Log.Error($"Note onset: {svpNote.onset} ticks ({onsetMs:F3} ms)");
 
-                    // Quantize to nearest 1/16th note (30 ticks)
-                    int tickOn = Quantize(rawTickOn, 30);
-                    int duration = Math.Max(Quantize(rawDuration, 30), 30);
+                    int tickOn = timeAxis.MsPosToTickPos(Math.Round(onsetMs));
+                    int tickOff = timeAxis.MsPosToTickPos(Math.Round(onsetMs + durationMs));
+                    int duration = Math.Max(tickOff - tickOn, 1);
+                    Log.Error($"Note tick: {tickOn}");
 
                     var note = project.CreateNote(
                         svpNote.pitch,
@@ -88,8 +87,10 @@ namespace OpenUtau.Core.Format {
                         duration);
                     
                     note.lyric = string.IsNullOrEmpty(svpNote.lyrics) ? "a" : svpNote.lyrics;
-
-                    // Handle vibrato parameters
+                    if (note.lyric == "-") {
+                        note.lyric = "+~";
+                    }
+                    
                     if (svpNote.attributes != null) {
                         note.vibrato.length = GetAttributeValue(svpNote.attributes, "tF0VbrLeft", 0.3f);
                         note.vibrato.depth = GetAttributeValue(svpNote.attributes, "dF0Vbr", 0f) / 100f;
@@ -101,7 +102,7 @@ namespace OpenUtau.Core.Format {
                 }
 
                 if (part.notes.Count > 0) {
-                    part.Duration = part.notes.Max.End;
+                    part.Duration = part.notes.Max(n => n.End);
                     project.tracks.Add(track);
                     project.parts.Add(part);
                 }
@@ -111,10 +112,6 @@ namespace OpenUtau.Core.Format {
             return project;
         }
 
-        private static int Quantize(int ticks, int gridSize) {
-            return (int)Math.Round(ticks / (double)gridSize) * gridSize;
-        }
-
         private static float GetAttributeValue(Dictionary<string, object> attributes, string key, float defaultValue) {
             if (attributes != null && attributes.TryGetValue(key, out var value)) {
                 if (value is double d) return (float)d;
@@ -122,24 +119,6 @@ namespace OpenUtau.Core.Format {
                 if (value is int i) return i;
             }
             return defaultValue;
-        }
-
-        private static int ConvertTimeToTicks(long nanoseconds, double bpm) {
-            double quarterNotes = nanoseconds / (500000000.0 * (120.0 / bpm));
-            return (int)Math.Round(quarterNotes * 480);
-        }
-
-        private static double GetBpmAtTime(SynthVProject project, long timeNs) {
-            if (project.time?.tempo == null || project.time.tempo.Count == 0) {
-                return 120.0;
-            }
-
-            var tempo = project.time.tempo
-                .Where(t => t.position <= timeNs)
-                .OrderByDescending(t => t.position)
-                .FirstOrDefault();
-
-            return tempo?.bpm ?? 120.0;
         }
 
         // Model classes
@@ -175,7 +154,7 @@ namespace OpenUtau.Core.Format {
             public List<SynthVNote> notes { get; set; }
         }
 
-         private class SynthVDatabase {
+        private class SynthVDatabase {
             public string name { get; set; }
         }
 
@@ -185,12 +164,20 @@ namespace OpenUtau.Core.Format {
             public long duration { get; set; }
             public string lyrics { get; set; }
             public int pitch { get; set; }
-            
+
             [JsonConverter(typeof(AttributeDictionaryConverter))]
             public Dictionary<string, object> attributes { get; set; }
+
+            [JsonProperty("pitchDelta")]
+            public SynthVUcurve pitchDelta { get; set; }
         }
 
-        // Custom JSON converter for handling mixed attribute types
+        public class SynthVUcurve {
+            public string shape { get; set; }
+            public List<float> x { get; set; }
+            public List<float> y { get; set; }
+        }
+
         private class AttributeDictionaryConverter : JsonConverter {
             public override bool CanConvert(Type objectType) {
                 return objectType == typeof(Dictionary<string, object>);
@@ -199,7 +186,7 @@ namespace OpenUtau.Core.Format {
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
                 var dictionary = new Dictionary<string, object>();
                 JObject obj = JObject.Load(reader);
-                
+
                 foreach (var property in obj.Properties()) {
                     switch (property.Value.Type) {
                         case JTokenType.Boolean:
@@ -219,7 +206,7 @@ namespace OpenUtau.Core.Format {
                             break;
                     }
                 }
-                
+
                 return dictionary;
             }
 
