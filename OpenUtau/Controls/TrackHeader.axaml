@@ -64,6 +64,7 @@
                 <Setter Property="Icon" Value="{Binding Icon}"/>
                 <Setter Property="ToolTip.Tip" Value="{Binding Location}"/>
                 <Setter Property="Height" Value="{Binding Height}"/>
+                <Setter Property="IsEnabled" Value="{Binding IsEnabled}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>

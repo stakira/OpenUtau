@@ -83,11 +83,11 @@ namespace OpenUtau.App.Controls {
         }
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
-            if (SingerManager.Inst.Singers.Count > 0) {
+            try {
                 ViewModel?.RefreshSingers();
                 SingersMenu.Open();
-            } else {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("There is no singer."));
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
             args.Handled = true;
         }
