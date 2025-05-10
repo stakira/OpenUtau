@@ -60,12 +60,7 @@ namespace OpenUtau.Core.Voicevox {
                 vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, singerID);
             }
 
-            var parentDirectory = Directory.GetParent(singer.Location).ToString();
-            var yamlPath = Path.Join(parentDirectory, "phonemes.yaml");
-            var yamlTxt = File.ReadAllText(yamlPath);
-            var phonemes_list = Yaml.DefaultDeserializer.Deserialize<Phoneme_list>(yamlTxt);
-
-            var list = new List<Phonemes>(vsParams.phonemes);
+            List<Phonemes> list = vsParams.phonemes;
             foreach (var note in vqMain.notes) {
                 if (note.vqnindex < 0) {
                     list.Remove(list[0]);
@@ -75,12 +70,12 @@ namespace OpenUtau.Core.Voicevox {
                 var phoneme = new List<Phoneme>();
                 int index = 0;
                 while (list.Count > 0) {
-                    if (phonemes_list.vowels.Contains(list[0].phoneme)) {
+                    if (VoicevoxUtils.phoneme_List.vowels.Contains(list[0].phoneme)) {
                         phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position });
                         index++;
                         list.Remove(list[0]);
                         break;
-                    } else if (phonemes_list.consonants.Contains(list[0].phoneme)) {
+                    } else if (VoicevoxUtils.phoneme_List.consonants.Contains(list[0].phoneme)) {
                         phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position - (int)timeAxis.MsPosToTickPos((list[0].frame_length / VoicevoxUtils.fps) * 1000) });
                     }
                     list.Remove(list[0]);
