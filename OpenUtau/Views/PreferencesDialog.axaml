@@ -272,6 +272,10 @@
         <StackPanel>
           <TextBlock Text="{DynamicResource prefs.rendering.diffsingersteps}" Margin="0,10,0,0"/>
           <ComboBox HorizontalAlignment="Stretch"  ItemsSource="{Binding DiffSingerStepsOptions}" SelectedItem="{Binding DiffSingerSteps}"/>
+          <TextBlock Text="{DynamicResource prefs.rendering.diffsingerstepsvariance}" Margin="0,10,0,0"/>
+          <ComboBox HorizontalAlignment="Stretch"  ItemsSource="{Binding DiffSingerStepsVarianceOptions}" SelectedItem="{Binding DiffSingerStepsVariance}"/>
+          <TextBlock Text="{DynamicResource prefs.rendering.diffsingerstepspitch}" Margin="0,10,0,0"/>
+          <ComboBox HorizontalAlignment="Stretch"  ItemsSource="{Binding DiffSingerStepsPitchOptions}" SelectedItem="{Binding DiffSingerStepsPitch}"/>
           <Grid ColumnDefinitions="Auto,8,40,8,*" Margin="0,10,0,0">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerdepth}"/>
               <TextBlock Grid.Column="2">

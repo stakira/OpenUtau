@@ -91,7 +91,6 @@ namespace OpenUtau.App.ViewModels {
         public List<GpuInfo> OnnxGpuOptions { get; set; }
         [Reactive] public GpuInfo OnnxGpu { get; set; }
 
-
         // Appearance
         [Reactive] public int Theme { get; set; }
         [Reactive] public int DegreeStyle { get; set; }
@@ -109,8 +108,12 @@ namespace OpenUtau.App.ViewModels {
 
         // Diffsinger
         public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-        [Reactive] public int DiffSingerSteps { get; set; }
+        public List<int> DiffSingerStepsVarianceOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+        public List<int> DiffSingerStepsPitchOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
         [Reactive] public double DiffSingerDepth { get; set; }
+        [Reactive] public int DiffSingerSteps { get; set; }
+        [Reactive] public int DiffSingerStepsVariance { get; set; }
+        [Reactive] public int DiffSingerStepsPitch { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
 
         // Advanced
@@ -160,8 +163,11 @@ namespace OpenUtau.App.ViewModels {
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
             DiffSingerSteps = Preferences.Default.DiffSingerSteps;
+            DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
+            DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
-            SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
+            
+          = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -348,6 +354,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerSteps)
                 .Subscribe(index => {
                     Preferences.Default.DiffSingerSteps = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerStepsVariance)
+                 .Subscribe(index => {
+                     Preferences.Default.DiffSingerStepsVariance = index;
+                     Preferences.Save();
+                 });
+            this.WhenAnyValue(vm => vm.DiffSingerStepsPitch)
+                .Subscribe(index => {
+                    Preferences.Default.DiffSingerStepsPitch = index;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.DiffSingerDepth)

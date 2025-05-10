@@ -12,7 +12,6 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -62,6 +61,7 @@ namespace OpenUtau.Core.Voicevox {
                     progress.Complete(0, progressInfo);
                     ulong hash = HashPhraseGroups(phrase);
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
+                    phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var singer = phrase.singer as VoicevoxSinger;
