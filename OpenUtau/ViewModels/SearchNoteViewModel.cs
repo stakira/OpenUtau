@@ -11,7 +11,7 @@ namespace OpenUtau.App.ViewModels {
     class SearchNoteViewModel : ViewModelBase {
         [Reactive] public bool NoteMode { get; set; }
         [Reactive] public string SearchWord { get; set; } = "";
-        [Reactive] public string Watermark { get => ThemeManager.GetString(NoteMode ? "pianoroll.menu.searchnote" : "pianoroll.menu.searchnote.searchalias"); }
+        public string Watermark { get => ThemeManager.GetString(NoteMode ? "pianoroll.menu.searchnote" : "pianoroll.menu.searchnote.searchalias"); }
         [Reactive] public int Count { get; private set; }
         public ReactiveCommand<string, Unit> SelectCommand { get; }
 
