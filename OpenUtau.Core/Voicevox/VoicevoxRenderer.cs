@@ -52,7 +52,7 @@ namespace OpenUtau.Core.Voicevox {
         public RenderResult Layout(RenderPhrase phrase) {
             return new RenderResult() {
                 leadingMs = phrase.leadingMs,
-                positionMs = phrase.positionMs - ((VoicevoxUtils.headS * 1000) + 10),
+                positionMs = phrase.positionMs - ((VoicevoxUtils.headS * 1000)),
                 estimatedLengthMs = phrase.durationMs + phrase.leadingMs,
             };
         }
@@ -65,8 +65,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
-                    ulong hash = HashPhraseGroups(phrase);
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}-{hash:x16}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.preEffectHash:x16}.wav");
                     phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
@@ -226,7 +225,7 @@ namespace OpenUtau.Core.Voicevox {
                 if (vsParams.phonemes.Count == vsParams_1.phonemes.Count) {
                     for (int i = 0; i < vsParams_1.phonemes.Count; i++) {
                         //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
-                        //if (flag != null && flag.Item2.HasValue) {
+                        //if (flag != null) {
                         //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
                                 vsParams.phonemes[i].phoneme = vsParams_1.phonemes[i].phoneme;
                         //    }
@@ -239,7 +238,7 @@ namespace OpenUtau.Core.Voicevox {
                 //Update phoneme
                 for (int i = 0; i < vsParams_2.phonemes.Count; i++) {
                     //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
-                    //if (flag != null && flag.Item2.HasValue) {
+                    //if (flag != null) {
                     //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
                             vsParams.phonemes[i].phoneme = vsParams_2.phonemes[i].phoneme;
                     //    }
@@ -259,7 +258,8 @@ namespace OpenUtau.Core.Voicevox {
                     frame_length = headFrames
                 });
                 for (int i = 0; i < phrase.phones.Length; i++) {
-                    int length = (int)Math.Round((phrase.phones[i].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
+                    double durationMs = phrase.phones[i].durationMs;
+                    int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     if (length < 2) {
                         length = 2;
                     }
@@ -324,13 +324,13 @@ namespace OpenUtau.Core.Voicevox {
             var result = new List<UExpressionDescriptor> {
                 //volumes
                 new UExpressionDescriptor{
-                    name="volume (curve)",
+                    name="input volume (curve)",
                     abbr=VOLC,
                     type=UExpressionType.Curve,
                     min=0,
                     max=200,
                     defaultValue=100,
-                    isFlag=false,
+                    isFlag = false,
                 },
                 //replace mode
                 //new UExpressionDescriptor{
@@ -346,7 +346,7 @@ namespace OpenUtau.Core.Voicevox {
                     type = UExpressionType.Curve,
                     min = 0,
                     max = 10,
-                    defaultValue = 6,
+                    defaultValue = 0,
                     isFlag = false
                 },
             };
@@ -370,7 +370,7 @@ namespace OpenUtau.Core.Voicevox {
                     List<double> f0 = vsParams.f0;
 
 
-                    var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
+                    var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1.Equals(SMOC));
                     if (exprCurve != null) {
                         List<int> exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x).Select(x => (int)x).ToList();
                         var f0S = new F0Smoother(f0);
@@ -390,28 +390,10 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     return result;
                 }
-            } catch( Exception e) {
+            } catch (Exception e) {
                 Log.Error(e.Message);
             }
             return null;
-        }
-
-
-        ulong HashPhraseGroups(RenderPhrase phrase) {
-            using (var stream = new MemoryStream()) {
-                using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(phrase.preEffectHash);
-                    writer.Write(phrase.phones[0].tone);
-                    writer.Write(phrase.phones[0].direct);
-                    if (phrase.phones[0].direct) {
-                        writer.Write(phrase.phones[0].toneShift);
-                    } else {
-                        phrase.phones.ForEach(x => writer.Write(x.toneShift));
-                    }
-                    writer.Write(phrase.phones[0].volume);
-                    return XXH64.DigestOf(stream.ToArray());
-                }
-            }
         }
     }
 }
