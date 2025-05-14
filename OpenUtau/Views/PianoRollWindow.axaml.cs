@@ -294,8 +294,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
-            var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
+            var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, ViewModel.NotesViewModel.Selection.ToArray());
             var dialog = new LyricsReplaceDialog() {
                 DataContext = vm,
             };
