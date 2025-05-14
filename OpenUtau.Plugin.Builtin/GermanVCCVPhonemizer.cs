@@ -231,7 +231,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 splittingReplacements = new List<Replacement>();
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from arpasing.yaml: {ex.Message}");
+                            Log.Error($"Failed to load replacements from de_vccv.yaml: {ex.Message}");
                         }
                         // Load fallbacks
                         try {
