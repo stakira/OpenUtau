@@ -81,8 +81,9 @@ namespace OpenUtau.Classic {
             string basePath = PathManager.Inst.ResamplersPath;
             try {
                 Directory.CreateDirectory(basePath);
+                
                 foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
-                    RecurseSubdirectories = true
+                    RecurseSubdirectories = Preferences.Default.LoadDeepFolderSinger
                 })) {
                     var driver = LoadResampler(file, basePath);
                     if (driver != null) {
@@ -107,7 +108,7 @@ namespace OpenUtau.Classic {
             try {
                 Directory.CreateDirectory(basePath);
                 foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
-                    RecurseSubdirectories = true
+                    RecurseSubdirectories = Preferences.Default.LoadDeepFolderSinger
                 })) {
                     var driver = LoadWavtool(file, basePath);
                     if (driver != null) {
