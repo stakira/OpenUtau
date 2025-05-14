@@ -727,6 +727,9 @@ namespace OpenUtau.App.Views {
             int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
+            if (shiftHeld != shiftWasHeld) {
+                firstPoint = point;
+            }
             if (ctrlShiftHeld) {
                 lastX = notesVm.PointToTick(firstPoint);
                 x = notesVm.PointToTick(lastPoint);
