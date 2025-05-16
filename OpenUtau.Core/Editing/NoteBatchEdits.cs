@@ -666,7 +666,6 @@ namespace OpenUtau.Core.Editing {
                 if (results.Count == 0) {
                     continue;
                 }
-                // TODO: Optimize interpolation and command.
                 if (cancellationToken.IsCancellationRequested) break;
                 foreach (var result in results) {
                     if (!curveDict.ContainsKey(result.abbr)) {
