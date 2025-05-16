@@ -476,7 +476,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             DiffSingerSinger singer = (DiffSingerSinger) phrase.singer;
-            if (!singer.hasPitchPredictor) {
+            if (!singer.HasPitchPredictor) {
                 throw new Exception("This singer has no pitch predictor.");
             }
             var pitchPredictor = singer.getPitchPredictor()!;
@@ -490,7 +490,7 @@ namespace OpenUtau.Core.DiffSinger {
                 throw new Exception("Please enable DiffSinger tensor cache and re-render the phrase to display correct base curves.");
             }
             DiffSingerSinger singer = (DiffSingerSinger) phrase.singer;
-            if (!singer.hasVariancePredictor) {
+            if (!singer.HasVariancePredictor) {
                 return new List<RenderRealCurveResult>(0);
             }
             var variancePredictor = singer.getVariancePredictor()!;

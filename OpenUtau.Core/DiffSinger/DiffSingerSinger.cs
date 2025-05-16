@@ -51,8 +51,8 @@ namespace OpenUtau.Core.DiffSinger {
         public DsPitch pitchPredictor = null;
         public DiffSingerSpeakerEmbedManager speakerEmbedManager = null;
         public DsVariance variancePredictor = null;
-        public bool hasPitchPredictor => File.Exists(Path.Join(Location, "dspitch", "dsconfig.yaml"));
-        public bool hasVariancePredictor => File.Exists(Path.Join(Location,"dsvariance", "dsconfig.yaml"));
+        public bool HasPitchPredictor => File.Exists(Path.Join(Location, "dspitch", "dsconfig.yaml"));
+        public bool HasVariancePredictor => File.Exists(Path.Join(Location,"dsvariance", "dsconfig.yaml"));
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -184,7 +184,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public DsPitch? getPitchPredictor(){
             if(pitchPredictor is null) {
-                if(hasPitchPredictor){
+                if(HasPitchPredictor){
                     pitchPredictor = new DsPitch(Path.Join(Location, "dspitch"));
                     return pitchPredictor;
                 }
@@ -201,7 +201,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public DsVariance? getVariancePredictor(){
             if(variancePredictor is null) {
-                if(hasVariancePredictor){
+                if(HasVariancePredictor){
                     variancePredictor = new DsVariance(Path.Join(Location, "dsvariance"));
                     return variancePredictor;
                 }
