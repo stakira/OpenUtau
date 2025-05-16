@@ -31,13 +31,31 @@ namespace OpenUtau.Core.Render {
     }
 
     public class RenderPitchResult {
+        /// <summary>
+        /// Abbreviation of the expression.
+        /// </summary>
         public float[] ticks;
+
+        /// <summary>
+        /// Semitone values in MIDI scale.
+        /// </summary>
         public float[] tones;
     }
 
     public class RenderRealCurveResult {
+        /// <summary>
+        /// Abbreviation of the expression.
+        /// </summary>
         public string abbr;
+
+        /// <summary>
+        /// Ticks relative to the start of the phrase.
+        /// </summary>
         public float[] ticks;
+
+        /// <summary>
+        /// Values normalized between 0 and 1.
+        /// </summary>
         public float[] values;
     }
 
