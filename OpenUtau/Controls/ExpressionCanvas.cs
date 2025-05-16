@@ -172,7 +172,10 @@ namespace OpenUtau.App.Controls {
                         while (start < baseIndexR && curve.realYs[start] < 0) ++start;
                         int end = start;
                         while (end < baseIndexR && curve.realYs[end] >= 0) ++end;
-                        if (end - start < 2) break;
+                        if (end - start < 2) {
+                            offset = end;
+                            continue;
+                        }
                         var geometry = new PathGeometry();
                         var figure = new PathFigure {
                             IsClosed = false
