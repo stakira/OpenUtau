@@ -503,19 +503,19 @@ namespace OpenUtau.Core.DiffSinger {
                         ENE, result.energy ?? Array.Empty<float>(),
                         phrase.curves.FirstOrDefault(curve => curve.Item1 == ENE)?.Item2
                         ?? Enumerable.Repeat(0f, 2).ToArray(),
-                        x => Math.Clamp(x, -96, 0) / 0.96f + 100
+                        x => Math.Clamp(x, -96f, 0f) / 96f + 1f
                     ),
                     (
                         Format.Ustx.BREC, result.breathiness ?? Array.Empty<float>(), phrase.breathiness,
-                        x => Math.Clamp(x, -96, 0) / 0.96f + 100
+                        x => Math.Clamp(x, -96f, 0f) / 96f + 1f
                     ),
                     (
                         Format.Ustx.VOIC, result.voicing ?? Array.Empty<float>(), phrase.voicing,
-                        x => Math.Clamp(x, -96, 0) / 0.96f + 100
+                        x => Math.Clamp(x, -96f, 0f) / 96f + 1f
                     ),
                     (
                         Format.Ustx.TENC, result.tension ?? Array.Empty<float>(), phrase.tension,
-                        x => Math.Clamp(x, -10, 10) * 5 + 50
+                        x => Math.Clamp(x, -10f, 10f) / 20f + 0.5f
                     ),
                 }.Select(t => {
                     var abbr = t.Item1;

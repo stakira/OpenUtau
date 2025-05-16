@@ -687,7 +687,7 @@ namespace OpenUtau.Core.Editing {
                     xs.Add(ticks[0]);
                     ys.Add(-1);
                     xs.AddRange(ticks);
-                    ys.AddRange(result.values.Select(v => (int) v));
+                    ys.AddRange(result.values.Select(v => (int)(v * 1000.0)));
                 }
                 finished += 1;
                 setProgressCallback(finished, part.renderPhrases.Count);
