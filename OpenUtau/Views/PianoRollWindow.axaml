@@ -606,13 +606,15 @@
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
-                          Key="{Binding NotesViewModel.SecondaryKey}"/>
+                          Key="{Binding NotesViewModel.SecondaryKey}"
+                          ShowRealCurve="False"/>
       <c:ExpressionCanvas Grid.Row="5" Grid.Column="1"
                           Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
                           Key="{Binding NotesViewModel.PrimaryKey}"
+                          ShowRealCurve="True"
                           PointerPressed="ExpCanvasPointerPressed"
                           PointerMoved="ExpCanvasPointerMoved"
                           PointerReleased="ExpCanvasPointerReleased">

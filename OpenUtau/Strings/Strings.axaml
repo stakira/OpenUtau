@@ -299,6 +299,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>
+  <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>

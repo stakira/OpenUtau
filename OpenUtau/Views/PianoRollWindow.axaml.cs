@@ -90,6 +90,7 @@ namespace OpenUtau.App.Views {
             });
             ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() {
                 new LoadRenderedPitch(),
+                new RefreshRealCurves(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
                 new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
