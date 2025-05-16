@@ -184,7 +184,7 @@ namespace OpenUtau.App.Controls {
                             float tick = curve.realXs[i];
                             float value = curve.realYs[i];
                             double x = viewModel.TickToneToPoint(tick, 0).X;
-                            double y = Bounds.Height * (1 - value / 100.0);
+                            double y = Bounds.Height * (1 - value / 1000.0);
                             if (i == start) {
                                 figure.StartPoint = new Point(x, Bounds.Height);
                             }
