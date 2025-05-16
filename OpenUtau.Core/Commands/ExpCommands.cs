@@ -368,11 +368,11 @@ namespace OpenUtau.Core {
                 curve = new UCurve(descriptor);
                 Part.curves.Add(curve);
             }
-            getCurveXs(curve)!.Clear();
-            getCurveYs(curve)!.Clear();
+            getCurveXs(curve)?.Clear();
+            getCurveYs(curve)?.Clear();
             if (newXs != null && newYs != null) {
-                getCurveXs(curve)!.AddRange(newXs);
-                getCurveYs(curve)!.AddRange(newYs);
+                getCurveXs(curve)?.AddRange(newXs);
+                getCurveYs(curve)?.AddRange(newYs);
             }
         }
         public override void Unexecute() {
@@ -381,11 +381,11 @@ namespace OpenUtau.Core {
                 curve = new UCurve(descriptor);
                 Part.curves.Add(curve);
             }
-            getCurveXs(curve)!.Clear();
-            getCurveYs(curve)!.Clear();
+            getCurveXs(curve)?.Clear();
+            getCurveYs(curve)?.Clear();
             if (oldXs != null && oldYs != null) {
-                getCurveXs(curve)!.AddRange(oldXs);
-                getCurveYs(curve)!.AddRange(oldYs);
+                getCurveXs(curve)?.AddRange(oldXs);
+                getCurveYs(curve)?.AddRange(oldYs);
             }
         }
         private List<int>? getCurveXs(UCurve? curve) {
