@@ -17,10 +17,9 @@
              Text="{Binding Text}" Focusable="True"/>
     <TextBlock Grid.Row="2" Text="" Margin="0,2" HorizontalAlignment="Right">
       <TextBlock.Text>
-        <MultiBinding StringFormat="{}{0}/{1} ({2} Max)">
+        <MultiBinding StringFormat="{}{0}/{1}">
           <Binding Path="CurrentCount"/>
           <Binding Path="TotalCount"/>
-          <Binding Path="MaxCount"/>
         </MultiBinding>
       </TextBlock.Text>
     </TextBlock>
@@ -56,9 +55,17 @@
           </Style>
         </ToggleSwitch.Styles>
       </ToggleSwitch>
+      <TextBlock Text="{StaticResource lyrics.applyselected}" Margin="0,8"/>
+      <ToggleSwitch Margin="0" IsChecked="{Binding ApplySelection}">
+        <ToggleSwitch.Styles>
+          <Style Selector="TextBlock">
+            <Setter Property="IsVisible" Value="False"/>
+          </Style>
+        </ToggleSwitch.Styles>
+      </ToggleSwitch>
     </StackPanel>
     <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-      <Button Content="{StaticResource lyrics.reset}" Margin="0" Click="OnReset"/>
+      <Button Content="{StaticResource lyrics.reset}" Margin="0" Command="{Binding Reset}"/>
       <Button Content="{StaticResource lyrics.cancel}" Margin="0" Click="OnCancel"/>
       <Button Content="{StaticResource lyrics.apply}" Margin="0" Click="OnFinish"/>
     </StackPanel>
