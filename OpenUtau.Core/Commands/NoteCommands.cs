@@ -188,7 +188,7 @@ namespace OpenUtau.Core {
         readonly UVibrato oldVibrato;
         public SetVibratoCommand(UVoicePart part, UNote note, UVibrato vibrato) : base(part, note) {
             this.note = note;
-            newVibrato = vibrato;
+            newVibrato = vibrato.Clone();
             oldVibrato = note.vibrato;
         }
         public override string ToString() {
