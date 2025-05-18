@@ -72,7 +72,7 @@ namespace OpenUtau.Classic {
             foreach (var otoSet in voicebank.OtoSets) {
                 string dir = Path.Combine(path, Path.GetDirectoryName(otoSet.File));
                 foreach (var oto in otoSet.Otos) {
-                    if (oto.FileTrace.line == string.Empty || oto.FileTrace.line.StartsWith("#Charaset:")) {
+                    if (oto.FileTrace.line == string.Empty || oto.FileTrace.line.StartsWith("#Charset:")) {
                         continue;
                     }
                     if (!oto.IsValid) {
