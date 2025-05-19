@@ -71,6 +71,16 @@ symbols:
   - {symbol: x, type: vowel}
   - {symbol: dd, type: tap}
 
+replacements:
+  - {from: [h, E], n, to: [hh, E]}
+  - {from: [i, ng], n, to: [1, ng]}
+  - {from: [9, r], n, to: [0, r]}
+  - {from: [e, r], n, to: [A, r]}
+  - {from: ['@', m], n, to: ['&', m]}
+  - {from: ['@', n], n, to: ['&', n]}
+  - {from: ['@', ng], n, to: [Ang]}
+  - {from: [O, l], n, to: [0, l]}
+
 entries:
   - grapheme: openutau
     phonemes: [ow, p, eh, n, w, uw, t, ah, w, uw]
