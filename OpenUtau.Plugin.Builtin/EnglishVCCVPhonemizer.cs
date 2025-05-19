@@ -828,18 +828,12 @@ namespace OpenUtau.Plugin.Builtin {
                 // --------------------------- ENDING VC ------------------------------- //
                 if (ending.IsEndingVCWithOneConsonant) {
 
-                    if (HasOto(vc, ending.tone) || HasOto(CheckVCExceptions(vc) + "-", ending.tone)) {
+                    if (HasOto(CheckVCExceptions(vc) + "-", ending.tone)) {
                         phonemes.Add(CheckVCExceptions(vc) + "-");
-                    } else {
-                        phonemes.Add($"{v} {cc[0]}");
-                    }
-
+                    } 
                 } else {
-                    if (HasOto($"{v}{cc[0]}", ending.tone)) {
-                        phonemes.Add($"{v}{cc[0]}");
-                    } else {
-                        phonemes.Add($"{v} {cc[0]}");
-                    }
+                    vc = $"{v}{cc[0]}";
+                    vc = CheckVCExceptions(vc) + "-";
                     
                     // "1nks" exception
                     var startingC = 0;
