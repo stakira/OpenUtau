@@ -158,6 +158,21 @@ namespace OpenUtau.Core.DiffSinger
                 .ToArray();
         }
 
+        /// <summary>
+        /// Check if lyrics are all uppercase.
+        /// If true, do not parse as all lowercase.
+        /// If false (e.g. only some letters are uppercase but not all, or all letters are already lowercase), parse as lowercase.
+        /// </summary>
+        /// <param name="IsAllUpper()"></param>
+        /// <returns></returns>
+        bool IsAllUpper(string lyric) {
+            for (int i = 0; i < lyric.Length; i++) {
+                if (char.IsLetter(lyric[i]) && !char.IsUpper(lyric[i]))
+                    return false;
+            }
+            return true;
+        }
+
         string[] GetSymbols(Note note) {
             //priority:
             //1. phonetic hint
@@ -172,7 +187,7 @@ namespace OpenUtau.Core.DiffSinger
             var g2presult = g2p.Query(note.lyric)
                 ?? g2p.Query(note.lyric.ToLowerInvariant());
             if(g2presult != null) {
-                if (note.lyric != defaultPause && note.lyric != "AP") {
+                if (!IsAllUpper(note.lyric)) {
                     g2presult = g2p.Query(note.lyric.ToLowerInvariant());
                     return g2presult;
                 }
