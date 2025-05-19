@@ -164,7 +164,6 @@ namespace OpenUtau.Core.DiffSinger
         /// If false (e.g. only some letters are uppercase but not all, or all letters are already lowercase), parse as lowercase.
         /// </summary>
         /// <param name="IsAllUpper()"></param>
-        /// <returns></returns>
         bool IsAllUpper(string lyric) {
             for (int i = 0; i < lyric.Length; i++) {
                 if (char.IsLetter(lyric[i]) && !char.IsUpper(lyric[i]))
