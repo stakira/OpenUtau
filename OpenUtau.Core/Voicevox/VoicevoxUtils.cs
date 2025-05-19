@@ -14,6 +14,12 @@ using Serilog;
 
 namespace OpenUtau.Core.Voicevox {
 
+    public class VoicevoxException : Exception {
+        public VoicevoxException() { }
+        public VoicevoxException(string message) : base(message) { }
+        public VoicevoxException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
     public struct VoicevoxNote {
         public string lyric;
         public double positionMs;
