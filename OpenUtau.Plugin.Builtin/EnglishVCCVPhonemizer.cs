@@ -148,7 +148,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
-            g2ps.Add(new ArpabetPlusG2p());
+            g2ps.Add(new ArpabetG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
 
