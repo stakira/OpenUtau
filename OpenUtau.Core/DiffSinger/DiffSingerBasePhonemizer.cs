@@ -172,6 +172,10 @@ namespace OpenUtau.Core.DiffSinger
             var g2presult = g2p.Query(note.lyric)
                 ?? g2p.Query(note.lyric.ToLowerInvariant());
             if(g2presult != null) {
+                if (note.lyric != defaultPause && note.lyric != "AP") {
+                    g2presult = g2p.Query(note.lyric.ToLowerInvariant());
+                    return g2presult;
+                }
                 return g2presult;
             }
             //not found in g2p dictionary, treat lyric as phonetic hint
