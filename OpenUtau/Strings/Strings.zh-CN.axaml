@@ -1,8 +1,11 @@
-﻿<?xml version="1.0"?>
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:system="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">复制音符</system:String>
-  <system:String x:Key="context.note.clearcache"></system:String>
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.note.pasteparameters">粘贴表情</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
@@ -48,8 +51,8 @@
   <system:String x:Key="dialogs.messagebox.yes">是</system:String>
   <system:String x:Key="dialogs.noresampler.caption">无Resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">无Resampler! 将你选择的resampler exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
-  <system:String x:Key="dialogs.recovery"></system:String>
-  <system:String x:Key="dialogs.recovery.caption"></system:String>
+  <!--<system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>-->
+  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
   <system:String x:Key="dialogs.remaptimeaxis.message">此工具会改变工程的曲速及各音符的tick时值，而不改变各音符的位置与时长（以秒为单位）
   新曲速：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍号</system:String>
@@ -66,7 +69,7 @@
   <system:String x:Key="errors.details">错误详情</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">载入声码器时错误 </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. 请从以下位置下载声码器： </system:String>
-  <system:String x:Key="errors.editing.autopitch.unsupported"></system:String>
+  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
   <system:String x:Key="errors.encryptedarchive">不支持加密压缩包。请使用其他软件解压。</system:String>
   <system:String x:Key="errors.expression.abbrlong">缩写长度必须在 1 到 4 字符之间</system:String>
   <system:String x:Key="errors.expression.abbrset">必须设置缩写</system:String>
@@ -216,8 +219,8 @@
   <system:String x:Key="menu.view">视图</system:String>
 
   <system:String x:Key="notedefaults.lyric">歌词</system:String>
-  <system:String x:Key="notedefaults.lyric.enter"></system:String>
-  <system:String x:Key="notedefaults.lyric.knife"></system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <system:String x:Key="notedefaults.portamento">滑音</system:String>
   <system:String x:Key="notedefaults.portamento.length">长度</system:String>
   <system:String x:Key="notedefaults.portamento.start">开始</system:String>
@@ -271,12 +274,12 @@
 
   <system:String x:Key="phoneticassistant.caption">语音学助手</system:String>
   <system:String x:Key="phoneticassistant.copy">复制</system:String>
-  
+
   <system:String x:Key="pianoroll.key">调性（用于音级显示）</system:String>
   <system:String x:Key="pianoroll.menu.batch">批量编辑</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">正在运行批处理</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 &quot;-&quot; 替换为 &quot;+&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.insertslur">插入转音歌词</system:String>
@@ -289,8 +292,8 @@
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addbreath">添加呼吸</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部&quot;-&quot;音符</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部&quot;R&quot;音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">自动连奏</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">将手绘音高转换为锚点音高</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
@@ -301,8 +304,8 @@
   <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">对齐到当前网格</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部&quot;-&quot;音符</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部&quot;R&quot;音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">重置音素别名</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.all">全部重置</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.allparameters">重置所有参数</system:String>
@@ -366,7 +369,7 @@
   <system:String x:Key="prefs.advanced.importtempo.never">从不</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">歌词助手</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">歌词助手添加方括号</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">在&quot;最近打开&quot;中记住以下文件格式</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">在"最近打开"中记住以下文件格式</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler 日志</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存resampler输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
@@ -389,7 +392,7 @@
   <system:String x:Key="prefs.cache.clearonquit">退出时清空缓存</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger 张量缓存</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
-  <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
+  <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
   <system:String x:Key="prefs.editing">编辑</system:String>
   <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.off">关</system:String>
@@ -411,7 +414,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定播放标记</system:String>
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
-  <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">自动滚动边界</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暂停时</system:String>
@@ -422,14 +425,14 @@
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps"></system:String>
-  <system:String x:Key="prefs.rendering.diffsingerstepsvariance"></system:String>
-  <system:String x:Key="prefs.rendering.diffsingerstepspitch"></system:String>
-  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
-  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
 1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
@@ -444,11 +447,11 @@
     警告：渲染线程过多可能会导致OpenUtau运行缓慢
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">最大渲染线程数</system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
-  <system:String x:Key="prefs.utau">UTAU</system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
-  <system:String x:Key="progress.cachecleared"></system:String>
-  <system:String x:Key="progress.clearingcache"></system:String>
+  <!--<system:String x:Key="progress.cachecleared">Cache cleared.</system:String>-->
+  <!--<system:String x:Key="progress.clearingcache">Clearing cache...</system:String>-->
   <system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
@@ -563,11 +566,11 @@
   <system:String x:Key="tracks.trackcolor">修改音轨颜色</system:String>
   <system:String x:Key="tracks.tracksettings">音轨设置</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">检查更新</system:String>
   <system:String x:Key="updater.description">开放歌声合成平台</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">有新更新 v{0} !</system:String>
   <system:String x:Key="updater.status.checking">检查更新中...</system:String>
   <system:String x:Key="updater.status.notavailable">已更新至最新</system:String>
@@ -575,6 +578,6 @@
   <system:String x:Key="updater.update">更新</system:String>
 
   <system:String x:Key="warning">警告</system:String>
-  <system:String x:Key="warning.asciipath">OpenUtau路径&quot;{0}&quot;包含非ASCII字符. Exe格式resampler可能无法正常工作.</system:String>
+  <system:String x:Key="warning.asciipath">OpenUtau路径"{0}"包含非ASCII字符. Exe格式resampler可能无法正常工作.</system:String>
   <system:String x:Key="warning.renderer">此渲染器没有设置项</system:String>
 </ResourceDictionary>

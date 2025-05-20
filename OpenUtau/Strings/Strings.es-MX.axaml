@@ -1,8 +1,11 @@
-﻿<?xml version="1.0"?>
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:system="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">Copiar nota</system:String>
-  <system:String x:Key="context.note.clearcache"></system:String>
   <system:String x:Key="context.note.delete">Borrar nota</system:String>
   <system:String x:Key="context.note.pasteparameters">Seleccionar y pegar parámetros</system:String>
   <system:String x:Key="context.part.delete">Borrar parte</system:String>
@@ -43,13 +46,13 @@
   <system:String x:Key="dialogs.installdll.message">Instalando... </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
   <system:String x:Key="dialogs.messagebox.copy">Copiar error</system:String>
-  <system:String x:Key="dialogs.messagebox.no">No</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
   <system:String x:Key="dialogs.messagebox.yes">Sí</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Error de resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
-  <system:String x:Key="dialogs.recovery"></system:String>
-  <system:String x:Key="dialogs.recovery.caption"></system:String>
+  <!--<system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>-->
+  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
   <system:String x:Key="dialogs.remaptimeaxis.message">Esta herramienta cambia el tempo sin mover las notas ni cambiar su duración (en segundos).
   Nuevo BPM:</system:String>
   <system:String x:Key="dialogs.timesig.caption">Medida del compás</system:String>
@@ -62,11 +65,11 @@
   <system:String x:Key="dialogs.voicecolorremapping">Remapear Colores de Voz</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Esto se aplicará a todas las notas de las pistas:</system:String>
 
-  <system:String x:Key="errors.caption">Error</system:String>
+  <!--<system:String x:Key="errors.caption">Error</system:String>-->
   <system:String x:Key="errors.details">Detalles</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">No se pudo descargar el vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">Por favor, descarga el vocoder desde </system:String>
-  <system:String x:Key="errors.editing.autopitch.unsupported"></system:String>
+  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
   <system:String x:Key="errors.encryptedarchive">Los archivos encriptados no pueden ser extraídos por OpenUTAU. Porfavor, hazlo manualmente.</system:String>
   <system:String x:Key="errors.expression.abbrlong">La abreviación debe de ser entre 1 y 4 caracteres</system:String>
   <system:String x:Key="errors.expression.abbrset">La abreviación debe de ser única</system:String>
@@ -155,7 +158,7 @@
   <system:String x:Key="menu.edit.lockunselectednotes">Bloquear edición de notas no seleccionadas</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.expressions">Expresiones</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Puntos de tono</system:String>
-  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>
+  <!--<system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>-->
   <system:String x:Key="menu.edit.paste">_Pegar</system:String>
   <system:String x:Key="menu.edit.redo">_Rehacer</system:String>
   <system:String x:Key="menu.edit.selectall">Seleccionar _Todo</system:String>
@@ -202,7 +205,7 @@
   <system:String x:Key="menu.tools.debugwindow">Ventana de depuración</system:String>
   <system:String x:Key="menu.tools.dependency.install">Instalar dependencia (.oudep)...</system:String>
   <system:String x:Key="menu.tools.fullscreen">Pantalla completa</system:String>
-  <system:String x:Key="menu.tools.layout">Layout</system:String>
+  <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit13">1:3 Horizontal</system:String>
@@ -216,9 +219,9 @@
   <system:String x:Key="menu.view">Ver</system:String>
 
   <system:String x:Key="notedefaults.lyric">Letra</system:String>
-  <system:String x:Key="notedefaults.lyric.enter"></system:String>
-  <system:String x:Key="notedefaults.lyric.knife"></system:String>
-  <system:String x:Key="notedefaults.portamento">Portamento</system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
   <system:String x:Key="notedefaults.portamento.length">Duración</system:String>
   <system:String x:Key="notedefaults.portamento.start">Inicio</system:String>
   <system:String x:Key="notedefaults.preset">Base</system:String>
@@ -230,7 +233,7 @@
   <system:String x:Key="notedefaults.reset">Reestablecer ajustes</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">Reestablece todos los ajustes a sus valores predeterminados.
 Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
-  <system:String x:Key="notedefaults.vibrato">Vibrato</system:String>
+  <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
   <system:String x:Key="notedefaults.vibrato.autominlength">Largo mínimo</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato automático por largo</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Profundidad</system:String>
@@ -251,8 +254,8 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="noteproperty.tone">Tono</system:String>
   <system:String x:Key="noteproperty.vibratoenable">Activar</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
-  <system:String x:Key="oto.color">Color</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
   <system:String x:Key="oto.edit.consonant">Aplicar Consonante</system:String>
@@ -271,12 +274,12 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
 
   <system:String x:Key="phoneticassistant.caption">Asistente fonético</system:String>
   <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
-  
-  <system:String x:Key="pianoroll.key"></system:String>
+
+  <!--<system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>-->
   <system:String x:Key="pianoroll.menu.batch">Editar notas</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Aplicando ediciones</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar &quot;-&quot; con &quot;+&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.insertslur">Insertar legato</system:String>
@@ -289,8 +292,8 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Ajustes de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addbreath">Insertar respiro</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola &quot;-&quot;</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola &quot;R&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Conectar notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">Convertir PITD a puntos de control</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Quitar vibratos</system:String>
@@ -300,9 +303,9 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Cargar tono automático</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Transponer por una octava (para abajo)</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Transponer por una octava (para arriba)</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize"></system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">Quitar cola &quot;-&quot;</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">Quitar cola &quot;R&quot;</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">Quitar cola "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">Quitar cola "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Restablecer fonemas</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.all">Restablecer notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.allparameters">Restablecer parámetros</system:String>
@@ -321,13 +324,13 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Cerrar</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Siguiente</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Anterior</system:String>
-  <system:String x:Key="pianoroll.snapdiv"></system:String>
+  <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">Ver línea de tono avanzada (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">Ver parámetros de nota (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver curvas del tono (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Activar/Desactivar ajuste (P)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
   <system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (tresillo)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver consejos (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar tono de nota (Y)</system:String>
@@ -370,7 +373,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Nunca</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Ayudante de letra</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">El ayudante añade en brackets</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">Recordar los tipos de archivos en &quot;Abrir archivos recientes&quot;</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Recordar los tipos de archivos en "Abrir archivos recientes"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Registrar resamplers</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Esta opción guarda la producción del resampler en archivos de registro. Esta opción causará peor rendimiento y ralentización en la UI.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estable</system:String>
@@ -389,11 +392,11 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Oscuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Usar color de pista en la interfaz</system:String>
-  <system:String x:Key="prefs.cache">Cache</system:String>
+  <!--<system:String x:Key="prefs.cache">Cache</system:String>-->
   <system:String x:Key="prefs.cache.clearonquit">Limpiar cache al salir</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">Cache de Tensor de DiffSinger</system:String>
   <system:String x:Key="prefs.caption">Ajustes</system:String>
-  <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
+  <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
   <system:String x:Key="prefs.editing">Edición</system:String>
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
   <system:String x:Key="prefs.off">No</system:String>
@@ -415,7 +418,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor fijo</system:String>
   <system:String x:Key="prefs.playback.backend">Backend de audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Escoger automáticamente</system:String>
-  <system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posición del cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de reproducción</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Cuando se pausa...</system:String>
@@ -426,18 +429,18 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Renderizador predeterminado (para voces UTAU)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Profundidad de renderización</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps"></system:String>
-  <system:String x:Key="prefs.rendering.diffsingerstepsvariance"></system:String>
-  <system:String x:Key="prefs.rendering.diffsingerstepspitch"></system:String>
-  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">Correr inteligencia artificial con</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Prerenderización</system:String>
-  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser lento y causar un alto uso de la CPU. Si quiere usarlo, por favor:
-1. Establezca &quot;resampler-compatibility&quot; como &quot;on&quot; en moreconfig.txt.
-2. Establezca &quot;auto-update-llsm-mrq&quot; como &quot;off&quot; en moreconfig.txt.
+1. Establezca "resampler-compatibility" como "on" en moreconfig.txt.
+2. Establezca "auto-update-llsm-mrq" como "off" en moreconfig.txt.
 3. Espere pacientemente a que Moresampler genere los archivos llsm que faltan.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
@@ -448,11 +451,11 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
     Cuidado: Activar demasiados hilos de renderización puede causar que OpenUTAU corra lento. 
   </system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Máximo número de hilos de renderización</system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
-  <system:String x:Key="prefs.utau">UTAU</system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
-  <system:String x:Key="progress.cachecleared"></system:String>
-  <system:String x:Key="progress.clearingcache"></system:String>
+  <!--<system:String x:Key="progress.cachecleared">Cache cleared.</system:String>-->
+  <!--<system:String x:Key="progress.clearingcache">Clearing cache...</system:String>-->
   <system:String x:Key="progress.loadingsingers">Cargando Voces...</system:String>
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando al Renderizador...</system:String>
@@ -493,7 +496,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="singers.setsingertype">Motor de Voz</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
   <system:String x:Key="singers.subbanks.clear">Borrar</system:String>
-  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
   <system:String x:Key="singers.subbanks.color.add">Agregar color</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Borrar color</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Renombrar</system:String>
@@ -559,15 +562,15 @@ General
   <system:String x:Key="tracks.rename">Renombrar pista</system:String>
   <system:String x:Key="tracks.selectrenderer">Seleccionar Renderizador</system:String>
   <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
-  <system:String x:Key="tracks.singerdefault"></system:String>
-  <system:String x:Key="tracks.solo">Solo</system:String>
+  <!--<system:String x:Key="tracks.singerdefault">(Singer default) </system:String>-->
+  <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
   <system:String x:Key="tracks.solo.add">Solo adicional (no quita el solo de otras pistas)</system:String>
   <system:String x:Key="tracks.solo.only">Solo único (quita el solo de otras pistas)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">Quitar solos</system:String>
   <system:String x:Key="tracks.trackcolor">Colores de pista</system:String>
   <system:String x:Key="tracks.tracksettings">Ajustes de Pista</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
 
   <system:String x:Key="updater.caption">Buscar actualizaciones</system:String>
   <system:String x:Key="updater.description">La plataforma de síntesis de canto de código abierto</system:String>
@@ -579,6 +582,6 @@ General
   <system:String x:Key="updater.update">Actualizar</system:String>
 
   <system:String x:Key="warning">Alerta</system:String>
-  <system:String x:Key="warning.asciipath">La ruta de OpenUTAU &quot;{0}&quot; contiene símbolos que no son ASCII. Puede que Resamplers en .exe no funcionen.</system:String>
+  <system:String x:Key="warning.asciipath">La ruta de OpenUTAU "{0}" contiene símbolos que no son ASCII. Puede que Resamplers en .exe no funcionen.</system:String>
   <system:String x:Key="warning.renderer">Este renderizador no está configurado para esto.</system:String>
 </ResourceDictionary>

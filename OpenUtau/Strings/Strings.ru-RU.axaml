@@ -1,8 +1,11 @@
-﻿<?xml version="1.0"?>
-<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:system="clr-namespace:System;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <system:String x:Key="context.note.copy">Скопировать ноту</system:String>
   <system:String x:Key="context.note.clearcache">Очистить кэш фразы</system:String>
+  <system:String x:Key="context.note.copy">Скопировать ноту</system:String>
   <system:String x:Key="context.note.delete">Удалить ноту</system:String>
   <system:String x:Key="context.note.pasteparameters">Выделение и вставка параметров</system:String>
   <system:String x:Key="context.part.delete">Удалить часть</system:String>
@@ -216,8 +219,8 @@
   <system:String x:Key="menu.view">Вид</system:String>
 
   <system:String x:Key="notedefaults.lyric">Текст</system:String>
-  <system:String x:Key="notedefaults.lyric.enter"></system:String>
-  <system:String x:Key="notedefaults.lyric.knife"></system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <system:String x:Key="notedefaults.portamento">Портаменто</system:String>
   <system:String x:Key="notedefaults.portamento.length">Длина</system:String>
   <system:String x:Key="notedefaults.portamento.start">Начало</system:String>
@@ -271,12 +274,12 @@
 
   <system:String x:Key="phoneticassistant.caption">Фонетический помощник</system:String>
   <system:String x:Key="phoneticassistant.copy">Скопировть</system:String>
-  
+
   <system:String x:Key="pianoroll.key">Тональность (для отображения ступеней)</system:String>
   <system:String x:Key="pianoroll.menu.batch">Пакетное редактирование</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Групповое редактирование</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Текст</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Заменить &quot;-&quot; на &quot;+&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Заменить "-" на "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Редактировать текст</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Хирагана в ромадзи</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.insertslur">Добавить шлейф</system:String>
@@ -289,8 +292,8 @@
   <system:String x:Key="pianoroll.menu.notedefaults">Нота по умолчанию</system:String>
   <system:String x:Key="pianoroll.menu.notes">Ноты</system:String>
   <system:String x:Key="pianoroll.menu.notes.addbreath">Добавить дыхание</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">Добавить &quot;-&quot;</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить &quot;R&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Добавить "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Автоматическое легато</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">Преобразование PITD в контрольные точки питча</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Очистить вибрато</system:String>
@@ -301,8 +304,8 @@
   <system:String x:Key="pianoroll.menu.notes.octavedown">Переместить на октаву ниже</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Переместить на октаву выше</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Выровнять по сетке</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetaildash">Удалить хвост &quot;-&quot;</system:String>
-  <system:String x:Key="pianoroll.menu.notes.removetailrest">Удалить хвост &quot;R&quot;</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">Удалить хвост "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">Удалить хвост "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Сбросить алиасы фонем</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.all">Сбросить ноты к стандартным значениям</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.allparameters">Сбросить все настройки</system:String>
@@ -366,7 +369,7 @@
   <system:String x:Key="prefs.advanced.importtempo.never">Никогда</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
-  <system:String x:Key="prefs.advanced.rememberfiletypes">Запомнить эти типы файлов в &quot;Открыть последние&quot;</system:String>
+  <system:String x:Key="prefs.advanced.rememberfiletypes">Запомнить эти типы файлов в "Открыть последние"</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Журналирование ресамплера</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет вывод ресамплера в файлах лога. Эта опция замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
@@ -403,7 +406,7 @@
   <system:String x:Key="prefs.paths.loaddeepfolders">Загрузить все глубинные папки</system:String>
   <system:String x:Key="prefs.paths.reset">Сбросить</system:String>
   <system:String x:Key="prefs.paths.select">Выбрать</system:String>
-  <system:String x:Key="prefs.penplus">Установить инструмент &quot;Перо плюс&quot; по умолчанию</system:String>
+  <system:String x:Key="prefs.penplus">Установить инструмент "Перо плюс" по умолчанию</system:String>
   <system:String x:Key="prefs.playback">Воспроизведение</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Автопрокрутка</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Режим автопрокрутки</system:String>
@@ -423,8 +426,8 @@
   <system:String x:Key="prefs.rendering.defaultrenderer">Рендерер по-умолчанию (для классических войсбанков)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Глубина рендеринга DiffSinger</system:String>
   <system:String x:Key="prefs.rendering.diffsingersteps">Количество шагов для рендера acoustic Diffsinger</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerstepsvariance">Количество шагов для рендера variance Diffsinger</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepspitch">Количество шагов для рендера питча Diffsinger</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerstepsvariance">Количество шагов для рендера variance Diffsinger</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">Графический процессор</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Машинное обучение</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
@@ -432,8 +435,8 @@
   <system:String x:Key="prefs.rendering.resampler">Ресамплер</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Предупреждение: moresampler поддерживается не полностью. Он может быть медленным и вызвать высокую нагрузку процессора. Если вы настаиваете, пожалуйста:
-    1. Для параметра &quot;resampler-compatibility&quot; установите значение &quot;on&quot; в moreconfig.txt.
-    2. Задайте параметру &quot;auto-update-llsm-mrq&quot; значение &quot;off&quot; в moreconfig.txt.
+    1. Для параметра "resampler-compatibility" установите значение "on" в moreconfig.txt.
+    2. Задайте параметру "auto-update-llsm-mrq" значение "off" в moreconfig.txt.
     3. Терпеливо ждите, пока moresampler сгенерирует недостающие llsm файлы.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
@@ -563,7 +566,7 @@
   <system:String x:Key="tracks.trackcolor">Изменить цвет трека</system:String>
   <system:String x:Key="tracks.tracksettings">Настройки трека</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
 
   <system:String x:Key="updater.caption">Проверить наличие обновлений</system:String>
   <system:String x:Key="updater.description">Открытая платформа синтеза вокала</system:String>
@@ -575,6 +578,6 @@
   <system:String x:Key="updater.update">Обновить</system:String>
 
   <system:String x:Key="warning">Предупреждение</system:String>
-  <system:String x:Key="warning.asciipath">Ваш путь к OpenUtau (&quot;{0}&quot;) содержит символы, не являющимися символами ASCII. EXE-ресамплеры могут не работать.</system:String>
+  <system:String x:Key="warning.asciipath">Ваш путь к OpenUtau ("{0}") содержит символы, не являющимися символами ASCII. EXE-ресамплеры могут не работать.</system:String>
   <system:String x:Key="warning.renderer">Для этого рендерера нет настроек.</system:String>
 </ResourceDictionary>
