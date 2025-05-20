@@ -177,7 +177,7 @@ namespace OpenUtau.Core.Voicevox {
             //Prepare for future additions of Teacher Singer.
             string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
 
-            if (!phrase.phonemizerTag.Equals("VOICEVOX JA")) {
+            if (phrase.phones.Length == phrase.notes.Length && phrase.phones.All(p => VoicevoxUtils.phoneme_List.kanas.ContainsKey(p.phoneme))) {
                 VoicevoxNote[] vnotes = new VoicevoxNote[phrase.phones.Length];
                 for (int i = 0; i < phrase.phones.Length; i++) {
                     vnotes[i] = new VoicevoxNote() {

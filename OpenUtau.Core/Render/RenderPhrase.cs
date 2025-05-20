@@ -192,9 +192,6 @@ namespace OpenUtau.Core.Render {
 
         private List<string> cacheFiles = new List<string>();
 
-        // voicevox args
-        public readonly string phonemizerTag;
-
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var uNotes = new List<UNote> { phonemes.First().Parent };
             var endNote = phonemes.Last().Parent;
@@ -215,7 +212,6 @@ namespace OpenUtau.Core.Render {
             renderer = track.RendererSettings.Renderer;
             wavtool = track.RendererSettings.wavtool;
             timeAxis = project.timeAxis.Clone();
-            phonemizerTag = track.PhonemizerTag;
 
             position = part.position + phonemes.First().position;
             end = part.position + phonemes.Last().End;
