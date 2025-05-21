@@ -1133,6 +1133,19 @@ namespace OpenUtau.App.Views {
                 }
             }
 
+            if (args.Key == Key.R && args.KeyModifiers == KeyModifiers.Control) {
+                var project = DocManager.Inst.Project;
+                var part = notesVm.Part;
+                var selectedNotes = notesVm.Selection.ToList();
+
+                if (part != null && selectedNotes.Count > 0) {
+                    noteBatchEditCommand.Execute(new LoadRenderedPitch()).Subscribe();
+                }
+
+                args.Handled = true;
+                return;
+            }
+
             // returns true if handled
             args.Handled = OnKeyExtendedHandler(args);
         }
