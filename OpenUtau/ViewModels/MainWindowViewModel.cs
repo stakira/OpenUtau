@@ -346,11 +346,11 @@ namespace OpenUtau.App.ViewModels {
                         project, part, partNewStartTick, part.trackNo));
                 }
                 if(part is UVoicePart voicePart){
-                    var partOldEndTick = voicePart.End;
-                    var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
-                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                    var partOldDuration = voicePart.Duration;
+                    var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
+                    if(partNewDuration != partOldDuration) {
                         DocManager.Inst.ExecuteCmd(new ResizePartCommand(
-                            project, voicePart, partNewEndTick - partNewStartTick));
+                            project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();
                     foreach(var note in voicePart.notes){

@@ -975,6 +975,7 @@ namespace OpenUtau.App.Views {
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
             }
+            Cursor = null;
         }
 
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
@@ -1007,6 +1008,9 @@ namespace OpenUtau.App.Views {
                     bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
                     if (isVoice && trim) {
                         partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        Cursor = ViewConstants.cursorSizeWE;
+                    } else if (isVoice && skip) {
+                        partEditState = new PartResizeEditState(control, viewModel, partControl.part, true);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (isWave && skip) {
                         // TODO
@@ -1060,7 +1064,7 @@ namespace OpenUtau.App.Views {
                 bool isWave = partControl.part is UWavePart;
                 bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
                 bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                if (isVoice && trim) {
+                if (isVoice && (skip || trim)) {
                     Cursor = ViewConstants.cursorSizeWE;
                 } else if (isWave && (skip || trim)) {
                     Cursor = null; // TODO

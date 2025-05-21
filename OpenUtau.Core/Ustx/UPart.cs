@@ -27,6 +27,7 @@ namespace OpenUtau.Core.Ustx {
         public UPart() { }
 
         public abstract int GetMinDurTick(UProject project);
+        public abstract int GetMaxPosiTick(UProject project);
 
         public virtual void BeforeSave(UProject project, UTrack track) { }
         public virtual void AfterLoad(UProject project, UTrack track) { }
@@ -64,6 +65,12 @@ namespace OpenUtau.Core.Ustx {
             int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
             project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
             return project.timeAxis.BarBeatToTickPos(bar, beat + 1) - position;
+        }
+        
+        public override int GetMaxPosiTick(UProject project) {
+            int maxStartTick = position + (notes.FirstOrDefault()?.position ?? Duration);
+            project.timeAxis.TickPosToBarBeat(maxStartTick, out int bar, out int beat, out int remainingTicks);
+            return project.timeAxis.BarBeatToTickPos(bar, beat - 1);
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -312,6 +319,11 @@ namespace OpenUtau.Core.Ustx {
             double posMs = project.timeAxis.TickPosToMsPos(position);
             int end = project.timeAxis.MsPosToTickPos(posMs + fileDurationMs);
             return end - position;
+        }
+
+        public override int GetMaxPosiTick(UProject project) {
+            // TODO
+            return position;
         }
 
         public override UPart Clone() {
