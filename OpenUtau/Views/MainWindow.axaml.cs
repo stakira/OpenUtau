@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
@@ -200,6 +201,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
+            viewModel.Page = 1;
             viewModel.NewProject();
         }
 
@@ -220,6 +222,7 @@ namespace OpenUtau.App.Views {
             if (files == null || files.Length == 0) {
                 return;
             }
+            viewModel.Page = 1;
             try {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
@@ -841,6 +844,7 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
+                viewModel.Page = 1;
                 try {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
@@ -848,6 +852,7 @@ namespace OpenUtau.App.Views {
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
@@ -904,6 +909,7 @@ namespace OpenUtau.App.Views {
                     DependencyInstaller.Install(file);
                 }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
@@ -1230,6 +1236,21 @@ namespace OpenUtau.App.Views {
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     MessageBox.ShowError(this, e);
+                }
+            }
+        }
+
+        public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is RecentFileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
+                }
+                viewModel.Page = 1;
+                try{
+                    viewModel.OpenProject(new string[] { fileInfo.PathName });
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
                 }
             }
         }

@@ -374,6 +374,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
   <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
+  <system:String x:Key="prefs.advanced.launch">When launching</system:String>
+  <system:String x:Key="prefs.advanced.launch.newproject">Open a new project</system:String>
+  <system:String x:Key="prefs.advanced.launch.welcome">Show welcome page</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
@@ -587,4 +590,12 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
+  
+  <system:String x:Key="welcome.new">New</system:String>
+  <system:String x:Key="welcome.new.description">Create a new project</system:String>
+  <system:String x:Key="welcome.open">Open</system:String>
+  <system:String x:Key="welcome.open.description">Open a local project</system:String>
+  <system:String x:Key="welcome.recent">Recent</system:String>
+  <system:String x:Key="welcome.start">Start</system:String>
+
 </ResourceDictionary>
