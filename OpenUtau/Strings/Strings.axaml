@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>
   <system:String x:Key="context.note.copy">Copy note</system:String>
   <system:String x:Key="context.note.delete">Delete note</system:String>
   <system:String x:Key="context.note.pasteparameters">Select and paste parameters</system:String>
@@ -66,6 +67,7 @@
   <system:String x:Key="errors.details">Error Details</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
+  <system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>
   <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
@@ -122,6 +124,7 @@
   <system:String x:Key="languages.pt">Portuguese</system:String>
   <system:String x:Key="languages.ru">Russian</system:String>
   <system:String x:Key="languages.th">Thai</system:String>
+  <system:String x:Key="languages.tr">Turkish</system:String>
   <system:String x:Key="languages.vi">Vietnamese</system:String>
   <system:String x:Key="languages.zh">Chinese</system:String>
   <system:String x:Key="languages.zh-yue">Cantonese</system:String>
@@ -215,7 +218,8 @@
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>
+  <system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>
+  <system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>
   <system:String x:Key="notedefaults.portamento">Portamento</system:String>
   <system:String x:Key="notedefaults.portamento.length">Length</system:String>
   <system:String x:Key="notedefaults.portamento.start">Start</system:String>
@@ -269,7 +273,7 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
-  
+
   <system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>
   <system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>
@@ -296,6 +300,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>
+  <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
@@ -315,10 +320,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>
   <system:String x:Key="pianoroll.menu.reset">Reset</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>
   <system:String x:Key="pianoroll.phoneme.offset">Offset</system:String>
   <system:String x:Key="pianoroll.phoneme.overlap">Overlap Delta</system:String>
   <system:String x:Key="pianoroll.phoneme.preutter">Preutter Delta</system:String>
@@ -370,6 +378,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
   <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
+  <system:String x:Key="prefs.advanced.launch">When launching</system:String>
+  <system:String x:Key="prefs.advanced.launch.newproject">Open a new project</system:String>
+  <system:String x:Key="prefs.advanced.launch.welcome">Show welcome page</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
@@ -428,7 +439,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>
+  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
@@ -451,6 +464,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
   <system:String x:Key="prefs.utau">UTAU</system:String>
 
+  <system:String x:Key="progress.cachecleared">Cache cleared.</system:String>
+  <system:String x:Key="progress.clearingcache">Clearing cache...</system:String>
   <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
@@ -518,8 +533,15 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>
 
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
-  <system:String x:Key="tip.exps">Left Button Draw: Set expressions
-Right Button Draw: Reset expressions</system:String>
+  <system:String x:Key="tip.exps">Numerical,Options Type
+    Left Button Draw: Set expressions
+    Ctrl + Left Button Draw: Set uniform expressions
+    Right Button Draw: Reset expressions
+Curve Type
+    Left Button Draw: Draw
+    Shift + Ctrl + Left Button Draw: Line Draw
+    Shift + Left Button Draw: Horizontal Line Draw
+    Right Button Draw: Reset Line</system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
@@ -579,4 +601,12 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
+  
+  <system:String x:Key="welcome.new">New</system:String>
+  <system:String x:Key="welcome.new.description">Create a new project</system:String>
+  <system:String x:Key="welcome.open">Open</system:String>
+  <system:String x:Key="welcome.open.description">Open a local project</system:String>
+  <system:String x:Key="welcome.recent">Recent</system:String>
+  <system:String x:Key="welcome.start">Start</system:String>
+
 </ResourceDictionary>

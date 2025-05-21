@@ -11,6 +11,8 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public UExpressionDescriptor descriptor;
         public List<int> xs = new List<int>();
         public List<int> ys = new List<int>();
+        [YamlIgnore] public List<int> realXs = new List<int>();
+        [YamlIgnore] public List<int> realYs = new List<int>();
         public string abbr;
 
         [YamlIgnore] public bool IsEmpty => xs.Count == 0 || ys.All(y => y == 0);
