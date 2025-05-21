@@ -342,12 +342,12 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
-                    if (line.StartsWith("#Charaset:")) {
+                    if (line.StartsWith("#Charset:")) {
                         try {
-                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
-                            if (encoding != charaset) {
+                            var charset = Encoding.GetEncoding(line.Replace("#Charset:", ""));
+                            if (encoding != charset) {
                                 stream.Position = 0;
-                                return ParseOtoSet(stream, filePath, charaset);
+                                return ParseOtoSet(stream, filePath, charset);
                             }
                         } catch { }
                     }

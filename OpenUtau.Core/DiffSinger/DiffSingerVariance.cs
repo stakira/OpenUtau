@@ -34,6 +34,7 @@ namespace OpenUtau.Core.DiffSinger{
         const float tailMs = DiffSingerUtils.tailMs;
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
+        public float FrameMs => frameMs;
 
         public DsVariance(string rootPath)
         {
