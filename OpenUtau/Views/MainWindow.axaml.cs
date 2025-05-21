@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
@@ -53,7 +53,7 @@ namespace OpenUtau.App.Views {
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
 
-            viewModel.InitProject();
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -86,6 +86,11 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+            this.Cursor = null;
+        }
+
+        public void InitProject() {
+            viewModel.InitProject(this);
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
@@ -196,6 +201,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
+            viewModel.Page = 1;
             viewModel.NewProject();
         }
 
@@ -216,6 +222,7 @@ namespace OpenUtau.App.Views {
             if (files == null || files.Length == 0) {
                 return;
             }
+            viewModel.Page = 1;
             try {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
@@ -649,9 +656,9 @@ namespace OpenUtau.App.Views {
 
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Cache cleared."));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
             });
         }
 
@@ -718,10 +725,11 @@ namespace OpenUtau.App.Views {
         void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
 
         private void LayoutSplit(double? x, double? y) {
-            if (Screens.Primary == null) {
+            var mainScreen = Screens.Primary != null ? Screens.Primary : Screens.All[0];
+            if (mainScreen == null) {
                 return;
             }
-            var wa = Screens.Primary.WorkingArea;
+            var wa = mainScreen.WorkingArea;
             WindowState = WindowState.Normal;
             double titleBarHeight = 20;
             if (FrameSize != null) {
@@ -836,6 +844,7 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
+                viewModel.Page = 1;
                 try {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
@@ -843,6 +852,7 @@ namespace OpenUtau.App.Views {
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
@@ -899,6 +909,7 @@ namespace OpenUtau.App.Views {
                     DependencyInstaller.Install(file);
                 }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
@@ -1229,6 +1240,21 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is RecentFileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
+                }
+                viewModel.Page = 1;
+                try{
+                    viewModel.OpenProject(new string[] { fileInfo.PathName });
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
+                }
+            }
+        }
+
         async void ValidateTracksVoiceColor() {
             DocManager.Inst.StartUndoGroup();
             foreach (var track in DocManager.Inst.Project.tracks) {
@@ -1298,6 +1324,8 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
                 return;
             }
             e.Cancel = true;

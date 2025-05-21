@@ -1,7 +1,10 @@
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">노트 복사</system:String>
   <system:String x:Key="context.note.delete">노트 삭제</system:String>
   <system:String x:Key="context.note.pasteparameters">선택한 곳에 파라미터 붙여넣기</system:String>
@@ -48,6 +51,8 @@
   <system:String x:Key="dialogs.messagebox.yes">네</system:String>
   <system:String x:Key="dialogs.noresampler.caption">리샘플러가 없어요</system:String>
   <system:String x:Key="dialogs.noresampler.message">리샘플러가 없어요! 'Resamplers' 폴더에 좋아하는 리샘플러의 exe나 dll을 넣고, 환경 설정에서 원하는 리샘플러를 골라 보세요!</system:String>
+  <!--<system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>-->
+  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
   <system:String x:Key="dialogs.remaptimeaxis.message">노트들의 위치와 길이를 그대로 유지하면서, 프로젝트 전체의 템포를 변경해요 (초 단위 기준).
   새 BPM 입력:</system:String>
   <system:String x:Key="dialogs.timesig.caption">박자표</system:String>
@@ -64,6 +69,7 @@
   <system:String x:Key="errors.details">에러 상세정보</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">보코더 로드 중 오류가 발생했어요 </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. 다음 링크에서 보코더를 다운로드해 주세요. </system:String>
+  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
   <!--<system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>-->
   <system:String x:Key="errors.expression.abbrlong">줄임말의 글자 수는 한 글자 이상 네 글자 이하여야 해요</system:String>
   <system:String x:Key="errors.expression.abbrset">줄임말은 반드시 설정되어 있어야 해요</system:String>
@@ -213,7 +219,8 @@
   <system:String x:Key="menu.view">보기</system:String>
 
   <system:String x:Key="notedefaults.lyric">가사</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">가사 기본값</system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <system:String x:Key="notedefaults.portamento">포르타멘토</system:String>
   <system:String x:Key="notedefaults.portamento.length">길이</system:String>
   <system:String x:Key="notedefaults.portamento.start">시작</system:String>
@@ -268,6 +275,7 @@
   <system:String x:Key="phoneticassistant.caption">음소 도우미</system:String>
   <system:String x:Key="phoneticassistant.copy">복사</system:String>
 
+  <!--<system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>-->
   <system:String x:Key="pianoroll.menu.batch">일괄 수정</system:String>
   <!--<system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics">가사 설정</system:String>
@@ -295,8 +303,7 @@
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링된 피치 불러오기</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">한 옥타브 아래로</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">한 옥타브 위로</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">[퀀타이징] 1/128</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">[퀀타이징] 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.removetaildash">[끝 노트 제거] '-'</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">[끝 노트 제거] 'R'</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">[재설정] 에일리어스</system:String>
@@ -317,6 +324,7 @@
   <system:String x:Key="pianoroll.menu.searchnote.close">닫기</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">다음</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">이전</system:String>
+  <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">렌더링된 피치 보기 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">노트 설정 열기 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">음소 보기 (O)</system:String>
@@ -421,7 +429,9 @@
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">기본 렌더러 (Classic 음원용)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 렌더링 깊이(Depth)</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger 렌더링 단계(Steps)</system:String>
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
   <system:String x:Key="prefs.rendering.onnxgpu">그래픽 카드(GPU)</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">머신러닝 실행 장치</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
@@ -444,6 +454,8 @@
   <system:String x:Key="prefs.rendering.wavtool">웨이브툴</system:String>
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <!--<system:String x:Key="progress.cachecleared">Cache cleared.</system:String>-->
+  <!--<system:String x:Key="progress.clearingcache">Clearing cache...</system:String>-->
   <system:String x:Key="progress.loadingsingers">가수를 불러오고 있어요...</system:String>
   <system:String x:Key="progress.saved">{0}에 프로젝트를 저장했어요</system:String>
   <system:String x:Key="progress.waitingrendering">렌더링을 기다리고 있어요...</system:String>
@@ -550,6 +562,7 @@
   <system:String x:Key="tracks.rename">트랙 이름 변경</system:String>
   <system:String x:Key="tracks.selectrenderer">렌더러 선택</system:String>
   <system:String x:Key="tracks.selectsinger">가수 선택</system:String>
+  <!--<system:String x:Key="tracks.singerdefault">(Singer default) </system:String>-->
   <system:String x:Key="tracks.solo">솔로</system:String>
   <system:String x:Key="tracks.solo.add">솔로 추가 (다른 트랙의 솔로 유지)</system:String>
   <system:String x:Key="tracks.solo.only">이 트랙만 솔로</system:String>
