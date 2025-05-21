@@ -90,6 +90,7 @@ namespace OpenUtau.App.Views {
             });
             ViewModel.NoteBatchEdits.AddRange(new List<BatchEdit>() {
                 new LoadRenderedPitch(),
+                new RefreshRealCurves(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
                 new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
@@ -530,7 +531,7 @@ namespace OpenUtau.App.Views {
                     return;
                 }
             }
-            if (ViewModel.NotesViewModel.EraserTool) {
+            if (ViewModel.NotesViewModel.EraserTool && args.KeyModifiers != cmdKey) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Left);
                 Cursor = ViewConstants.cursorNo;
@@ -577,12 +578,6 @@ namespace OpenUtau.App.Views {
             }
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
             if (noteHitInfo.hitBody) {
-                if (ViewModel.NotesViewModel.KnifeTool) {
-                    ViewModel.NotesViewModel.DeselectNotes();
-                    editState = new NoteSplitEditState(
-                            control, ViewModel, this, noteHitInfo.note);
-                    return;
-                }
                 if (noteHitInfo.hitResizeArea) {
                     editState = new NoteResizeEditState(
                         control, ViewModel, this, noteHitInfo.note,
@@ -593,18 +588,17 @@ namespace OpenUtau.App.Views {
                     ViewModel.NotesViewModel.ToggleSelectNote(noteHitInfo.note);
                 } else if (args.KeyModifiers == KeyModifiers.Shift) {
                     ViewModel.NotesViewModel.SelectNotesUntil(noteHitInfo.note);
+                } else if (ViewModel.NotesViewModel.KnifeTool) {
+                    ViewModel.NotesViewModel.DeselectNotes();
+                    editState = new NoteSplitEditState(
+                            control, ViewModel, this, noteHitInfo.note);
                 } else {
                     editState = new NoteMoveEditState(control, ViewModel, this, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeAll;
                 }
                 return;
             }
-            if (ViewModel.NotesViewModel.CursorTool ||
-                ViewModel.NotesViewModel.PenTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.PenPlusTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.DrawLinePitchTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.OverwritePitchTool && args.KeyModifiers == cmdKey) {
+            if (ViewModel.NotesViewModel.CursorTool || args.KeyModifiers == cmdKey) {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
@@ -681,7 +675,7 @@ namespace OpenUtau.App.Views {
                     return;
                 }
             }
-            if (ViewModel.NotesViewModel.CursorTool || ViewModel.NotesViewModel.PenTool) {
+            if (ViewModel.NotesViewModel.CursorTool || ViewModel.NotesViewModel.PenTool || ViewModel.NotesViewModel.KnifeTool) {
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
                 var vibHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
                 if ((hitInfo.hitBody && hitInfo.note != null) || vibHitInfo.hit) {
@@ -722,6 +716,10 @@ namespace OpenUtau.App.Views {
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),
                             Command = noteDefaultsCommand,
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.note.clearcache"),
+                            Command = ViewModel.ClearPhraseCacheCommand,
                         });
                         shouldOpenNotesContextMenu = true;
                         return;
