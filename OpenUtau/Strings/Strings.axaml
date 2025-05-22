@@ -531,7 +531,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">Numerical,Options Type
     Left Button Draw: Set expressions
-    Ctrl + Left Button Draw: Set uniform expressions
+    Shift + Left Button Draw: Set uniform expressions
     Right Button Draw: Reset expressions
 Curve Type
     Left Button Draw: Draw
