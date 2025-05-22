@@ -33,6 +33,11 @@ namespace OpenUtau.App.Controls {
                 nameof(Key),
                 o => o.Key,
                 (o, v) => o.Key = v);
+        public static readonly DirectProperty<ExpressionCanvas, bool> ShowRealCurveProperty =
+            AvaloniaProperty.RegisterDirect<ExpressionCanvas, bool>(
+                nameof(ShowRealCurve),
+                o => o.ShowRealCurve,
+                (o, v) => o.ShowRealCurve = v);
 
         public double TickWidth {
             get => tickWidth;
@@ -50,11 +55,16 @@ namespace OpenUtau.App.Controls {
             get => key;
             set => SetAndRaise(KeyProperty, ref key, value);
         }
+        public bool ShowRealCurve {
+            get => showRealCurve;
+            set => SetAndRaise(ShowRealCurveProperty, ref showRealCurve, value);
+        }
 
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
         private string key = string.Empty;
+        private bool showRealCurve = true;
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -143,6 +153,55 @@ namespace OpenUtau.App.Controls {
                     index++;
                     if (tick2 >= rTick) {
                         break;
+                    }
+                }
+                if (ShowRealCurve) {
+                    int baseIndexL = curve.realXs.BinarySearch(lTick);
+                    if (baseIndexL < 0) {
+                        baseIndexL = ~baseIndexL;
+                    }
+                    baseIndexL = Math.Max(0, baseIndexL - 1);
+                    int baseIndexR = curve.realXs.BinarySearch(rTick);
+                    if (baseIndexR < 0) {
+                        baseIndexR = ~baseIndexR;
+                    }
+                    int offset = baseIndexL;
+                    while (offset < baseIndexR) {
+                        // negative values are breakpoints
+                        int start = offset;
+                        while (start < baseIndexR && curve.realYs[start] < 0) ++start;
+                        int end = start;
+                        while (end < baseIndexR && curve.realYs[end] >= 0) ++end;
+                        if (end - start < 2) {
+                            offset = end;
+                            continue;
+                        }
+                        var geometry = new PathGeometry();
+                        var figure = new PathFigure {
+                            IsClosed = false
+                        };
+                        for (int i = start; i < end; ++i) {
+                            float tick = curve.realXs[i];
+                            float value = curve.realYs[i];
+                            double x = viewModel.TickToneToPoint(tick, 0).X;
+                            double y = Bounds.Height * (1 - value / 1000.0);
+                            if (i == start) {
+                                figure.StartPoint = new Point(x, Bounds.Height);
+                            }
+                            figure.Segments!.Add(new LineSegment {
+                                Point = new Point(x, y),
+                                IsStroked = i != start
+                            });
+                            if (i == end - 1) {
+                                figure.Segments!.Add(new LineSegment {
+                                    Point = new Point(x, Bounds.Height),
+                                    IsStroked = false
+                                });
+                            }
+                        }
+                        geometry.Figures!.Add(figure);
+                        context.DrawGeometry(ThemeManager.RealCurveFillBrush, ThemeManager.RealCurvePen, geometry);
+                        offset = end;
                     }
                 }
                 return;

@@ -64,6 +64,9 @@ namespace OpenUtau.App {
         public static IPen BarNumberPen = new Pen(Brushes.White);
         public static IBrush FinalPitchBrush = Brushes.Gray;
         public static IPen FinalPitchPen = new Pen(Brushes.Gray);
+        public static IBrush RealCurveFillBrush = Brushes.Gray;
+        public static IBrush RealCurveStrokeBrush = Brushes.Gray;
+        public static IPen RealCurvePen = new Pen(Brushes.Gray, 1D, DashStyle.Dash);
         public static IPen FinalPitchPenThick = new Pen(Brushes.Gray);
         public static IPen FinalPitchPenTransparent = new Pen(Brushes.White, 1);
         public static IBrush WhiteKeyBrush = Brushes.White;
@@ -250,7 +253,13 @@ namespace OpenUtau.App {
                 FinalPitchPen = new Pen(FinalPitchBrush, 1);
                 FinalPitchPenThick = new Pen(FinalPitchBrush, 1.5);
             }
-            
+            if (resDict.TryGetResource("RealCurveFillBrush", themeVariant, out outVar)) {
+                RealCurveFillBrush = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("RealCurveStrokeBrush", themeVariant, out outVar)) {
+                RealCurveStrokeBrush = (IBrush)outVar!;
+                RealCurvePen = new Pen(RealCurveStrokeBrush, 2, DashStyle.Dash);
+            }
             SetKeyboardBrush();
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
