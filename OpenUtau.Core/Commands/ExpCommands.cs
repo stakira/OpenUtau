@@ -21,10 +21,20 @@ namespace OpenUtau.Core {
     }
 
     public class SetNoteExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT, Format.Ustx.VEL
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly float?[] newValue;
         public readonly float?[] oldValue;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
+            };
         public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float?[] values) : base(part) {
             this.project = project;
             this.track = track;
@@ -39,11 +49,21 @@ namespace OpenUtau.Core {
     }
 
     public class SetNotesSameExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT, Format.Ustx.VEL
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly UNote[] notes;
         public readonly float? newValue;
         public readonly float?[][] oldValue;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipTiming = true,
+                Part = Part,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
+            };
         public SetNotesSameExpressionCommand(UProject project, UTrack track, UVoicePart part, IEnumerable<UNote> notes, string abbr, float? value) : base(part) {
             this.project = project;
             this.track = track;
@@ -330,14 +350,16 @@ namespace OpenUtau.Core {
         readonly int[] oldYs;
         readonly int[] newXs;
         readonly int[] newYs;
+        readonly bool setReal;
         public MergedSetCurveCommand(UProject project, UVoicePart part,
-            string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs) : base(part) {
+            string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs, bool setReal = false) : base(part) {
             this.project = project;
             this.abbr = abbr;
             this.oldXs = oldXs;
             this.oldYs = oldYs;
             this.newXs = newXs;
             this.newYs = newYs;
+            this.setReal = setReal;
         }
         public override string ToString() => "Edit Curve";
         public override void Execute() {
@@ -346,11 +368,11 @@ namespace OpenUtau.Core {
                 curve = new UCurve(descriptor);
                 Part.curves.Add(curve);
             }
-            curve.xs.Clear();
-            curve.ys.Clear();
+            GetCurveXs(curve)?.Clear();
+            GetCurveYs(curve)?.Clear();
             if (newXs != null && newYs != null) {
-                curve.xs.AddRange(newXs);
-                curve.ys.AddRange(newYs);
+                GetCurveXs(curve)?.AddRange(newXs);
+                GetCurveYs(curve)?.AddRange(newYs);
             }
         }
         public override void Unexecute() {
@@ -359,12 +381,18 @@ namespace OpenUtau.Core {
                 curve = new UCurve(descriptor);
                 Part.curves.Add(curve);
             }
-            curve.xs.Clear();
-            curve.ys.Clear();
+            GetCurveXs(curve)?.Clear();
+            GetCurveYs(curve)?.Clear();
             if (oldXs != null && oldYs != null) {
-                curve.xs.AddRange(oldXs);
-                curve.ys.AddRange(oldYs);
+                GetCurveXs(curve)?.AddRange(oldXs);
+                GetCurveYs(curve)?.AddRange(oldYs);
             }
+        }
+        private List<int>? GetCurveXs(UCurve? curve) {
+            return setReal ? curve?.realXs : curve?.xs;
+        }
+        private List<int>? GetCurveYs(UCurve? curve) {
+            return setReal ? curve?.realYs : curve?.ys;
         }
     }
 

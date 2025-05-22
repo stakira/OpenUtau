@@ -25,6 +25,9 @@ def file_to_dict(filename):
 
 def dict_to_file(filename, dict, en_dict):
     with open(filename, "w", encoding='utf8') as f:
+        if(not filename.endswith("Strings.axaml")):
+            f.write('<!--DO NOT modify this file. It is managed autometically.-->\n')
+            f.write("<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->\n")
         f.write('<ResourceDictionary xmlns="https://github.com/avaloniaui"\n')
         f.write(
             '                    xmlns:system="clr-namespace:System;assembly=mscorlib"\n')
