@@ -200,7 +200,18 @@ namespace OpenUtau.App.Controls {
                             }
                         }
                         geometry.Figures!.Add(figure);
-                        context.DrawGeometry(ThemeManager.RealCurveFillBrush, ThemeManager.RealCurvePen, geometry);
+                        // recreate the effect from the axml
+                        var realCurveFillBrush = new LinearGradientBrush {
+                            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                            Opacity = 0.3,
+                            GradientStops = new GradientStops {
+                                new GradientStop(((SolidColorBrush)ThemeManager.AccentBrush1NoteDarkSemi).Color, 0.0),
+                                new GradientStop(Colors.Transparent, 1.0)
+                            }
+                        };
+                        var realCurvePen = new Pen(ThemeManager.AccentBrush1NoteLightSemi2, 2, new DashStyle(new double[] { 2, 2 }, 0));
+                        context.DrawGeometry(realCurveFillBrush, realCurvePen, geometry);
                         offset = end;
                     }
                 }

@@ -253,13 +253,6 @@ namespace OpenUtau.App {
                 FinalPitchPen = new Pen(FinalPitchBrush, 1);
                 FinalPitchPenThick = new Pen(FinalPitchBrush, 1.5);
             }
-            if (resDict.TryGetResource("RealCurveFillBrush", themeVariant, out outVar)) {
-                RealCurveFillBrush = (IBrush)outVar!;
-            }
-            if (resDict.TryGetResource("RealCurveStrokeBrush", themeVariant, out outVar)) {
-                RealCurveStrokeBrush = (IBrush)outVar!;
-                RealCurvePen = new Pen(RealCurveStrokeBrush, 2, DashStyle.Dash);
-            }
             SetKeyboardBrush();
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
@@ -279,6 +272,8 @@ namespace OpenUtau.App {
                 resDict["SelectedTrackAccentDarkBrush"] = tcolor.AccentColorDark;
                 resDict["SelectedTrackCenterKeyBrush"] = tcolor.AccentColorCenterKey;
 
+                resDict["RealCurveFillBrush"] = tcolor.AccentColorLightSemi2;
+
                 AccentBrush1Note = tcolor.AccentColor;
                 AccentBrush1NoteDark = tcolor.AccentColorDark;
                 AccentBrush1NoteSemi = tcolor.AccentColorSemi;
@@ -289,7 +284,7 @@ namespace OpenUtau.App {
                 NoteTextBrush = tcolor.NoteTextColor;
                 AccentBrush1NoteLightSemi = tcolor.AccentColorLightSemi;
                 AccentBrush1NoteLightSemi2 = tcolor.AccentColorLightSemi2;
-
+                
                 // pen
                 AccentPen1 = new Pen(AccentBrush1Note, 1);
                 AccentPen1Dark = new Pen(tcolor.AccentColorDark, 1);
@@ -303,6 +298,7 @@ namespace OpenUtau.App {
                 AccentPen2Thickness2Light = new Pen(AccentBrushLight, 2);
                 AccentPen2Thickness3Light = new Pen(AccentBrushLight, 3);
                 NoteBorderPen = new Pen(tcolor.AccentColorDark, 2);
+                
                 SetKeyboardBrush();
             } catch {
             }
