@@ -276,7 +276,8 @@
                               DataContext="{Binding TracksViewModel}"
                               TrackHeight="{Binding TrackHeight}"
                               TrackOffset="{Binding TrackOffset}"
-                              Items="{Binding Tracks}"/>
+                              Items="{Binding Tracks}"
+							  PointerWheelChanged="MainPagePointerWheelChanged"/>
           <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                             Foreground="{DynamicResource TrackBackgroundAltBrush}"
                             DataContext="{Binding TracksViewModel}"
@@ -303,7 +304,7 @@
                         PointerMoved="PartsCanvasPointerMoved"
                         PointerReleased="PartsCanvasPointerReleased"
                         DoubleTapped="PartsCanvasDoubleTapped"
-                        PointerWheelChanged="PartsCanvasPointerWheelChanged">
+                        PointerWheelChanged="MainPagePointerWheelChanged">
             <Rectangle Name="PlayPosHighlight"
                       Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
                       Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
