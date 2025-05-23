@@ -50,6 +50,7 @@
   </CFBundleDocumentTypes>
   </PropertyGroup>
   <PropertyGroup>
+    <DisableBeautyCondition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'false'">True</DisableBeauty>
     <BeautySharedRuntimeMode>False</BeautySharedRuntimeMode>
     <BeautyLibsDir>./Libs</BeautyLibsDir>
     <BeautyExcludes>OpenUtau.dll;OpenUtau.Plugin.Builtin.dll</BeautyExcludes>
