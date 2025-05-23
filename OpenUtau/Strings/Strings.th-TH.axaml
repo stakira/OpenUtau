@@ -362,6 +362,7 @@
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">ขั้นสูง</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">เบต้า</system:String>
   <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
   <!--<system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>-->
