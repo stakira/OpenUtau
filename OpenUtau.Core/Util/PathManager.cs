@@ -64,11 +64,16 @@ namespace OpenUtau.Core {
                     {
                         if (line.Trim().StartsWith("version:"))
                         {
-                            string version = line.Split(':')[1].Trim();
-                            if (version.Equals(appVersion)) {
-                                IsInstalled = true;
+                            var parts = line.Split(':');
+                            if (parts.Length > 1) {
+                                string version = parts[1].Trim();
+                                if (version.Equals(appVersion)) {
+                                    IsInstalled = true;
+                                }
+                                break;
+                            } else {
+                                Log.Warning($"Malformed version line: {line}");
                             }
-                            break;
                         }
                     }
                 }
