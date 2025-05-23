@@ -1,5 +1,6 @@
 ﻿using System;
 using NAudio.Wave;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.SignalChain {
     class ExportAdapter : ISampleProvider {
