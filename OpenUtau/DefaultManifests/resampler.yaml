@@ -1,0 +1,78 @@
+expressions:
+  nff:
+    name: no formant filter
+    abbr: nff
+    type: Options
+    min: 0
+    max: 1
+    default_value: 0
+    is_flag: true
+    options:
+    - ""
+    - N
+  flf:
+    name: formant filter highpass
+    abbr: flf
+    type: Numerical
+    min: 0
+    max: 10
+    default_value: 3
+    is_flag: true
+    flag: F
+  fll:
+    name: fixed formant filter highpass
+    abbr: fll
+    type: Options
+    min: 0
+    max: 11
+    default_value: 0
+    is_flag: true
+    options:
+    - ""
+    - L0
+    - L1
+    - L2
+    - L3
+    - L4
+    - L5
+    - L6
+    - L7
+    - L8
+    - L9
+    - L10
+  flh:
+    name: periodic component lowpass
+    abbr: flh
+    type: Numerical
+    min: 0
+    max: 100
+    default_value: 0
+    is_flag: true
+    flag: h
+  flc:
+    name: 22kHz suppression
+    abbr: flc
+    type: Numerical
+    min: 0
+    max: 100
+    default_value: 0
+    is_flag: true
+    flag: C
+  fld:
+    name: 11kHz suppression
+    abbr: fld
+    type: Numerical
+    min: 0
+    max: 100
+    default_value: 0
+    is_flag: true
+    flag: D
+  fle:
+    name: 7.1kHz and 22kHz suppression
+    abbr: fle
+    type: Numerical
+    min: 0
+    max: 100
+    default_value: 0
+    is_flag: true
+    flag: E
