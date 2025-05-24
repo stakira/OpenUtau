@@ -82,12 +82,12 @@ namespace OpenUtau.Core.Voicevox {
             otos.Clear();
             try {
                 //Prepared for planned changes or additions to phonemizers.
-                //foreach (var str in VoicevoxUtils.phoneme_List.vowels) {
-                //   phonemes.Add(str);
-                //}
-                //foreach (var str in VoicevoxUtils.phoneme_List.consonants) {
-                //    phonemes.Add(str);
-                //}
+                foreach (var str in VoicevoxUtils.phoneme_List.vowels) {
+                    phonemes.Add(str);
+                }
+                foreach (var str in VoicevoxUtils.phoneme_List.consonants) {
+                    phonemes.Add(str);
+                }
                 foreach (var str in VoicevoxUtils.phoneme_List.kanas) {
                     phonemes.Add(str.Key);
                 }
