@@ -573,6 +573,7 @@ namespace OpenUtau.App.Views {
                             singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks.First());
                         }
                         var vm = new SingersViewModel();
+                        
                         if (singer != null) {
                             vm.Singer = singer;
                         }
@@ -1119,14 +1120,15 @@ namespace OpenUtau.App.Views {
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
                     LoadingWindow.BeginLoading(this);
-                    
+
                     var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel());
                     pianoRollWindow = new PianoRollWindow(model) {
                         MainWindow = this,
                     };
 
-                    pianoRollWindow.InitializePianoRollWindow();
-                    
+                    await Task.Run(() => 
+                        pianoRollWindow.InitializePianoRollWindowAsync()
+                    );
                     LoadingWindow.EndLoading();
 
                     pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
@@ -1398,7 +1400,8 @@ namespace OpenUtau.App.Views {
                 }
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
                 if (loadingNotif.startLoading) {
-                    LoadingWindow.BeginLoading(this);
+                    // No delay opening popup
+                    LoadingWindow.BeginLoadingImmediate(this);
                 } else {
                     LoadingWindow.EndLoading();
                 }

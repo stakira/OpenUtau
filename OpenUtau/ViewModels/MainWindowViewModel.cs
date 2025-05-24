@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -189,11 +190,12 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
             try {
-                await Task.Run(() => {
-                    Core.Format.Formats.LoadProject(files);
-                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
-                    this.RaisePropertyChanged(nameof(Title));
-                });
+                // Five milisecond wait off UI thread to allow avalonia to draw the loading popup
+                await Task.Delay(5);
+
+                Core.Format.Formats.LoadProject(files);
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+                this.RaisePropertyChanged(nameof(Title));
             } finally {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
             }

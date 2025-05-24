@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
-using OpenUtau.Core;
-using Serilog;
-using SharpCompress;
 
 namespace OpenUtau.App.Views {
     public partial class LoadingWindow : Window {
         private static LoadingWindow? loadingDialog;
         private static bool isCurrentlyLoading = false;
         private static CancellationTokenSource? globalLoadingCancellationTokenSource;
-        private static Window? lastLoadingParent;
 
         // Used to schedule tasks on the UI thread
         public static TaskFactory uiTaskFactory = new TaskFactory(CancellationToken.None,
@@ -47,7 +37,6 @@ namespace OpenUtau.App.Views {
             }
             
             loadingDialog?.ShowDialog(parent);
-            lastLoadingParent = parent;
         }
 
         private static void CloseLoadingWindow() {
@@ -99,7 +88,7 @@ namespace OpenUtau.App.Views {
         }
 
         private static async Task ShowLoadingAfterTime(CancellationToken ct, Window parentWindow, int milisDelay) {
-            // Must have at least 1ms of delay opening loading window to avoid strange race conditions with UI thread
+            // Must have at least 1ms of delay opening loading window to avoid strange race conditions with UI thread (?)
             await Task.Delay(Math.Max(milisDelay, 1), ct);
 
             if (ct.IsCancellationRequested) {
@@ -113,11 +102,20 @@ namespace OpenUtau.App.Views {
             return uiTaskFactory.StartNew(func);
         }
 
+        public static void BeginLoadingImmediate(Window parentWindow) {
+            BeginLoading(parentWindow, 0);
+        }
+
         public static void BeginLoading(Window parentWindow, int milisDelay = 100) {
             if (isCurrentlyLoading) {
                 return;
             }
+
             isCurrentlyLoading = true;
+            if (milisDelay == 0) {
+                ShowLoadingWindow(parentWindow);
+                return;
+            }
 
             globalLoadingCancellationTokenSource = new CancellationTokenSource();
             Task.Run(() => ShowLoadingAfterTime(globalLoadingCancellationTokenSource.Token, parentWindow, milisDelay), globalLoadingCancellationTokenSource.Token);

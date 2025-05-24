@@ -44,11 +44,10 @@ namespace OpenUtau.App.Views {
         public PianoRollWindow(PianoRollViewModel model) {
             InitializeComponent();
             DataContext = ViewModel = model;
+            ValueTip.IsVisible = false;
         }
 
-        public void InitializePianoRollWindow() {
-            ValueTip.IsVisible = false;
-
+        public void InitializePianoRollWindowAsync() {
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
                 var NotesVm = ViewModel?.NotesViewModel;
                 if (NotesVm == null || NotesVm.Part == null) {
