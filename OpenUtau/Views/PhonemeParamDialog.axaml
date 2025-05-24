@@ -19,19 +19,27 @@
     </Style>
   </Window.Styles>
 
-  <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" Margin="15">
-    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{DynamicResource pianoroll.phoneme.title}" HorizontalAlignment="Center" Margin="0,0,0,15" FontWeight="Bold"/>
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,Auto" Margin="15">
+    <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Text="{DynamicResource phoneme.title}" HorizontalAlignment="Center" Margin="0,0,0,15" FontWeight="Bold"/>
     
-    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource pianoroll.phoneme.offset}" Margin="5" HorizontalAlignment="Right"/>
+    <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource phoneme.offset}" Margin="5" HorizontalAlignment="Right"/>
     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Offset, UpdateSourceTrigger=LostFocus}" KeyDown="TextBox_KeyDown"/>
     <TextBlock Grid.Row="1" Grid.Column="2" Text="ms" Margin="0,0,5,0" HorizontalAlignment="Left"/>
 
-    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource pianoroll.phoneme.preutter}" Margin="5" HorizontalAlignment="Right"/>
+    <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource phoneme.preutter}" Margin="5" HorizontalAlignment="Right"/>
     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Preutter, UpdateSourceTrigger=LostFocus}" KeyDown="TextBox_KeyDown"/>
     <TextBlock Grid.Row="2" Grid.Column="2" Text="ms" Margin="0,0,5,0" HorizontalAlignment="Left"/>
 
-    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource pianoroll.phoneme.overlap}" Margin="5" HorizontalAlignment="Right"/>
+    <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource phoneme.overlap}" Margin="5" HorizontalAlignment="Right"/>
     <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Overlap, UpdateSourceTrigger=LostFocus}" KeyDown="TextBox_KeyDown"/>
     <TextBlock Grid.Row="3" Grid.Column="2" Text="ms" Margin="0,0,5,0" HorizontalAlignment="Left"/>
+
+    <TextBlock Grid.Row="4" Grid.Column="0" Text="{DynamicResource phoneme.attacktime}" Margin="5" HorizontalAlignment="Right"/>
+    <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding AttackTime, UpdateSourceTrigger=LostFocus}" KeyDown="TextBox_KeyDown"/>
+    <TextBlock Grid.Row="4" Grid.Column="2" Text="ms" Margin="0,0,5,0" HorizontalAlignment="Left"/>
+
+    <TextBlock Grid.Row="5" Grid.Column="0" Text="{DynamicResource phoneme.releasetime}" Margin="5" HorizontalAlignment="Right"/>
+    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ReleaseTime, UpdateSourceTrigger=LostFocus}" KeyDown="TextBox_KeyDown"/>
+    <TextBlock Grid.Row="5" Grid.Column="2" Text="ms" Margin="0,0,5,0" HorizontalAlignment="Left"/>
   </Grid>
 </Window>

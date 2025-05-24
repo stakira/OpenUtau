@@ -271,6 +271,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
 
+  <system:String x:Key="phoneme.attacktime">Attack Time Delta</system:String>
+  <system:String x:Key="phoneme.offset">Offset</system:String>
+  <system:String x:Key="phoneme.overlap">Overlap Delta</system:String>
+  <system:String x:Key="phoneme.preutter">Preutter Delta</system:String>
+  <system:String x:Key="phoneme.releasetime">Release Time Delta</system:String>
+  <system:String x:Key="phoneme.title">Phoneme Parameter</system:String>
+  
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
 
@@ -327,10 +334,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>
-  <system:String x:Key="pianoroll.phoneme.offset">Offset</system:String>
-  <system:String x:Key="pianoroll.phoneme.overlap">Overlap Delta</system:String>
-  <system:String x:Key="pianoroll.phoneme.preutter">Preutter Delta</system:String>
-  <system:String x:Key="pianoroll.phoneme.title">Phoneme Parameter</system:String>
   <system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>

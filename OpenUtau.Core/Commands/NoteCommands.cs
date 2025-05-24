@@ -422,12 +422,15 @@ namespace OpenUtau.Core {
             Part = Part,
             SkipPhonemizer = true,
         };
-        public PhonemePreutterCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
+        public PhonemePreutterCommand(UVoicePart part, UNote note, int index, UPhoneme phoneme, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
             oldDelta = o.preutterDelta ?? 0;
-            newDelta = delta;
+
+            double max = Math.Max(0, Math.Min(phoneme.maxOtoPreutter - phoneme.autoPreutter, (phoneme.Prev?.DurationMs ?? 1000) - phoneme.autoPreutter));
+            double min = -phoneme.autoPreutter;
+            newDelta = (float)Math.Clamp(delta, min, max);
         }
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
@@ -450,12 +453,16 @@ namespace OpenUtau.Core {
             Part = Part,
             SkipPhonemizer = true,
         };
-        public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
+        public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, UPhoneme phoneme, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
             oldDelta = o.overlapDelta ?? 0;
-            newDelta = delta;
+
+            double overlap = phoneme.preutter - phoneme.autoOverlap;
+            double max = phoneme.envelope.data[3].X + overlap;
+            double min = -phoneme.Prev?.DurationMs + 5 + overlap ?? 0;
+            newDelta = (float)Math.Clamp(delta, min, max);
         }
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
@@ -466,6 +473,69 @@ namespace OpenUtau.Core {
             o.overlapDelta = oldDelta == 0 ? null : (float?)oldDelta;
         }
         public override string ToString() => "Set phoneme overlap";
+    }
+
+    public class PhonemeAttackTimeCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly float oldDelta;
+        readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
+        public PhonemeAttackTimeCommand(UVoicePart part, UNote note, int index, UPhoneme phoneme, float delta) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldDelta = o.attackTimeDelta ?? 0;
+
+            double max = phoneme.autoPreutter - phoneme.GetFadeIn() + phoneme.envelope.data[3].X;
+            double min = -phoneme.GetFadeIn() + 5;
+            newDelta = (float)Math.Clamp(delta, min, max);
+        }
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            o.attackTimeDelta = newDelta == 0 ? null : (float?)newDelta;
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            o.attackTimeDelta = oldDelta == 0 ? null : (float?)oldDelta;
+        }
+        public override string ToString() => "Set phoneme attack time";
+    }
+
+    public class PhonemeReleaseTimeCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly float oldDelta;
+        readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
+        public PhonemeReleaseTimeCommand(UVoicePart part, UNote note, int index, UPhoneme phoneme, float delta) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldDelta = o.releaseTimeDelta ?? 0;
+
+            var p3x = phoneme.envelope.data[4].X - phoneme.GetFadeOut();
+            double max = p3x - phoneme.envelope.data[2].X;
+            double min = -phoneme.GetFadeOut() + 5;
+            newDelta = (float)Math.Clamp(delta, min, max);
+        }
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            o.releaseTimeDelta = newDelta == 0 ? null : (float?)newDelta;
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            o.releaseTimeDelta = oldDelta == 0 ? null : (float?)oldDelta;
+        }
+        public override string ToString() => "Set phoneme release time";
     }
 
     public class ClearPhonemeTimingCommand : NoteCommand {

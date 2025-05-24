@@ -324,10 +324,6 @@
   <system:String x:Key="pianoroll.menu.searchnote.close">閉じる</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">次へ</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">前へ</system:String>
-  <system:String x:Key="pianoroll.phoneme.offset">タイミング</system:String>
-  <system:String x:Key="pianoroll.phoneme.overlap">オーバーラップ補正値</system:String>
-  <system:String x:Key="pianoroll.phoneme.preutter">先行発声補正値</system:String>
-  <system:String x:Key="pianoroll.phoneme.title">音素のパラメータ</system:String>
   <system:String x:Key="pianoroll.snapdiv">グリッド幅</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">音符のパラメータを表示 (\)</system:String>
