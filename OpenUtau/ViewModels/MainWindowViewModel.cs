@@ -99,6 +99,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
+                Page = 1;
                 try {
                     OpenProject(new[] { file });
                     DocManager.Inst.Project.Saved = false;
@@ -130,6 +131,7 @@ namespace OpenUtau.App.ViewModels {
                     ThemeManager.GetString("dialogs.recovery.caption"),
                     MessageBox.MessageBoxButtons.YesNo);
                 if (result == MessageBox.MessageBoxResult.Yes) {
+                    Page = 1;
                     DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
                     try {
                         Core.Format.Formats.RecoveryProject(new string[] { recPath });
