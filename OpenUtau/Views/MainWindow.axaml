@@ -24,26 +24,26 @@
           <MenuItem Header="{DynamicResource menu.file}">
             <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
             <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" ItemsSource="{Binding OpenTemplates}" Classes="MenuItemWithSubMenu"/>
-            <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate"/>
+            <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate" IsEnabled="{Binding Page}"/>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
             <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}" Classes="MenuItemWithSubMenu"/>
-            <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
+            <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation" IsEnabled="{Binding Page}"/>
             <MenuItem Header="-" Height="1"/>
-            <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
-            <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs"/>
+            <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave" IsEnabled="{Binding Page}"/>
+            <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs" IsEnabled="{Binding Page}"/>
             <MenuItem Header="-" Height="1"/>
-            <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
-            <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
-            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
+            <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks" IsEnabled="{Binding Page}"/>
+            <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio" IsEnabled="{Binding Page}"/>
+            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi" IsEnabled="{Binding Page}">
             </MenuItem>
             <MenuItem Header="-" Height="1"/>
-            <MenuItem Header="{DynamicResource menu.file.exportaudio}">
+            <MenuItem Header="{DynamicResource menu.file.exportaudio}" IsEnabled="{Binding Page}">
               <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
               <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
             </MenuItem>
-            <MenuItem Header="{DynamicResource menu.file.exportproject}">
+            <MenuItem Header="{DynamicResource menu.file.exportproject}" IsEnabled="{Binding Page}">
               <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
               <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
@@ -51,15 +51,15 @@
               <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2To"/>
               <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitchTo"/>
             </MenuItem>
-            <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
+            <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation" IsEnabled="{Binding Page}"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.edit}">
-            <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
-            <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
+            <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}" IsEnabled="{Binding Page}"/>
+            <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}" IsEnabled="{Binding Page}"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.project}">
-            <MenuItem Header="{DynamicResource menu.project.expressions}" Click="OnMenuExpressionss"/>
-            <MenuItem Header="{DynamicResource menu.project.remaptimeaxis}" Click="OnMenuRemapTimeaxis"/>
+            <MenuItem Header="{DynamicResource menu.project.expressions}" Click="OnMenuExpressionss" IsEnabled="{Binding Page}"/>
+            <MenuItem Header="{DynamicResource menu.project.remaptimeaxis}" Click="OnMenuRemapTimeaxis" IsEnabled="{Binding Page}"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.tools}">
             <MenuItem Header="{DynamicResource menu.tools.layout}">
