@@ -106,7 +106,7 @@ namespace OpenUtau.App.Views {
             BeginLoading(parentWindow, 0);
         }
 
-        public static void BeginLoading(Window parentWindow, int milisDelay = 100) {
+        public static void BeginLoading(Window parentWindow, int milisDelay = 250) {
             if (isCurrentlyLoading) {
                 return;
             }
