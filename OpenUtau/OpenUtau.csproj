@@ -54,7 +54,7 @@
     <BeautySharedRuntimeMode>False</BeautySharedRuntimeMode>
     <BeautyLibsDir>./Libs</BeautyLibsDir>
     <BeautyExcludes>OpenUtau.dll;OpenUtau.Plugin.Builtin.dll</BeautyExcludes>
-    <BeautyOnPublishOnly>True</BeautyOnPublishOnly>
+    <BeautyOnPublishOnly>False</BeautyOnPublishOnly>
     <BeautyNoRuntimeInfo>False</BeautyNoRuntimeInfo>
     <BeautyNBLoaderVerPolicy>auto</BeautyNBLoaderVerPolicy>
     <BeautyEnableDebugging>True</BeautyEnableDebugging>
