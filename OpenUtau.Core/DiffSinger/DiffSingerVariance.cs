@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +34,7 @@ namespace OpenUtau.Core.DiffSinger{
         const float tailMs = DiffSingerUtils.tailMs;
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
+        public float FrameMs => frameMs;
 
         public DsVariance(string rootPath)
         {
@@ -179,6 +180,7 @@ namespace OpenUtau.Core.DiffSinger{
             if (linguisticOutputs is null) {
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
+                phrase.AddCacheFile(linguisticCache?.Filename);
             }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -235,7 +237,7 @@ namespace OpenUtau.Core.DiffSinger{
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, totalFrames, numVariances })));
-            var steps = Preferences.Default.DiffSingerSteps;
+            var steps = Preferences.Default.DiffSingerStepsVariance;
             if (dsConfig.useContinuousAcceleration) {
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
                     new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
@@ -262,6 +264,7 @@ namespace OpenUtau.Core.DiffSinger{
             if (varianceOutputs is null) {
                 varianceOutputs = varianceModel.Run(varianceInputs).Cast<NamedOnnxValue>().ToList();
                 varianceCache?.Save(varianceOutputs);
+                phrase.AddCacheFile(varianceCache?.Filename);
             }
             Tensor<float>? energy_pred = dsConfig.predict_energy
                 ? varianceOutputs

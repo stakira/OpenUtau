@@ -14,7 +14,6 @@ using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using VocalShaper;
-using VocalShaper.World;
 
 namespace OpenUtau.Core.Vogen {
     public class VogenRenderer : IRenderer {
@@ -62,6 +61,7 @@ namespace OpenUtau.Core.Vogen {
                     }
                     var result = Layout(phrase);
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
+                    phrase.AddCacheFile(wavPath);
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     if (File.Exists(wavPath)) {

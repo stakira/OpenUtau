@@ -345,12 +345,12 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
-                    if (line.StartsWith("#Charaset:")) {
+                    if (line.StartsWith("#Charset:")) {
                         try {
-                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
-                            if (encoding != charaset) {
+                            var charset = Encoding.GetEncoding(line.Replace("#Charset:", ""));
+                            if (encoding != charset) {
                                 stream.Position = 0;
-                                return ParseOtoSet(stream, filePath, charaset);
+                                return ParseOtoSet(stream, filePath, charset);
                             }
                         } catch { }
                     }
@@ -503,9 +503,7 @@ namespace OpenUtau.Classic {
                     }
                     writer.Write(oto.Wav);
                     writer.Write('=');
-                    if (oto.Alias != RemoveExtension(oto.Wav)) {
-                        writer.Write(oto.Alias);
-                    }
+                    writer.Write(oto.Alias);
                     writer.Write(',');
                     if (oto.Offset != 0) {
                         writer.Write(oto.Offset);
