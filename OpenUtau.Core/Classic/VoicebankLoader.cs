@@ -393,6 +393,7 @@ namespace OpenUtau.Classic {
             var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
             var dir = Path.GetDirectoryName(otoSet.File);
             var NFDFiles = Directory.GetFiles(dir, "*.wav")
+                .Select(file => Path.GetFileName(file))
                 .Where(file => !file.IsNormalized())
                 .ToDictionary(file => file.Normalize());
 
