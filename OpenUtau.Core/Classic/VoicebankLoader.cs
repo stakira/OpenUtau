@@ -392,26 +392,25 @@ namespace OpenUtau.Classic {
         static void CheckWavExist(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
             var dir = Path.GetDirectoryName(otoSet.File);
-            var NFDFiles = Directory.GetFiles(dir, "*.wav").Where(file => !file.IsNormalized());
+            var NFDFiles = Directory.GetFiles(dir, "*.wav")
+                .Where(file => !file.IsNormalized())
+                .ToDictionary(file => file.Normalize());
 
             foreach (var group in wavGroups) {
                 string path = Path.Combine(dir, group.Key);
                 if (!File.Exists(path)) {
-                    foreach (var file in NFDFiles) {
-                        if (group.Key.Normalize() == Path.GetFileName(file).Normalize()) {
-                            group.ForEach(oto => oto.Wav = Path.GetFileName(file));
-                            goto LOOPEND;
+                    if (NFDFiles.TryGetValue(group.Key.Normalize(), out string NFDFile)) {
+                        group.ForEach(oto => oto.Wav = NFDFile);
+                    } else {
+                        Log.Error($"Sound file missing. {path}");
+                        foreach (Oto oto in group) {
+                            if (string.IsNullOrEmpty(oto.Error)) {
+                                oto.Error = $"Sound file missing. {path}";
+                            }
+                            oto.IsValid = false;
                         }
-                    }
-                    Log.Error($"Sound file missing. {path}");
-                    foreach (Oto oto in group) {
-                        if (string.IsNullOrEmpty(oto.Error)) {
-                            oto.Error = $"Sound file missing. {path}";
-                        }
-                        oto.IsValid = false;
                     }
                 }
-LOOPEND: ;
             }
         }
 
