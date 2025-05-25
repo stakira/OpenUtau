@@ -130,8 +130,8 @@ namespace OpenUtau.Core.Ustx {
                     autoPreutter = maxPreutter;
                     autoOverlap *= ratio;
                 }
-                if (adjacent && autoPreutter > prevDur * 0.9f) {
-                    double delta = autoPreutter - prevDur * 0.9f;
+                if (adjacent && autoPreutter > prevDur) {
+                    double delta = autoPreutter - prevDur;
                     autoPreutter -= delta;
                     autoOverlap -= delta;
                 }
