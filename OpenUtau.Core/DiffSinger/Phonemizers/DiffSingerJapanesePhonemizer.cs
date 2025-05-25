@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerJapanesePhonemizer : DiffSingerBasePhonemizer {
         protected override string GetDictionaryName() => "dsdict-ja.yaml";
 
-        protected override string GetLangCode() => "ja";
+        public override string GetLangCode() => "ja";
 
         protected override string[] Romanize(IEnumerable<string> lyrics) {
             var lyricsArray = lyrics.ToArray();

@@ -25,10 +25,33 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
     }
 
+    public class RecentFileInfo {
+        public string Name { get; }
+        public string PathName { get; }
+        public string Directory { get; }
+        public DateTime LastWriteTime { get; }
+        public string LastWriteTimeStr { get; }
+
+        public RecentFileInfo(string directoryName) {
+            PathName = directoryName;
+            Name = Path.GetFileName(directoryName);
+            Directory = Path.GetDirectoryName(directoryName) ?? string.Empty;
+            LastWriteTime = System.IO.File.GetLastWriteTime(directoryName);
+            LastWriteTimeStr = LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+    }
+
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+        
+        /// <summary>
+        ///0: welcome page, 1: tracks page
+        /// </summary>
+        [Reactive] public int Page { get; set; } = 0;
+        ObservableCollectionExtended<RecentFileInfo> RecentFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
+
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -55,11 +78,19 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
         public MainWindowViewModel() {
+            if(Preferences.Default.LaunchBehaviour == 1){
+                Page = 1;
+            }
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
             ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
+            RecentFiles.Clear();
+            RecentFiles.AddRange(Preferences.Default.RecentFiles
+                .Select(file => new RecentFileInfo(file))
+                .OrderByDescending(f => f.LastWriteTime));
             OpenRecentCommand = ReactiveCommand.Create<string>(file => {
+                Page = 1;
                 try {
                     OpenProject(new[] { file });
                 } catch (Exception e) {
@@ -114,6 +145,7 @@ namespace OpenUtau.App.ViewModels {
           
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
+                Page = 1;
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
@@ -314,11 +346,11 @@ namespace OpenUtau.App.ViewModels {
                         project, part, partNewStartTick, part.trackNo));
                 }
                 if(part is UVoicePart voicePart){
-                    var partOldEndTick = voicePart.End;
-                    var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
-                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                    var partOldDuration = voicePart.Duration;
+                    var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
+                    if(partNewDuration != partOldDuration) {
                         DocManager.Inst.ExecuteCmd(new ResizePartCommand(
-                            project, voicePart, partNewEndTick - partNewStartTick));
+                            project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();
                     foreach(var note in voicePart.notes){

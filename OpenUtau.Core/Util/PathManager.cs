@@ -16,7 +16,7 @@ namespace OpenUtau.Core {
         public PathManager() {
             RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
-                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 DataPath = Path.Combine(userHome, "Library", "OpenUtau");
                 CachePath = Path.Combine(userHome, "Library", "Caches", "OpenUtau");
                 HomePathIsAscii = true;
