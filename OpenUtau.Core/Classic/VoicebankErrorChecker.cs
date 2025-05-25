@@ -246,15 +246,10 @@ namespace OpenUtau.Classic {
 
         void CheckNFDFiles(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
-            var dir = Path.GetDirectoryName(otoSet.File);
-            var NFDFiles = Directory.GetFiles(dir, "*.wav")
-                .Select(file => Path.GetFileName(file))
-                .Where(file => !file.IsNormalized());
-
             foreach (var group in wavGroups) {
                 if (group.Key != group.First().FileTrace.line.Split('=')[0].Trim() && !group.Key.IsNormalized()) {
                     Errors.Add(new VoicebankError() {
-                        soundFile = Path.Combine(dir, group.Key),
+                        soundFile = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key),
                         message = $"Wav filename is NFD.",
                     });
                 }
