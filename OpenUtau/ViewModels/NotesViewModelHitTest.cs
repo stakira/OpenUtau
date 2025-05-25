@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
+using Avalonia.Media.TextFormatting;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -388,6 +389,7 @@ namespace OpenUtau.App.ViewModels {
             bool raiseText = false;
             double leftTick = viewModel.TickOffset - 480;
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            string langCode = PhonemeUIRender.getLangCode(viewModel.Part);
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
             foreach (var phoneme in viewModel.Part.phonemes) {
                 double leftBound = viewModel.Project.timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
@@ -407,23 +409,14 @@ namespace OpenUtau.App.ViewModels {
                 if (string.IsNullOrEmpty(phonemeText)) {
                     continue;
                 }
-                var x = viewModel.TickToneToPoint(phoneme.position, 0).X;
-                var bold = phoneme.phoneme != phoneme.rawPhoneme;
-                var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
-                if (x < lastTextEndX) {
-                    raiseText = !raiseText;
-                } else {
-                    raiseText = false;
-                }
-                double textY = raiseText ? 2 : 18;
-                var size = new Size(textLayout.Width + 4, textLayout.Height - 2);
-                var rect = new Rect(new Point(x - 2, textY + 1.5), size);
+                (double textX, double textY, Size size, TextLayout textLayout) 
+                    = PhonemeUIRender.AliasPosition(viewModel, phoneme, langCode, ref lastTextEndX, ref raiseText);
+                var rect = new Rect(new Point(textX - 2, textY + 1.5), size);
                 if (rect.Contains(mousePos)) {
                     result.phoneme = phoneme;
                     result.hit = true;
                     return result;
                 }
-                lastTextEndX = x + size.Width;
             }
             return result;
         }

@@ -65,6 +65,7 @@
 
   <system:String x:Key="errors.caption">Error</system:String>
   <system:String x:Key="errors.details">Error Details</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder">Error loading vocoder "{0}". Please download vocoder from {1}</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
   <system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>
@@ -85,8 +86,9 @@
   <system:String x:Key="errors.failed.load">Failed to load</system:String>
   <system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>
   <system:String x:Key="errors.failed.openfile">Failed to open</system:String>
+  <system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>
   <system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>
-  <system:String x:Key="errors.failed.render">Failed to render</system:String>
+  <system:String x:Key="errors.failed.render">Failed to render.</system:String>
   <system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>
   <system:String x:Key="errors.failed.save">Failed to save</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>
@@ -346,8 +348,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    Line Draw Pitch Tool (Shift + 4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (Shift + 4)
     Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
@@ -405,6 +406,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
+  <system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>
   <system:String x:Key="prefs.cache">Cache</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>
@@ -538,7 +540,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">Numerical,Options Type
     Left Button Draw: Set expressions
-    Ctrl + Left Button Draw: Set uniform expressions
+    Shift + Left Button Draw: Set uniform expressions
     Right Button Draw: Reset expressions
 Curve Type
     Left Button Draw: Draw
@@ -568,6 +570,7 @@ General
 
   <system:String x:Key="tracks.duplicate">Duplicate Track</system:String>
   <system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>
+  <system:String x:Key="tracks.favorite">Favorites</system:String>
   <system:String x:Key="tracks.installsinger">Install singer</system:String>
   <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
