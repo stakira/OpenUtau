@@ -2,14 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Width="450" Height="130"
+        mc:Ignorable="d" Width="380" Height="230"
         x:Class="OpenUtau.App.Views.TrackColorDialog" WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource tracks.trackcolor}"
         KeyDown="OnKeyDown">
   <Grid RowDefinitions="*,50" >
     <ListBox ItemsSource="{Binding TrackColors}" SelectedValue="{Binding SelectedColor}"
-             Grid.Row="0" VerticalAlignment="Center" Background="Transparent" Height="50" Margin="20,0">
+             Grid.Row="0" VerticalAlignment="Center" Background="Transparent" Height="150" Margin="20,0">
       <ListBox.ItemTemplate>
         <DataTemplate>
           <Border Background="{Binding AccentColor}" CornerRadius="2" Width="25"/>
@@ -17,7 +17,7 @@
       </ListBox.ItemTemplate>
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <UniformGrid Rows="2" />
+          <UniformGrid Rows="6" />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.Styles>
