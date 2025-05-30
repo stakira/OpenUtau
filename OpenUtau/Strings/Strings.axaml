@@ -217,6 +217,7 @@
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
+  <system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
