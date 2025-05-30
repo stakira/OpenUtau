@@ -488,7 +488,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.otoview.showall">Show All</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
-  <system:String x:Key="singers.playsample">Play sample</system:String>
+  <system:String x:Key="singers.playsample">Play Sample</system:String>
+  <system:String x:Key="singers.playselectedfile">Play Selected File</system:String>
   <system:String x:Key="singers.publish">Publish Singer</system:String>
   <system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>
