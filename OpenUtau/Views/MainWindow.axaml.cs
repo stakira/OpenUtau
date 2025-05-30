@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
@@ -85,6 +86,7 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+            this.Cursor = null;
         }
 
         public void InitProject() {
@@ -199,6 +201,7 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
+            viewModel.Page = 1;
             viewModel.NewProject();
         }
 
@@ -219,6 +222,7 @@ namespace OpenUtau.App.Views {
             if (files == null || files.Length == 0) {
                 return;
             }
+            viewModel.Page = 1;
             try {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
@@ -859,6 +863,7 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
+                viewModel.Page = 1;
                 try {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
@@ -866,6 +871,7 @@ namespace OpenUtau.App.Views {
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
@@ -922,6 +928,7 @@ namespace OpenUtau.App.Views {
                     DependencyInstaller.Install(file);
                 }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
+                viewModel.Page = 1;
                 try {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
@@ -987,6 +994,7 @@ namespace OpenUtau.App.Views {
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
             }
+            Cursor = null;
         }
 
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
@@ -1019,6 +1027,9 @@ namespace OpenUtau.App.Views {
                     bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
                     if (isVoice && trim) {
                         partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        Cursor = ViewConstants.cursorSizeWE;
+                    } else if (isVoice && skip) {
+                        partEditState = new PartResizeEditState(control, viewModel, partControl.part, true);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (isWave && skip) {
                         // TODO
@@ -1072,7 +1083,7 @@ namespace OpenUtau.App.Views {
                 bool isWave = partControl.part is UWavePart;
                 bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
                 bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                if (isVoice && trim) {
+                if (isVoice && (skip || trim)) {
                     Cursor = ViewConstants.cursorSizeWE;
                 } else if (isWave && (skip || trim)) {
                     Cursor = null; // TODO
@@ -1125,7 +1136,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+        public void MainPagePointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
                 if (args.KeyModifiers == KeyModifiers.Shift) {
@@ -1248,6 +1259,21 @@ namespace OpenUtau.App.Views {
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     MessageBox.ShowError(this, e);
+                }
+            }
+        }
+
+        public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is RecentFileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
+                }
+                viewModel.Page = 1;
+                try{
+                    viewModel.OpenProject(new string[] { fileInfo.PathName });
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
                 }
             }
         }

@@ -94,39 +94,9 @@
             <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
             <MenuItem Header="{DynamicResource singers.setimage}" Click="OnSetImage"/>
             <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
-            <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}">
-              <MenuItem.DataTemplates>
-                <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
-                    <MenuItem.Icon>
-                      <CheckBox IsChecked="{Binding IsChecked}" />
-                    </MenuItem.Icon>
-                  </MenuItem>
-                </DataTemplate>
-              </MenuItem.DataTemplates>
-            </MenuItem>
-            <MenuItem Header="{DynamicResource singers.setsingertype}" ItemsSource="{Binding SetSingerTypeMenuItems}">
-              <MenuItem.DataTemplates>
-                <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
-                    <MenuItem.Icon>
-                      <CheckBox IsChecked="{Binding IsChecked}" />
-                    </MenuItem.Icon>
-                  </MenuItem>
-                </DataTemplate>
-              </MenuItem.DataTemplates>
-            </MenuItem>
-            <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}">
-              <MenuItem.DataTemplates>
-                <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}">
-                    <MenuItem.Icon>
-                      <CheckBox IsChecked="{Binding IsChecked}" />
-                    </MenuItem.Icon>
-                  </MenuItem>
-                </DataTemplate>
-              </MenuItem.DataTemplates>
-            </MenuItem>
+            <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}" Classes="MenuItemWithSubMenu"/>
+            <MenuItem Header="{DynamicResource singers.setsingertype}" ItemsSource="{Binding SetSingerTypeMenuItems}" Classes="MenuItemWithSubMenu"/>
+            <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}" Classes="MenuItemWithSubMenu"/>
             <MenuItem Header="{DynamicResource singers.usefilename}" IsVisible="{Binding IsClassic}" Click="OnSetUseFilenameAsAlias">
               <MenuItem.Icon>
                 <CheckBox Classes="menu" IsChecked="{Binding UseFilenameAsAlias}" />
