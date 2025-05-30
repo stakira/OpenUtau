@@ -167,6 +167,8 @@ namespace OpenUtau.App.Views {
                 EditNoteDefaults();
             });
 
+            this.AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+
             DocManager.Inst.AddSubscriber(this);
         }
 
@@ -1119,7 +1121,7 @@ namespace OpenUtau.App.Views {
 
         #endregion
 
-        void OnKeyDown(object sender, KeyEventArgs args) {
+        void OnKeyDown(object? sender, KeyEventArgs args) {
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 args.Handled = false;
