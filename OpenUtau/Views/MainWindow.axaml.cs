@@ -1117,7 +1117,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+        public void MainPagePointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
                 if (args.KeyModifiers == KeyModifiers.Shift) {
