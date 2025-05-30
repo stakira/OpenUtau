@@ -110,6 +110,20 @@ jobs:
           codesign -fvs - OpenUtau-${{ matrix.arch.name }}.dmg
         if: ${{ matrix.arch.os == 'osx' }}
 
+      # Create Pkg
+      - name: Create Pkg
+        run: |
+          mkdir -p pkgroot/Applications
+          cp -R bin/${{ matrix.arch.name }}/publish/OpenUtau.app pkgroot/Applications/
+
+          pkgbuild \
+            --root pkgroot \
+            --identifier com.openutau.app \
+            --install-location / \
+            --version ${{ inputs.version }} \
+            OpenUtau-${{ matrix.arch.name }}.pkg
+        if: ${{ matrix.arch.os == 'osx' }}
+
       # Upload Artifacts
       - uses: actions/upload-artifact@v4
         with:
@@ -125,8 +139,14 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: OpenUtau-osx-${{ matrix.arch.name }}.dmg
-          path: OpenUtau-osx-${{ matrix.arch.name }}.dmg
+          name: OpenUtau-${{ matrix.arch.name }}.dmg
+          path: OpenUtau-${{ matrix.arch.name }}.dmg
+        if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.arch.name }}.pkg
+          path: OpenUtau-${{ matrix.arch.name }}.pkg
         if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
 
       # Appcast
@@ -140,6 +160,7 @@ jobs:
       - name: Appcast MacOS
         run: |
           python appcast.py -v=${{ inputs.version }} -o=macos -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.dmg
+          python appcast.py -v=${{ inputs.version }} -o=macos -r=${{ matrix.arch.name }}-installer  -f=OpenUtau-${{ matrix.arch.name }}.pkg
         if: ${{ inputs.release && matrix.arch.os == 'osx' }}
 
       - name: Appcast Linux
