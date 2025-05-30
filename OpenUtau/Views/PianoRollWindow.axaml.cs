@@ -540,13 +540,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-            if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
+            if (pitHitInfo.Note != null) {
                 editState = new PitchPointEditState(control, ViewModel, this,
                     pitHitInfo.Note, pitHitInfo.Index, pitHitInfo.OnPoint, pitHitInfo.X, pitHitInfo.Y);
                 return;
             }
             var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
-            if (vbrHitInfo.hit && !IsLockedEdit(ViewModel.LockVibrato, vbrHitInfo.note)) {
+            if (vbrHitInfo.hit) {
                 if (vbrHitInfo.hitToggle) {
                     ViewModel.NotesViewModel.ToggleVibrato(vbrHitInfo.note);
                     return;
@@ -630,7 +630,7 @@ namespace OpenUtau.App.Views {
             }
             if (ViewModel.NotesViewModel.ShowPitch) {
                 var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-                if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
+                if (pitHitInfo.Note != null) {
                     ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                         Header = ThemeManager.GetString("context.pitch.easeinout"),
                         Command = ViewModel.PitEaseInOutCommand,
@@ -755,12 +755,12 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-            if (pitHitInfo.Note != null && !IsLockedEdit(ViewModel.LockPitchPoints, pitHitInfo.Note)) {
+            if (pitHitInfo.Note != null) {
                 Cursor = ViewConstants.cursorHand;
                 return;
             }
             var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
-            if (vbrHitInfo.hit && !IsLockedEdit(ViewModel.LockVibrato, vbrHitInfo.note)) {
+            if (vbrHitInfo.hit) {
                 if (vbrHitInfo.hitDepth) {
                     Cursor = ViewConstants.cursorSizeNS;
                 } else if (vbrHitInfo.hitPeriod) {
@@ -1028,10 +1028,6 @@ namespace OpenUtau.App.Views {
         public void BackgroundPointerMoved(object sender, PointerEventArgs args) {
             Cursor = null;
             args.Handled = true;
-        }
-
-        private bool IsLockedEdit(bool locked, UNote note) {
-            return locked && ViewModel.NotesViewModel.Selection.Count > 0 && !ViewModel.NotesViewModel.Selection.Contains(note);
         }
 
         public void OnSnapDivMenuButton(object sender, RoutedEventArgs args) {
