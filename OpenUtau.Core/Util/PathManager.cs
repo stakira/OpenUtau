@@ -28,7 +28,7 @@ namespace OpenUtau.Core {
                     }
                 } catch { }
             } else if (OS.IsLinux()) {
-                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
                 if (string.IsNullOrEmpty(dataHome)) {
                     dataHome = Path.Combine(userHome, ".local", "share");
