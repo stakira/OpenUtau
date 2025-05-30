@@ -53,6 +53,7 @@ namespace OpenUtau.App.Views {
                     mainWindow.Show();
                     desktop.MainWindow = mainWindow;
                     mainWindow.InitProject();
+                    LoadingWindow.InitializeLoadingWindow();
                     Close();
                 }
             }, CancellationToken.None, TaskContinuationOptions.None, mainScheduler);
