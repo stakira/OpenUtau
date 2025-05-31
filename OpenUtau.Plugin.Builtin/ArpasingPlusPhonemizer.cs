@@ -767,8 +767,13 @@ namespace OpenUtau.Plugin.Builtin {
                 var vcr = $"{v} {cc[0]}-";
                 var vcr2 = $"{v}{cc[0]} -";
                 if (!RomajiException.Contains(cc[0])) {
-                    if (HasOto(vcr, ending.tone) || HasOto(ValidateAlias(vcr), ending.tone) || HasOto(vcr2, ending.tone) || HasOto(ValidateAlias(vcr2), ending.tone)) {
+                    if (HasOto(vcr, ending.tone) && HasOto(ValidateAlias(vcr), ending.tone) || HasOto(vcr2, ending.tone) && HasOto(ValidateAlias(vcr2), ending.tone)) {
                         phonemes.Add(AliasFormat($"{v} {cc[0]}", "dynEnd", ending.tone, ""));
+                    } else if (!HasOto(vcr, ending.tone) && !HasOto(ValidateAlias(vcr), ending.tone) || !HasOto(vcr2, ending.tone) && HasOto(ValidateAlias(vcr2), ending.tone)) {
+                        phonemes.Add(vc);
+                        if (vc.Contains(cc[0])) {
+                            phonemes.Add(AliasFormat($"{cc[0]}", "ending", ending.tone, ""));
+                        }
                     } else {
                         phonemes.Add(vc);
                         if (vc.Contains(cc[0])) {
@@ -792,15 +797,15 @@ namespace OpenUtau.Plugin.Builtin {
                                 phonemes.Add(AliasFormat($"{v}", "ending", ending.tone, ""));
                             }
                             break;
-                        } else if ((HasOto(vcc, ending.tone) || HasOto(ValidateAlias(vcc), ending.tone)) && lastC == 1 && !ccvException.Contains(cc[0])) {
+                        } else if (HasOto(vcc, ending.tone) && HasOto(ValidateAlias(vcc), ending.tone) && lastC == 1 && !ccvException.Contains(cc[0])) {
                             phonemes.Add(vcc);
                             firstC = 1;
                             break;
-                        } else if ((HasOto(vcc2, ending.tone) || HasOto(ValidateAlias(vcc2), ending.tone)) && lastC == 1 && !ccvException.Contains(cc[0])) {
+                        } else if (HasOto(vcc2, ending.tone) && HasOto(ValidateAlias(vcc2), ending.tone) && lastC == 1 && !ccvException.Contains(cc[0])) {
                             phonemes.Add(vcc2);
                             firstC = 1;
                             break;
-                        } else if (HasOto(vcc3, ending.tone) || HasOto(ValidateAlias(vcc3), ending.tone) && !ccvException.Contains(cc[0])) {
+                        } else if (HasOto(vcc3, ending.tone) && HasOto(ValidateAlias(vcc3), ending.tone) && !ccvException.Contains(cc[0])) {
                             phonemes.Add(vcc3);
                             if (vcc3.EndsWith(cc.Last()) && lastC == 1) {
                                 if (consonants.Contains(cc.Last())) {
@@ -809,7 +814,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             firstC = 1;
                             break;
-                        } else if (HasOto(vcc4, ending.tone) || HasOto(ValidateAlias(vcc4), ending.tone) && !ccvException.Contains(cc[0])) {
+                        } else if (HasOto(vcc4, ending.tone) && HasOto(ValidateAlias(vcc4), ending.tone) && !ccvException.Contains(cc[0])) {
                             phonemes.Add(vcc4);
                             if (vcc4.EndsWith(cc.Last()) && lastC == 1) {
                                 if (consonants.Contains(cc.Last())) {
@@ -817,6 +822,12 @@ namespace OpenUtau.Plugin.Builtin {
                                 }
                             }
                             firstC = 1;
+                            break;
+                        } else if (!!HasOto(vcc, ending.tone) && !HasOto(ValidateAlias(vcc), ending.tone)
+                                || !HasOto(vcc2, ending.tone) && HasOto(ValidateAlias(vcc2), ending.tone)
+                                || !HasOto(vcc3, ending.tone) && HasOto(ValidateAlias(vcc3), ending.tone)
+                                || !HasOto(vcc4, ending.tone) && HasOto(ValidateAlias(vcc4), ending.tone)) {
+                            phonemes.Add(vc);
                             break;
                         } else {
                             phonemes.Add(vc);
