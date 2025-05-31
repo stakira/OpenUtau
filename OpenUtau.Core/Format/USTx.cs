@@ -106,7 +106,7 @@ namespace OpenUtau.Core.Format {
                 Preferences.Save();
                 DocManager.Inst.Recovered = false;
             } catch (Exception ex) {
-                var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
+                var e = new MessageCustomizableException($"Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
@@ -133,7 +133,7 @@ namespace OpenUtau.Core.Format {
             project.AfterLoad();
             project.ValidateFull();
             if (project.ustxVersion > kUstxVersion) {
-                throw new MessageCustomizableException("Project file is newer than software.", $"<translate:errors.failed.opennewerproject>: {filePath}", new FileFormatException("Project file is newer than software."));
+                throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", new FileFormatException("Project file is newer than software."));
             }
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");

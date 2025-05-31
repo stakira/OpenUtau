@@ -319,13 +319,7 @@ namespace OpenUtau.App.ViewModels {
                         }
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to install singer {file}");
-                        MessageCustomizableException mce;
-                        if(e is MessageCustomizableException){
-                            mce = (MessageCustomizableException)e;
-                        } else {
-                            mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
-                        }
-                        _ = await MessageBox.ShowError(mainWindow, mce);
+                        _ = await MessageBox.ShowError(mainWindow, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
                     }
                 })
             });
