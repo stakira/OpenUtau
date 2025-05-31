@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
@@ -143,8 +142,6 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
             DocManager.Inst.EndUndoGroup();
         }
-
-
 
         void OnMenuRemapTimeaxis(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
@@ -607,13 +604,7 @@ namespace OpenUtau.App.Views {
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to install singer {file}");
-                MessageCustomizableException mce;
-                if (e is MessageCustomizableException) {
-                    mce = (MessageCustomizableException)e;
-                } else {
-                    mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
-                }
-                _ = await MessageBox.ShowError(this, mce);
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
             }
         }
 
@@ -872,13 +863,7 @@ namespace OpenUtau.App.Views {
                     }
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to install singer {file}");
-                    MessageCustomizableException mce;
-                    if (e is MessageCustomizableException) {
-                        mce = (MessageCustomizableException)e;
-                    } else {
-                        mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
-                    }
-                    _ = await MessageBox.ShowError(this, mce);
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
