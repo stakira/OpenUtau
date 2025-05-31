@@ -375,9 +375,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
   <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
   <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
-  <system:String x:Key="prefs.advanced.launch">When launching</system:String>
-  <system:String x:Key="prefs.advanced.launch.newproject">Open a new project</system:String>
-  <system:String x:Key="prefs.advanced.launch.welcome">Show welcome page</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
@@ -607,5 +604,6 @@ General
   <system:String x:Key="welcome.open.description">Open a local project</system:String>
   <system:String x:Key="welcome.recent">Recent</system:String>
   <system:String x:Key="welcome.start">Start</system:String>
+  <system:String x:Key="welcome.template">Template</system:String>
 
 </ResourceDictionary>

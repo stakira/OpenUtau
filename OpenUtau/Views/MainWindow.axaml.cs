@@ -1250,12 +1250,17 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
-                viewModel.Page = 1;
-                try{
-                    viewModel.OpenProject(new string[] { fileInfo.PathName });
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
+                viewModel.OpenRecent(fileInfo.PathName);
+            }
+        }
+
+        public async void OnWelcomeTemplate(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is RecentFileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
                 }
+                viewModel.OpenTemplate(fileInfo.PathName);
             }
         }
 
