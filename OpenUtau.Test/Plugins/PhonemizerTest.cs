@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core;

@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
 using OpenUtau.App.Views;
-using OpenUtau.Classic;
-using OpenUtau.Core;
 using Serilog;
-using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.App {
     public class App : Application {

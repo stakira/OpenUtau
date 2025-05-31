@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DiffSinger
     public class DiffSingerKoreanG2PPhonemizer : DiffSingerG2pPhonemizer
     {
         protected override string GetDictionaryName() => "dsdict-ko.yaml";
-        protected override string GetLangCode()=>"ko";
+        public override string GetLangCode()=>"ko";
         protected override IG2p LoadBaseG2p() => new KoreanG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "a", "e", "eo", "eu", "i", "o", "u", "w", "y"

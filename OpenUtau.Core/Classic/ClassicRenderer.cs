@@ -68,12 +68,14 @@ namespace OpenUtau.Classic {
                         if (!(item.resampler is WorldlineResampler)) {
                             VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                         }
-                        lock (Renderers.GetCacheLock(item.outputFile)) {
-                            item.resampler.DoResamplerReturnsFile(item, Log.Logger);
-                        }
-                        if (!File.Exists(item.outputFile)) {
-                            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                            throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                        if(!item.phone.direct){
+                            lock (Renderers.GetCacheLock(item.outputFile)) {
+                                item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                            }
+                            if (!File.Exists(item.outputFile)) {
+                                DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                            }
                         }
                         if (!(item.resampler is WorldlineResampler)) {
                             VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
@@ -101,6 +103,7 @@ namespace OpenUtau.Classic {
                 string progressInfo = $"Track {trackNo + 1} : {phrase.wavtool} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                 progress.Complete(0, progressInfo);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"cat-{phrase.hash:x16}.wav");
+                phrase.AddCacheFile(wavPath);
                 var result = Layout(phrase);
                 if (File.Exists(wavPath)) {
                     try {

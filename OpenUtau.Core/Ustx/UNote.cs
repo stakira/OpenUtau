@@ -220,6 +220,8 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
 
+            phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr);
+
             int indexes = phonemeIndexes.LastOrDefault() + 1;
             for (int i = 0; i < indexes; i++) {
                 if (i == 0 || phonemeIndexes.Contains(i)) {
@@ -229,21 +231,14 @@ namespace OpenUtau.Core.Ustx {
                     } else {
                         value = values.Last();
                     }
-
                     if (value == null) {
-                        phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == i);
                         continue;
                     }
-                    var phonemeExp = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == i);
-                    if (phonemeExp != null) {
-                        phonemeExp.descriptor = trackExp.descriptor;
-                        phonemeExp.value = (float)value;
-                    } else {
-                        phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
-                            index = i,
-                            value = (float)value,
-                        });
-                    }
+
+                    phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                        index = i,
+                        value = (float)value,
+                    });
                 }
             }
         }

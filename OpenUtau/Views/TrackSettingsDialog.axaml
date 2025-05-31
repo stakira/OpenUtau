@@ -6,8 +6,7 @@
         x:Class="OpenUtau.App.Views.TrackSettingsDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource dialogs.tracksettings.caption}"
-        Height="184" Width="320" WindowStartupLocation="CenterOwner"
-        ExtendClientAreaToDecorationsHint="False" CanResize="False">
+        Height="184" Width="320" WindowStartupLocation="CenterOwner" CanResize="False">
   <Border Margin="{Binding $parent.WindowDecorationMargin}">
     <StackPanel Margin="8">
       <TextBlock Text="{DynamicResource warning.renderer}" IsVisible="{Binding IsNotClassic}"/>

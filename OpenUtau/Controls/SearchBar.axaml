@@ -4,14 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              x:Class="OpenUtau.App.Controls.SearchBar" Focusable="False">
-  <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="114,54,28,28,28,28" Width="280" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-    <!--Row 1-->
-    <TextBox Name="box" Grid.Row="0" Padding="4,3" Margin="0" Height="24" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+  <Grid ColumnDefinitions="Auto,Auto,100,40,28,28,28,28" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+    <RadioButton Grid.Column="0" Content="{DynamicResource pianoroll.menu.searchnote.note}" Margin="2,0,0,0" IsChecked="{Binding NoteMode}"/>
+    
+    <RadioButton Grid.Column="1" Content="{DynamicResource pianoroll.menu.searchnote.alias}" Margin="2,0,4,0" IsChecked="{Binding !NoteMode, Mode=OneWay}"/>
+    
+    <TextBox Grid.Column="2" Name="box" Padding="4,3" Margin="0" Height="24" VerticalAlignment="Center" HorizontalAlignment="Stretch"
              Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-             Text="{Binding SearchWord}" Focusable="True" Watermark="{DynamicResource pianoroll.menu.searchnote}"
+             Text="{Binding SearchWord}" Focusable="True" Watermark="{Binding Watermark}"
              GotFocus="Box_GotFocus"  KeyDown="Box_KeyDown"/>
-    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ResultCount}" Width="54" VerticalAlignment="Center" TextAlignment="Center"/>
-    <Button Grid.Row="0" Grid.Column="2" Command="{Binding SelectCommand}" CommandParameter="prev"
+    
+    <TextBlock Grid.Column="3" Text="{Binding ResultCount}" Width="54" VerticalAlignment="Center" TextAlignment="Center"/>
+    
+    <Button Grid.Column="4" Command="{Binding SelectCommand}" CommandParameter="prev"
       ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.prev}"
       Width="24" Height="24" Margin="2,2,2,2"
       Background="Transparent" BorderThickness="0">
@@ -27,7 +32,8 @@
         </Path.RenderTransform>
       </Path>
     </Button>
-    <Button Grid.Row="0" Grid.Column="3" Command="{Binding SelectCommand}" CommandParameter="next"
+    
+    <Button Grid.Column="5" Command="{Binding SelectCommand}" CommandParameter="next"
       ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.next}"
       Width="24" Height="24" Margin="2,2,2,2"
       Background="Transparent" BorderThickness="0">
@@ -43,7 +49,8 @@
         </Path.RenderTransform>
       </Path>
     </Button>
-    <Button Grid.Row="0" Grid.Column="4" Command="{Binding SelectCommand}"  CommandParameter="all"
+    
+    <Button Grid.Column="6" Command="{Binding SelectCommand}"  CommandParameter="all"
       ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.all}"
       Width="24" Height="24" Margin="2,2,2,2"
       Background="Transparent" BorderThickness="0">
@@ -59,7 +66,8 @@
         </Path.RenderTransform>
       </Path>
     </Button>
-    <Button Grid.Row="0" Grid.Column="5" Click="OnClose"
+    
+    <Button Grid.Column="7" Click="OnClose"
       ToolTip.Tip="{DynamicResource pianoroll.menu.searchnote.close}"
       Width="24" Height="24" Margin="2,2,2,2"
       Background="Transparent" BorderThickness="0">

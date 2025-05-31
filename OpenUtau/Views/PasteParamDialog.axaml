@@ -6,8 +6,7 @@
         x:Class="OpenUtau.App.Views.PasteParamDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource context.note.pasteparameters}"
-        WindowStartupLocation="CenterOwner"
-        ExtendClientAreaToDecorationsHint="False">
+        WindowStartupLocation="CenterOwner">
   <Grid RowDefinitions="*, 40" >
     <ListBox SelectionMode="Multiple,Toggle" ItemsSource="{Binding Params}"
              Grid.Row="0" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Auto" Background="Transparent" >

@@ -64,4 +64,75 @@
     </Style>
   </Style>
 
+  <Style Selector="RadioButton">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="RadioButton">
+        <StackPanel Orientation="Horizontal">
+          <Border
+          Name="RootBorder"
+          Background="{TemplateBinding Background}"
+          BorderBrush="{TemplateBinding BorderBrush}"
+          BorderThickness="{TemplateBinding BorderThickness}"
+          CornerRadius="{TemplateBinding CornerRadius}">
+            <Grid ColumnDefinitions="20,*">
+              <Grid Height="32" VerticalAlignment="Top">
+                <Ellipse
+                    Name="OuterEllipse"
+                    Width="14"
+                    Height="14"
+                    Fill="{DynamicResource RadioButtonOuterEllipseFill}"
+                    Stroke="{DynamicResource RadioButtonOuterEllipseStroke}"
+                    StrokeThickness="{DynamicResource RadioButtonBorderThemeThickness}"
+                    UseLayoutRounding="False" />
+
+                <Ellipse
+                    Name="CheckOuterEllipse"
+                    Width="14"
+                    Height="14"
+                    Fill="{DynamicResource SelectedTrackAccentBrush}"
+                    Opacity="0"
+                    Stroke="{DynamicResource SelectedTrackAccentBrush}"
+                    StrokeThickness="{DynamicResource RadioButtonBorderThemeThickness}"
+                    UseLayoutRounding="False" />
+
+                <Ellipse
+                    Name="CheckGlyph"
+                    Width="7"
+                    Height="7"
+                    Fill="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    Opacity="0"
+                    Stroke="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    UseLayoutRounding="False" />
+              </Grid>
+
+              <ContentPresenter
+                  Name="PART_ContentPresenter"
+                  Grid.Column="1"
+                  Margin="{TemplateBinding Padding}"
+                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                  Content="{TemplateBinding Content}"
+                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                  Foreground="{TemplateBinding Foreground}"
+                  RecognizesAccessKey="True" />
+            </Grid>
+          </Border>
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+    <Style Selector="^:pointerover /template/ Ellipse#OuterEllipse">
+      <Setter Property="Stroke" Value="{DynamicResource RadioButtonOuterEllipseStrokePointerOver}" />
+      <Setter Property="Fill" Value="{DynamicResource RadioButtonOuterEllipseFillPointerOver}" />
+    </Style>
+    <Style Selector="^:pointerover /template/ Ellipse#CheckOuterEllipse">
+      <Setter Property="Stroke" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+      <Setter Property="Fill" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+    </Style>
+    <Style Selector="^:pointerover /template/ Ellipse#CheckGlyph">
+      <Setter Property="Stroke" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+      <Setter Property="Fill" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+    </Style>
+  </Style>
 </Styles>

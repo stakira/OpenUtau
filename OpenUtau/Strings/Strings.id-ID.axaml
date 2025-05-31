@@ -1,7 +1,10 @@
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">Salin not</system:String>
   <system:String x:Key="context.note.delete">Hapus not</system:String>
   <system:String x:Key="context.note.pasteparameters">Pilih dan tempel parameter</system:String>
@@ -48,6 +51,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Ya</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Tidak ada resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
+  <!--<system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>-->
+  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
   <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
   New BPM:</system:String>-->
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
@@ -64,6 +69,7 @@
   <!--<system:String x:Key="errors.details">Error Details</system:String>-->
   <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
   <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
+  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
   <!--<system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>-->
   <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
   <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
@@ -213,7 +219,8 @@
   <!--<system:String x:Key="menu.view">View</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">Lirik</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">Lirik Bawaan</system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
   <system:String x:Key="notedefaults.portamento.length">Panjang</system:String>
   <system:String x:Key="notedefaults.portamento.start">Mulai</system:String>
@@ -268,6 +275,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="phoneticassistant.caption">Asisten Fonetik</system:String>
   <system:String x:Key="phoneticassistant.copy">Salin</system:String>
 
+  <!--<system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>-->
   <system:String x:Key="pianoroll.menu.batch">Pengeditan Batch</system:String>
   <!--<system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
@@ -295,8 +303,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Muat Pitch yang Dirender</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Turunkan satu oktaf</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Naikkan satu oktaf</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Hapus ekor "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Hapus ekor "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Setel ulang alias fonem</system:String>
@@ -317,6 +324,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Tutup</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Berikutnya</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Sebelumnya</system:String>
+  <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">Tampilkan Pitch Akhir Untuk Dirender (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">Lihat Parameter Not (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
@@ -421,7 +429,9 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Perender bawaan (untuk voicebank klasik)</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">Kedalaman Render DiffSinger</system:String>
-  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">Penjalan Pembelajaran Mesin</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>
@@ -444,6 +454,8 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <!--<system:String x:Key="progress.cachecleared">Cache cleared.</system:String>-->
+  <!--<system:String x:Key="progress.clearingcache">Clearing cache...</system:String>-->
   <system:String x:Key="progress.loadingsingers">Memuat Penyanyi...</system:String>
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Menunggu Dirender</system:String>
@@ -550,6 +562,7 @@ Umum
   <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">Pilih Perender</system:String>
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
+  <!--<system:String x:Key="tracks.singerdefault">(Singer default) </system:String>-->
   <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
   <system:String x:Key="tracks.solo.add">Solo tambahan (yang tidak menghilangkan solo dari trek lain)</system:String>
   <system:String x:Key="tracks.solo.only">Hanya solo ini saja (yang menghilangkan solo dari trek lain)</system:String>

@@ -1,7 +1,10 @@
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">Copiar nota</system:String>
   <system:String x:Key="context.note.delete">Remover nota</system:String>
   <system:String x:Key="context.note.pasteparameters">Selecionar e colar parâmetros</system:String>
@@ -48,6 +51,8 @@
   <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
+  <system:String x:Key="dialogs.recovery">Anteriormente, o OpenUtau foi encerrado de forma anormal. Você quer recuperar os dados da última sessão?</system:String>
+  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
   <system:String x:Key="dialogs.remaptimeaxis.message">Esta ferramenta mudará o andamento do projeto sem alterar as posições e durações reais (em segundos) das notas.
   Novo BPM:</system:String>
   <system:String x:Key="dialogs.timesig.caption">Assinatura de Tempo</system:String>
@@ -64,6 +69,7 @@
   <system:String x:Key="errors.details">Detalhes do Erro</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Erro ao carregar vocoder. </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">Faça o download do vocoder em </system:String>
+  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
   <system:String x:Key="errors.encryptedarchive">Arquivos criptografados não são suportados. Por favor, extraia o arquivo manualmente.</system:String>
   <system:String x:Key="errors.expression.abbrlong">A abreviação deve ter de 1 a 4 caracteres</system:String>
   <system:String x:Key="errors.expression.abbrset">A abreviação deve ser definida</system:String>
@@ -213,7 +219,8 @@
   <system:String x:Key="menu.view">Ver</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lírica</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">Lírica Padrão</system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
   <system:String x:Key="notedefaults.portamento.length">Comprimento</system:String>
   <system:String x:Key="notedefaults.portamento.start">Início</system:String>
@@ -268,6 +275,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="phoneticassistant.caption">Assistente Fonético</system:String>
   <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
 
+  <!--<system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>-->
   <system:String x:Key="pianoroll.menu.batch">Edição em Lote</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Executando edição em lote</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
@@ -295,8 +303,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Mover uma oitava abaixo</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Mover uma oitava acima</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remover cauda “-”</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remover cauda “R”</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Redefinir aliases de fonemas</system:String>
@@ -317,6 +324,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Fechar</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">Próx</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Ant</system:String>
+  <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">Ver Tom Final para Renderizar (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">Exibir Parâmetros da Nota (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
@@ -417,7 +425,9 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">Renderizador padrão (para bancos de voz clássicos)</system:String>
   <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
@@ -440,6 +450,8 @@ Segure Ctrl para selecionar</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <system:String x:Key="progress.cachecleared">Cache limpo.</system:String>
+  <system:String x:Key="progress.clearingcache">Limpando Cache...</system:String>
   <system:String x:Key="progress.loadingsingers">Carregando Cantores...</system:String>
   <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
@@ -546,6 +558,7 @@ Geral
   <system:String x:Key="tracks.rename">Renomear Ttack</system:String>
   <system:String x:Key="tracks.selectrenderer">Seleciona Renderizador</system:String>
   <system:String x:Key="tracks.selectsinger">Selecione a Voz</system:String>
+  <!--<system:String x:Key="tracks.singerdefault">(Singer default) </system:String>-->
   <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
   <system:String x:Key="tracks.solo.add">Solo adicionalmente (que não remove o solo de outras faixas)</system:String>
   <system:String x:Key="tracks.solo.only">Solo apenas este (que remove o solo de outras faixas)</system:String>

@@ -11,95 +11,272 @@ namespace OpenUtau.Plugins {
             return new JapanesePresampPhonemizer();
         }
 
-        [Theory]
-        [InlineData("ja_presamp",
-            new string[] { "あ", "+", "あ", "-" },
-            new string[] { "C4", "C4", "C4", "C4" },
-            new string[] { "", "", "波", "" },
-            new string[] { "- あ_D4", "a あ波_D4", "a -_D4" })]
-        [InlineData("ja_presamp",
-            new string[] { "- ず", "u t", "と", "お・", "o R" },
-            new string[] { "A3", "A3", "C4", "D4", "D4" },
-            new string[] { "", "", "", "", "" },
-            new string[] { "- ず_A3", "u t_A3", "と_D4", "o ・_D4", "・ お_D4",  "o R_D4" })]
-        [InlineData("ja_presamp",
-            new string[] { "\u304c", "\u304b\u3099", "\u30f4", "\u30a6\u3099" }, // が, が, ヴ, ヴ
-            new string[] { "A3", "C4", "D4", "E4" },
-            new string[] { "", "", "", "" },
-            new string[] { "- が_A3", "a が_D4", "a ヴ_D4", "u ヴ_F4" })]
-        public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
+        // General
+        [Fact]
+        public void JaPlusMinusTest() {
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "+", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "+~", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "a あ", "a R"]);
+        }
+        [Fact]
+        public void JaUnicordTest() { // が, が, ヴ, ヴ
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "\u304c", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "\u304b\u3099", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "\u30f4", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "\u30a6\u3099", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- が", "a が", "a ヴ", "u ヴ"]);
+        }
+        [Fact]
+        public void JaPriorityTest() { // [PRIORITY] p
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "ri", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "p", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "re", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "i", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "s", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["り", "i p", "p", "れ", "e い", "i s"]);
         }
 
+        // CV
         [Fact]
-        public void VcColorTest() {
-            RunPhonemizeTest("ja_presamp", new NoteParams[] {
-                    new NoteParams {
-                        lyric = "あ",
-                        hint = "",
-                        tone = "C4",
-                        phonemes = new PhonemeParams[] {
-                            new PhonemeParams {
-                                color = "",
-                                shift = 0,
-                                alt = 0
-                            },
-                            new PhonemeParams {
-                                color = "星",
-                                shift = 0,
-                                alt = 0
-                            }
+        public void CvTest() {
+            RunPhonemizeTest("ja_cv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["あ", "か", "さ", "た", "な"]);
+        }
+        [Fact]
+        public void CvColorTest() {
+            RunPhonemizeTest("ja_cv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cv") },
+                new NoteParams { lyric = "た", hint = "", tone = "G4", phonemes = SamePhonemeParams(1, 0, 0, "cv") },
+                new NoteParams { lyric = "な", hint = "", tone = "G4", phonemes = SamePhonemeParams(1, 0, 0, "cv") }
+            },
+            ["あ", "か", "さ_CV_C4", "た_CV_G4", "な_CV_G4"]);
+        }
+        [Fact]
+        public void CvIntegrationTest() {
+            RunPhonemizeTest("ja_cv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cv") }
+            },
+            ["あ", "か_CVVC_C4", "a s_CVVC_C4", "さ_CVVC_C4", "a た_VCV_D4", "な_CV_C4", "R"]);
+        }
+        [Fact]
+        public void CvGlottalTest() {
+            RunPhonemizeTest("ja_cv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") }
+            },
+            ["あ", "あ", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a k_CVVC_C4", "か_CVVC_C4", "a あ・_VCV_D4", "a た_VCV_D4", "a あ・_VCV_D4", "a R_VCV_D4"]);
+        }
+        
+        // CVVC
+        [Fact]
+        public void CvvcTest() {
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "っ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "a t", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "a あ", "a k", "か", "a s", "さ", "a t", "た", "a n", "な"]);
+        }
+        [Fact]
+        public void CvvcPreCTest() {
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- s", "さ", "a s", "さ"]);
+        }
+        [Fact]
+        public void CvvcColorTest() {
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4",
+                    phonemes = new PhonemeParams[] {
+                        new PhonemeParams {
+                            color = "",
+                            shift = 0,
+                            alt = 0
+                        },
+                        new PhonemeParams {
+                            color = "cvvc",
+                            shift = 0,
+                            alt = 0
                         }
-                    },
-                    new NoteParams {
-                        lyric = "k",
-                        hint = "",
-                        tone = "C4",
-                        phonemes = SamePhonemeParams(1, 0, 0, "")
                     }
                 },
-                new string[] { "- あ_D4", "a k星_B3", "k" });
+                new NoteParams { lyric = "さ", hint = "", tone = "F4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4",
+                    phonemes = new PhonemeParams[] {
+                        new PhonemeParams {
+                            color = "cvvc",
+                            shift = 0,
+                            alt = 0
+                        },
+                        new PhonemeParams {
+                            color = "",
+                            shift = 0,
+                            alt = 0
+                        }
+                    }
+                },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") }
+            },
+            ["- あ", "a k", "か", "a s_CVVC_C4", "さ_CVVC_F4", "a t_CVVC_F4", "た_CVVC_C4", "a n", "な_CVVC_C4"]);
+        }
+        [Fact]
+        public void CvvcIntegrationTest() {
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "a k", "か_CVVC_C4", "a s_CVVC_C4", "さ_CVVC_C4", "a た_VCV_D4", "な_CV_C4", "a R"]);
+        }
+        [Fact]
+        public void CvvcGlottalTest() {
+            RunPhonemizeTest("ja_cvvc_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") }
+            },
+            ["- あ", "a ・", "・ あ", "a あ", "a ・", "・ あ", "a k", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a k_CVVC_C4", "か_CVVC_C4", "a あ・_VCV_D4", "a た_VCV_D4", "a あ・_VCV_D4", "a R_VCV_D4"]);
         }
 
-        /// <summary>
-        /// Second phoneme params are ignored here
-        /// </summary>
+        // VCV
+        [Fact]
+        public void VcvTest() {
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "っ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "a あ", "っ", "- か", "a さ", "a た", "a R"]);
+        }
         [Fact]
         public void VcvColorTest() {
-            RunPhonemizeTest("ja_presamp", new NoteParams[] {
-                    new NoteParams {
-                        lyric = "あ",
-                        hint = "",
-                        tone = "C4",
-                        phonemes = new PhonemeParams[] {
-                            new PhonemeParams {
-                                color = "",
-                                shift = 0,
-                                alt = 0
-                            },
-                            new PhonemeParams {
-                                color = "星",
-                                shift = 0,
-                                alt = 0
-                            }
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4",
+                    phonemes = new PhonemeParams[] {
+                        new PhonemeParams {
+                            color = "vcv",
+                            shift = 0,
+                            alt = 0
+                        },
+                        new PhonemeParams { // Second phoneme params are ignored here
+                            color = "cvvc",
+                            shift = 0,
+                            alt = 0
                         }
-                    },
-                    new NoteParams {
-                        lyric = "か",
-                        hint = "",
-                        tone = "C4",
-                        phonemes = SamePhonemeParams(1, 0, 0, "")
                     }
                 },
-                new string[] { "- あ_D4", "a か_D4" });
+                new NoteParams { lyric = "さ", hint = "", tone = "F4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4",
+                    phonemes = new PhonemeParams[] {
+                        new PhonemeParams {
+                            color = "",
+                            shift = 0,
+                            alt = 0
+                        },
+                        new PhonemeParams {
+                            color = "cvvc",
+                            shift = 0,
+                            alt = 0
+                        }
+                    }
+                },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") }
+            },
+            ["- あ", "a か_VCV_D4", "a さ_VCV_D4", "a た", "a な_VCV_D4"]);
+        }
+        [Fact]
+        public void VcvIntegrationTest() {
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "な", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "か_CVVC_C4", "a さ", "a た_VCV_D4", "な_CV_C4", "a R"]);
+        }
+        [Fact]
+        public void VcvGlottalTest() {
+            RunPhonemizeTest("ja_vcv_integration", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") },
+                new NoteParams { lyric = "か", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "cvvc") },
+                new NoteParams { lyric = "た", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "あ・", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "vcv") },
+                new NoteParams { lyric = "R", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "") }
+            },
+            ["- あ", "a あ・", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a た_VCV_D4", "a あ・_VCV_D4", "a R"]);
         }
 
-        [Theory]
-        [InlineData("ja_presamp",
-            new string[] { "ri", "p", "re", "i", "s" }, // [PRIORITY] p,s
-            new string[] { "- り_D4", "i p_D4", "p", "れ_D4", "e い_D4", "i s_D4", "s" })]
-        public void PriorityTest(string singerName, string[] lyrics, string[] aliases) {
-            SameAltsTonesColorsTest(singerName, lyrics, aliases, "", "C4", "");
+        // X-SAMPA
+        [Fact]
+        public void CvvcXsampaTest() {
+            RunPhonemizeTest("ja_presamp", new NoteParams[] {
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "あ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "っ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "ひゃ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "さ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "ちゃ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") },
+                new NoteParams { lyric = "にゃ", hint = "", tone = "C4", phonemes = SamePhonemeParams(1, 0, 0, "波") }
+            },
+            ["- あ波_D4", "a あ波_D4", "a C波_D4", "ひゃ波_D4", "a s波_D4", "さ波_D4", "a tS波_D4", "ちゃ波_D4", "a J波_D4", "にゃ波_D4"]);
         }
     }
 }

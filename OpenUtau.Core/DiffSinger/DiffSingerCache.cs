@@ -16,6 +16,7 @@ namespace OpenUtau.Core.DiffSinger {
         private readonly string filename;
 
         public ulong Hash => hash;
+        public string Filename => filename;
 
         public DiffSingerCache(ulong identifier, ICollection<NamedOnnxValue> inputs) {
             using var stream = new MemoryStream();

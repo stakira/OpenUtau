@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
@@ -18,11 +19,12 @@ namespace OpenUtau.App.Views {
                 LogoTypeLight.IsVisible = true;
                 LogoTypeDark.IsVisible = false;
             }
+            this.Cursor = new Cursor(StandardCursorType.AppStarting);
             this.Opened += SplashWindow_Opened;
         }
 
         private void SplashWindow_Opened(object? sender, EventArgs e) {
-            if (Screens.Primary == null) {
+            if (Screens.Primary == null && Screens.ScreenCount == 0) {
                 return;
             }
 
@@ -50,6 +52,7 @@ namespace OpenUtau.App.Views {
                     var mainWindow = new MainWindow();
                     mainWindow.Show();
                     desktop.MainWindow = mainWindow;
+                    mainWindow.InitProject();
                     Close();
                 }
             }, CancellationToken.None, TaskContinuationOptions.None, mainScheduler);

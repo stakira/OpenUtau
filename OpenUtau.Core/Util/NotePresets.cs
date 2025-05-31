@@ -58,6 +58,7 @@ namespace OpenUtau.Core.Util {
         [Serializable]
         public class SerializableNotePresets {
             public string DefaultLyric = "a";
+            public string SplittedLyric = "+";
             public PortamentoPreset DefaultPortamento = new PortamentoPreset("Standard", 80, -40);
             public List<PortamentoPreset> PortamentoPresets = new List<PortamentoPreset> { };
             public VibratoPreset DefaultVibrato = new VibratoPreset("Standard", 75, 175, 25, 10, 10, 0, 0, 0);

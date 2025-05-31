@@ -8,7 +8,6 @@
         Icon="/Assets/open-utau.ico"
         WindowStartupLocation="CenterScreen"
         MinWidth="500" MinHeight="500" Width="500" Height="500"
-        ExtendClientAreaToDecorationsHint="False"
         Title="{DynamicResource singers.publish}">
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">

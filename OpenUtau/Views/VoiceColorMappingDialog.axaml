@@ -6,8 +6,7 @@
         x:Class="OpenUtau.App.Views.VoiceColorMappingDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource dialogs.voicecolorremapping}"
-        WindowStartupLocation="CenterOwner"
-        ExtendClientAreaToDecorationsHint="False">
+        WindowStartupLocation="CenterOwner">
   <Grid RowDefinitions="40,1*,30" Margin="10">
     <StackPanel Grid.Row="0" >
       <TextBlock Text="{DynamicResource dialogs.voicecolorremapping.caption}" />
