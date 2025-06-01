@@ -209,7 +209,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             viewModel.Page = 1;
-            await viewModel.NewProject();
+            viewModel.NewProject();
         }
 
         void OnMenuOpen(object sender, RoutedEventArgs args) => Open();
@@ -231,7 +231,7 @@ namespace OpenUtau.App.Views {
             }
             viewModel.Page = 1;
             try {
-                await viewModel.OpenProjectAsync(files);
+                viewModel.OpenProjectAsync(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
                 _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open files {string.Join("\n", files)}", $"<translate:errors.failed.openfile>:\n{string.Join("\n", files)}", e));
@@ -863,7 +863,7 @@ namespace OpenUtau.App.Views {
                 }
                 viewModel.Page = 1;
                 try {
-                    await viewModel.OpenProjectAsync(new string[] { file });
+                    viewModel.OpenProjectAsync(new string[] { file });
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file {file}");
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
@@ -1277,7 +1277,7 @@ namespace OpenUtau.App.Views {
                 }
                 viewModel.Page = 1;
                 try{
-                    await viewModel.OpenProjectAsync(new string[] { fileInfo.PathName });
+                    viewModel.OpenProjectAsync(new string[] { fileInfo.PathName });
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file { fileInfo.PathName }");
                 }
@@ -1401,9 +1401,9 @@ namespace OpenUtau.App.Views {
             } else if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(MainWindow)) {
                 if (loadingNotif.startLoading) {
                     // No delay opening popup
-                    LoadingWindow.BeginLoadingImmediate(this);
+                    //LoadingWindow.BeginLoadingImmediate(this);
                 } else {
-                    LoadingWindow.EndLoading();
+                    //LoadingWindow.EndLoading();
                 }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {

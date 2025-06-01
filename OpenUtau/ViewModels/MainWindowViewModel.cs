@@ -90,18 +90,18 @@ namespace OpenUtau.App.ViewModels {
             RecentFiles.AddRange(Preferences.Default.RecentFiles
                 .Select(file => new RecentFileInfo(file))
                 .OrderByDescending(f => f.LastWriteTime));
-            OpenRecentCommand = ReactiveCommand.CreateFromTask<string>(async file => {
+            OpenRecentCommand = ReactiveCommand.Create<string>(file => {
                 Page = 1;
                 try {
-                    await OpenProjectAsync(new[] { file });
+                    OpenProjectAsync(new[] { file });
                 } catch (Exception e) {
                     var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             });
-            OpenTemplateCommand = ReactiveCommand.CreateFromTask<string>(async file => {
+            OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
                 try {
-                    await OpenProjectAsync(new[] { file });
+                    OpenProjectAsync(new[] { file });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
@@ -140,8 +140,6 @@ namespace OpenUtau.App.ViewModels {
                     } finally {
                         DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
                     }
-
-                    Page = 1;
                     return;
                 }
             }
@@ -161,15 +159,15 @@ namespace OpenUtau.App.ViewModels {
 
             if (Preferences.Default.LaunchBehaviour == 1) {
                 Page = 1;
-                await NewProject();
+                NewProject();
             }
         }
 
-        public async Task NewProject() {
+        public void NewProject() {
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {
-                    await OpenProjectAsync(new[] { defaultTemplate });
+                    OpenProjectAsync(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                     return;
@@ -184,14 +182,12 @@ namespace OpenUtau.App.ViewModels {
 
 
 
-        public async Task OpenProjectAsync(string[] files) {
+        public void OpenProjectAsync(string[] files) {
             if (files == null) {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
             try {
-                // Five milisecond wait off UI thread to allow avalonia to draw the loading popup
-                await Task.Delay(5);
 
                 Core.Format.Formats.LoadProject(files);
                 DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
