@@ -925,15 +925,6 @@ namespace OpenUtau.App.Views {
                 LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
                 return;
             }
-            var hitInfoPhoneme = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point);
-            if (hitInfoPhoneme.hit) {
-                var vm = new PhonemeParamViewModel(ViewModel.NotesViewModel.Part, hitInfoPhoneme.phoneme);
-                var dialog = new PhonemeParamDialog() {
-                    DataContext = vm,
-                };
-                vm.loading = false;
-                dialog.ShowDialog(this);
-            }
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {

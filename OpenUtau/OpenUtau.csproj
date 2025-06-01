@@ -124,9 +124,6 @@
     <Compile Update="Views\PasteParamDialog.axaml.cs">
       <DependentUpon>PasteParamDialog.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\PhonemeParamDialog.axaml.cs">
-      <DependentUpon>PhonemeParamDialog.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\TrackSettingsDialog.axaml.cs">
       <DependentUpon>TrackSettingsDialog.axaml</DependentUpon>
     </Compile>
