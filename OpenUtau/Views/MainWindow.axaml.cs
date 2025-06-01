@@ -198,8 +198,8 @@ namespace OpenUtau.App.Views {
             if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                 return;
             }
-            viewModel.Page = 1;
             viewModel.NewProject();
+            viewModel.Page = 1;
         }
 
         void OnMenuOpen(object sender, RoutedEventArgs args) => Open();
@@ -219,9 +219,9 @@ namespace OpenUtau.App.Views {
             if (files == null || files.Length == 0) {
                 return;
             }
-            viewModel.Page = 1;
             try {
                 viewModel.OpenProject(files);
+                viewModel.Page = 1;
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
                 _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open files {string.Join("\n", files)}", $"<translate:errors.failed.openfile>:\n{string.Join("\n", files)}", e));
@@ -853,17 +853,17 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
-                viewModel.Page = 1;
                 try {
                     viewModel.OpenProject(new string[] { file });
+                    viewModel.Page = 1;
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file {file}");
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
                 }
             } else if (ext == ".mid" || ext == ".midi") {
-                viewModel.Page = 1;
                 try {
                     viewModel.ImportMidi(file);
+                    viewModel.Page = 1;
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import midi");
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
@@ -912,9 +912,9 @@ namespace OpenUtau.App.Views {
                     DependencyInstaller.Install(file);
                 }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
-                viewModel.Page = 1;
                 try {
                     viewModel.ImportAudio(file);
+                    viewModel.Page = 1;
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import audio");
                     _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
@@ -1253,12 +1253,17 @@ namespace OpenUtau.App.Views {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }
-                viewModel.Page = 1;
-                try{
-                    viewModel.OpenProject(new string[] { fileInfo.PathName });
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to open file { fileInfo.PathName }");
+                viewModel.OpenRecent(fileInfo.PathName);
+            }
+        }
+
+        public async void OnWelcomeTemplate(object sender, PointerPressedEventArgs args) {
+            if (sender is StackPanel panel &&
+                panel.DataContext is RecentFileInfo fileInfo) {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
                 }
+                viewModel.OpenTemplate(fileInfo.PathName);
             }
         }
 
