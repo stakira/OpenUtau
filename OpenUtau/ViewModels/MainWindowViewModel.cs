@@ -93,7 +93,7 @@ namespace OpenUtau.App.ViewModels {
             OpenRecentCommand = ReactiveCommand.Create<string>(file => {
                 Page = 1;
                 try {
-                    OpenProjectAsync(new[] { file });
+                    OpenProject(new[] { file });
                 } catch (Exception e) {
                     var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -101,7 +101,7 @@ namespace OpenUtau.App.ViewModels {
             });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
                 try {
-                    OpenProjectAsync(new[] { file });
+                    OpenProject(new[] { file });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
@@ -167,7 +167,7 @@ namespace OpenUtau.App.ViewModels {
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {
-                    OpenProjectAsync(new[] { defaultTemplate });
+                    OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
                     return;
@@ -182,7 +182,7 @@ namespace OpenUtau.App.ViewModels {
 
 
 
-        public void OpenProjectAsync(string[] files) {
+        public void OpenProject(string[] files) {
             if (files == null) {
                 return;
             }
