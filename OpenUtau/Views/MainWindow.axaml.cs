@@ -620,6 +620,24 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuInstallWavtoolResampler(object sender, RoutedEventArgs args) {
+            var file = await FilePicker.OpenFile(
+                this, "menu.tools.dependency.install", FilePicker.EXE);
+            if (file == null) {
+                return;
+            }
+            
+            if (file.EndsWith(".exe")) {
+                var setup = new ExeSetupDialog() {
+                    DataContext = new ExeSetupViewModel(file)
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
+            }
+        }
+
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
             PreferencesViewModel dataContext;
             try {
