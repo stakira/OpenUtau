@@ -1321,7 +1321,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public async void WindowClosing(object? sender, WindowClosingEventArgs e) {
+        public void WindowClosing(object? sender, WindowClosingEventArgs e) {
             if (forceClose || DocManager.Inst.ChangesSaved) {
                 if (Preferences.Default.ClearCacheOnQuit) {
                     Log.Information("Clearing cache...");
@@ -1333,12 +1333,14 @@ namespace OpenUtau.App.Views {
                 return;
             }
             e.Cancel = true;
-            if (!await AskIfSaveAndContinue()) {
-                return;
-            }
-            pianoRollWindow?.Close();
-            forceClose = true;
-            Close();
+            AskIfSaveAndContinue().ContinueWith(t => {
+                if (!t.Result) {
+                    return;
+                }
+                pianoRollWindow?.Close();
+                forceClose = true;
+                Close();
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private async Task<bool> AskIfSaveAndContinue() {
