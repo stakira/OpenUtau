@@ -30,7 +30,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
         private readonly string[] tapConsonant = "dx,nx,lx".Split(",");
-        private readonly string[] semilongConsonants = "ng,n,m,v,z,q,hh".Split(",");
+        private readonly string[] semilongConsonants = "ng,n,m,v,z,q,hh,h".Split(",");
         private readonly string[] semiVowels = "y,w".Split(",");
         private readonly string[] connectingGlides = "l,r,ll".Split(",");
         private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
@@ -1832,7 +1832,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in semilongConsonants) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
                     if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -") && !alias.Contains($"- q")) {
-                        return base.GetTransitionBasicLengthMs() * 1.5;
+                        return base.GetTransitionBasicLengthMs() * 1.4;
                     }
                 }
             }
@@ -1840,7 +1840,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var c in semiVowels) {
                 foreach (var v in semilongConsonants.Except(excludedEndings)) {
                     if (alias.Contains(c) && !alias.StartsWith(c) && !alias.Contains($"{c} -")) {
-                        return base.GetTransitionBasicLengthMs() * 1.5;
+                        return base.GetTransitionBasicLengthMs() * 1.2;
                     }
                 }
             }
