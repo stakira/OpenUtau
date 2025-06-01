@@ -88,12 +88,6 @@ namespace OpenUtau.App.Views {
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
             this.Cursor = null;
-
-
-            if (Preferences.Default.LaunchBehaviour == 1) {
-                //Task.Run(viewModel.NewProject);
-                NewProject();
-            }
         }
 
         public void InitProject() {
