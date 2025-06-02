@@ -366,6 +366,7 @@
   <system:String x:Key="pianoroll.tool.selectionv2">選択ツール (1)</system:String>
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
+  <system:String x:Key="prefs.advanced.checkupdateonstart">起動時にアップデートをチェック</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
   <system:String x:Key="prefs.advanced.importtempo">トラックのインポート時、テンポもインポートする</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">常にインポートする</system:String>

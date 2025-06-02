@@ -362,6 +362,7 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Ferramenta Seleção (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
+  <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.importtempo">Ao importar tracks, use os tempos do projeto importado</system:String>
   <system:String x:Key="prefs.advanced.importtempo.always">Sempre</system:String>
