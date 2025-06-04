@@ -46,7 +46,7 @@ namespace OpenUtau.Core {
                 if (!IsInstalled) {
                     DataPath = exePath;
                 } else {
-                    string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     DataPath = Path.Combine(dataHome, "OpenUtau");
                 }
                 CachePath = Path.Combine(DataPath, "Cache");
