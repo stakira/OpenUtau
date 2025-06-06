@@ -920,13 +920,13 @@ namespace OpenUtau.App.Views {
                 editState = null;
                 Cursor = null;
             }
-            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point);
-            var phoneme = hitInfo.phoneme;
-            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfo.hit}, point = {{{hitInfo.point}}}, phoneme = {phoneme?.phoneme}");
-            if (!hitInfo.hit) {
+            var hitInfoAlias = ViewModel.NotesViewModel.HitTest.HitTestAlias(point);
+            var phoneme = hitInfoAlias.phoneme;
+            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfoAlias.hit}, point = {{{hitInfoAlias.point}}}, phoneme = {phoneme?.phoneme}");
+            if (hitInfoAlias.hit) {
+                LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
                 return;
             }
-            LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
@@ -966,7 +966,19 @@ namespace OpenUtau.App.Views {
                         editState = new PhonemeChangePreutterState(
                             control, ViewModel, this, note.Extends ?? note, phoneme, index);
                     } else if (hitInfo.hitOverlap) {
+                        if (phoneme.Next == null) {
+                            return;
+                        }
+                        phoneme = hitInfo.phoneme.Next;
+                        note = phoneme.Parent;
+                        index = phoneme.index;
                         editState = new PhonemeChangeOverlapState(
+                            control, ViewModel, this, note.Extends ?? note, phoneme, index);
+                    } else if (hitInfo.hitAttackTime) {
+                        editState = new PhonemeChangeAttackTimeState(
+                            control, ViewModel, this, note.Extends ?? note, phoneme, index);
+                    } else if (hitInfo.hitReleaseTime) {
+                        editState = new PhonemeChangeReleaseTimeState(
                             control, ViewModel, this, note.Extends ?? note, phoneme, index);
                     }
                 }
@@ -1001,7 +1013,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
-            if (hitInfo.hit) {
+            if (hitInfo.hitPosition || hitInfo.hitPreutter || hitInfo.hitOverlap || hitInfo.hitAttackTime || hitInfo.hitReleaseTime) {
                 Cursor = ViewConstants.cursorSizeWE;
                 ViewModel.MouseoverPhoneme(null);
                 return;
