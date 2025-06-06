@@ -372,10 +372,6 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
-  <system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>

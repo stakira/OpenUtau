@@ -290,12 +290,6 @@
             <CheckBox IsChecked="{Binding RememberVsqx}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
             <TextBlock Text=" .vsqx" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
           </Grid>
-          <TextBlock Text="{DynamicResource prefs.advanced.importtempo}" Margin="0,10,0,0"/>
-          <ComboBox SelectedIndex="{Binding ImportTempo}">
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.always}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.never}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.ask}"/>
-          </ComboBox>
           <TextBlock Text="{DynamicResource prefs.advanced.winepath}" 
                       IsVisible="{OnPlatform Windows=False, Default=True}" Margin="0,10,0,0"/>
           <TextBlock HorizontalAlignment="Stretch" Margin="4"
