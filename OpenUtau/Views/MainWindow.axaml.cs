@@ -320,30 +320,20 @@ namespace OpenUtau.App.Views {
                 if (loadedProjects == null || loadedProjects.Length == 0) {
                     return;
                 }
-                bool importTempo = true;
-                switch (Preferences.Default.ImportTempo) {
-                    case 1:
-                        importTempo = false;
-                        break;
-                    case 2:
-                        if (loadedProjects[0].tempos.Count == 0) {
-                            importTempo = false;
-                            break;
-                        }
-                        var tempoString = String.Join("\n",
-                            loadedProjects[0].tempos
-                                .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
-                            );
-                        //ask the user
-                        var result = await MessageBox.Show(
-                            this,
-                            ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
-                            ThemeManager.GetString("dialogs.importtracks.caption"),
-                            MessageBox.MessageBoxButtons.YesNo);
-                        if (result == MessageBox.MessageBoxResult.No) {
-                            importTempo = false;
-                        }
-                        break;
+                // Imports tempo for new projects, otherwise asks the user.
+                bool importTempo = DocManager.Inst.Project.parts.Count == 0;
+                if (!importTempo && loadedProjects[0].tempos.Count > 0) {
+                    var tempoString = string.Join("\n",
+                        loadedProjects[0].tempos
+                            .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                        );
+                    // Ask the user
+                    var result = await MessageBox.Show(
+                        this,
+                        ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                        ThemeManager.GetString("dialogs.importtracks.caption"),
+                        MessageBox.MessageBoxButtons.YesNo);
+                    importTempo = result == MessageBox.MessageBoxResult.Yes;
                 }
                 viewModel.ImportTracks(loadedProjects, importTempo);
             } catch (Exception e) {
@@ -626,7 +616,7 @@ namespace OpenUtau.App.Views {
             if (file == null) {
                 return;
             }
-            
+
             if (file.EndsWith(".exe")) {
                 var setup = new ExeSetupDialog() {
                     DataContext = new ExeSetupViewModel(file)
