@@ -186,7 +186,6 @@ namespace OpenUtau.Core.DiffSinger {
             if(pitchPredictor is null) {
                 if(HasPitchPredictor){
                     pitchPredictor = new DsPitch(Path.Join(Location, "dspitch"));
-                    return pitchPredictor;
                 }
             }
             return pitchPredictor;
@@ -203,7 +202,6 @@ namespace OpenUtau.Core.DiffSinger {
             if(variancePredictor is null) {
                 if(HasVariancePredictor){
                     variancePredictor = new DsVariance(Path.Join(Location, "dsvariance"));
-                    return variancePredictor;
                 }
             }
             return variancePredictor;
