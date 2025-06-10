@@ -14,6 +14,7 @@ namespace OpenUtau.Core.Util {
             var threadId = Thread.CurrentThread.ManagedThreadId;
             using (var proc = new Process()) {
                 proc.StartInfo = new ProcessStartInfo(file, args) {
+                    Environment = {{"LANG", "ja_JP.utf8"}},
                     UseShellExecute = false,
                     RedirectStandardOutput = DebugSwitch,
                     RedirectStandardError = true,
