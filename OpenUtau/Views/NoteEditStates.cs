@@ -1012,12 +1012,69 @@ namespace OpenUtau.App.Views {
             var project = notesVm.Project;
             double preutter = project.timeAxis.MsBetweenTickPos(notesVm.PointToTick(point), phoneme.position);
             double preutterDelta = preutter - phoneme.autoPreutter;
-            preutterDelta = Math.Max(-phoneme.oto?.Preutter ?? 0, preutterDelta);
             if (notesVm.Part == null) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterDelta));
-            valueTip.UpdateValueTip($"{phoneme.preutter:0.0}ms ({preutterDelta:+0.0;-0.0;0}ms)");
+            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, phoneme, (float)preutterDelta));
+            valueTip.UpdateValueTip($"{phoneme.preutter:0.0}ms ({phoneme.preutterDelta ?? 0:+0.0;-0.0;0}ms)");
+        }
+    }
+
+    class PhonemeChangeAttackTimeState : NoteEditState {
+        public readonly UNote leadingNote;
+        public readonly UPhoneme phoneme;
+        public readonly int index;
+        public PhonemeChangeAttackTimeState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote leadingNote,
+            UPhoneme phoneme,
+            int index) : base(control, vm, valueTip) {
+            this.leadingNote = leadingNote;
+            this.phoneme = phoneme;
+            this.index = index;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            int partPos = notesVm.Part?.position ?? 0;
+            double p1x = phoneme.PositionMs + Math.Max(-phoneme.preutter + 5, -phoneme.preutter + phoneme.GetFadeIn());
+            double attackTimeDelta = project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + partPos) - p1x;
+            if (notesVm.Part == null) {
+                return;
+            }
+            DocManager.Inst.ExecuteCmd(new PhonemeAttackTimeCommand(notesVm.Part, leadingNote, index, phoneme, (float)attackTimeDelta));
+            valueTip.UpdateValueTip($"{phoneme.attackTimeDelta ?? 0:+0.0;-0.0;0}ms");
+        }
+    }
+
+    class PhonemeChangeReleaseTimeState : NoteEditState {
+        public readonly UNote leadingNote;
+        public readonly UPhoneme phoneme;
+        public readonly int index;
+        public PhonemeChangeReleaseTimeState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote leadingNote,
+            UPhoneme phoneme,
+            int index) : base(control, vm, valueTip) {
+            this.leadingNote = leadingNote;
+            this.phoneme = phoneme;
+            this.index = index;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            int partPos = notesVm.Part?.position ?? 0;
+            double p3x = phoneme.PositionMs + Math.Max(phoneme.envelope.data[2].X, phoneme.envelope.data[4].X - phoneme.GetFadeOut());
+            double releaseTimeDelta = p3x - project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + partPos);
+            if (notesVm.Part == null) {
+                return;
+            }
+            DocManager.Inst.ExecuteCmd(new PhonemeReleaseTimeCommand(notesVm.Part, leadingNote, index, phoneme, (float)releaseTimeDelta));
+            valueTip.UpdateValueTip($"{phoneme.releaseTimeDelta ?? 0:+0.0;-0.0;0}ms");
         }
     }
 
@@ -1040,13 +1097,13 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             int partPos = notesVm.Part?.position ?? 0;
-            double overlap = project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + partPos) - (phoneme.PositionMs - phoneme.preutter);
-            double overlapDelta = overlap - phoneme.autoOverlap;
+            double overlap = - phoneme.preutter + phoneme.autoOverlap;
+            double overlapDelta = project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) - phoneme.position) - overlap;
             if (notesVm.Part == null) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapDelta));
-            valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({overlapDelta:+0.0;-0.0;0}ms)");
+            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, phoneme, (float)overlapDelta));
+            valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({phoneme.overlapDelta ?? 0:+0.0;-0.0;0}ms)");
         }
     }
 
@@ -1068,9 +1125,20 @@ namespace OpenUtau.App.Views {
                 if (hitInfo.hitPosition) {
                     DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitPreutter) {
-                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 0));
+                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, phoneme, 0));
                 } else if (hitInfo.hitOverlap) {
-                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
+                    if (phoneme.Next == null) {
+                        return;
+                    }
+                    phoneme = phoneme.Next;
+                    parent = phoneme.Parent;
+                    leadingNote = parent.Extends ?? parent;
+                    index = phoneme.index;
+                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, phoneme, 0));
+                } else if (hitInfo.hitAttackTime) {
+                    DocManager.Inst.ExecuteCmd(new PhonemeAttackTimeCommand(notesVm.Part, leadingNote, index, phoneme, 0));
+                } else if (hitInfo.hitReleaseTime) {
+                    DocManager.Inst.ExecuteCmd(new PhonemeReleaseTimeCommand(notesVm.Part, leadingNote, index, phoneme, 0));
                 }
                 return;
             }
