@@ -335,7 +335,7 @@ namespace OpenUtau.Classic {
                 var position = 0;
                 var note_count = 0;
                 if (prev != null) {
-                    writer.WriteLine($"[#{note_count:D4}]");
+                    writer.WriteLine("[#PREV]");
                     note_count += 1;
                     WriteNoteBody(project, track, part, prev, writer);
                     position = prev.End;
@@ -412,7 +412,7 @@ namespace OpenUtau.Classic {
                         case "[#VERSION]":
                         case "[#SETTING]":
                         case "[#TRACKEND]":
-                        case "[#0000]":
+                        case "[#PREV]":
                         case "[#NEXT]":
                             break;
                         case "[#INSERT]":
