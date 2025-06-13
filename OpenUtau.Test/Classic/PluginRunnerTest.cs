@@ -118,11 +118,13 @@ Length=10
 Lyric=R
 NoteNum=60
 PreUtterance=
+Envelope=5,0,0,100,100,100,100,%,35
 [#0001]
 Length=20
 Lyric=ka
 NoteNum=0
 PreUtterance=
+Envelope=5,0,0,100,100,100,100,%,35
 [#0002]
 Length=30
 Lyric=r
@@ -132,21 +134,25 @@ Velocity=40
 Intensity=50
 Modulation=60
 Flags=g30B0H0P86
+Envelope=5,0,0,100,100,100,100,%,35
 [#0003]
 Length=40
 Lyric=ta
 NoteNum=0
 PreUtterance=
+Envelope=5,0,0,100,100,100,100,%,35
 [#0004]
 Length=50
 Lyric=na
 NoteNum=0
 PreUtterance=
+Envelope=5,0,0,100,100,100,100,%,35
 [#NEXT]
 Length=60
 Lyric=ha
 NoteNum=0
 PreUtterance=
+Envelope=5,0,0,100,100,100,100,%,35
 ";
                     // Different line feed code for each OS
                     var eol = Environment.NewLine;
