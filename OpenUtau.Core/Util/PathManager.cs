@@ -65,11 +65,15 @@ namespace OpenUtau.Core {
         public string RootPath { get; private set; }
         public string DataPath { get; private set; }
         public string CachePath { get; private set; }
+        public string[] SystemWideDataPaths => OS.IsLinux() 
+            ? (Environment.GetEnvironmentVariable("XDG_DATA_DIRS") ?? "/usr/share:/usr/local/share").Split(':').Select(v => Path.Combine(v, "OpenUtau")).ToArray() 
+            : Array.Empty<string>();
         public bool HomePathIsAscii { get; private set; }
         public bool IsInstalled { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
+        public string[] SystemSingersPath => SystemWideDataPaths.Select(path => Path.Combine(path, "Singers")).ToArray();
         public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath
             && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
                 ? AdditionalSingersPath
@@ -94,6 +98,11 @@ namespace OpenUtau.Core {
                 }
                 if (Directory.Exists(AdditionalSingersPath)) {
                     list.Add(AdditionalSingersPath);
+                }
+                foreach (string path in SystemSingersPath) {
+                    if (Directory.Exists(path)) {
+                        list.Add(path);
+                    }
                 }
                 return list.Distinct().ToList();
             }
