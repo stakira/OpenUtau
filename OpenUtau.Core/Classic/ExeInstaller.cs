@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using OpenUtau;
 using OpenUtau.Core;
@@ -18,7 +19,34 @@ namespace Classic {
             
             if (OS.IsMacOS()) {
                 //reference: https://github.com/stakira/OpenUtau/wiki/Resamplers-and-Wavtools#macos
-                string MacWrapper = $"#!/bin/sh\r\nRELPATH=\"{fileName}\"\r\n\r\nABSPATH=$(cd \"$(dirname \"$0\")\"; pwd -P)\r\nABSPATH=\"$ABSPATH/$RELPATH\"\r\nif [[ ! -x \"$ABSPATH\" ]]\r\nthen\r\n    chmod +x \"$ABSPATH\"\r\nfi\r\nexec /usr/local/bin/wine32on64 \"$ABSPATH\" \"$@\"";
+
+                string WineLocation = "/usr/local/bin/wine32on64";
+                
+                try {
+                    using (var proc = new Process()) {
+                        proc.StartInfo = new ProcessStartInfo{
+                            FileName = "/bin/bash",
+                            Arguments = "-c which wine",
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                        };
+
+                        proc.Start();
+
+                        using (var r = proc.StandardOutput){
+                            string output = r.ReadToEnd().Trim();
+                            proc.WaitForExit();
+
+                            if (!string.IsNullOrEmpty(output)) {
+                                WineLocation = output;
+                            }
+                        }
+                    }
+                }
+                catch {}
+                
+                string MacWrapper = $"#!/bin/sh\r\nRELPATH=\"{fileName}\"\r\n\r\nABSPATH=$(cd \"$(dirname \"$0\")\"; pwd -P)\r\nABSPATH=\"$ABSPATH/$RELPATH\"\r\nif [[ ! -x \"$ABSPATH\" ]]\r\nthen\r\n    chmod +x \"$ABSPATH\"\r\nfi\r\nexec {WineLocation} \"$ABSPATH\" \"$@\"";
                 File.WriteAllText(Path.ChangeExtension(destName, ".sh"), MacWrapper, new UTF8Encoding(false));
             } else if (OS.IsLinux()) {
                 //reference: https://github.com/stakira/OpenUtau/wiki/Resamplers-and-Wavtools#linux
