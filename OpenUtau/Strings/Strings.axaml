@@ -219,6 +219,7 @@
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
+  <system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
@@ -373,13 +374,6 @@ Warning: this option removes custom presets.</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
-  <system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.always">Always</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">Ask me each time</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">Never</system:String>
-  <system:String x:Key="prefs.advanced.launch">When launching</system:String>
-  <system:String x:Key="prefs.advanced.launch.newproject">Open a new project</system:String>
-  <system:String x:Key="prefs.advanced.launch.welcome">Show welcome page</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>
@@ -387,6 +381,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>
+  <system:String x:Key="prefs.advanced.winepath">Wine Path (set to enable wine for compatibility)</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.degree">Scale degree display style</system:String>
   <system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>
@@ -427,6 +422,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
+  <system:String x:Key="prefs.paths.detect">Detect</system:String>
   <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
@@ -497,7 +493,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.otoview.showall">Show All</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
-  <system:String x:Key="singers.playsample">Play sample</system:String>
+  <system:String x:Key="singers.playsample">Play Sample</system:String>
+  <system:String x:Key="singers.playselectedfile">Play Selected File</system:String>
   <system:String x:Key="singers.publish">Publish Singer</system:String>
   <system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>
@@ -616,5 +613,6 @@ General
   <system:String x:Key="welcome.open.description">Open a local project</system:String>
   <system:String x:Key="welcome.recent">Recent</system:String>
   <system:String x:Key="welcome.start">Start</system:String>
+  <system:String x:Key="welcome.template">Template</system:String>
 
 </ResourceDictionary>

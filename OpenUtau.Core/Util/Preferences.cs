@@ -188,6 +188,7 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
+            public string WinePath = string.Empty;
             public int LaunchBehaviour = 0;
             public int ImportTempo = 0;
             public int MixdownChannel = 1;

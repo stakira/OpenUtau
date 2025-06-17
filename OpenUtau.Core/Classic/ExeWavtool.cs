@@ -14,17 +14,21 @@ using System;
 namespace OpenUtau.Classic {
     class ExeWavtool : IWavtool {
         static object tempBatLock = new object();
-        static object tempShLock = new object();
 
         readonly StringBuilder sb = new StringBuilder();
         readonly string filePath;
         readonly string name;
+        readonly string winePath;
+        readonly bool useWine;
         private Encoding osEncoding;
 
         public ExeWavtool(string filePath, string basePath) {
             this.filePath = filePath;
             name = Path.GetRelativePath(basePath, filePath);
             osEncoding = OS.IsWindows() ? Encoding.GetEncoding(0) : Encoding.UTF8;
+            string ext = Path.GetExtension(filePath).ToLower();
+            winePath = Preferences.Default.WinePath;
+            useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath) && (ext == ".exe" || ext == ".bat");
         }
 
         public float[] Concatenate(List<ResamplerItem> resamplerItems, string tempPath, CancellationTokenSource cancellation) {
@@ -45,7 +49,7 @@ namespace OpenUtau.Classic {
             lock (tempBatLock) {
                 using (var stream = File.Open(batPath, FileMode.Create)) {
                     UTF8Encoding noBomEncoding = new UTF8Encoding(false);
-                    using (var writer = new StreamWriter(stream, OS.IsLinux() ? noBomEncoding : osEncoding)) {
+                    using (var writer = new StreamWriter(stream, OS.IsWindows() ? osEncoding : noBomEncoding)) {
                         WriteSetUp(writer, resamplerItems, tempPath);
                         for (var i = 0; i < resamplerItems.Count; i++) {
                             WriteItem(writer, resamplerItems[i], i, resamplerItems.Count);
@@ -54,14 +58,12 @@ namespace OpenUtau.Classic {
                     }
                 }
 
-                if (OS.IsLinux()) {
-                    //Because you can't run .bat files directly on linux, we have to create a shell script wrapper
-                    string shPath = PrepareSh();
-                    ProcessRunner.Run(shPath, "", Log.Logger, workDir: PathManager.Inst.CachePath, timeoutMs: 5 * 60 * 1000);
-                }
-                else {
+                if (useWine) {
+                    ProcessRunner.Run(winePath, batPath, Log.Logger, workDir: PathManager.Inst.CachePath, timeoutMs: 5 * 60 * 1000);
+                } else {
                     ProcessRunner.Run(batPath, "", Log.Logger, workDir: PathManager.Inst.CachePath, timeoutMs: 5 * 60 * 1000);
                 }
+
             }
             if (string.IsNullOrEmpty(tempPath) || File.Exists(tempPath)) {
                 using (var wavStream = Core.Format.Wave.OpenFile(tempPath)) {
@@ -71,31 +73,6 @@ namespace OpenUtau.Classic {
             return new float[0];
         }
 
-        string PrepareSh () {
-            string shPath = Path.Join(PathManager.Inst.CachePath, "temp.sh");
-            lock(tempShLock) {
-                if (!File.Exists(shPath)) {
-                    using (FileStream stream = File.Open(shPath, FileMode.Create)) {
-                        //Making a new encoding here that does not have a byte order mark
-                        //The byte order mark at the front of an shell script causes an exec format error
-                        UTF8Encoding noBomEncoding = new UTF8Encoding(false);
-                        using (StreamWriter writer = new StreamWriter(stream, noBomEncoding)) {
-                            WriteSh(writer);
-                        }
-                    }
-                    int mode = (7 << 6) | (5 << 3) | 5;
-                    chmod(shPath, mode);
-                }
-            }
-            return shPath;
-        }
-
-        void WriteSh (StreamWriter writer) {
-            string batPath = Path.Combine(PathManager.Inst.CachePath, "temp.bat");
-            writer.WriteLine("#!/bin/bash");
-            writer.WriteLine("LANG=\"ja_JP.UTF8\" wine \"" + batPath + "\" \"${@,-1}\"");
-        }
-
         void PrepareHelper() {
             string tempHelper = Path.Join(PathManager.Inst.CachePath, "temp_helper.bat");
             lock (Renderers.GetCacheLock(tempHelper)) {
@@ -103,7 +80,7 @@ namespace OpenUtau.Classic {
                     using (var stream = File.Open(tempHelper, FileMode.Create)) {
                         //BOM also causes problems when running .bat files through wine
                         UTF8Encoding noBomEncoding = new UTF8Encoding(false);
-                        using (var writer = new StreamWriter(stream, OS.IsLinux() ? noBomEncoding : osEncoding)) {
+                        using (var writer = new StreamWriter(stream, OS.IsWindows() ? osEncoding : noBomEncoding)) {
                             WriteHelper(writer);
                         }
                     }
@@ -127,8 +104,7 @@ namespace OpenUtau.Classic {
             writer.WriteLine($"@set tempo={resamplerItems[0].tempo}");
             writer.WriteLine($"@set samples={44100}");
             writer.WriteLine($"@set oto={ConvertIfNeeded(PathManager.Inst.CachePath)}");
-            string toolPath = OS.IsLinux() ? ResolveResamplerExePathLinux(filePath) : filePath;
-            writer.WriteLine($"@set tool={ConvertIfNeeded(toolPath)}");
+            writer.WriteLine($"@set tool={ConvertIfNeeded(filePath)}");
             string tempFile = Path.GetRelativePath(PathManager.Inst.CachePath, tempPath);
             writer.WriteLine($"@set output={ConvertIfNeeded(tempFile)}");
             writer.WriteLine("@set helper=temp_helper.bat");
@@ -143,8 +119,7 @@ namespace OpenUtau.Classic {
         }
 
         void WriteItem(StreamWriter writer, ResamplerItem item, int index, int total) {
-            string resampPath = OS.IsLinux() ? ResolveResamplerExePathLinux(item.resampler.FilePath) : item.resampler.FilePath;
-            writer.WriteLine($"@set resamp={ConvertIfNeeded(resampPath)}");
+            writer.WriteLine($"@set resamp={ConvertIfNeeded(item.resampler.FilePath)}");
             writer.WriteLine($"@set params={item.volume} {item.modulation} !{item.tempo:G999} {Base64.Base64EncodeInt12(item.pitches)}");
             // fixed the commandline vulnerabilities that also exists in og utau
             writer.WriteLine($"@set flag=\"{EscapeFlags(item.GetFlagsString())}\"");
@@ -221,7 +196,7 @@ namespace OpenUtau.Classic {
         }
 
         string ConvertIfNeeded(string path) {
-            if (OS.IsLinux()) return ConvertToWindowsPath(path);
+            if (!OS.IsWindows()) return ConvertToWindowsPath(path);
             else return path;
         } 
 
@@ -241,46 +216,6 @@ namespace OpenUtau.Classic {
             string windowsPath = new string(path.ToArray());
             if (absolutePath) windowsPath = "Z:" + windowsPath;
             return windowsPath;
-        }
-
-        //Parse the wrapper shell script created by the user during the resampler install process on linux for the path
-        //to the resampler's exe file. Should work for most paths and files that people would make, but there may be edge cases.
-        //Intended only for use on linux
-        string ResolveResamplerExePathLinux (string wrapperPath) {
-            using (FileStream stream = File.Open(wrapperPath, FileMode.Open)) {
-                using (StreamReader reader = new StreamReader(stream)) {
-                    string line;
-                    int start = -1;
-                    int end = -1;
-                    for (line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
-                        if (line[0] == '#') continue; //ignore comments in the file
-                        start = line.IndexOf("wine ") + 5;
-                        if (start == -1) continue;
-
-                        end = -1;
-                        if (line[start] == '"') { //if path is enclosed by quotation marks
-                            start++;
-                            end = line.IndexOf('"', start + 1);
-                        }
-                        else { //if path is not enclosed by quotation marks (potential for "\ " in string)
-                            int lastChecked = start;
-                            do {
-                                end = line.IndexOf(' ', lastChecked);
-                                if (line[end - 1] != '\\') break;
-
-                                lastChecked = end + 1;
-                            } while (end != -1);
-                        }
-                        if (end != -1) break;
-                    }
-                    if (line == null) 
-                        throw new InvalidDataException("Shell script wrapper for exe resampler is empty");
-                    else if (start == -1 || end == -1) 
-                        throw new InvalidDataException("Could not find path to .exe resampler in shell script wrapper");
-                    else
-                        return line.Substring(start, end - start);
-                }
-            }
         }
 
         [DllImport("libc", SetLastError = true)]
