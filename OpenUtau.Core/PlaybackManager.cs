@@ -94,12 +94,12 @@ namespace OpenUtau.Core {
         }
 
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
+            Render(project, tick, endTick, trackNo);
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
                 return;
             }
             AudioOutput.Stop();
-            Render(project, tick, endTick, trackNo);
             StartingToPlay = true;
         }
 
