@@ -879,18 +879,12 @@ namespace OpenUtau.App.ViewModels {
                             switch (i) {
                                 case 0:
                                     if (vm.Params[i].IsSelected) {
-                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch.Clone()));
+                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch));
                                     }
                                     break;
                                 case 1:
                                     if (vm.Params[i].IsSelected) {
-                                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, copyNote.vibrato.length));
-                                        DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, copyNote.vibrato.depth));
-                                        DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, copyNote.vibrato.period));
-                                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, copyNote.vibrato.@in));
-                                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, copyNote.vibrato.@out));
-                                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, copyNote.vibrato.shift));
-                                        DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, copyNote.vibrato.drift));
+                                        DocManager.Inst.ExecuteCmd(new SetVibratoCommand(Part, note, copyNote.vibrato));
                                     }
                                     break;
                                 default:

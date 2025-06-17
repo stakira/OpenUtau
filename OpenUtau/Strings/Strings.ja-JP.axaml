@@ -67,6 +67,7 @@
 
   <system:String x:Key="errors.caption">エラー</system:String>
   <system:String x:Key="errors.details">エラーの詳細</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder">ボコーダー "{0}" のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください：{1}</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">ボコーダー </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">のロードに失敗しました。未インストールの場合、以下のURLからダウンロードしてください: </system:String>
   <system:String x:Key="errors.editing.autopitch.unsupported">現在のボイスバンクはピッチカーブの生成に対応していません。この機能はDiffSingerやEnunuのシンガーで使用できます。</system:String>
@@ -336,8 +337,7 @@
   <system:String x:Key="pianoroll.toggle.tone">ガイド音を有効化 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">ビブラートを表示 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">波形を表示 (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    ラインピッチ描画ツール (Shift + 4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">ラインピッチ描画ツール (Shift + 4)
     左クリックで直線を描画
     右クリックでリセット
     Ctrl長押しで選択
@@ -556,6 +556,7 @@
 
   <system:String x:Key="tracks.duplicate">トラックを複製</system:String>
   <system:String x:Key="tracks.duplicatesettings">トラック設定を複製</system:String>
+  <system:String x:Key="tracks.favorite">お気に入り</system:String>
   <system:String x:Key="tracks.installsinger">シンガーをインストール</system:String>
   <system:String x:Key="tracks.more">さらに表示</system:String>
   <system:String x:Key="tracks.movedown">下へ</system:String>
