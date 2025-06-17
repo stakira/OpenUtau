@@ -27,12 +27,12 @@ namespace OpenUtau.App.Views {
         }
 
         async void ReloadSingers(object sender, RoutedEventArgs e) {
-            MessageBox.ShowLoading(this);
+            LoadingWindow.BeginLoading(this);
             await Task.Run(() => {
                 SingerManager.Inst.SearchAllSingers();
             });
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
-            MessageBox.CloseLoading();
+            LoadingWindow.EndLoading();
         }
 
         void ResetVLabelerPath(object sender, RoutedEventArgs e) {
