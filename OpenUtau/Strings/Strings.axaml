@@ -464,6 +464,35 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
+  <system:String x:Key="singerconfig.author">Author</system:String>
+  <system:String x:Key="singerconfig.delete">Delete</system:String>
+  <system:String x:Key="singerconfig.encoding">Text Encoding</system:String>
+  <system:String x:Key="singerconfig.header.singer">Singer Extra Settings</system:String>
+  <system:String x:Key="singerconfig.header.system">Singer System Settings</system:String>
+  <system:String x:Key="singerconfig.header.utaucompatible">UTAU Compatible Settings</system:String>
+  <system:String x:Key="singerconfig.image">Icon</system:String>
+  <system:String x:Key="singerconfig.localizednames.language">Language</system:String>
+  <system:String x:Key="singerconfig.localizednames.name">Name</system:String>
+  <system:String x:Key="singerconfig.localizednames">Localized Names</system:String>
+  <system:String x:Key="singerconfig.name">Default Name</system:String>
+  <system:String x:Key="singerconfig.open">Open</system:String>
+  <system:String x:Key="singerconfig.other">Other Info</system:String>
+  <system:String x:Key="singerconfig.phonemizer">Default Phonemizer</system:String>
+  <system:String x:Key="singerconfig.portrait">Portrait</system:String>
+  <system:String x:Key="singerconfig.portraitheight">Portrait Height</system:String>
+  <system:String x:Key="singerconfig.portraitopacity">Portrait Opacity</system:String>
+  <system:String x:Key="singerconfig.sample">Sample Audio</system:String>
+  <system:String x:Key="singerconfig.title">Singer Settings</system:String>
+  <system:String x:Key="singerconfig.txtexport.noexport">Do not export</system:String>
+  <system:String x:Key="singerconfig.txtexport.shiftjis">Export in shift-jis</system:String>
+  <system:String x:Key="singerconfig.txtexport.specified">Export in the specified encoding</system:String>
+  <system:String x:Key="singerconfig.txtexport">character.txt Export Option</system:String>
+  <system:String x:Key="singerconfig.type">Singer Type</system:String>
+  <system:String x:Key="singerconfig.usefilename">Use filename as alias</system:String>
+  <system:String x:Key="singerconfig.version">Version</system:String>
+  <system:String x:Key="singerconfig.voice">Voice</system:String>
+  <system:String x:Key="singerconfig.web">Website</system:String>
+  
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
@@ -494,11 +523,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.readme">Open readme.txt</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
-  <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
-  <system:String x:Key="singers.setencoding">Set Encoding</system:String>
-  <system:String x:Key="singers.setimage">Set Icon</system:String>
-  <system:String x:Key="singers.setportrait">Set Portrait</system:String>
-  <system:String x:Key="singers.setsingertype">Set Singer Type</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancel</system:String>
   <system:String x:Key="singers.subbanks.clear">Clear</system:String>
   <system:String x:Key="singers.subbanks.color">Color</system:String>
@@ -514,7 +538,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.subbanks.set">Set</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
-  <system:String x:Key="singers.usefilename">Use filename as alias</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>

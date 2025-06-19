@@ -460,6 +460,35 @@
   <system:String x:Key="progress.saved">プロジェクトを保存しました：{0:yyyy/MM/dd HH:mm:ss}</system:String>
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>
 
+  <system:String x:Key="singerconfig.author">Author(権利者)</system:String>
+  <system:String x:Key="singerconfig.delete">削除</system:String>
+  <system:String x:Key="singerconfig.encoding">文字コード</system:String>
+  <system:String x:Key="singerconfig.header.singer">シンガーの拡張設定</system:String>
+  <system:String x:Key="singerconfig.header.system">シンガーのシステム設定</system:String>
+  <system:String x:Key="singerconfig.header.utaucompatible">UTAU互換設定</system:String>
+  <system:String x:Key="singerconfig.image">アイコン</system:String>
+  <system:String x:Key="singerconfig.localizednames.language">言語</system:String>
+  <system:String x:Key="singerconfig.localizednames.name">名前</system:String>
+  <system:String x:Key="singerconfig.localizednames">名前の翻訳</system:String>
+  <system:String x:Key="singerconfig.name">デフォルトの名前</system:String>
+  <system:String x:Key="singerconfig.open">開く</system:String>
+  <system:String x:Key="singerconfig.other">その他の情報</system:String>
+  <system:String x:Key="singerconfig.phonemizer">デフォルトのPhonemizer</system:String>
+  <system:String x:Key="singerconfig.portrait">背景イラスト</system:String>
+  <system:String x:Key="singerconfig.portraitheight">背景イラストのサイズ補正</system:String>
+  <system:String x:Key="singerconfig.portraitopacity">背景イラストの透明度</system:String>
+  <system:String x:Key="singerconfig.sample">サンプル音声</system:String>
+  <system:String x:Key="singerconfig.title">シンガー設定</system:String>
+  <system:String x:Key="singerconfig.txtexport.noexport">出力しない</system:String>
+  <system:String x:Key="singerconfig.txtexport.shiftjis">shift-jisで出力する</system:String>
+  <system:String x:Key="singerconfig.txtexport.specified">指定した文字コードで出力する</system:String>
+  <system:String x:Key="singerconfig.txtexport">character.txt出力オプション</system:String>
+  <system:String x:Key="singerconfig.type">シンガータイプ</system:String>
+  <system:String x:Key="singerconfig.usefilename">ファイル名をエイリアスとして使用する</system:String>
+  <system:String x:Key="singerconfig.version">バージョン</system:String>
+  <system:String x:Key="singerconfig.voice">Voice(声の提供者)</system:String>
+  <system:String x:Key="singerconfig.web">Webサイト</system:String>
+
   <system:String x:Key="singers.caption">シンガー</system:String>
   <system:String x:Key="singers.editoto.editinsetparam">setParamで編集</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabelerで編集</system:String>
@@ -489,11 +518,6 @@
   <system:String x:Key="singers.readme">readme.txtを開く</system:String>
   <system:String x:Key="singers.readme.notfound">readme.txtが見つかりません</system:String>
   <system:String x:Key="singers.refresh">再読み込み</system:String>
-  <system:String x:Key="singers.setdefaultphonemizer">デフォルトのPhonemizerを設定</system:String>
-  <system:String x:Key="singers.setencoding">文字コードを設定</system:String>
-  <system:String x:Key="singers.setimage">アイコンを設定</system:String>
-  <system:String x:Key="singers.setportrait">背景イラストを設定</system:String>
-  <system:String x:Key="singers.setsingertype">シンガータイプを設定</system:String>
   <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
   <system:String x:Key="singers.subbanks.clear">クリア</system:String>
   <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
@@ -509,7 +533,6 @@
   <system:String x:Key="singers.subbanks.set">セット</system:String>
   <system:String x:Key="singers.subbanks.tone">音程</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
-  <system:String x:Key="singers.usefilename">ファイル名をエイリアスとして使用する</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトを開く</system:String>
 
   <system:String x:Key="singersetup.archivefileencoding">アーカイブファイルのエンコード</system:String>

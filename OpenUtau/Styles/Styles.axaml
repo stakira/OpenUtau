@@ -213,11 +213,31 @@
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
 
+  <Style Selector="RadioButton">
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
   <Style Selector="ListBoxItem">
     <Setter Property="MinHeight" Value="24"/>
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="Margin" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.RadioButtonListBox">
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.RadioButtonListBox ListBoxItem">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border Background="Transparent">
+            <RadioButton Content="{TemplateBinding ContentPresenter.Content}" Padding="4,0" Height="30"
+                         IsChecked="{Binding Path=IsSelected,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Style Selector="CheckBox">

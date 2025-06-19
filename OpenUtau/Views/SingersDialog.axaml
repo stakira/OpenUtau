@@ -91,17 +91,8 @@
                 </Style>
               </Style>
             </ContextMenu.Styles>
+            <MenuItem Header="{DynamicResource singerconfig.title}" Click="OnSetSingerConfig" />
             <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
-            <MenuItem Header="{DynamicResource singers.setimage}" Click="OnSetImage"/>
-            <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
-            <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}" Classes="MenuItemWithSubMenu"/>
-            <MenuItem Header="{DynamicResource singers.setsingertype}" ItemsSource="{Binding SetSingerTypeMenuItems}" Classes="MenuItemWithSubMenu"/>
-            <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}" Classes="MenuItemWithSubMenu"/>
-            <MenuItem Header="{DynamicResource singers.usefilename}" IsVisible="{Binding IsClassic}" Click="OnSetUseFilenameAsAlias">
-              <MenuItem.Icon>
-                <CheckBox Classes="menu" IsChecked="{Binding UseFilenameAsAlias}" />
-              </MenuItem.Icon>
-            </MenuItem>
             <MenuItem Header="{DynamicResource singers.publish}" Click="OnPublish"/>
             <MenuItem Header="{DynamicResource singers.errorreport}" Command="{Binding ErrorReport}"/>
             <MenuItem Header="{DynamicResource singers.refresh}" Command="{Binding Refresh}"/>
