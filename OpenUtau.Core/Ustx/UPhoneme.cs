@@ -118,7 +118,7 @@ namespace OpenUtau.Core.Ustx {
                     autoPreutter = maxPreutter;
                     autoOverlap *= ratio;
                 }
-                if (autoPreutter > prevDur) {
+                if (autoPreutter > prevDur && overlapped) {
                     double delta = autoPreutter - prevDur;
                     autoPreutter = prevDur; // Ensure autoPreutter doesn't exceed 100% of prevDur
                     autoOverlap -= delta;
@@ -190,7 +190,7 @@ namespace OpenUtau.Core.Ustx {
             }
             var note = Parent.Extends ?? Parent;
             if (value == null) {
-                note.phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == index);
+                note.phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == abbr && exp.index == index || (exp.index != null && !note.phonemeIndexes.Contains((int)exp.index)));
             } else {
                 var phonemeExp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == abbr && exp.index == index);
                 if (phonemeExp != null) {
