@@ -118,7 +118,7 @@ namespace OpenUtau.Core.Ustx {
                     autoPreutter = maxPreutter;
                     autoOverlap *= ratio;
                 }
-                if (autoPreutter > prevDur) {
+                if (autoPreutter > prevDur && overlapped) {
                     double delta = autoPreutter - prevDur;
                     autoPreutter = prevDur; // Ensure autoPreutter doesn't exceed 100% of prevDur
                     autoOverlap -= delta;
