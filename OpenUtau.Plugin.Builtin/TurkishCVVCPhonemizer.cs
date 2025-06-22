@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Turkish CVVC Phonemizer", "TR CVVC", "ise", language: "TR")]
+    [Phonemizer("Turkish CVVC Phonemizer", "TR CVVC", "ise", language: "UTAU")]
     // Contributed by ise with the help of Japanese CVVC phonemizer by TUBS
     public class TurkishCVVCPhonemizer : Phonemizer {
         static readonly string[] glottalStops = new string[] { "?", "q" };

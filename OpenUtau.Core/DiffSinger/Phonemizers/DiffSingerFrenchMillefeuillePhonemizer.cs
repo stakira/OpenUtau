@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DiffSinger
     public class DiffSingerFrenchMillfeuillePhonemizer : DiffSingerG2pPhonemizer
     {
         protected override string GetDictionaryName()=>"dsdict-fr-millefeuille.yaml";
-        protected override string GetLangCode()=>"fr";
+        public override string GetLangCode()=>"fr";
         protected override IG2p LoadBaseG2p() => new FrenchMillefeuilleG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "ah", "eh", "ae", "ee", "oe", "ih", "oh", "oo", "ou", "uh", "en", "in", "on"
