@@ -951,8 +951,8 @@ namespace OpenUtau.App.ViewModels {
             PlayPosX = TickToneToPoint(tick, 0).X;
 
             if (UseSolidPlaybackLine) {
-                PlayPosHighlightX = PlayPosX - 3;
-                PlayPosHighlightWidth = 6;
+                PlayPosHighlightX = PlayPosX - 2;
+                PlayPosHighlightWidth = 4;
             } else {
                 TickToLineTick(tick, out int left, out int right);
                 PlayPosHighlightX = TickToneToPoint(left, 0).X;
