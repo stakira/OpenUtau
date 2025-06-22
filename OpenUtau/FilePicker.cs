@@ -56,6 +56,10 @@ namespace OpenUtau.App {
         public static FilePickerFileType OUDEP { get; } = new("OpenUtau dependency") {
             Patterns = new[] { "*.oudep" },
         };
+        public static FilePickerFileType UnixExecutable { get; } = new("Executable") {
+            MimeTypes = new[] { "application/x-executable" },
+            AppleUniformTypeIdentifiers = new[] { "public.unix-executable" },
+        };
 
         public async static Task<string?> OpenFile(
             Window window, string titleKey, params FilePickerFileType[] types) {

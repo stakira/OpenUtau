@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DiffSinger
     public class DiffSingerRussianPhonemizer : DiffSingerG2pPhonemizer
     {
         protected override string GetDictionaryName()=>"dsdict-ru.yaml";
-        protected override string GetLangCode()=>"ru";
+        public override string GetLangCode()=>"ru";
         protected override IG2p LoadBaseG2p() => new RussianG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "a", "aa", "ay", "ee", "i", "ii", "ja", "je", "jo", "ju", "oo",

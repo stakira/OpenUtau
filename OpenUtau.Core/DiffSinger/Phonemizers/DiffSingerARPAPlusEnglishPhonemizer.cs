@@ -17,7 +17,7 @@ namespace OpenUtau.Core.DiffSinger {
     // plus other ds features
     {
         protected override string GetDictionaryName() => "dsdict-en.yaml";
-        protected override string GetLangCode() => "en";
+        public override string GetLangCode() => "en";
         protected override IG2p LoadBaseG2p() => new ArpabetPlusG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "aa", "ae", "ah", "ao", "aw", "ax", "ay", "eh", "er",
