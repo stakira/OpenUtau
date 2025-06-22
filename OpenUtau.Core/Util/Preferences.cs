@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Util {
             public double DiffSingerDepth = 1.0;
             public int DiffSingerSteps = 20;
             public int DiffSingerStepsVariance = 20;
-            public int DiffSingerStepsPitch = 5;
+            public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerLangCodeHide = false;
             public bool SkipRenderingMutedTracks = true;
