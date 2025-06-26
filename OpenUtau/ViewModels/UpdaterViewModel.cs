@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using NetSparkleUpdater;
@@ -32,7 +34,7 @@ namespace OpenUtau.App.ViewModels {
             public GithubReleaseAsset[] assets = new GithubReleaseAsset[0];
 #pragma warning restore 0649
         }
-        public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
+        public string AppVersion => $"v{Assembly.GetEntryAssembly()?.GetName().Version}";
         public bool IsDarkMode => ThemeManager.IsDarkMode;
         [Reactive] public string UpdaterStatus { get; set; }
         [Reactive] public bool UpdateAvailable { get; set; }
@@ -163,7 +165,12 @@ namespace OpenUtau.App.ViewModels {
                 item = item ?? downloadedItem;
                 if (item == null) {
                     Log.Error("DownloadFinished unexpected null item.");
-                } else {
+                }  
+                else
+                {
+                    if (OS.IsMacOS()&&path.EndsWith(".pkg")) {
+                        Process.Start("open", path);
+                    }
                     sparkle.InstallUpdate(downloadedItem, path);
                 }
             };
