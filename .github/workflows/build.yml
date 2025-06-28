@@ -67,6 +67,7 @@ jobs:
         if: ${{ matrix.arch.os != 'osx' }}
 
       - name: Write release channel info
+        shell: pwsh
         run: echo "${{ inputs.beta && 'beta' || 'stable' }}" > bin/${{ matrix.arch.name }}/release-channel.txt
 
       # Create Zip
