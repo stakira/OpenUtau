@@ -34,7 +34,7 @@ namespace OpenUtau.Core.Util {
                 string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                 string releaseChannelPath = Path.Combine(exePath, "release-channel.txt");
                 if (File.Exists(releaseChannelPath)) {
-                    string channel = File.ReadAllText(releaseChannelPath);
+                    string channel = File.ReadAllText(releaseChannelPath).Trim();
                     if (channel == "beta")
                     {
                         Default.Beta = true;
