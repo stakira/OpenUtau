@@ -66,6 +66,9 @@ jobs:
         run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
 
+      - name: Write release channel info
+        run: echo "${{ inputs.beta && 'beta' || 'stable' }}" > bin/${{ matrix.arch.name }}/release-channel.txt
+
       # Create Zip
       - name: DirectML
         shell: cmd
