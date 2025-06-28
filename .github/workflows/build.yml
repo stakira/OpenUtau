@@ -107,7 +107,7 @@ jobs:
       - name: Create Dmg
         run: |
           dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
-          echo "${{ inputs.beta && 'beta' || 'stable' }}" > ../bin/${{ matrix.arch.name }}/release-channel.txt
+          echo "${{ inputs.beta && 'beta' || 'stable' }}" > bin/${{ matrix.arch.name }}/release-channel.txt
           npm install -g create-dmg
           cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.arch.name }}/publish/OpenUtau.app/Contents/Resources/
           create-dmg bin/${{ matrix.arch.name }}/publish/OpenUtau.app || true
