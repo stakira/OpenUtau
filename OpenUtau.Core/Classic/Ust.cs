@@ -82,7 +82,7 @@ namespace OpenUtau.Classic {
 
             var blocks = Ini.ReadBlocks(reader, file, @"\[#\w+\]");
             ParsePart(project, part, blocks);
-            part.Duration = part.notes.Select(note => note.End).Max() + project.resolution;
+            part.Duration = part.notes.LastOrDefault()?.End ?? 0 + project.resolution;
 
             return project;
         }
