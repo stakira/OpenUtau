@@ -151,22 +151,27 @@ namespace OpenUtau.App.Views {
 
     class PartResizeEditState : PartEditState {
         public readonly UPart part;
-        public PartResizeEditState(Control control, MainWindowViewModel vm, UPart part) : base(control, vm) {
+        public readonly bool fromStart;
+        public PartResizeEditState(Control control, MainWindowViewModel vm, UPart part, bool fromStart = false) : base(control, vm) {
             this.part = part;
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
                 tracksVm.DeselectParts();
             }
+            this.fromStart = fromStart;
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
             tracksVm.PointToLineTick(point, out int left, out int right);
-            int deltaDuration = right - part.End;
+
+            int deltaDuration = this.fromStart
+                ? part.position - left
+                : right - part.End;
             if (deltaDuration < 0) {
-                int maxDurReduction = part.Duration - part.GetMinDurTick(project);
+                int maxDurReduction = fromStart ? part.GetMaxPosiTick(project) - part.position : part.Duration - part.GetMinDurTick(project);
                 if (tracksVm.SelectedParts.Count > 0) {
-                    maxDurReduction = tracksVm.SelectedParts.Min(p => p.Duration - p.GetMinDurTick(project));
+                    maxDurReduction = tracksVm.SelectedParts.Min(p => fromStart ? p.GetMaxPosiTick(project) - p.position : p.Duration - p.GetMinDurTick(project));
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxDurReduction);
             }
@@ -174,11 +179,11 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (tracksVm.SelectedParts.Count == 0) {
-                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, part.Duration + deltaDuration));
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, deltaDuration, fromStart));
                 return;
             }
             foreach (UPart part in tracksVm.SelectedParts) {
-                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, part.Duration + deltaDuration));
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, deltaDuration, fromStart));
             }
         }
     }

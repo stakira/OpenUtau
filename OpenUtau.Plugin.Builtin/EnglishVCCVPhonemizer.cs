@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using NumSharp.Utilities;
+using Classic;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
+using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English VCCV Phonemizer", "EN VCCV", "cubialpha & Mim", language: "EN")]
@@ -14,17 +18,25 @@ namespace OpenUtau.Plugin.Builtin {
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
     // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and Anjo for their help.
+    // cadlaxa here ^_^
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
 
-        private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
+        private string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
-        private readonly Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
+        private Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
             "b=b;ch=ch;d=d;dh=dh;eh=e;er=3;ey=A;f=f;g=g;hh=h;hhy=hh;ih=i;iy=E;jh=j;k=k;l=l;m=m;n=n;ng=ng;ow=O;oy=Q;" +
             "p=p;r=r;s=s;sh=sh;t=t;th=th;uh=6;uw=o;v=v;w=w;y=y;z=z;zh=zh;dx=dd;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
+        
+        private readonly Dictionary<string, string> replacements = "ax=x".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+        private bool isReplacements = false;
 
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
@@ -90,7 +102,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly Dictionary<string, string> vcccExceptions =
             new Dictionary<string, string>() {
                 {"spr","sp"},
-               {"spl","sp"},
+                {"spl","sp"},
                 {"skr","sk"},
                 {"str","st"},
                 {"skw","sk"},
@@ -102,12 +114,13 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
         private readonly string[] ucvCs = { "r", "l", "w", "y", "f"};
-
-
+        private readonly string[] starlightccs = { "rl", "ll", "nn", "mm" };
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionaryName() => "cmudict-0_7b.txt";
+        protected override string GetDictionaryName() => "";
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
+
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -133,18 +146,119 @@ namespace OpenUtau.Plugin.Builtin {
             g2ps.Add(new ArpabetG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
-        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
+        public override void SetSinger(USinger singer) {
+            if (this.singer != singer) {
+                string file;
+                if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
+                    file = Path.Combine(singer.Location, "envccv.yaml");
+                    if (!File.Exists(file)) {
+                        try {
+                            File.WriteAllBytes(file, Data.Resources.envccv_template);
+                        } catch (Exception e) {
+                            Log.Error(e, $"Failed to write 'envccv.yaml' to singer folder at {file}");
+                        }
+                    }
+                } else if (!string.IsNullOrEmpty(PluginDir)) {
+                    file = Path.Combine(PluginDir, "envccv.yaml");
+                } else {
+                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'envccv.yaml'.");
+                    return; // Exit early to avoid null file issues
+                }
+
+                if (File.Exists(file)) {
+                    try {
+                        var data = Core.Yaml.DefaultDeserializer.Deserialize<CZSampaYAMLData>(File.ReadAllText(file));
+
+                        // Load vowels
+                        try {
+                            var loadVowels = data.symbols
+                                ?.Where(s => s.type == "vowel")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            vowels = vowels.Concat(loadVowels).Distinct().ToArray();
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load vowels from envccv.yaml: {ex.Message}");
+                        }
+                        // Load replacements
+                        try {
+                            if (data?.replacements?.Any() == true) {
+                                foreach (var r in data.replacements) {
+                                    if (!string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to)) {
+                                        // Overwrite or add
+                                        dictionaryReplacements[r.from] = r.to;
+                                    } else {
+                                        Log.Warning("Ignored YAML replacement with missing 'from' or 'to' value.");
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load replacements from YAML: {ex.Message}");
+                        }
+
+                        // Load fallbacks
+                        try {
+                            if (data?.fallbacks?.Any() == true) {
+                                foreach (var df in data.fallbacks) {
+                                    if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
+                                        // Overwrite or add
+                                        replacements[df.from] = df.to;
+                                    } else {
+                                        Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load fallbacks from YAML: {ex.Message}");
+                        }
+
+                    } catch (Exception ex) {
+                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}");
+                    }
+                }
+                ReadDictionaryAndInit();
+                this.singer = singer;
+            }
+        }
+        public class CZSampaYAMLData {
+            public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
+            public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
+            public Replacement[] fallbacks { get; set; } = Array.Empty<Replacement>();
+
+            public struct SymbolData {
+                public string symbol { get; set; }
+                public string type { get; set; }
+            }
+            public struct Replacement {
+                public string from { get; set; }
+                public string to { get; set; }
+            }
+        }
+
+        // prioritize yaml replacements over dictionary replacements
+        private string ReplacePhoneme(string phoneme) {
+            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
+                return replaced;
+            }
+            return phoneme;
+        }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            string prevV = syllable.prevV;
-            string[] cc = syllable.cc;
-            string[] PreviousWordCc = syllable.PreviousWordCc;
-            string[] CurrentWordCc = syllable.CurrentWordCc;
-            string v = syllable.v;
-            var lastC = cc.Length - 1;
-            var lastCPrevWord = syllable.prevWordConsonantsCount;
+            string prevV = ReplacePhoneme(syllable.prevV);
+            string v = ReplacePhoneme(syllable.v);
+            string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
+            int lastC = cc.Length - 1;
+            int lastCPrevWord = syllable.prevWordConsonantsCount;
 
+            foreach (var entry in replacements) {
+                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
+                    isReplacements = true;
+                    break;
+                }
+            }
 
             string basePhoneme = null;
             var phonemes = new List<string>();
@@ -327,7 +441,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (phonemes.Count == 0) {
                             // opera [9 p] + [pr] + [_ru]
                             parsingCC = $"{cc[0]}{cc[1]}";
-                            if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ucvCs.Contains($"{cc[1]}") && parsingCC != "rl" ) {
+                            if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ucvCs.Contains($"{cc[1]}") && !starlightccs.Contains($"{cc[0]}{cc[1]}")) {
                                 parsingVCC = $"{prevV} {cc[0]}";
 
                                 basePhoneme = $"_{cc.Last()}{v}";
@@ -556,9 +670,9 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string[] cc = ending.cc;
-            string v = ending.prevV;
-            var lastC = cc.Length - 1;
+            string[] cc = ending.cc.Select(ReplacePhoneme).ToArray();
+            string v = ReplacePhoneme(ending.prevV);
+            int lastC = cc.Length - 1;
 
             var phonemes = new List<string>();
             // --------------------------- ENDING V ------------------------------- //
@@ -687,6 +801,11 @@ namespace OpenUtau.Plugin.Builtin {
             //foreach (var consonant in new[] { "h" }) {
             //    alias = alias.Replace(consonant, "hh");
             //}
+            if (isReplacements) {
+                foreach (var syllable in replacements) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
             foreach (var consonant in new[] { "6r" }) {
                 alias = alias.Replace(consonant, "3");
                 }

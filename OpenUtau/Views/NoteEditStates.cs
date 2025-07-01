@@ -413,7 +413,7 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, NotePresets.Default.SplittedLyric));
         }
 
         public override void Update(IPointer pointer, Point point) {
@@ -649,12 +649,12 @@ namespace OpenUtau.App.Views {
             }
             bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
             bool ctrlShiftHeld = args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift);
-            bool typeOptions = descriptor.type == UExpressionType.Options;
-            if (typeOptions) {
+            if (descriptor.type != UExpressionType.Curve) {
                 UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
                 UpdateCurveExp(pointer, point, ctrlShiftHeld, shiftHeld);
             }
+            bool typeOptions = descriptor.type == UExpressionType.Options;
             double viewMax = descriptor.max + (typeOptions ? 1 : 0);
             double displayValue;
             if (shiftHeld) {

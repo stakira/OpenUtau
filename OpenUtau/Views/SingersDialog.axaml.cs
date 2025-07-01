@@ -340,11 +340,16 @@ namespace OpenUtau.App.Views {
             return null;
         }
 
-        public void OnPlaySample(object sender, RoutedEventArgs e) {
+        public void OnPlayCharacterSample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             var playBack = PlaybackManager.Inst.AudioOutput;
             var playbackState = playBack.PlaybackState;
             if (viewModel.Singer != null) {
+                // Stop other sounds to play sample
+                if (playbackState == PlaybackState.Playing) {
+                    playBack.Stop();
+                }
+
                 var sample = FindSample(viewModel.Singer);
                 if(sample == null){
                     return;
@@ -357,10 +362,31 @@ namespace OpenUtau.App.Views {
                     return;
                 }
                 playBack.Play();
-                if (playbackState == PlaybackState.Playing) {
-                    playBack.Stop();
-                }
             }
+        }
+
+        public void OnPlaySelectedFile(object sender, RoutedEventArgs e) {
+            var oto = OtoGrid?.SelectedItem as UOto;
+            if (oto == null) {
+                return;
+            }
+
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+
+            // If currently playing something, stop it to play sample right away
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
+
+            try {
+                var playSound = Wave.OpenFile(oto.File);
+                playBack.Init(playSound.ToSampleProvider());
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to load sample {oto.File}.");
+                return;
+            }
+            playBack.Play();
         }
 
         void RegenFrq(object sender, RoutedEventArgs args) {

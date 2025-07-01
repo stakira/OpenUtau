@@ -41,14 +41,14 @@ namespace OpenUtau.Core {
         public List<UNote> NotesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
 
-        public void Initialize() {
+        public void Initialize(Thread mainThread, TaskScheduler mainScheduler) {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 CrashSave();
             });
             SearchAllPlugins();
             SearchAllLegacyPlugins();
-            mainThread = Thread.CurrentThread;
-            mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            this.mainThread = mainThread;
+            this.mainScheduler = mainScheduler;
             PhonemizerRunner = new PhonemizerRunner(mainScheduler);
         }
 
@@ -115,11 +115,13 @@ namespace OpenUtau.Core {
         UCommandGroup? undoGroup = null;
         UCommandGroup? savedPoint = null;
         UCommandGroup? autosavedPoint = null;
+        public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
 
         public bool ChangesSaved {
             get {
                 return (Project.Saved || (Project.tracks.Count <= 1 && Project.parts.Count == 0)) &&
-                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null) &&
+                    !Recovered;
             }
         }
 
@@ -142,7 +144,7 @@ namespace OpenUtau.Core {
                     : Path.GetFileNameWithoutExtension(Project.FilePath);
                 string backup = Path.Join(dir, filename + "-backup.ustx");
                 Log.Information($"Saving backup {backup}.");
-                Format.Ustx.Save(backup, Project);
+                Format.Ustx.AutoSave(backup, Project);
                 Log.Information($"Saved backup {backup}.");
             } catch (Exception e) {
                 Log.Error(e, "Save backup failed.");

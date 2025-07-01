@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,6 +34,7 @@ namespace OpenUtau.Core.DiffSinger{
         const float tailMs = DiffSingerUtils.tailMs;
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
+        public float FrameMs => frameMs;
 
         public DsVariance(string rootPath)
         {
@@ -41,11 +42,13 @@ namespace OpenUtau.Core.DiffSinger{
             dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     Encoding.UTF8));
+            if(dsConfig.variance == null){
+                throw new Exception("This voicebank doesn't contain a variance model");
+            }
             //Load language id if needed
             if(dsConfig.use_lang_id){
                 if(dsConfig.languages == null){
-                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return;
+                    throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
@@ -56,9 +59,15 @@ namespace OpenUtau.Core.DiffSinger{
                 }
             }
             //Load phonemes list
+            if (dsConfig.phonemes == null) {
+                throw new Exception("Configuration key \"phonemes\" is null.");
+            }
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
             //Load models
+            if (dsConfig.linguistic == null) {
+                throw new Exception("Configuration key \"linguistic\" is null.");
+            }
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
             linguisticHash = XXH64.DigestOf(linguisticModelBytes);
@@ -179,6 +188,7 @@ namespace OpenUtau.Core.DiffSinger{
             if (linguisticOutputs is null) {
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
+                phrase.AddCacheFile(linguisticCache?.Filename);
             }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -187,8 +197,10 @@ namespace OpenUtau.Core.DiffSinger{
 
             //Variance Predictor
             var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
-                x => x * 0.01)
-                .Select(f => (float)f).ToArray();
+                x => x * 0.01).Select(f => (float)f).ToArray();
+            var toneShift = DiffSingerUtils.SampleCurve(phrase, phrase.toneShift, 0, frameMs, totalFrames, headFrames, tailFrames,
+                x => x * 0.01).Select(f => (float)f).ToArray();
+            pitch = pitch.Zip(toneShift, (x, d) => x + d).ToArray();
 
             var varianceInputs = new List<NamedOnnxValue>();
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
@@ -233,7 +245,7 @@ namespace OpenUtau.Core.DiffSinger{
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, totalFrames, numVariances })));
-            var steps = Preferences.Default.DiffSingerSteps;
+            var steps = Preferences.Default.DiffSingerStepsVariance;
             if (dsConfig.useContinuousAcceleration) {
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
                     new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
@@ -260,6 +272,7 @@ namespace OpenUtau.Core.DiffSinger{
             if (varianceOutputs is null) {
                 varianceOutputs = varianceModel.Run(varianceInputs).Cast<NamedOnnxValue>().ToList();
                 varianceCache?.Save(varianceOutputs);
+                phrase.AddCacheFile(varianceCache?.Filename);
             }
             Tensor<float>? energy_pred = dsConfig.predict_energy
                 ? varianceOutputs
