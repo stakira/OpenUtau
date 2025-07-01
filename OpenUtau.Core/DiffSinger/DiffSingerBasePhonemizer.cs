@@ -135,19 +135,36 @@ namespace OpenUtau.Core.DiffSinger
             return new G2pFallbacks(g2ps.ToArray());
         }
 
-        //Check if the phoneme is supported. If unsupported, return an empty string.
-        //And apply language prefix to phoneme
+        // Check if a phoneme is supported by trying the following in this order:
+        // 1. Phoneme as is (ex. [a])
+        // 2. Phoneme prefixed with language code (ex. [ja/a])
+        // 3. Phoneme substituted using YAML dictionary (for voicebanks that indirectly support other languages)
+        // Otherwise, return empty string
         string ValidatePhoneme(string phoneme){
-            if(g2p.IsValidSymbol(phoneme) && phonemeTokens.ContainsKey(phoneme)){
+            // Try to return phoneme as is
+            if (g2p.IsValidSymbol(phoneme) && phonemeTokens.ContainsKey(phoneme)) {
                 return phoneme;
             }
+
+            // Try to return phoneme prefixed with language code
             var langCode = GetLangCode();
-            if(langCode != String.Empty){
+            if (langCode != String.Empty) {
                 var phonemeWithLanguage = langCode + "/" + phoneme;
-                if(g2p.IsValidSymbol(phonemeWithLanguage)  && phonemeTokens.ContainsKey(phonemeWithLanguage)){
+                if(g2p.IsValidSymbol(phonemeWithLanguage) && phonemeTokens.ContainsKey(phonemeWithLanguage)){
                     return phonemeWithLanguage;
                 }
             }
+
+            // Try to return phoneme substituted using YAML dictionary
+            var subQuery = g2p.Query(phoneme);
+            if (subQuery != null && subQuery.Length > 0) {
+                var phonemeSubbed = subQuery[0];
+                if (g2p.IsValidSymbol(phonemeSubbed) && phonemeTokens.ContainsKey(phonemeSubbed)) {
+                    return phonemeSubbed;
+                }
+            }
+
+            // Otherwise, return an empty string
             return String.Empty;
         }
 
