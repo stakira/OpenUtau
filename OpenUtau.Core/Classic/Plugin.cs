@@ -1,25 +1,31 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Classic {
-    public class Plugin {
+    public class Plugin : IPlugin {
         public string Name;
         public string Executable;
         public bool AllNotes;
         public bool UseShell;
+        private string encoding = "shift_jis";
+        public string Shortcut;
+
+        public string Encoding { get => encoding; set => encoding = value; }
 
         public void Run(string tempFile) {
-            var startInfo = UseShell
-                 ? new ProcessStartInfo() {
-                     FileName = "cmd.exe",
-                     Arguments = $"/K {Executable} {tempFile}",
-                     UseShellExecute = true,
-                 }
-                 : new ProcessStartInfo() {
-                     FileName = Executable,
-                     Arguments = tempFile,
-                     WorkingDirectory = Path.GetDirectoryName(Executable),
-                 };
+            if (!File.Exists(Executable)) {
+                throw new FileNotFoundException($"Executable {Executable} not found.");
+            }
+            string winePath = Preferences.Default.WinePath;
+            bool useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath);
+            var startInfo = new ProcessStartInfo() {
+                FileName = useWine ? winePath : Executable,
+                Arguments = useWine ? $"\"{Executable}\" \"{tempFile}\"" : $"\"{tempFile}\"",
+                Environment = {{"LANG", "ja_JP.utf8"}},
+                WorkingDirectory = Path.GetDirectoryName(Executable),
+                UseShellExecute = UseShell,
+            };
             using (var process = Process.Start(startInfo)) {
                 process.WaitForExit();
             }

@@ -95,26 +95,29 @@ namespace OpenUtau.App.Controls {
                         control.InvalidateVisual();
                     }
                 });
+            MessageBus.Current.Listen<TimeAxisChangedEvent>()
+                .Subscribe(e => {
+                    foreach (var (part, control) in partControls) {
+                        control.InvalidateVisual();
+                    }
+                });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => InvalidateVisual());
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == ItemsProperty) {
-                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UPart> oldCol) {
+                if (change.OldValue != null && change.OldValue is ObservableCollection<UPart> oldCol) {
                     oldCol.CollectionChanged -= Items_CollectionChanged;
                 }
-                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UPart> newCol) {
+                if (change.NewValue != null && change.NewValue is ObservableCollection<UPart> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
                 }
             }
         }
 
-        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
@@ -145,7 +148,6 @@ namespace OpenUtau.App.Controls {
         void Add(UPart part) {
             var control = new PartControl(part, this);
             Children.Add(control);
-            Children.Add(control.image);
             partControls.Add(part, control);
         }
 
@@ -153,7 +155,6 @@ namespace OpenUtau.App.Controls {
             var control = partControls[part];
             control.Dispose();
             partControls.Remove(part);
-            Children.Remove(control.image);
             Children.Remove(control);
         }
     }

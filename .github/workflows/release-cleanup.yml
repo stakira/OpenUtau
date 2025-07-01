@@ -1,0 +1,28 @@
+# This is a basic workflow to help you get started with Actions
+
+name: release-cleanup
+
+# Controls when the workflow will run
+on:
+  schedule:
+    - cron: '15 10 * * 3' # every Wednesday at 10:15 UTC
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          keep_latest: 32
+          delete_prerelease_only: true
+          delete_tag_pattern: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

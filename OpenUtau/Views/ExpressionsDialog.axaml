@@ -3,18 +3,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="using:OpenUtau.Controls"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.ExpressionsDialog"
+        Icon="/Assets/open-utau.ico"
         Title="{DynamicResource exps.caption}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="400" Width="600" Height="400"
-        ExtendClientAreaToDecorationsHint="False">
+        MinWidth="600" MinHeight="400" Width="600" Height="400">
   <Design.DataContext>
     <vm:ExpressionsViewModel/>
   </Design.DataContext>
+  <Window.Styles>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
+  </Window.Styles>
+
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Border Margin="10,10,10,40" Width="150" HorizontalAlignment="Left">
-      <ListBox Items="{Binding Expressions}" SelectedItem="{Binding Expression}">
+      <ListBox ItemsSource="{Binding Expressions}" SelectedItem="{Binding Expression}" SelectedItems="{Binding SelectExpressions}" SelectionMode="Multiple">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding}"/>
@@ -48,6 +53,7 @@
                   SelectionChanged="OnExpressionTypeChanged">
           <ComboBoxItem Content="{DynamicResource exps.type.numerical}"/>
           <ComboBoxItem Content="{DynamicResource exps.type.options}"/>
+          <ComboBoxItem Content="{DynamicResource exps.type.curve}"/>
         </ComboBox>
       </Grid>
       <Grid IsVisible="{Binding Expression.IsOptions}">
@@ -58,17 +64,17 @@
         <Label Content="{DynamicResource exps.flag}" Width="130" HorizontalAlignment="Left"/>
         <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Flag}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.minvalue}" Width="130" HorizontalAlignment="Left"/>
-        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Min}"/>
+        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Min}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.maxvalue}" Width="130" HorizontalAlignment="Left"/>
-        <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Max}"/>
+        <c:FloatEditor Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Max}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.defaultvalue}" Width="130" HorizontalAlignment="Left"/>
-        <TextBox Margin="140,0,0,4" Text="{Binding Expression.DefaultValue}"/>
+        <c:FloatEditor Margin="140,0,0,4" Value="{Binding Expression.DefaultValue}"/>
       </Grid>
       <Grid IsVisible="{Binding Expression.IsOptions}">
         <Label Content="{DynamicResource exps.optionvalues}" Width="130" HorizontalAlignment="Left"/>
@@ -76,7 +82,11 @@
         <TextBlock Margin="140,24,0,4" Text="{DynamicResource exps.sepbycomma}"/>
       </Grid>
     </StackPanel>
-    <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+      <Button Margin="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Content="{DynamicResource exps.getsuggestions}" Command="{Binding GetSuggestions}"/>
+      <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Content="{DynamicResource exps.apply}" Click="ApplyButtonClicked"/>
+    </StackPanel>
   </Grid>
 </Window>

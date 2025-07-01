@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Diagnostics;
-using Newtonsoft.Json;
+using System.Linq;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     public enum UExpressionType : int {
         Numerical = 0,
         Options = 1,
+        Curve = 2,
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
-    public class UExpressionDescriptor {
-        [JsonProperty] public string name;
-        [JsonProperty] public string abbr;
-        [JsonProperty] public UExpressionType type;
-        [JsonProperty] public float min;
-        [JsonProperty] public float max;
-        [JsonProperty] public float defaultValue;
-        [JsonProperty] public bool isFlag;
-        [JsonProperty] public string flag;
-        [JsonProperty] public string[] options;
-
+    public class UExpressionDescriptor : IEquatable<UExpressionDescriptor> {
+        public string name;
+        public string abbr;
+        public UExpressionType type;
+        public float min;
+        public float max;
+        public float defaultValue;
+        public bool isFlag;
+        public string flag;
+        public string[] options;
 
         /// <summary>
         /// Constructor for Yaml deserialization
@@ -67,24 +66,32 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
-        public override string ToString() => name;
+        public override string ToString() => $"{abbr.ToUpper()}: {name}";
+
+        public bool Equals(UExpressionDescriptor other) {
+            return this.name == other.name &&
+                this.abbr == other.abbr &&
+                this.type == other.type &&
+                this.min == other.min &&
+                this.max == other.max &&
+                this.defaultValue == other.defaultValue &&
+                this.isFlag == other.isFlag &&
+                this.flag == other.flag &&
+                ((this.options == null && other.options == null) || this.options.SequenceEqual(other.options));
+        }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UExpression {
         [YamlIgnore] public UExpressionDescriptor descriptor;
 
         private float _value;
 
-        [JsonProperty]
         public int? index;
-        [JsonProperty]
         public string abbr;
-        [JsonProperty]
         public float value {
             get => _value;
-            set => _value = descriptor == null
-                ? value
+            set => _value = descriptor == null ? value
+                : abbr == Format.Ustx.CLR ? value
                 : Math.Min(descriptor.max, Math.Max(descriptor.min, value));
         }
 
@@ -109,5 +116,7 @@ namespace OpenUtau.Core.Ustx {
                 value = value,
             };
         }
+
+        public override string ToString() => $"{abbr.ToUpper()}: {value}";
     }
 }

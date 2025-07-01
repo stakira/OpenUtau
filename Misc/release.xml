@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<item>
-  <version>{{version}}</version>
-  <url>https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau.zip</url>
-  <mandatory>false</mandatory>
-</item>

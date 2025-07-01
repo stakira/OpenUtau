@@ -4,6 +4,11 @@
         bool IsVowel(string symbol);
 
         /// <summary>
+        /// Returns true if the symbol is a semivowel or liquid phoneme, like y, w, l, r in English.
+        /// </summary>
+        bool IsGlide(string symbol);
+
+        /// <summary>
         /// Produces a list of phonemes from grapheme.
         /// </summary>
         string[] Query(string grapheme);

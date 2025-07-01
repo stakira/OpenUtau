@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA")]
+    [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA", language:"KO")]
 
-    public class KoreanCVCPhonemizer : Phonemizer {
+    public class KoreanCVCPhonemizer : BaseKoreanPhonemizer {
 
         static readonly string[] naPlainVowels = new string[] { "a", "e", "a", "e", "eo", "e", "eo", "e", "o", "a", "e", "e", "o", "u", "eo", "e", "i", "u", "eu", "i", "i" };
 
@@ -27,7 +27,9 @@ namespace OpenUtau.Plugin.Builtin {
         // ======================================================================================
 
 
-        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
+        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o", "er" };
+
+        static readonly string[] plainDiphthongs = new string[] { "ya", "yeo", "yo", "yu", "ye", "wa", "weo", "wi", "we", "eui" };
 
         static readonly string[] vowels = new string[] {
             "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu,feu,veu,zeu,theu,rreu",
@@ -43,7 +45,8 @@ namespace OpenUtau.Plugin.Builtin {
             "l=al,il,ul,el,ol,eul,eol",
             "p=ap,ip,up,ep,op,eup,eop",
             "t=at,it,ut,et,ot,eut,eot",
-            "k=ak,ik,uk,ek,ok,euk,eok"
+            "k=ak,ik,uk,ek,ok,euk,eok",
+            "er=er"
         };
 
         static readonly string[] consonants = new string[] {
@@ -51,8 +54,8 @@ namespace OpenUtau.Plugin.Builtin {
             "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo,ddya,ddyu,ddye,ddyo,ddyeo,ddwa,ddwi,ddwe,ddweo",
             "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo,bbya,bbyu,bbye,bbyo,bbyeo,bbwa,bbwi,bbwe,bbweo",
             "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo,ssya,ssyu,ssye,ssyo,ssyeo,sswa,sswi,sswe,ssweo",
-	
-	"f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
+
+    "f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
             "v=v,va,vi,vu,ve,vo,veu,veo,vya,vyu,vye,vyo,vyeo,vwa,vwi,vwe,vweo",
             "z=z,za,zi,zu,ze,zo,zeu,zeo,zya,zyu,zye,zyo,zyeo,zwa,zwi,zwe,zweo",
             "th=th,tha,thi,thu,the,tho,theu,theo,thya,thyu,thye,thyo,thyeo,thwa,thwi,thwe,thweo",
@@ -73,7 +76,6 @@ namespace OpenUtau.Plugin.Builtin {
             "h=h,ha,hi,hu,he,ho,heu,heo,hya,hyu,hye,hyo,hyeo,hwa,hwi,hwe,hweo"
             };
 
-
         static readonly Dictionary<string, string> vowelLookup;
         static readonly Dictionary<string, string> consonantLookup;
 
@@ -88,6 +90,14 @@ namespace OpenUtau.Plugin.Builtin {
             str = str.Trim();
 
             return str;
+        }
+
+        /// <summary>
+        /// Apply Korean sandhi rules to Hangeul lyrics.
+        /// </summary>
+        public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+            // variate lyrics 
+            KoreanPhonemizerUtil.RomanizeNotes(groups, false);
         }
 
         bool isAlphaCon(string str) {
@@ -136,10 +146,30 @@ namespace OpenUtau.Plugin.Builtin {
 
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
+
+        // make it quicker to check multiple oto occurrences at once rather than spamming if else if
+            private bool checkOtoUntilHit(string[] input, Note note, out UOto oto){
+                oto = default;
+
+                var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+
+                foreach (string test in input){
+                    if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric); // 현재 가사의 유니코드
             string currentLyric = note.lyric; // 현재 가사
+            var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            int totalDuration = notes.Sum(n => n.duration);
 
             // 가사의 초성, 중성, 종성 분리
             // P(re)Lconsonant, PLvowel, PLfinal / C(urrent)Lconsonant, CLvowel, CLfinal / N(ext)Lconsonant, NLvowel, NLfinal
@@ -170,6 +200,7 @@ namespace OpenUtau.Plugin.Builtin {
             string TPLvowel = "";
             string TPLfinal = "";
             string TPLplainvowel = "";
+            string TPLplainfinal = "";
 
             bool currentHangeul = false;
             bool prevHangeul = false;
@@ -182,6 +213,11 @@ namespace OpenUtau.Plugin.Builtin {
             int lCL, lPL, lNL;
             int uCL, uPL, uNL;
             lCL = 0; lPL = 0; lNL = 0;
+
+            var phoneticHint = RenderPhoneticHint(singer, notes[0], totalDuration);
+            if (phoneticHint != null) {
+                return (Result) phoneticHint;
+            }
 
 
             // 현재 노트 첫번째 글자 확인
@@ -233,6 +269,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                     TPLtemp = naFinals[PLfinal].Split(":");
                     TPLfinal = TPLtemp[1];
+                    TPLplainfinal = TPLfinal;
                 }
             }
 
@@ -440,63 +477,132 @@ namespace OpenUtau.Plugin.Builtin {
 
                 }
 
-
-
-                string CV = TCLconsonant + TCLvowel;
+                string CV = (TCLconsonant + TCLvowel);
                 string VC = "";
-                if (nextExist && (TCLfinal == "")) { VC = TCLplainvowel + " " + TNLconsonant; }
+
+                if (nextExist && (TCLfinal == "") && nextHangeul && TNLconsonant == "gg") {
+                    VC = TCLplainvowel + "k";
+                } else if (nextExist && (TCLfinal == "") && nextHangeul && (TNLconsonant == "dd" || TNLconsonant == "jj")) {
+                    VC = TCLplainvowel + "t";
+                } else if (nextExist && (TCLfinal == "") && nextHangeul && TNLconsonant == "bb") {
+                    VC = TCLplainvowel + "p";
+                } else if (nextExist && (TCLfinal == "") && nextHangeul && (TNLconsonant != "gg" || TNLconsonant != "dd" || TNLconsonant != "bb")) {
+                    VC = TCLplainvowel + " " + TNLconsonant;
+                }    
 
                 string FC = "";
                 if (TCLfinal != "") { FC = TCLplainvowel + TCLfinal; }
 
-
                 if (lCL == 1) { CV = CV.Replace("r", "l"); }
 
-
                 // 만약 앞에 노트가 없다면
-                if (!prevExist) { CV = $"- {CV}"; }
+                if (!prevExist && TCLconsonant == "r") {
+                    string[] tests = new string[] { $"- {CV}", $"l{TCLvowel}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
+                else if (!prevExist && TCLconsonant != "r") {
+                    string[] tests = new string[] { $"- {CV}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
+
+                if (prevExist && TCLconsonant == "" && TPLfinal == "") {
+                    string[] tests = new string[] { $"{TPLplainvowel} {CV}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
+                
+                if (prevExist && TCLconsonant == "" && TPLfinal == "ng") {
+                    string[] tests = new string[] { $"ng{CV}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
+
+                if (prevNeighbour != null && prevExist && !prevHangeul && TCLconsonant == "") {
+                    var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                    var vowel = "";
+
+                    var prevLyric = string.Join("", prevUnicode);
+
+                    // Current note is VV
+                    if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                        vowel = vow;
+
+                        var mixVV = $"{vow} {CV}";
+
+                        if (prevLyric.EndsWith("eo")) {
+                            mixVV = $"eo {CV}";
+                        } else if (prevLyric.EndsWith("eu")) {
+                            mixVV = $"eu {CV}";
+                        } else if (prevLyric.EndsWith("er")) {
+                            mixVV = $"er {CV}";
+                        }
+
+                        // try vowlyric then currentlyric
+                        string[] tests = new string[] { mixVV, CV, currentLyric };
+                        if (checkOtoUntilHit(tests, note, out var oto)) {
+                            CV = oto.Alias;
+                        }
+                    }
+
+                }
+
+                if (nextNeighbour != null) { // 다음에 노트가 있으면
+                    var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
+                    var nextLyric = string.Join("", nextUnicode);
+
+                    // Insert VC before next neighbor
+                    // Get vowel from current note
+                    var vowel = TCLplainvowel;
+
+                    // Get consonant from next note
+                    var consonant = "";
+                    if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                        consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
+                        if (nextLyric.StartsWith("gg")) {
+                            consonant = "k";
+                        } else if (nextLyric.StartsWith("dd")) {
+                            consonant = "t";
+                        } else if (nextLyric.StartsWith("bb")) {
+                            consonant = "p";
+                        } else if (nextLyric.StartsWith("jj")) {
+                            consonant = "t";
+                        } else if ((!isAlphaCon(consonant))) { consonant = con; }
+                    } else if (nextExist && nextHangeul) {
+                        consonant = TNLconsonant;
+                    } else if (nextLyric.StartsWith("ch")) { consonant = "ch"; }
+                    else if (nextLyric.StartsWith("l")) {
+                        consonant = "l";
+                    }
+
+                    if (!nextHangeul && (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj") || nextLyric.StartsWith("l"))) {
+                        VC = TCLplainvowel + consonant;
+                    } else if (!nextHangeul && (!nextLyric.StartsWith("gg") || !nextLyric.StartsWith("dd") || !nextLyric.StartsWith("bb") || !nextLyric.StartsWith("jj") || !nextLyric.StartsWith("l"))) {
+                        VC = TCLplainvowel + " " + consonant;
+                    }
+                }
 
                 // 만약 받침이 있다면
                 if (FC != "") {
-                    int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
                     if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { fcLength = totalDuration / 2; }
 
-                    return new Result {
-                        phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = CV,
-                            },
-                            new Phoneme() {
-                                phoneme = FC,
-                                position = totalDuration - fcLength,
-                            }
-                        },
-                    };
-                }
-
-
-                // 만약 받침이 없다면
-                if (TCLfinal == "") {
-                    // 뒤에 노트가 있다면
-                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
-                    if ((VC != "") && (TNLconsonant != "")) {
-                        int totalDuration = notes.Sum(n => n.duration);
-                        int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
-                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
-                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
-                        vcLength = Math.Min(totalDuration / 2, vcLength);
-
+                    if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                        CV = oto1.Alias;
+                        FC = oto2.Alias;
                         return new Result {
                             phonemes = new Phoneme[] {
                                 new Phoneme() {
                                     phoneme = CV,
                                 },
                                 new Phoneme() {
-                                    phoneme = VC,
-                                    position = totalDuration - vcLength,
+                                    phoneme = FC,
+                                    position = totalDuration - fcLength,
                                 }
                             },
                         };
@@ -504,18 +610,94 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
 
-                // 그 외(받침 없는 마지막 노트)
+                // 만약 받침이 없다면
+                if (TCLfinal == "") {
+                    // 뒤에 노트가 있다면
+                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = TCLplainvowel + "l"; } }
+                    if ((VC != "") && (TNLconsonant != "")) {
+                        int vcLength = 60;
+                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
+                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
+                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
+                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                        vcLength = Math.Min(totalDuration / 2, vcLength);
 
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = CV,
+                        if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                            CV = oto1.Alias;
+                            VC = oto2.Alias;
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                                    new Phoneme() {
+                                        phoneme = CV,
+                                    },
+                                    new Phoneme() {
+                                        phoneme = VC,
+                                        position = totalDuration - vcLength,
+                                    }
+                                },
+                            };
                         }
-                    },
-                };
+                    } else if (VC != "" && TNLconsonant == "") {
+                        int vcLength = 60;
+                        var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                        var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
+                        var nextLyric = string.Join("", nextUnicode);
+                        if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto0)) {
+                            vcLength = MsToTick(oto0.Preutter);
+                            
+                        }
+                        vcLength = Math.Min(totalDuration / 2, vcLength);
+
+                        if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                            CV = oto1.Alias;
+                            VC = oto2.Alias;
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                                    new Phoneme() {
+                                        phoneme = CV,
+                                    },
+                                    new Phoneme() {
+                                        phoneme = VC,
+                                        position = totalDuration - vcLength,
+                                    }
+                                },
+                            };
+                        }
+                    }
+                    // 그 외(받침 없는 마지막 노트)
+                    if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                        CV = oto.Alias;
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = CV,
+                                }
+                            },
+                        };
+                    }
+                }
             }
 
+            if (prevHangeul) {
+                string endBreath = "R";
 
+                if (prevExist && TPLfinal == "" && endBreath.Contains(currentLyric)) {
+                    endBreath = $"{TPLplainvowel} R";
+                } else if (prevExist && TPLfinal != "" && endBreath.Contains(currentLyric)) {
+                    endBreath = $"{TPLplainfinal} R";
+                }
+
+                if (singer.TryGetMappedOto(endBreath, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
+                    endBreath = oto.Alias;
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = endBreath,
+                            }
+                        },
+                    };
+                }
+            }
 
 
 
@@ -523,13 +705,94 @@ namespace OpenUtau.Plugin.Builtin {
 
 
             if (prevNeighbour == null) {
-                // Usevkf "- V" or "- CV" if present in voicebank
+                // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
-                if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
-                    currentLyric = initial;
+                string[] tests = new string[] {initial, currentLyric};
+                // try [- XX] before trying plain lyric
+                if (checkOtoUntilHit(tests, note, out var oto)){
+                    currentLyric = oto.Alias;
                 }
-            } else if (plainVowels.Contains(currentLyric)) {
+            } else if (plainVowels.Contains(currentLyric) || plainDiphthongs.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                var vowel = "";
+
+                var prevLyric = string.Join("", prevUnicode);
+                // Current note is VV
+                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    vowel = vow;
+
+                    var vowLyric = $"{vow} {currentLyric}";
+
+                    if (prevLyric.EndsWith("eo")) {
+                        vowLyric = $"eo {currentLyric}";
+                    } else if (prevLyric.EndsWith("eu")) {
+                        vowLyric = $"eu {currentLyric}";
+                    } else if (prevLyric.EndsWith("er")) {
+                        vowLyric = $"er {currentLyric}";
+                    }
+
+                    // try vowlyric then currentlyric
+                    string[] tests = new string[] { vowLyric, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else if (prevExist && prevHangeul && TPLfinal == "") {
+                    var vowLyric = $"{TPLplainvowel} {currentLyric}";
+
+                    string[] tests = new string[] { vowLyric, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else if (prevExist && prevHangeul && TPLfinal == "ng") {
+                    string[] tests = new string[] { $"ng{currentLyric}", currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else {
+                    string[] tests = new string[] { currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                }
+            } else if ("R".Contains(currentLyric)) {
+                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                var prevLyric = string.Join("", prevUnicode);
+                // end breath note
+                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    var vowel = "";
+                    vowel = vow;
+
+                    var endBreath = $"{vow} R";
+                    if (prevLyric.EndsWith("eo")) {
+                        endBreath = $"eo R";
+                    } else if (prevLyric.EndsWith("eu")) {
+                        endBreath = $"eu R";
+                    } else if (prevLyric.EndsWith("er")) {
+                        endBreath = $"er R";
+                    }
+
+                    // try end breath
+                    string[] tests = new string[] { endBreath, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else {
+                    var endBreath = $"{prevUnicode.LastOrDefault()} R";
+                    if (prevLyric.EndsWith("ng")) {
+                        endBreath = $"ng R";
+                    }
+
+                    // try end breath
+                    string[] tests = new string[] { endBreath, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                }
+            } else {
+                string[] tests = new string[] {currentLyric};
+                if (checkOtoUntilHit(tests, note, out var oto)){
+                    currentLyric = oto.Alias;
+                }
             }
 
             if (nextNeighbour != null) { // 다음에 노트가 있으면
@@ -550,16 +813,50 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
 
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
+                    if (currentLyric.Contains(TCLplainvowel)) {
+                        vow = TCLplainvowel;
+                    }
+
+                    if (currentLyric.Contains("e") && !currentLyric.Contains("eui")) {
+                        vowel = "e" + vowel;
+                        vowel = vowel.Replace("ee", "e");
+                    }
                 }
 
                 // Get consonant from next note
                 var consonant = "";
                 if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
                     consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
-                    if (!(isAlphaCon(consonant))) { consonant = con; }
+                    if (nextLyric.StartsWith("jj")) {
+                        consonant = "t";
+                    }
+                    if ((!isAlphaCon(consonant))) { consonant = con; }
+                    } else if (nextLyric.StartsWith("gg")) {
+                    consonant = "k";
+                    } else if (nextLyric.StartsWith("dd")) {
+                    consonant = "t";
+                    } else if (nextLyric.StartsWith("bb")) {
+                    consonant = "p";
+                    } else if (nextLyric.StartsWith("l")) {
+                    consonant = "l";
+                    } else if (nextExist && nextHangeul) {
+                    consonant = TNLconsonant;
+                    if (TNLconsonant == "gg") {
+                        consonant = "k";
+                    } else if (TNLconsonant == "dd" || TNLconsonant == "jj") {
+                        consonant = "t";
+                    } else if (TNLconsonant == "bb") {
+                        consonant = "p";
+                    } else if (nextLyric.StartsWith('ㄹ')) {
+                        consonant = "l";
+                    } else {
+                        consonant = TNLconsonant;
+                    }
+                } else if (nextLyric.StartsWith("ch")) {
+                    consonant = "ch";
                 }
 
                 if (consonant == "") {
@@ -572,8 +869,18 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
 
-                var vcPhoneme = $"{vowel} {consonant}";
-                if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
+                var vcPhoneme = "";
+                if (TNLconsonant == "gg" || TNLconsonant == "dd" || TNLconsonant == "bb" || TNLconsonant == "jj" || nextLyric.StartsWith('ㄹ')) {
+                    vcPhoneme = $"{vowel}{consonant}";
+                } else if (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj") || nextLyric.StartsWith("l")) {
+                    vcPhoneme = $"{vowel}{consonant}";
+                } else {
+                    vcPhoneme = $"{vowel} {consonant}";
+                }
+                var vcPhonemes = new string[] {vcPhoneme, ""};
+                if (checkOtoUntilHit(vcPhonemes, note, out var oto1)) {
+                    vcPhoneme = oto1.Alias;
+                } else {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -582,16 +889,16 @@ namespace OpenUtau.Plugin.Builtin {
                         },
                     };
                 }
-
-                int totalDuration = notes.Sum(n => n.duration);
+                
                 int vcLength = 60;
-                if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
+                var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
-                }
-
-                vcLength = Math.Min(totalDuration / 2, vcLength);
-
-
+                } else if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
+                else if (TNLconsonant == "s") { vcLength = totalDuration / 3; }
+                else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
+                else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                vcLength = Math.Min(totalDuration / 2, vcLength);           
 
                 return new Result {
                     phonemes = new Phoneme[] {
@@ -605,7 +912,6 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
-
 
             // No next neighbor
             return new Result {

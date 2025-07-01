@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -30,13 +31,26 @@ namespace OpenUtau.Classic {
                         if (s.Length == 2) {
                             s[0] = s[0].ToLowerInvariant();
                             if (s[0] == "name") {
-                                plugin.Name = s[1];
+                                Regex reg = new Regex("(.+)\\(&([A-Za-z0-9])\\)");
+                                var match = reg.Match(s[1]);
+                                if (match.Success) {
+                                    plugin.Shortcut = match.Groups[2].Value;
+                                    plugin.Name = match.Groups[1].Value + " (" + plugin.Shortcut + ")";
+                                } else {
+                                    plugin.Name = s[1];
+                                }
                             } else if (s[0] == "execute") {
-                                plugin.Executable = Path.Combine(Path.GetDirectoryName(filePath), s[1]);
+                                string execute = s[1];
+                                if (execute.StartsWith(".\\")) {
+                                    execute = execute.Substring(2);
+                                }
+                                plugin.Executable = Path.Combine(Path.GetDirectoryName(filePath), execute);
                             } else if (s[0] == "notes" && s[1] == "all") {
                                 plugin.AllNotes = true;
                             } else if (s[0] == "shell" && s[1] == "use") {
                                 plugin.UseShell = true;
+                            } else if (s[0] == "encoding"){
+                                plugin.Encoding = s[1];
                             } else {
                                 otherLines.Add(line);
                             }

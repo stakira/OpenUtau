@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 using ReactiveUI;
 
@@ -44,15 +43,8 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackNoProperty ||
                 change.Property == TrackHeightProperty) {

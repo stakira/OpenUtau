@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using OpenUtau.Api;
 using System.Linq;
+using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Russian VCCV Phonemizer", "RU VCCV", "Heiden.BZR")]
+    [Phonemizer("Russian VCCV Phonemizer", "RU VCCV", "Heiden.BZR", language: "RU")]
     public class RussianVCCVPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,e,o,u,y,i,M,N,ex,ax,x".Split(",");
@@ -27,6 +27,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_ru.txt";
+        protected override IG2p LoadBaseDictionary() => new RussianG2p();
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
         protected override List<string> ProcessSyllable(Syllable syllable) {

@@ -1,34 +1,24 @@
 ﻿using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Views {
     public partial class TypeInDialog : Window {
         public Action<string>? onFinish;
 
-        private Button button;
-        private TextBox textBox;
-
         public TypeInDialog() {
             InitializeComponent();
-            button = this.FindControl<Button>("OkButton");
-            button.Click += OkButtonClick;
-            textBox = this.FindControl<TextBox>("TextBox");
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            OkButton.Click += OkButtonClick;
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
+        public void SetPrompt(string prompt) {
+            Prompt.IsVisible = true;
+            Prompt.Text = prompt;
         }
 
         public void SetText(string text) {
-            textBox.Text = text;
+            TextBox.Text = text;
         }
 
         private void OkButtonClick(object? sender, RoutedEventArgs e) {
@@ -37,7 +27,7 @@ namespace OpenUtau.App.Views {
 
         private void Finish() {
             if (onFinish != null) {
-                onFinish.Invoke(textBox.Text);
+                onFinish.Invoke(TextBox.Text ?? string.Empty);
             }
             Close();
         }

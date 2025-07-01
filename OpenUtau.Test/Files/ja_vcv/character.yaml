@@ -1,0 +1,58 @@
+﻿text_file_encoding: shift_jis
+portrait_opacity: 0.67000001668930054
+subbanks:
+- color: ''
+  prefix: ''
+  suffix: C5
+  tone_ranges:
+  - C5-B7
+- color: ''
+  prefix: ''
+  suffix: G4
+  tone_ranges:
+  - G4-B4
+- color: ''
+  prefix: ''
+  suffix: D4
+  tone_ranges:
+  - D4-F#4
+- color: ''
+  prefix: ''
+  suffix: A3
+  tone_ranges:
+  - C1-C#4
+- color: Clear
+  prefix: ''
+  suffix: CC5
+  tone_ranges:
+  - C5-B7
+- color: Clear
+  prefix: ''
+  suffix: CG4
+  tone_ranges:
+  - G4-B4
+- color: Clear
+  prefix: ''
+  suffix: CD4
+  tone_ranges:
+  - D4-F#4
+- color: Clear
+  prefix: ''
+  suffix: CA3
+  tone_ranges:
+  - C1-C#4
+- color: Whisper
+  prefix: ''
+  suffix: WG4
+  tone_ranges:
+  - G4-B7
+- color: Whisper
+  prefix: ''
+  suffix: WD4
+  tone_ranges:
+  - D4-F#4
+- color: Whisper
+  prefix: ''
+  suffix: WA3
+  tone_ranges:
+  - C1-C#4

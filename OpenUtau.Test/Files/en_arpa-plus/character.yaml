@@ -1,0 +1,24 @@
+﻿portrait_opacity: 0.67000001668930054
+subbanks:
+- color: ''
+  prefix: ''
+  suffix: ''
+  tone_ranges:
+  - C1-A#2
+  - D4-D5
+  - F6-B7
+- color: ''
+  prefix: ''
+  suffix: _A#3
+  tone_ranges:
+  - D#5-E6
+- color: ''
+  prefix: ''
+  suffix: _C3
+  tone_ranges:
+  - B2-C#4
+- color: Whisper
+  prefix: ''
+  suffix: _W
+  tone_ranges:
+  - C1-B7

@@ -1,0 +1,19 @@
+﻿name: DE Diphone Test
+portrait_opacity: 0.67
+default_phonemizer: OpenUtau.Plugin.Builtin.GermanDiphonePhonemizer
+subbanks:
+- color: ""
+  prefix: ""
+  suffix: _F4
+  tone_ranges:
+  - E4-B7
+- color: ""
+  prefix: ""
+  suffix: _C4
+  tone_ranges:
+  - B3-D#4
+- color: ""
+  prefix: ""
+  suffix: _F3
+  tone_ranges:
+  - C1-A#3

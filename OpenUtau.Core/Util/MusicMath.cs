@@ -32,6 +32,36 @@ namespace OpenUtau.Core {
             { "B", 11 },
         };
 
+        public static readonly string[] Solfeges = { 
+            "do",
+            "",
+            "re",
+            "",
+            "mi",
+            "fa",
+            "",
+            "sol",
+            "",
+            "la",
+            "",
+            "ti",
+        };
+
+        public static readonly string[] NumberedNotations = {
+            "1",
+            "",
+            "2",
+            "",
+            "3",
+            "4",
+            "",
+            "5",
+            "",
+            "6",
+            "",
+            "7",
+        };
+
         public static string GetToneName(int noteNum) {
             return noteNum < 0 ? string.Empty : KeysInOctave[noteNum % 12].Item1 + (noteNum / 12 - 1).ToString();
         }
@@ -88,15 +118,12 @@ namespace OpenUtau.Core {
             }
         }
 
-        public static double TickToMillisecond(double tick, double BPM, int beatUnit, int resolution) {
-            return tick * 60000.0 / BPM * beatUnit / 4 / resolution;
-        }
-
-        public static int MillisecondToTick(double ms, double BPM, int beatUnit, int resolution) {
-            return (int)Math.Ceiling(ms / 60000.0 * BPM / beatUnit * 4 * resolution);
-        }
+        const double ep = 0.001;
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
 
@@ -105,6 +132,9 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingIn(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));
         }
 
@@ -113,6 +143,9 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingOut(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * Math.Sin((x - x0) / (x1 - x0) * Math.PI / 2);
         }
 
@@ -121,6 +154,9 @@ namespace OpenUtau.Core {
         }
 
         public static double Linear(double x0, double x1, double y0, double y1, double x) {
+            if(x1 - x0 < ep){
+                return y1;
+            }
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
         }
 
@@ -156,6 +192,60 @@ namespace OpenUtau.Core {
 
         public static double ToneToFreq(int tone) {
             return 440.0 * Math.Pow(a, tone - 69);
+        }
+
+        public static double ToneToFreq(double tone) {
+            return 440.0 * Math.Pow(a, tone - 69);
+        }
+
+        public static double FreqToTone(double freq) {
+            return Math.Log(freq / 440.0, a) + 69;
+        }
+
+        public static List<int> GetSnapDivs(int resolution) {
+            var result = new List<int>();
+            int div = 4;
+            int ticks = resolution * 4 / div;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            div = 6;
+            ticks = resolution * 4 / div;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            return result;
+        }
+
+        public static void GetSnapUnit(
+            int resolution, double minTicks, bool triplet,
+            out int ticks, out int div) {
+            div = triplet ? 6 : 4;
+            ticks = resolution * 4 / div;
+            while (ticks % 2 == 0 && ticks / 2 >= minTicks) {
+                ticks /= 2;
+                div *= 2;
+            }
+        }
+
+        public static double TempoMsToTick(double tempo, double ms) {
+            return (tempo * 480 * ms) / (60.0 * 1000.0);
+        }
+
+        public static double TempoTickToMs(double tempo, int tick) {
+            return (60.0 * 1000.0 * tick) / (tempo * 480);
+        }
+
+        public static (float, float) PanToChannelVolumes(float pan) {
+            float volumeLeft = (Math.Max(pan, 0) - 100) / 100;
+            float volumeRight = (Math.Min(pan, 0) + 100) / -100;
+            return (volumeLeft, volumeRight);
         }
     }
 }

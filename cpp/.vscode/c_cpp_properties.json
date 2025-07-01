@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "default",
+            "includePath": [
+                "${default}",
+                "${workspaceFolder}/",
+                "${workspaceFolder}/bazel-cpp/external/abseil-cpp~20240116.1",
+                "${workspaceFolder}/bazel-cpp/external/googletest~1.14.0.bcr.1/googletest/include",
+                "${workspaceFolder}/bazel-cpp/external/libgvps",
+                "${workspaceFolder}/bazel-cpp/external/libnpy/include",
+                "${workspaceFolder}/bazel-cpp/external/libpyin",
+                "${workspaceFolder}/bazel-cpp/external/spline/src",
+                "${workspaceFolder}/bazel-cpp/external/world/src",
+                "${workspaceFolder}/bazel-cpp/external/world/tools",
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+        }
+    ],
+    "version": 4
+}

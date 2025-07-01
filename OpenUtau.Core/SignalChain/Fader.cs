@@ -3,6 +3,7 @@
 namespace OpenUtau.Core.SignalChain {
     public class Fader : ISignalSource {
         private readonly ISignalSource source;
+        private float pan = 1;
         private float scale = 1;
         private float scaleTarget = 1;
         private float[] scaleBuffer;
@@ -14,6 +15,11 @@ namespace OpenUtau.Core.SignalChain {
         public float Scale {
             get => scaleTarget;
             set => scaleTarget = value;
+        }
+
+        public float Pan {
+            get => pan;
+            set => pan = value;
         }
 
         public void SetScaleToTarget() {
@@ -31,6 +37,7 @@ namespace OpenUtau.Core.SignalChain {
             for (int i = 0; i < count; ++i) {
                 scaleBuffer[i] = 0;
             }
+            (float volumeLeft, float volumeRight) = MusicMath.PanToChannelVolumes(pan);
             int ret = source.Mix(position, scaleBuffer, 0, count);
             for (int i = 0; i < count; ++i) {
                 if (scaleTarget > scale) {
@@ -38,7 +45,7 @@ namespace OpenUtau.Core.SignalChain {
                 } else if (scaleTarget < scale) {
                     scale = Math.Max(scaleTarget, scale - 0.0005f);
                 }
-                buffer[index + i] += scaleBuffer[i] * scale;
+                buffer[index + i] += scaleBuffer[i] * scale * (i % 2 == 0 ? volumeLeft : volumeRight);
             }
             return ret;
         }

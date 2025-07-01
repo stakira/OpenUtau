@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Italian CVVC Phonemizer", "IT CVVC", "DJ-001")]
+    [Phonemizer("Italian CVVC Phonemizer", "IT CVVC", "DJ-001", language: "IT")]
     public class ItalianCVVCPhonemizer : Phonemizer {
 
         /// <summary>

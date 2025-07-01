@@ -25,7 +25,7 @@ namespace OpenUtau {
             } else if (OS.IsLinux()) {
                 string lib = Path.Combine(path, "linux-x64", $"lib{library}.so");
                 Log.Information($"Loading {lib}");
-                _handle = dlopen(lib, RTLD_NOW);
+                _handle = dlopenLinux(lib, RTLD_NOW);
             } else if (OS.IsMacOS()) {
                 string lib = Path.Combine(path, "osx-x64", $"lib{library}.dylib");
                 Log.Information($"Loading {lib}");
@@ -42,8 +42,10 @@ namespace OpenUtau {
             IntPtr ptr = IntPtr.Zero;
             if (OS.IsWindows()) {
                 ptr = GetProcAddress(_handle, name);
-            } else if (OS.IsLinux() || OS.IsMacOS()) {
+            } else if (OS.IsMacOS()) {
                 ptr = dlsym(_handle, name);
+            } else {
+                ptr = dlsymLinux(_handle, name);
             }
             if (_handle == IntPtr.Zero) {
                 throw new Exception($"Could not load function name: {name}.");
@@ -57,8 +59,10 @@ namespace OpenUtau {
             }
             if (OS.IsWindows()) {
                 FreeLibrary(_handle);
-            } else {
+            } else if (OS.IsMacOS()) {
                 dlclose(_handle);
+            } else {
+                dlcloseLinux(_handle);
             }
             _disposed = true;
         }
@@ -69,6 +73,31 @@ namespace OpenUtau {
         [DllImport("libdl")] static extern IntPtr dlopen(string fileName, int flags);
         [DllImport("libdl")] static extern IntPtr dlsym(IntPtr handle, string symbol);
         [DllImport("libdl")] static extern int dlclose(IntPtr handle);
+        [DllImport("libdl.so.2", EntryPoint = "dlopen")] static extern IntPtr dlopen2(string fileName, int flags);
+        [DllImport("libdl.so.2", EntryPoint = "dlsym")] static extern IntPtr dlsym2(IntPtr handle, string symbol);
+        [DllImport("libdl.so.2", EntryPoint = "dlclose")] static extern int dlclose2(IntPtr handle);
+
+        static IntPtr dlopenLinux(string fileName, int flags) {
+            try {
+                return dlopen2(fileName, flags);
+            } catch (DllNotFoundException) {
+                return dlopen(fileName, flags);
+            }
+        }
+        static IntPtr dlsymLinux(IntPtr handle, string symbol) {
+            try {
+                return dlsym2(handle, symbol);
+            } catch (DllNotFoundException) {
+                return dlsym(handle, symbol);
+            }
+        }
+        static int dlcloseLinux(IntPtr handle) {
+            try {
+                return dlclose2(handle);
+            } catch (DllNotFoundException) {
+                return dlclose(handle);
+            }
+        }
 
         // https://stackoverflow.com/a/15608028
         public static bool IsManagedAssembly(string fileName) {

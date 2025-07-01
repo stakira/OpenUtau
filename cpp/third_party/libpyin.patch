@@ -1,0 +1,42 @@
+diff --git a/common.h b/common.h
+index 83d6843..99980e9 100644
+--- a/common.h
++++ b/common.h
+@@ -36,16 +36,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <stdlib.h>
+ #include <math.h>
++#if !defined(_WIN32)
+ #include <unistd.h>
+-
+-#ifdef max
+-#undef max
+-#endif
+-#ifdef min
+-#undef min
+ #endif
+-#define max(a, b) ((a) > (b) ? (a) : (b))
+-#define min(a, b) ((a) < (b) ? (a) : (b))
+ 
+ #ifndef M_PI
+   #define M_PI 3.1415926535897932385
+diff --git a/pyin.c b/pyin.c
+index 320cf44..d0e33ea 100644
+--- a/pyin.c
++++ b/pyin.c
+@@ -31,10 +31,14 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+-#include <libgvps/gvps.h>
++#include "libgvps/gvps.h"
+ #include "math-funcs.h"
+ #include "pyin.h"
+ 
++#if !defined(_WIN32)
++static int min(int a, int b) { return a < b ? a : b; }
++#endif
++
+ FP_TYPE* pyin_yincorr(FP_TYPE* x, int nx, int w);
+ FP_TYPE pyin_qinterp(FP_TYPE* x, int k, FP_TYPE* y);
+ 

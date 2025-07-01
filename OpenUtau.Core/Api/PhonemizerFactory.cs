@@ -8,11 +8,13 @@ namespace OpenUtau.Api {
         public string name;
         public string tag;
         public string author;
+        public string language;
 
         public Phonemizer Create() {
             var phonemizer = Activator.CreateInstance(type) as Phonemizer;
             phonemizer.Name = name;
             phonemizer.Tag = tag;
+            phonemizer.Language = language;
             return phonemizer;
         }
 
@@ -32,6 +34,7 @@ namespace OpenUtau.Api {
                     name = attr.Name,
                     tag = attr.Tag,
                     author = attr.Author,
+                    language = attr.Language,
                 };
                 factories[type] = factory;
             }

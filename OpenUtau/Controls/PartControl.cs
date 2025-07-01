@@ -13,9 +13,10 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Serilog;
 using System.Threading;
+using NWaves.Signals;
 
 namespace OpenUtau.App.Controls {
-    class PartControl : TemplatedControl, IDisposable, IProgress<int> {
+    class PartControl : Control, IDisposable, IProgress<int> {
         public static readonly DirectProperty<PartControl, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<PartControl, double>(
                 nameof(TickWidth),
@@ -93,16 +94,11 @@ namespace OpenUtau.App.Controls {
         public readonly UPart part;
         private readonly Pen notePen = new Pen(Brushes.White, 3);
         private List<IDisposable> unbinds = new List<IDisposable>();
-        public readonly Image image;
         private WriteableBitmap? bitmap;
         private int[] bitmapData;
 
         public PartControl(UPart part, PartsCanvas canvas) {
-            image = new Image() {
-                IsHitTestVisible = false,
-            };
             this.part = part;
-            Foreground = Brushes.White;
             Text = part.DisplayName;
             bitmapData = new int[0];
 
@@ -119,9 +115,7 @@ namespace OpenUtau.App.Controls {
 
             if (part is UWavePart wavePart) {
                 var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() => {
-                    wavePart.BuildPeaks(this);
-                }).ContinueWith((task) => {
+                wavePart.Peaks.ContinueWith((task) => {
                     if (task.IsFaulted) {
                         Log.Error(task.Exception, "Failed to build peaks");
                     } else {
@@ -131,11 +125,8 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackHeightProperty ||
                 change.Property == TickWidthProperty) {
@@ -150,8 +141,6 @@ namespace OpenUtau.App.Controls {
         public void SetPosition() {
             Canvas.SetLeft(this, Offset.X + part.position * tickWidth);
             Canvas.SetTop(this, Offset.Y + part.trackNo * trackHeight);
-            Canvas.SetLeft(image, 0);
-            Canvas.SetTop(image, Offset.Y + part.trackNo * trackHeight);
         }
 
         public void SetSize() {
@@ -169,10 +158,10 @@ namespace OpenUtau.App.Controls {
             context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 
             // Text
-            var textLayout = TextLayoutCache.Get(Text, Foreground!, 12);
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(3, 2))) {
-                context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), textLayout.Size));
-                textLayout.Draw(context);
+            var textLayout = TextLayoutCache.Get(Text, Brushes.White, 12);
+            using (var state = context.PushTransform(Matrix.CreateTranslation(3, 2))) {
+                context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), new Size(textLayout.Width, textLayout.Height)));
+                textLayout.Draw(context, new Point());
             }
 
             if (part == null) {
@@ -182,12 +171,12 @@ namespace OpenUtau.App.Controls {
                 // Notes
                 int maxTone = voicePart.notes.Max(note => note.tone);
                 int minTone = voicePart.notes.Min(note => note.tone);
-                if (maxTone - minTone < 36) {
-                    int additional = (36 - (maxTone - minTone)) / 2;
+                if (maxTone - minTone < 52) {
+                    int additional = (52 - (maxTone - minTone)) / 2;
                     minTone -= additional;
                     maxTone += additional;
                 }
-                using var pushedState = context.PushPreTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
+                using var pushedState = context.PushTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
                 foreach (var note in voicePart.notes) {
                     var start = new Point((int)(note.position * tickWidth), maxTone - note.tone);
                     var end = new Point((int)(note.End * tickWidth), maxTone - note.tone);
@@ -195,11 +184,13 @@ namespace OpenUtau.App.Controls {
                 }
             } else if (part is UWavePart wavePart) {
                 // Waveform
-                if (wavePart.Peaks == null) {
-                    return;
-                }
                 try {
                     DrawWaveform(wavePart, GetBitmap(ViewWidth));
+                    if (bitmap != null) {
+                        var srcRect = Bounds.WithY(0);
+                        var dstRect = Bounds.WithX(1).WithY(0);
+                        context.DrawImage(bitmap, srcRect, dstRect);
+                    }
                 } catch (Exception e) {
                     Log.Error(e, "failed to draw bitmap");
                 }
@@ -209,7 +200,6 @@ namespace OpenUtau.App.Controls {
         private WriteableBitmap GetBitmap(double width) {
             int w = 128 * (int)(width / 128 + 1);
             if (bitmap == null || bitmap.Size.Width < w) {
-                image.Source = null;
                 bitmap?.Dispose();
                 var size = new PixelSize(w, (int)ViewConstants.TrackHeightMax);
                 Log.Information($"created bitmap {size}");
@@ -218,70 +208,58 @@ namespace OpenUtau.App.Controls {
                     Avalonia.Platform.PixelFormat.Rgba8888,
                     Avalonia.Platform.AlphaFormat.Unpremul);
                 bitmapData = new int[size.Width * size.Height];
-                image.Source = bitmap;
-                image.Width = bitmap.Size.Width;
-                image.Height = bitmap.Size.Height;
             }
             return bitmap;
         }
 
         private void DrawWaveform(UWavePart wavePart, WriteableBitmap bitmap) {
-            double width = wavePart.Duration * TickWidth;
+            if (wavePart.Peaks == null ||
+                !wavePart.Peaks.IsCompletedSuccessfully ||
+                wavePart.Peaks.Result == null) {
+                return;
+            }
             double height = TrackHeight;
-            double offset = TickWidth * (TickOffset - wavePart.position);
+            double monoChnlAmp = (height - 4.0) / 2;
+            double stereoChnlAmp = (height - 6.0) / 4;
+
+            var timeAxis = Core.DocManager.Inst.Project.timeAxis;
+            DiscreteSignal[] peaks = wavePart.Peaks.Result;
+            int x = 0;
+            if (TickOffset <= wavePart.position) {
+                // Part starts in or to the right of view.
+                x = (int)(TickWidth * (wavePart.position - TickOffset));
+            }
+            int posTick = (int)(TickOffset + x / TickWidth);
+            double posMs = timeAxis.TickPosToMsPos(posTick);
+            double offsetMs = timeAxis.TickPosToMsPos(wavePart.position);
+            int sampleIndex = (int)(wavePart.peaksSampleRate * (posMs - offsetMs) * 0.001);
+            sampleIndex = Math.Clamp(sampleIndex, 0, peaks[0].Length);
             using (var frameBuffer = bitmap.Lock()) {
                 Array.Clear(bitmapData, 0, bitmapData.Length);
-
-                double monoChnlAmp = (height - 4.0) / 2;
-                double stereoChnlAmp = (height - 6.0) / 4;
-                float[] peaks = wavePart.Peaks;
-                double samplesPerPixel = peaks.Length / width;
-
-                int channels = wavePart.channels;
-                float left, right, lmax, lmin, rmax, rmin;
-                lmax = lmin = rmax = rmin = 0;
-                double position = (int)Math.Round(offset) * samplesPerPixel;
-                int x = 0;
-                if (offset < 0) {
-                    position = 0;
-                    x = (int)-offset;
-                } else {
-                    position = (int)Math.Round(offset) * samplesPerPixel;
-                    x = 0;
-                }
-
-                for (int i = (int)(position / channels) * channels; i < peaks.Length; i += channels) {
-                    left = peaks[i];
-                    right = channels > 1 ? peaks[i + 1] : left;
-                    lmax = Math.Max(left, lmax);
-                    lmin = Math.Min(left, lmin);
-                    if (channels > 1) {
-                        rmax = Math.Max(right, rmax);
-                        rmin = Math.Min(right, rmin);
+                while (x < frameBuffer.Size.Width) {
+                    if (posTick >= wavePart.position + wavePart.Duration) {
+                        break;
                     }
-                    if (i > position) {
-                        if (channels > 1) {
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(stereoChnlAmp * (1 + lmin)) + 1,
-                                (int)(stereoChnlAmp * (1 + lmax)) + 1);
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(stereoChnlAmp * (1 + rmin) + monoChnlAmp) + 2,
-                                (int)(stereoChnlAmp * (1 + rmax) + monoChnlAmp) + 2);
-                        } else {
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(monoChnlAmp * (1 + lmin)) + 2,
-                                (int)(monoChnlAmp * (1 + lmax)) + 2);
-                        }
-                        lmax = lmin = rmax = rmin = 0;
-                        position += samplesPerPixel;
-                        x++;
-                        if (x >= bitmap.Size.Width) {
-                            break;
+                    int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
+                    double nexPosMs = timeAxis.TickPosToMsPos(nextPosTick);
+                    int nextSampleIndex = (int)(wavePart.peaksSampleRate * (nexPosMs - offsetMs) * 0.001);
+                    nextSampleIndex = Math.Clamp(nextSampleIndex, 0, peaks[0].Length);
+                    if (nextSampleIndex > sampleIndex) {
+                        for (int i = 0; i < peaks.Length; ++i) {
+                            var segment = new ArraySegment<float>(peaks[i].Samples, sampleIndex, nextSampleIndex - sampleIndex);
+                            float min = segment.Min();
+                            float max = segment.Max();
+                            double ySpan = peaks.Length == 1 ? monoChnlAmp : stereoChnlAmp;
+                            double yOffset = i == 1 ? monoChnlAmp : 0;
+                            DrawPeak(bitmapData, frameBuffer.Size.Width, x,
+                                (int)(ySpan * (1 + -min) + yOffset) + 2,
+                                (int)(ySpan * (1 + -max) + yOffset) + 2);
                         }
                     }
+                    x++;
+                    posTick = nextPosTick;
+                    posMs = nexPosMs;
+                    sampleIndex = nextSampleIndex;
                 }
                 Marshal.Copy(bitmapData, 0, frameBuffer.Address, bitmapData.Length);
             }

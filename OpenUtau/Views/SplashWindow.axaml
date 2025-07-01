@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Width="400" Height="180"
+        x:Class="OpenUtau.App.Views.SplashWindow"
+        Title="SplashWindow"
+        Icon="/Assets/open-utau.ico"
+        CanResize="False"
+        ExtendClientAreaChromeHints="NoChrome"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        ExtendClientAreaToDecorationsHint="True"
+        SystemDecorations="BorderOnly"
+        WindowStartupLocation="CenterScreen">
+  <Grid>
+    <Image Margin="20" Width="96" Height="96"
+           VerticalAlignment="Top" HorizontalAlignment="Center"
+           Source="/Assets/open-utau.ico"/>
+    <Image x:Name="LogoTypeDark" Height="16" Margin="0,136,0,10"
+           VerticalAlignment="Top" HorizontalAlignment="Center"
+           Source="/Assets/logotype-w.png" IsVisible="{Binding IsDarkMode}"/>
+    <Image x:Name="LogoTypeLight" Height="16" Margin="0,136,0,10"
+           VerticalAlignment="Top" HorizontalAlignment="Center"
+           Source="/Assets/logotype.png" IsVisible="{Binding !IsDarkMode}"/>
+    <ProgressBar VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+           IsIndeterminate="True"/>
+  </Grid>
+</Window>

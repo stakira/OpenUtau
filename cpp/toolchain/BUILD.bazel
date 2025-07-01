@@ -1,0 +1,35 @@
+load(":cc_toolchain_config.bzl", "cc_toolchain_config")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_toolchain_suite(
+    name = "arm_suite",
+    toolchains = {
+        "aarch64|gcc": ":aarch64_toolchain",
+    },
+)
+
+filegroup(name = "empty")
+
+cc_toolchain(
+    name = "aarch64_toolchain",
+    all_files = ":empty",
+    compiler_files = ":empty",
+    dwp_files = ":empty",
+    linker_files = ":empty",
+    objcopy_files = ":empty",
+    strip_files = ":empty",
+    supports_param_files = 0,
+    toolchain_config = ":aarch64_toolchain_config",
+    toolchain_identifier = "aarch64-toolchain",
+)
+
+cc_toolchain_config(
+    name = "aarch64_toolchain_config",
+    cxx_builtin_include_directories = [
+        "/usr/aarch64-linux-gnu/include",
+        "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include",
+    ],
+    target_cpu = "aarch64",
+    tool_path_prefx = "/usr/bin/aarch64-linux-gnu-",
+)

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using NetSparkleUpdater.Enums;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Util;
@@ -16,29 +13,24 @@ namespace OpenUtau.App.Views {
         public UpdaterDialog() {
             InitializeComponent();
             DataContext = ViewModel = new UpdaterViewModel();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        void OnClosing(object sender, CancelEventArgs e) {
+        void OnClosing(object sender, WindowClosingEventArgs e) {
             ViewModel.OnClosing();
         }
 
         public static void CheckForUpdate(Action<Window> showDialog, Action closeApplication, TaskScheduler scheduler) {
             Task.Run(async () => {
-                using (var updater = UpdaterViewModel.NewUpdater()) {
-                    var info = await updater.CheckForUpdatesQuietly(true);
-                    if (info.Status == UpdateStatus.UpdateAvailable) {
-                        if (info.Updates[0].Version.ToString() == Preferences.Default.SkipUpdate) {
-                            return false;
-                        }
-                        return true;
+                using var updater = await UpdaterViewModel.NewUpdaterAsync();
+                if (updater == null) {
+                    return false;
+                }
+                var info = await updater.CheckForUpdatesQuietly(true);
+                if (info.Status == UpdateStatus.UpdateAvailable) {
+                    if (info.Updates[0].Version.ToString() == Preferences.Default.SkipUpdate) {
+                        return false;
                     }
+                    return true;
                 }
                 return false;
             }).ContinueWith(t => {

@@ -12,6 +12,9 @@ namespace OpenUtau.Classic {
 
         static VoicebankConfig CreateConfig() {
             return new VoicebankConfig() {
+                PortraitOpacity = 0.75f,
+                PortraitHeight = 675,
+                Sample = "sample.wav",
                 SymbolSet = new SymbolSet() {
                     Preset = SymbolSetPreset.hiragana,
                 },
@@ -50,35 +53,42 @@ namespace OpenUtau.Classic {
             var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
             output.WriteLine(yaml);
 
-            Assert.Equal(@"portrait_opacity: 0.67000001668930054
+            //"" evaluates to " in verbatim string literals
+            Assert.Equal(@"portrait_opacity: 0.75
+portrait_height: 675
+sample: sample.wav
 symbol_set:
   preset: hiragana
   head: '-'
   tail: R
 subbanks:
-- prefix: ''
-  suffix: ''
+- color: """"
+  prefix: """"
+  suffix: """"
   tone_ranges:
   - C1-C4
-- prefix: ''
+- color: """"
+  prefix: """"
   suffix: D4
   tone_ranges:
   - C#4-F4
-- prefix: ''
+- color: """"
+  prefix: """"
   suffix: G4
   tone_ranges:
   - F#4-A#4
-- prefix: ''
+- color: """"
+  prefix: """"
   suffix: C5
   tone_ranges:
   - B4-B7
 - color: power
-  prefix: ''
+  prefix: """"
   suffix: C5P
   tone_ranges:
   - B4-B7
 - color: shout
-  prefix: ''
+  prefix: """"
   suffix: C5S
   tone_ranges:
   - B4-B7

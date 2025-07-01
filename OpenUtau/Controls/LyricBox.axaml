@@ -6,8 +6,9 @@
              x:Class="OpenUtau.App.Controls.LyricBox" Focusable="False"
              IsVisible="{Binding IsVisible}" IsEnabled="{Binding IsVisible}">
   <Grid RowDefinitions="22,Auto,Auto" Width="360" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Left" Text="{DynamicResource tip.lyricbox.prev}"/>
-    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Right" Text="{DynamicResource tip.lyricbox.next}"/>
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Left" Text="{DynamicResource tip.lyricbox.prev}" IsVisible="{Binding !IsAliasBox, Mode=OneWay}"/>
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Right" Text="{DynamicResource tip.lyricbox.next}" IsVisible="{Binding !IsAliasBox, Mode=OneWay}"/>
+    <TextBlock Classes="tips" Grid.Row="0" Margin="4" HorizontalAlignment="Center" Text="{DynamicResource tip.aliasbox}" IsVisible="{Binding IsAliasBox, Mode=OneWay}"/>
     <TextBox Name="PART_Box" Grid.Row="1" Padding="4,3" Margin="0" Height="24"
              Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
              Text="{Binding Text}" Focusable="True"
@@ -17,8 +18,8 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                BorderThickness="0" Background="Transparent"
                Margin="{DynamicResource AutoCompleteListPadding}"
-               Items="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
-               KeyDown="ListBox_KeyDown">
+               ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
+               Focusable="True" KeyDown="ListBox_KeyDown">
         <ListBox.Styles>
           <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="0"/>
@@ -26,10 +27,10 @@
         </ListBox.Styles>
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <Grid Margin="0" Width="360" HorizontalAlignment="Left" Background="Transparent" PointerPressed="ListBox_PointerPressed">
-              <TextBlock Margin="4" Grid.Column="0" HorizontalAlignment="Left" IsHitTestVisible="False" Text="{Binding Alias}"/>
-              <TextBlock Margin="4,4,24,4" Grid.Column="1" HorizontalAlignment="Right" IsHitTestVisible="False" FontSize="10" Text="{Binding Source}"/>
-            </Grid>
+            <DockPanel Margin="0" Width="360" Background="Transparent" PointerPressed="ListBox_PointerPressed" ToolTip.Tip="{Binding Source}">
+              <TextBlock Margin="4" DockPanel.Dock="Left" IsHitTestVisible="False" Text="{Binding Alias}"/>
+              <TextBlock Margin="4" DockPanel.Dock="Right" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" IsHitTestVisible="False" FontSize="10" VerticalAlignment="Center" Text="{Binding Source}"/>
+            </DockPanel>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>

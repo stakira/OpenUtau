@@ -1,20 +1,18 @@
-﻿using Avalonia;
+﻿using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Views {
     public partial class LyricsDialog : Window {
         public LyricsDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            DIALOG_Box.AddHandler(KeyDownEvent, TextBoxKeyDown, RoutingStrategies.Tunnel);
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
+        void OnOpened(object? sender, EventArgs e) {
+            DIALOG_Box.Focus();
         }
 
         void OnReset(object? sender, RoutedEventArgs e) {
@@ -29,6 +27,25 @@ namespace OpenUtau.App.Views {
         void OnFinish(object? sender, RoutedEventArgs e) {
             (DataContext as LyricsViewModel)!.Finish();
             Close();
+        }
+
+        private void TextBoxKeyDown(object? sender, KeyEventArgs e) {
+            switch (e.Key) {
+                case Key.Enter:
+                    //If Shift+Enter, insert line break (default textbox behavior).
+                    if (e.KeyModifiers == KeyModifiers.Shift) {
+                        return;
+                    }
+                    OnFinish(sender, e);
+                    e.Handled = true;
+                    break;
+                case Key.Escape:
+                    OnCancel(sender, e);
+                    e.Handled = true;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

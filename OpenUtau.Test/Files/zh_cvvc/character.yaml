@@ -1,0 +1,18 @@
+text_file_encoding: shift_jis
+portrait_opacity: 0.67000001668930054
+subbanks:
+- color: ''
+  prefix: ''
+  suffix: C#4
+  tone_ranges:
+  - C1-E4
+- color: ''
+  prefix: ''
+  suffix: F4
+  tone_ranges:
+  - F4-A4
+- color: ''
+  prefix: ''
+  suffix: A#4
+  tone_ranges:
+  - A#4-B7

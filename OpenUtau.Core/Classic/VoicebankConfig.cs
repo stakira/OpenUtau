@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using OpenUtau.Core;
-using YamlDotNet.Serialization;
 
 namespace OpenUtau.Classic {
     public enum SymbolSetPreset { unknown, hiragana, arpabet }
@@ -19,7 +17,7 @@ namespace OpenUtau.Classic {
         /// <summary>
         /// Voice color, e.g., "power", "whisper". Leave unspecified for the main bank.
         /// </summary>
-        public string Color { get; set; }
+        public string Color { get; set; } = string.Empty;
 
         /// <summary>
         /// Subbank prefix. Leave unspecified if none.
@@ -39,14 +37,22 @@ namespace OpenUtau.Classic {
 
     public class VoicebankConfig {
         public string Name;
+        public Dictionary<string, string> LocalizedNames;
+        public string SingerType;
         public string TextFileEncoding;
         public string Image;
         public string Portrait;
         public float PortraitOpacity = 0.67f;
+        public int PortraitHeight = 0;
         public string Author;
+        public string Voice;
         public string Web;
+        public string Version;
+        public string Sample;
+        public string DefaultPhonemizer;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
+        public bool? UseFilenameAsAlias = null;
 
         public void Save(Stream stream) {
             using (var writer = new StreamWriter(stream, Encoding.UTF8)) {

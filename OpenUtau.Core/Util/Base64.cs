@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using Serilog;
 
-namespace OpenUtau.Core.Util
-{
-    internal static class Base64
+namespace OpenUtau.Core.Util {
+    public static class Base64
     {
         public static string Base64EncodeInt12(int[] data)
         {
@@ -29,7 +31,7 @@ namespace OpenUtau.Core.Util
                 else
                 {
                     base64.Append('#');
-                    base64.Append(dups + 1);
+                    base64.Append(dups);
                     base64.Append('#');
                     dups = 0;
                     base64.Append(b);
@@ -39,7 +41,7 @@ namespace OpenUtau.Core.Util
             if (dups != 0)
             {
                 base64.Append('#');
-                base64.Append(dups + 1);
+                base64.Append(dups);
                 base64.Append('#');
             }
             return base64.ToString();
@@ -58,6 +60,18 @@ namespace OpenUtau.Core.Util
             base64[0] = intToBase64[(data >> 6) & 0x003F];
             base64[1] = intToBase64[data & 0x003F];
             return new string(base64);
+        }
+
+        public static void Base64ToFile(string base64str,string filePath) {
+            try {
+                byte[] bytes = Convert.FromBase64String(base64str);
+
+                // Write to file
+                File.WriteAllBytes(filePath, bytes);
+
+            } catch (Exception ex) {
+                Log.Error($"{ex}");
+            }
         }
     }
 }

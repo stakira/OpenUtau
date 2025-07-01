@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
@@ -42,7 +43,7 @@ namespace OpenUtau.App.Controls {
 
         private double trackHeight;
         private double trackOffset;
-        private ObservableCollection<UTrack> _items;
+        private ObservableCollection<UTrack> _items = new ObservableCollection<UTrack>();
 
         private Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
         private TrackAdder? trackAdder;
@@ -51,7 +52,11 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.Listen<TracksRefreshEvent>()
                 .Subscribe(_ => {
                     foreach (var (track, header) in trackHeaders) {
-                        header.ViewModel?.ManuallyRaise();
+                        if (header.ViewModel == null) {
+                            continue;
+                        }
+                        header.ViewModel.JudgeMuted();
+                        header.ViewModel.ManuallyRaise();
                     }
                     if (trackAdder != null) {
                         trackAdder.TrackNo = trackHeaders.Count;
@@ -61,16 +66,35 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(e => {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
-                            if (track.TrackNo == e.trackNo) {
-                                header.ViewModel.Solo = e.solo;
-                                if (e.solo) {
-                                    header.ViewModel.Mute = false;
+                            if (e.solo) {
+                                if (track.TrackNo == e.trackNo) {
+                                    header.ViewModel.Solo = true;
+                                } else if (!e.additionally) {
+                                    header.ViewModel.Solo = false;
                                 }
                             } else {
-                                header.ViewModel.Solo = false;
-                                header.ViewModel.Mute = e.solo;
+                                if (track.TrackNo == e.trackNo || e.trackNo == -1) {
+                                    header.ViewModel.Solo = false;
+                                }
                             }
+                        }
+                    }
+                    foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel != null) {
+                            header.ViewModel.JudgeMuted();
                             header.ViewModel.ManuallyRaise();
+                        }
+                    }
+                });
+            MessageBus.Current.Listen<TracksMuteEvent>()
+                .Subscribe(e => {
+                    foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel != null) {
+                            if(e.trackNo == -1) {
+                                header.ViewModel.ToggleMute(e.allmute);
+                            } else if (track.TrackNo == e.trackNo) {
+                                header.ViewModel.ToggleMute();
+                            }
                         }
                     }
                 });
@@ -83,16 +107,13 @@ namespace OpenUtau.App.Controls {
             Children.Add(trackAdder);
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == ItemsProperty) {
-                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UTrack> oldCol) {
+                if (change.OldValue != null && change.OldValue is ObservableCollection<UTrack> oldCol) {
                     oldCol.CollectionChanged -= Items_CollectionChanged;
                 }
-                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UTrack> newCol) {
+                if (change.NewValue != null && change.NewValue is ObservableCollection<UTrack> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
                 }
             } else if (change.Property == DataContextProperty) {
@@ -102,7 +123,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -25,7 +24,7 @@ namespace OpenUtau.Plugins {
                 Phonetic = "a",
             });
             voicebank.OtoSets.Add(otoSet);
-            return new USinger(voicebank);
+            return new ClassicSinger(voicebank);
         }
 
         [Fact]
@@ -38,7 +37,7 @@ namespace OpenUtau.Plugins {
         public virtual void SetSingerTest() {
             var phonemizer = Activator.CreateInstance(typeof(T)) as Phonemizer;
             Assert.NotNull(phonemizer);
-            phonemizer.SetSinger(new USinger("Unloaded"));
+            phonemizer.SetSinger(USinger.CreateMissing("Unloaded"));
             phonemizer.SetSinger(null);
         }
 
@@ -63,5 +62,5 @@ namespace OpenUtau.Plugins {
     public class JapaneseCVVCPhonemizerTest : PhonemizerTest<JapaneseCVVCPhonemizer> { }
     public class JapaneseVCVPhonemizerTest : PhonemizerTest<JapaneseVCVPhonemizer> { }
     public class KoreanCVCPhonemizerTest : PhonemizerTest<KoreanCVCPhonemizer> { }
-    public class KoreanCVVCStandardPronunciationPhonemizerTest : PhonemizerTest<KoreanCVVCStandardPronunciationPhonemizer> { }
+    public class KoreanCVVCPhonemizerTest : PhonemizerTest<KoreanCVVCPhonemizer> { }
 }

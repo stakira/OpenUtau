@@ -1,108 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Binding;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 
 namespace OpenUtau.App.ViewModels {
     public class SingerSetupViewModel : ViewModelBase {
-        public int Step {
-            get => step;
-            set => this.RaiseAndSetIfChanged(ref step, value);
-        }
+        [Reactive] public int Step { get; set; }
         public ObservableCollection<string> TextItems => textItems;
-        public string ArchiveFilePath {
-            get => archiveFilePath;
-            set => this.RaiseAndSetIfChanged(ref archiveFilePath, value);
-        }
-        public Encoding[] Encodings => encodings;
-        public Encoding ArchiveEncoding {
-            get => archiveEncoding;
-            set => this.RaiseAndSetIfChanged(ref archiveEncoding, value);
-        }
-        public Encoding TextEncoding {
-            get => textEncoding;
-            set => this.RaiseAndSetIfChanged(ref textEncoding, value);
-        }
-        public bool CanInstall {
-            get => canInstall;
-            set => this.RaiseAndSetIfChanged(ref canInstall, value);
-        }
-        public bool CreateRootDirectory {
-            get => createRootDirectory;
-            set => this.RaiseAndSetIfChanged(ref createRootDirectory, value);
-        }
-        public bool CreateCharacterTxt {
-            get => createCharacterTxt;
-            set => this.RaiseAndSetIfChanged(ref createCharacterTxt, value);
-        }
-        public string CreateRootDirectoryName {
-            get => createRootDirectoryName;
-            set => this.RaiseAndSetIfChanged(ref createRootDirectoryName, value);
-        }
-        public string CreateCharacterTxtName {
-            get => createCharacterTxtName;
-            set => this.RaiseAndSetIfChanged(ref createCharacterTxtName, value);
-        }
+        [Reactive] public string ArchiveFilePath { get; set; } = string.Empty;
+        public Encoding[] Encodings { get; set; } = new Encoding[] {
+            Encoding.GetEncoding("shift_jis"),
+            Encoding.UTF8,
+            Encoding.GetEncoding("gb2312"),
+            Encoding.GetEncoding("big5"),
+            Encoding.GetEncoding("ks_c_5601-1987"),
+            Encoding.GetEncoding("Windows-1252"),
+            Encoding.GetEncoding("macintosh"),
+        };
+        [Reactive] public Encoding ArchiveEncoding { get; set; }
+        [Reactive] public Encoding TextEncoding { get; set; }
+        [Reactive] public bool MissingInfo { get; set; }
+        public string[] SingerTypes { get; set; } = new[] { "utau", "enunu", "diffsinger" };
+        [Reactive] public string SingerType { get; set; }
 
-        private int step;
         private ObservableCollectionExtended<string> textItems;
-        private string archiveFilePath;
-        private Encoding[] encodings;
-        private Encoding archiveEncoding;
-        private Encoding textEncoding;
-
-        private bool canInstall;
-        private bool createRootDirectory;
-        private bool createCharacterTxt;
-        private string createRootDirectoryName = string.Empty;
-        private string createCharacterTxtName = string.Empty;
 
         public SingerSetupViewModel() {
-            archiveFilePath = string.Empty;
-            encodings = new Encoding[] {
-                Encoding.GetEncoding("shift_jis"),
-                Encoding.ASCII,
-                Encoding.UTF8,
-                Encoding.GetEncoding("gb2312"),
-                Encoding.GetEncoding("big5"),
-                Encoding.GetEncoding("ks_c_5601-1987"),
-                Encoding.GetEncoding("Windows-1252"),
-                Encoding.GetEncoding("macintosh"),
-            };
-            archiveEncoding = encodings[0];
-            textEncoding = encodings[0];
+#if DEBUG
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
+            SingerType = SingerTypes[0];
+            ArchiveEncoding = Encodings[0];
+            TextEncoding = Encodings[0];
             textItems = new ObservableCollectionExtended<string>();
-
-            this.WhenAnyValue(vm => vm.Step)
-                .Subscribe(_ => OnStep());
+            this.WhenAnyValue(vm => vm.ArchiveFilePath)
+                .Subscribe(_ => {
+                    if (!string.IsNullOrEmpty(ArchiveFilePath)) {
+                        if(IsEncrypted(ArchiveFilePath)) {
+                            throw new MessageCustomizableException(
+                                "Encrypted archive file isn't supported",
+                                "<translate:errors.encryptedarchive>", 
+                                new Exception("Encrypted archive file: " + ArchiveFilePath)
+                            );
+                        }                        
+                        var config = LoadCharacterYaml(ArchiveFilePath);
+                        MissingInfo = string.IsNullOrEmpty(config?.SingerType);
+                        if (!string.IsNullOrEmpty(config?.TextFileEncoding)) {
+                            try {
+                                TextEncoding = Encoding.GetEncoding(config.TextFileEncoding);
+                            } catch { }
+                        }
+                    }
+                });
             this.WhenAnyValue(vm => vm.Step, vm => vm.ArchiveEncoding, vm => vm.ArchiveFilePath)
                 .Subscribe(_ => RefreshArchiveItems());
             this.WhenAnyValue(vm => vm.Step, vm => vm.TextEncoding)
                 .Subscribe(_ => RefreshTextItems());
-            this.WhenAnyValue(
-                vm => vm.CreateRootDirectory,
-                vm => vm.CreateRootDirectoryName,
-                vm => vm.CreateCharacterTxt,
-                vm => vm.CreateCharacterTxtName)
-                .Subscribe(_ => CanInstall =
-                    (!CreateRootDirectory || !string.IsNullOrWhiteSpace(CreateRootDirectoryName)) &&
-                    (!CreateCharacterTxt || !string.IsNullOrWhiteSpace(CreateCharacterTxtName)));
         }
 
-        private void Back() {
+        public void Back() {
             Step--;
         }
 
-        private void Next() {
+        public void Next() {
             Step++;
         }
 
@@ -115,13 +85,31 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
                 textItems.AddRange(archive.Entries
-                    .Select(entry => entry.Key)
+                    .Select(entry => entry.Key!)
                     .ToArray());
+            }
+        }
+
+        private bool IsEncrypted(string archiveFilePath) {
+            using (var archive = ArchiveFactory.Open(archiveFilePath)) {
+                return archive.Entries.Any(e => e.IsEncrypted);
+            }
+        }
+
+        private VoicebankConfig? LoadCharacterYaml(string archiveFilePath) {
+            using (var archive = ArchiveFactory.Open(archiveFilePath)) {
+                var entry = archive.Entries.FirstOrDefault(e => Path.GetFileName(e.Key)=="character.yaml");
+                if (entry == null) {
+                    return null;
+                }
+                using (var stream = entry.OpenEntryStream()) {
+                    return VoicebankConfig.Load(stream);
+                }
             }
         }
 
@@ -134,98 +122,32 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
-                textItems.Clear();
-                foreach (var entry in archive.Entries.Where(entry => entry.Key.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
-                    using (var stream = entry.OpenEntryStream()) {
-                        using var reader = new StreamReader(stream, TextEncoding);
-                        textItems.Add($"------ {entry.Key} ------");
-                        int count = 0;
-                        while (count < 256 && !reader.EndOfStream) {
-                            string? line = reader.ReadLine();
-                            if (!string.IsNullOrWhiteSpace(line)) {
-                                textItems.Add(line);
-                                count++;
+                try {
+                    textItems.Clear();
+                    foreach (var entry in archive.Entries.Where(entry => entry.Key!.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
+                        using (var stream = entry.OpenEntryStream()) {
+                            using var reader = new StreamReader(stream, TextEncoding);
+                            textItems.Add($"------ {entry.Key} ------");
+                            int count = 0;
+                            while (count < 256 && !reader.EndOfStream) {
+                                string? line = reader.ReadLine();
+                                if (!string.IsNullOrWhiteSpace(line)) {
+                                    textItems.Add(line);
+                                    count++;
+                                }
+                            }
+                            if (!reader.EndOfStream) {
+                                textItems.Add($"...");
                             }
                         }
-                        if (!reader.EndOfStream) {
-                            textItems.Add($"...");
-                        }
                     }
+                } catch (Exception ex) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+                    Step--;
                 }
-            }
-        }
-
-        class Character {
-            public string file;
-            public List<string> otoSets = new List<string>();
-            public Character(string file) {
-                this.file = file;
-            }
-        }
-
-        private void OnStep() {
-            if (Step == 2) {
-                BuildTree();
-            }
-        }
-
-        private void BuildTree() {
-            var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
-            };
-            using var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions);
-            var banks = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "character.txt")
-                .OrderByDescending(bank => bank.Key.Length)
-                .Select(bank => new Character(bank.Key))
-                .ToList();
-            var otoSets = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "oto.ini")
-                .ToArray();
-            var prefixMaps = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "prefix.map")
-                .ToArray();
-            var bankDirs = banks
-                .Select(bank => Path.GetDirectoryName(bank.file)!)
-                .ToArray();
-            var unknownBank = new Character("(Unknown)");
-            foreach (var otoSet in otoSets) {
-                var dir = Path.GetDirectoryName(otoSet.Key);
-                bool foundBank = false;
-                for (int i = 0; i < bankDirs.Length; ++i) {
-                    if (dir.StartsWith(bankDirs[i])) {
-                        string relPath = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoSet.Key));
-                        if (relPath == ".") {
-                            relPath = string.Empty;
-                        }
-                        banks[i].otoSets.Add(otoSet.Key);
-                        foundBank = true;
-                        break;
-                    }
-                }
-                if (!foundBank) {
-                    unknownBank.otoSets.Add(otoSet.Key);
-                }
-            }
-            textItems.Clear();
-            foreach (var bank in banks) {
-                textItems.Add($"{bank.file}");
-                textItems.AddRange(bank.otoSets.Select(set => $"      | {set}"));
-            }
-
-            if (unknownBank.otoSets.Count > 0) {
-                CreateCharacterTxt = true;
-                banks.Add(unknownBank);
-            }
-
-            List<string> dirs = banks.Select(b => Path.GetDirectoryName(b.file)).ToList();
-            dirs.AddRange(otoSets.Select(set => Path.GetDirectoryName(set.Key)));
-            string root = dirs.OrderBy(dir => dir.Length).FirstOrDefault();
-            if (string.IsNullOrEmpty(root) || root == ".") {
-                CreateRootDirectory = true;
             }
         }
 
@@ -235,13 +157,16 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.SingersPath, (progress, info) => {
+                    var basePath = PathManager.Inst.SingersInstallPath;
+                    var installer = new VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
-                    installer.LoadArchive(archiveFilePath);
+                    installer.Install(archiveFilePath, SingerType);
                 } finally {
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                    DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                    new Task(() => {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                        DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                    }).Start(DocManager.Inst.MainScheduler);
                 }
             });
         }

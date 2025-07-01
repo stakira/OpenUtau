@@ -1,0 +1,111 @@
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "audio_debug",
+    srcs = ["audio_debug.cc"],
+    deps = [
+        ":audio_output_lib",
+        "@absl//absl/debugging:failure_signal_handler",
+        "@absl//absl/debugging:symbolize",
+        "@absl//absl/flags:flag",
+        "@absl//absl/flags:parse",
+        "@absl//absl/log",
+        "@absl//absl/log:check",
+        "@absl//absl/log:initialize",
+        "@absl//absl/strings",
+        "@absl//absl/strings:string_view",
+        "@miniaudio",
+        "@xxhash",
+    ],
+)
+
+cc_library(
+    name = "audio_output_lib",
+    srcs = ["audio_output.cc"],
+    hdrs = ["audio_output.h"],
+    deps = [
+        "@miniaudio",
+        "@xxhash",
+    ],
+)
+
+cc_test(
+    name = "audio_output_test",
+    srcs = ["audio_output_test.cc"],
+    deps = [
+        ":audio_output_lib",
+        "@absl//absl/log",
+        "@absl//absl/strings",
+        "@absl//absl/time",
+        "@gtest//:gtest_main",
+        "@xxhash",
+    ],
+)
+
+cc_library(
+    name = "synth_request",
+    hdrs = ["synth_request.h"],
+)
+
+cc_library(
+    name = "phrase_synth",
+    srcs = ["phrase_synth.cpp"],
+    hdrs = ["phrase_synth.h"],
+    deps = [
+        ":synth_request",
+        "//worldline/classic:timing",
+        "//worldline/model",
+        "//worldline/model:effects",
+    ],
+)
+
+cc_library(
+    name = "worldline_lib",
+    srcs = ["worldline.cpp"],
+    hdrs = ["worldline.h"],
+    deps = [
+        ":phrase_synth",
+        "//worldline/classic:resampler",
+        "//worldline/f0",
+        "//worldline/model:effects",
+        "@world",
+    ],
+    alwayslink = 1,
+)
+
+cc_shared_library(
+    name = "worldline",
+    deps = [
+        ":audio_output_lib",
+        ":worldline_lib",
+    ],
+)
+
+cc_test(
+    name = "worldline_test",
+    srcs = [
+        "worldline_test.cpp",
+    ],
+    dynamic_deps = [
+        ":worldline",
+    ],
+    deps = [
+        ":worldline_lib",
+        "@gtest//:gtest_main",
+    ],
+)
+
+cc_binary(
+    name = "main",
+    srcs = [
+        "worldline_main.cpp",
+    ],
+    deps = [
+        ":worldline_lib",
+        "@absl//absl/debugging:failure_signal_handler",
+        "@absl//absl/debugging:symbolize",
+        "@world//:audioio",
+    ],
+)

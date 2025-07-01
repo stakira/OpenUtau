@@ -13,14 +13,17 @@ namespace OpenUtau.Api {
         public string Name { get; private set; }
         public string Tag { get; private set; }
         public string Author { get; private set; }
+        public string Language { get; private set; }
 
         /// <param name="name">Name of phonemizer. Required.</param>
-        /// <param name="tag">Use IETF language code + phonetic type as tag, e.g., "EN ARPA", "JP VCV", etc. Required.</param>
+        /// <param name="tag">Use IETF language code + phonetic type as tag, e.g., "EN ARPA", "JA VCV", etc. Required.</param>
         /// <param name="author">Author of this phonemizer.</param>
-        public PhonemizerAttribute(string name, string tag, string author = null) {
+        /// <param name="language">IETF language code of this phonemizer's singing language, e.g., "EN", "JA"</param>
+        public PhonemizerAttribute(string name, string tag, string author = null, string language = null) {
             Name = name;
             Tag = tag;
             Author = author;
+            Language = language;
         }
     }
 
@@ -52,14 +55,14 @@ namespace OpenUtau.Api {
             public int tone;
 
             /// <summary>
-            /// Position of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Position of note in project, measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int position;
 
             /// <summary>
-            /// Duration of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Duration of note measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int duration;
 
@@ -94,10 +97,21 @@ namespace OpenUtau.Api {
             public string voiceColor;
         }
 
+        public struct PhonemeExpression {
+            public string abbr;
+            public float value;
+        }
+
         /// <summary>
         /// The output struct that represents a phoneme.
         /// </summary>
         public struct Phoneme {
+            /// <summary>
+            /// Number to manage phonemes in note.
+            /// Optional. Whether to specify an index or not should be consistent within Phonemizer (All phonemes should be indexed, or all should be unindexed).
+            /// </summary>
+            public int? index;
+
             /// <summary>
             /// Phoneme name. Should match one of oto alias.
             /// Note that you don't have to return tone-mapped phonemes. OpenUtau will do it afterwards.
@@ -108,14 +122,14 @@ namespace OpenUtau.Api {
 
             /// <summary>
             /// Position of phoneme in note. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds.
             /// </summary>
             public int position;
 
             /// <summary>
-            /// Suggested attributes. May or may not be used eventually.
+            /// Suggested attributes. It may later be overwritten with a user-specified value.
             /// </summary>
-            public PhonemeAttributes attributes;
+            public List<PhonemeExpression> expressions;
 
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
@@ -132,10 +146,10 @@ namespace OpenUtau.Api {
 
         public string Name { get; set; }
         public string Tag { get; set; }
+        public string Language { get; set; }
 
         protected double bpm;
-        private int beatUnit;
-        private int resolution;
+        protected TimeAxis timeAxis;
 
         /// <summary>
         /// Sets the current singer. Called by OpenUtau when user changes the singer.
@@ -151,6 +165,14 @@ namespace OpenUtau.Api {
         public abstract void SetSinger(USinger singer);
 
         /// <summary>
+        /// Uses the legacy bahaviour of further mapping phonemizer outputs.
+        /// Do not override for new phonemizers.
+        /// </summary>
+        public virtual bool LegacyMapping => false;
+
+        public virtual void SetUp(Note[][] notes, UProject project, UTrack track) { }
+
+        /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
         /// </summary>
         /// <param name="notes">A note and its extender notes. Always one or more.</param>
@@ -161,32 +183,36 @@ namespace OpenUtau.Api {
         /// <param name="prevs">Prev note neighbour with all extended notes. May be emtpy, not null</param>
         public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs);
 
+        public virtual void CleanUp() { }
+
         public override string ToString() => $"[{Tag}] {Name}";
 
         /// <summary>
         /// Used by OpenUtau to set timing info for TickToMs() and MsToTick().
         /// Not need to call this method from within a phonemizer.
         /// </summary>
-        public void SetTiming(double bpm, int beatUnit, int resolution) {
-            this.bpm = bpm;
-            this.beatUnit = beatUnit;
-            this.resolution = resolution;
+        public void SetTiming(TimeAxis timeAxis) {
+            this.timeAxis = timeAxis;
+            bpm = timeAxis.GetBpmAtTick(0);
         }
 
+        public string DictionariesPath => PathManager.Inst.DictionariesPath;
         public string PluginDir => PathManager.Inst.PluginsPath;
 
         /// <summary>
-        /// Utility method to convert ticks to milliseconds.
+        /// Utility method to convert tick position to millisecond position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected double TickToMs(int tick) {
-            return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
+            return timeAxis.TickPosToMsPos(tick);
         }
 
         /// <summary>
-        /// Utility method to convert milliseconds to ticks.
+        /// Utility method to convert millisecond position to tick position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected int MsToTick(double ms) {
-            return MusicMath.MillisecondToTick(ms, bpm, beatUnit, resolution);
+            return timeAxis.MsPosToTickPos(ms);
         }
 
         /// <summary>
@@ -201,13 +227,20 @@ namespace OpenUtau.Api {
             return result;
         }
 
+        public bool Testing { get; set; } = false;
+
         protected void OnAsyncInitStarted() {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+            if (!Testing) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+            }
         }
 
         protected void OnAsyncInitFinished() {
-            DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
-            DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+            if (!Testing) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+                DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+            }
         }
 
         protected Result MakeSimpleResult(string phoneme) {

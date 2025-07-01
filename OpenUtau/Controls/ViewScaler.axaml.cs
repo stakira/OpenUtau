@@ -2,9 +2,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     public partial class ViewScaler : UserControl {
@@ -41,22 +39,12 @@ namespace OpenUtau.App.Controls {
         private double min;
         private double value_;
 
-        private Path path;
-
         public ViewScaler() {
             InitializeComponent();
-            path = this.FindControl<Path>("Path");
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == MaxProperty || change.Property == MinProperty || change.Property == ValueProperty) {
                 UpdatePath();
             }
@@ -67,7 +55,7 @@ namespace OpenUtau.App.Controls {
             double size = offset < 4 ? 4 : 8 - offset;
             if (double.IsNaN(offset) || double.IsNaN(size) ||
                 double.IsInfinity(offset) || double.IsInfinity(size)) return;
-            path.Data = Geometry.Parse(FormattableString.Invariant(
+            Path.Data = Geometry.Parse(FormattableString.Invariant(
                 $"M {8 - size} {offset + size} L 8 {offset} L {8 + size} {offset + size} M {8 - size} {16 - size - offset} L 8 {16 - offset} L {8 + size} {16 - size - offset}"));
         }
     }

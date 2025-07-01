@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -18,12 +17,8 @@ namespace OpenUtau.App.Controls {
         public LyricBox() {
             InitializeComponent();
             DataContext = viewModel = new LyricBoxViewModel();
-            box = this.FindControl<TextBox>("PART_Box");
-            listBox = this.FindControl<ListBox>("PART_Suggestions");
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
+            box = PART_Box;
+            listBox = PART_Suggestions;
             IsVisible = false;
         }
 
@@ -32,6 +27,7 @@ namespace OpenUtau.App.Controls {
         }
 
         private void Box_LostFocus(object? sender, RoutedEventArgs e) {
+            box.CaretIndex = 0;
         }
 
         private void ListBox_KeyDown(object? sender, KeyEventArgs e) {
@@ -48,10 +44,12 @@ namespace OpenUtau.App.Controls {
                     e.Handled = true;
                     break;
                 case Key.Tab:
-                    if (listBox.SelectedItem is LyricBoxViewModel.SuggestionItem item1) {
-                        box.Text = item1.Alias;
+                    if (!viewModel.IsAliasBox) {
+                        if (listBox.SelectedItem is LyricBoxViewModel.SuggestionItem item1) {
+                            box.Text = item1.Alias;
+                        }
+                        OnTab(e.KeyModifiers);
                     }
-                    OnTab(e.KeyModifiers);
                     e.Handled = true;
                     break;
                 case Key.Up:
@@ -103,7 +101,9 @@ namespace OpenUtau.App.Controls {
                     e.Handled = true;
                     break;
                 case Key.Tab:
-                    OnTab(e.KeyModifiers);
+                    if (!viewModel.IsAliasBox) {
+                        OnTab(e.KeyModifiers);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Up:
@@ -114,6 +114,14 @@ namespace OpenUtau.App.Controls {
                     listBox.SelectedIndex = 0;
                     e.Handled = true;
                     break;
+                case Key.Left:
+                    if (box.SelectionStart < box.SelectionEnd)
+                        box.SelectionEnd = box.SelectionStart;
+                    break;
+                case Key.Right:
+                    if (box.SelectionStart > box.SelectionEnd)
+                        box.SelectionEnd = box.SelectionStart;
+                    break;
                 default:
                     break;
             }
@@ -122,29 +130,30 @@ namespace OpenUtau.App.Controls {
         private void OnTab(KeyModifiers keyModifiers) {
             UVoicePart? part = viewModel.Part;
             UNote? tabTo = null;
+            var tabFrom = viewModel.NoteOrPhoneme as LyricBoxNote;
             if (keyModifiers == KeyModifiers.None) {
-                tabTo = viewModel.Note?.Next;
+                tabTo = tabFrom?.Unwrap().Next;
             } else if (keyModifiers == KeyModifiers.Shift) {
-                tabTo = viewModel.Note?.Prev;
+                tabTo = tabFrom?.Unwrap().Prev;
             }
             EndEdit(true);
             if (tabTo != null && part != null) {
                 DocManager.Inst.ExecuteCmd(new FocusNoteNotification(part, tabTo));
-                Show(part, tabTo, tabTo.lyric);
+                Show(part, new LyricBoxNote(tabTo), tabTo.lyric);
             }
         }
 
         public void ListBox_PointerPressed(object sender, PointerPressedEventArgs args) {
-            if (sender is Grid grid &&
-                grid.DataContext is LyricBoxViewModel.SuggestionItem item) {
+            if (sender is DockPanel panel &&
+                panel.DataContext is LyricBoxViewModel.SuggestionItem item) {
                 box.Text = item.Alias;
             }
             EndEdit(true);
         }
 
-        public void Show(UVoicePart part, UNote note, string text) {
+        public void Show(UVoicePart part, LyricBoxNoteOrPhoneme noteOrPhoneme, string text) {
             viewModel.Part = part;
-            viewModel.Note = note;
+            viewModel.NoteOrPhoneme = noteOrPhoneme;
             viewModel.Text = text;
             viewModel.IsVisible = true;
             box.SelectAll();
@@ -169,10 +178,10 @@ namespace OpenUtau.App.Controls {
                 viewModel.Commit();
             }
             viewModel.Part = null;
-            viewModel.Note = null;
+            viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
-            KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
+            TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
         }
     }
 }

@@ -10,7 +10,7 @@
   <Grid Height="22" Width="60" Background="{Binding Background}" PointerPressed="TextBlockPointerPressed">
     <ComboBox VerticalAlignment="Center" HorizontalAlignment="Left" Height="22"
               Focusable="False" Foreground="{Binding TagBrush}" Background="Transparent" Width="20"
-              SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}" SelectedIndex="{Binding SelectedIndex}">
+              SelectedItem="{Binding Descriptor}" ItemsSource="{Binding Descriptors}" SelectedIndex="{Binding SelectedIndex}">
       <ComboBox.Styles>
         <Style Selector="ComboBox">
           <Setter Property="Padding" Value="{DynamicResource ComboBoxPadding}" />
@@ -64,8 +64,9 @@
                          IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
                          MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
                          MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                         PlacementTarget="Background"
-                         PlacementAnchor="BottomLeft"
+                         Placement="AnchorAndGravity"
+                         PlacementAnchor="Top"
+                         PlacementGravity="TopRight"
                          IsLightDismissEnabled="True">
                     <Border x:Name="PopupBorder"
                             Background="{DynamicResource ComboBoxDropDownBackground}"
@@ -78,11 +79,8 @@
                       <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                     VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                         <ItemsPresenter Name="PART_ItemsPresenter"
-                                        Items="{TemplateBinding Items}"
                                         Margin="{DynamicResource ComboBoxDropdownContentMargin}"
-                                        ItemsPanel="{TemplateBinding ItemsPanel}"
-                                        ItemTemplate="{TemplateBinding ItemTemplate}"
-                                        VirtualizationMode="{TemplateBinding VirtualizationMode}" />
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
                       </ScrollViewer>
                     </Border>
                   </Popup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -11,7 +12,7 @@ using ReactiveUI;
 namespace OpenUtau.App.Controls {
     public enum ExpDisMode { Hidden, Visible, Shadow };
 
-    class ExpressionCanvas : Canvas {
+    class ExpressionCanvas : Control {
         public static readonly DirectProperty<ExpressionCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<ExpressionCanvas, double>(
                 nameof(TickWidth),
@@ -32,6 +33,11 @@ namespace OpenUtau.App.Controls {
                 nameof(Key),
                 o => o.Key,
                 (o, v) => o.Key = v);
+        public static readonly DirectProperty<ExpressionCanvas, bool> ShowRealCurveProperty =
+            AvaloniaProperty.RegisterDirect<ExpressionCanvas, bool>(
+                nameof(ShowRealCurve),
+                o => o.ShowRealCurve,
+                (o, v) => o.ShowRealCurve = v);
 
         public double TickWidth {
             get => tickWidth;
@@ -49,11 +55,16 @@ namespace OpenUtau.App.Controls {
             get => key;
             set => SetAndRaise(KeyProperty, ref key, value);
         }
+        public bool ShowRealCurve {
+            get => showRealCurve;
+            set => SetAndRaise(ShowRealCurveProperty, ref showRealCurve, value);
+        }
 
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
         private string key = string.Empty;
+        private bool showRealCurve = true;
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -74,11 +85,8 @@ namespace OpenUtau.App.Controls {
                 });
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             InvalidateVisual();
         }
 
@@ -92,50 +100,147 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             var project = DocManager.Inst.Project;
-            if (!project.tracks[Part.trackNo].TryGetExpression(project, key, out var descriptor)) {
+            var track = project.tracks[Part.trackNo];
+            if (!track.TryGetExpDescriptor(project, key, out var descriptor)) {
                 return;
             }
             if (descriptor.max <= descriptor.min) {
                 return;
             }
-            var track = project.tracks[Part.trackNo];
+            DrawBackgroundForHitTest(context);
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             double optionHeight = descriptor.type == UExpressionType.Options
                 ? Bounds.Height / descriptor.options.Length
                 : 0;
-            foreach (UNote note in Part.notes) {
-                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+            if (descriptor.type == UExpressionType.Curve) {
+                var curve = Part.curves.FirstOrDefault(c => c.descriptor == descriptor);
+                double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+                var lPen = ThemeManager.AccentPen1;
+                var lPen2 = ThemeManager.AccentPen1Thickness2;
+                var lPen3 = new Pen(ThemeManager.NeutralAccentBrush, 1, new DashStyle(new double[] { 4, 4 }, 0));
+                var brush = ThemeManager.AccentBrush1;
+                double x3 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                double x4 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                context.DrawLine(lPen3, new Point(x3, defaultHeight), new Point(x4, defaultHeight));
+                if (curve == null) {
+                    double x1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                    double x2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                    context.DrawLine(lPen, new Point(x1, defaultHeight), new Point(x2, defaultHeight));
+                    return;
+                }
+                int lTick = (int)Math.Floor(leftTick / 5) * 5;
+                int rTick = (int)Math.Ceiling(rightTick / 5) * 5;
+                int index = curve.xs.BinarySearch(lTick);
+                if (index < 0) {
+                    index = -index - 1;
+                }
+                index = Math.Max(0, index) - 1;
+                while (index < curve.xs.Count) {
+                    float tick1 = index < 0 ? lTick : curve.xs[index];
+                    float value1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
+                    double x1 = viewModel.TickToneToPoint(tick1, 0).X;
+                    double y1 = defaultHeight - Bounds.Height * (value1 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                    float tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1];
+                    float value2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
+                    double x2 = viewModel.TickToneToPoint(tick2, 0).X;
+                    double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                    var pen = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? lPen : lPen2;
+                    context.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
+                    //using (var state = context.PushTransform(Matrix.CreateTranslation(x1, y1))) {
+                    //    context.DrawGeometry(brush, null, pointGeometry);
+                    //}
+                    index++;
+                    if (tick2 >= rTick) {
+                        break;
+                    }
+                }
+                if (ShowRealCurve) {
+                    int baseIndexL = curve.realXs.BinarySearch(lTick);
+                    if (baseIndexL < 0) {
+                        baseIndexL = ~baseIndexL;
+                    }
+                    baseIndexL = Math.Max(0, baseIndexL - 1);
+                    int baseIndexR = curve.realXs.BinarySearch(rTick);
+                    if (baseIndexR < 0) {
+                        baseIndexR = ~baseIndexR;
+                    }
+                    int offset = baseIndexL;
+                    while (offset < baseIndexR) {
+                        // negative values are breakpoints
+                        int start = offset;
+                        while (start < baseIndexR && curve.realYs[start] < 0) ++start;
+                        int end = start;
+                        while (end < baseIndexR && curve.realYs[end] >= 0) ++end;
+                        if (end - start < 2) {
+                            offset = end;
+                            continue;
+                        }
+                        var geometry = new PathGeometry();
+                        var figure = new PathFigure {
+                            IsClosed = false
+                        };
+                        for (int i = start; i < end; ++i) {
+                            float tick = curve.realXs[i];
+                            float value = curve.realYs[i];
+                            double x = viewModel.TickToneToPoint(tick, 0).X;
+                            double y = Bounds.Height * (1 - value / 1000.0);
+                            if (i == start) {
+                                figure.StartPoint = new Point(x, Bounds.Height);
+                            }
+                            figure.Segments!.Add(new LineSegment {
+                                Point = new Point(x, y),
+                                IsStroked = i != start
+                            });
+                            if (i == end - 1) {
+                                figure.Segments!.Add(new LineSegment {
+                                    Point = new Point(x, Bounds.Height),
+                                    IsStroked = false
+                                });
+                            }
+                        }
+                        geometry.Figures!.Add(figure);
+                        context.DrawGeometry(ThemeManager.RealCurveFillBrush, ThemeManager.RealCurvePen, geometry);
+                        offset = end;
+                    }
+                }
+                return;
+            }
+            foreach (var phoneme in Part.phonemes) {
+                if (phoneme.Error || phoneme.Parent == null) {
                     continue;
                 }
+                double leftBound = phoneme.position;
+                double rightBound = phoneme.End;
+                if (leftBound >= rightTick || rightBound <= leftTick) {
+                    continue;
+                }
+                var note = phoneme.Parent;
                 var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
                 var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
                 var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
-                foreach (var phoneme in note.phonemes) {
-                    if (phoneme.Error) {
-                        continue;
+                var (value, overriden) = phoneme.GetExpression(project, track, Key);
+                double x1 = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X);
+                double x2 = Math.Round(viewModel.TickToneToPoint(phoneme.End, 0).X);
+                if (descriptor.type == UExpressionType.Numerical) {
+                    double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
+                    double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
+                    context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
+                        context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
                     }
-                    var (value, overriden) = phoneme.GetExpression(project, track, Key);
-                    double x1 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.position, 0).X);
-                    double x2 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.End, 0).X);
-                    if (descriptor.type == UExpressionType.Numerical) {
-                        double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
-                        double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
-                        context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                        context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
-                            context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
-                        }
-                    } else if (descriptor.type == UExpressionType.Options) {
-                        for (int i = 0; i < descriptor.options.Length; ++i) {
-                            double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
-                            using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
-                                if ((int)value == i) {
+                } else if (descriptor.type == UExpressionType.Options) {
+                    for (int i = 0; i < descriptor.options.Length; ++i) {
+                        double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
+                        using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
+                            if ((int)value == i) {
+                                if (overriden) {
                                     context.DrawGeometry(brush, null, pointGeometry);
-                                    context.DrawGeometry(null, hPen, circleGeometry);
-                                } else {
-                                    context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
                                 }
+                                context.DrawGeometry(null, hPen, circleGeometry);
+                            } else {
+                                context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
                             }
                         }
                     }
@@ -148,18 +253,22 @@ namespace OpenUtau.App.Controls {
                         option = "\"\"";
                     }
                     var textLayout = TextLayoutCache.Get(option, ThemeManager.ForegroundBrush, 12);
-                    double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Size.Height * 0.5;
+                    double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Height * 0.5;
                     y = Math.Round(y);
-                    var size = new Size(textLayout.Size.Width + 8, textLayout.Size.Height + 2);
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(12, y))) {
+                    var size = new Size(textLayout.Width + 8, textLayout.Height + 2);
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(12, y))) {
                         context.DrawRectangle(
                             ThemeManager.BackgroundBrush,
                             ThemeManager.NeutralAccentPenSemi,
                             new Rect(new Point(-4, -0.5), size), 4, 4);
-                        textLayout.Draw(context);
+                        textLayout.Draw(context, new Point());
                     }
                 }
             }
+        }
+
+        private void DrawBackgroundForHitTest(DrawingContext context) {
+            context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
         }
     }
 }

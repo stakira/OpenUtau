@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class NoteCommand : UCommand {
-        protected readonly UNote[] Notes;
+        public readonly UNote[] Notes;
         public readonly UVoicePart Part;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+        };
         public NoteCommand(UVoicePart part, UNote note) {
             Part = part;
             Notes = new UNote[] { note };
@@ -92,18 +95,35 @@ namespace OpenUtau.Core {
     }
 
     public class ResizeNoteCommand : NoteCommand {
+        readonly int NewPartDuration;
+        readonly int OldPartDuration;
         readonly int DeltaDur;
         public ResizeNoteCommand(UVoicePart part, UNote note, int deltaDur) : base(part, note) {
             DeltaDur = deltaDur;
+            OldPartDuration = part.Duration;
+            DocManager.Inst.Project.timeAxis.TickPosToBarBeat(note.End + deltaDur, out int bar, out int beat, out int remainingTicks);
+            int minDurTick = DocManager.Inst.Project.timeAxis.BarBeatToTickPos(bar + 2, 0) - part.position;
+            if (part.Duration < minDurTick) {
+                NewPartDuration = minDurTick;
+            }
         }
         public ResizeNoteCommand(UVoicePart part, List<UNote> notes, int deltaDur) : base(part, notes) {
             DeltaDur = deltaDur;
+            OldPartDuration = part.Duration;
+            DocManager.Inst.Project.timeAxis.TickPosToBarBeat((Notes.LastOrDefault()?.End ?? 1) + deltaDur, out int bar, out int beat, out int remainingTicks);
+            int minDurTick = DocManager.Inst.Project.timeAxis.BarBeatToTickPos(bar + 2, 0) - part.position;
+            if (part.Duration < minDurTick) {
+                NewPartDuration = minDurTick;
+            }
         }
         public override string ToString() { return $"Change {Notes.Count()} notes duration"; }
         public override void Execute() {
             lock (Part) {
                 foreach (var note in Notes) {
                     note.duration += DeltaDur;
+                }
+                if (NewPartDuration > 0) {
+                    Part.Duration = NewPartDuration;
                 }
             }
         }
@@ -112,6 +132,7 @@ namespace OpenUtau.Core {
                 foreach (var note in Notes) {
                     note.duration -= DeltaDur;
                 }
+                Part.Duration = OldPartDuration;
             }
         }
     }
@@ -151,7 +172,41 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoLengthCommand : NoteCommand {
+    public abstract class VibratoCommand : NoteCommand {
+        public VibratoCommand(UVoicePart part, UNote note) : base(part, note) { }
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+            SkipPhoneme = true,
+        };
+    }
+
+    public class SetVibratoCommand : VibratoCommand {
+        readonly UNote note;
+        readonly UVibrato newVibrato;
+        readonly UVibrato oldVibrato;
+        public SetVibratoCommand(UVoicePart part, UNote note, UVibrato vibrato) : base(part, note) {
+            this.note = note;
+            newVibrato = vibrato.Clone();
+            oldVibrato = note.vibrato;
+        }
+        public override string ToString() {
+            return "Change vibrato";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato = newVibrato;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato = oldVibrato;
+            }
+        }
+    }
+
+    public class VibratoLengthCommand : VibratoCommand {
         readonly UNote note;
         readonly float newLength;
         readonly float oldLength;
@@ -175,7 +230,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoFadeInCommand : NoteCommand {
+    public class VibratoFadeInCommand : VibratoCommand {
         readonly UNote note;
         readonly float newFadeIn;
         readonly float oldFadeIn;
@@ -200,7 +255,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoFadeOutCommand : NoteCommand {
+    public class VibratoFadeOutCommand : VibratoCommand {
         readonly UNote note;
         readonly float newFadeOut;
         readonly float oldFadeOut;
@@ -224,7 +279,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoDepthCommand : NoteCommand {
+    public class VibratoDepthCommand : VibratoCommand {
         readonly UNote note;
         readonly float newDepth;
         readonly float oldDepth;
@@ -248,7 +303,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoPeriodCommand : NoteCommand {
+    public class VibratoPeriodCommand : VibratoCommand {
         readonly UNote note;
         readonly float newPeriod;
         readonly float oldPeriod;
@@ -272,7 +327,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoShiftCommand : NoteCommand {
+    public class VibratoShiftCommand : VibratoCommand {
         readonly UNote note;
         readonly float newShift;
         readonly float oldShift;
@@ -296,11 +351,65 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class VibratoDriftCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newDrift;
+        readonly float oldDrift;
+        public VibratoDriftCommand(UVoicePart part, UNote note, float drift) : base(part, note) {
+            this.note = note;
+            newDrift = drift;
+            oldDrift = note.vibrato.drift;
+        }
+        public override string ToString() {
+            return "Change vibrato drift";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.drift = newDrift;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.drift = oldDrift;
+            }
+        }
+    }
+
+    public class VibratoVolumeLinkCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newVolLink;
+        readonly float oldVolLink;
+        public VibratoVolumeLinkCommand(UVoicePart part, UNote note, float volLink) : base(part, note) {
+            this.note = note;
+            newVolLink = volLink;
+            oldVolLink = note.vibrato.volLink;
+        }
+        public override string ToString() {
+            return "Change vibrato volume link";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.volLink = newVolLink;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.volLink = oldVolLink;
+            }
+        }
+    }
+
+
     public class PhonemeOffsetCommand : NoteCommand {
         readonly UNote note;
         readonly int index;
         readonly int oldOffset;
         readonly int newOffset;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemeOffsetCommand(UVoicePart part, UNote note, int index, int offset) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -332,6 +441,11 @@ namespace OpenUtau.Core {
         readonly int index;
         readonly float oldDelta;
         readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemePreutterCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -355,6 +469,11 @@ namespace OpenUtau.Core {
         readonly int index;
         readonly float oldDelta;
         readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -371,5 +490,66 @@ namespace OpenUtau.Core {
             o.overlapDelta = oldDelta == 0 ? null : (float?)oldDelta;
         }
         public override string ToString() => "Set phoneme overlap";
+    }
+
+    public class ClearPhonemeTimingCommand : NoteCommand {
+        readonly UNote note;
+        readonly Tuple<int, int?, float?, float?>[] oldValues;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
+        public ClearPhonemeTimingCommand(UVoicePart part, UNote note) : base(part, note) {
+            this.note = note;
+            oldValues = note.phonemeOverrides
+                .Select(o => Tuple.Create(o.index, o.offset, o.preutterDelta, o.overlapDelta))
+                .ToArray();
+        }
+
+        public override void Execute() {
+            foreach (var o in note.phonemeOverrides) {
+                o.offset = null;
+                o.preutterDelta = null;
+                o.overlapDelta = null;
+            }
+        }
+        public override void Unexecute() {
+            foreach (var t in oldValues) {
+                var o = note.GetPhonemeOverride(t.Item1);
+                o.offset = t.Item2;
+                o.preutterDelta = t.Item3;
+                o.overlapDelta = t.Item4;
+            }
+        }
+        public override string ToString() => "Clear phoneme timing";
+    }
+
+    public class ChangePhonemeAliasCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly string oldAlias;
+        readonly string? newAlias;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+        };
+        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string? alias) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldAlias = o.phoneme;
+            newAlias = alias;
+        }
+
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
+        }
+        public override string ToString() => "Change phoneme alias";
     }
 }

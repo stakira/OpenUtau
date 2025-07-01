@@ -1,0 +1,24 @@
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "effects",
+    srcs = ["effects.cpp"],
+    hdrs = ["effects.h"],
+    deps = [
+        "@spline",
+    ],
+)
+
+cc_library(
+    name = "model",
+    srcs = ["model.cpp"],
+    hdrs = ["model.h"],
+    deps = [
+        "//worldline/common:vec_utils",
+        "//worldline/f0",
+        "//worldline/platinum",
+        "@world",
+    ],
+)

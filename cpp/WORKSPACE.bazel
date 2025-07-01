@@ -1,0 +1,55 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "libgvps",
+    build_file = "@//third_party:libgvps.BUILD",
+    integrity = "sha256-6sxK57GyukEr6KZZEg937jfejQPlq2z5mQ4JnLU1H3w=",
+    strip_prefix = "libgvps-2f1b4106d72f8f8138dc447bf0123820c0772cbd",
+    urls = ["https://github.com/Sleepwalking/libgvps/archive/2f1b4106d72f8f8138dc447bf0123820c0772cbd.zip"],
+)
+
+http_archive(
+    name = "libnpy",
+    build_file = "@//third_party:libnpy.BUILD",
+    integrity = "sha256-PJhkwb968IyI8gVkeKLG0lOWdGc7q5+bSgBCqEqFfxk=",
+    strip_prefix = "libnpy-1.0.1",
+    urls = ["https://github.com/llohse/libnpy/archive/refs/tags/v1.0.1.zip"],
+)
+
+http_archive(
+    name = "libpyin",
+    build_file = "@//third_party:libpyin.BUILD",
+    integrity = "sha256-BRCmignOqiKCAiodLoTp031z6T4OdNjSiVai03D2Ugo=",
+    patch_args = ["-p1"],
+    patches = ["@//third_party:libpyin.patch"],
+    strip_prefix = "libpyin-b38135390b335c3e8cea6ef35cf5093789b36dac",
+    urls = ["https://github.com/Sleepwalking/libpyin/archive/b38135390b335c3e8cea6ef35cf5093789b36dac.zip"],
+)
+
+http_archive(
+    name = "spline",
+    build_file = "@//third_party:spline.BUILD",
+    integrity = "sha256-DUK3fQ85jJrStykFh7YlxJw5ojN/bPqItqeTAgfZGjM=",
+    patch_args = ["-p1"],
+    patches = ["@//third_party:spline.patch"],
+    strip_prefix = "spline-5894beaf91e9adbfdbe5c6c9a1c60770e380e8e8",
+    urls = ["https://github.com/ttk592/spline/archive/5894beaf91e9adbfdbe5c6c9a1c60770e380e8e8.zip"],
+)
+
+http_archive(
+    name = "world",
+    build_file = "@//third_party:world.BUILD",
+    integrity = "sha256-IFTxKolh7TkbCJxAHDkPmD9+9+MfY+q8sVoTVWMAHJU=",
+    patch_args = ["-p1"],
+    patches = ["@//third_party:world.patch"],
+    strip_prefix = "World-f8dd5fb289db6a7f7f704497752bf32b258f9151",
+    urls = ["https://github.com/mmorise/World/archive/f8dd5fb289db6a7f7f704497752bf32b258f9151.zip"],
+)
+
+http_archive(
+    name = "miniaudio",
+    build_file = "@//third_party:miniaudio.BUILD",
+    sha256 = "cbde908871e2619115fd216c74235265348060fe7d340f980cd14342e88d7f72",
+    strip_prefix = "miniaudio-0.11.21",
+    urls = ["https://github.com/mackron/miniaudio/archive/refs/tags/0.11.21.zip"],
+)

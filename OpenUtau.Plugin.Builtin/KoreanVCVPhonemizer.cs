@@ -4,12 +4,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using static OpenUtau.Core.KoreanPhonemizerUtil;
 
 namespace OpenUtau.Plugin.Builtin
 {
-	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc")]
+	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "KO")]
 
-	public class KoreanVCVPhonemizer : Phonemizer
+	public class KoreanVCVPhonemizer : BaseKoreanPhonemizer
 	{
 		/// <summary>
 		/// Initial jamo as ordered in Unicode
@@ -24,10 +25,10 @@ namespace OpenUtau.Plugin.Builtin
 		// ㅏ ㅐ ㅑ ㅒ ㅓ ㅔ ㅕ ㅖ ㅗ ㅘ ㅙ ㅚ ㅛ ㅜ ㅝ ㅞ ㅟ ㅠ ㅡ ㅢ ㅣ
 
 		/// <summary>
-		/// Final jamo as ordered in Unicode
+		/// Final jamo as ordered in Unicode + vowel end breath sounds (inhale and exhale)
 		/// </summary>
-		static readonly string[] finals = { string.Empty, "k", "k", "k", "n", "n", "n", "t", "l", "l", "l", "l", "l", "l", "l", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t" };
-		// - ㄱ ㄲ ㄳ ㄴ ㄵ ㄶ ㄷ ㄹ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅁ ㅂ ㅄ ㅅ ㅆ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ
+		static readonly string[] finals = { string.Empty, "k", "k", "k", "n", "n", "n", "t", "l", "l", "l", "l", "l", "l", "l", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t", string.Empty, string.Empty, string.Empty, };
+		// - ㄱ ㄲ ㄳ ㄴ ㄵ ㄶ ㄷ ㄹ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅁ ㅂ ㅄ ㅅ ㅆ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ H B bre
 
 		/// <summary>
 		/// Sonorant batchim (i.e., extendable batchim sounds)
@@ -37,7 +38,15 @@ namespace OpenUtau.Plugin.Builtin
 		/// <summary>
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
-		static readonly string[] extras = { "f", "v", "th", "dh", "z", "kk", "pp", "tt" };
+		static readonly string[] extras = { "f", "v", "th", "dh", "z", "rr", "kk", "pp", "tt" };
+
+		/// <summary>
+		/// Apply Korean sandhi rules to Hangeul lyrics.
+		/// </summary>
+		public override void SetUp(Note[][] groups, UProject project, UTrack track) {
+			// variate lyrics 
+			RomanizeNotes(groups, false);
+		}
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.
@@ -121,17 +130,44 @@ namespace OpenUtau.Plugin.Builtin
 			Note note = notes[0];
 			string color = string.Empty;
 			int shift = 0;
+			int? alt;
+			int totalDuration = notes.Sum(n => n.duration);
+
+			string color1 = string.Empty;
+			int shift1 = 0;
+			int? alt1;
 
 			PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
 			color = attr.voiceColor;
 			shift = attr.toneShift;
+			alt = attr.alternate;
+
+			PhonemeAttributes attr1 = note.phonemeAttributes.FirstOrDefault(a => a.index == 1);
+			color1 = attr1.voiceColor;
+			shift1 = attr1.toneShift;
+			alt1 = attr1.alternate;
 
 			string[] currIMF;
 			string currPhoneme;
 			string[] prevIMF;
 
-			// Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
-			if (note.lyric == "R" || note.lyric == "-")
+			var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
+			if (romaji2Korean != null) {
+				notes = romaji2Korean.KoreanLyricNotes;
+
+				note = notes[0];
+			}
+
+			// Check if notes are romaji
+			var currRomaji = IsKoreanRomaji(note.lyric);
+			var prevRomaji = IsKoreanRomaji(prevNeighbour?.lyric);
+
+			// Improve romaji lyric parsing, to mix with hangeul, vowel endings, and phonetic hint
+			var currRomLyric = TryParseKoreanRomaji(note.lyric);
+			var prevRomLyric = TryParseKoreanRomaji(prevNeighbour?.lyric);
+
+			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
+			if (note.lyric == "R" || note.lyric == "R2" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
 			{
 				currPhoneme = note.lyric;
 
@@ -156,17 +192,27 @@ namespace OpenUtau.Plugin.Builtin
 							byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
 							int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
-							else return new Result {
-								phonemes = new Phoneme[] {
+							else if (prevRomaji && prevRomLyric != null) {
+								prevIMF = GetIMF(prevRomLyric);
+							} else
+								return new Result {
+									phonemes = new Phoneme[] {
 									new Phoneme { phoneme = currPhoneme }
 								}
-							};
+								};
 						} else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
 
 						if (string.IsNullOrEmpty(prevIMF[2])) currPhoneme = $"{((prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oi") ? prevIMF[1].Remove(0, 1) : ((prevIMF[1] == "eui" || prevIMF[1] == "ui") ? "i" : prevIMF[1]))} {currPhoneme}";
 						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, color, out _) ? prevIMF[2].ToUpper() : prevIMF[2])} {currPhoneme}";
 					}
-					
+
+					// Map alias (apply shift + color)
+					if (singer.TryGetMappedOto(currPhoneme + alt, note.tone + shift, color, out var otoAlt)) {
+						currPhoneme = otoAlt.Alias;
+					} else if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto)) {
+						currPhoneme = oto.Alias;
+					}
+
 					return new Result {
 						phonemes = new Phoneme[] {
 							new Phoneme { phoneme = currPhoneme }
@@ -176,19 +222,19 @@ namespace OpenUtau.Plugin.Builtin
 			}
 
 			// Get IMF of current note if valid, otherwise return the lyric as is
-			if (string.IsNullOrEmpty(note.phoneticHint))
-			{
+			if (string.IsNullOrEmpty(note.phoneticHint)) {
 				byte[] bytes = Encoding.Unicode.GetBytes($"{note.lyric[0]}");
 				int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 				if (note.lyric.Length == 1 && numval >= 44032 && numval <= 55215) currIMF = GetIMF(note.lyric);
-				else return new Result
-				{
-					phonemes = new Phoneme[] {
+				else if (currRomaji && currRomLyric != null) {
+					currIMF = GetIMF(currRomLyric);
+				} else
+					return new Result {
+						phonemes = new Phoneme[] {
 						new Phoneme { phoneme = note.lyric }
 					}
-				};
-			}
-			else currIMF = GetIMFFromHint(note.phoneticHint);
+					};
+			} else currIMF = GetIMFFromHint(note.phoneticHint);
 
 			// Convert current note to phoneme
 			currPhoneme = $"{currIMF[0]}{currIMF[1]}";
@@ -203,10 +249,10 @@ namespace OpenUtau.Plugin.Builtin
 			}
 
 			// Adjust current phoneme based on previous neighbor
-			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
+			if (prevNeighbour != null && prevNeighbour?.lyric != "bre" && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
 			else
 			{
-				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
+				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "R2" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B" || prevNeighbour?.lyric == "bre") currPhoneme = $"- {currPhoneme}";
 				else
 				{
 					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))
@@ -214,8 +260,9 @@ namespace OpenUtau.Plugin.Builtin
 						byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
 						int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 						if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
-						else return new Result
-						{
+						else if (prevRomaji && prevRomLyric != null) {
+							prevIMF = GetIMF(prevRomLyric);
+						} else return new Result {
 							phonemes = new Phoneme[] {
 								new Phoneme { phoneme = note.lyric }
 							}
@@ -248,6 +295,13 @@ namespace OpenUtau.Plugin.Builtin
 			// Return Result now if note has no batchim
 			if (string.IsNullOrEmpty(currIMF[2]))
 			{
+				// Map alias (apply shift + color)
+				if (singer.TryGetMappedOto(currPhoneme + alt, note.tone + shift, color, out var otoAlt)) {
+					currPhoneme = otoAlt.Alias;
+				} else if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto)) {
+					currPhoneme = oto.Alias;
+				}
+
 				return new Result
 				{
 					phonemes = new Phoneme[] {
@@ -259,24 +313,44 @@ namespace OpenUtau.Plugin.Builtin
 			// Adjust Result if note has batchim
 			else
 			{
-				string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || currIMF[1] == "ui") ? currIMF[1].Remove(0, 1) : currIMF[1];
+				if (currIMF[1] == "eui") {
+                    currIMF[1] = "ui";
+                }
+					
+                string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || (currIMF[1] == "ui")) ? currIMF[1].Remove(0, 1) : currIMF[1];
 
-				if (nextNeighbour == null)
+                if (nextNeighbour == null)
 				{
 					if (string.IsNullOrEmpty(currIMF[2])) secondPhoneme += " R";
 					else
 					{
-						if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
+						if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift1, color1, out _)) secondPhoneme += $" {currIMF[2]}";
 						else secondPhoneme += $" {currIMF[2].ToUpper()}";
 					}
 				}
 				else if (!string.IsNullOrEmpty(currIMF[2]))
 				{
-					if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
+					if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift1, color1, out _)) secondPhoneme += $" {currIMF[2]}";
 					else secondPhoneme += $" {currIMF[2].ToUpper()}";
 				}
 
-				int secondPosition = Math.Max(note.duration - (nextNeighbour == null ? 120 : 180), note.duration / 2);
+				int noteLength = 0;
+				for (int i = 0; i < notes.Length; i++) noteLength += notes[i].duration;
+
+				int secondPosition = Math.Max(noteLength - (nextNeighbour == null ? 120 : 180), noteLength / 2);
+
+				// Map alias (apply shift + color)
+				if (singer.TryGetMappedOto(currPhoneme + alt, note.tone + shift, color, out var otoAlt)) {
+					currPhoneme = otoAlt.Alias;
+				} else if (singer.TryGetMappedOto(currPhoneme, note.tone + shift, color, out var oto)) {
+					currPhoneme = oto.Alias;
+				}
+
+				if (singer.TryGetMappedOto(secondPhoneme + alt1, note.tone + shift1, color1, out var otoAlt1)) {
+					secondPhoneme = otoAlt1.Alias;
+				} else if (singer.TryGetMappedOto(secondPhoneme, note.tone + shift1, color1, out var oto)) {
+					secondPhoneme = oto.Alias;
+				}
 
 				// Return Result
 				return new Result

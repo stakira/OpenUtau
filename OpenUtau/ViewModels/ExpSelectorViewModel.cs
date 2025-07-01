@@ -15,6 +15,14 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int SelectedIndex { get; set; }
         [Reactive] public ExpDisMode DisplayMode { get; set; }
         [Reactive] public UExpressionDescriptor? Descriptor { get; set; }
+        public string Abbr {
+            get{
+                if (Descriptor == null) {
+                    return "";
+                }
+                return Descriptor.abbr;
+            }
+        }
         public ObservableCollection<UExpressionDescriptor> Descriptors => descriptors;
         public string Header => header.Value;
         [Reactive] public IBrush TagBrush { get; set; }
@@ -34,9 +42,7 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(SelectionChanged);
             this.WhenAnyValue(x => x.Index, x => x.Descriptors)
                 .Subscribe(tuple => {
-                    if (tuple.Item2 != null && tuple.Item2.Count > tuple.Item1) {
-                        Descriptor = tuple.Item2[tuple.Item1];
-                    }
+                    SetExp(DocManager.Inst.Project.expSelectors[tuple.Item1]);
                 });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => RefreshBrushes());
@@ -45,9 +51,26 @@ namespace OpenUtau.App.ViewModels {
             OnListChange();
         }
 
-        public void OnSelected() {
+        public bool SetExp(string abbr) {
+            if(Descriptors.Any(d => d.abbr == abbr)) {
+                Descriptor = Descriptors.First(d => d.abbr == abbr);
+                return true;
+            } else {
+                if (Descriptors != null && Descriptors.Count > Index) {
+                    Descriptor = Descriptors[Index];
+                }
+                return false;
+            }
+        }
+
+        public void OnSelected(bool store) {
             if (DisplayMode != ExpDisMode.Visible && Descriptor != null) {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Descriptor.abbr, Index, true));
+            }
+            if(store) {
+                var project = DocManager.Inst.Project;
+                project.expSecondary = project.expPrimary;
+                project.expPrimary = Index;
             }
         }
 
@@ -55,11 +78,13 @@ namespace OpenUtau.App.ViewModels {
             if (descriptor != null) {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(descriptor.abbr, Index, DisplayMode != ExpDisMode.Visible));
             }
+            if (!string.IsNullOrEmpty(Abbr)) {
+                DocManager.Inst.Project.expSelectors[Index] = Abbr;
+            }
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is ChangeExpressionListNotification ||
-                cmd is LoadProjectNotification ||
+            if (cmd is LoadProjectNotification ||
                 cmd is LoadPartNotification ||
                 cmd is ConfigureExpressionsCommand) {
                 OnListChange();

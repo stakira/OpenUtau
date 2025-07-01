@@ -4,12 +4,13 @@ namespace OpenUtau.App {
     static class ViewConstants {
         public const double TickWidthMax = 256.0 / 480.0;
         public const double TickWidthMin = 4.0 / 480.0;
-        public const double TickWidthDefault = 16.0 / 480.0;
+        public const double TickWidthDefault = 24.0 / 480.0;
         public const double MinTicklineWidth = 12.0;
 
-        public const double TrackHeightMax = 120;
-        public const double TrackHeightMin = 40;
-        public const double TrackHeightDefault = 60;
+        public const double TrackHeightMax = 144;
+        public const double TrackHeightMin = 44;
+        public const double TrackHeightDefault = 104;
+        public const double TrackHeightDelta = 20;
 
         public const double PianoRollTickWidthMax = 640.0 / 480.0;
         public const double PianoRollTickWidthMin = 4.0 / 480.0;
@@ -49,7 +50,5 @@ namespace OpenUtau.App {
         public const int ExpressionHiddenZIndex = 0;
         public const int ExpressionVisibleZIndex = 200;
         public const int ExpressionShadowZIndex = 100;
-
-        public const double PlayPosMarkerMargin = 0.92;
     }
 }

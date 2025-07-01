@@ -12,15 +12,15 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.App.Views {
     class PartEditState {
         public virtual MouseButton MouseButton => MouseButton.Left;
-        public readonly Canvas canvas;
+        public readonly Control control;
         public readonly MainWindowViewModel vm;
         public Point startPoint;
-        public PartEditState(Canvas canvas, MainWindowViewModel vm) {
-            this.canvas = canvas;
+        public PartEditState(Control control, MainWindowViewModel vm) {
+            this.control = control;
             this.vm = vm;
         }
         public virtual void Begin(IPointer pointer, Point point) {
-            pointer.Capture(canvas);
+            pointer.Capture(control);
             startPoint = point;
             DocManager.Inst.StartUndoGroup();
         }
@@ -37,15 +37,20 @@ namespace OpenUtau.App.Views {
     }
 
     class PartSelectionEditState : PartEditState {
+        private int startTick;
+        private int startTrack;
+
         public readonly Rectangle selectionBox;
-        public PartSelectionEditState(Canvas canvas, MainWindowViewModel vm, Rectangle selectionBox) : base(canvas, vm) {
+        public PartSelectionEditState(Control control, MainWindowViewModel vm, Rectangle selectionBox) : base(control, vm) {
             this.selectionBox = selectionBox;
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
             selectionBox.IsVisible = true;
+            var tracksVm = vm.TracksViewModel;
+            startTick = tracksVm.PointToTick(point);
+            startTrack = tracksVm.PointToTrackNo(point);
         }
-
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
             selectionBox.IsVisible = false;
@@ -54,18 +59,17 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var tracksVm = vm.TracksViewModel;
-            int x0 = tracksVm.PointToSnappedTick(point);
-            int x1 = tracksVm.PointToSnappedTick(startPoint);
-            int y0 = tracksVm.PointToTrackNo(point);
-            int y1 = tracksVm.PointToTrackNo(startPoint);
-            if (x0 > x1) {
-                Swap(ref x0, ref x1);
-            }
-            if (y0 > y1) {
-                Swap(ref y0, ref y1);
-            }
-            x1 += tracksVm.SnapUnit;
-            y1++;
+            int tick = tracksVm.PointToTick(point);
+            int track = tracksVm.PointToTrackNo(point);
+
+            int minTick = Math.Min(tick, startTick);
+            int maxTick = Math.Max(tick, startTick);
+            tracksVm.TickToLineTick(minTick, out int x0, out int _);
+            tracksVm.TickToLineTick(maxTick, out int _, out int x1);
+
+            int y0 = Math.Min(track, startTrack);
+            int y1 = Math.Max(track, startTrack) + 1;
+
             var leftTop = tracksVm.TickTrackToPoint(x0, y0);
             var Size = tracksVm.TickTrackToSize(x1 - x0, y1 - y0);
             Canvas.SetLeft(selectionBox, leftTop.X);
@@ -80,12 +84,13 @@ namespace OpenUtau.App.Views {
         public readonly UPart part;
         public readonly bool isVoice;
         private double xOffset;
-        public PartMoveEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
+        public PartMoveEditState(Control control, MainWindowViewModel vm, UPart part) : base(control, vm) {
             this.part = part;
             isVoice = part is UVoicePart;
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
                 tracksVm.DeselectParts();
+                tracksVm.SelectPart(part);
             }
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -94,6 +99,10 @@ namespace OpenUtau.App.Views {
             xOffset = point.X - tracksVm.TickTrackToPoint(part.position, 0).X;
         }
         public override void Update(IPointer pointer, Point point) {
+            var delta = point - startPoint;
+            if (Math.Abs(delta.X) + Math.Abs(delta.Y) < 4) {
+                return;
+            }
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
 
@@ -109,9 +118,14 @@ namespace OpenUtau.App.Views {
             }
             deltaTrack = Math.Clamp(deltaTrack, minDeltaTrack, maxDeltaTrack);
 
-            int deltaTick = isVoice
-                ? tracksVm.PointToSnappedTick(point - new Point(xOffset, 0)) - part.position
-                : tracksVm.PointToTick(point - new Point(xOffset, 0)) - part.position;
+            int newPos = 0;
+            if (!isVoice) {
+                newPos = tracksVm.PointToTick(point - new Point(xOffset, 0));
+            } else {
+                tracksVm.PointToLineTick(point - new Point(xOffset, 0), out int left, out int right);
+                newPos = left;
+            }
+            int deltaTick = newPos - part.position;
             int minDeltaTick;
             if (tracksVm.SelectedParts.Count > 0) {
                 minDeltaTick = -tracksVm.SelectedParts.Select(p => p.position).Min();
@@ -137,24 +151,27 @@ namespace OpenUtau.App.Views {
 
     class PartResizeEditState : PartEditState {
         public readonly UPart part;
-        public PartResizeEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
+        public readonly bool fromStart;
+        public PartResizeEditState(Control control, MainWindowViewModel vm, UPart part, bool fromStart = false) : base(control, vm) {
             this.part = part;
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
                 tracksVm.DeselectParts();
             }
+            this.fromStart = fromStart;
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
-            int deltaDuration = tracksVm.PointToSnappedTick(point) + tracksVm.SnapUnit - part.EndTick;
+            tracksVm.PointToLineTick(point, out int left, out int right);
+
+            int deltaDuration = this.fromStart
+                ? part.position - left
+                : right - part.End;
             if (deltaDuration < 0) {
-                int maxDurReduction = part.Duration - part.GetMinDurTick(project);
+                int maxDurReduction = fromStart ? part.GetMaxPosiTick(project) - part.position : part.Duration - part.GetMinDurTick(project);
                 if (tracksVm.SelectedParts.Count > 0) {
-                    maxDurReduction = tracksVm.SelectedParts.Min(p => p.Duration - p.GetMinDurTick(project));
-                }
-                if (tracksVm.SnapUnit > 0) {
-                    maxDurReduction = (int)Math.Floor((double)maxDurReduction / tracksVm.SnapUnit) * tracksVm.SnapUnit;
+                    maxDurReduction = tracksVm.SelectedParts.Min(p => fromStart ? p.GetMaxPosiTick(project) - p.position : p.Duration - p.GetMinDurTick(project));
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxDurReduction);
             }
@@ -162,21 +179,21 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (tracksVm.SelectedParts.Count == 0) {
-                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, part.Duration + deltaDuration));
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, deltaDuration, fromStart));
                 return;
             }
             foreach (UPart part in tracksVm.SelectedParts) {
-                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, part.Duration + deltaDuration));
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, deltaDuration, fromStart));
             }
         }
     }
 
     class PartEraseEditState : PartEditState {
         public override MouseButton MouseButton => MouseButton.Right;
-        public PartEraseEditState(Canvas canvas, MainWindowViewModel vm) : base(canvas, vm) { }
+        public PartEraseEditState(Control control, MainWindowViewModel vm) : base(control, vm) { }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
-            var control = canvas.InputHitTest(point);
+            var control = base.control.InputHitTest(point);
             if (control is PartControl partControl) {
                 DocManager.Inst.ExecuteCmd(new RemovePartCommand(project, partControl.part));
             }
@@ -185,9 +202,9 @@ namespace OpenUtau.App.Views {
 
     class PartPanningState : PartEditState {
         public override MouseButton MouseButton => MouseButton.Middle;
-        public PartPanningState(Canvas canvas, MainWindowViewModel vm) : base(canvas, vm) { }
+        public PartPanningState(Control control, MainWindowViewModel vm) : base(control, vm) { }
         public override void Begin(IPointer pointer, Point point) {
-            pointer.Capture(canvas);
+            pointer.Capture(control);
             startPoint = point;
         }
         public override void End(IPointer pointer, Point point) {

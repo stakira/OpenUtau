@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using Serilog;
 using System.Threading.Tasks;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -60,9 +61,17 @@ namespace OpenUtau.Plugin.Builtin {
             /// </summary>
             public int tone;
             /// <summary>
+            /// Other phoneme attributes for VC and CC
+            /// </summary>
+            public PhonemeAttributes[] attr;
+            /// <summary>
             /// tone for base "vowel" phoneme
             /// </summary>
             public int vowelTone;
+            /// <summary>
+            /// Other phoneme attributes for base "vowel" phoneme
+            /// </summary>
+            public PhonemeAttributes[] vowelAttr;
 
             /// <summary>
             /// 0 if no consonants are taken from previous word;
@@ -119,6 +128,10 @@ namespace OpenUtau.Plugin.Builtin {
             /// the tone from last syllable, for all ending phonemes
             /// </summary>
             public int tone;
+            /// <summary>
+            /// Other phoneme attributes from last syllable
+            /// </summary>
+            public PhonemeAttributes[] attr;
 
             // helpers
             public bool IsEndingV => cc.Length == 0;
@@ -148,21 +161,51 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<Phoneme>();
             foreach (var syllable in syllables) {
-                phonemes.AddRange(MakePhonemes(ProcessSyllable(syllable), mainNote.phonemeAttributes, phonemes.Count, syllable.duration, syllable.position,
-                    syllable.tone, syllable.vowelTone, false));
+                phonemes.AddRange(MakePhonemes(ProcessSyllable(syllable), syllable.duration, syllable.position, false));
             }
             if (!nextNeighbour.HasValue) {
                 var tryEnding = MakeEnding(notes);
                 if (tryEnding.HasValue) {
                     var ending = tryEnding.Value;
-                    phonemes.AddRange(MakePhonemes(ProcessEnding(ending), mainNote.phonemeAttributes, phonemes.Count, ending.duration, ending.position,
-                        ending.tone, ending.tone, true));
+                    phonemes.AddRange(MakePhonemes(ProcessEnding(ending), ending.duration, ending.position, true));
                 }
             }
 
             return new Result() {
-                phonemes = phonemes.ToArray()
+                phonemes = AssignAllAffixes(phonemes, notes, prevNeighbours)
             };
+        }
+
+        protected virtual Phoneme[] AssignAllAffixes(List<Phoneme> phonemes, Note[] notes, Note[] prevs) {
+            int noteIndex = 0;
+            for (int i = 0; i < phonemes.Count; i++) {
+                var attr = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == i) ?? default;
+                string alt = attr.alternate?.ToString() ?? string.Empty;
+                string color = attr.voiceColor;
+                int toneShift = attr.toneShift;
+                var phoneme = phonemes[i];
+                while (noteIndex < notes.Length - 1 && notes[noteIndex].position - notes[0].position < phoneme.position) {
+                    noteIndex++;
+                }
+                var noteStartPosition = notes[noteIndex].position - notes[0].position;
+                int tone = (prevs != null && prevs.Length > 0 && phoneme.position < noteStartPosition) ?
+                    prevs.Last().tone : (noteIndex > 0 && phoneme.position < noteStartPosition) ?
+                    notes[noteIndex - 1].tone : notes[noteIndex].tone;
+
+                var validatedAlias = phoneme.phoneme;
+                if (validatedAlias != null) {
+                    validatedAlias = ValidateAliasIfNeeded(validatedAlias, tone + toneShift);
+                    validatedAlias = MapPhoneme(validatedAlias, tone + toneShift, color, alt, singer);
+
+                    phoneme.phoneme = validatedAlias;
+                } else {
+                    phoneme.phoneme = null;
+                    phoneme.position = 0;
+                }
+
+                phonemes[i] = phoneme;
+            }
+            return phonemes.ToArray();
         }
 
         private Result HandleError() {
@@ -186,11 +229,11 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected USinger singer;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
-        protected G2pDictionary dictionary => dictionaries[GetType()];
+        protected IG2p dictionary => dictionaries[GetType()];
         protected bool isDictionaryLoading => dictionaries[GetType()] == null;
         protected double TransitionBasicLengthMs => 100;
 
-        private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
+        private static Dictionary<Type, IG2p> dictionaries = new Dictionary<Type, IG2p>();
         private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
         private readonly string[] wordSeparators = new[] { " ", "_" };
@@ -256,12 +299,13 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!string.IsNullOrEmpty(note.phoneticHint)) {
                     return getSymbolsRaw(note.phoneticHint);
                 }
+
                 var result = new List<string>();
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
                         Log.Warning($"Subword '{subword}' from word '{note.lyric}' can't be found in the dictionary");
-                        subResult = HandleWordNotFound(subword);
+                        subResult = HandleWordNotFound(note);
                         if (subResult == null) {
                             return null;
                         }
@@ -312,9 +356,11 @@ namespace OpenUtau.Plugin.Builtin {
                     cc = beginningCc.ToArray(),
                     v = symbols[firstVowelId],
                     tone = prevEndingValue.tone,
+                    attr = prevEndingValue.attr,
                     duration = prevEndingValue.duration,
                     position = 0,
                     vowelTone = notes[0].tone,
+                    vowelAttr = notes[0].phonemeAttributes,
                     prevWordConsonantsCount = prevEndingValue.cc.Count()
                 };
             } else {
@@ -324,9 +370,11 @@ namespace OpenUtau.Plugin.Builtin {
                     cc = symbols.Take(firstVowelId).ToArray(),
                     v = symbols[firstVowelId],
                     tone = notes[0].tone,
+                    attr = notes[0].phonemeAttributes,
                     duration = -1,
                     position = 0,
-                    vowelTone = notes[0].tone
+                    vowelTone = notes[0].tone,
+                    vowelAttr = notes[0].phonemeAttributes
                 };
             }
 
@@ -345,9 +393,11 @@ namespace OpenUtau.Plugin.Builtin {
                         cc = ccs.ToArray(),
                         v = symbols[lastSymbolI],
                         tone = notes[noteI - 1].tone,
+                        attr = notes[noteI - 1].phonemeAttributes,
                         duration = notes[noteI - 1].duration,
                         position = position,
                         vowelTone = notes[noteI].tone,
+                        vowelAttr = notes[noteI].phonemeAttributes,
                         canAliasBeExtended = true // for all not-first notes is allowed
                     };
                     ccs = new List<string>();
@@ -364,7 +414,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param inputNotes="notes"></param>
         /// <returns></returns>
         protected Ending? MakeEnding(Note[] inputNotes) {
-            if (inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+            if (inputNotes == null || inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return null;
             }
 
@@ -377,6 +427,7 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = symbols[vowelIds.Last()],
                 cc = symbols.Skip(vowelIds.Last() + 1).ToArray(),
                 tone = notes.Last().tone,
+                attr = notes.Last().phonemeAttributes,
                 duration = notes.Skip(vowelIds.Length - 1).Sum(n => n.duration),
                 position = notes.Sum(n => n.duration)
             };
@@ -426,6 +477,7 @@ namespace OpenUtau.Plugin.Builtin {
                 newNotes.Add(new Note() {
                     position = position,
                     duration = durationFinal,
+                    tone = lastNote.tone,
                     phonemeAttributes = lastNote.phonemeAttributes
                 });
                 position += durationFinal;
@@ -439,8 +491,17 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        protected virtual string[] HandleWordNotFound(string word) {
-            error = "word not found";
+        protected virtual string[] HandleWordNotFound(Note note) {
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            string alt = attr.alternate?.ToString() ?? string.Empty;
+            string color = attr.voiceColor;
+            int toneShift = attr.toneShift;
+            var mpdlyric = MapPhoneme(note.lyric, note.tone + toneShift, color, alt, singer);
+            if(HasOto(mpdlyric, note.tone)){
+                error = mpdlyric;
+            }else{
+                error = "word not found";
+            }
             return null;
         }
 
@@ -481,14 +542,6 @@ namespace OpenUtau.Plugin.Builtin {
             return GetTransitionBasicLengthMsByConstant();
         }
 
-        protected double GetTransitionBasicLengthMsByOto(string alias) {
-            if (alias != null && alias.Length > 0 && singer.Otos.TryGetValue(alias, out var oto)) {
-                return oto.Preutter * GetTempoNoteLengthFactor();
-            } else {
-                return GetTransitionBasicLengthMsByConstant();
-            }
-        }
-
         protected double GetTransitionBasicLengthMsByConstant() {
             return TransitionBasicLengthMs * GetTempoNoteLengthFactor();
         }
@@ -501,8 +554,22 @@ namespace OpenUtau.Plugin.Builtin {
             return (300 - Math.Clamp(bpm, 90, 300)) / (300 - 90) / 3 + 0.33;
         }
 
-        protected virtual string ReadDictionary(string filename) {
-            return File.ReadAllText(filename);
+        protected virtual IG2p LoadBaseDictionary() {
+            var dictionaryName = GetDictionaryName();
+            var filename = Path.Combine(DictionariesPath, dictionaryName);
+            var dictionaryText = File.ReadAllText(filename);
+            var builder = G2pDictionary.NewBuilder();
+            var vowels = GetVowels();
+            foreach (var vowel in vowels) {
+                builder.AddSymbol(vowel, true);
+            }
+            var consonants = GetConsonants();
+            foreach (var consonant in consonants) {
+                builder.AddSymbol(consonant, false);
+            }
+            builder.AddEntry("a", new string[] { "a" });
+            ParseDictionary(dictionaryText, builder);
+            return builder.Build();
         }
 
         /// <summary>
@@ -552,7 +619,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="tone"></param>
         /// <returns></returns>
         protected bool HasOto(string alias, int tone) {
-            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
+            return singer.TryGetMappedOto(alias, tone, out _);
         }
 
         /// <summary>
@@ -578,8 +645,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="syllable"></param>
         /// <returns></returns>
         protected bool CanMakeAliasExtension(Syllable syllable) {
-            return syllable.canAliasBeExtended && syllable.prevV == syllable.v && syllable.cc.Length == 0
-                && AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone);
+            return syllable.canAliasBeExtended && syllable.prevV == syllable.v && syllable.cc.Length == 0;
         }
 
         /// <summary>
@@ -616,33 +682,41 @@ namespace OpenUtau.Plugin.Builtin {
             return MakeSimpleResult(note.lyric.Substring(1));
         }
 
-        private void ReadDictionaryAndInit() {
+        protected void ReadDictionaryAndInit() {
             var dictionaryName = GetDictionaryName();
-            if (dictionaryName == null)
+            if (dictionaryName == null) {
                 return;
-            var filename = Path.Combine("Dictionaries", dictionaryName);
+            }
             dictionaries[GetType()] = null;
+            if (Testing) {
+                ReadDictionary(dictionaryName);
+                Init();
+                return;
+            }
             OnAsyncInitStarted();
             Task.Run(() => {
-                try {
-                    var dictionaryText = ReadDictionary(filename);
-                    var builder = G2pDictionary.NewBuilder();
-                    var vowels = GetVowels();
-                    foreach (var vowel in vowels) {
-                        builder.AddSymbol(vowel, true);
-                    }
-                    var consonants = GetConsonants();
-                    foreach (var consonant in consonants) {
-                        builder.AddSymbol(consonant, false);
-                    }
-                    builder.AddEntry("a", new string[] { "a" });
-                    ParseDictionary(dictionaryText, builder);
-                    var dict = builder.Build();
-                    dictionaries[GetType()] = dict;
-                } catch (Exception ex) {
-                    Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
+                ReadDictionary(dictionaryName);
+                Init();
+                OnAsyncInitFinished();
+            });
+        }
+
+        private void ReadDictionary(string dictionaryName) {
+            try {
+                var phonemeSymbols = new Dictionary<string, bool>();
+                foreach (var vowel in GetVowels()) {
+                    phonemeSymbols.Add(vowel, true);
                 }
-            }).ContinueWith((task) => { Init(); OnAsyncInitFinished(); });
+                foreach (var consonant in GetConsonants()) {
+                    phonemeSymbols.Add(consonant, false);
+                }
+                dictionaries[GetType()] = new G2pRemapper(
+                    LoadBaseDictionary(),
+                    phonemeSymbols,
+                    GetDictionaryPhonemesReplacement());
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
+            }
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {
@@ -679,20 +753,14 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, PhonemeAttributes[] phonemeAttributes, int phonemesOffset,
-            int containerLength, int position, int tone, int lastTone, bool isEnding) {
+        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, bool isEnding) {
 
             var phonemes = new Phoneme[phonemeSymbols.Count];
             for (var i = 0; i < phonemeSymbols.Count; i++) {
                 var phonemeI = phonemeSymbols.Count - i - 1;
-                var attr = phonemeAttributes?.FirstOrDefault(attr => attr.index == phonemesOffset + phonemeI) ?? default;
-                var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
 
                 var validatedAlias = phonemeSymbols[phonemeI];
                 if (validatedAlias != null) {
-                    validatedAlias = ValidateAlias(validatedAlias);
-                    validatedAlias = MapPhoneme(validatedAlias, currentTone + attr.toneShift, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
-
                     phonemes[phonemeI].phoneme = validatedAlias;
                     var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme));
                     if (i == 0) {
@@ -707,11 +775,17 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     phonemes[phonemeI].phoneme = null;
                     phonemes[phonemeI].position = 0;
-                    phonemesOffset -= 1;
                 }
             }
 
             return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+        }
+
+        private string ValidateAliasIfNeeded(string alias, int tone) {
+            if (HasOto(alias, tone)) {
+                return alias;
+            }
+            return ValidateAlias(alias);
         }
 
         private Phoneme[] ScalePhonemes(Phoneme[] phonemes, int startPosition, int phonemesCount, int containerLengthTick = -1) {

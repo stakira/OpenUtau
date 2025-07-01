@@ -1,0 +1,58 @@
+﻿text_file_encoding: shift_jis
+portrait_opacity: 0.67000001668930054
+subbanks:
+- color: ''
+  prefix: ''
+  suffix: _B4
+  tone_ranges:
+  - A#4-B7
+- color: ''
+  prefix: ''
+  suffix: _F4
+  tone_ranges:
+  - E4-A4
+- color: ''
+  prefix: ''
+  suffix: _C4
+  tone_ranges:
+  - B3-D#4
+- color: ''
+  prefix: ''
+  suffix: _A3
+  tone_ranges:
+  - C1-A#3
+- color: 弱
+  prefix: ''
+  suffix: _弱B4
+  tone_ranges:
+  - A#4-B7
+- color: 弱
+  prefix: ''
+  suffix: _弱E4
+  tone_ranges:
+  - E4-A4
+- color: 弱
+  prefix: ''
+  suffix: _弱C4
+  tone_ranges:
+  - C4-D#4
+- color: 弱
+  prefix: ''
+  suffix: _弱A3
+  tone_ranges:
+  - C1-B3
+- color: 強
+  prefix: ''
+  suffix: _強B4
+  tone_ranges:
+  - A#4-B7
+- color: 強
+  prefix: ''
+  suffix: _強F4
+  tone_ranges:
+  - E4-A4
+- color: 強
+  prefix: ''
+  suffix: _強B3
+  tone_ranges:
+  - C1-D#4

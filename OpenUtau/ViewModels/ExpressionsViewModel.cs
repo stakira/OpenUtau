@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
@@ -11,8 +12,6 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder : ReactiveObject {
-        private static readonly string[] required = { "vel", "vol", "atk", "dec", "eng", "clr" };
-
         [Reactive] public string Name { get; set; }
         [Reactive] public string Abbr { get; set; }
         [Reactive] public UExpressionType ExpressionType { get; set; }
@@ -25,11 +24,13 @@ namespace OpenUtau.App.ViewModels {
 
         public bool IsCustom => isCustom.Value;
         public bool IsNumerical => isNumerical.Value;
+        public bool ShowNumbers => showNumbers.Value;
         public bool IsOptions => isOptions.Value;
         public int SelectedType => selectedType.Value;
 
         private ObservableAsPropertyHelper<bool> isCustom;
         private ObservableAsPropertyHelper<bool> isNumerical;
+        private ObservableAsPropertyHelper<bool> showNumbers;
         private ObservableAsPropertyHelper<bool> isOptions;
         private ObservableAsPropertyHelper<int> selectedType;
 
@@ -54,11 +55,14 @@ namespace OpenUtau.App.ViewModels {
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !required.Contains(abbr))
+                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Numerical || type == UExpressionType.Curve)
+                .ToProperty(this, x => x.ShowNumbers, out showNumbers);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Options)
                 .ToProperty(this, x => x.IsOptions, out isOptions);
@@ -67,33 +71,39 @@ namespace OpenUtau.App.ViewModels {
                 .ToProperty(this, x => x.SelectedType, out selectedType);
         }
 
-        public string? Validate() {
+        public string[]? Validate() {
             if (string.IsNullOrWhiteSpace(Name)) {
-                return "Name must be set.";
+                return new string[] { "Name must be set.", "<translate:errors.expression.name>" };
             }
             if (string.IsNullOrWhiteSpace(Abbr)) {
-                return "Abbreviation must be set.";
+                return new string[] { "Abbreviation must be set.", "<translate:errors.expression.abbrset>" };
             }
             if (ExpressionType == UExpressionType.Numerical) {
                 if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
-                    return "Abbreviation must be between 1 and 4 characters long.";
+                    return new string[] { "Abbreviation must be between 1 and 4 characters long.", "<translate:errors.expression.abbrlong>" };
                 }
                 if (Min >= Max) {
-                    return "Min must be smaller than max.";
+                    return new string[] { "Min must be smaller than max.", "<translate:errors.expression.min>" };
                 }
                 if (DefaultValue < Min || DefaultValue > Max) {
-                    return "Default value must be between min and max.";
+                    return new string[] { "Default value must be between min and max.", "<translate:errors.expression.default>" };
                 }
             }
             return null;
         }
 
         public UExpressionDescriptor Build() {
-            return ExpressionType == UExpressionType.Numerical
-            ? new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag)
-            : new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+            switch (ExpressionType) {
+                case UExpressionType.Numerical:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
+                case UExpressionType.Options:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+                case UExpressionType.Curve:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue) {
+                        type = UExpressionType.Curve,
+                    };
+            }
+            throw new Exception("Unexpected expression type");
         }
 
         public override string ToString() => Name;
@@ -108,12 +118,16 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref expression, value);
         }
 
+        public ObservableCollection<ExpressionBuilder>? SelectExpressions => selectexpressions;
+
         private ReadOnlyObservableCollection<ExpressionBuilder> expressions;
         private ExpressionBuilder? expression;
+        private ObservableCollection<ExpressionBuilder>? selectexpressions;
 
         private ObservableCollectionExtended<ExpressionBuilder> expressionsSource;
 
         public ExpressionsViewModel() {
+            selectexpressions = new ObservableCollection<ExpressionBuilder>();
             expressionsSource = new ObservableCollectionExtended<ExpressionBuilder>();
             expressionsSource.ToObservableChangeSet()
                 .Bind(out expressions)
@@ -128,15 +142,16 @@ namespace OpenUtau.App.ViewModels {
             if (!Expressions.All(builder => builder.Validate() == null)) {
                 var invalid = Expressions.First(builder => builder.Validate() != null);
                 Expression = invalid;
-                throw new ArgumentException(invalid.Validate());
+                string[] validate = invalid.Validate()!;
+                throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
             }
-            var abbrs = Expressions.Select(builder => builder.Abbr);
-            if (abbrs.Count() != abbrs.Distinct().Count()) {
-                throw new ArgumentException("Abbreviations must be unique.");
+            var abbrs = Expressions.GroupBy(builder => builder.Abbr).Where(g => g.Count() > 1).Select(g => g.Key);
+            if (abbrs.Count() > 0) {
+                throw new MessageCustomizableException("", $"<translate:errors.expression.abbrunique>: {string.Join(", ", abbrs)}", new ArgumentException($"Abbreviations must be unique: {string.Join(", ", abbrs)}"), false);
             }
-            var flags = Expressions.Where(builder => !string.IsNullOrEmpty(builder.Flag)).Select(builder => builder.Flag);
-            if (flags.Count() != flags.Distinct().Count()) {
-                throw new ArgumentException("Flags must be unique.");
+            var flags = Expressions.Where(builder => !string.IsNullOrEmpty(builder.Flag)).GroupBy(builder => builder.Flag).Where(g => g.Count() > 1).Select(g => g.Key);
+            if (flags.Count() > 0) {
+                throw new MessageCustomizableException("", $"<translate:errors.expression.flagunique>: {string.Join(", ", flags)}", new ArgumentException($"Flags must be unique: {string.Join(", ", flags)}"), false);
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(DocManager.Inst.Project, Expressions.Select(builder => builder.Build()).ToArray()));
@@ -150,8 +165,33 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Remove() {
-            if (Expression != null) {
+            if (SelectExpressions != null) {
+                var selectedItems = SelectExpressions.ToList();
+                foreach (var expression in selectedItems) {
+                    if (expression.IsCustom) {
+                        expressionsSource.Remove(expression);
+                    }
+                }
+            } else if (Expression != null) {
                 expressionsSource.Remove(Expression);
+            }
+        }
+
+        public void GetSuggestions() {
+            foreach (var track in DocManager.Inst.Project.tracks) {
+                if (track.RendererSettings.Renderer == null) {
+                    continue;
+                }
+                var suggestions = track.RendererSettings.Renderer.GetSuggestedExpressions(track.Singer, track.RendererSettings);
+                if (suggestions == null) {
+                    continue;
+                }
+                foreach (var suggestion in suggestions) {
+                    //Add if not already in the list
+                    if (!expressionsSource.Any(builder => builder.Abbr == suggestion.abbr)) {
+                        expressionsSource.Add(new ExpressionBuilder(suggestion));
+                    }
+                }
             }
         }
     }
