@@ -118,6 +118,20 @@ namespace OpenUtau.App.Views {
             await dialog.ShowDialog(this);
         }
 
+        async void OnMerge(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var classicSinger = viewModel.Singer as ClassicSinger;
+            if (classicSinger == null) {
+                return;
+            }
+            var dialog = new MergeVoicebankDialog();
+            dialog.DataContext = new MergeVoicebankViewModel(classicSinger);
+            await dialog.ShowDialog(this);
+        }
+
         void OnSetUseFilenameAsAlias(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             viewModel.SetUseFilenameAsAlias();
