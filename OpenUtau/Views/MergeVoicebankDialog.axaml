@@ -14,7 +14,7 @@
     <!-- Select which voicebank to merge -->
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="40"/>
+        <RowDefinition Height="60"/>
         <RowDefinition Height="1*"/>
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
