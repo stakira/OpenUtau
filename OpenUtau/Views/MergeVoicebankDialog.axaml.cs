@@ -11,6 +11,36 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
+        void OnEditedFolder(object sender, DataGridCellEditEndedEventArgs e)
+        {
+            var viewModel = DataContext as MergeVoicebankViewModel;
+            if (viewModel == null)
+            {
+                return;
+            }
+            viewModel.CheckFolderNames();
+        }
+
+        void OnEditedSubbank(object sender, DataGridCellEditEndedEventArgs e)
+        {
+            var viewModel = DataContext as MergeVoicebankViewModel;
+            if (viewModel == null)
+            {
+                return;
+            }
+            viewModel.CheckSubbankNames();
+        }
+
+        void OnEditedVoiceColor(object sender, DataGridCellEditEndedEventArgs e)
+        {
+            var viewModel = DataContext as MergeVoicebankViewModel;
+            if (viewModel == null)
+            {
+                return;
+            }
+            viewModel.CheckVoiceColorNames();
+        }
+
         void MergeClicked(object sender, RoutedEventArgs arg) {
             var viewModel = DataContext as MergeVoicebankViewModel;
             if (viewModel == null) {
