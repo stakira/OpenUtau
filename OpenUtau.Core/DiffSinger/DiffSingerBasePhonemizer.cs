@@ -144,7 +144,6 @@ namespace OpenUtau.Core.DiffSinger
         // 3. Phoneme substituted using YAML dictionary (for voicebanks that indirectly support other languages)
         // Otherwise, return empty string
         string ValidatePhoneme(string phoneme, Dictionary<string, string> repDict){
-            Log.Debug($"{singer.Name}, {phoneme}");
             // Try to return phoneme as is
             if (g2p.IsValidSymbol(phoneme) && phonemeTokens.ContainsKey(phoneme)) {
                 return phoneme;
@@ -162,7 +161,6 @@ namespace OpenUtau.Core.DiffSinger
             // Try to return phoneme substituted using YAML dictionary
             try {
                 string subbedPhoneme = repDict[phoneme];
-                Log.Debug($"{singer.Name}, {phoneme} -> {subbedPhoneme}");
                 if (g2p.IsValidSymbol(subbedPhoneme) && phonemeTokens.ContainsKey(subbedPhoneme)) {
                     return subbedPhoneme;
                 }
