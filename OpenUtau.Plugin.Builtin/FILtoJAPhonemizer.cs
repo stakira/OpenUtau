@@ -206,6 +206,12 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
+            if (note.lyric.Contains("ng")) {
+                return new string[] { "n", "a", "ng" };
+            }
+            if (note.lyric.Contains("mga")) {
+                return new string[] { "m", "a", "ng", "a" };
+            }
             if (original == null) {
                 string lyric = note.lyric.ToLowerInvariant();
                 List<string> fallbackSplit = new List<string>();
