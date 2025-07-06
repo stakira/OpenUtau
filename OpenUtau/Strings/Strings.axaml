@@ -97,6 +97,17 @@
   <system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>
 
+  <system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>
+  <system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
+1. Install wine from {0}
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>
+  <system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
+1. Install wine using following commands
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>
+  <system:String x:Key="exesetup.resampler">Install as resampler</system:String>
+  <system:String x:Key="exesetup.title">Installing Exe File</system:String>
+  <system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>
+  
   <system:String x:Key="exps.abbr">Abbreviation</system:String>
   <system:String x:Key="exps.apply">Apply</system:String>
   <system:String x:Key="exps.caption">Expressions</system:String>
