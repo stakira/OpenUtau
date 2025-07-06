@@ -526,21 +526,21 @@ namespace OpenUtau.Plugin.Builtin {
                 var vccv3 = $"{prevV}{string.Join("", cc)}";
                 var crv = $"{cc.Last()} {v}";
                 // Use regular VCV if the current word starts with one consonant and the previous word ends with none
-                if (syllable.IsVCVWithOneConsonant && (HasOto(vcv, syllable.vowelTone) || HasOto(ValidateAlias(vcv), syllable.vowelTone)) && prevWordConsonantsCount == 0 && CurrentWordCc.Length == 1) {
+                if (syllable.IsVCVWithOneConsonant && (HasOto(vcv, syllable.vowelTone) && HasOto(ValidateAlias(vcv), syllable.vowelTone)) && prevWordConsonantsCount == 0 && CurrentWordCc.Length == 1) {
                     basePhoneme = vcv;
-                } else if (syllable.IsVCVWithOneConsonant && (HasOto(vcv2, syllable.vowelTone) || HasOto(ValidateAlias(vcv2), syllable.vowelTone)) && prevWordConsonantsCount == 1 || CurrentWordCc.Length == 1) {
+                } else if (syllable.IsVCVWithOneConsonant && (HasOto(vcv2, syllable.vowelTone) && HasOto(ValidateAlias(vcv2), syllable.vowelTone)) && prevWordConsonantsCount == 0 && CurrentWordCc.Length == 1) {
                     basePhoneme = vcv2;
                     // Use end VCV if current word does not start with a consonant but the previous word does end with one
-                } else if (syllable.IsVCVWithOneConsonant && prevWordConsonantsCount == 1 && CurrentWordCc.Length == 0 && (HasOto(vcvEnd, syllable.vowelTone) || HasOto(ValidateAlias(vcvEnd), syllable.vowelTone))) {
+                } else if (syllable.IsVCVWithOneConsonant && prevWordConsonantsCount == 1 && CurrentWordCc.Length == 0 && (HasOto(vcvEnd, syllable.vowelTone) && HasOto(ValidateAlias(vcvEnd), syllable.vowelTone))) {
                     basePhoneme = vcvEnd;
                     // Use regular VCV if end VCV does not exist
-                } else if (syllable.IsVCVWithOneConsonant && !HasOto(vcvEnd, syllable.vowelTone) && !HasOto(ValidateAlias(vcvEnd), syllable.vowelTone) && (HasOto(vcv, syllable.vowelTone) || HasOto(ValidateAlias(vcv), syllable.vowelTone))) {
+                } else if (syllable.IsVCVWithOneConsonant && (!HasOto(vcvEnd, syllable.vowelTone) && !HasOto(ValidateAlias(vcvEnd), syllable.vowelTone)) && (HasOto(vcv, syllable.vowelTone) && HasOto(ValidateAlias(vcv), syllable.vowelTone))) {
                     basePhoneme = vcv;
                     // VCV with multiple consonants, only for current word onset and null previous word ending
-                } else if (syllable.IsVCVWithMoreThanOneConsonant && (HasOto(vccv, syllable.vowelTone) || HasOto(ValidateAlias(vccv), syllable.vowelTone)) && prevWordConsonantsCount == 0) {
+                } else if (syllable.IsVCVWithMoreThanOneConsonant && (HasOto(vccv, syllable.vowelTone) && HasOto(ValidateAlias(vccv), syllable.vowelTone)) && prevWordConsonantsCount == 0) {
                     basePhoneme = vccv;
                     lastC = 0;
-                } else if (syllable.IsVCVWithMoreThanOneConsonant && (HasOto(vccv2, syllable.vowelTone) || HasOto(ValidateAlias(vccv2), syllable.vowelTone) || (HasOto(vccv3, syllable.vowelTone) || HasOto(ValidateAlias(vccv3), syllable.vowelTone)))) {
+                } else if (syllable.IsVCVWithMoreThanOneConsonant && (HasOto(vccv3, syllable.vowelTone) && HasOto(ValidateAlias(vccv3), syllable.vowelTone))) {
                     basePhoneme = AliasFormat($"{prevV} {string.Join("", cc)}{v}", "dynMid", syllable.vowelTone, "");
                     lastC = 0;
                 } else {
