@@ -136,13 +136,13 @@ namespace OpenUtau.App.Views {
             }));
             DocManager.Inst.AddSubscriber(this);
 
-            ViewModel.NoteBatchEdits.Insert(5, new MenuItemViewModel() {
+            ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
-            ViewModel.NoteBatchEdits.Insert(8, new MenuItemViewModel() {
+            ViewModel.NoteBatchEdits.Insert(9, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
                 Command = ReactiveCommand.Create(() => {
                     QuantizeNotes();
