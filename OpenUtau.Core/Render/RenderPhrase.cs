@@ -192,7 +192,10 @@ namespace OpenUtau.Core.Render {
 
         private List<string> cacheFiles = new List<string>();
 
-        internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
+        /// <summary>
+        /// Creates a render phrase for headless rendering or testing.
+        /// </summary>
+        public RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var uNotes = new List<UNote> { phonemes.First().Parent };
             var endNote = phonemes.Last().Parent;
             while (endNote.Next != null && endNote.Next.Extends != null) {
