@@ -224,8 +224,8 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             var note_midi = phrase.notes
-                .Select(n=>(float)n.tone)
-                .Prepend((float)phrase.notes[0].tone)
+                .Select(n=>(float)n.adjustedTone)
+                .Prepend((float)phrase.notes[0].adjustedTone)
                 .ToArray();
             //get the index of groups of consecutive rest notes
             var restGroups = new List<Tuple<int,int>>();
