@@ -47,6 +47,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int DiffSingerStepsVariance { get; set; }
         [Reactive] public int DiffSingerStepsPitch { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
+        [Reactive] public bool DiffSingerLangCodeHide { get; set; }
         [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
@@ -59,6 +60,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public string SetParamPath => Preferences.Default.SetParamPath;
+        public string WinePath => Preferences.Default.WinePath;
         [Reactive] public bool ClearCacheOnQuit { get; set; }
         public int LogicalCoreCount {
             get => Environment.ProcessorCount;
@@ -99,7 +101,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid{ get; set; }
         [Reactive] public bool RememberUst{ get; set; }
         [Reactive] public bool RememberVsqx{ get; set; }
-        [Reactive] public int ImportTempo{ get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -150,6 +151,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
             DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
+            DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
@@ -165,7 +167,6 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
-            ImportTempo = Preferences.Default.ImportTempo;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -324,11 +325,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.RememberVsqx = index;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.ImportTempo)
-                .Subscribe(index => {
-                    Preferences.Default.ImportTempo = index;
-                    Preferences.Save();
-                });
             this.WhenAnyValue(vm => vm.ClearCacheOnQuit)
                 .Subscribe(index => {
                     Preferences.Default.ClearCacheOnQuit = index;
@@ -357,6 +353,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerTensorCache)
                 .Subscribe(useCache => {
                     Preferences.Default.DiffSingerTensorCache = useCache;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerLangCodeHide)
+                .Subscribe(useCache => {
+                    Preferences.Default.DiffSingerLangCodeHide = useCache;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
@@ -396,6 +397,13 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.SetParamPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(SetParamPath));
+        }
+
+        public void SetWinePath(string path) {
+            Preferences.Default.WinePath = path;
+            Preferences.Save();
+            ToolsManager.Inst.Initialize();
+            this.RaisePropertyChanged(nameof(WinePath));
         }
     }
 }
