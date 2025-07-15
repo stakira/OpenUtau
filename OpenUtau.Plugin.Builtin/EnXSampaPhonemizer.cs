@@ -423,11 +423,11 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                         if (!singleReplaced) {
-                            finalPhonemes.Add(ReplacePhoneme(modified[i]));
+                            finalPhonemes.Add(ReplacePhoneme(modified[i], note.tone));
                         }
                         i++;
                     } else if (!replaced) {
-                        finalPhonemes.Add(ReplacePhoneme(modified[i]));
+                        finalPhonemes.Add(ReplacePhoneme(modified[i], note.tone));
                         i++;
                     }
                 }
@@ -457,7 +457,12 @@ namespace OpenUtau.Plugin.Builtin {
             return finalProcessedPhonemes.ToArray();
         }
         // prioritize yaml replacements over dictionary replacements
-        private string ReplacePhoneme(string phoneme) {
+        private string ReplacePhoneme(string phoneme, int tone) {
+            // If the original phoneme has an OTO, use it directly.
+            if (HasOto(phoneme, tone) || HasOto(ValidateAlias(phoneme), tone)) {
+                return phoneme;
+            }
+            // Otherwise, try to apply the dictionary replacement.
             if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
                 return replaced;
             }
@@ -466,10 +471,10 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
             syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
-            var replacedPrevV = ReplacePhoneme(syllable.prevV);
+            var replacedPrevV = ReplacePhoneme(syllable.prevV, syllable.tone);
             var prevV = string.IsNullOrEmpty(replacedPrevV) ? "" : replacedPrevV;
             string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
-            string v = ReplacePhoneme(syllable.v);
+            string v = ReplacePhoneme(syllable.v, syllable.vowelTone);
 
             string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
             string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
@@ -809,8 +814,8 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
-            string[] cc = ending.cc.Select(c => ReplacePhoneme(c)).ToArray();
-            string v = ReplacePhoneme(ending.prevV);
+            string[] cc = ending.cc.Select(c => ReplacePhoneme(c, ending.tone)).ToArray();
+            string v = ReplacePhoneme(ending.prevV, ending.tone);
 
             var phonemes = new List<string>();
             var vr = $"{v} -";
