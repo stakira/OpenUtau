@@ -17,13 +17,13 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] vowels = {
         "a", "e", "i", "o", "u", "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw"
         };
-        private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
+        private readonly string[] consonants = "b,ch,d,dh,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
         private readonly string[] tapConsonant = "dx,nx,lx,r,l".Split(",");
         private readonly string[] semilongConsonants = "ng,n,m,v,z,q,hh,h".Split(",");
         private readonly string[] semiVowels = "y,w".Split(",");
         private readonly string[] connectingGlides = "rr,ll".Split(",");
-        private readonly string[] longConsonants = "f,s,sh,th,zh,dr,tr,ts,c,vf".Split(",");
+        private readonly string[] longConsonants = "f,s,sh,th,zh,ts,c,vf".Split(",");
         private readonly string[] normalConsonants = "b,d,dh,g,k,p,t".Split(',');
         private readonly string[] connectingNormCons = "b,d,g,k,p,t".Split(',');
         protected override string[] GetVowels() => vowels;
