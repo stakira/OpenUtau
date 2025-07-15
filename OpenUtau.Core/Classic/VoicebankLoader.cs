@@ -316,6 +316,10 @@ namespace OpenUtau.Classic {
 
         public static OtoSet ParseOtoSet(string filePath, Encoding encoding, bool? useFilenameAsAlias) {
             try {
+                var otoDeclaredEncoding = GetOtoDeclaredEncoding(filePath);
+                if (otoDeclaredEncoding != null) {
+                    encoding = otoDeclaredEncoding;
+                }
                 using (var stream = File.OpenRead(filePath)) {
                     var otoSet = ParseOtoSet(stream, filePath, encoding);
                     if (!IsTest) {
@@ -356,10 +360,6 @@ namespace OpenUtau.Classic {
 
         public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
-            var otoDeclaredEncoding = GetOtoDeclaredEncoding(filePath);
-            if (otoDeclaredEncoding != null) {
-                encoding = otoDeclaredEncoding;
-            }
             using (var reader = new StreamReader(stream, encoding)) {
                 var trace = new FileTrace { file = filePath, lineNumber = 0 };
                 otoSet = new OtoSet() {
