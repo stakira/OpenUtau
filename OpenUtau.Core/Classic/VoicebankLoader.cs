@@ -333,8 +333,33 @@ namespace OpenUtau.Classic {
             return null;
         }
 
+        // Oto.ini can declare its own encoding at the beginning of the file with #Charset:
+        static Encoding? GetOtoDeclaredEncoding(string filePath) {
+            using (var reader = new StreamReader(filePath, Encoding.GetEncoding("shift_jis"))) {
+                for (var i = 0; i < 10; i++) {
+                    var line = reader.ReadLine();
+                    if (line == null) {
+                        break;
+                    }
+                    line = line.Trim();
+                    if (line.StartsWith("#Charset:")) {
+                        try {
+                            return Encoding.GetEncoding(line.Replace("#Charset:", ""));
+                        } catch (ArgumentException) {
+                            return null;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
+            var otoDeclaredEncoding = GetOtoDeclaredEncoding(filePath);
+            if (otoDeclaredEncoding != null) {
+                encoding = otoDeclaredEncoding;
+            }
             using (var reader = new StreamReader(stream, encoding)) {
                 var trace = new FileTrace { file = filePath, lineNumber = 0 };
                 otoSet = new OtoSet() {
@@ -342,15 +367,6 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
-                    if (line.StartsWith("#Charset:")) {
-                        try {
-                            var charset = Encoding.GetEncoding(line.Replace("#Charset:", ""));
-                            if (encoding != charset) {
-                                stream.Position = 0;
-                                return ParseOtoSet(stream, filePath, charset);
-                            }
-                        } catch { }
-                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
