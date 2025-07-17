@@ -285,8 +285,6 @@ namespace OpenUtau.Core.Render {
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);
 
-
-
         public static float[] Resample(ResamplerItem item) {
             var requestWrapper = new SynthRequestWrapper(item);
             SynthRequest request = requestWrapper.request;
