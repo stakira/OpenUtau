@@ -20,6 +20,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="24"/>
+    <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
   </Style>
   <Style Selector="MenuItem /template/ Path#PART_ChevronPath">
@@ -208,6 +209,7 @@
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="ComboBox /template/ Path#DropDownGlyph">
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
@@ -218,6 +220,7 @@
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="Margin" Value="0"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
 
   <Style Selector="CheckBox">

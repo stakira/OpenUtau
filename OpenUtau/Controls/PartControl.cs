@@ -155,7 +155,7 @@ namespace OpenUtau.App.Controls {
         public override void Render(DrawingContext context) {
             var backgroundBrush = Selected ? ThemeManager.AccentBrush2Semi2 : ThemeManager.AccentBrush1Semi2;
             var borderPen = Selected ? new Pen(ThemeManager.AccentBrush3, 2) : new Pen(ThemeManager.AccentBrush4, 2);
-            context.DrawRectangle(backgroundBrush, borderPen, new Rect(1, 0, Width - 1, Height - 1), 6, 6);
+            context.DrawRectangle(backgroundBrush, borderPen, new Rect(1, 0, Width - 1, Height - 1), 8, 8);
             // Text
             var textLayout = TextLayoutCache.Get(Text, Brushes.White, 12);
             using (var state = context.PushTransform(Matrix.CreateTranslation(3, 2))) {

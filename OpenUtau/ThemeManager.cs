@@ -68,6 +68,10 @@ namespace OpenUtau.App {
         public static IBrush RealCurveStrokeBrush = Brushes.Gray;
         public static IPen RealCurvePen = new Pen(Brushes.Gray, 1D, DashStyle.Dash);
         public static IPen FinalPitchPenThick = new Pen(Brushes.Gray);
+        public static IPen PitchPenThickDark = new Pen(Brushes.Gray);
+        public static IPen PitchPenThickColored = new Pen(Brushes.Gray);
+        public static IPen PitchPenThickLight = new Pen(Brushes.Gray);
+        public static IPen PitchPenCenter = new Pen(Brushes.Gray);
         public static IPen FinalPitchPenTransparent = new Pen(Brushes.White, 1);
         public static IBrush WhiteKeyBrush = Brushes.White;
         public static IBrush WhiteKeyNameBrush = Brushes.Black;
@@ -105,7 +109,7 @@ namespace OpenUtau.App {
             new TrackColor("Red3", "#FF5252", "#cf3134", "#FF8A80", "#FFCDD2", "#FFFFFF"),
             new TrackColor("Coral", "#ff8a80", "#e65b5c", "#FFAB91", "#FFCDD2", "#FFFFFF"),
             new TrackColor("Amber", "#ffc107", "#e8950b", "#FFD54F", "#FFE082", "#141414"), //
-            new TrackColor("Lime", "#D4E157", "#b1c431", "#E6EE9C", "#f0f2cf", "#141414"), //
+            new TrackColor("Lime", "#d7e64e", "#b1c431", "#E6EE9C", "#f0f2cf", "#141414"), //
             new TrackColor("Moss", "#adcf61", "#74a74a", "#c5e1a5", "#e6ee9c", "#141414"), //
             new TrackColor("Mint", "#80cbc4", "#42a79d", "#b2dfdb", "#e0f2f1", "#141414"), //
             new TrackColor("Teal", "#26a69a", "#067b76", "#4DB6AC", "#B2DFDB", "#FFFFFF"),
@@ -121,7 +125,7 @@ namespace OpenUtau.App {
             new TrackColor("Dark Teal", "#00695c", "#034340", "#068072", "#4cad97", "#FFFFFF"),
             new TrackColor("Dark Cyan", "#00838f", "#05515d", "#00acc1", "#6fd8e1", "#FFFFFF"),
 
-            new TrackColor("Sky", "#81D4FA", "#479fe3", "#B3E5FC", "#E1F5FE", "#141414"), //
+            new TrackColor("Sky", "#67c8f5", "#479fe3", "#B3E5FC", "#E1F5FE", "#141414"), //
             new TrackColor("Indigo", "#5c6bc0", "#3643a6", "#9fa8da", "#c5cae9", "#FFFFFF"),
             new TrackColor("Deep Purple", "#673ab7", "#452496", "#9575cd", "#d1c4e9", "#FFFFFF"),
             new TrackColor("Plum", "#9575CD", "#6b4bad", "#B39DDB", "#D7CDE8", "#FFFFFF"),
@@ -132,9 +136,9 @@ namespace OpenUtau.App {
             new TrackColor("Slate", "#4c84a3", "#2d4c60", "#7aaac0", "#9ecadd", "#FFFFFF"),
             // 2nd dark
             new TrackColor("Dark Sky", "#0288d1", "#0f4995", "#03a9f4", "#81d4fa", "#FFFFFF"),
-            new TrackColor("Dark Indigo", "#303F9F", "#1f2471", "#3949ab", "#5C6BC0", "#FFFFFF"),
-            new TrackColor("Dark Deep Purple", "#4527A0", "#311b92", "#673AB7", "#9575CD", "#FFFFFF"),
-            new TrackColor("Dark Plum", "#512DA8", "#37207d", "#7E57C2", "#9575CD", "#FFFFFF"),
+            new TrackColor("Dark Indigo", "#3e4fb8", "#1f2471", "#6373d4", "#5C6BC0", "#FFFFFF"),
+            new TrackColor("Dark Deep Purple", "#563ba8", "#311b92", "#8c64d1", "#9575CD", "#FFFFFF"),
+            new TrackColor("Dark Plum", "#5d38b5", "#37207d", "#7E57C2", "#9575CD", "#FFFFFF"),
             new TrackColor("Dark Lavender", "#7c52b9", "#523098", "#8b66c0", "#9d75cd", "#FFFFFF"),
             new TrackColor("Dark Brown", "#5D4037", "#3f2c29", "#8d6e63", "#A1887F", "#FFFFFF"),
             new TrackColor("Dark Gray", "#455a64", "#2b3c46", "#78909c", "#90a4ae", "#FFFFFF"),
@@ -298,6 +302,10 @@ namespace OpenUtau.App {
                 AccentPen2Thickness2Light = new Pen(AccentBrushLight, 2);
                 AccentPen2Thickness3Light = new Pen(AccentBrushLight, 3);
                 NoteBorderPen = new Pen(tcolor.AccentColorDark, 2);
+                PitchPenThickColored = new Pen(AccentBrush1Note, 1.8);
+                PitchPenThickDark = new Pen(tcolor.AccentColorDark, 1.8);
+                PitchPenThickLight = new Pen(AccentBrushLight, 1.8);
+                PitchPenCenter = new Pen(tcolor.AccentColorCenterKey, 1.8);
                 
                 SetKeyboardBrush();
             } catch {

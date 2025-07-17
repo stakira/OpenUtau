@@ -12,6 +12,7 @@ using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class NotesCanvas : Control {
+        public bool IsDarkMode => ThemeManager.IsDarkMode;
         public static readonly DirectProperty<NotesCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<NotesCanvas, double>(
                 nameof(TickWidth),
@@ -197,10 +198,50 @@ namespace OpenUtau.App.Controls {
                     RenderVibratoControl(note, viewModel, context);
                 }
             }
+            // the lyrics will be always on top
+            foreach (var note in Part.notes) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                    continue;
+                }
+                RenderNoteLyric(note, viewModel, context);
+            }
         }
 
         private void DrawBackgroundForHitTest(DrawingContext context) {
             context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
+        }
+
+        private void RenderNoteLyric(UNote note, NotesViewModel viewModel, DrawingContext context) {
+            Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
+            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y));
+            Size size = viewModel.TickToneToSize(note.duration, 1);
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height));
+            if (TrackHeight < 10 || note.lyric.Length == 0) {
+                return;
+            }
+
+            string displayLyric = note.lyric;
+            int txtsize = 14;
+            var TextPen = selectedNotes.Contains(note) ? Brushes.White : ThemeManager.NoteTextBrush;
+            var textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
+            if (txtsize > size.Height) return;
+
+            if (textLayout.Height + 5 < size.Height) {
+                txtsize = (int)(12 * (size.Height / textLayout.Height));
+                textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
+            }
+
+            if (textLayout.Width + 5 > size.Width) {
+                displayLyric = displayLyric[0] + "..";
+                textLayout = TextLayoutCache.Get(displayLyric, TextPen, txtsize);
+                if (textLayout.Width + 5 > size.Width) return;
+            }
+
+            Point textPosition = leftTop.WithX(leftTop.X + 5)
+                .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Height) / 2));
+            using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
+                textLayout.Draw(context, new Point());
+            }
         }
 
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
@@ -212,12 +253,13 @@ namespace OpenUtau.App.Controls {
             var brush = selectedNotes.Contains(note)
                 ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
                 : (note.Error ? ThemeManager.AccentBrush1NoteDarkSemi : ThemeManager.AccentBrush1Note);
-            context.DrawRectangle(brush, ThemeManager.NoteBorderPen, new Rect(leftTop, rightBottom), 4, 4);
-            var borderPen = selectedNotes.Contains(note) ?  ThemeManager.AccentPen3SemiThick: ThemeManager.NoteBorderPen;
-            context.DrawRectangle(brush, borderPen, new Rect(leftTop, rightBottom), 4, 4);
+            context.DrawRectangle(brush, ThemeManager.NoteBorderPen, new Rect(leftTop, rightBottom), 5, 5);
+            var borderPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen3SemiThick : ThemeManager.NoteBorderPen;
+            context.DrawRectangle(brush, borderPen, new Rect(leftTop, rightBottom), 5, 5);
             if (TrackHeight < 10 || note.lyric.Length == 0) {
                 return;
             }
+            /*
             string displayLyric = note.lyric;
             int txtsize = 14;
             var TextPen = selectedNotes.Contains(note) ?  Brushes.White: ThemeManager.NoteTextBrush;
@@ -241,6 +283,7 @@ namespace OpenUtau.App.Controls {
             using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
                 textLayout.Draw(context, new Point());
             }
+            */
         }
 
         private void RenderGhostNote(UNote note, NotesViewModel viewModel, DrawingContext context, int partOffset, IBrush brush) {
@@ -271,8 +314,8 @@ namespace OpenUtau.App.Controls {
             points.Clear();
             points.Add(p0);
 
-            var brush = note.pitch.snapFirst ? ThemeManager.FinalPitchBrush : null;
-            var pen = ThemeManager.FinalPitchPenThick;
+            var brush = note.pitch.snapFirst ? (IsDarkMode ? ThemeManager.AccentBrushLight : ThemeManager.AccentBrush1NoteDark) : null;
+            var pen = IsDarkMode ? ThemeManager.PitchPenThickLight : ThemeManager.PitchPenThickDark;
             using (var state = context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
                 context.DrawGeometry(brush, pen, pointGeometry);
             }
@@ -314,7 +357,7 @@ namespace OpenUtau.App.Controls {
                 return;
             }
 
-            var pen = ThemeManager.FinalPitchPenThick;
+            var pen = IsDarkMode ? ThemeManager.PitchPenThickLight : ThemeManager.PitchPenThickDark;
             float nPeriod = (float)viewModel.Project.timeAxis.TicksBetweenMsPos(note.PositionMs, note.PositionMs + vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
             var point = vibrato.Evaluate(nPos, nPeriod, note);
@@ -375,6 +418,8 @@ namespace OpenUtau.App.Controls {
 
         private void RenderFinalPitch(double leftTick, double rightTick, NotesViewModel viewModel, DrawingContext context) {
             var pen = ThemeManager.FinalPitchPenTransparent;
+            var penout = ThemeManager.PitchPenCenter;
+            //var penout = IsDarkMode ? ThemeManager.PitchPenThickLight : ThemeManager.PitchPenThickDark;
             lock (Part!) {
                 foreach (var phrase in Part!.renderPhrases) {
                     if (phrase.position - Part.position > rightTick || phrase.end - Part.position < leftTick) {
@@ -390,6 +435,7 @@ namespace OpenUtau.App.Controls {
                         points.Add(viewModel.TickToneToPoint(t, p / 100 - 0.5));
                     }
                     polylineGeometry.Points = points;
+                    context.DrawGeometry(null, penout, polylineGeometry);
                     context.DrawGeometry(null, pen, polylineGeometry);
                 }
             }
