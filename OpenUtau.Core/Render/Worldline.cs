@@ -262,7 +262,7 @@ namespace OpenUtau.Core.Render {
                 if ((in_start_frame + in_length_frame) * frame_ms * request.sample_fs > request.sample_length * 1000.0) {
                     throw new CutOffExceedDurationError();
                 }
-                if(in_length_frame < 0) {
+                if (in_length_frame <= 0) {
                     throw new CutOffBeforeOffsetError();
                 }
             }
