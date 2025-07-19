@@ -206,10 +206,10 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
-            if (note.lyric.Contains("ng")) {
+            if (note.lyric == "ng") {
                 return new string[] { "n", "a", "ng" };
             }
-            if (note.lyric.Contains("mga")) {
+            if (note.lyric == "mga") {
                 return new string[] { "m", "a", "ng", "a" };
             }
             if (original == null) {
