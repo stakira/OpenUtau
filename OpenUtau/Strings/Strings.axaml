@@ -234,6 +234,17 @@
   <system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>
   <system:String x:Key="menu.view">View</system:String>
 
+  <system:String x:Key="mergevoicebank.back">Back</system:String>
+  <system:String x:Key="mergevoicebank.merge">Merge</system:String>
+  <system:String x:Key="mergevoicebank.next">Next</system:String>
+  <system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
+Choose the voicebank that you want to merge into current voicebank</system:String>
+  <system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>
+  <system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
+Syntax: prefix,suffix</system:String>
+  <system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>
+  <system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>
+
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
   <system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>
   <system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>
@@ -491,6 +502,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>
+  <system:String x:Key="singers.merge">Merge with another voicebank</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
   <system:String x:Key="singers.otoview.moveright">Move Right</system:String>
   <system:String x:Key="singers.otoview.selectnext">Select Next</system:String>
