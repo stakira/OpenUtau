@@ -52,7 +52,7 @@ namespace OpenUtau.Core.Ustx {
                 NotifyPropertyChanged(nameof(Overlap));
             }
         }
-        public OtoFrq? Frq { get; set; }
+        public OtoFrq Frq { get;set; }
         public List<string> SearchTerms { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;

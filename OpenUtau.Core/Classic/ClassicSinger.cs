@@ -44,7 +44,7 @@ namespace OpenUtau.Classic {
         OtoWatcher otoWatcher;
 
         public bool? UseFilenameAsAlias { get => voicebank.UseFilenameAsAlias; set => voicebank.UseFilenameAsAlias = value; }
-        public Dictionary<string, IFrqFiles> Frqs { get; set; } = new Dictionary<string, IFrqFiles>();
+        public Dictionary<string, Frq> Frqs { get; set; } = new Dictionary<string, Frq>();
 
         public ClassicSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
