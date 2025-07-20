@@ -74,12 +74,12 @@ namespace OpenUtau.App.ViewModels {
                 }
                 result.note = note;
                 result.hitX = true;
-                var tone = viewModel.PointToTone(point);
-                if (tone != note.tone) {
+                var tone = viewModel.PointToToneDouble(point);
+                if (tone > note.AdjustedTone + 0.5 || tone < note.AdjustedTone - 0.5) {
                     continue;
                 }
                 result.hitBody = true;
-                double x1 = viewModel.TickToneToPoint(note.position, note.tone).X;
+                double x1 = viewModel.TickToneToPoint(note.position, note.AdjustedTone).X;
                 double x2 = viewModel.TickToneToPoint(note.End, tone).X;
                 var hitLeftResizeArea = point.X >= x1 && point.X < x1 + ViewConstants.ResizeMargin;
                 var hitRightResizeArea = point.X <= x2 && point.X > x2 - ViewConstants.ResizeMargin;
@@ -160,7 +160,7 @@ namespace OpenUtau.App.ViewModels {
                 for (int i = 0; i < note.pitch.data.Count; i++) {
                     var pit = note.pitch.data[i];
                     int posTick = viewModel.Project.timeAxis.MsPosToTickPos(note.PositionMs + pit.X) - viewModel.Part.position;
-                    double tone = note.tone + pit.Y / 10;
+                    double tone = note.AdjustedTone + pit.Y / 10;
                     var pitPoint = viewModel.TickToneToPoint(posTick, tone);
                     double x = pitPoint.X;
                     double y = pitPoint.Y + viewModel.TrackHeight / 2;
@@ -183,7 +183,7 @@ namespace OpenUtau.App.ViewModels {
                         if (dis < 3) {
                             var timeAxis = viewModel.Project.timeAxis;
                             double msX = timeAxis.TickPosToMsPos(viewModel.PointToTick(point) + viewModel.Part.position) - note.PositionMs;
-                            double decCentY = (viewModel.PointToToneDouble(point) - note.tone) * 10;
+                            double decCentY = (viewModel.PointToToneDouble(point) - note.AdjustedTone) * 10;
                             return new PitchPointHitInfo() {
                                 Note = note,
                                 Index = i - 1,
@@ -213,12 +213,12 @@ namespace OpenUtau.App.ViewModels {
             if (note == null) {
                 return null;
             }
-            double pitch = note.tone * 100;
+            double pitch = note.AdjustedTone * 100;
             pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
             if (note.Next != null && note.Next.position == note.End) {
                 double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
                 if (delta != null) {
-                    pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
+                    pitch += delta.Value + note.Next.AdjustedTone * 100 - note.AdjustedTone * 100;
                 }
             }
             return pitch;
