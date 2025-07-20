@@ -584,6 +584,7 @@ namespace OpenUtau.App.Views {
                     editState = new NoteResizeEditState(
                         control, ViewModel, this, noteHitInfo.note,
                         args.KeyModifiers == KeyModifiers.Alt,
+                        args.KeyModifiers == KeyModifiers.Shift,
                         fromStart: noteHitInfo.hitResizeAreaFromStart);
                     Cursor = ViewConstants.cursorSizeWE;
                 } else if (args.KeyModifiers == cmdKey) {
