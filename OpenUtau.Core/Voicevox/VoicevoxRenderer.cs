@@ -271,7 +271,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         private bool IsPhonemeNoteCountMatch(RenderPhrase phrase) {
-            return phrase.phones.Length == phrase.notes.Where(note => !VoicevoxUtils.IsSyllableVowelExtensionNote(note.lyric)).ToArray().Length;
+            return phrase.phones.Length == phrase.notes.Where(note => !VoicevoxUtils.IsSyllableVowelExtensionNote(note.lyric)).Count();
         }
 
         private VoicevoxSynthParams PhonemeToVoicevoxSynthParams(RenderPhrase phrase) {
