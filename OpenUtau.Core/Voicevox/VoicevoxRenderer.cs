@@ -171,7 +171,7 @@ namespace OpenUtau.Core.Voicevox {
             return task;
         }
 
-        private VoicevoxSynthParams PhraseToVoicevoxSynthParams(RenderPhrase phrase, VoicevoxSinger singer/*, bool slur = false*/) {
+        private VoicevoxSynthParams PhraseToVoicevoxSynthParams(RenderPhrase phrase, VoicevoxSinger singer) {
 
             VoicevoxSynthParams vsParams = new VoicevoxSynthParams();
             //Prepare for future additions of Teacher Singer.
