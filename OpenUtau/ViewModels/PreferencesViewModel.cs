@@ -12,6 +12,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using OpenUtau.Core.Render;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PreferencesViewModel : ViewModelBase {
@@ -368,7 +369,12 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void TestAudioOutputDevice() {
-            PlaybackManager.Inst.PlayTestSound();
+            try {
+                PlaybackManager.Inst.PlayTestSound();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to play test sound.");
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to play test sound.", e));
+            }
         }
 
         public void OpenResamplerLocation() {
