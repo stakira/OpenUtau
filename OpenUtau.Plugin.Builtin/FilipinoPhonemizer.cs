@@ -36,6 +36,8 @@ namespace OpenUtau.Plugin.Builtin {
         // Store the merging replacements
         private List<Replacement> mergingReplacements = new List<Replacement>();
 
+        List<string> consExceptions = new List<string>();
+
         string[] diphthongs = new[] { "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw"  };
 
         // For banks with missing vowels
@@ -266,6 +268,17 @@ namespace OpenUtau.Plugin.Builtin {
                             vowels = vowels.Concat(loadVowels).Distinct().ToArray();
                         } catch (Exception ex) {
                             Log.Error($"Failed to load vowels from filipino.yaml: {ex.Message}");
+                        }
+                        // Load stop and tap consonants
+                        try {
+                            var loadConsonants = data.symbols
+                                ?.Where(s => s.type == "stop" || s.type == "tap")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            consExceptions.AddRange(loadConsonants);
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load stop and tap consonants from filipino.yaml: {ex.Message}");
                         }
                         // Load replacements
                         try {
@@ -635,13 +648,30 @@ namespace OpenUtau.Plugin.Builtin {
                     cc1 = ValidateAlias(cc1);
                 }
                 // CC FALLBACKS
-                if (!HasOto(cc1, syllable.tone) || !HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", syllable.tone)) {
-                    // [C1 -] [- C2]
-                    cc1 = AliasFormat($"{cc[i + 1]}", "cc_inB", syllable.vowelTone, "");
-                    TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[i]}", "cc_endB", syllable.vowelTone, ""));
-                }
-                if (!HasOto(cc1, syllable.tone)) {
-                    cc1 = ValidateAlias(cc1);
+                if (!HasOto(cc1, syllable.tone) || (!HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", syllable.tone))) {
+                    var c1 = cc[i];
+                    var c2 = cc[i + 1];
+                    bool c1IsException = consExceptions.Contains(c1);
+                    bool c2IsException = consExceptions.Contains(c2);
+
+                    // Scenario 1: Both are NOT exceptions
+                    if (!c1IsException && !c2IsException) {
+                        // [C1 -] [- C2]
+                        cc1 = AliasFormat($"{c2}", "cc_inB", syllable.vowelTone, "");
+                        TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{c1}", "cc_endB", syllable.vowelTone, ""));
+                    }
+                    // Scenario 2: C1 is an exception, C2 is NOT
+                    else if (c1IsException && !c2IsException) {
+                        cc1 = AliasFormat($"{c2}", "cc_inB", syllable.vowelTone, "");
+                    }
+                    // Scenario 3: C1 is NOT an exception, C2 is
+                    else if (!c1IsException && c2IsException) {
+                        cc1 = AliasFormat($"{c1}", "cc_endB", syllable.vowelTone, "");
+                    }
+                    // Scenario 4: Both are exceptions
+                    else if (c1IsException && c2IsException) {
+                        cc1 = "";
+                    }
                 }
                 // CCV
                 if (CurrentWordCc.Length >= 2) {
@@ -682,10 +712,30 @@ namespace OpenUtau.Plugin.Builtin {
                         cc1 = ValidateAlias(cc1);
                     }
                     // CC FALLBACKS
-                    if (!HasOto(cc1, syllable.tone) || !HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", syllable.tone)) {
-                        // [C1 -] [- C2]
-                        cc1 = AliasFormat($"{cc[i + 1]}", "cc_inB", syllable.vowelTone, "");
-                        TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[i]}", "cc_endB", syllable.vowelTone, ""));
+                    if (!HasOto(cc1, syllable.tone) || (!HasOto(ValidateAlias(cc1), syllable.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", syllable.tone))) {
+                        var c1 = cc[i];
+                        var c2 = cc[i + 1];
+                        bool c1IsException = consExceptions.Contains(c1);
+                        bool c2IsException = consExceptions.Contains(c2);
+
+                        // Scenario 1: Both are NOT exceptions
+                        if (!c1IsException && !c2IsException) {
+                            // [C1 -] [- C2]
+                            cc1 = AliasFormat($"{c2}", "cc_inB", syllable.vowelTone, "");
+                            TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{c1}", "cc_endB", syllable.vowelTone, ""));
+                        }
+                        // Scenario 2: C1 is an exception, C2 is NOT
+                        else if (c1IsException && !c2IsException) {
+                            cc1 = AliasFormat($"{c2}", "cc_inB", syllable.vowelTone, "");
+                        }
+                        // Scenario 3: C1 is NOT an exception, C2 is
+                        else if (!c1IsException && c2IsException) {
+                            cc1 = AliasFormat($"{c1}", "cc_endB", syllable.vowelTone, "");
+                        }
+                        // Scenario 4: Both are exceptions
+                        else if (c1IsException && c2IsException) {
+                            cc1 = "";
+                        }
                     }
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
