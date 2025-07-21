@@ -96,6 +96,7 @@ namespace OpenUtau.Classic {
                     }
                     CheckOto(oto, fileDuration);
                 }
+                CheckNFDFiles(otoSet);
             }
             if (FindDuplication(out List<Oto> duplicates)) {
                 string message = "";
@@ -241,6 +242,18 @@ namespace OpenUtau.Classic {
                 valid = false;
             }
             return valid;
+        }
+
+        void CheckNFDFiles(OtoSet otoSet) {
+            var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
+            foreach (var group in wavGroups) {
+                if (group.Key != group.First().FileTrace.line.Split('=')[0].Trim() && !group.Key.IsNormalized()) {
+                    Errors.Add(new VoicebankError() {
+                        soundFile = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key),
+                        message = $"Wav filename is NFD.",
+                    });
+                }
+            }
         }
 
         bool FindDuplication(out List<Oto> duplicates) {
