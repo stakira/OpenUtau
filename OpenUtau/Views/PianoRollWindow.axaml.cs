@@ -1124,11 +1124,20 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
-            if (FocusManager != null && FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
-                if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+            if (FocusManager != null) {
+                if (FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
+                    if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+                        args.Handled = false;
+                        return;
+                    }
+                } else if (FocusManager.GetFocusedElement() is ComboBox || FocusManager.GetFocusedElement() is ComboBoxItem) {
                     args.Handled = false;
                     return;
                 }
+            }
+            if (LyricBox.IsVisible) {
+                args.Handled = false;
+                return;
             }
 
             if (args.Key == Key.R && args.KeyModifiers == KeyModifiers.Control) {
