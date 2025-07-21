@@ -423,12 +423,28 @@ namespace OpenUtau.App.Views {
             var element = (TrackBackground)sender;
             keyboardPlayState = new KeyboardPlayState(element, ViewModel);
             keyboardPlayState.Begin(args.Pointer, args.GetPosition(element));
+
+            var part = ViewModel.NotesViewModel.Part;
+            if (part != null) {
+                var tone = ViewModel.NotesViewModel.PointToTone(args.GetPosition(element));
+                var notes = part.notes.Where(note => note.tone == tone);
+                ViewModel.NotesViewModel.Selection.Select(notes);
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(ViewModel.NotesViewModel.Selection));
+            }
         }
 
         public void KeyboardPointerMoved(object sender, PointerEventArgs args) {
             if (keyboardPlayState != null) {
                 var element = (TrackBackground)sender;
                 keyboardPlayState.Update(args.Pointer, args.GetPosition(element));
+
+                var part = ViewModel.NotesViewModel.Part;
+                if (part != null) {
+                    var tone = ViewModel.NotesViewModel.PointToTone(args.GetPosition(element));
+                    var notes = part.notes.Where(note => note.tone == tone);
+                    ViewModel.NotesViewModel.Selection.Add(notes);
+                    MessageBus.Current.SendMessage(new NotesSelectionEvent(ViewModel.NotesViewModel.Selection));
+                }
             }
         }
 
