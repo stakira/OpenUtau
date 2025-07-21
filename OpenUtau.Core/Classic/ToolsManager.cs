@@ -42,7 +42,7 @@ namespace OpenUtau.Classic {
                 return new ExeResampler(filePath, basePath);
             } 
             if (!OS.IsWindows() && (ext == ".sh" || string.IsNullOrEmpty(ext))) {
-                return new ExeResampler(filePath, basePath);
+                return new ExeResampler(filePath, basePath, isUnix: true);
             }
             return null;
         }
