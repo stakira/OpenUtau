@@ -27,7 +27,7 @@ namespace OpenUtau.Classic {
             name = Path.GetRelativePath(basePath, filePath);
             osEncoding = OS.IsWindows() ? Encoding.GetEncoding(0) : Encoding.UTF8;
             winePath = Preferences.Default.WinePath;
-            useWine = !OS.IsWindows();
+            useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath);
         }
 
         public float[] Concatenate(List<ResamplerItem> resamplerItems, string tempPath, CancellationTokenSource cancellation) {

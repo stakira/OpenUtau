@@ -71,7 +71,7 @@ namespace OpenUtau.Classic {
             //Check if should use wine
             if (!isUnix) {
                 winePath = Preferences.Default.WinePath;
-                useWine = !OS.IsWindows();
+                useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath);
             }
             //Load Resampler Manifest
             Manifest = LoadManifest();
