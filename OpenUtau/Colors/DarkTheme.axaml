@@ -22,15 +22,19 @@
   <!-- Pressed -->
   <Color x:Key="SystemAccentColorDark1">#1E88E5</Color>
 
-  <Color x:Key="NeutralAccentColor">#808080</Color>
+  <Color x:Key="NeutralAccentColor">#939393</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#A0A0A0</Color>
   <Color x:Key="AccentColor1">#4EA6EA</Color>
   <Color x:Key="AccentColor2">#FF679D</Color>
   <Color x:Key="AccentColor3">#E62E6E</Color>
+  <Color x:Key="AccentColor4">#4FC3F7</Color>
+  <Color x:Key="AccentColor1Note">#4EA6EA</Color>
+  <Color x:Key="AccentColor2Pitch">#FFFFFF</Color>
+  <Color x:Key="FinalPitchColorTransparent">#eaeaea</Color>
 
   <Color x:Key="TickLineColor">#707070</Color>
   <Color x:Key="BarNumberColor">#D0D0D0</Color>
-  <Color x:Key="FinalPitchColor">#D0D0D0</Color>
+  <Color x:Key="FinalPitchColor">#eaeaea</Color>
   <Color x:Key="TrackBackgroundAltColor">#404040</Color>
 
   <!--Keyboard Background-->
