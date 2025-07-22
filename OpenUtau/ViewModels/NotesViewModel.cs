@@ -1025,9 +1025,13 @@ namespace OpenUtau.App.ViewModels {
                             SelectNote(focusNote.note);
                         }
                     }
-                } else if (cmd is ValidateProjectNotification
-                    || cmd is SingersRefreshedNotification
-                    || cmd is PhonemizedNotification) {
+                } else if (cmd is ValidateProjectNotification || cmd is SingersRefreshedNotification) {
+                    if (Part != null) {
+                        LoadPortrait(Part, Project);
+                    }
+                    OnPartModified();
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                } else if (cmd is PhonemizedNotification) {
                     OnPartModified();
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 } else if (notif is PartRenderedNotification && notif.part == Part) {

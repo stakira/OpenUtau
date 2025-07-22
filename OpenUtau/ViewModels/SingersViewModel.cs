@@ -157,7 +157,6 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -170,7 +169,6 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.Image = filepath);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -183,7 +181,6 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -196,7 +193,6 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.SingerType = singerType);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -209,7 +205,6 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
@@ -222,14 +217,13 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 ModifyConfig(Singer, config => config.UseFilenameAsAlias = !this.UseFilenameAsAlias);
-                Refresh();
             } catch (Exception e) {
                 var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
             }
         }
 
-        private static void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
+        private void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             VoicebankConfig? config = null;
             if (File.Exists(yamlFile)) {
@@ -244,6 +238,7 @@ namespace OpenUtau.App.ViewModels {
             using (var stream = File.Open(yamlFile, FileMode.Create)) {
                 config.Save(stream);
             }
+            RefreshSinger();
         }
 
         public void ErrorReport() {
