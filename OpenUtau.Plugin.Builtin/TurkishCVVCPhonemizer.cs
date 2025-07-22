@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     // Contributed by ise with the help of Japanese CVVC phonemizer by TUBS
     public class TurkishCVVCPhonemizer : Phonemizer {
         static readonly string[] glottalStops = new string[] { "?", "q" };
-        static string[] vowels = new string[] { "a", "e", "i", "o", "u", "", "", "", "" };
+        static string[] vowels = new string[] { "a", "e", "i", "o", "u", "æ", "ı", "ö", "ü" };
         static readonly string[,] vowelAlternatives = new string[,] {
             { "E", "æ", "ae" },
             { "I", "ı", "eu" },
@@ -26,7 +26,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "N", "n" },
             { "NG", "ng" },
             { "?", "q" },
-            { "l'", "l" }, //not ideal
+            { "l'", "l" },
             { "k'", "ky" },
             { "g'", "gy" }
         };
@@ -99,7 +99,6 @@ namespace OpenUtau.Plugin.Builtin {
                 if (consonantReplace[3] && consonant == "l") { //if ly does not exist
                     return consonant;
                 }
-                /* if (singer.TryGetOto("e " + consonant + "'", out UOto oto)) {}*/
 
                 if (consonant.ToUpper() == consonant) {
                     y = "Y";
@@ -153,10 +152,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void syncPhonemesFromSinger() {
-            vowels[5] = "";
-            vowels[6] = "";
-            vowels[7] = "";
-            vowels[8] = "";
             for (int i = 5; i < 9; i++) {
                 for (int j = 0; j < 3; j++) {
                     string v = vowelAlternatives[i - 5, j];
@@ -166,13 +161,13 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
+
             for (int i = 0; i < consonantAlternatives.GetLength(0); i++) {
                 if (!singer.TryGetOto("a " + consonantAlternatives[i, 0], out UOto oto))
                     consonantReplace[i] = true;
                 else
                     consonantReplace[i] = false;
             }
-
         }
 
         private string convertToOtoStyledLyric(string lyric) {
