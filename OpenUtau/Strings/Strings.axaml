@@ -86,8 +86,8 @@
   <system:String x:Key="errors.failed.load">Failed to load</system:String>
   <system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>
   <system:String x:Key="errors.failed.openfile">Failed to open</system:String>
-  <system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>
   <system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>
+  <system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>
   <system:String x:Key="errors.failed.render">Failed to render.</system:String>
   <system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>
   <system:String x:Key="errors.failed.save">Failed to save</system:String>
@@ -109,7 +109,7 @@
   <system:String x:Key="exesetup.resampler">Install as resampler</system:String>
   <system:String x:Key="exesetup.title">Installing Exe File</system:String>
   <system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>
-  
+
   <system:String x:Key="exps.abbr">Abbreviation</system:String>
   <system:String x:Key="exps.apply">Apply</system:String>
   <system:String x:Key="exps.caption">Expressions</system:String>
@@ -130,6 +130,7 @@
   <system:String x:Key="languages.de">German</system:String>
   <system:String x:Key="languages.en">English</system:String>
   <system:String x:Key="languages.es">Spanish</system:String>
+  <system:String x:Key="languages.fil">Filipino</system:String>
   <system:String x:Key="languages.fr">French</system:String>
   <system:String x:Key="languages.invariant">Not translating</system:String>
   <system:String x:Key="languages.it">Italian</system:String>
@@ -143,7 +144,6 @@
   <system:String x:Key="languages.vi">Vietnamese</system:String>
   <system:String x:Key="languages.zh">Chinese</system:String>
   <system:String x:Key="languages.zh-yue">Cantonese</system:String>
-  <system:String x:Key="languages.fil">Filipino</system:String>
 
   <system:String x:Key="lyrics.apply">Apply</system:String>
   <system:String x:Key="lyrics.cancel">Cancel</system:String>
@@ -328,10 +328,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>
-  <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
+  <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>
@@ -410,6 +410,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>
   <system:String x:Key="prefs.appearance.degree.off">Off</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>
+  <system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>
   <system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>
@@ -419,7 +420,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
-  <system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>
   <system:String x:Key="prefs.cache">Cache</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
   <system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>
@@ -435,10 +435,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
+  <system:String x:Key="prefs.paths.detect">Detect</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
-  <system:String x:Key="prefs.paths.detect">Detect</system:String>
   <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
@@ -623,7 +623,7 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
-  
+
   <system:String x:Key="welcome.new">New</system:String>
   <system:String x:Key="welcome.new.description">Create a new project</system:String>
   <system:String x:Key="welcome.open">Open</system:String>
@@ -631,5 +631,4 @@ General
   <system:String x:Key="welcome.recent">Recent</system:String>
   <system:String x:Key="welcome.start">Start</system:String>
   <system:String x:Key="welcome.template">Template</system:String>
-
 </ResourceDictionary>
