@@ -186,9 +186,9 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5, Voicevox=0x6 }
+    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger = 0x5, Voicevox = 0x6 }
 
-    public static class SingerTypeUtils{
+    public static class SingerTypeUtils {
         public static Dictionary<USingerType?, string> SingerTypeNames = new Dictionary<USingerType?, string>(){
             {USingerType.Classic, "utau"},
             {USingerType.Enunu, "enunu"},
@@ -262,16 +262,16 @@ namespace OpenUtau.Core.Ustx {
 
         private string name;
 
-        public string LocalizedName { 
+        public string LocalizedName {
             get {
-                if(LocalizedNames == null) {
+                if (LocalizedNames == null) {
                     return Found ? Name : $"[Missing] {Name}";
                 }
                 string language = Preferences.Default.SortingOrder;
                 if (language == null) {
                     language = Preferences.Default.Language;
                 }
-                if (language == string.Empty) { // InvariantCulture
+                if (string.IsNullOrEmpty(language)) { // InvariantCulture
                     return Found ? Name : $"[Missing] {Name}";
                 }
                 if (LocalizedNames.TryGetValue(language, out var localizedName)) {
@@ -330,6 +330,6 @@ namespace OpenUtau.Core.Ustx {
         /// - the voicebank may be used again even after this method is called.
         /// - this method may be called even when the singer has not been used
         /// </summary>
-        public virtual void FreeMemory(){ }
+        public virtual void FreeMemory() { }
     }
 }
