@@ -102,6 +102,13 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid { get; set; }
         [Reactive] public bool RememberUst { get; set; }
         [Reactive] public bool RememberVsqx { get; set; }
+        [Reactive] public int LaunchBehaviour{ get; set; }
+        [Reactive] public int ImportTempo{ get; set; }
+        [Reactive] public int MixdownChannel { get; set; }
+        [Reactive] public int MixdownSamplingRate { get; set; }
+        [Reactive] public int ParallelChannel { get; set; }
+        [Reactive] public int ParallelSamplingRate { get; set; }
+        public List<int> SamplingRateOptions { get; } = new List<int> { 44100, 48000 };
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -168,6 +175,12 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
+            LaunchBehaviour = Preferences.Default.LaunchBehaviour;
+            ImportTempo = Preferences.Default.ImportTempo;
+            MixdownChannel = Preferences.Default.MixdownChannel;
+            MixdownSamplingRate = SamplingRateOptions.FirstOrDefault(x => x == Preferences.Default.MixdownSamplingRate, SamplingRateOptions[0]);
+            ParallelChannel = Preferences.Default.ParallelChannel;
+            ParallelSamplingRate = SamplingRateOptions.FirstOrDefault(x => x == Preferences.Default.ParallelSamplingRate, SamplingRateOptions[0]);
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -324,6 +337,36 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.RememberVsqx)
                 .Subscribe(index => {
                     Preferences.Default.RememberVsqx = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LaunchBehaviour)
+                .Subscribe(index => {
+                    Preferences.Default.LaunchBehaviour = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ImportTempo)
+                .Subscribe(index => {
+                    Preferences.Default.ImportTempo = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.MixdownChannel)
+                .Subscribe(index => {
+                    Preferences.Default.MixdownChannel = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.MixdownSamplingRate)
+                .Subscribe(samplingRate => {
+                    Preferences.Default.MixdownSamplingRate = samplingRate;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ParallelChannel)
+                .Subscribe(index => {
+                    Preferences.Default.ParallelChannel = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ParallelSamplingRate)
+                .Subscribe(samplingRate => {
+                    Preferences.Default.ParallelSamplingRate = samplingRate;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.ClearCacheOnQuit)
