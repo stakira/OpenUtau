@@ -177,25 +177,31 @@ namespace OpenUtau.Core.Voicevox {
             //Prepare for future additions of Teacher Singer.
             string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
 
-            if (phrase.phones.Length == phrase.notes.Length && phrase.phones.All(p => VoicevoxUtils.phoneme_List.kanas.ContainsKey(p.phoneme))) {
-                VoicevoxNote[] vnotes = new VoicevoxNote[phrase.phones.Length];
+            if (IsPhonemeNoteCountMatch(phrase) && phrase.phones.All(p => VoicevoxUtils.phoneme_List.kanas.ContainsKey(p.phoneme))) {
+                // TODO: slur support
+                List<VoicevoxNote> vnotes = new List<VoicevoxNote>();
+                //if (slur) {
                 for (int i = 0; i < phrase.phones.Length; i++) {
-                    vnotes[i] = new VoicevoxNote() {
+                    vnotes.Add(new VoicevoxNote() {
                         lyric = phrase.phones[i].phoneme,
                         positionMs = phrase.phones[i].positionMs,
                         durationMs = phrase.phones[i].durationMs,
                         tone = (int)(phrase.phones[i].tone + phrase.phones[i].toneShift)
-                    };
+                    });
                 }
+                //} else {
+                //}
 
-                VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes, phrase.timeAxis);
+                VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes.ToArray(), phrase.timeAxis);
 
                 vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, baseSingerID);
             } else {
-                VoicevoxNote[] vnotes = new VoicevoxNote[phrase.notes.Length];
-                for (int i = 0; i < vnotes.Length; i++) {
+                List<VoicevoxNote> vnotes = new List<VoicevoxNote>();
+                for (int i = 0; i < phrase.notes.Length; i++) {
+                    var durationMs = phrase.notes[i].durationMs;
                     var currentLyric = phrase.notes[i].lyric.Normalize();
                     var lyricList = currentLyric.Split(" ");
+                    var shiftTone = phrase.phones[0].toneShift;
                     if (lyricList.Length > 1) {
                         currentLyric = lyricList[1];
                     }
@@ -207,21 +213,29 @@ namespace OpenUtau.Core.Voicevox {
                         } else if (!VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
                             currentLyric = string.Empty;
                         }
-                    } else if(vnotes.Length <= i - 1 && 0 >= i - 1) {
-                        if(VoicevoxUtils.phoneme_List.kanas.TryGetValue(vnotes[i-1].lyric,out string str)){
-                            currentLyric = str;
-                        }
+                    } else if (vnotes.Count >= i - 1 && 0 <= i - 1) {
+                        // TODO: slur support
+                        //if (slur) {
+                        var tempNote = vnotes[vnotes.Count - 1];
+                        tempNote.durationMs += durationMs;
+                        vnotes[vnotes.Count - 1] = tempNote;
+                        continue;
+                        //} else {
+                        //    if (VoicevoxUtils.phoneme_List.kanas.TryGetValue(vnotes[i - 1].lyric, out string str)) {
+                        //        currentLyric = str;
+                        //    }
+                        //}
                     }
-                        vnotes[i] = new VoicevoxNote() {
-                            lyric = currentLyric,
-                            positionMs = phrase.notes[i].positionMs,
-                            durationMs = phrase.notes[i].durationMs,
-                            tone = (int)(phrase.notes[i].tone + (phrase.phones[i] != null ? phrase.phones[i].toneShift : 0))
-                        };
+                    vnotes.Add(new VoicevoxNote() {
+                        lyric = currentLyric,
+                        positionMs = phrase.notes[i].positionMs,
+                        durationMs = durationMs,
+                        tone = (int)(phrase.notes[i].tone + shiftTone)
+                    });
                 }
                 //Match the phonemes in the synthesis parameters to the scores in the score to update F0 and volume  
                 //Create parameters for the update source. 
-                VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes, phrase.timeAxis);
+                VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes.ToArray(), phrase.timeAxis);
                 VoicevoxSynthParams vsParams_1 = VoicevoxUtils.VoicevoxVoiceBase(vqMain, baseSingerID);
 
                 //Create parameters for the update destination.
@@ -231,6 +245,7 @@ namespace OpenUtau.Core.Voicevox {
 
                 if (vsParams.phonemes.Count == vsParams_1.phonemes.Count) {
                     for (int i = 0; i < vsParams_1.phonemes.Count; i++) {
+                        // TODO: Develop a VOICEVOX engine dedicated to OpenUtau so that synthesis parameters are updated when phonemes are changed.
                         //var flag = phrase.phones[i].flags.FirstOrDefault(f => f.Item1 == VoicevoxUtils.REPM);
                         //if (flag != null) {
                         //    if (flag.Item3.Equals(VoicevoxUtils.REPLACE)) {
@@ -253,6 +268,10 @@ namespace OpenUtau.Core.Voicevox {
                 }
             }
             return vsParams;
+        }
+
+        private bool IsPhonemeNoteCountMatch(RenderPhrase phrase) {
+            return phrase.phones.Length == phrase.notes.Where(note => !VoicevoxUtils.IsSyllableVowelExtensionNote(note.lyric)).Count();
         }
 
         private VoicevoxSynthParams PhonemeToVoicevoxSynthParams(RenderPhrase phrase) {
@@ -316,10 +335,11 @@ namespace OpenUtau.Core.Voicevox {
             return vsParams;
         }
 
+        // TODO: Development of a more stable tone shift
         //private List<double> ToneShift(RenderPhrase phrase, VoicevoxSynthParams vsParams) {
         //    //Compatible with toneShift (key shift), for adjusting the range of tones when synthesizing
         //    List<double> result = new List<double>();
-        //    if (!phrase.phonemizerTag.Equals("VOICEVOX JA")) {
+        //    if (IsPhonemeNoteCountMatch(phrase) && phrase.phones.All(p => VoicevoxUtils.phoneme_List.kanas.ContainsKey(p.phoneme))) {
         //        List<int> shifts = new List<int>() { 0 };
         //        shifts.AddRange(phrase.phones.Select(x => x.toneShift).ToList());
         //        shifts.Add(0);
@@ -403,7 +423,7 @@ namespace OpenUtau.Core.Voicevox {
                 if (singer != null) {
 
                     string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
-                    VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase, phrase.singer as VoicevoxSinger);
+                    VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase, phrase.singer as VoicevoxSinger/*, true*/);
                     double frameMs = (1000d / VoicevoxUtils.fps);
                     int vvTotalFrames = 0;
                     vsParams.phonemes.ForEach(x => vvTotalFrames += x.frame_length);

@@ -12,6 +12,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using OpenUtau.Core.Render;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PreferencesViewModel : ViewModelBase {
@@ -27,7 +28,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         [Reactive] public int LockStartTime { get; set; }
-        public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath)? PathManager.Inst.AdditionalSingersPath : "(None)";
+        public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath) ? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool LoadDeepFolders { get; set; }
         [Reactive] public bool PreRender { get; set; }
@@ -98,9 +99,9 @@ namespace OpenUtau.App.ViewModels {
                 .ToList();
         [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
         [Reactive] public bool LyricsHelperBrackets { get; set; }
-        [Reactive] public bool RememberMid{ get; set; }
-        [Reactive] public bool RememberUst{ get; set; }
-        [Reactive] public bool RememberVsqx{ get; set; }
+        [Reactive] public bool RememberMid { get; set; }
+        [Reactive] public bool RememberUst { get; set; }
+        [Reactive] public bool RememberVsqx { get; set; }
         [Reactive] public int LaunchBehaviour{ get; set; }
         [Reactive] public int ImportTempo{ get; set; }
         [Reactive] public int MixdownChannel { get; set; }
@@ -141,7 +142,7 @@ namespace OpenUtau.App.ViewModels {
             SortingOrders = Languages.ToList();
             SortingOrders.Insert(0, CultureInfo.InvariantCulture);
             SortingOrder = Preferences.Default.SortingOrder == null ? Language
-                : Preferences.Default.SortingOrder == string.Empty ? CultureInfo.InvariantCulture
+                : string.IsNullOrEmpty(Preferences.Default.SortingOrder) ? CultureInfo.InvariantCulture
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender;
             DefaultRendererOptions = Renderers.getRendererOptions();
@@ -411,7 +412,12 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void TestAudioOutputDevice() {
-            PlaybackManager.Inst.PlayTestSound();
+            try {
+                PlaybackManager.Inst.PlayTestSound();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to play test sound.");
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to play test sound.", e));
+            }
         }
 
         public void OpenResamplerLocation() {
