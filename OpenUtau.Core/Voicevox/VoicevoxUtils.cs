@@ -128,7 +128,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
 
                 }
-            } catch (Exception e) {
+            } catch (VoicevoxException e) {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
@@ -246,7 +246,7 @@ namespace OpenUtau.Core.Voicevox {
                     vqnindex = -1
                 });
 
-            } catch (Exception e) {
+            } catch (VoicevoxException e) {
                 Log.Error($"VoicevoxQueryNotes setup error.");
             }
             return vqMain;
@@ -300,7 +300,7 @@ namespace OpenUtau.Core.Voicevox {
                 //Fill head and tail
                 Array.Fill(result, convert(curve[0]), 0, headFrames);
                 Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
-            } catch (Exception e) {
+            } catch (VoicevoxException e) {
                 Log.Error($"SampleCurve:{e}");
             }
             return result;

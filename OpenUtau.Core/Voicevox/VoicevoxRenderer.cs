@@ -134,7 +134,7 @@ namespace OpenUtau.Core.Voicevox {
                                 if (bytes != null) {
                                     File.WriteAllBytes(wavPath, bytes);
                                 }
-                            } catch (Exception e) {
+                            } catch (VoicevoxException e) {
                                 Log.Error($"Failed to create a voice base.:{e}");
                             }
                             if (cancellation.IsCancellationRequested) {
@@ -153,7 +153,7 @@ namespace OpenUtau.Core.Voicevox {
                                 Renderers.ApplyDynamics(phrase, result);
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (VoicevoxException e) {
                         Log.Error(e.Message);
                         result.samples = new float[0];
                     }
@@ -258,8 +258,12 @@ namespace OpenUtau.Core.Voicevox {
                     //    }
                     //}
                 }
+            } else {
+                throw new MessageCustomizableException(
+                    $"Failed to create a voice base. The phoneme is not supported by the VOICEVOX engine.\n{string.Join(" ", phrase.phones.Select(p => p.phoneme))}",
+                    $"You are confusing phonemes and hiragana.\n{string.Join(" ", phrase.phones.Select(p => p.phoneme))}", new VoicevoxException());
             }
-            return vsParams;
+                return vsParams;
         }
 
         private bool IsPhonemeNoteCountMatch(RenderPhrase phrase) {
@@ -315,7 +319,7 @@ namespace OpenUtau.Core.Voicevox {
                     phoneme = "pau",
                     frame_length = tailFrames
                 });
-            } catch (Exception e) {
+            } catch (VoicevoxException e) {
                 Log.Error($"Failed to create a voice base.:{e}");
             }
 
@@ -444,7 +448,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     return result;
                 }
-            } catch (Exception e) {
+            } catch (VoicevoxException e) {
                 Log.Error(e.Message);
             }
             return null;
