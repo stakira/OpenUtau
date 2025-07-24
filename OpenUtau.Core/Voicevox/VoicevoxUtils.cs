@@ -306,12 +306,19 @@ namespace OpenUtau.Core.Voicevox {
             return result;
         }
 
+        public static bool IsDicKana(string s) {
+            return phoneme_List.kanas.ContainsKey(s);
+        }
+
+        public static bool IsDicPau(string s) {
+            return phoneme_List.paus.ContainsKey(s);
+        }
+
         public static bool IsVowel(string s) {
             return phoneme_List.vowels.Contains(s);
         }
-
-        public static bool IsPau(string s) {
-            return phoneme_List.paus.ContainsKey(s);
+        public static bool IsConsonant(string s) {
+            return phoneme_List.consonants.Contains(s);
         }
 
         public static bool TryGetPau(string s, out string str) {

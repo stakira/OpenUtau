@@ -177,7 +177,7 @@ namespace OpenUtau.Core.Voicevox {
             //Prepare for future additions of Teacher Singer.
             string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
 
-            if (IsPhonemeNoteCountMatch(phrase) && phrase.phones.All(p => VoicevoxUtils.phoneme_List.kanas.ContainsKey(p.phoneme))) {
+            if (phrase.phones.All(p => VoicevoxUtils.IsDicKana(p.phoneme) || VoicevoxUtils.IsDicPau(p.phoneme))) {
                 // TODO: slur support
                 List<VoicevoxNote> vnotes = new List<VoicevoxNote>();
                 //if (slur) {
@@ -195,7 +195,7 @@ namespace OpenUtau.Core.Voicevox {
                 VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes.ToArray(), phrase.timeAxis);
 
                 vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, baseSingerID);
-            } else {
+            } else if(phrase.phones.All(p => VoicevoxUtils.IsVowel(p.phoneme) || VoicevoxUtils.IsConsonant(p.phoneme))) {
                 List<VoicevoxNote> vnotes = new List<VoicevoxNote>();
                 for (int i = 0; i < phrase.notes.Length; i++) {
                     var durationMs = phrase.notes[i].durationMs;
@@ -206,11 +206,11 @@ namespace OpenUtau.Core.Voicevox {
                         currentLyric = lyricList[1];
                     }
                     if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
-                        if (VoicevoxUtils.IsPau(currentLyric)) {
+                        if (VoicevoxUtils.IsDicPau(currentLyric)) {
                             currentLyric = string.Empty;
                         } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
                             currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
-                        } else if (!VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
+                        } else if (!VoicevoxUtils.IsDicKana(currentLyric)) {
                             currentLyric = string.Empty;
                         }
                     } else if (vnotes.Count >= i - 1 && 0 <= i - 1) {
