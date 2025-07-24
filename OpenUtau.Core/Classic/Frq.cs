@@ -16,26 +16,14 @@ namespace OpenUtau.Classic {
 
         public OtoFrq(UOto oto, Dictionary<string, IFrqFiles> dict) {
             if (!dict.TryGetValue(oto.File, out IFrqFiles? frq)) {
-                var result = Load(oto.File, out frq);
-                if (result) {
-                    dict.Add(oto.File, frq!);
+                Load(oto.File, out frq);
+                if (frq != null) {
+                    dict.Add(oto.File, frq);
                 }
             }
 
             if(frq != null) {
                 hopSize = frq.hopSize;
-                /*  Might be needed in the future if the frequency files of engines that can handle wav's other than 44100Hz are supported.
-                if (frq.wavSampleRate == 0) {
-                    try {
-                        using (var waveStream = Core.Format.Wave.OpenFile(oto.File)) {
-                            var sampleProvider = waveStream.ToSampleProvider();
-                            frq.wavSampleRate = sampleProvider.WaveFormat.SampleRate;
-                        }
-                    } catch {
-                        frq.wavSampleRate = 44100;
-                    }
-                }*/
-
                 int offset = ConvertMsToFrqLength(frq, oto.Offset);
                 int consonant = ConvertMsToFrqLength(frq, oto.Offset + oto.Consonant);
                 int cutoff = oto.Cutoff < 0 ?
@@ -50,20 +38,19 @@ namespace OpenUtau.Classic {
             }
         }
 
-        private bool Load(string otoPath, out IFrqFiles? frqFile) {
+        private void Load(string otoPath, out IFrqFiles? frqFile) {
             var frq = new Frq();
             if (frq.Load(otoPath)) {
                 frqFile = frq;
-                return true;
+                return;
             }
             // Please write a code to read other frequency files!
 
             frqFile = null;
-            return false;
         }
 
         private int ConvertMsToFrqLength(IFrqFiles frq, double lengthMs) {
-            return (int)Math.Floor(lengthMs / 1000 * frq.wavSampleRate / frq.hopSize);
+            return (int)Math.Floor(lengthMs * frq.wavSampleRate / 1000 / frq.hopSize);
         }
 
         /// <summary>
@@ -116,6 +103,18 @@ namespace OpenUtau.Classic {
         /// If the wav path is null (machine learning voicebank), return false.
         /// </summary>
         public bool Load(string wavPath);
+
+        /* Might be needed in the future if the frequency files of engines that can handle wav's other than 44100Hz are supported.
+        if (frq.wavSampleRate == 0) {
+            try {
+                using (var waveStream = Core.Format.Wave.OpenFile(oto.File)) {
+                    var sampleProvider = waveStream.ToSampleProvider();
+                    frq.wavSampleRate = sampleProvider.WaveFormat.SampleRate;
+                }
+            } catch {
+                frq.wavSampleRate = 44100;
+            }
+        }*/
     }
 
     public class Frq : IFrqFiles {
@@ -125,7 +124,7 @@ namespace OpenUtau.Classic {
         public double averageF0 { get; private set; }
         public double[] f0 { get; private set; } = new double[0];
         public double[] amp { get; private set; } = new double[0];
-        public int wavSampleRate { get; set; }
+        public int wavSampleRate { get; set; } = 44100; // Sample rate for .frq files is fixed
 
         public bool Load(string wavPath) {
             if (string.IsNullOrEmpty(wavPath)) {
