@@ -67,7 +67,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.preEffectHash:x16}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}.wav");
                     phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
@@ -88,14 +88,6 @@ namespace OpenUtau.Core.Voicevox {
                                 } else {
                                     //vsParams.f0 = ToneShift(phrase, vsParams);
                                     vsParams.f0 = vsParams.f0.Select(f0 => f0 = f0 * Math.Pow(2, ((phrase.phones[0].toneShift * -1) / 12d))).ToList();
-                                }
-
-                                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == SMOC);
-                                if (exprCurve != null) {
-                                    List<int> exprs = VoicevoxUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, vvTotalFrames, vsParams.phonemes[0].frame_length, vsParams.phonemes[^1].frame_length, -(VoicevoxUtils.headS + 10), x => x).Select(x => (int)x).ToList();
-                                    var f0S = new F0Smoother(vsParams.f0);
-                                    f0S.SmoothenWidthList = exprs;
-                                    vsParams.f0 = f0S.GetSmoothenedF0List(vsParams.f0);
                                 }
 
                                 //Volume parameter for synthesis. Scheduled to be revised
