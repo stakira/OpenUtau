@@ -84,7 +84,13 @@ jobs:
         run: |
           cd bin/${{ matrix.arch.name }}
           7z a ../../OpenUtau-${{ matrix.arch.name }}.zip *
-        if: ${{ matrix.arch.os != 'osx' }}
+        if: ${{ matrix.arch.os == 'win' }}
+
+      - name: Tar.gz
+        run: |
+          cd bin/${{ matrix.arch.name }}
+          tar -czf ../../OpenUtau-${{ matrix.arch.name }}.tar.gz *
+        if: ${{ matrix.arch.os == 'linux' }}
 
       # Create Installer
       - name: Get VC Redist
@@ -113,9 +119,15 @@ jobs:
       # Upload Artifacts
       - uses: actions/upload-artifact@v4
         with:
+          name: OpenUtau-${{ matrix.arch.name }}.tar.gz
+          path: OpenUtau-${{ matrix.arch.name }}.tar.gz
+        if: ${{ !inputs.release && matrix.arch.os == 'linux' }}
+
+      - uses: actions/upload-artifact@v4
+        with:
           name: OpenUtau-${{ matrix.arch.name }}.zip
           path: OpenUtau-${{ matrix.arch.name }}.zip
-        if: ${{ !inputs.release && matrix.arch.os != 'osx' }}
+        if: ${{ !inputs.release && matrix.arch.os == 'win' }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -144,7 +156,7 @@ jobs:
 
       - name: Appcast Linux
         run: |
-          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.zip
+          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.tar.gz
         if: ${{ inputs.release && matrix.arch.os == 'linux' }}
 
       # Release
