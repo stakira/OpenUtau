@@ -183,7 +183,7 @@ namespace OpenUtau.Core.Voicevox {
                 VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vnotes.ToArray(), phrase.timeAxis);
 
                 vsParams = VoicevoxUtils.VoicevoxVoiceBase(vqMain, baseSingerID);
-            } else if(phrase.phones.All(p => VoicevoxUtils.IsVowel(p.phoneme) || VoicevoxUtils.IsConsonant(p.phoneme))) {
+            } else if (phrase.phones.All(p => VoicevoxUtils.IsVowel(p.phoneme) || VoicevoxUtils.IsConsonant(p.phoneme))) {
                 List<VoicevoxNote> vnotes = new List<VoicevoxNote>();
                 for (int i = 0; i < phrase.notes.Length; i++) {
                     var durationMs = phrase.notes[i].durationMs;
@@ -259,7 +259,7 @@ namespace OpenUtau.Core.Voicevox {
                     $"Failed to create a voice base. The phoneme is not supported by the VOICEVOX engine.\n{string.Join(" ", phrase.phones.Select(p => p.phoneme))}",
                     $"You are confusing phonemes and hiragana.\n{string.Join(" ", phrase.phones.Select(p => p.phoneme))}", new VoicevoxException());
             }
-                return vsParams;
+            return vsParams;
         }
 
         private VoicevoxSynthParams PhonemeToVoicevoxSynthParams(RenderPhrase phrase) {
@@ -312,7 +312,7 @@ namespace OpenUtau.Core.Voicevox {
                     frame_length = tailFrames
                 });
             } catch (Exception e) {
-                throw new VoicevoxException("Failed to create a voice base.",e);
+                throw new VoicevoxException("Failed to create a voice base.", e);
             }
 
             int totalFrames = 0;
