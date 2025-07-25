@@ -122,8 +122,8 @@ jobs:
         run: |
           cp OpenUtau/Assets/OpenUtau.desktop bin/${{ matrix.arch.name }}
           cp OpenUtau/Assets/OpenUtau.png bin/${{ matrix.arch.name }}
+          cp OpenUtau/Assets/OpenUtau.png bin/${{ matrix.arch.name }}/.DirIcon
           cp OpenUtau/Assets/AppRun bin/${{ matrix.arch.name }}
-          ln -s bin/${{ matrix.arch.name }}/OpenUtau.png bin/${{ matrix.arch.name }}/.DirIcon
           chmod 755 bin/${{ matrix.arch.name }}/AppRun
           ARCH=${{ matrix.arch.linuxarch }} linuxdeploy --appdir bin/${{ matrix.arch.name }} --output appimage
         if: ${{ matrix.arch.os == 'linux' }}
