@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Serilog;
 
 namespace ThirdParty {
-    class F0SmootherExtension : Exception
-    {
-        public F0SmootherExtension() { }
-        public F0SmootherExtension(string message) : base(message) { }
-        public F0SmootherExtension(string message, Exception inner) : base(message, inner) { }
-    }
-
     /// <summary>
     /// F0Smoother is a class that provides methods to smoothen and repair F0 (fundamental frequency) values in a list.
     /// <para>
@@ -41,10 +33,15 @@ namespace ThirdParty {
 
         public List<double> RepairSuddenZeroF0(List<double> f0List) {
             var newF0List = new List<double>(f0List);
-            for (int i = 1; i < f0List.Count - 2; i++) {
-                if (f0List[i] == 0 && f0List[i - 1] != 0 && f0List[i + 1] != 0) {
-                    newF0List[i] = (f0List[i - 1] + f0List[i + 1]) / 2.0;
+            try {
+                for (int i = 1; i < f0List.Count - 2; i++) {
+                    if (f0List[i] == 0 && f0List[i - 1] != 0 && f0List[i + 1] != 0) {
+                        newF0List[i] = (f0List[i - 1] + f0List[i + 1]) / 2.0;
+                    }
                 }
+            } catch (Exception e) {
+                Log.Error($"Error in RepairSuddenZeroF0.:{e.Message}");
+                throw e;
             }
             return newF0List;
         }
@@ -52,20 +49,25 @@ namespace ThirdParty {
         public List<double> RepairJaggyF0(List<double> f0List, double ignoreThreshold) {
             var newF0List = new List<double>(f0List);
             var indices = new List<int>();
-            for (int i = 2; i < f0List.Count - 2; i++) {
-                if (f0List[i - 1] == 0 || f0List[i] == 0 || f0List[i + 1] == 0 || f0List[i + 2] == 0)
-                    continue;
-                double delta1 = f0List[i + 1] - f0List[i];
-                double delta3 = f0List[i + 2] - f0List[i - 1];
-                if (delta3 == 0) continue;
-                if (Math.Abs(delta1) < ignoreThreshold) continue;
-                if (delta1 * delta3 < 0)
-                    indices.Add(i);
-            }
-            foreach (var idx in indices) {
-                newF0List[idx - 1] = 0.75 * newF0List[idx - 2] + 0.25 * newF0List[idx + 2];
-                newF0List[idx] = 0.5 * newF0List[idx - 2] + 0.5 * newF0List[idx + 2];
-                newF0List[idx + 1] = 0.25 * newF0List[idx - 2] + 0.75 * f0List[idx + 2];
+            try {
+                for (int i = 2; i < f0List.Count - 2; i++) {
+                    if (f0List[i - 1] == 0 || f0List[i] == 0 || f0List[i + 1] == 0 || f0List[i + 2] == 0)
+                        continue;
+                    double delta1 = f0List[i + 1] - f0List[i];
+                    double delta3 = f0List[i + 2] - f0List[i - 1];
+                    if (delta3 == 0) continue;
+                    if (Math.Abs(delta1) < ignoreThreshold) continue;
+                    if (delta1 * delta3 < 0)
+                        indices.Add(i);
+                }
+                foreach (var idx in indices) {
+                    newF0List[idx - 1] = 0.75 * newF0List[idx - 2] + 0.25 * newF0List[idx + 2];
+                    newF0List[idx] = 0.5 * newF0List[idx - 2] + 0.5 * newF0List[idx + 2];
+                    newF0List[idx + 1] = 0.25 * newF0List[idx - 2] + 0.75 * f0List[idx + 2];
+                }
+            } catch (Exception e) {
+                Log.Error($"Error in RepairJaggyF0.:{e.Message}");
+                throw e;
             }
             return newF0List;
         }
@@ -92,9 +94,11 @@ namespace ThirdParty {
                         if (right >= 0 && right < f0Copy.Count)
                             f0Copy[right] = ratioTarget * targetF0 + ratioOriginal * f0Copy[right];
                     }
+                    throw new Exception();
                 }
-            } catch (F0SmootherExtension e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                Log.Error($"Error in GetSmoothenedF0List.:{e.Message}");
+                throw e;
             }
             return f0Copy;
         }
@@ -112,8 +116,9 @@ namespace ThirdParty {
                     if (delta1 / delta3 > DetectThresholdList[i])
                         indices.Add(i);
                 }
-            } catch (F0SmootherExtension e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                Log.Error($"Error in GetRapidF0ChangeIndices.:{e.Message}");
+                throw e;
             }
             return indices;
         }
@@ -134,8 +139,9 @@ namespace ThirdParty {
                         result[i + 1] -= 2;
                     }
                 }
-            } catch (F0SmootherExtension e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                Log.Error($"Error in ReduceIndices.:{e.Message}");
+                throw e;
             }
             return result.Where(idx => idx >= 0).ToList();
         }
@@ -153,8 +159,9 @@ namespace ThirdParty {
                         width--;
                     adjustedWidths.Add(width);
                 }
-            } catch (F0SmootherExtension e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                Log.Error($"Error in GetAdjustedWidths.:{e.Message}");
+                throw e;
             }
             return adjustedWidths;
         }
@@ -172,8 +179,9 @@ namespace ThirdParty {
                     double targetF0 = (f0Left + f0Right) / 2.0;
                     targetF0List.Add(targetF0);
                 }
-            } catch (F0SmootherExtension e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                Log.Error($"Error in GetTargetF0List.:{e.Message}");
+                throw e;
             }
             return targetF0List;
         }

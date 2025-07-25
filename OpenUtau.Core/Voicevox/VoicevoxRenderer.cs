@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using K4os.Hash.xxHash;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +11,6 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using SharpCompress;
 using ThirdParty;
 
 /*
@@ -77,7 +75,6 @@ namespace OpenUtau.Core.Voicevox {
                                 VoicevoxUtils.Loaddic(singer);
                             }
                             try {
-                                Log.Information($"Starting Voicevox synthesis");
                                 VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase, phrase.singer as VoicevoxSinger);
 
                                 int vvTotalFrames = 0;
@@ -128,14 +125,14 @@ namespace OpenUtau.Core.Voicevox {
                                 } else if (!string.IsNullOrEmpty(response.Item1)) {
                                     var jObj = JObject.Parse(response.Item1);
                                     if (jObj.ContainsKey("detail")) {
-                                        Log.Error($"Failed to create a voice base. : {jObj}");
+                                        Log.Error($"Voice synthesis failed with the VOICEVOX engine. : {jObj}");
                                     }
                                 }
                                 if (bytes != null) {
                                     File.WriteAllBytes(wavPath, bytes);
                                 }
-                            } catch (VoicevoxException e) {
-                                Log.Error($"Failed to create a voice base.:{e}");
+                            } catch (Exception e) {
+                                throw new VoicevoxException("Failed to create a voice base.", e);
                             }
                             if (cancellation.IsCancellationRequested) {
                                 return new RenderResult();
@@ -153,9 +150,8 @@ namespace OpenUtau.Core.Voicevox {
                                 Renderers.ApplyDynamics(phrase, result);
                             }
                         }
-                    } catch (VoicevoxException e) {
-                        Log.Error(e.Message);
-                        result.samples = new float[0];
+                    } catch (Exception e) {
+                        throw new VoicevoxException("The WAV file could not be read.", e);
                     }
                     return result;
                 }
@@ -315,8 +311,8 @@ namespace OpenUtau.Core.Voicevox {
                     phoneme = "pau",
                     frame_length = tailFrames
                 });
-            } catch (VoicevoxException e) {
-                Log.Error($"Failed to create a voice base.:{e}");
+            } catch (Exception e) {
+                throw new VoicevoxException("Failed to create a voice base.",e);
             }
 
             int totalFrames = 0;
@@ -444,8 +440,8 @@ namespace OpenUtau.Core.Voicevox {
                     }
                     return result;
                 }
-            } catch (VoicevoxException e) {
-                Log.Error(e.Message);
+            } catch (Exception e) {
+                throw new VoicevoxException("Failed to create pitch data.", e);
             }
             return null;
         }
