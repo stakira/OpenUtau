@@ -67,7 +67,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in RepairJaggyF0.:{e.Message}");
-                throw e;
+                throw;
             }
             return newF0List;
         }
