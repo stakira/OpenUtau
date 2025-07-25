@@ -35,7 +35,7 @@ jobs:
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
           - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13 }
           - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, linuxarch: a86_64}
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, linuxarch: x86_64}
           - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest, linuxarch: aarch64}
 
     steps:
