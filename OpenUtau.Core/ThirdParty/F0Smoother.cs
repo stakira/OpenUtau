@@ -41,7 +41,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in RepairSuddenZeroF0.:{e.Message}");
-                throw e;
+                throw;
             }
             return newF0List;
         }
@@ -97,7 +97,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in GetSmoothenedF0List.:{e.Message}");
-                throw e;
+                throw;
             }
             return f0Copy;
         }
@@ -117,7 +117,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in GetRapidF0ChangeIndices.:{e.Message}");
-                throw e;
+                throw;
             }
             return indices;
         }
@@ -140,7 +140,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in ReduceIndices.:{e.Message}");
-                throw e;
+                throw;
             }
             return result.Where(idx => idx >= 0).ToList();
         }
@@ -160,7 +160,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in GetAdjustedWidths.:{e.Message}");
-                throw e;
+                throw;
             }
             return adjustedWidths;
         }
@@ -180,7 +180,7 @@ namespace ThirdParty {
                 }
             } catch (Exception e) {
                 Log.Error($"Error in GetTargetF0List.:{e.Message}");
-                throw e;
+                throw;
             }
             return targetF0List;
         }
