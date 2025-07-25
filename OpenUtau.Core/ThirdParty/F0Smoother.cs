@@ -94,7 +94,6 @@ namespace ThirdParty {
                         if (right >= 0 && right < f0Copy.Count)
                             f0Copy[right] = ratioTarget * targetF0 + ratioOriginal * f0Copy[right];
                     }
-                    throw new Exception();
                 }
             } catch (Exception e) {
                 Log.Error($"Error in GetSmoothenedF0List.:{e.Message}");
