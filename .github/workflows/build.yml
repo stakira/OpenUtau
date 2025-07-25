@@ -124,7 +124,7 @@ jobs:
           cp OpenUtau/Assets/OpenUtau.png bin/${{ matrix.arch.name }}
           cp OpenUtau/Assets/AppRun bin/${{ matrix.arch.name }}
           ARCH=${{ matrix.arch.linuxarch }} linuxdeploy --appdir bin/${{ matrix.arch.name }} --output appimage
-          mv OpenUtau-{{ matrix.arch.linuxarch }}.AppImage OpenUtau-${{ matrix.arch.name }}.AppImage
+          mv -i OpenUtau-{{ matrix.arch.linuxarch }}.AppImage OpenUtau-${{ matrix.arch.name }}.AppImage
         if: ${{ matrix.arch.os == 'linux' }}
 
       # Upload Artifacts
