@@ -17,7 +17,6 @@ namespace OpenUtau.Core.Voicevox {
             base.SetSinger(singer);
             this.singer = singer as VoicevoxSinger;
             if (this.singer != null) {
-                this.singer.voicevoxConfig.Tag = this.Tag;
                 VoicevoxUtils.Loaddic(this.singer);
             }
         }
