@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,9 +40,8 @@ namespace OpenUtau.Core.DiffSinger
             }
             //Load language id if needed
             if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
-                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return;
+                if(dsConfig.languages == null) {
+                    throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
@@ -53,9 +52,15 @@ namespace OpenUtau.Core.DiffSinger
                 }
             }
             //Load phonemes list
+            if (dsConfig.phonemes == null) {
+                throw new Exception("Configuration key \"phonemes\" is null.");
+            }
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
             //Load models
+            if (dsConfig.linguistic == null) {
+                throw new Exception("Configuration key \"linguistic\" is null.");
+            }
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
             linguisticHash = XXH64.DigestOf(linguisticModelBytes);
@@ -181,6 +186,7 @@ namespace OpenUtau.Core.DiffSinger
             if (linguisticOutputs is null) {
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
+                phrase.AddCacheFile(linguisticCache?.Filename);
             }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -284,7 +290,7 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, retake.Length })));
-            var steps = Preferences.Default.DiffSingerSteps;
+            var steps = Preferences.Default.DiffSingerStepsPitch;
             if (dsConfig.useContinuousAcceleration) {
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
                     new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));

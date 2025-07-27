@@ -5,13 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
-using NumSharp;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
-using static NetMQ.NetMQSelector;
 
 namespace OpenUtau.Classic {
     public class WorldlineRenderer : IRenderer {
@@ -58,6 +56,7 @@ namespace OpenUtau.Classic {
             var task = Task.Run(() => {
                 var result = Layout(phrase);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
+                phrase.AddCacheFile(wavPath);
                 string progressInfo = $"Track {trackNo + 1}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
                 progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
@@ -77,7 +76,23 @@ namespace OpenUtau.Classic {
                         double lengthMs = item.phone.envelope[4].X - item.phone.envelope[0].X;
                         double fadeInMs = item.phone.envelope[1].X - item.phone.envelope[0].X;
                         double fadeOutMs = item.phone.envelope[4].X - item.phone.envelope[3].X;
-                        phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                        try {
+                            phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                        } catch (SynthRequestError e) {
+                            if(e is CutOffExceedDurationError cee) {
+                                throw new MessageCustomizableException(
+                                    $"Failed to render\n Oto error: cutoff exceeds audio duration \n{item.phone.phoneme}",
+                                    $"<translate:errors.failed.synth.cutoffexceedduration>\n{item.phone.phoneme}",
+                                    e);
+                            }
+                            if(e is CutOffBeforeOffsetError cbe) {
+                                throw new MessageCustomizableException(
+                                    $"Failed to render\n Oto error: cutoff before offset \n{item.phone.phoneme}",
+                                    $"<translate:errors.failed.synth.cutoffbeforeoffset>\n{item.phone.phoneme}",
+                                    e);
+                            }
+                            throw e;
+                        }
                     }
                     int frames = (int)Math.Ceiling(result.estimatedLengthMs / frameMs);
                     var f0 = SampleCurve(phrase, phrase.pitches, 0, frames, x => MusicMath.ToneToFreq(x * 0.01));

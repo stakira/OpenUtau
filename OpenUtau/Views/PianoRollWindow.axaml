@@ -8,62 +8,14 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
         Icon="/Assets/open-utau.ico"
-        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
+        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" Closing="WindowClosing"
         Focusable="True"
         TransparencyLevelHint="None"
         Deactivated="WindowDeactivated">
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
-  <Grid Margin="{Binding $parent[1].WindowDecorationMargin}">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="24"/>
-      <RowDefinition Height="24"/>
-      <RowDefinition Height="24"/>
-      <RowDefinition Height="*" MinHeight="200"/>
-      <RowDefinition Height="10"/>
-      <RowDefinition Height="150" MinHeight="132" MaxHeight="600"/>
-      <RowDefinition Height="4"/>
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="60"/>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="24"/>
-      <ColumnDefinition Width="Auto"/>
-    </Grid.ColumnDefinitions>
-    <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2">
-      <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
-      <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
-        <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-               Width="50" Height="50" Stretch="UniformToFill" Source="{Binding NotesViewModel.Avatar}"/>
-      </Border>
-    </Grid>
-    <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-               Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
-               DataContext="{Binding NotesViewModel}"
-               Maximum="{Binding HScrollBarMax, Mode=OneWay}"
-               Value="{Binding TickOffset}"
-               ViewportSize="{Binding ViewportTicks}"
-               LargeChange="{Binding ViewportTicks}"
-               SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
-    <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-               Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
-               DataContext="{Binding NotesViewModel}"
-               Maximum="{Binding VScrollBarMax, Mode=OneWay}"
-               Value="{Binding TrackOffset}"
-               ViewportSize="{Binding ViewportTracks}"
-               LargeChange="{Binding ViewportTracks}"
-               SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
-    <c:TrackBackground Grid.Column="0" Grid.Row="3" IsPianoRoll="True" IsKeyboard="True"
-                       DataContext="{Binding NotesViewModel}"
-                       TrackHeight="{Binding TrackHeight}"
-                       TrackOffset="{Binding TrackOffset}"
-                       Key="{Binding Key}"
-                       PointerWheelChanged="KeyboardPointerWheelChanged"
-                       PointerPressed="KeyboardPointerPressed"
-                       PointerMoved="KeyboardPointerMoved"
-                       PointerReleased="KeyboardPointerReleased"/>
-    <Grid  Grid.Column="0" Grid.Row="5">
+    <Grid Margin="{Binding $parent[1].WindowDecorationMargin}"　PointerMoved="BackgroundPointerMoved">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="24"/>
@@ -605,13 +557,15 @@
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         Part="{Binding NotesViewModel.Part}"
-                        Key="{Binding NotesViewModel.SecondaryKey}"/>
+                        Key="{Binding NotesViewModel.SecondaryKey}"
+                        ShowRealCurve="False"/>
     <c:ExpressionCanvas Grid.Row="5" Grid.Column="1"
                         Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         Part="{Binding NotesViewModel.Part}"
                         Key="{Binding NotesViewModel.PrimaryKey}"
+                        ShowRealCurve="True"
                         PointerPressed="ExpCanvasPointerPressed"
                         PointerMoved="ExpCanvasPointerMoved"
                         PointerReleased="ExpCanvasPointerReleased">
