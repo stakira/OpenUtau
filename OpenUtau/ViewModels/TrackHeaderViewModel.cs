@@ -60,6 +60,7 @@ namespace OpenUtau.App.ViewModels {
             SelectSingerCommand = ReactiveCommand.Create<USinger>(singer => {
                 if (track.Singer != singer) {
                     DocManager.Inst.StartUndoGroup();
+                    Log.Information($"Loading Singer: {singer.Name}");
                     DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
                     if (!string.IsNullOrEmpty(singer?.Id) &&
                         Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName) &&
@@ -97,6 +98,7 @@ namespace OpenUtau.App.ViewModels {
                 if (track.Phonemizer.GetType() != factory.type) {
                     DocManager.Inst.StartUndoGroup();
                     var phonemizer = factory.Create();
+                    Log.Information($"Loading Phonemizer: {phonemizer.ToString()}");
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
                     var name = phonemizer.GetType().FullName!;
@@ -254,6 +256,21 @@ namespace OpenUtau.App.ViewModels {
                     Command = SelectSingerCommand,
                     CommandParameter = singer,
                 }));
+            items.Add(new SingerMenuItemViewModel() {
+                Header = ThemeManager.GetString("tracks.favorite") + " ...",
+                Items = Preferences.Default.FavoriteSingers
+                    .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
+                    .OfType<USinger>()
+                    .LocalizedOrderBy(singer => singer.LocalizedName)
+                    .Select(singer => new SingerMenuItemViewModel() {
+                        Header = singer.LocalizedName,
+                        Command = SelectSingerCommand,
+                        CommandParameter = singer,
+                    }).ToArray(),
+            });
+
+            var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
+            foreach (var key in keys) {
                 items.Add(new SingerMenuItemViewModel() {
                     Header = "Favourites ...",
                     Items = Preferences.Default.FavoriteSingers
@@ -324,13 +341,7 @@ namespace OpenUtau.App.ViewModels {
                         }
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to install singer {file}");
-                        MessageCustomizableException mce;
-                        if(e is MessageCustomizableException){
-                            mce = (MessageCustomizableException)e;
-                        } else {
-                            mce = new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e);
-                        }
-                        _ = await MessageBox.ShowError(mainWindow, mce);
+                        _ = await MessageBox.ShowError(mainWindow, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
                     }
                 })
             });

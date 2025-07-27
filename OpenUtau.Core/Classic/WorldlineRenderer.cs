@@ -76,7 +76,23 @@ namespace OpenUtau.Classic {
                         double lengthMs = item.phone.envelope[4].X - item.phone.envelope[0].X;
                         double fadeInMs = item.phone.envelope[1].X - item.phone.envelope[0].X;
                         double fadeOutMs = item.phone.envelope[4].X - item.phone.envelope[3].X;
-                        phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                        try {
+                            phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                        } catch (SynthRequestError e) {
+                            if(e is CutOffExceedDurationError cee) {
+                                throw new MessageCustomizableException(
+                                    $"Failed to render\n Oto error: cutoff exceeds audio duration \n{item.phone.phoneme}",
+                                    $"<translate:errors.failed.synth.cutoffexceedduration>\n{item.phone.phoneme}",
+                                    e);
+                            }
+                            if(e is CutOffBeforeOffsetError cbe) {
+                                throw new MessageCustomizableException(
+                                    $"Failed to render\n Oto error: cutoff before offset \n{item.phone.phoneme}",
+                                    $"<translate:errors.failed.synth.cutoffbeforeoffset>\n{item.phone.phoneme}",
+                                    e);
+                            }
+                            throw e;
+                        }
                     }
                     int frames = (int)Math.Ceiling(result.estimatedLengthMs / frameMs);
                     var f0 = SampleCurve(phrase, phrase.pitches, 0, frames, x => MusicMath.ToneToFreq(x * 0.01));

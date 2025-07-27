@@ -292,6 +292,10 @@
             <TextBlock Text="{DynamicResource prefs.cache.diffsingertensorcache}" HorizontalAlignment="Left" />
             <ToggleSwitch IsChecked="{Binding DiffSingerTensorCache}" />
           </Grid>
+          <Grid Margin="0,5,0,0">
+            <TextBlock Text="{DynamicResource prefs.appearance.diffsingerlangcodehide}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding DiffSingerLangCodeHide}" />
+          </Grid>
         </StackPanel>
 
         <!-- Advanced -->
@@ -305,12 +309,20 @@
             <CheckBox IsChecked="{Binding RememberVsqx}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
             <TextBlock Text=" .vsqx" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
           </Grid>
-          <TextBlock Text="{DynamicResource prefs.advanced.importtempo}" Margin="0,10,0,0"/>
-          <ComboBox SelectedIndex="{Binding ImportTempo}">
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.always}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.never}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.advanced.importtempo.ask}"/>
-          </ComboBox>
+          <TextBlock Text="{DynamicResource prefs.advanced.winepath}" 
+                      IsVisible="{OnPlatform Windows=False, Default=True}" Margin="0,10,0,0"/>
+          <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                      TextWrapping="Wrap" FontSize="11" Text="{Binding WinePath}"
+                      IsVisible="{OnPlatform Windows=False, Default=True}" />
+          <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*,10,*"
+                IsVisible="{OnPlatform Windows=False, Default=True}">
+            <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                    HorizontalAlignment="Stretch" Click="ResetWinePath"/>
+            <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                    HorizontalAlignment="Stretch" Click="SelectWinePath"/>
+            <Button Grid.Column="4" Content="{DynamicResource prefs.paths.detect}"
+                    HorizontalAlignment="Stretch" Click="DetectWinePath"/>
+          </Grid>
         </StackPanel>
       </Carousel>
     </ScrollViewer>
