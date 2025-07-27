@@ -12,8 +12,15 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
-        void ResetCustomDataPath(object sender, RoutedEventArgs e) {
-            ((PreferencesViewModel)DataContext!).SetCustomDataPath(string.Empty);
+        async void ResetCustomDataPath(object sender, RoutedEventArgs e) {
+            var result = ((PreferencesViewModel)DataContext!).SetCustomDataPath(string.Empty);
+            if (result) {
+                await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("prefs.paths.datapath.warning"),
+                    ThemeManager.GetString("warning"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
         }
 
         async void SelectCustomDataPath(object sender, RoutedEventArgs e) {
@@ -22,7 +29,14 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (Directory.Exists(path)) {
-                ((PreferencesViewModel)DataContext!).SetCustomDataPath(path);
+                var result = ((PreferencesViewModel)DataContext!).SetCustomDataPath(path);
+                if (result) {
+                    await MessageBox.Show(
+                        this,
+                        ThemeManager.GetString("prefs.paths.datapath.warning"),
+                        ThemeManager.GetString("warning"),
+                        MessageBox.MessageBoxButtons.Ok);
+                }
             }
         }
 

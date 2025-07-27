@@ -8,10 +8,10 @@ using System.Text.RegularExpressions;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using OpenUtau.Core.Render;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
@@ -388,13 +388,19 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        public void SetCustomDataPath(string path) {
+        public bool SetCustomDataPath(string path) {
             try {
                 PathManager.Inst.SetCustomDataPath(path);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to set data path; cannot access {path}", e));
+                if (string.IsNullOrEmpty(path)) {
+                    path = "default path";
+                }
+                var customEx = new MessageCustomizableException("Failed to set data path", "<translate:prefs.paths.datapath.error>", e, true, [path]);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                return false;
             }
             this.RaisePropertyChanged(nameof(DataPath));
+            return true;
         }
         
         public void SetAddlSingersPath(string path) {
