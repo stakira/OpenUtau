@@ -64,7 +64,6 @@ namespace OpenUtau.App.ViewModels {
         public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath) ? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool LoadDeepFolders { get; set; }
-        // public string CachePath => PathManager.Inst.CachePath;
 
         // Editing
         public List<LyricsHelperOption> LyricsHelpers { get; } =
@@ -106,26 +105,15 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public string SetParamPath => Preferences.Default.SetParamPath;
-        public string WinePath => Preferences.Default.WinePath;
-
-        public class LyricsHelperOption {
-            public readonly Type klass;
-            public LyricsHelperOption(Type klass) {
-                this.klass = klass;
-            }
-            public override string ToString() {
-                return klass.Name;
-            }
-        }
 
         // Diffsinger
         public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
         public List<int> DiffSingerStepsVarianceOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
         public List<int> DiffSingerStepsPitchOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-        [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public int DiffSingerSteps { get; set; }
         [Reactive] public int DiffSingerStepsVariance { get; set; }
         [Reactive] public int DiffSingerStepsPitch { get; set; }
+        [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
         [Reactive] public bool DiffSingerLangCodeHide { get; set; }
 
@@ -133,7 +121,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid { get; set; }
         [Reactive] public bool RememberUst { get; set; }
         [Reactive] public bool RememberVsqx { get; set; }
-        [Reactive] public int ImportTempo { get; set; }
+        public string WinePath => Preferences.Default.WinePath;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;

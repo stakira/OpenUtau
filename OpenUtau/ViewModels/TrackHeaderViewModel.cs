@@ -268,18 +268,6 @@ namespace OpenUtau.App.ViewModels {
                             CommandParameter = singer,
                         }).ToArray(),
                 });
-                items.Add(new SingerMenuItemViewModel() {
-                    Header = "Favourites ...",
-                    Items = Preferences.Default.FavoriteSingers
-                        .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
-                        .OfType<USinger>()
-                        .LocalizedOrderBy(singer => singer.LocalizedName)
-                        .Select(singer => new SingerMenuItemViewModel() {
-                            Header = singer.LocalizedName,
-                            Command = SelectSingerCommand,
-                            CommandParameter = singer,
-                        }).ToArray(),
-                });
                 var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
                 foreach (var key in keys) {
                     items.Add(new SingerMenuItemViewModel() {
