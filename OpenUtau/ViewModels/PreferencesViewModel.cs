@@ -61,7 +61,6 @@ namespace OpenUtau.App.ViewModels {
 
         // Paths
         public string SingerPath => PathManager.Inst.SingersPath;
-        [Reactive] public int LockStartTime { get; set; }
         public string AdditionalSingersPath => !string.IsNullOrWhiteSpace(PathManager.Inst.AdditionalSingersPath) ? PathManager.Inst.AdditionalSingersPath : "(None)";
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool LoadDeepFolders { get; set; }
@@ -108,27 +107,6 @@ namespace OpenUtau.App.ViewModels {
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public string SetParamPath => Preferences.Default.SetParamPath;
         public string WinePath => Preferences.Default.WinePath;
-        [Reactive] public bool ClearCacheOnQuit { get; set; }
-        public int LogicalCoreCount {
-            get => Environment.ProcessorCount;
-        }
-        public int SafeMaxThreadCount {
-            get => Math.Min(8, LogicalCoreCount / 2);
-        }
-
-        public List<CultureInfo>? Languages { get; }
-        public CultureInfo? Language {
-            get => language;
-            set => this.RaiseAndSetIfChanged(ref language, value);
-        }
-
-        public List<CultureInfo>? SortingOrders { get; }
-        public CultureInfo? SortingOrder {
-            get => sortingOrder;
-            set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
-        }
-
-        [Reactive] public bool Beta { get; set; }
 
         public class LyricsHelperOption {
             public readonly Type klass;
@@ -139,15 +117,17 @@ namespace OpenUtau.App.ViewModels {
                 return klass.Name;
             }
         }
-        public List<LyricsHelperOption> LyricsHelpers { get; } =
-            ActiveLyricsHelper.Inst.Available
-                .Select(klass => new LyricsHelperOption(klass))
-                .ToList();
-        [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
-        [Reactive] public bool LyricsHelperBrackets { get; set; }
-        [Reactive] public bool RememberMid { get; set; }
-        [Reactive] public bool RememberUst { get; set; }
-        [Reactive] public bool RememberVsqx { get; set; }
+
+        // Diffsinger
+        public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+        public List<int> DiffSingerStepsVarianceOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+        public List<int> DiffSingerStepsPitchOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
+        [Reactive] public double DiffSingerDepth { get; set; }
+        [Reactive] public int DiffSingerSteps { get; set; }
+        [Reactive] public int DiffSingerStepsVariance { get; set; }
+        [Reactive] public int DiffSingerStepsPitch { get; set; }
+        [Reactive] public bool DiffSingerTensorCache { get; set; }
+        [Reactive] public bool DiffSingerLangCodeHide { get; set; }
 
         // Advanced
         [Reactive] public bool RememberMid { get; set; }
