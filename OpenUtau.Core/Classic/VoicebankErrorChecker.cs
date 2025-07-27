@@ -7,10 +7,10 @@ using NAudio.Wave;
 
 namespace OpenUtau.Classic {
     public class VoicebankError {
-        public string message;
-        public FileTrace trace;
-        public string soundFile;
-        public Exception e;
+        public string message = string.Empty;
+        public FileTrace? trace;
+        public string soundFile = string.Empty;
+        public Exception? e;
 
         public override string ToString() {
             var builder = new StringBuilder();
@@ -72,6 +72,9 @@ namespace OpenUtau.Classic {
             foreach (var otoSet in voicebank.OtoSets) {
                 string dir = Path.Combine(path, Path.GetDirectoryName(otoSet.File));
                 foreach (var oto in otoSet.Otos) {
+                    if (string.IsNullOrEmpty(oto.FileTrace?.line) || oto.FileTrace.line.StartsWith("#Charset:")) {
+                        continue;
+                    }
                     if (!oto.IsValid) {
                         Errors.Add(new VoicebankError() {
                             trace = oto.FileTrace,
@@ -93,21 +96,22 @@ namespace OpenUtau.Classic {
                     }
                     CheckOto(oto, fileDuration);
                 }
+                CheckNFDFiles(otoSet);
             }
             if (FindDuplication(out List<Oto> duplicates)) {
                 string message = "";
-                duplicates.ForEach(oto => message += "\n" + oto.FileTrace.file + " : " + oto.Alias);
+                duplicates.ForEach(oto => message += $"\n{oto.FileTrace?.file} line {oto.FileTrace?.lineNumber}: {oto.Alias}");
                 Errors.Add(new VoicebankError() {
                     message = $"There are duplicate aliases.{message}"
                 });
             }
-            foreach(var otoSet in voicebank.OtoSets) {
+            foreach (var otoSet in voicebank.OtoSets) {
                 CheckCaseMatchForFileReference(otoSet);
                 CheckDuplicatedNameIgnoringCase(otoSet);
             }
             CheckCaseMatchForFileReference(voicebank.BasePath, new string[]{
-                "chatacter.txt", 
-                "character.yaml", 
+                "chatacter.txt",
+                "character.yaml",
                 "prefix.map",
                 });
         }
@@ -240,6 +244,22 @@ namespace OpenUtau.Classic {
             return valid;
         }
 
+        void CheckNFDFiles(OtoSet otoSet) {
+            var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
+            foreach (var group in wavGroups) {
+                string? fileTraceLine = group.First().FileTrace?.line;
+                if (fileTraceLine == null) {
+                    continue;
+                }
+                if (group.Key != fileTraceLine.Split('=')[0].Trim() && !group.Key.IsNormalized()) {
+                    Errors.Add(new VoicebankError() {
+                        soundFile = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key),
+                        message = $"Wav filename is NFD.",
+                    });
+                }
+            }
+        }
+
         bool FindDuplication(out List<Oto> duplicates) {
             duplicates = voicebank.OtoSets
                 .SelectMany(set => set.Otos)
@@ -249,7 +269,7 @@ namespace OpenUtau.Classic {
 
             return duplicates.Count > 0;
         }
-    
+
         /// <summary>
         /// Check if the file names in the oto.ini are the same as the file names in the file system.
         /// </summary>
@@ -257,28 +277,28 @@ namespace OpenUtau.Classic {
         /// <returns></returns>
         bool CheckCaseMatchForFileReference(OtoSet otoSet) {
             return CheckCaseMatchForFileReference(
-                Directory.GetParent(otoSet.File).FullName, 
+                Directory.GetParent(otoSet.File).FullName,
                 otoSet.Otos
                     .Select(oto => oto.Wav)
                     .Append(otoSet.File)//oto.ini itself
                     .ToHashSet());
         }
 
-        bool CheckCaseMatchForFileReference(string folder, IEnumerable<string> correctFileNames){
+        bool CheckCaseMatchForFileReference(string folder, IEnumerable<string> correctFileNames) {
             bool valid = true;
             Dictionary<string, string> fileNamesLowerToActual = Directory.GetFiles(folder)
                 .Select(Path.GetFileName)
                 .ToDictionary(x => x.ToLower(), x => x);
-            foreach(string fileName in correctFileNames) {
-                if(!fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
+            foreach (string fileName in correctFileNames) {
+                if (string.IsNullOrWhiteSpace(fileName) || !fileNamesLowerToActual.ContainsKey(fileName.ToLower())) {
                     continue;
                 }
                 if (fileNamesLowerToActual[fileName.ToLower()] != fileName) {
                     valid = false;
                     Errors.Add(new VoicebankError() {
                         message = $"Wrong case in file name: \n"
-                            + $"expected: {Path.Join(folder,fileName)}\n"
-                            + $"Actual: {Path.Join(folder,fileNamesLowerToActual[fileName.ToLower()])}\n"
+                            + $"expected: {Path.Join(folder, fileName)}\n"
+                            + $"Actual: {Path.Join(folder, fileNamesLowerToActual[fileName.ToLower()])}\n"
                             + $"The voicebank may not work on another OS."
                     });
                 }
@@ -292,7 +312,7 @@ namespace OpenUtau.Classic {
         /// <param name="otoSet">otoSet to be checked</param>
         /// <returns></returns>
         bool CheckDuplicatedNameIgnoringCase(OtoSet otoSet) {
-            var wavNames = otoSet.Otos.Select(x => x.Wav).Distinct().ToList();
+            var wavNames = otoSet.Otos.Select(x => x.Wav).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
             var duplicatedGroups = wavNames.GroupBy(x => x.ToLower())
                 .Where(group => group.Count() > 1)
                 .ToList();

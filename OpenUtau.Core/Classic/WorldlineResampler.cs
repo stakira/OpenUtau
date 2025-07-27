@@ -16,7 +16,23 @@ namespace OpenUtau.Classic {
         }
 
         public float[] DoResampler(ResamplerItem item, ILogger logger) {
-            return Worldline.Resample(item);
+            try {
+                return Worldline.Resample(item);
+            } catch (SynthRequestError e) {
+                if (e is CutOffExceedDurationError cee) {
+                    throw new MessageCustomizableException(
+                        $"Failed to render\n Oto error: cutoff exceeds audio duration \n{item.phone.phoneme}",
+                        $"<translate:errors.failed.synth.cutoffexceedduration>\n{item.phone.phoneme}",
+                        e);
+                }
+                if (e is CutOffBeforeOffsetError cbe) {
+                    throw new MessageCustomizableException(
+                        $"Failed to render\n Oto error: cutoff before offset \n{item.phone.phoneme}",
+                        $"<translate:errors.failed.synth.cutoffbeforeoffset>\n{item.phone.phoneme}",
+                        e);
+                }
+                throw e;
+            }
         }
 
         public string DoResamplerReturnsFile(ResamplerItem item, ILogger logger) {

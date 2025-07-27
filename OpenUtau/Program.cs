@@ -38,6 +38,7 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.RuntimeIdentifier}");
             Log.Information($"Data path = {PathManager.Inst.DataPath}");
             Log.Information($"Cache path = {PathManager.Inst.CachePath}");
+            Log.Information($"System encoding = {Encoding.GetEncoding(0)?.WebName ?? "null"}");
             try {
                 Run(args);
                 Log.Information($"Exiting.");
@@ -54,7 +55,7 @@ namespace OpenUtau.App {
         public static AppBuilder BuildAvaloniaApp() {
             FontManagerOptions fontOptions = new();
             if (OS.IsLinux()) {
-                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
+                using Process process = Process.Start(new ProcessStartInfo("fc-match")
                 {
                     ArgumentList = { "-f", "%{family}" },
                     RedirectStandardOutput = true
