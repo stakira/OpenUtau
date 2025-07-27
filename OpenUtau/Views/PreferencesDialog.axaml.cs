@@ -77,5 +77,37 @@ namespace OpenUtau.App.Views {
                 ((PreferencesViewModel)DataContext!).SetSetParamPath(path);
             }
         }
+
+        void ResetWinePath(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).SetWinePath(string.Empty);
+        }
+
+        async void SelectWinePath(object sender, RoutedEventArgs e) {
+            var path = await FilePicker.OpenFile(this, "prefs.advanced.winepath", FilePicker.UnixExecutable);
+            if (string.IsNullOrEmpty(path)) {
+                return;
+            }
+            if (File.Exists(path)) {
+                ((PreferencesViewModel)DataContext!).SetWinePath(path);
+            }
+        }
+
+        void DetectWinePath(object sender, RoutedEventArgs e) {
+            string[] wineNames = { "wine", "wine64", "wine32", "wine32on64" };
+            string winePath = string.Empty;
+
+            foreach (string wineName in wineNames) {
+                winePath = OS.WhereIs(wineName);
+                if (!string.IsNullOrEmpty(winePath)) {
+                    break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(winePath)) {
+                return;
+            }
+
+            ((PreferencesViewModel)DataContext!).SetWinePath(winePath);
+        }
     }
 }

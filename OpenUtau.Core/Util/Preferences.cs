@@ -159,7 +159,10 @@ namespace OpenUtau.Core.Util {
             public int OnnxGpu = 0;
             public double DiffSingerDepth = 1.0;
             public int DiffSingerSteps = 20;
+            public int DiffSingerStepsVariance = 20;
+            public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
+            public bool DiffSingerLangCodeHide = false;
             public bool SkipRenderingMutedTracks = false;
             public string Language = string.Empty;
             public string? SortingOrder = null;
@@ -188,7 +191,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
-            public bool ShowNoteParams = false;
+            public bool ShowNoteParams = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
             public string LyricHelper = string.Empty;
@@ -200,7 +203,7 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
-            public int ImportTempo = 0;
+            public string WinePath = string.Empty;
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
