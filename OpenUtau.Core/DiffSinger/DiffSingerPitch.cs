@@ -40,9 +40,8 @@ namespace OpenUtau.Core.DiffSinger
             }
             //Load language id if needed
             if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
-                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return;
+                if(dsConfig.languages == null) {
+                    throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
@@ -53,9 +52,15 @@ namespace OpenUtau.Core.DiffSinger
                 }
             }
             //Load phonemes list
+            if (dsConfig.phonemes == null) {
+                throw new Exception("Configuration key \"phonemes\" is null.");
+            }
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
             //Load models
+            if (dsConfig.linguistic == null) {
+                throw new Exception("Configuration key \"linguistic\" is null.");
+            }
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
             linguisticHash = XXH64.DigestOf(linguisticModelBytes);

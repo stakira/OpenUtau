@@ -38,14 +38,11 @@ namespace OpenUtau.Classic {
                 return null;
             }
             string ext = Path.GetExtension(filePath).ToLower();
-            if (OS.IsWindows()) {
-                if (ext == ".exe" || ext == ".bat") {
-                    return new ExeResampler(filePath, basePath);
-                }
-            } else {
-                if (ext == ".sh" || string.IsNullOrEmpty(ext)) {
-                    return new ExeResampler(filePath, basePath);
-                }
+            if ((OS.IsWindows() || !string.IsNullOrEmpty(Preferences.Default.WinePath)) && (ext == ".exe" || ext == ".bat")) {
+                return new ExeResampler(filePath, basePath);
+            } 
+            if (!OS.IsWindows() && (ext == ".sh" || string.IsNullOrEmpty(ext))) {
+                return new ExeResampler(filePath, basePath);
             }
             return null;
         }
@@ -55,14 +52,11 @@ namespace OpenUtau.Classic {
                 return null;
             }
             string ext = Path.GetExtension(filePath).ToLower();
-            if (OS.IsWindows()) {
-                if (ext == ".exe" || ext == ".bat") {
-                    return new ExeWavtool(filePath, basePath);
-                }
-            } else {
-                if (ext == ".sh" || string.IsNullOrEmpty(ext)) {
-                    return new ExeWavtool(filePath, basePath);
-                }
+            if ((OS.IsWindows() || !string.IsNullOrEmpty(Preferences.Default.WinePath)) && (ext == ".exe" || ext == ".bat")) {
+                return new ExeWavtool(filePath, basePath);
+            } 
+            if (!OS.IsWindows() && (ext == ".sh" || string.IsNullOrEmpty(ext))) {
+                return new ExeWavtool(filePath, basePath);
             }
             return null;
         }

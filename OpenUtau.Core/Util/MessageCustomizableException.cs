@@ -18,11 +18,19 @@ namespace OpenUtau.Core {
         /// <paramref name="e">underlying exception</paramref>
         /// <paramref name="showStackTrace">Can be omitted. Default is true.</paramref>
         public MessageCustomizableException(string message, string translatableMessage, Exception e, bool showStackTrace = true, object[]? replaces = null) {
-            Message = message;
-            TranslatableMessage = translatableMessage;
-            SubstanceException = e;
-            ShowStackTrace = showStackTrace;
-            Replaces = replaces;
+            if (e is MessageCustomizableException mce) {
+                Message = mce.Message;
+                TranslatableMessage = mce.TranslatableMessage;
+                SubstanceException = mce.SubstanceException;
+                ShowStackTrace = mce.ShowStackTrace;
+                Replaces = mce.Replaces;
+            } else {
+                Message = message;
+                TranslatableMessage = translatableMessage;
+                SubstanceException = e;
+                ShowStackTrace = showStackTrace;
+                Replaces = replaces;
+            }
         }
 
         public override string ToString() {

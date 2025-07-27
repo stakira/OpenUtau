@@ -535,6 +535,13 @@ namespace OpenUtau.Core.Render {
                 }
             }
             cacheFiles.Clear();
+
+            if (singer is ClassicSinger cSinger && cSinger.Frqs != null) {
+                foreach (var oto in phones.Select(p => p.oto).Distinct()) {
+                    oto.Frq = null;
+                    cSinger.Frqs.Remove(oto.File);
+                }
+            }
         }
     }
 }
