@@ -15,7 +15,55 @@
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
-    <Grid Margin="{Binding $parent[1].WindowDecorationMargin}"　PointerMoved="BackgroundPointerMoved">
+  <Grid Margin="{Binding $parent[1].WindowDecorationMargin}" PointerMoved="BackgroundPointerMoved">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="24"/>
+      <RowDefinition Height="24"/>
+      <RowDefinition Height="24"/>
+      <RowDefinition Height="*" MinHeight="200"/>
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="150" MinHeight="132" MaxHeight="600"/>
+      <RowDefinition Height="4"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="60"/>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="24"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+    <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="2">
+      <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
+      <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
+        <Image HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="50" Height="50" Stretch="UniformToFill" Source="{Binding NotesViewModel.Avatar}"/>
+      </Border>
+    </Grid>
+    <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+                DataContext="{Binding NotesViewModel}"
+                Maximum="{Binding HScrollBarMax, Mode=OneWay}"
+                Value="{Binding TickOffset}"
+                ViewportSize="{Binding ViewportTicks}"
+                LargeChange="{Binding ViewportTicks}"
+                SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
+    <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
+                DataContext="{Binding NotesViewModel}"
+                Maximum="{Binding VScrollBarMax, Mode=OneWay}"
+                Value="{Binding TrackOffset}"
+                ViewportSize="{Binding ViewportTracks}"
+                LargeChange="{Binding ViewportTracks}"
+                SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
+    <c:TrackBackground Grid.Column="0" Grid.Row="3" IsPianoRoll="True" IsKeyboard="True"
+                        DataContext="{Binding NotesViewModel}"
+                        TrackHeight="{Binding TrackHeight}"
+                        TrackOffset="{Binding TrackOffset}"
+                        Key="{Binding Key}"
+                        PointerWheelChanged="KeyboardPointerWheelChanged"
+                        PointerPressed="KeyboardPointerPressed"
+                        PointerMoved="KeyboardPointerMoved"
+                        PointerReleased="KeyboardPointerReleased"/>
+    <Grid  Grid.Column="0" Grid.Row="5">
       <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="24"/>
@@ -23,25 +71,25 @@
       <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Hidden">
         <StackPanel >
           <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="0" ToolTip.Tip="Alt + 1"/>
+                          Index="0" ToolTip.Tip="Alt + 1"/>
           <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="1" ToolTip.Tip="Alt + 2"/>
+                          Index="1" ToolTip.Tip="Alt + 2"/>
           <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="2" ToolTip.Tip="Alt + 3"/>
+                          Index="2" ToolTip.Tip="Alt + 3"/>
           <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="3" ToolTip.Tip="Alt + 4"/>
+                          Index="3" ToolTip.Tip="Alt + 4"/>
           <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="4" ToolTip.Tip="Alt + 5"/>
+                          Index="4" ToolTip.Tip="Alt + 5"/>
           <c:ExpSelector Name="expSelector6" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="5" ToolTip.Tip="Alt + 6"/>
+                          Index="5" ToolTip.Tip="Alt + 6"/>
           <c:ExpSelector Name="expSelector7" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="6" ToolTip.Tip="Alt + 7"/>
+                          Index="6" ToolTip.Tip="Alt + 7"/>
           <c:ExpSelector Name="expSelector8" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="7" ToolTip.Tip="Alt + 8"/>
+                          Index="7" ToolTip.Tip="Alt + 8"/>
           <c:ExpSelector Name="expSelector9" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="8" ToolTip.Tip="Alt + 9"/>
+                          Index="8" ToolTip.Tip="Alt + 9"/>
           <c:ExpSelector Name="expSelector10" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
-                         Index="9" ToolTip.Tip="Alt + 0"/>
+                          Index="9" ToolTip.Tip="Alt + 0"/>
         </StackPanel >
       </ScrollViewer>
       <Button Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="20" Height="20" Margin="0" Background="Transparent" Click="OnExpButtonClick">
@@ -70,11 +118,11 @@
             Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
     </Canvas>
     <c:TrackBackground Grid.Row="3" Grid.Column="1" IsHitTestVisible="False"
-                       Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                       DataContext="{Binding NotesViewModel}"
-                       Bounds="{Binding Bounds, Mode=OneWayToSource}"
-                       TrackHeight="{Binding TrackHeight}"
-                       TrackOffset="{Binding TrackOffset}" IsPianoRoll="True"/>
+                        Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                        DataContext="{Binding NotesViewModel}"
+                        Bounds="{Binding Bounds, Mode=OneWayToSource}"
+                        TrackHeight="{Binding TrackHeight}"
+                        TrackOffset="{Binding TrackOffset}" IsPianoRoll="True"/>
     <c:TickBackground Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
                       Foreground="{DynamicResource TickLineBrush}"
                       Background="{DynamicResource TickLineBrushLow}"
@@ -86,32 +134,32 @@
                       SnapTicks="{Binding NotesViewModel.SnapTicks}"
                       ShowBarNumber="True"/>
     <Image Grid.Row="3" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,100,0"
-           Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
+            Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
     <Border Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
             Margin="0,0,0,60" Height="60" IsHitTestVisible="False">
       <c:WaveformImage DataContext="{Binding NotesViewModel, Mode=OneWay}"
-                       TickWidth="{Binding TickWidth, Mode=OneWay}"
-                       TickOffset="{Binding TickOffset, Mode=OneWay}"
-                       ShowWaveform="{Binding ShowWaveform, Mode=OneWay}"/>
+                        TickWidth="{Binding TickWidth, Mode=OneWay}"
+                        TickOffset="{Binding TickOffset, Mode=OneWay}"
+                        ShowWaveform="{Binding ShowWaveform, Mode=OneWay}"/>
     </Border>
     <c:NotesCanvas Grid.Row="3" Grid.Column="1"
-                   TickWidth="{Binding NotesViewModel.TickWidth}"
-                   TrackHeight="{Binding NotesViewModel.TrackHeight}"
-                   TickOffset="{Binding NotesViewModel.TickOffset}"
-                   TrackOffset="{Binding NotesViewModel.TrackOffset}"
-                   ShowVibrato="{Binding NotesViewModel.ShowVibrato}"
-                   ShowPitch="{Binding NotesViewModel.ShowPitch}"
-                   ShowFinalPitch="{Binding NotesViewModel.ShowFinalPitch}"
-                   Part="{Binding NotesViewModel.Part}"
-                   PointerPressed="NotesCanvasPointerPressed"
-                   PointerMoved="NotesCanvasPointerMoved"
-                   PointerReleased="NotesCanvasPointerReleased"
-                   DoubleTapped="NotesCanvasDoubleTapped"
-                   PointerWheelChanged="NotesCanvasPointerWheelChanged">
+                    TickWidth="{Binding NotesViewModel.TickWidth}"
+                    TrackHeight="{Binding NotesViewModel.TrackHeight}"
+                    TickOffset="{Binding NotesViewModel.TickOffset}"
+                    TrackOffset="{Binding NotesViewModel.TrackOffset}"
+                    ShowVibrato="{Binding NotesViewModel.ShowVibrato}"
+                    ShowPitch="{Binding NotesViewModel.ShowPitch}"
+                    ShowFinalPitch="{Binding NotesViewModel.ShowFinalPitch}"
+                    Part="{Binding NotesViewModel.Part}"
+                    PointerPressed="NotesCanvasPointerPressed"
+                    PointerMoved="NotesCanvasPointerMoved"
+                    PointerReleased="NotesCanvasPointerReleased"
+                    DoubleTapped="NotesCanvasDoubleTapped"
+                    PointerWheelChanged="NotesCanvasPointerWheelChanged">
       <c:NotesCanvas.ContextMenu>
         <ContextMenu ItemsSource="{Binding NotesContextMenuItems}"
-                     Opening="NotesContextMenuOpening"
-                     Closing="NotesContextMenuClosing">
+                      Opening="NotesContextMenuOpening"
+                      Closing="NotesContextMenuClosing">
           <ContextMenu.Styles>
             <Style Selector="MenuItem">
               <Setter Property="Header" Value="{Binding Header}"/>
@@ -126,15 +174,15 @@
     </c:NotesCanvas>
     <Canvas Grid.Row="3" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
       <Rectangle Name="PlayPosHighlight"
-                 Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
-                 Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
-                 Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
-                 Canvas.Top="0" ZIndex="-10"
-                 Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
+                  Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
+                  Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                  Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
+                  Canvas.Top="0" ZIndex="-10"
+                  Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
       <Rectangle Name="SelectionBox" StrokeThickness="2"
-                 Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                 Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
-                 IsHitTestVisible="False" IsVisible="False"/>
+                  Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                  Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                  IsHitTestVisible="False" IsVisible="False"/>
     </Canvas>
     <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="2"
           HorizontalAlignment="Stretch" VerticalAlignment="Top">
@@ -289,7 +337,7 @@
                         ToolTip.Tip="{DynamicResource pianoroll.toggle.tips}">
             <Grid Width="18" Height="18">
               <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"
-                         Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             </Grid>
           </ToggleButton>
           <Border Width="12"/>
@@ -479,11 +527,11 @@
           <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnSnapDivMenuButton"
             ToolTip.Tip="{DynamicResource pianoroll.snapdiv}">
             <TextBlock Grid.Column="0" Text="{Binding NotesViewModel.SnapDivText}"
-                       TextAlignment="Right" FontSize="10" FontFamily="monospace"
-                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                        TextAlignment="Right" FontSize="10" FontFamily="monospace"
+                        Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             <Button.ContextMenu>
               <ContextMenu Name="SnapDivMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
-                           ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown"/>
+                            ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown"/>
             </Button.ContextMenu>
           </Button>
           <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnKeyMenuButton"
@@ -493,7 +541,7 @@
                         Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             <Button.ContextMenu>
               <ContextMenu Name="KeyMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
-                           ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown"/>
+                            ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown"/>
             </Button.ContextMenu>
           </Button>
         </StackPanel>
@@ -523,7 +571,7 @@
       </Border>
     </StackPanel>
     <Rectangle Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-               Margin="0,0,0,60" Height="6" Opacity="0.15" IsVisible="{Binding NotesViewModel.ShowPhoneme}">
+                Margin="0,0,0,60" Height="6" Opacity="0.15" IsVisible="{Binding NotesViewModel.ShowPhoneme}">
       <Rectangle.Fill>
         <LinearGradientBrush StartPoint="0,0" EndPoint="0,6">
           <GradientStop Color="Transparent" Offset="0"/>
@@ -532,19 +580,19 @@
       </Rectangle.Fill>
     </Rectangle>
     <c:PhonemeCanvas Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0" Height="60"
-                     Background="{DynamicResource BackgroundBrushSemi}"
-                     TickWidth="{Binding NotesViewModel.TickWidth}"
-                     TickOffset="{Binding NotesViewModel.TickOffset}"
-                     Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
-                     DoubleTapped="PhonemeCanvasDoubleTapped"
-                     PointerPressed="PhonemeCanvasPointerPressed"
-                     PointerMoved="PhonemeCanvasPointerMoved"
-                     PointerReleased="PhonemeCanvasPointerReleased"/>
+                      Background="{DynamicResource BackgroundBrushSemi}"
+                      TickWidth="{Binding NotesViewModel.TickWidth}"
+                      TickOffset="{Binding NotesViewModel.TickOffset}"
+                      Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
+                      DoubleTapped="PhonemeCanvasDoubleTapped"
+                      PointerPressed="PhonemeCanvasPointerPressed"
+                      PointerMoved="PhonemeCanvasPointerMoved"
+                      PointerReleased="PhonemeCanvasPointerReleased"/>
     <GridSplitter Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth"/>
     <c:TrackBackground Grid.Row="5" Grid.Column="1" IsHitTestVisible="False"
-                       Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                       TrackHeight="{Binding NotesViewModel.ExpTrackHeight}"/>
+                        Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                        TrackHeight="{Binding NotesViewModel.ExpTrackHeight}"/>
     <c:TickBackground Grid.Row="5"  Grid.Column="1" IsHitTestVisible="False"
                       Foreground="{DynamicResource TickLineBrush}"
                       Background="{DynamicResource TickLineBrushLow}"
@@ -571,9 +619,9 @@
                         PointerReleased="ExpCanvasPointerReleased">
     </c:ExpressionCanvas>
     <TextBlock Classes="tips" Grid.Row="5" Grid.Column="1"
-               IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
-               IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
-               Text="{DynamicResource tip.exps.notsupported}"/>
+                IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
+                IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
+                Text="{DynamicResource tip.exps.notsupported}"/>
     <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="6"
             IsEnabled="{Binding NotesViewModel.ShowNoteParams}"
             IsVisible="{Binding NotesViewModel.ShowNoteParams}"
