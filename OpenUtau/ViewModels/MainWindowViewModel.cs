@@ -81,24 +81,6 @@ namespace OpenUtau.App.ViewModels {
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
-            OpenRecentCommand = ReactiveCommand.Create<string>(file => {
-                try {
-                    OpenProject(new[] { file });
-                } catch (Exception e) {
-                    var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
-                }
-            });
-            OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
-                try {
-                    OpenProject(new[] { file });
-                    DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = string.Empty;
-                } catch (Exception e) {
-                    var customEx = new MessageCustomizableException("Failed to open template", "<translate:errors.failed.openfile>: project template", e);
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
-                }
-            });
             RecentFiles.Clear();
             RecentFiles.AddRange(Preferences.Default.RecentFiles
                 .Select(file => new RecentFileInfo(file))
