@@ -1368,6 +1368,12 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.L:
+                    if (isNone) {
+                        notesVm.ShowExpressions = !notesVm.ShowExpressions;
+                        return true;
+                    }
+                    break;
                 case Key.P:
                     if (isNone) {
                         notesVm.IsSnapOn = !notesVm.IsSnapOn;
