@@ -45,6 +45,7 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartGotoFileCommand;
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
         private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartMergeCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -74,6 +75,7 @@ namespace OpenUtau.App.Views {
             PartGotoFileCommand = ReactiveCommand.Create<UPart>(part => GotoFile(part));
             PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(part => ReplaceAudio(part));
             PartTranscribeCommand = ReactiveCommand.Create<UPart>(part => Transcribe(part));
+            PartMergeCommand = ReactiveCommand.Create<UPart>(part => MergePart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -1028,6 +1030,7 @@ namespace OpenUtau.App.Views {
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
                             PartRenameCommand = PartRenameCommand,
                             PartTranscribeCommand = PartTranscribeCommand,
+                            PartMergeCommand = PartMergeCommand,
                         };
                         shouldOpenPartsContextMenu = true;
                     }
@@ -1235,6 +1238,19 @@ namespace OpenUtau.App.Views {
                     MessageBox.ShowError(this, e);
                 }
             }
+        }
+
+        void MergePart(UPart part) {
+            List<UPart> selectedParts = viewModel.TracksViewModel.SelectedParts;
+            if (!selectedParts.All(p => p.trackNo.Equals(part.trackNo))) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.merge.multitracks"),
+                    ThemeManager.GetString("dialogs.merge.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            // Todo: Add MergePartsCommand from PartCommands
         }
 
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
