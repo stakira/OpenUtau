@@ -58,6 +58,9 @@ namespace OpenUtau.Classic {
                 Tuple.Create(source + ".vs4ufrq", sourceTemp + ".vs4ufrq"),
                 Tuple.Create(noExt + ".rudb", tempNoExt + ".rudb"),
                 Tuple.Create(noExt + ".sc.npz", tempNoExt + ".sc.npz"),
+                Tuple.Create(noExt + ".sc", tempNoExt + ".sc"),
+                Tuple.Create(noExt + ".hifi.npz", tempNoExt + ".hifi.npz"),
+                //Tuple.Create(noExt + ".lessaudio", tempNoExt + ".lessaudio"),
             };
         }
 
