@@ -628,4 +628,85 @@ namespace OpenUtau.Core.Editing {
             docManager.EndUndoGroup();
         }
     }
+
+    public class RefreshRealCurves : BatchEdit {
+        public virtual string Name => name;
+
+        public bool IsAsync => true;
+
+        private string name;
+
+        public RefreshRealCurves() {
+            name = "pianoroll.menu.notes.refreshrealcurves";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            RunAsync(
+                project, part, selectedNotes, docManager,
+                (current, total) => { }, CancellationToken.None);
+        }
+
+        public void RunAsync(
+            UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
+            Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
+            var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
+            if (renderer == null || !renderer.SupportsRealCurve) {
+                docManager.ExecuteCmd(new ErrorMessageNotification("Not supported"));
+                return;
+            }
+
+            int finished = 0;
+            setProgressCallback(0, part.renderPhrases.Count);
+            var curveDict = new Dictionary<string, UCurve?>();
+            var newXsDict = new Dictionary<string, List<int>>();
+            var newYsDict = new Dictionary<string, List<int>>();
+            for (int ph_i = 0; ph_i < part.renderPhrases.Count; ++ph_i) {
+                var phrase = part.renderPhrases[ph_i];
+                var results = renderer.LoadRenderedRealCurves(phrase);
+                if (results.Count == 0) {
+                    continue;
+                }
+                if (cancellationToken.IsCancellationRequested) break;
+                foreach (var result in results) {
+                    if (!curveDict.ContainsKey(result.abbr)) {
+                        var curve = part.curves.FirstOrDefault(c => c.abbr == result.abbr);
+                        curveDict[result.abbr] = curve;
+                        newXsDict[result.abbr] = new List<int>();
+                        newYsDict[result.abbr] = new List<int>();
+                    }
+                    var xs = newXsDict[result.abbr];
+                    var ys = newYsDict[result.abbr];
+                    var ticks = result.ticks.Select(t => phrase.position - part.position + (int)t).ToArray();
+                    if (ticks.Length == 0) {
+                        continue;
+                    }
+                    while (xs.Count > 0 && xs[^1] >= ticks[0]) {
+                        xs.RemoveAt(xs.Count - 1);
+                        ys.RemoveAt(ys.Count - 1);
+                    }
+                    xs.Add(ticks[0]);
+                    ys.Add(-1);
+                    xs.AddRange(ticks);
+                    ys.AddRange(result.values.Select(v => (int)(v * 1000.0)));
+                }
+                finished += 1;
+                setProgressCallback(finished, part.renderPhrases.Count);
+            }
+            var commands = curveDict
+                .Select(kv => new MergedSetCurveCommand(
+                    project, part, kv.Key,
+                    kv.Value?.realXs.ToArray() ?? Array.Empty<int>(),
+                    kv.Value?.realYs.ToArray() ?? Array.Empty<int>(),
+                    newXsDict[kv.Key].ToArray(),
+                    newYsDict[kv.Key].ToArray(),
+                    true))
+                .ToList();
+
+            DocManager.Inst.PostOnUIThread(() => {
+                docManager.StartUndoGroup(true);
+                commands.ForEach(docManager.ExecuteCmd);
+                docManager.EndUndoGroup();
+            });
+        }
+    }
 }

@@ -6,7 +6,6 @@
         x:Class="OpenUtau.App.Views.LyricsDialog" WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource lyrics.caption}"
-        KeyDown="OnKeyDown"
         Opened="OnOpened">
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>

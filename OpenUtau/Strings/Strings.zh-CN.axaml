@@ -1,7 +1,10 @@
+<!--DO NOT modify this file. It is managed autometically.-->
+<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
   <system:String x:Key="context.note.copy">复制音符</system:String>
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.note.pasteparameters">粘贴表情</system:String>
@@ -48,6 +51,8 @@
   <system:String x:Key="dialogs.messagebox.yes">是</system:String>
   <system:String x:Key="dialogs.noresampler.caption">无Resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">无Resampler! 将你选择的resampler exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
+  <system:String x:Key="dialogs.recovery">上一次 OpenUtau 异常退出。你想要恢复吗？</system:String>
+  <system:String x:Key="dialogs.recovery.caption">恢复项目</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">此工具会改变工程的曲速及各音符的tick时值，而不改变各音符的位置与时长（以秒为单位）
   新曲速：</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍号</system:String>
@@ -62,8 +67,10 @@
 
   <system:String x:Key="errors.caption">错误</system:String>
   <system:String x:Key="errors.details">错误详情</system:String>
+  <!--<system:String x:Key="errors.diffsinger.downloadvocoder">Error loading vocoder "{0}". Please download vocoder from {1}</system:String>-->
   <system:String x:Key="errors.diffsinger.downloadvocoder1">载入声码器时错误 </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. 请从以下位置下载声码器： </system:String>
+  <system:String x:Key="errors.editing.autopitch.unsupported">当前声库不支持生成音高线。请使用 Diffsinger 或 Enunu 声库。</system:String>
   <system:String x:Key="errors.encryptedarchive">不支持加密压缩包。请使用其他软件解压。</system:String>
   <system:String x:Key="errors.expression.abbrlong">缩写长度必须在 1 到 4 字符之间</system:String>
   <system:String x:Key="errors.expression.abbrset">必须设置缩写</system:String>
@@ -82,14 +89,28 @@
   <system:String x:Key="errors.failed.loadprefs">导入使用偏好失败。请初始化。</system:String>
   <system:String x:Key="errors.failed.openfile">打开失败</system:String>
   <system:String x:Key="errors.failed.openlocation">打开位置失败</system:String>
+  <system:String x:Key="errors.failed.opennewerproject">项目版本高于软件！请升级 OpenUtau！</system:String>
   <system:String x:Key="errors.failed.render">渲染失败</system:String>
   <system:String x:Key="errors.failed.runeditingmacro">编辑宏失败</system:String>
   <system:String x:Key="errors.failed.save">保存失败</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">保存歌手配置文件失败</system:String>
   <system:String x:Key="errors.failed.searchsinger">查找歌手失败</system:String>
+  <!--<system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>-->
+  <!--<system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>-->
   <system:String x:Key="errors.install.cpp">请安装最新的 Visual C++ 运行环境。 https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
   <system:String x:Key="errors.lyrics.regex">正则表达式包含不支持的字符</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- 正则表达式错误 -</system:String>
+
+  <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
+  <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
+1. Install wine from {0}
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
+1. Install wine using following commands
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.resampler">Install as resampler</system:String>-->
+  <!--<system:String x:Key="exesetup.title">Installing Exe File</system:String>-->
+  <!--<system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>-->
 
   <system:String x:Key="exps.abbr">简称</system:String>
   <system:String x:Key="exps.apply">应用</system:String>
@@ -111,6 +132,7 @@
   <system:String x:Key="languages.de">德语</system:String>
   <system:String x:Key="languages.en">英语</system:String>
   <system:String x:Key="languages.es">西班牙语</system:String>
+  <!--<system:String x:Key="languages.fil">Filipino</system:String>-->
   <system:String x:Key="languages.fr">法语</system:String>
   <system:String x:Key="languages.invariant">不翻译</system:String>
   <system:String x:Key="languages.it">意大利语</system:String>
@@ -120,6 +142,7 @@
   <system:String x:Key="languages.pt">葡萄牙语</system:String>
   <system:String x:Key="languages.ru">俄语</system:String>
   <system:String x:Key="languages.th">泰语</system:String>
+  <system:String x:Key="languages.tr">土耳其语</system:String>
   <system:String x:Key="languages.vi">越南语</system:String>
   <system:String x:Key="languages.zh">中文</system:String>
   <system:String x:Key="languages.zh-yue">中文（粤语）</system:String>
@@ -210,10 +233,23 @@
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
+  <system:String x:Key="menu.tools.wavtoolresampler.install">安装 Wavtool/Resampler (.exe)...</system:String>
   <system:String x:Key="menu.view">视图</system:String>
 
+  <!--<system:String x:Key="mergevoicebank.back">Back</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.merge">Merge</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.next">Next</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
+Choose the voicebank that you want to merge into current voicebank</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
+Syntax: prefix,suffix</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>-->
+
   <system:String x:Key="notedefaults.lyric">歌词</system:String>
-  <system:String x:Key="notedefaults.lyric.defaultlyric">默认歌词</system:String>
+  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
   <system:String x:Key="notedefaults.portamento">滑音</system:String>
   <system:String x:Key="notedefaults.portamento.length">长度</system:String>
   <system:String x:Key="notedefaults.portamento.start">开始</system:String>
@@ -268,6 +304,7 @@
   <system:String x:Key="phoneticassistant.caption">语音学助手</system:String>
   <system:String x:Key="phoneticassistant.copy">复制</system:String>
 
+  <system:String x:Key="pianoroll.key">调性（用于音级显示）</system:String>
   <system:String x:Key="pianoroll.menu.batch">批量编辑</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">正在运行批处理</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
@@ -295,8 +332,8 @@
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
-  <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize">对齐到当前网格</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">重置音素别名</system:String>
@@ -313,10 +350,14 @@
   <system:String x:Key="pianoroll.menu.plugin.reload">重新加载</system:String>
   <system:String x:Key="pianoroll.menu.reset">重置</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">搜索音符</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>-->
   <system:String x:Key="pianoroll.menu.searchnote.all">全选</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">关闭</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">下一个</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>-->
   <system:String x:Key="pianoroll.menu.searchnote.prev">上一个</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>-->
+  <system:String x:Key="pianoroll.snapdiv">网格精度</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">显示参数面板 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
@@ -328,8 +369,7 @@
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">显示波形 (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    直线音高工具 (Shift + 4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">直线音高工具 (Shift + 4)
     鼠标左键绘制音高线
     鼠标右键擦除音高线
     按住 Ctrl 选择
@@ -355,10 +395,6 @@
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
-  <system:String x:Key="prefs.advanced.importtempo">导入音轨时导入曲速</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.always">总是</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">每次询问</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">从不</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">歌词助手</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">歌词助手添加方括号</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">在"最近打开"中记住以下文件格式</system:String>
@@ -366,11 +402,13 @@
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存resampler输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler 路径</system:String>
+  <system:String x:Key="prefs.advanced.winepath">Wine 路径（设置以启用 Wine 获得兼容性）</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.degree">音级显示方式</system:String>
   <system:String x:Key="prefs.appearance.degree.numbered">简谱（1 2 3 4 5 6 7）</system:String>
   <system:String x:Key="prefs.appearance.degree.off">关闭</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">唱名（do re mi fa sol la ti）</system:String>
+  <system:String x:Key="prefs.appearance.diffsingerlangcodehide">在音素编辑器中隐藏语言前缀</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">在钢琴窗上显示其他音轨的音符</system:String>
   <system:String x:Key="prefs.appearance.showicon">在钢琴窗上显示歌手图标</system:String>
@@ -395,6 +433,7 @@
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger">额外歌手路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">安装至额外歌手路径</system:String>
+  <system:String x:Key="prefs.paths.detect">检测</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">加载歌手时遍历所有子文件夹</system:String>
   <system:String x:Key="prefs.paths.reset">清除</system:String>
   <system:String x:Key="prefs.paths.select">选择</system:String>
@@ -417,7 +456,9 @@
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.defaultrenderer">传统音源的默认渲染器</system:String>
   <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
-  <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger 渲染步数</system:String>
+  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
@@ -440,6 +481,8 @@
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
   <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
 
+  <system:String x:Key="progress.cachecleared">缓存已清除</system:String>
+  <system:String x:Key="progress.clearingcache">正在清除缓存...</system:String>
   <system:String x:Key="progress.loadingsingers">正在加载歌手...</system:String>
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
@@ -457,6 +500,7 @@
   <system:String x:Key="singers.editoto.setvlabelerpath">请从 https://github.com/sdercolin/vlabeler 下载 vLabeler （1.0.0-beta1 或更高版本），并在使用偏好中设置 vLabeler 的安装位置</system:String>
   <system:String x:Key="singers.errorreport">生成歌手错误报告</system:String>
   <system:String x:Key="singers.location">位置</system:String>
+  <!--<system:String x:Key="singers.merge">Merge with another voicebank</system:String>-->
   <system:String x:Key="singers.otoview.moveleft">左移</system:String>
   <system:String x:Key="singers.otoview.moveright">右移</system:String>
   <system:String x:Key="singers.otoview.selectnext">下一个</system:String>
@@ -464,7 +508,8 @@
   <system:String x:Key="singers.otoview.showall">显示全部</system:String>
   <system:String x:Key="singers.otoview.zoomin">放大</system:String>
   <system:String x:Key="singers.otoview.zoomout">缩小</system:String>
-  <system:String x:Key="singers.playsample">播放示例</system:String>
+  <!--<system:String x:Key="singers.playsample">Play Sample</system:String>-->
+  <system:String x:Key="singers.playselectedfile">播放选择的文件</system:String>
   <system:String x:Key="singers.publish">音源打包</system:String>
   <system:String x:Key="singers.publish.description">将音源打包为适合发布的压缩包</system:String>
   <system:String x:Key="singers.publish.ignoretypes">忽略以下文件类型（gitignore语法）：</system:String>
@@ -484,7 +529,7 @@
   <system:String x:Key="singers.subbanks.color.add">添加色彩</system:String>
   <system:String x:Key="singers.subbanks.color.remove">删除色彩</system:String>
   <system:String x:Key="singers.subbanks.color.rename">重命名</system:String>
-  <system:String x:Key="singers.subbanks.edit">编辑子声库</system:String>
+  <system:String x:Key="singers.subbanks.edit">编辑音色</system:String>
   <system:String x:Key="singers.subbanks.export">导出 prefix.map</system:String>
   <system:String x:Key="singers.subbanks.import">导入 prefix.map</system:String>
   <system:String x:Key="singers.subbanks.reset">重置</system:String>
@@ -507,8 +552,15 @@
   <system:String x:Key="singersetup.textfileencoding.prompt">请选择一种编码，使文件内容看起来是正确的。</system:String>
 
   <system:String x:Key="tip.aliasbox">手动选择别名</system:String>
-  <system:String x:Key="tip.exps">鼠标左键绘制: 设定表情
-鼠标右键绘制: 重置表情</system:String>
+  <!--<system:String x:Key="tip.exps">Numerical,Options Type
+    Left Button Draw: Set expressions
+    Shift + Left Button Draw: Set uniform expressions
+    Right Button Draw: Reset expressions
+Curve Type
+    Left Button Draw: Draw
+    Shift + Ctrl + Left Button Draw: Line Draw
+    Shift + Left Button Draw: Horizontal Line Draw
+    Right Button Draw: Reset Line</system:String>-->
   <system:String x:Key="tip.exps.notsupported">当前渲染器不支持此表情</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
@@ -532,6 +584,7 @@
 
   <system:String x:Key="tracks.duplicate">复制音轨</system:String>
   <system:String x:Key="tracks.duplicatesettings">复制音轨设置</system:String>
+  <!--<system:String x:Key="tracks.favorite">Favorites</system:String>-->
   <system:String x:Key="tracks.installsinger">安装歌手</system:String>
   <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
@@ -546,6 +599,7 @@
   <system:String x:Key="tracks.rename">重命名音轨</system:String>
   <system:String x:Key="tracks.selectrenderer">选择渲染器</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
+  <system:String x:Key="tracks.singerdefault">（歌手默认） </system:String>
   <system:String x:Key="tracks.solo">独奏</system:String>
   <system:String x:Key="tracks.solo.add">添加到独奏（其他音轨的独奏状态保持不变）</system:String>
   <system:String x:Key="tracks.solo.only">仅独奏该音轨（并使其他音轨不再独奏）</system:String>
@@ -567,4 +621,12 @@
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau路径"{0}"包含非ASCII字符. Exe格式resampler可能无法正常工作.</system:String>
   <system:String x:Key="warning.renderer">此渲染器没有设置项</system:String>
+
+  <system:String x:Key="welcome.new">新建</system:String>
+  <system:String x:Key="welcome.new.description">创建新项目</system:String>
+  <system:String x:Key="welcome.open">打开</system:String>
+  <system:String x:Key="welcome.open.description">打开本地项目</system:String>
+  <system:String x:Key="welcome.recent">最近</system:String>
+  <system:String x:Key="welcome.start">开始</system:String>
+  <system:String x:Key="welcome.template">模板</system:String>
 </ResourceDictionary>

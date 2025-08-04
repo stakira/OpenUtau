@@ -38,6 +38,7 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.RuntimeIdentifier}");
             Log.Information($"Data path = {PathManager.Inst.DataPath}");
             Log.Information($"Cache path = {PathManager.Inst.CachePath}");
+            Log.Information($"System encoding = {Encoding.GetEncoding(0)?.WebName ?? "null"}");
             try {
                 Run(args);
                 Log.Information($"Exiting.");
