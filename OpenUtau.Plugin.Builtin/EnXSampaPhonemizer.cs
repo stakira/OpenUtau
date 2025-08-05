@@ -799,9 +799,12 @@ namespace OpenUtau.Plugin.Builtin {
                             i++;
                         }
                     } else {
-                        // Add single consonant if no CC cluster
-                        // like [V C1] [C1] [C2 ..]
-                        TryAddPhoneme(phonemes, syllable.tone, cc[i], ValidateAlias(cc[i]));
+                        // singular cc
+                        if (PreviousWordCc.Contains(cc1) == CurrentWordCc.Contains(cc1)) {
+                            cc1 = ValidateAlias(cc1);
+                        } else {
+                            TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], ValidateAlias(cc[i]));
+                        }
                     }
                 } else {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
