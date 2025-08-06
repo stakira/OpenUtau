@@ -800,7 +800,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     } else {
                         // singular cc
-                        if (PreviousWordCc.Contains(cc1) == CurrentWordCc.Contains(cc1)) {
+                        if ((PreviousWordCc.Contains(cc1) == CurrentWordCc.Contains(cc1)) && !affricates.Contains(cc1)) {
                             cc1 = ValidateAlias(cc1);
                         } else {
                             TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], ValidateAlias(cc[i]));
