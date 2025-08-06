@@ -344,7 +344,7 @@
             </ToggleButton>
             <Border Width="12"/>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.CursorTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.CursorTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="1"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.selectionv2}">
               <Grid Width="18" Height="18">
@@ -359,7 +359,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.PenTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.PenTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.penv2}">
               <Grid Width="18" Height="18">
@@ -374,7 +374,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.PenPlusTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.PenPlusTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2+"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.penplus}">
               <Grid Width="18" Height="18">
@@ -389,7 +389,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.EraserTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.EraserTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="3"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.eraser}">
               <Grid Width="18" Height="18">
@@ -404,7 +404,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.DrawPitchTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.DrawPitchTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.drawpitch}">
               <Grid Width="18" Height="18">
@@ -419,7 +419,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.OverwritePitchTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.OverwritePitchTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4+"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.overwritepitch}">
               <Grid Width="18" Height="18">
@@ -434,7 +434,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.DrawLinePitchTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.DrawLinePitchTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4++"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.drawlinepitch}">
               <Grid Width="18" Height="18">
@@ -449,7 +449,7 @@
               </Grid>
             </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                          IsChecked="{Binding NotesViewModel.KnifeTool, Mode=OneWay}"
+                          IsChecked="{Binding NotesViewModel.KnifeTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="5"
                           ToolTip.Tip="{DynamicResource pianoroll.tool.knife}">
               <Grid Width="18" Height="18">
