@@ -23,6 +23,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
+using SharpCompress;
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
@@ -1250,7 +1251,61 @@ namespace OpenUtau.App.Views {
                     MessageBox.MessageBoxButtons.Ok);
                 return;
             }
-            // Todo: Add MergePartsCommand from PartCommands
+            if (selectedParts.Count() <= 1) { return; }
+            List<UVoicePart> voiceParts = [];
+            foreach (UPart p in selectedParts) {
+                if (p is UVoicePart vp) {
+                    voiceParts.Add(vp);
+                } else {
+                    return;
+                }
+            }
+            UVoicePart mergedPart = voiceParts.Aggregate((merging, nextup) => {
+                string newComment = merging.comment + nextup.comment; // Not sure how comments are used
+                var (leftPart, rightPart) = (merging.position < nextup.position) ? (merging, nextup) : (nextup, merging);
+                int newPosition = leftPart.position;
+                int newDuration = Math.Max(leftPart.End, rightPart.End) - newPosition;
+                int deltaPos = rightPart.position - leftPart.position;
+                UVoicePart shiftPart = new UVoicePart();
+                rightPart.notes.ForEach((note) => {
+                    UNote shiftNote = note.Clone();
+                    shiftNote.position += deltaPos;
+                    shiftPart.notes.Add(shiftNote);
+                });
+                foreach (var curve in rightPart.curves) {
+                    UCurve shiftCurve = curve.Clone();
+                    for (var i = 0; i < shiftCurve.xs.Count; i++) {
+                        shiftCurve.xs[i] += deltaPos;
+                    }
+                    shiftPart.curves.Add(shiftCurve);
+                }
+                SortedSet<UNote> newNotes = [.. leftPart.notes, .. shiftPart.notes];
+                List<UCurve> newCurves = UCurve.MergeCurves(leftPart.curves, shiftPart.curves);
+                return new UVoicePart() {
+                    name = part.name,
+                    comment = newComment,
+                    trackNo = part.trackNo,
+                    position = newPosition,
+                    notes = newNotes,
+                    curves = newCurves,
+                    Duration = newDuration,
+                };
+            });
+            ValidateOptions options = new ValidateOptions() {
+                SkipTiming = true,
+                Part = mergedPart,
+                SkipPhoneme = false,
+                SkipPhonemizer = false
+            };
+            mergedPart.Validate(options, DocManager.Inst.Project, DocManager.Inst.Project.tracks[part.trackNo]);
+            DocManager.Inst.StartUndoGroup();
+            for (int i = selectedParts.Count - 1; i >= 0; i--) {
+                // The index will shift by removing a part on each loop
+                // Workaround by removing backwards from the largest index and going down
+                DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, selectedParts[i]));
+            }
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, mergedPart));
+            DocManager.Inst.EndUndoGroup();
         }
 
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
