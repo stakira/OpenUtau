@@ -132,10 +132,21 @@ namespace OpenUtau.Core.Format {
 
         public static UProject Load(string filePath) {
             var text = File.ReadAllText(filePath, Encoding.UTF8);
-            var project = LoadText(text);
-            project.FilePath = filePath;
+            try {
+                var project = LoadText(text);
+                project.FilePath = filePath;
 
-            return project;
+                return project;
+            } catch (FileFormatException ex) {
+                if (ex.Message == "Project file is newer than software.") {
+                    // Keep the original behavior
+                    throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", ex);
+                } else {
+                    throw ex;
+                }
+            } catch (Exception ex) {
+                throw ex;
+            }
         }
 
         public static UProject LoadText(string text) {
@@ -145,7 +156,7 @@ namespace OpenUtau.Core.Format {
             project.AfterLoad();
             project.ValidateFull();
             if (project.ustxVersion > kUstxVersion) {
-                throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", new FileFormatException("Project file is newer than software."));
+                throw new FileFormatException($"Project file is newer than software.");
             }
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
@@ -178,10 +189,10 @@ namespace OpenUtau.Core.Format {
                 project.ValidateFull();
             }
             if (project.ustxVersion < new Version(0, 6)) {
-    #pragma warning disable CS0612 // Type or member is obsolete
+#pragma warning disable CS0612 // Type or member is obsolete
                 project.timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, project.beatPerBar, project.beatUnit) };
                 project.tempos = new List<UTempo> { new UTempo(0, project.bpm) };
-    #pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0612 // Type or member is obsolete
                 project.ValidateFull();
             }
             if (project.ustxVersion < new Version(0, 7)) {
