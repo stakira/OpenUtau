@@ -303,9 +303,9 @@ namespace OpenUtau.Plugin.Builtin {
 
             var romaji2Korean = ConvertRomajiNoteToHangeul(notes, prevNeighbour, nextNeighbour);
             if (romaji2Korean != null) {
-                notes = romaji2Korean.KoreanLryicNotes;
-                prevNeighbour = romaji2Korean.KoreanLryicPrevNote;
-                nextNeighbour = romaji2Korean.KoreanLryicNextNote;
+                notes = romaji2Korean.KoreanLyricNotes;
+                prevNeighbour = romaji2Korean.KoreanLyricPrevNote;
+                nextNeighbour = romaji2Korean.KoreanLyricNextNote;
                 
                 prevLyric = prevNeighbour?.lyric;
                 nextLyric = nextNeighbour?.lyric;

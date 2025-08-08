@@ -9,23 +9,24 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="BunLabs.NAudio.Flac" Version="2.0.1" />
-    <PackageReference Include="Concentus.OggFile" Version="1.0.4" />
+    <PackageReference Include="Concentus.OggFile" Version="1.0.6" />
+    <PackageReference Include="csharp-kana" Version="1.0.2" />
     <PackageReference Include="csharp-pinyin" Version="1.0.0" />
     <PackageReference Include="Ignore" Version="0.1.50" />
     <PackageReference Include="K4os.Hash.xxHash" Version="1.0.8" />
-    <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.2" />
+    <PackageReference Include="Melanchall.DryWetMidi" Version="7.2.0" />
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
     <PackageReference Include="NumSharp" Version="0.30.0" />
     <PackageReference Include="NWaves" Version="0.9.6" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="SharpCompress" Version="0.36.0" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="Serilog" Version="4.1.0" />
+    <PackageReference Include="SharpCompress" Version="0.38.0" />
+    <PackageReference Include="System.Buffers" Version="4.6.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.IO.Packaging" Version="9.0.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.2" />
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
     <PackageReference Include="Vortice.DXGI" Version="2.4.2" />
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
@@ -35,10 +36,10 @@
   </ItemGroup>
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.15.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.16.3" />
   </ItemGroup>
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'false'">
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.15.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.16.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Analysis\Crepe\Resources.Designer.cs">

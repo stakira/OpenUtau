@@ -60,6 +60,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapDiv { get; set; }
+        [Reactive] public int SnapUnit { get; set; }
         public ObservableCollectionExtended<int> SnapTicks { get; } = new ObservableCollectionExtended<int>();
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
@@ -139,6 +140,11 @@ namespace OpenUtau.App.ViewModels {
                 out int ticks,
                 out int div);
             SnapDiv = div;
+            int snapUnit = Project.resolution * 4 / SnapDiv;
+            while (snapUnit * TickWidth < ViewConstants.MinTicklineWidth) {
+                snapUnit *= 2; // Avoid drawing too dense.
+            }
+            SnapUnit = snapUnit;
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -181,22 +187,28 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void TickToLineTick(int tick, out int left, out int right) {
-            if (SnapTicks.Count == 0) {
-                left = 0;
-                right = Project.resolution;
+            if(tick < 0 || SnapUnit <= 0){
+                left = right = 0;
                 return;
             }
-            int index = SnapTicks.BinarySearch(tick);
-            if (index < 0) {
-                index = ~index - 1;
+            double minLineTick = ViewConstants.MinTicklineWidth / TickWidth;
+            var timeSig = Project.timeAxis.TimeSignatureAtTick(tick);
+            Project.timeAxis.TickPosToBarBeat(tick, out int bar, out int beat, out int remainingTicks);
+            int barTick = Project.timeAxis.BarBeatToTickPos(bar, 0);
+            int nextBarTick = Project.timeAxis.BarBeatToTickPos(bar + 1, 0);
+            int ticksPerBeat = Project.resolution * 4 * timeSig.beatPerBar / timeSig.beatUnit;
+            int ticksPerLine = SnapUnit;
+            if (ticksPerBeat < SnapUnit) {
+                ticksPerLine = ticksPerBeat;
+            } else if (ticksPerBeat % SnapUnit != 0) {
+                if (ticksPerBeat > minLineTick) {
+                    ticksPerLine = ticksPerBeat;
+                } else {
+                    ticksPerLine = nextBarTick - barTick;
+                }
             }
-            if (0 >= SnapTicks.Count - 2) {
-                left = right = tick;
-                return;
-            }
-            index = Math.Clamp(index, 0, SnapTicks.Count - 2);
-            left = SnapTicks[index];
-            right = SnapTicks[index + 1];
+            left = barTick + (tick - barTick) / ticksPerLine * ticksPerLine;
+            right = left + ticksPerLine;
         }
 
         public void PointToLineTick(Point point, out int left, out int right) {
@@ -430,6 +442,11 @@ namespace OpenUtau.App.ViewModels {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
                     if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
                         MaybeAutoScroll();
+                    }
+                } else if (cmd is LoadPartNotification loadPartNotif) {
+                    if (SelectedParts.Count != 1 || SelectedParts.First() != loadPartNotif.part) {
+                        DeselectParts();
+                        SelectPart(loadPartNotif.part);
                     }
                 }
                 Notify();

@@ -83,6 +83,16 @@ namespace OpenUtau.Plugin.Builtin.Data {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] en_cPv_template {
+            get {
+                object obj = ResourceManager.GetObject("en_cPv_template", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] en_xsampa_template {
             get {
                 object obj = ResourceManager.GetObject("en_xsampa_template", resourceCulture);
@@ -96,6 +106,16 @@ namespace OpenUtau.Plugin.Builtin.Data {
         internal static byte[] envccv_template {
             get {
                 object obj = ResourceManager.GetObject("envccv_template", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] filipino_template {
+            get {
+                object obj = ResourceManager.GetObject("filipino_template", resourceCulture);
                 return ((byte[])(obj));
             }
         }

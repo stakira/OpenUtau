@@ -5,7 +5,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {
-    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi, Ufdata };
+    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi, Ufdata, Musicxml };
 
     public static class Formats {
         const string ustMatch = "[#SETTING]";
@@ -15,6 +15,7 @@ namespace OpenUtau.Core.Format {
         const string vsq4Match = VSQx.vsq4NameSpace;
         const string midiMatch = "MThd";
         const string ufdataMatch = "\"formatVersion\":";
+        const string musicxmlMatch = "score-partwise";
 
         public static ProjectFormats DetectProjectFormat(string file) {
             var lines = new List<string>();
@@ -36,6 +37,8 @@ namespace OpenUtau.Core.Format {
                 return ProjectFormats.Midi;
             } else if (contents.Contains(ufdataMatch)) {
                 return ProjectFormats.Ufdata;
+            } else if (contents.Contains(musicxmlMatch)) {
+                return ProjectFormats.Musicxml;
             } else {
                 return ProjectFormats.Unknown;
             }
@@ -67,6 +70,9 @@ namespace OpenUtau.Core.Format {
                     break;
                 case ProjectFormats.Ufdata:
                     project = Ufdata.Load(files[0]);
+                    break;
+                case ProjectFormats.Musicxml:
+                    project = MusicXML.LoadProject(files[0]);
                     break;
                 default:
                     throw new FileFormatException("Unknown file format");
@@ -100,6 +106,25 @@ namespace OpenUtau.Core.Format {
                 .Where(p => p != null)
                 .Cast<UProject>()
                 .ToArray();
+        }
+
+        /// <summary>
+        /// Load project from backup file.
+        /// </summary>
+        /// <param name="files">Names of the files to be loaded</param>
+        public static void RecoveryProject(string[] files) {
+            UProject project = ReadProject(files);
+            if (project != null) {
+                string originalPath = project.FilePath.Replace("-autosave.ustx", ".ustx").Replace("-backup.ustx", ".ustx");
+                if (File.Exists(originalPath)) {
+                    project.FilePath = originalPath;
+                } else {
+                    project.FilePath = string.Empty;
+                    project.Saved = false;
+                }
+                
+                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            }
         }
 
         /// <summary>

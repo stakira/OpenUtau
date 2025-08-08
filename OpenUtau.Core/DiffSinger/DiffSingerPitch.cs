@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,9 +40,8 @@ namespace OpenUtau.Core.DiffSinger
             }
             //Load language id if needed
             if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
-                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return;
+                if(dsConfig.languages == null) {
+                    throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
@@ -53,9 +52,15 @@ namespace OpenUtau.Core.DiffSinger
                 }
             }
             //Load phonemes list
+            if (dsConfig.phonemes == null) {
+                throw new Exception("Configuration key \"phonemes\" is null.");
+            }
             string phonemesPath = Path.Combine(rootPath, dsConfig.phonemes);
             phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
             //Load models
+            if (dsConfig.linguistic == null) {
+                throw new Exception("Configuration key \"linguistic\" is null.");
+            }
             var linguisticModelPath = Path.Join(rootPath, dsConfig.linguistic);
             var linguisticModelBytes = File.ReadAllBytes(linguisticModelPath);
             linguisticHash = XXH64.DigestOf(linguisticModelBytes);
@@ -106,13 +111,11 @@ namespace OpenUtau.Core.DiffSinger
             var endMs = phrase.notes[^1].endMs + tailMs;
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
-            if (dsConfig.predict_dur || dsConfig.use_note_rest) {
-                //Check if all phonemes are defined in dsdict.yaml (for their types)
-                foreach (var phone in phrase.phones) {
-                    if (!g2p.IsValidSymbol(phone.phoneme)) {
-                        throw new InvalidDataException(
-                            $"Type definition of symbol \"{phone.phoneme}\" not found. Consider adding it to dsdict.yaml of the pitch predictor.");
-                    }
+            //Check if all phonemes are defined in dsdict.yaml (for their types)
+            foreach (var phone in phrase.phones) {
+                if (!g2p.IsValidSymbol(phone.phoneme)) {
+                    throw new InvalidDataException(
+                        $"Type definition of symbol \"{phone.phoneme}\" not found. Consider adding it to dsdict.yaml of the pitch predictor.");
                 }
             }
             //Linguistic Encoder
@@ -183,6 +186,7 @@ namespace OpenUtau.Core.DiffSinger
             if (linguisticOutputs is null) {
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
+                phrase.AddCacheFile(linguisticCache?.Filename);
             }
             Tensor<float> encoder_out = linguisticOutputs
                 .Where(o => o.Name == "encoder_out")
@@ -195,29 +199,29 @@ namespace OpenUtau.Core.DiffSinger
             
             //Pitch Predictor   
             var note_rest = new List<bool>{true};
-                bool prevNoteRest = true;
-                int phIndex = 0;
-                foreach(var note in phrase.notes) {
-                    //Slur notes follow the previous note's rest status
-                    if(note.lyric.StartsWith("+")) {
-                        note_rest.Add(prevNoteRest);
-                        continue;
-                    }
-                    //find all the phonemes in the note's time range
-                    while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
-                        phIndex++;
-                    }
-                    var phs = phrase.phones
-                        .SkipWhile(ph => ph.end <= note.position + 1)
-                        .TakeWhile(ph => ph.position < note.end - 1)
-                        .ToArray();
-                    //If all the phonemes in a note's time range are AP, SP or consonant,
-                    //it is a rest note
-                    bool isRest = phs.Length == 0 
-                        || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
-                    note_rest.Add(isRest);
-                    prevNoteRest = isRest;
+            bool prevNoteRest = true;
+            int phIndex = 0;
+            foreach(var note in phrase.notes) {
+                //Slur notes follow the previous note's rest status
+                if(note.lyric.StartsWith("+")) {
+                    note_rest.Add(prevNoteRest);
+                    continue;
                 }
+                //find all the phonemes in the note's time range
+                while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
+                    phIndex++;
+                }
+                var phs = phrase.phones
+                    .SkipWhile(ph => ph.end <= note.position + 1)
+                    .TakeWhile(ph => ph.position < note.end - 1)
+                    .ToArray();
+                //If all the phonemes in a note's time range are AP, SP or consonant,
+                //it is a rest note
+                bool isRest = phs.Length == 0
+                    || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
+                note_rest.Add(isRest);
+                prevNoteRest = isRest;
+            }
 
             var note_midi = phrase.notes
                 .Select(n=>(float)n.tone)
@@ -286,7 +290,7 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
                 new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
                 .Reshape(new int[] { 1, retake.Length })));
-            var steps = Preferences.Default.DiffSingerSteps;
+            var steps = Preferences.Default.DiffSingerStepsPitch;
             if (dsConfig.useContinuousAcceleration) {
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
                     new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));

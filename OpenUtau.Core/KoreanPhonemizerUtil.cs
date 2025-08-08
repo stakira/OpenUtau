@@ -10,7 +10,6 @@ using OpenUtau.Classic;
 using Serilog;
 using static OpenUtau.Api.Phonemizer;
 using OpenUtau.Api;
-using System.Text;
 
 namespace OpenUtau.Core {
     /// <summary>

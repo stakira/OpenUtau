@@ -8,12 +8,13 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
+using SharpCompress;
 
 namespace OpenUtau.Classic {
     public class FileTrace {
-        public string file;
+        public string file = string.Empty;
         public int lineNumber;
-        public string line;
+        public string line = string.Empty;
         public FileTrace() { }
         public FileTrace(FileTrace other) {
             file = other.file;
@@ -89,9 +90,9 @@ namespace OpenUtau.Classic {
                 }
             }
             string singerType = bankConfig?.SingerType ?? string.Empty;
-            if(SingerTypeUtils.SingerTypeFromName.ContainsKey(singerType)){
+            if (SingerTypeUtils.SingerTypeFromName.ContainsKey(singerType)) {
                 voicebank.SingerType = SingerTypeUtils.SingerTypeFromName[singerType];
-            }else{
+            } else {
                 // Legacy detection code. Do not add more here.
                 var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
                 var dsconfigFile = Path.Combine(dir, kDsconfigYaml);
@@ -316,6 +317,10 @@ namespace OpenUtau.Classic {
 
         public static OtoSet ParseOtoSet(string filePath, Encoding encoding, bool? useFilenameAsAlias) {
             try {
+                var otoDeclaredEncoding = GetOtoDeclaredEncoding(filePath);
+                if (otoDeclaredEncoding != null) {
+                    encoding = otoDeclaredEncoding;
+                }
                 using (var stream = File.OpenRead(filePath)) {
                     var otoSet = ParseOtoSet(stream, filePath, encoding);
                     if (!IsTest) {
@@ -333,6 +338,27 @@ namespace OpenUtau.Classic {
             return null;
         }
 
+        // Oto.ini can declare its own encoding at the beginning of the file with #Charset:
+        static Encoding? GetOtoDeclaredEncoding(string filePath) {
+            using (var reader = new StreamReader(filePath, Encoding.GetEncoding("shift_jis"))) {
+                for (var i = 0; i < 10; i++) {
+                    var line = reader.ReadLine();
+                    if (line == null) {
+                        break;
+                    }
+                    line = line.Trim();
+                    if (line.StartsWith("#Charset:")) {
+                        try {
+                            return Encoding.GetEncoding(line.Replace("#Charset:", ""));
+                        } catch (ArgumentException) {
+                            return null;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
             using (var reader = new StreamReader(stream, encoding)) {
@@ -342,15 +368,6 @@ namespace OpenUtau.Classic {
                 };
                 while (!reader.EndOfStream) {
                     var line = reader.ReadLine().Trim();
-                    if (line.StartsWith("#Charaset:")) {
-                        try {
-                            var charaset = Encoding.GetEncoding(line.Replace("#Charaset:", ""));
-                            if (encoding != charaset) {
-                                stream.Position = 0;
-                                return ParseOtoSet(stream, filePath, charaset);
-                            }
-                        } catch { }
-                    }
                     trace.line = line;
                     try {
                         Oto oto = ParseOto(line, trace);
@@ -380,7 +397,7 @@ namespace OpenUtau.Classic {
                     var oto = new Oto {
                         Alias = Path.GetFileNameWithoutExtension(file),
                         Wav = file,
-                        FileTrace = new FileTrace { file = wav, lineNumber = 0 }
+                        FileTrace = null,
                     };
                     oto.Phonetic = oto.Alias;
                     otoSet.Otos.Add(oto);
@@ -390,15 +407,25 @@ namespace OpenUtau.Classic {
 
         static void CheckWavExist(OtoSet otoSet) {
             var wavGroups = otoSet.Otos.Where(oto => oto.IsValid).GroupBy(oto => oto.Wav);
+            var dir = Path.GetDirectoryName(otoSet.File);
+            var NFDFiles = Directory.GetFiles(dir, "*.wav")
+                .Select(file => Path.GetFileName(file))
+                .Where(file => !file.IsNormalized())
+                .ToDictionary(file => file.Normalize());
+
             foreach (var group in wavGroups) {
-                string path = Path.Combine(Path.GetDirectoryName(otoSet.File), group.Key);
+                string path = Path.Combine(dir, group.Key);
                 if (!File.Exists(path)) {
-                    Log.Error($"Sound file missing. {path}");
-                    foreach (Oto oto in group) {
-                        if (string.IsNullOrEmpty(oto.Error)) {
-                            oto.Error = $"Sound file missing. {path}";
+                    if (NFDFiles.TryGetValue(group.Key.Normalize(), out string NFDFile)) {
+                        group.ForEach(oto => oto.Wav = NFDFile);
+                    } else {
+                        Log.Error($"Sound file missing. {path}");
+                        foreach (Oto oto in group) {
+                            if (string.IsNullOrEmpty(oto.Error)) {
+                                oto.Error = $"Sound file missing. {path}";
+                            }
+                            oto.IsValid = false;
                         }
-                        oto.IsValid = false;
                     }
                 }
             }
@@ -500,9 +527,7 @@ namespace OpenUtau.Classic {
                     }
                     writer.Write(oto.Wav);
                     writer.Write('=');
-                    if (oto.Alias != RemoveExtension(oto.Wav)) {
-                        writer.Write(oto.Alias);
-                    }
+                    writer.Write(oto.Alias);
                     writer.Write(',');
                     if (oto.Offset != 0) {
                         writer.Write(oto.Offset);

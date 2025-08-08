@@ -33,7 +33,7 @@ jobs:
           - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest, daw-plugin: true }
           - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest, daw-plugin: false }
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: true }
-          - { name: osx-x64, rid: osx.10.14-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: true }
+          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: true }
           - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: true }
           - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
           - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
@@ -45,7 +45,9 @@ jobs:
           submodules: recursive
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: |
+            6.0.x
+            8.0.x
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -120,7 +122,7 @@ jobs:
       - name: DirectML
         shell: cmd
         run: |
-          curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.0 -o Microsoft.AI.DirectML.nupkg
+          curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.1 -o Microsoft.AI.DirectML.nupkg
           mkdir Microsoft.AI.DirectML
           tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
           copy /y Microsoft.AI.DirectML\bin\${{ matrix.arch.arch }}-${{ matrix.arch.os }}\DirectML.dll bin\${{ matrix.arch.name }}\
@@ -175,8 +177,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: OpenUtau-osx-${{ matrix.arch.name }}.dmg
-          path: OpenUtau-osx-${{ matrix.arch.name }}.dmg
+          name: OpenUtau-${{ matrix.arch.name }}.dmg
+          path: OpenUtau-${{ matrix.arch.name }}.dmg
         if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
 
       - uses: actions/upload-artifact@v4
@@ -222,4 +224,11 @@ jobs:
             OpenUtau-${{ matrix.arch.name }}.*
             DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
             DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
+          body: |
+            See [Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) for how to use.
+
+            If you encountered issues, see [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
+
+            ## macOS says "This app is damaged"
+            Open a terminal and run `xattr -rc /Applications/OpenUtau.app`. Try opening OpenUtau again.
         if: ${{ inputs.release }}
