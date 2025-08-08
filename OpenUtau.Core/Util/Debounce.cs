@@ -12,7 +12,7 @@ namespace OpenUtau.Core.Util {
             cancellation?.Cancel();
             cancellation = new CancellationTokenSource();
 
-            Task.Delay(TimeSpan.FromSeconds(5), cancellation.Token)
+            Task.Delay(timeSpan, cancellation.Token)
                 .ContinueWith(async task => {
                     if (task.IsCompletedSuccessfully) {
                         await callback();
