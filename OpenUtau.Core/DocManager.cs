@@ -31,15 +31,6 @@ namespace OpenUtau.Core {
 
         public int playPosTick = 0;
 
-        readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
-        readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
-        UCommandGroup? undoGroup = null;
-        UCommandGroup? savedPoint = null;
-        UCommandGroup? autosavedPoint = null;
-
-        private readonly object lockObj = new object();
-        private readonly List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
-
         public TaskScheduler MainScheduler => mainScheduler;
         public Action<Action> PostOnUIThread { get; set; }
         public Plugin[] Plugins { get; private set; }
@@ -118,6 +109,12 @@ namespace OpenUtau.Core {
         }
 
         #region Command Queue
+
+        readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
+        readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
+        UCommandGroup? undoGroup = null;
+        UCommandGroup? savedPoint = null;
+        UCommandGroup? autosavedPoint = null;
         public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
 
         public bool ChangesSaved {
@@ -183,7 +180,6 @@ namespace OpenUtau.Core {
                 Log.Error(e, "Autosave failed.");
             }
         }
-
 
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
@@ -332,6 +328,9 @@ namespace OpenUtau.Core {
         # endregion
 
         # region Command Subscribers
+
+        private readonly object lockObj = new object();
+        private readonly List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
 
         public void AddSubscriber(ICmdSubscriber sub) {
             lock (lockObj) {
