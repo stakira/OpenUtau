@@ -38,35 +38,47 @@ namespace OpenUtau.Core.DawIntegration {
                 throw new Exception("stream is null");
             }
             await Task.Run(async () => {
-                byte[] currentMessageBuffer = new byte[0];
-                while (true) {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    try {
-                        bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
-                    } catch (SocketException) {
-                        break;
-                    }
-                    currentMessageBuffer = currentMessageBuffer.Concat(buffer.Slice(0, bytesRead)).ToArray();
-                    while (currentMessageBuffer.Contains((byte)'\n')) {
-                        int index = Array.IndexOf(currentMessageBuffer, (byte)'\n');
-                        string message = Encoding.UTF8.GetString(currentMessageBuffer.Take(index).ToArray());
-                        currentMessageBuffer = currentMessageBuffer.Skip(index + 1).ToArray();
-                        string[] parts = message.Split(' ', 2);
-                        var kind = parts[0];
-                        var content = parts[1];
-                        if (handlers.ContainsKey(kind)) {
-                            handlers[kind](content);
-                        } else if (onetimeHandlers.ContainsKey(kind)) {
-                            onetimeHandlers[kind](content);
-                            onetimeHandlers.Remove(kind);
-                        } else {
-                            Log.Warning($"Unhandled message: {kind}");
+                using (var currentMessageBuffer = new MemoryStream()) {
+                    while (true) {
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        try {
+                            bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
+                        } catch (SocketException) {
+                            break;
                         }
-                    }
+                        currentMessageBuffer.Write(buffer, 0, bytesRead);
+                        while (true) {
+                            // Search for newline in the buffer
+                            var buf = currentMessageBuffer.GetBuffer();
+                            int length = (int)currentMessageBuffer.Length;
+                            int index = Array.IndexOf(buf, (byte)'\n', 0, length);
+                            if (index < 0) {
+                                break;
+                            }
+                            // Extract message up to newline
+                            string message = Encoding.UTF8.GetString(buf, 0, index);
+                            // Remove processed message from buffer
+                            int remaining = length - (index + 1);
+                            // Shift remaining bytes to start
+                            Array.Copy(buf, index + 1, buf, 0, remaining);
+                            currentMessageBuffer.SetLength(remaining);
+                            string[] parts = message.Split(' ', 2);
+                            var kind = parts[0];
+                            var content = parts.Length > 1 ? parts[1] : "";
+                            if (handlers.ContainsKey(kind)) {
+                                handlers[kind](content);
+                            } else if (onetimeHandlers.ContainsKey(kind)) {
+                                onetimeHandlers[kind](content);
+                                onetimeHandlers.Remove(kind);
+                            } else {
+                                Log.Warning($"Unhandled message: {kind}");
+                            }
+                        }
 
-                    if (cancellationTokenSource != null && cancellationTokenSource.IsCancellationRequested) {
-                        break;
+                        if (cancellationTokenSource != null && cancellationTokenSource.IsCancellationRequested) {
+                            break;
+                        }
                     }
                 }
 
