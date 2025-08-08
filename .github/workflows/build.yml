@@ -33,10 +33,10 @@ jobs:
           - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest, daw-plugin: true }
           - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest, daw-plugin: false }
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: true }
-          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: true }
-          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: true }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
-          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-24.04, daw-plugin: true }
+          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-24.04, daw-plugin: false }
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-24.04, daw-plugin: false }
 
     steps:
       # Setup
