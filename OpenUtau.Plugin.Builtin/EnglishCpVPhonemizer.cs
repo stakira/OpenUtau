@@ -23,6 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
         "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang", "N", "nn", "mm", "ll"
         };
+        private static string[] diphthongs = { "ay", "ey", "oy", "aw", "ow" };
         private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
         private readonly string[] affricates = "ch,jh,j".Split(',');
         private readonly string[] tapConsonant = "dx,nx,lx".Split(",");
@@ -66,112 +67,10 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isTimitPhonemes = false;
 
-        private static readonly Dictionary<string, string> VVManualOverrides = new Dictionary<string, string>() {
-            {"aw","w"},
-            {"ow","w"},
-            {"uw","w"},
-            {"uh","w"},
-            {"ay","y"},
-            {"ey","y"},
-            {"iy","y"},
-            {"oy","y"},
-            {"ih","y"},
-            {"er","r"},
-            {"ea", "ea"},
-            {"ia", "ia"},
-            {"oa", "oa"},
-            {"ua", "ua"}
-        };
-            
-        // Final consonants
-        private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
-
-        // Manually defined exceptions (Overrides auto-generated values)
-        private static readonly Dictionary<string, string> ManualOverrides = new Dictionary<string, string>() {
-            {"ea", "ea"},
-            {"ia", "ia"},
-            {"oa", "oa"},
-            {"ua", "ua"}
-        };
-
-        // Dictionary initialized dynamically
-        private Dictionary<string, string> _diphthongExceptions;
-        private readonly object diphthongLock = new object();
-        private Dictionary<string, string> _vvExceptions;
-        private readonly object vvLock = new object();
-        public Dictionary<string, string> DiphthongExceptions {
-            get {
-                // Lazy initialization: only initialize once when it's accessed
-                if (_diphthongExceptions == null) {
-                    lock (diphthongLock) {
-                        if (_diphthongExceptions == null) {
-                            // Create an instance of the phonemizer to access instance-specific data
-                            var phonemizerInstance = new EnglishCpVPhonemizer();
-                            phonemizerInstance.SetSinger(singer);
-                            _diphthongExceptions = phonemizerInstance.GenerateDiphthongExceptions();
-                        }
-                    }
-                }
-                return _diphthongExceptions;
-            }
-        }
-
-        private Dictionary<string, string> GenerateDiphthongExceptions() {
-            var diphthongExceptions = new Dictionary<string, string>();
-
-            // Access instance-specific vowels here
-            foreach (string vowel in GetVowels()) {
-                foreach (string consonant in FinalConsonants) {
-                    if (vowel.EndsWith(consonant)) {
-                        diphthongExceptions[vowel] = consonant;
-                        break;
-                    }
-                }
-            }
-
-            // Apply manual overrides
-            foreach (var entry in ManualOverrides) {
-                diphthongExceptions[entry.Key] = entry.Value;
-            }
-            return diphthongExceptions;
-        }
-
-        public Dictionary<string, string> vvExceptions {
-            get {
-                // Lazy initialization: only initialize once when it's accessed
-                if (_vvExceptions == null) {
-                    lock (vvLock) {
-                        if (_vvExceptions == null) {
-                            // Create an instance of the phonemizer to access instance-specific data
-                            var phonemizerInstance = new EnglishCpVPhonemizer();
-                            phonemizerInstance.SetSinger(singer);
-                            _vvExceptions = phonemizerInstance.GenerateVVExceptions();
-                        }
-                    }
-                }
-                return _vvExceptions;
-            }
-        }
-
-        private Dictionary<string, string> GenerateVVExceptions() {
-            var vvExceptions = new Dictionary<string, string>();
-
-            // Access instance-specific vowels here
-            foreach (string vowel in GetVowels()) {
-                foreach (string consonant in FinalConsonants) {
-                    if (vowel.EndsWith(consonant)) {
-                        // only the final consonants are used
-                        vvExceptions[vowel] = consonant;
-                        break;
-                    }
-                }
-            }
-            // Apply manual overrides
-            foreach (var entry in VVManualOverrides) {
-                vvExceptions[entry.Key] = entry.Value;
-            }
-            return vvExceptions;
-        }
+        private static Dictionary<string, string> DiphthongExceptions = diphthongs.ToDictionary(
+            key => key,
+            value => value.Last().ToString()
+        );
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
@@ -238,7 +137,7 @@ namespace OpenUtau.Plugin.Builtin {
                 finalPhonemes = new List<string>(modified);
             }
             List<string> finalProcessedPhonemes = new List<string>();
-            
+
             // SPLITS UP DR AND TR
             string[] tr = new[] { "tr" };
             string[] dr = new[] { "dr" };
@@ -340,7 +239,7 @@ namespace OpenUtau.Plugin.Builtin {
             return new G2pFallbacks(g2ps.ToArray());
         }
 
-    public override void SetSinger(USinger singer) {
+        public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
@@ -363,16 +262,52 @@ namespace OpenUtau.Plugin.Builtin {
                     try {
                         var data = Core.Yaml.DefaultDeserializer.Deserialize<ArpabetYAMLData>(File.ReadAllText(file));
 
-                        // Load vowels
+                        // Load vowels and diphthongs
                         try {
-                            var loadVowels = data.symbols
+                            var loadedVowels = data.symbols
                                 ?.Where(s => s.type == "vowel")
                                 .Select(s => s.symbol)
                                 .ToList() ?? new List<string>();
 
-                            vowels = vowels.Concat(loadVowels).Distinct().ToArray();
+                            var loadedDiphthongs = data.symbols
+                                ?.Where(s => s.type == "diphthong")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            // Combine vowels and diphthongs, then remove duplicates
+                            vowels = vowels.Concat(loadedVowels)
+                                        .Concat(loadedDiphthongs)
+                                        .Distinct()
+                                        .ToArray();
+
+                            // Load diphthongs specifically to their own list
+                            diphthongs = loadedDiphthongs.ToArray();
+
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load vowels from en-cPv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load vowels and diphthongs from en-cPv.yaml: {ex.Message}");
+                        }
+                        // Load diphthong exceptions
+                        try {
+                            var allDiphthongs = data.symbols
+                                ?.Where(s => s.type == "diphthong")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            // Load explicit exceptions from the new YAML section
+                            var loadedDiphthongExceptions = data.diphthongs
+                                ?.ToDictionary(d => d.from, d => d.to) ?? new Dictionary<string, string>();
+
+                            // Initialize the DiphthongExceptions dictionary with explicit exceptions
+                            DiphthongExceptions = new Dictionary<string, string>(loadedDiphthongExceptions);
+
+                            // Create default mappings for diphthongs without an explicit exception [aw=aw], [ay=ay] etc
+                            foreach (var diphthong in allDiphthongs) {
+                                if (!DiphthongExceptions.ContainsKey(diphthong)) {
+                                    DiphthongExceptions.Add(diphthong, diphthong);
+                                }
+                            }
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load diphthongs and exceptions: {ex.Message}");
                         }
                         // Load replacements (errors out if there's no replacements)
                         try {
@@ -438,7 +373,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                        Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();
@@ -450,6 +385,7 @@ namespace OpenUtau.Plugin.Builtin {
             public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
             public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
             public Fallbacks[] fallbacks { get; set; } = Array.Empty<Fallbacks>();
+            public Fallbacks[] diphthongs { get; set; } = Array.Empty<Fallbacks>();
 
             public struct SymbolData {
                 public string symbol { get; set; }
@@ -541,13 +477,13 @@ namespace OpenUtau.Plugin.Builtin {
             else if (syllable.IsVV) {
                 if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = $"{prevV} {v}";
-                    if (!HasOto(basePhoneme, syllable.vowelTone) && !HasOto(ValidateAlias(basePhoneme), syllable.vowelTone) && vvExceptions.ContainsKey(prevV)) {
-                        // VV IS NOT PRESENT, CHECKS VVEXCEPTIONS LOGIC
-                        var vc = $"{prevV} {vvExceptions[prevV]}";
+                    if (!HasOto(basePhoneme, syllable.vowelTone) && !HasOto(ValidateAlias(basePhoneme), syllable.vowelTone) && DiphthongExceptions.ContainsKey(prevV)) {
+                        // VV IS NOT PRESENT, CHECKS DiphthongExceptions LOGIC
+                        var vc = $"{prevV} {DiphthongExceptions[prevV]}";
                         if (!HasOto(vc, syllable.vowelTone) && !HasOto(ValidateAlias(vc), syllable.vowelTone)) {
                             vc = $"{prevV}-";
                         }
-                        TryAddPhoneme(phonemes, syllable.tone, vc, $"{vvExceptions[prevV]}", $"{prevV} -", $"_{prevV}", $"- {vvExceptions[prevV]}", $"-{vvExceptions[prevV]}", ValidateAlias(vc), ValidateAlias($"{prevV}-"), ValidateAlias($"_{prevV}"), ValidateAlias($"{vvExceptions[prevV]}"), ValidateAlias($"-{vvExceptions[prevV]}"), ValidateAlias($"- {vvExceptions[prevV]}"));
+                        TryAddPhoneme(phonemes, syllable.tone, vc, $"{DiphthongExceptions[prevV]}", $"{prevV} -", $"_{prevV}", $"- {DiphthongExceptions[prevV]}", $"-{DiphthongExceptions[prevV]}", ValidateAlias(vc), ValidateAlias($"{prevV}-"), ValidateAlias($"_{prevV}"), ValidateAlias($"{DiphthongExceptions[prevV]}"), ValidateAlias($"-{DiphthongExceptions[prevV]}"), ValidateAlias($"- {DiphthongExceptions[prevV]}"));
                         basePhoneme = AliasFormat(v, "vv", syllable.vowelTone, "");
                     } else {
                         {
@@ -734,8 +670,8 @@ namespace OpenUtau.Plugin.Builtin {
                 if (HasOto(vR, ending.tone) || HasOto(ValidateAlias(vR), ending.tone) || (HasOto(vR1, ending.tone) || HasOto(ValidateAlias(vR1), ending.tone) || (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone)))) {
                     TryAddPhoneme(phonemes, ending.tone, AliasFormat(v, "ending", ending.tone, ""));
                     /// split diphthong vowels
-                } else if (vvExceptions.ContainsKey(prevV) && !(HasOto(vR, ending.tone) && HasOto(ValidateAlias(vR), ending.tone) && (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone)))) {
-                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{vvExceptions[prevV]}", "cv", ending.tone, ""));
+                } else if (DiphthongExceptions.ContainsKey(prevV) && !(HasOto(vR, ending.tone) && HasOto(ValidateAlias(vR), ending.tone) && (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone)))) {
+                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "cv", ending.tone, ""));
                 }
             } else if (ending.IsEndingVCWithOneConsonant) {
                 var vc = $"{v} {cc[0]}";
@@ -780,7 +716,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         /// add additional c to those consonants on the top
                     } else if (c_cR.Contains(cc.Last())) {
-                        if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) { 
+                        if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) {
                             TryAddPhoneme(phonemes, ending.tone, vc);
                             //TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
@@ -1096,14 +1032,14 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Check if the alias ends with a consonant or vowel
             foreach (var c in consonants) {
-                if (alias.Contains(c) && alias.Contains('-') && alias.Contains($"{c} -")) {
+                if (alias.EndsWith("-")) {
                     isEndingConsonant = true;
                     break;
                 }
             }
 
             foreach (var v in vowels) {
-                if (alias.Contains(v) && alias.Contains('-') && alias.Contains($"{v} -")) {
+                if (alias.EndsWith("-")) {
                     isEndingVowel = true;
                     break;
                 }

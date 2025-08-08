@@ -7,8 +7,8 @@ symbols:
   - {symbol: ae, type: vowel}
   - {symbol: ah, type: vowel}
   - {symbol: ao, type: vowel}
-  - {symbol: aw, type: vowel}
-  - {symbol: ay, type: vowel}
+  - {symbol: aw, type: diphthong}
+  - {symbol: ay, type: diphthong}
   - {symbol: b, type: stop}
   - {symbol: by, type: stop}
   - {symbol: bw, type: stop}
@@ -21,8 +21,8 @@ symbols:
   - {symbol: dr, type: affricate}
   - {symbol: e, type: vowel}
   - {symbol: eh, type: vowel}
-  - {symbol: er, type: vowel}
-  - {symbol: ey, type: vowel}
+  - {symbol: er, type: diphthong}
+  - {symbol: ey, type: diphthong}
   - {symbol: f, type: fricative}
   - {symbol: g, type: stop}
   - {symbol: gy, type: stop}
@@ -33,7 +33,7 @@ symbols:
   - {symbol: hw, type: aspirate}
   - {symbol: i, type: vowel}
   - {symbol: ih, type: vowel}
-  - {symbol: iy, type: vowel}
+  - {symbol: iy, type: diphthong}
   - {symbol: jh, type: affricate}
   - {symbol: j, type: affricate}
   - {symbol: jy, type: affricate}
@@ -51,8 +51,8 @@ symbols:
   - {symbol: nw, type: nasal}
   - {symbol: ng, type: nasal}
   - {symbol: o, type: vowel}
-  - {symbol: ow, type: vowel}
-  - {symbol: oy, type: vowel}
+  - {symbol: ow, type: diphthong}
+  - {symbol: oy, type: diphthong}
   - {symbol: p, type: stop}
   - {symbol: py, type: stop}
   - {symbol: pw, type: stop}
@@ -71,26 +71,12 @@ symbols:
   - {symbol: tr, type: affricate}
   - {symbol: u, type: vowel}
   - {symbol: uh, type: vowel}
-  - {symbol: uw, type: vowel}
+  - {symbol: uw, type: diphthong}
   - {symbol: v, type: fricative}
   - {symbol: w, type: semivowel}
   - {symbol: y, type: semivowel}
   - {symbol: z, type: fricative}
   - {symbol: zh, type: fricative}
-  - {symbol: br, type: fricative}
-  - {symbol: ar, type: vowel}
-  - {symbol: air, type: vowel}
-  - {symbol: or, type: vowel}
-  - {symbol: ir, type: vowel}
-  - {symbol: ur, type: vowel}
-  - {symbol: al, type: vowel}
-  - {symbol: el, type: vowel}
-  - {symbol: il, type: vowel}
-  - {symbol: ol, type: vowel}
-  - {symbol: ul, type: vowel}
-  - {symbol: ix, type: vowel}
-  - {symbol: ea, type: vowel}
-  - {symbol: inh, type: vowel}
 entries:
   - grapheme: b
     phonemes: [b]
