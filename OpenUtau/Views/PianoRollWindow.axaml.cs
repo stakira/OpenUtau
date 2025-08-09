@@ -115,6 +115,7 @@ namespace OpenUtau.App.Views {
                 new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
+                new DashToPlusTilda(),
                 new InsertSlur(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
