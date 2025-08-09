@@ -155,7 +155,7 @@ namespace OpenUtau.Core.DawIntegration {
         }
 
         public void RegisterNotification<T>(string kind, Action<T> handler) where T : DawOuNotification {
-            handlers[kind] = (string message) => {
+            handlers[$"notification:{kind}"] = (string message) => {
                 handler(JsonConvert.DeserializeObject<T>(message)!);
             };
         }

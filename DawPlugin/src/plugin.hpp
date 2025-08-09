@@ -6,6 +6,7 @@
 #include "common.hpp"
 #include "extra/String.hpp"
 #include "yamc_rwlock_sched.hpp"
+#include <cstdint>
 #include <filesystem>
 #include <map>
 #include <string>
@@ -15,7 +16,7 @@
 
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
 
-using AudioHash = uint32_t;
+using AudioHash = uint64_t;
 class Part {
 public:
   int trackNo;

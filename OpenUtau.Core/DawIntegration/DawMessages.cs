@@ -89,9 +89,9 @@ namespace OpenUtau.Core.DawIntegration {
             public int trackNo;
             public double startMs;
             public double endMs;
-            public uint audioHash;
+            public ulong audioHash;
 
-            public Part(int trackNo, double startMs, double endMs, uint audioHash) {
+            public Part(int trackNo, double startMs, double endMs, ulong audioHash) {
                 this.trackNo = trackNo;
                 this.startMs = startMs;
                 this.endMs = endMs;

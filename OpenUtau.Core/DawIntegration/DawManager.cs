@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -33,7 +32,7 @@ namespace OpenUtau.Core.DawIntegration {
                 await UpdateUstx();
                 await UpdateTracks();
             });
-            sendAudioDebounce.Do(TimeSpan.FromSeconds(5), async () => {
+            sendAudioDebounce.Do(TimeSpan.FromSeconds(1), async () => {
                 await UpdateAudio();
             });
         }
@@ -104,19 +103,21 @@ namespace OpenUtau.Core.DawIntegration {
                     .ToList();
 
                 Log.Information("Rendering prerenders for DAW...");
+                var hashToAudioPart = new Dictionary<ulong, (UVoicePart part, int samplePos, int sampleCount)>();
                 var buffers = readyParts.Select(part => {
                     double startMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position);
                     double endMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position + part.duration);
                     int samplePos = (int)(startMs * 44100 / 1000) * 2;
                     int sampleCount = (int)((endMs - startMs) * 44100 / 1000) * 2;
-                    var floatBuffer = new float[sampleCount];
-                    part.Mix.Mix(samplePos, floatBuffer, 0, sampleCount);
-                    var byteBuffer = new byte[floatBuffer.Length * 4];
-                    Buffer.BlockCopy(floatBuffer, 0, byteBuffer, 0, byteBuffer.Length);
 
-                    var hash = XXH32.DigestOf(byteBuffer);
+                    ulong hash = 0;
+                    foreach (var phrase in part.renderPhrases) {
+                        hash ^= phrase.hash;
+                    }
 
-                    return (part, startMs, endMs, byteBuffer, hash);
+                    hashToAudioPart[hash] = (part, samplePos, sampleCount);
+
+                    return (part, startMs, endMs, hash);
                 });
                 Log.Information("Sending part layout to DAW...");
                 var missingAudios = await dawClient.SendRequest<UpdatePartLayoutResponse>(
@@ -136,8 +137,13 @@ namespace OpenUtau.Core.DawIntegration {
                     var buffersDict = buffers.GroupBy(buffer => buffer.hash).ToDictionary(group => group.Key, group => group.First());
                     var audios = new Dictionary<uint, string>();
                     foreach (var audioHash in missingAudios.missingAudios) {
-                        var buffer = buffersDict[audioHash].byteBuffer;
-                        var compressed = Zstd.Compress(buffer);
+                        var (part, sampleCount, samplePos) = hashToAudioPart[audioHash];
+                        var floatBuffer = new float[sampleCount];
+                        part.Mix.Mix(samplePos, floatBuffer, 0, sampleCount);
+                        var byteBuffer = new byte[floatBuffer.Length * 4];
+                        Buffer.BlockCopy(floatBuffer, 0, byteBuffer, 0, byteBuffer.Length);
+
+                        var compressed = Zstd.Compress(byteBuffer);
 
                         audios[audioHash] = Convert.ToBase64String(compressed);
                     }

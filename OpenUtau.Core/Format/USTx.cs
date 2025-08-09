@@ -112,7 +112,10 @@ namespace OpenUtau.Core.Format {
 
         public static string FromProject(UProject project) {
             project.ustxVersion = kUstxVersion;
+            // BeforeSave and AfterSave are used to serialize existing fields.
+            project.BeforeSave();
             var ustx = Yaml.DefaultSerializer.Serialize(project);
+            project.AfterSave();
 
             return ustx;
         }
