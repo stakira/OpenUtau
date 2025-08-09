@@ -1084,6 +1084,12 @@ namespace OpenUtau.Plugin.Builtin {
                     return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
+
+            foreach (var v in vowels) {
+                if (alias.EndsWith("-")) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
+                }
+            }
             return base.GetTransitionBasicLengthMs();
         }
     }
