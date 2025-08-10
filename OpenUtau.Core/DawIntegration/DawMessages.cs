@@ -76,6 +76,7 @@ namespace OpenUtau.Core.DawIntegration {
 
         public override string kind => "updateUstx";
     }
+
     public class UpdatePartLayoutRequest : DawDawRequest {
         public List<Part> parts;
 
@@ -89,9 +90,9 @@ namespace OpenUtau.Core.DawIntegration {
             public int trackNo;
             public double startMs;
             public double endMs;
-            public ulong audioHash;
+            public int audioHash;
 
-            public Part(int trackNo, double startMs, double endMs, ulong audioHash) {
+            public Part(int trackNo, double startMs, double endMs, int audioHash) {
                 this.trackNo = trackNo;
                 this.startMs = startMs;
                 this.endMs = endMs;
@@ -101,9 +102,9 @@ namespace OpenUtau.Core.DawIntegration {
     }
 
     public class UpdatePartLayoutResponse : DawDawResponse {
-        public List<uint> missingAudios;
+        public List<int> missingAudios;
 
-        public UpdatePartLayoutResponse(List<uint> missingAudios) {
+        public UpdatePartLayoutResponse(List<int> missingAudios) {
             this.missingAudios = missingAudios;
         }
 
@@ -132,12 +133,15 @@ namespace OpenUtau.Core.DawIntegration {
     }
 
     public class UpdateAudioNotification : DawDawNotification {
-        public Dictionary<uint, string> audios;
+        public Dictionary<int, string> audios;
 
         public override string kind => "updateAudio";
 
-        public UpdateAudioNotification(Dictionary<uint, string> audios) {
+        public UpdateAudioNotification(Dictionary<int, string> audios) {
             this.audios = audios;
         }
+    }
+
+    public class PingNotification : DawOuNotification {
     }
 }

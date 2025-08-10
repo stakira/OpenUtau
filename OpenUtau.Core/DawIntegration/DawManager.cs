@@ -103,16 +103,20 @@ namespace OpenUtau.Core.DawIntegration {
                     .ToList();
 
                 Log.Information("Rendering prerenders for DAW...");
-                var hashToAudioPart = new Dictionary<ulong, (UVoicePart part, int samplePos, int sampleCount)>();
+                var hashToAudioPart = new Dictionary<int, (UVoicePart part, int samplePos, int sampleCount)>();
                 var buffers = readyParts.Select(part => {
                     double startMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position);
                     double endMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position + part.duration);
                     int samplePos = (int)(startMs * 44100 / 1000) * 2;
                     int sampleCount = (int)((endMs - startMs) * 44100 / 1000) * 2;
 
-                    ulong hash = 0;
+                    int hash = 0;
                     foreach (var phrase in part.renderPhrases) {
-                        hash ^= phrase.hash;
+                        hash ^= (
+                            singerType: phrase.renderer.SingerType,
+                            phrase.leading,
+                            phrase.hash
+                        ).GetHashCode();
                     }
 
                     hashToAudioPart[hash] = (part, samplePos, sampleCount);
@@ -135,9 +139,13 @@ namespace OpenUtau.Core.DawIntegration {
                 if (missingAudios.missingAudios.Count > 0) {
                     Log.Information($"DAW requested {missingAudios.missingAudios.Count} missing audios.");
                     var buffersDict = buffers.GroupBy(buffer => buffer.hash).ToDictionary(group => group.Key, group => group.First());
-                    var audios = new Dictionary<uint, string>();
+                    var audios = new Dictionary<int, string>();
                     foreach (var audioHash in missingAudios.missingAudios) {
-                        var (part, sampleCount, samplePos) = hashToAudioPart[audioHash];
+                        if (!hashToAudioPart.ContainsKey(audioHash)) {
+                            Log.Warning($"DAW requested missing audio {audioHash}, but it is not in the project.");
+                            continue;
+                        }
+                        var (part, samplePos, sampleCount) = hashToAudioPart[audioHash];
                         var floatBuffer = new float[sampleCount];
                         part.Mix.Mix(samplePos, floatBuffer, 0, sampleCount);
                         var byteBuffer = new byte[floatBuffer.Length * 4];

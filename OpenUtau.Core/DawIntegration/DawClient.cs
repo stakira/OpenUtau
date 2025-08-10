@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using NAudio.Wave;
 using Newtonsoft.Json;
-using NumSharp.Utilities;
 using Serilog;
 
 namespace OpenUtau.Core.DawIntegration {
@@ -66,13 +63,17 @@ namespace OpenUtau.Core.DawIntegration {
                             string[] parts = message.Split(' ', 2);
                             var kind = parts[0];
                             var content = parts.Length > 1 ? parts[1] : "";
-                            if (handlers.ContainsKey(kind)) {
-                                handlers[kind](content);
-                            } else if (onetimeHandlers.ContainsKey(kind)) {
-                                onetimeHandlers[kind](content);
-                                onetimeHandlers.Remove(kind);
-                            } else {
-                                Log.Warning($"Unhandled message: {kind}");
+                            try {
+                                if (handlers.ContainsKey(kind)) {
+                                    handlers[kind](content);
+                                } else if (onetimeHandlers.ContainsKey(kind)) {
+                                    onetimeHandlers[kind](content);
+                                    onetimeHandlers.Remove(kind);
+                                } else {
+                                    Log.Warning($"Unhandled message: {kind}");
+                                }
+                            } catch (Exception ex) {
+                                Log.Error(ex, $"Error handling message: {kind}");
                             }
                         }
 
@@ -98,7 +99,7 @@ namespace OpenUtau.Core.DawIntegration {
             timeoutCanceller.CancelAfter(TimeSpan.FromSeconds(5));
             var initMessage = await client.SendRequest<InitResponse>(new InitRequest(), timeoutCanceller.Token);
 
-            client.RegisterNotification<DawOuNotification>("ping", (_) => { });
+            client.RegisterNotification<PingNotification>("ping", (_) => { });
             return (client, initMessage.ustx);
         }
 

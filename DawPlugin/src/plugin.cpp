@@ -51,8 +51,7 @@ choc::value::Value Part::serialize() const {
   auto obj = choc::value::createObject("", "trackNo", trackNo, "startMs",
                                        startMs, "endMs", endMs);
   if (hash.has_value()) {
-    // choc cannot set uint32_t, so we need to cast it to int64_t
-    obj.setMember("audioHash", (int64_t)hash.value());
+    obj.setMember("audioHash", hash.value());
   }
 
   return obj;
@@ -229,8 +228,8 @@ void OpenUtauPlugin::setState(const char *rawKey, const char *value) {
       if (cursor >= decompressed.size()) {
         break;
       }
-      uint32_t hash = *(uint32_t *)&decompressed[cursor];
-      cursor += sizeof(uint32_t);
+      AudioHash hash = *(AudioHash *)&decompressed[cursor];
+      cursor += sizeof(AudioHash);
       uint32_t size = *(uint32_t *)&decompressed[cursor];
       cursor += sizeof(uint32_t);
       std::vector<float> audio(size);
@@ -580,7 +579,7 @@ choc::value::Value OpenUtauPlugin::onRequest(const std::string kind,
     choc::value::Value response = choc::value::createObject("");
     auto missingAudios = choc::value::createEmptyArray();
     for (const auto &hash : toAdd) {
-      missingAudios.addArrayElement(std::to_string(hash));
+      missingAudios.addArrayElement(hash);
     }
     response.setMember("missingAudios", missingAudios);
 
@@ -623,9 +622,8 @@ void OpenUtauPlugin::onNotification(const std::string kind,
             std::string encoded = value.get<std::string>();
             auto decoded = Utils::unBase64ToVector(encoded);
             auto decompressed = Utils::unzstd(decoded.data(), decoded.size());
-            std::vector<float> audio((float *)decompressed.data(),
-                                     (float *)decompressed.data() +
-                                         decompressed.size() / sizeof(float));
+            std::vector<float> audio(decompressed.size() / sizeof(float));
+            memcpy(audio.data(), decompressed.data(), decompressed.size());
             audioBuffers[hash] = audio;
           });
 

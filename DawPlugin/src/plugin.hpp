@@ -16,7 +16,7 @@
 
 // note: OpenUtau returns 44100Hz, 2ch, 32bit float audio
 
-using AudioHash = uint64_t;
+using AudioHash = int;
 class Part {
 public:
   int trackNo;
