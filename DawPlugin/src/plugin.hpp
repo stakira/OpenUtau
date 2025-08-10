@@ -115,7 +115,7 @@ private:
   std::map<int, std::vector<Part>> parts;
 
   yamc::alternate::basic_shared_mutex<yamc::rwlock::WriterPrefer> mixMutex;
-  bool mixMutexLocked = false;
+  bool isProcessingMix = false;
   std::vector<std::pair<std::vector<float>, std::vector<float>>> mixes;
   double currentSampleRate = 44100.0;
 

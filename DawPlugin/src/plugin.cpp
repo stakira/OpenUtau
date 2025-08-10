@@ -301,8 +301,9 @@ void OpenUtauPlugin::run(const float **inputs, float **outputs, uint32_t frames,
   }
 
   auto sampleRate = getSampleRate();
-  auto lock = std::shared_lock(this->mixMutex, std::defer_lock);
-  if (this->mixes.size() > 0 && timePosition.playing && lock.try_lock()) {
+  // The lock should not be held for too long, so we do lock in `run` (where DAW requests audio)
+  auto lock = std::shared_lock(this->mixMutex);
+  if (this->mixes.size() > 0 && timePosition.playing) {
     if (this->currentSampleRate == sampleRate) {
       for (uint32_t j = 0; j < mixes.size(); ++j) {
         if (j >= this->outputMap.size()) {
@@ -669,8 +670,7 @@ void OpenUtauPlugin::requestResampleMixes(double newSampleRate) {
 }
 
 void OpenUtauPlugin::resampleMixes(double newSampleRate) {
-  auto _lock = std::unique_lock(this->mixMutex);
-  this->mixMutexLocked = true;
+  this->isProcessingMix = true;
   auto _lock2 = std::shared_lock(this->audioBuffersMutex);
   auto _lock3 = std::shared_lock(this->partsMutex);
 
@@ -730,9 +730,10 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
 
     mixes.push_back({resampledLeft, resampledRight});
   }
+  auto _lock = std::unique_lock(this->mixMutex);
   this->mixes = mixes;
   this->currentSampleRate = newSampleRate;
-  this->mixMutexLocked = false;
+  this->isProcessingMix = false;
 }
 
 std::string
@@ -747,7 +748,7 @@ bool OpenUtauPlugin::isProcessing() {
   // flag instead. I know it's not the best practice, but this is only for a
   // UI, which does not affect the audio processing nor causes some critical
   // issues.
-  return this->mixMutexLocked;
+  return this->isProcessingMix;
 }
 
 // ------------------------------------------------------------------------------------------------------------
