@@ -674,7 +674,8 @@ void OpenUtauPlugin::resampleMixes(double newSampleRate) {
   auto _lock2 = std::shared_lock(this->audioBuffersMutex);
   auto _lock3 = std::shared_lock(this->partsMutex);
 
-  std::vector<std::pair<std::vector<float>, std::vector<float>>> mixes(this->parts.size());
+  std::vector<std::pair<std::vector<float>, std::vector<float>>> mixes;
+  mixes.reserve(this->parts.size());
   for (const auto &[_, parts] : this->parts) {
     std::vector<float> resampledLeft;
     std::vector<float> resampledRight;
