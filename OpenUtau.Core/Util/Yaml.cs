@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using OpenUtau.Core.Ustx;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;

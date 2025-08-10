@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace OpenUtau.Core {
     public class MessageCustomizableException : Exception {

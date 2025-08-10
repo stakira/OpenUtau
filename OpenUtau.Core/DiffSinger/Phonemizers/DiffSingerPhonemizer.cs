@@ -1,4 +1,4 @@
-using OpenUtau.Api;
+﻿using OpenUtau.Api;
 
 namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger Phonemizer", "DIFFS")]

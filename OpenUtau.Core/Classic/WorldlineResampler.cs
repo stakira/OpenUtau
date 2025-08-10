@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;

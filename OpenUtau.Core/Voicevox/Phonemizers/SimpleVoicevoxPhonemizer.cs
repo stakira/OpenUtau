@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Voicevox;

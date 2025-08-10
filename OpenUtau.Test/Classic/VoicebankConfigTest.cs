@@ -1,4 +1,4 @@
-using OpenUtau.Core;
+﻿using OpenUtau.Core;
 using Xunit;
 using Xunit.Abstractions;
 

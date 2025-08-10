@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using K4os.Hash.xxHash;
 using Microsoft.ML.OnnxRuntime;

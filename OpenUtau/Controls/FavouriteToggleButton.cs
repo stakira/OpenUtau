@@ -1,4 +1,4 @@
-using Avalonia.Controls.Primitives;
+﻿using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using OpenUtau.App;

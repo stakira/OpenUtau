@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;

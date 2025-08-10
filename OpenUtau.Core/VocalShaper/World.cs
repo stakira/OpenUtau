@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace VocalShaper.World {
     public static class World {

@@ -1,4 +1,4 @@
-using OpenUtau.Core.Ustx;
+﻿using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {

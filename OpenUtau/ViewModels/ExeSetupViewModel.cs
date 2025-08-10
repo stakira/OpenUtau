@@ -1,4 +1,4 @@
-using ReactiveUI.Fody.Helpers;
+﻿using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExeSetupViewModel : ViewModelBase {

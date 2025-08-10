@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace OpenUtau.Core.SignalChain {
     public class Fader : ISignalSource {

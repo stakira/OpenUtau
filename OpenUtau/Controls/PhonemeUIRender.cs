@@ -1,4 +1,4 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Media.TextFormatting;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;

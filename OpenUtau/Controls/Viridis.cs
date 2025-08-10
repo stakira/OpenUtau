@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace OpenUtau.App.Controls {
     public class Viridis {

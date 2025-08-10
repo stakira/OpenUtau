@@ -1,4 +1,4 @@
-namespace OpenUtau.Api {
+﻿namespace OpenUtau.Api {
     public interface IG2p {
         bool IsValidSymbol(string symbol);
         bool IsVowel(string symbol);

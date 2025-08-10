@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using Xunit.Abstractions;
 
 namespace OpenUtau.Core.Ustx {

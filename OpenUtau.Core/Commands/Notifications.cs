@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {

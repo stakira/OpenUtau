@@ -9,7 +9,7 @@ indent_style = space
 [*.{cs,csx,vb,vbx}]
 indent_size = 4
 insert_final_newline = true
-charset = utf-8
+charset = utf-8-bom
 guidelines = 100
 ###############################
 # .NET Coding Conventions     #

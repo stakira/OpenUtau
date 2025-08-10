@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using OpenUtau.Core;
 using ReactiveUI.Fody.Helpers;
 

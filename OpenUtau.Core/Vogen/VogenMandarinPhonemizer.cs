@@ -1,4 +1,4 @@
-using Microsoft.ML.OnnxRuntime;
+﻿using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Api;
 
 namespace OpenUtau.Core.Vogen {
