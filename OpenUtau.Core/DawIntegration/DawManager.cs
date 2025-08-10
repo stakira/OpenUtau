@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -103,23 +104,21 @@ namespace OpenUtau.Core.DawIntegration {
                     .ToList();
 
                 Log.Information("Rendering prerenders for DAW...");
-                var hashToAudioPart = new Dictionary<int, (UVoicePart part, int samplePos, int sampleCount)>();
+                var hashToAudioPart = new Dictionary<int, byte[]>();
                 var buffers = readyParts.Select(part => {
                     double startMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position);
                     double endMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(part.position + part.duration);
                     int samplePos = (int)(startMs * 44100 / 1000) * 2;
                     int sampleCount = (int)((endMs - startMs) * 44100 / 1000) * 2;
 
-                    int hash = 0;
-                    foreach (var phrase in part.renderPhrases) {
-                        hash ^= (
-                            singerType: phrase.renderer.SingerType,
-                            phrase.leading,
-                            phrase.hash
-                        ).GetHashCode();
-                    }
+                    // TODO: memoize this
+                    var floatBuffer = new float[sampleCount];
+                    part.Mix.Mix(samplePos, floatBuffer, 0, sampleCount);
+                    var byteBuffer = new byte[floatBuffer.Length * 4];
+                    Buffer.BlockCopy(floatBuffer, 0, byteBuffer, 0, byteBuffer.Length);
+                    int hash = unchecked((int)XXH32.DigestOf(byteBuffer));
 
-                    hashToAudioPart[hash] = (part, samplePos, sampleCount);
+                    hashToAudioPart[hash] = byteBuffer;
 
                     return (part, startMs, endMs, hash);
                 });
@@ -145,12 +144,8 @@ namespace OpenUtau.Core.DawIntegration {
                             Log.Warning($"DAW requested missing audio {audioHash}, but it is not in the project.");
                             continue;
                         }
-                        var (part, samplePos, sampleCount) = hashToAudioPart[audioHash];
-                        var floatBuffer = new float[sampleCount];
-                        part.Mix.Mix(samplePos, floatBuffer, 0, sampleCount);
-                        var byteBuffer = new byte[floatBuffer.Length * 4];
-                        Buffer.BlockCopy(floatBuffer, 0, byteBuffer, 0, byteBuffer.Length);
 
+                        var byteBuffer = hashToAudioPart[audioHash];
                         var compressed = Zstd.Compress(byteBuffer);
 
                         audios[audioHash] = Convert.ToBase64String(compressed);
