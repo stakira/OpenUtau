@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NAudio.Wave;
 using OpenUtau.Core.Util;

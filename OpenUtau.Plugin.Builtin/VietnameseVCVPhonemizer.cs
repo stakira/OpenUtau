@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Vietnamese VCV Phonemizer", "VIE VCV", "Jani Tran", language:"VI")]
+    [Phonemizer("Vietnamese VCV Phonemizer", "VIE VCV", "Jani Tran", language: "VI")]
     public class VietnameseVCVPhonemizer : Phonemizer {
         /// <summary>
         /// The lookup table to convert a hiragana to its tail vowel.
@@ -41,9 +41,9 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
 
         public override void SetSinger(USinger singer) => this.singer = singer;
-        
+
         // Legacy mapping. Might adjust later to new mapping style.
-		public override bool LegacyMapping => true;
+        public override bool LegacyMapping => true;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];

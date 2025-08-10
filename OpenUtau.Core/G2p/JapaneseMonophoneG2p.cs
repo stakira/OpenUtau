@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
@@ -95,7 +95,7 @@ namespace OpenUtau.Core.G2p {
                     prepGrapheme(parts[0]),
                     parts[1].Split().Select(symbol => prepPhoneme(symbol))));
             var dict = builder.Build();
-            return Tuple.Create((IG2p) dict, session);
+            return Tuple.Create((IG2p)dict, session);
         }
 
         public JapaneseMonophoneG2p() {

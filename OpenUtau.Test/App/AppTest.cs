@@ -1,8 +1,8 @@
-﻿using Xunit;
 using Avalonia;
 using Avalonia.Headless;
 using Avalonia.Styling;
 using OpenUtau.App;
+using Xunit;
 
 [assembly: AvaloniaTestApplication(typeof(TestAppBuilder))]
 

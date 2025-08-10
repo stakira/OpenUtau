@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -313,13 +313,13 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        string? FindSample(USinger singer){
+        string? FindSample(USinger singer) {
             var sample = singer.Sample;
-            if(sample!=null && File.Exists(sample)){
+            if (sample != null && File.Exists(sample)) {
                 return sample;
             } else if (singer.SingerType == USingerType.Classic || singer.SingerType == USingerType.Voicevox) {
                 var path = singer.Location;
-                if(!Directory.Exists(path)){
+                if (!Directory.Exists(path)) {
                     return null;
                 }
                 string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
@@ -329,7 +329,7 @@ namespace OpenUtau.App.Views {
                         .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
                         .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
                         .ToArray();
-                if(files.Length==0){
+                if (files.Length == 0) {
                     return null;
                 }
                 Random rnd = new Random(Guid.NewGuid().GetHashCode());
@@ -351,10 +351,10 @@ namespace OpenUtau.App.Views {
                 }
 
                 var sample = FindSample(viewModel.Singer);
-                if(sample == null){
+                if (sample == null) {
                     return;
                 }
-                try{
+                try {
                     var playSound = Wave.OpenFile(sample);
                     playBack.Init(playSound.ToSampleProvider());
                 } catch (Exception ex) {

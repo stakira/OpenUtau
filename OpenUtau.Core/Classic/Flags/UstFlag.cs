@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace OpenUtau.Classic.Flags {

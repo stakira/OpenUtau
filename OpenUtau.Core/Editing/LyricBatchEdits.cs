@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
@@ -30,8 +30,8 @@ namespace OpenUtau.Core.Editing {
         private WanaKanaOptions option = new WanaKanaOptions() { CustomKanaMapping = mapping };
         public override string Name => "pianoroll.menu.lyrics.romajitohiragana";
         protected override string Transform(string lyric) {
-            string hiragana = WanaKana.ToHiragana(lyric, option).Replace('ゔ','ヴ');
-            if(Regex.IsMatch(hiragana, "[ぁ-んァ-ヴ]")) {
+            string hiragana = WanaKana.ToHiragana(lyric, option).Replace('ゔ', 'ヴ');
+            if (Regex.IsMatch(hiragana, "[ぁ-んァ-ヴ]")) {
                 return hiragana;
             } else {
                 return lyric;
@@ -112,7 +112,7 @@ namespace OpenUtau.Core.Editing {
                     string value = Regex.Replace(subbank.Suffix.Replace("_", ""), "[A-G](#|b)?[1-7]", "");
 
                     for (int i = 0; i < colors[clrIndex].Length && i < value.Length; i++) {
-                        if(colors[clrIndex][i] == value[i]) {
+                        if (colors[clrIndex][i] == value[i]) {
                             suffix += value[i];
                         } else {
                             break;
@@ -171,7 +171,7 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class InsertSlur : BatchEdit{
+    public class InsertSlur : BatchEdit {
         public virtual string Name => name;
         private string name;
 
@@ -180,15 +180,15 @@ namespace OpenUtau.Core.Editing {
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
-            if(selectedNotes.Count == 0){
+            if (selectedNotes.Count == 0) {
                 return;
             }
             var startPos = selectedNotes.First().position;
             Queue<string> lyricsQueue = new Queue<string>();
             docManager.StartUndoGroup(true);
-            foreach(var note in part.notes.Where(n => n.position >= startPos)){
+            foreach (var note in part.notes.Where(n => n.position >= startPos)) {
                 lyricsQueue.Enqueue(note.lyric);
-                if(selectedNotes.Contains(note)){
+                if (selectedNotes.Contains(note)) {
                     docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, "+~"));
                 } else {
                     docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyricsQueue.Dequeue()));

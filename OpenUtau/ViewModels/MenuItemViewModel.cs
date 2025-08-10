@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Windows.Input;
 using Avalonia.Data;
 using Avalonia.Input;
@@ -18,7 +18,7 @@ namespace OpenUtau.App.ViewModels {
     public class SingerMenuItemViewModel : MenuItemViewModel {
         public bool IsFavourite {
             get {
-                if(CommandParameter is USinger singer) {
+                if (CommandParameter is USinger singer) {
                     return singer.IsFavourite;
                 }
                 return false;
@@ -32,11 +32,11 @@ namespace OpenUtau.App.ViewModels {
         private object? _icon;
         public object? Icon {
             get {
-                if(_icon == null) {
+                if (_icon == null) {
                     if (CommandParameter is USinger) {
                         _icon = new FavouriteToggleButton() {
                             [!FavouriteToggleButton.IsCheckedProperty] = new Binding("IsFavourite")
-                            
+
                         };
                     }
                 }

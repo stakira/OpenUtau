@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using System.Linq;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Italian Syllable-Based Phonemizer", "IT SYL", "Lotte V", language:"IT")]
+    [Phonemizer("Italian Syllable-Based Phonemizer", "IT SYL", "Lotte V", language: "IT")]
     public class ItalianSyllableBasedPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// Italian syllable-based phonemizer.
@@ -32,8 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override IG2p LoadBaseDictionary() => new ItalianG2p();
 
-        protected override List<string> ProcessSyllable(Syllable syllable)
-        {
+        protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
@@ -82,20 +81,17 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else {
                 basePhoneme = cc.Last() + v;
-                    // try CCV
-                    if (cc.Length - firstC > 1)
-                    {
-                        for (var i = firstC; i < cc.Length; i++)
-                        {
-                            var ccv = $"{string.Join("", cc.Skip(i))}{v}";
-                            if (HasOto(ccv, syllable.vowelTone) && !ccv.Contains("bre"))
-                            {
-                                lastC = i;
-                                basePhoneme = ccv;
-                                break;
-                            }
+                // try CCV
+                if (cc.Length - firstC > 1) {
+                    for (var i = firstC; i < cc.Length; i++) {
+                        var ccv = $"{string.Join("", cc.Skip(i))}{v}";
+                        if (HasOto(ccv, syllable.vowelTone) && !ccv.Contains("bre")) {
+                            lastC = i;
+                            basePhoneme = ccv;
+                            break;
                         }
                     }
+                }
                 phonemes.Add($"{prevV} {cc[0]}");
             }
             for (var i = firstC; i < lastC; i++) {
@@ -117,7 +113,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if (i + 1 < lastC) {
                         var cc2 = $"{string.Join("", cc.Take(i))}";
                         if (!HasOto(cc2, syllable.tone)) {
-                           cc2 = $"{cc[i + 1]}{cc[i + 2]}";
+                            cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                         }
                         if (!HasOto($"{cc[i + 1]}{cc[i + 2]}", syllable.tone) && !HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone)) {
                             cc2 = $"{cc[i + 1]} {cc[i + 2]}";
@@ -135,7 +131,7 @@ namespace OpenUtau.Plugin.Builtin {
                             // like [V C1] [C1 C2-] [C3 ..]
                         }
                     } else {
-                       // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
+                        // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc1);
                     }
                 }
@@ -144,8 +140,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        protected override List<string> ProcessEnding(Ending ending)
-        {
+        protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc;
             string v = ending.prevV;
 
@@ -161,11 +156,9 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
                 phonemes.Add($"{v} {cc[0]}");
-                for (var i = 0; i < cc.Length - 1; i++)
-                {
+                for (var i = 0; i < cc.Length - 1; i++) {
                     var cc1 = $"{cc[i]}{cc[i + 1]}-";
-                    if (HasOto(cc1, ending.tone))
-                    {
+                    if (HasOto(cc1, ending.tone)) {
                         phonemes.Add(cc1);
                     }
                 }

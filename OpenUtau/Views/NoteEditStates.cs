@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
@@ -436,7 +436,7 @@ namespace OpenUtau.App.Views {
             }
 
             int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0)
-                ? (oldDur-1) / snapUnit * snapUnit
+                ? (oldDur - 1) / snapUnit * snapUnit
                 : oldDur - 15;
             int maxDelta = maxNoteTicks - note.duration;
 
@@ -1130,8 +1130,8 @@ namespace OpenUtau.App.Views {
         double? lastPitch;
         Point lastPoint;
         public DrawLinePitchState(
-            Control control, 
-            PianoRollViewModel vm, 
+            Control control,
+            PianoRollViewModel vm,
             IValueTip valueTip) : base(control, vm, valueTip) { }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);

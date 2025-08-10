@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -29,10 +29,10 @@ namespace OpenUtau.App.Controls {
                 slider.AddHandler(PointerReleasedEvent, SliderPointerReleased, RoutingStrategies.Tunnel);
                 slider.AddHandler(PointerMovedEvent, SliderPointerMoved, RoutingStrategies.Tunnel);
             });
-          
+
             MessageBus.Current.Listen<PianorollRefreshEvent>()
                 .Subscribe(e => {
-                    if(e.refreshItem == "Part") {
+                    if (e.refreshItem == "Part") {
                         LoadPart(ViewModel.Part);
                     }
                 });
@@ -60,7 +60,7 @@ namespace OpenUtau.App.Controls {
         private string textBoxValue = string.Empty;
         void OnTextBoxGotFocus(object? sender, GotFocusEventArgs args) {
             Log.Debug("Note property textbox got focus");
-            if(sender is TextBox text) {
+            if (sender is TextBox text) {
                 textBoxValue = text.Text ?? string.Empty;
             }
         }

@@ -1,4 +1,4 @@
-﻿using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Ustx;
 using SharpCompress;
 
 namespace OpenUtau.Core {

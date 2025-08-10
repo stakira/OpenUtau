@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Classic;
@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Format {
         /// Read project from files to a new UProject object, used by LoadProject and ImportTracks.
         /// </summary>
         /// <param name="files">Names of the files to be loaded</param>
-        public static UProject? ReadProject(string[] files){
+        public static UProject? ReadProject(string[] files) {
             if (files.Length < 1) {
                 return null;
             }
@@ -97,7 +97,7 @@ namespace OpenUtau.Core.Format {
         /// </summary>
         /// <param name="files">Names of the files to be loaded</param>
         /// <returns></returns>
-        public static UProject[] ReadProjects(string[] files){
+        public static UProject[] ReadProjects(string[] files) {
             if (files == null || files.Length < 1) {
                 return new UProject[0];
             }
@@ -122,7 +122,7 @@ namespace OpenUtau.Core.Format {
                     project.FilePath = string.Empty;
                     project.Saved = false;
                 }
-                
+
                 DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             }
         }

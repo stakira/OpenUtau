@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,7 @@ namespace OpenUtau.Core.Util {
         static Regex contracted = new Regex(@"[ゃゅょぁぃぅぇぉャュョァィゥェォ]");
 
         public static List<string> Split(string? text) {
-            if(text == null){
+            if (text == null) {
                 return new List<string>();
             }
             var lyrics = new List<string>();

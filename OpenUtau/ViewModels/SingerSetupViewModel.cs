@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -46,13 +46,13 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ArchiveFilePath)
                 .Subscribe(_ => {
                     if (!string.IsNullOrEmpty(ArchiveFilePath)) {
-                        if(IsEncrypted(ArchiveFilePath)) {
+                        if (IsEncrypted(ArchiveFilePath)) {
                             throw new MessageCustomizableException(
                                 "Encrypted archive file isn't supported",
-                                "<translate:errors.encryptedarchive>", 
+                                "<translate:errors.encryptedarchive>",
                                 new Exception("Encrypted archive file: " + ArchiveFilePath)
                             );
-                        }                        
+                        }
                         var config = LoadCharacterYaml(ArchiveFilePath);
                         MissingInfo = string.IsNullOrEmpty(config?.SingerType);
                         if (!string.IsNullOrEmpty(config?.TextFileEncoding)) {
@@ -103,7 +103,7 @@ namespace OpenUtau.App.ViewModels {
 
         private VoicebankConfig? LoadCharacterYaml(string archiveFilePath) {
             using (var archive = ArchiveFactory.Open(archiveFilePath)) {
-                var entry = archive.Entries.FirstOrDefault(e => Path.GetFileName(e.Key)=="character.yaml");
+                var entry = archive.Entries.FirstOrDefault(e => Path.GetFileName(e.Key) == "character.yaml");
                 if (entry == null) {
                     return null;
                 }

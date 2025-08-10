@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -51,7 +51,7 @@ namespace OpenUtau.Core.Enunu {
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
                 Log.Information(this.singer.Name + ":" + voicebankNameHash);
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
-                var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath,"", voicebankNameHash, "600" }, port);
+                var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath, "", voicebankNameHash, "600" }, port);
                 if (response.error != null) {
                     throw new Exception(response.error);
                 }
@@ -78,8 +78,8 @@ namespace OpenUtau.Core.Enunu {
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
-                            if(n.phoneticHint!= null) {
-                                writer.Write("["+n.phoneticHint+"]");
+                            if (n.phoneticHint != null) {
+                                writer.Write("[" + n.phoneticHint + "]");
                             }
                             writer.Write(n.position);
                             writer.Write(n.duration);

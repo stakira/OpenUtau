@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -20,10 +20,10 @@ namespace OpenUtau.Core.Util {
         public static IEnumerable<T> LocalizedOrderBy<T>(this IEnumerable<T> source, Func<T, string> selector) {
             var sortingOrder = Preferences.Default.SortingOrder;
             CultureInfo culture;
-            if(sortingOrder == null) {
+            if (sortingOrder == null) {
                 //Follow the display language
                 culture = CultureInfo.GetCultureInfo(Preferences.Default.Language);
-            } else if(sortingOrder == String.Empty){
+            } else if (sortingOrder == String.Empty) {
                 //Don't translate
                 culture = CultureInfo.InvariantCulture;
             } else {

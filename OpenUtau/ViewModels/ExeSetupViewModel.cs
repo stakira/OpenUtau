@@ -1,4 +1,4 @@
-﻿using ReactiveUI.Fody.Helpers;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExeSetupViewModel : ViewModelBase {
@@ -9,7 +9,7 @@ namespace OpenUtau.App.ViewModels {
             message = string.Format(ThemeManager.GetString("exesetup.installing"), filePath);
             if (OS.IsMacOS()) {
                 message += "\n\n" + ThemeManager.GetString("exesetup.mac");
-            } else if(OS.IsLinux()) {
+            } else if (OS.IsLinux()) {
                 message += "\n\n" + string.Format(ThemeManager.GetString("exesetup.linux"), "https://www.winehq.org/");
             }
         }

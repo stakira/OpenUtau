@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -60,17 +60,17 @@ namespace OpenUtau.App.Controls {
             box.SelectAll();
         }
 
-        private void Box_KeyDown(object? sender, KeyEventArgs e){
-            if(!IsVisible){
+        private void Box_KeyDown(object? sender, KeyEventArgs e) {
+            if (!IsVisible) {
                 return;
             }
             bool isShift = e.KeyModifiers == KeyModifiers.Shift;
-            switch (e.Key){
+            switch (e.Key) {
                 case Key.Enter:
-                    if (DataContext is SearchNoteViewModel viewModel){
-                        if(isShift){
+                    if (DataContext is SearchNoteViewModel viewModel) {
+                        if (isShift) {
                             viewModel.Prev();
-                        }else{
+                        } else {
                             viewModel.Next();
                         }
                     }

@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 
-namespace VocalShaper
-{
-    public class VSVocoder
-    {
+namespace VocalShaper {
+    public class VSVocoder {
         //采样率
         readonly int samplesPerSec;
         //采样率的一半
@@ -24,8 +22,7 @@ namespace VocalShaper
         /// 合成数据前面多出来的长度
         /// </summary>
         /// <returns></returns>
-        public int LerpLen()
-        {
+        public int LerpLen() {
             return hopSize;
         }
 
@@ -35,8 +32,7 @@ namespace VocalShaper
         /// <param name="fs">合成目标采样率</param>
         /// <param name="frameMs">帧长度/毫秒</param>
         /// <param name="noiseTimeSec">预合成噪声长度/秒</param>
-        public VSVocoder(int fs, double frameMs, double noiseTimeSec = 5)
-        {
+        public VSVocoder(int fs, double frameMs, double noiseTimeSec = 5) {
             samplesPerSec = fs;
             halfSameplesPerSec = samplesPerSec / 2;
             hopSize = (int)(frameMs / 1000 * samplesPerSec);
@@ -48,32 +44,27 @@ namespace VocalShaper
 
             //初始化sin
             sin = new double[samplesPerSec];
-            for (int i = 0; i < samplesPerSec; i++)
-            {
+            for (int i = 0; i < samplesPerSec; i++) {
                 sin[i] = 0.125 * Math.Sqrt(2) * Math.Sin(2 * Math.PI * i / samplesPerSec);
             }
 
             //初始化旋转因子
             W = new Complex[winLen];
-            for (int _ = 0; _ < winLen; _++)
-            {
+            for (int _ = 0; _ < winLen; _++) {
                 W[_] = new Complex(Math.Cos(2 * Math.PI / winLen), -Math.Sin(2 * Math.PI / winLen)) ^ _;
             }
             _W = new Complex[winLen];
-            for (int _ = 0; _ < winLen; _++)
-            {
+            for (int _ = 0; _ < winLen; _++) {
                 _W[_] = new Complex(Math.Cos(2 * Math.PI / winLen), -Math.Sin(2 * Math.PI / winLen)) ^ (-_);
             }
 
             //初始化窗函数
             BlackmanWindow = VSMath.BlackmanWin(winLen);
             Blackman2FrameTriangleWin = new double[frameSize];
-            for (int i = 0; i < hopSize; i++)
-            {
+            for (int i = 0; i < hopSize; i++) {
                 Blackman2FrameTriangleWin[i] = (double)i / hopSize / BlackmanWindow[i + ifftOffset];
             }
-            for (int i = hopSize; i < frameSize; i++)
-            {
+            for (int i = hopSize; i < frameSize; i++) {
                 Blackman2FrameTriangleWin[i] = (double)(frameSize - i) / hopSize / BlackmanWindow[i + ifftOffset];
             }
 
@@ -82,12 +73,10 @@ namespace VocalShaper
             int noiseLen = noiseCount * hopSize;
             var noiseData = VSMath.Noise(Math.Sqrt(3), noiseLen);
             Noises = new Complex[noiseCount][];
-            for (int i = 0; i < noiseCount; i++)
-            {
+            for (int i = 0; i < noiseCount; i++) {
                 double[] x = new double[winLen];
                 int offset = i * hopSize;
-                for (int j = 0; j < winLen; j++)
-                {
+                for (int j = 0; j < winLen; j++) {
                     x[j] = BlackmanWindow[j] * noiseData[(j + offset) % noiseLen];
                 }
                 Noises[i] = VSMath.FFT(x, W);
@@ -119,8 +108,7 @@ namespace VocalShaper
             double[] voicing,
             double[] gender,
             double phase = 0,
-            int noiseIndex = 0)
-        {
+            int noiseIndex = 0) {
             //初始化
             int frameCount = f0.Length;
             int resultLen = frameCount * hopSize;
@@ -129,8 +117,7 @@ namespace VocalShaper
             double lastf;
             double nextf;
             //合成
-            for (int i = 0; i < frameCount - 2; i++)
-            {
+            for (int i = 0; i < frameCount - 2; i++) {
                 int offset = i * hopSize;
 
                 double f = f0[i + 1];
@@ -195,9 +182,8 @@ namespace VocalShaper
                 double[] genN = Gender(gender[i + 1], unitFrequency, halfWinLen);
                 Complex[] noise = new Complex[winLen];
                 while (noiseIndex >= Noises.Length) noiseIndex -= Noises.Length;
-                noise[0] = new Complex(0,0); //Noises[noiseIndex][0];
-                for (int h = 1; h < halfWinLen; h++)
-                {
+                noise[0] = new Complex(0, 0); //Noises[noiseIndex][0];
+                for (int h = 1; h < halfWinLen; h++) {
                     double y = NoiseEnvelope(i + 1, genN[h - 1]);
                     int mirrorIndex = winLen - h;
                     noise[h] = Noises[noiseIndex][h] * y;
@@ -205,8 +191,7 @@ namespace VocalShaper
                 }
                 noise[halfWinLen] = new Complex(0, 0); //Noises[noiseIndex][halfWinLen];
                 var ifft = VSMath.IFFT(noise, _W);
-                for (int j = 0; j < frameSize; j++)
-                {
+                for (int j = 0; j < frameSize; j++) {
                     result[offset + j] += ifft[ifftOffset + j] * Blackman2FrameTriangleWin[j] * bre;
                 }
 
@@ -229,8 +214,7 @@ namespace VocalShaper
         /// </summary>
         /// <param name="x">相位与采样率的乘积</param>
         /// <returns></returns>
-        double Sin(double x)
-        {
+        double Sin(double x) {
             return sin[(int)(x % samplesPerSec)];
         }
 
@@ -251,32 +235,23 @@ namespace VocalShaper
         /// <param name="v"></param>
         /// <param name="f0"></param>
         /// <returns></returns>
-        double[] Tension(double v, double f0)
-        {
+        double[] Tension(double v, double f0) {
             int n = (int)(halfSameplesPerSec / f0);//int n = Math.Min((int)(samplesPerSec / 2 / f0), MaxHarmonicCount);
             double[] ten = new double[n];
             v = (v - 0.5) * 2;
 
-            if (v == 0)
-            {
-                for (int i = 0; i < n; i++)
-                {
+            if (v == 0) {
+                for (int i = 0; i < n; i++) {
                     ten[i] = 1;
                 }
-            }
-            else if (v < 0)
-            {
+            } else if (v < 0) {
                 ten[0] = Math.Pow(10, -v * tenBaseSensitivity / 20);
-                for (int i = 1; i < n; i++)
-                {
+                for (int i = 1; i < n; i++) {
                     ten[i] = Math.Pow(10, -v * (tenN2Gain + tenNStep * (i - 1)) / 20);
                 }
-            }
-            else
-            {
+            } else {
                 ten[0] = Math.Pow(10, -v * tenBaseSensitivity / 20);
-                for (int i = 1; i < n; i++)
-                {
+                for (int i = 1; i < n; i++) {
                     ten[i] = Math.Pow(10, v * Math.Log10(Math.Max(0.5, tenPb - tenPk * Math.Abs(i - 10))));
                 }
             }
@@ -290,8 +265,7 @@ namespace VocalShaper
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        double Breathiness(double v)
-        {
+        double Breathiness(double v) {
             return Math.Pow(10, (v - 0.5) * 2 * breathinessSensitivity / 20);
         }
 
@@ -300,8 +274,7 @@ namespace VocalShaper
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        double Voicing(double v)
-        {
+        double Voicing(double v) {
             return v;
         }
 
@@ -314,45 +287,35 @@ namespace VocalShaper
         /// <param name="v"></param>
         /// <param name="f0"></param>
         /// <returns></returns>
-        double[] Gender(double v, double f0, int n)
-        {
+        double[] Gender(double v, double f0, int n) {
             double[] gen = new double[n];
             double fn = 0;
             int i = 0;
             v = (v - 0.5) * 2;
 
-            if (v == 0)
-            {
-                for (; i < n; i++)
-                {
+            if (v == 0) {
+                for (; i < n; i++) {
                     fn += f0;
                     gen[i] = fn;
                 }
-            }
-            else
-            {
-                for (; i < n; i++)
-                {
+            } else {
+                for (; i < n; i++) {
                     fn += f0;
                     if (fn < genLow) gen[i] = fn * Math.Pow(genR, v);
-                    else
-                    {
+                    else {
                         fn -= f0;
                         break;
                     }
                 }
-                for (; i < n; i++)
-                {
+                for (; i < n; i++) {
                     fn += f0;
-                    if (fn > genHigh)
-                    {
+                    if (fn > genHigh) {
                         fn -= f0;
                         break;
                     }
                     gen[i] = genHigh - (genHigh - Math.Pow(genR, v) * genLow) / (genHigh - genLow) * (genHigh - fn);
                 }
-                for (; i < n; i++)
-                {
+                for (; i < n; i++) {
                     fn += f0;
                     gen[i] = fn;
                 }

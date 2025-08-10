@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using System.Linq;
-using System.IO;
 using Serilog;
-using System.Threading.Tasks;
 using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -497,9 +497,9 @@ namespace OpenUtau.Plugin.Builtin {
             string color = attr.voiceColor;
             int toneShift = attr.toneShift;
             var mpdlyric = MapPhoneme(note.lyric, note.tone + toneShift, color, alt, singer);
-            if(HasOto(mpdlyric, note.tone)){
+            if (HasOto(mpdlyric, note.tone)) {
                 error = mpdlyric;
-            }else{
+            } else {
                 error = "word not found";
             }
             return null;
@@ -594,8 +594,10 @@ namespace OpenUtau.Plugin.Builtin {
                         n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n);
                 lock (builder) {
                     builder.AddEntry(key, values);
-                };
-            };
+                }
+                ;
+            }
+            ;
         }
 
         #region helpers

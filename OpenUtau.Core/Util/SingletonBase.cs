@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OpenUtau.Core.Util {
     public abstract class SingletonBase<T> where T : class {

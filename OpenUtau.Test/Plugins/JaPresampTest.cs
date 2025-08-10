@@ -1,4 +1,4 @@
-﻿using OpenUtau.Api;
+using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
@@ -95,7 +95,7 @@ namespace OpenUtau.Plugins {
             },
             ["あ", "あ", "か_CVVC_C4", "a ・_CVVC_C4", "・ あ_CVVC_C4", "a k_CVVC_C4", "か_CVVC_C4", "a あ・_VCV_D4", "a た_VCV_D4", "a あ・_VCV_D4", "a R_VCV_D4"]);
         }
-        
+
         // CVVC
         [Fact]
         public void CvvcTest() {

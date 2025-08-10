@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace OpenUtau.Core.Util {
@@ -10,12 +10,12 @@ namespace OpenUtau.Core.Util {
         }
         [Fact]
         public void RunLengthTest() {
-            int[] data = { 0, 0};
-            Assert.Equal("AA#1#",Base64.Base64EncodeInt12(data));
+            int[] data = { 0, 0 };
+            Assert.Equal("AA#1#", Base64.Base64EncodeInt12(data));
         }
         [Fact]
         public void RunLength2Test() {
-            int[] data = { 0, 0,1,1 };
+            int[] data = { 0, 0, 1, 1 };
             Assert.Equal("AA#1#AB#1#", Base64.Base64EncodeInt12(data));
         }
         [Fact]

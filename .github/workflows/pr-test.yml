@@ -37,3 +37,6 @@ jobs:
 
     - name: test
       run: dotnet test OpenUtau.Test
+
+    - name: check format
+      run: dotnet format --verify-no-changes

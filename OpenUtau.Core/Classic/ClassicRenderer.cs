@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -68,7 +68,7 @@ namespace OpenUtau.Classic {
                         if (!(item.resampler is WorldlineResampler)) {
                             VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                         }
-                        if(!item.phone.direct){
+                        if (!item.phone.direct) {
                             lock (Renderers.GetCacheLock(item.outputFile)) {
                                 item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                             }
@@ -138,7 +138,7 @@ namespace OpenUtau.Classic {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            var manifest= renderSettings.Resampler.Manifest;
+            var manifest = renderSettings.Resampler.Manifest;
             if (manifest == null) {
                 return new UExpressionDescriptor[] { };
             }

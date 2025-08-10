@@ -3,9 +3,8 @@ using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace OpenUtau.Plugins
-{
-    public class ZhCvvcTest : PhonemizerTestBase{
+namespace OpenUtau.Plugins {
+    public class ZhCvvcTest : PhonemizerTestBase {
         public ZhCvvcTest(ITestOutputHelper output) : base(output) { }
 
         protected override Phonemizer CreatePhonemizer() {
@@ -48,7 +47,7 @@ namespace OpenUtau.Plugins
             new string[] { "F4", "F4", "F4", "F4" },
             new string[] { "", "", "", "" },
             new string[] { "- jiF4", "i nyF4", "niF4", "i tF4", "taiF4", "ai mF4", "meiF4", "ei RF4" })]
-        
+
         public void PhonemizeTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, alts, tones, colors, aliases);
         }

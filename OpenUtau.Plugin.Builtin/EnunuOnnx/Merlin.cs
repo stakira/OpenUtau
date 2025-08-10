@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.io.hts;
 //reference: https://github.com/r9y9/nnmnkwii/blob/master/nnmnkwii/frontend/merlin.py
 
@@ -60,7 +60,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend {
         public static float[] pattern_matching_continous_position(
             Dictionary<int, Tuple<string, Regex>> numeric_dict, string label) {
             int dict_size = numeric_dict.Count;
-            var lab_continuous_vector = Enumerable.Repeat(0f,dict_size).ToArray();
+            var lab_continuous_vector = Enumerable.Repeat(0f, dict_size).ToArray();
             foreach (int i in Enumerable.Range(0, dict_size)) {
                 //ignored code: Always true
                 //if isinstance(current_compiled, tuple):
@@ -81,7 +81,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend {
                 var ms = current_compiled.Match(label);
                 if (ms.Success) {
                     string note = ms.Groups[1].Value;
-                    if (HTS.NameToTone(note)>0) {
+                    if (HTS.NameToTone(note) > 0) {
                         continuous_value = HTS.NameToTone(note);
                     } else if (note.StartsWith("p")) {
                         continuous_value = int.Parse(note[1..]);
@@ -90,7 +90,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend {
                     } else if (float.TryParse(note, out float num)) {
                         continuous_value = num;
                     }
-                    
+
                 }
                 lab_continuous_vector[i] = continuous_value;
             }

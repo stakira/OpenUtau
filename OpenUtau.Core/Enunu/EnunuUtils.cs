@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using OpenUtau.Core.Ustx;
@@ -58,12 +58,12 @@ namespace OpenUtau.Core.Enunu {
         }
 
         internal static string SetPortNum() {
-             var ver_response = EnunuClient.Inst.SendRequest<VersionResponse>(new string[] { "ver_check" }, "15556", 1);
-             if (ver_response.error != null) {
-                 Log.Error(ver_response.error);
-             } else if (ver_response.result.name != null) {
-                 return "15556";
-             }
+            var ver_response = EnunuClient.Inst.SendRequest<VersionResponse>(new string[] { "ver_check" }, "15556", 1);
+            if (ver_response.error != null) {
+                Log.Error(ver_response.error);
+            } else if (ver_response.result.name != null) {
+                return "15556";
+            }
             return "15555";
         }
     }

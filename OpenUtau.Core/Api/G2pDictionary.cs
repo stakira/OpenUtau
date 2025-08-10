@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -75,7 +75,7 @@ namespace OpenUtau.Api {
             /// </summary>
             public Builder AddSymbol(string symbol, string type) {
                 phonemeSymbols[symbol] = type == "vowel";
-                if(type == "semivowel" || type == "liquid") {
+                if (type == "semivowel" || type == "liquid") {
                     glideSymbols.Add(symbol);
                 } else {
                     glideSymbols.Remove(symbol);
@@ -128,7 +128,7 @@ namespace OpenUtau.Api {
                 return Load(data);
             }
 
-            public Builder Load(G2pDictionaryData data){
+            public Builder Load(G2pDictionaryData data) {
                 if (data.symbols != null) {
                     foreach (var symbolData in data.symbols) {
                         AddSymbol(symbolData.symbol, symbolData.type);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using DynamicData;
@@ -34,7 +34,7 @@ namespace OpenUtau.App.ViewModels {
         public int SelectedIndex { get; set; }
         public ObservableCollection<string> NewColors { get; set; }
 
-        public ColorMapping(string name,int oldIndex, int selectedIndex, ObservableCollection<string> newColors) {
+        public ColorMapping(string name, int oldIndex, int selectedIndex, ObservableCollection<string> newColors) {
             Name = name;
             OldIndex = oldIndex;
             SelectedIndex = selectedIndex;

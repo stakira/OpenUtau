@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -41,7 +41,7 @@ namespace OpenUtau.Core.DiffSinger {
         //MusicMath.Linear, but float numbers are used instead of double
         public static float LinearF(float x0, float x1, float y0, float y1, float x) {
             const float ep = 0.001f;
-            if(x1 - x0 < ep){
+            if (x1 - x0 < ep) {
                 return y1;
             }
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
@@ -57,11 +57,11 @@ namespace OpenUtau.Core.DiffSinger {
             if (curve == null || curve.Length == 0) {
                 return null;
             }
-            if(length == curve.Length){
+            if (length == curve.Length) {
                 return curve;
             }
-            if(length == 1){
-                return new float[]{curve[0]};
+            if (length == 1) {
+                return new float[] { curve[0] };
             }
             float[] result = new float[length];
             for (int i = 0; i < length; i++) {
@@ -82,26 +82,26 @@ namespace OpenUtau.Core.DiffSinger {
         /// <param name="tensor">Tensor to be validated</param>
         /// <param name="expectedShape">Expected shape of the tensor, -1 means the length of the axis is dynamic</param>
         /// <returns></returns>
-        public static bool ValidateShape<T>(Tensor<T> tensor, int[] expectedShape){
+        public static bool ValidateShape<T>(Tensor<T> tensor, int[] expectedShape) {
             var shape = tensor.Dimensions;
-            if(shape.Length != expectedShape.Length){
+            if (shape.Length != expectedShape.Length) {
                 return false;
             }
             for (int i = 0; i < shape.Length; i++) {
-                if(shape[i] != expectedShape[i] && expectedShape[i] != -1){
+                if (shape[i] != expectedShape[i] && expectedShape[i] != -1) {
                     return false;
                 }
             }
             return true;
         }
 
-        public static string ShapeString<T>(Tensor<T> tensor){
+        public static string ShapeString<T>(Tensor<T> tensor) {
             var shape = tensor.Dimensions;
             return "(" + string.Join(", ", shape.ToArray()) + ")";
         }
 
-        public static Dictionary<string, int> LoadPhonemes(string filePath){
-            switch(Path.GetExtension(filePath).ToLower()){
+        public static Dictionary<string, int> LoadPhonemes(string filePath) {
+            switch (Path.GetExtension(filePath).ToLower()) {
                 case ".json":
                     return LoadPhonemesFromJson(filePath);
                 default:
@@ -109,12 +109,12 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-        static Dictionary<string, int> LoadPhonemesFromJson(string filePath){
+        static Dictionary<string, int> LoadPhonemesFromJson(string filePath) {
             var json = File.ReadAllText(filePath, Encoding.UTF8);
             return JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
         }
 
-        static Dictionary<string, int> LoadPhonemesFromTxt(string filePath){
+        static Dictionary<string, int> LoadPhonemesFromTxt(string filePath) {
             var lines = File.ReadAllLines(filePath, Encoding.UTF8);
             var result = new Dictionary<string, int>();
             for (int i = 0; i < lines.Length; i++) {
@@ -123,13 +123,13 @@ namespace OpenUtau.Core.DiffSinger {
             return result;
         }
 
-        public static Dictionary<string, int> LoadLanguageIds(string filePath){
+        public static Dictionary<string, int> LoadLanguageIds(string filePath) {
             var json = File.ReadAllText(filePath, Encoding.UTF8);
             return JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
         }
 
-        public static string PhonemeLanguage(string phoneme){
-            if(phoneme.Contains("/")){
+        public static string PhonemeLanguage(string phoneme) {
+            if (phoneme.Contains("/")) {
                 return phoneme.Split("/")[0];
             }
             return "";

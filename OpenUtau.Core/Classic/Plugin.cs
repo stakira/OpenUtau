@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 using OpenUtau.Core.Util;
 
@@ -19,11 +19,11 @@ namespace OpenUtau.Classic {
             }
             string winePath = Preferences.Default.WinePath;
             string ext = Path.GetExtension(tempFile).ToLower();
-            bool useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath) && ( ext == "exe" || ext == "bat");
+            bool useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath) && (ext == "exe" || ext == "bat");
             var startInfo = new ProcessStartInfo() {
                 FileName = useWine ? winePath : Executable,
                 Arguments = useWine ? $"\"{Executable}\" \"{tempFile}\"" : $"\"{tempFile}\"",
-                Environment = {{"LANG", "ja_JP.utf8"}},
+                Environment = { { "LANG", "ja_JP.utf8" } },
                 WorkingDirectory = Path.GetDirectoryName(Executable),
                 UseShellExecute = UseShell,
             };

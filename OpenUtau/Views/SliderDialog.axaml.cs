@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -22,7 +22,7 @@ namespace OpenUtau.App.Views {
             this.WhenAnyValue(d => d.Slider.Value)
                     .Subscribe(value => {
                         TextBlock.Text = value.ToString();
-                     });
+                    });
         }
 
         private void OkButtonClick(object? sender, RoutedEventArgs e) {

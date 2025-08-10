@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using OpenUtau.Api;
@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// A French diphone phonemizer that uses CMUSphinx dictionary.
     /// </summary>
-    [Phonemizer("French CMUSphinx Phonemizer", "FR SPHINX", language:"FR")]
+    [Phonemizer("French CMUSphinx Phonemizer", "FR SPHINX", language: "FR")]
     public class FrenchCMUSphinxPhonemizer : LatinDiphonePhonemizer {
         public FrenchCMUSphinxPhonemizer() {
             try {

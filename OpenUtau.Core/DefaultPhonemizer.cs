@@ -1,6 +1,6 @@
-﻿using OpenUtau.Api;
-using OpenUtau.Core.Ustx;
 using System.Linq;
+using OpenUtau.Api;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     /// <summary>

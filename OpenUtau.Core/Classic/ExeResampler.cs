@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,8 +8,8 @@ using System.Threading;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
-using OpenUtau.Core.Util;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -45,7 +45,7 @@ namespace OpenUtau.Classic {
             }
             for (int i = 0; i < lines.Count; i++) {
                 if (lines[i].StartsWith("resampler-compatibility")) {
-                    if(lines[i] == "resampler-compatibility on"){
+                    if (lines[i] == "resampler-compatibility on") {
                         //moreconfig.txt is correct
                         return;
                     } else {
@@ -72,13 +72,13 @@ namespace OpenUtau.Classic {
             //Load Resampler Manifest
             Manifest = LoadManifest();
             //Make moresampler happy
-            try{
-                if(Path.GetFileNameWithoutExtension(filePath) == "moresampler"){
+            try {
+                if (Path.GetFileNameWithoutExtension(filePath) == "moresampler") {
                     //Load moreconfig.txt under the same folder with filePath
                     var moreConfigPath = Path.Combine(Path.GetDirectoryName(filePath), "moreconfig.txt");
                     FixMoreConfig(moreConfigPath);
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 Log.Error($"Failed fixing moreconfig.txt for {filePath}: {ex}");
             }
         }
@@ -122,7 +122,7 @@ namespace OpenUtau.Classic {
         }
 
         public bool SupportsFlag(string abbr) {
-            if(Manifest == null || !Manifest.expressionFilter){
+            if (Manifest == null || !Manifest.expressionFilter) {
                 return true;
             }
             return Manifest.expressions.ContainsKey(abbr);

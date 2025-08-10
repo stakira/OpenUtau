@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -56,11 +56,11 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
 
         //write integer with "p" as positive and "n" as negative. 0 is "p0"
         public static string WriteInt(int integer) {
-            return (integer >= 0 ? "p":"m" )+Math.Abs(integer).ToString();
+            return (integer >= 0 ? "p" : "m") + Math.Abs(integer).ToString();
         }
     }
-    
-    public class HTSPhoneme{
+
+    public class HTSPhoneme {
         public string symbol;
 
         //Links to this phoneme's neighbors and parent
@@ -87,7 +87,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
 
         public HTSPhoneme? beforePrev {
             get {
-                if (prev == null) { return null; } else { return prev.prev;}
+                if (prev == null) { return null; } else { return prev.prev; }
             }
         }
 
@@ -113,14 +113,14 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
                 + string.Format(
                     "/E:{0}]{1}^{2}={3}~{4}!{5}@{6}#{7}+{8}]{9}${10}|{11}[{12}&{13}]{14}={15}^{16}~{17}#{18}_{19};{20}${21}&{22}%{23}[{24}|{25}]{26}-{27}^{28}+{29}~{30}={31}@{32}${33}!{34}%{35}#{36}|{37}|{38}-{39}&{40}&{41}+{42}[{43};{44}]{45};{46}~{47}~{48}^{49}^{50}@{51}[{52}#{53}={54}!{55}~{56}+{57}!{58}^{59}",
                     e())
-                +string.Format("/F:{0}#{1}#{2}-{3}${4}${5}+{6}%{7};{8}",f())
+                + string.Format("/F:{0}#{1}#{2}-{3}${4}${5}+{6}%{7};{8}", f())
                 + "/G:xx_xx/H:xx_xx/I:xx_xx/J:xx~xx@1"
                 ;
             return result;
         }
 
         public string[] p() {
-            var result = Enumerable.Repeat("xx",16).ToArray();
+            var result = Enumerable.Repeat("xx", 16).ToArray();
             result[0] = type;
             result[1] = (beforePrev == null) ? "xx" : beforePrev.symbol;
             result[2] = (prev == null) ? "xx" : prev.symbol;
@@ -149,7 +149,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         public string[] d() {
             return parent.d();
         }
-        
+
         public string[] e() {
             return parent.e();
         }
@@ -175,7 +175,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         public HTSNote? prev;
         public HTSNote? next;
 
-        public HTSNote(string[] symbols, int tone, int startms,int endms,int positionTicks, int durationTicks) {
+        public HTSNote(string[] symbols, int tone, int startms, int endms, int positionTicks, int durationTicks) {
             this.startMs = startms;
             this.endMs = endms;
             this.tone = tone;
@@ -239,7 +239,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         }
 
         public string[] d() {
-            if(prev == null) {
+            if (prev == null) {
                 return Enumerable.Repeat("xx", 60).ToArray();
             } else {
                 return prev.e();

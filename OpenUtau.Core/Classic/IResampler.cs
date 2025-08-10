@@ -1,4 +1,4 @@
-﻿using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -7,7 +7,7 @@ namespace OpenUtau.Classic {
         float[] DoResampler(ResamplerItem args, ILogger logger);
         string DoResamplerReturnsFile(ResamplerItem args, ILogger logger);
         void CheckPermissions();
-        ResamplerManifest Manifest {  get; }
+        ResamplerManifest Manifest { get; }
         bool SupportsFlag(string abbr);
     }
 }

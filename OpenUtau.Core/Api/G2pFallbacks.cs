@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 namespace OpenUtau.Api {
     public class G2pFallbacks : IG2p {
         IG2p[] dictionaries;

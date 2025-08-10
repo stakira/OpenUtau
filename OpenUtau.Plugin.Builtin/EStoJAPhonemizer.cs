@@ -296,7 +296,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"wu", "u" },
             {"wi", "uli" },
             {"we", "ule" },
-            {"wo", "ulo" }, 
+            {"wo", "ulo" },
         };
 
         private Dictionary<string, string> ConditionalAlt => conditionalAlt;
@@ -340,7 +340,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"sula", new [] { "su", "wa" } },
             {"sui", new [] { "su", "uli" } },
             {"sule", new [] { "su", "ule" } },
-            {"sulo", new [] { "su", "ulo" } }, 
+            {"sulo", new [] { "su", "ulo" } },
             {"je", new [] { "ji", "e" } },
             {"jya", new [] { "ji", "ya" } },
             {"jye", new [] { "ji", "e" } },

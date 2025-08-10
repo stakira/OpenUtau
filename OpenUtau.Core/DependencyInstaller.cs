@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,7 +26,7 @@ namespace OpenUtau.Core {
                     dependencyConfig = Core.Yaml.DefaultDeserializer.Deserialize<DependencyConfig>(reader);
                 }
                 string name = dependencyConfig.name;
-                if(string.IsNullOrEmpty(name)){
+                if (string.IsNullOrEmpty(name)) {
                     throw new ArgumentException("missing name in oudep.yaml");
                 }
                 var basePath = Path.Combine(PathManager.Inst.DependencyPath, name);

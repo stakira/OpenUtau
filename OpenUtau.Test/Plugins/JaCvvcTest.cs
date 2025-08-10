@@ -1,4 +1,4 @@
-﻿using OpenUtau.Api;
+using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,7 +33,7 @@ namespace OpenUtau.Plugins {
 
         [Fact]
         public void ColorTest() {
-            RunPhonemizeTest("ja_cvvc", new NoteParams[] { 
+            RunPhonemizeTest("ja_cvvc", new NoteParams[] {
                new NoteParams {
                    lyric = "あ",
                    hint = "",

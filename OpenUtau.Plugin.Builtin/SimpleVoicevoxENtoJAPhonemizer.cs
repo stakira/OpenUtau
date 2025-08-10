@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -219,7 +219,7 @@ namespace OpenUtau.Core.Voicevox {
 
         protected override string[] GetSymbols(Note note) {
             List<string> modified = new List<string>();
-            if (VoicevoxUtils.phoneme_List.paus.TryGetValue(note.lyric,out string str)) {
+            if (VoicevoxUtils.phoneme_List.paus.TryGetValue(note.lyric, out string str)) {
                 modified.Add(str);
             } else {
                 string[] original = base.GetSymbols(note);
@@ -252,8 +252,8 @@ namespace OpenUtau.Core.Voicevox {
                 return phonemes;
             }
 
-                // Check CCs for special clusters
-                var adjustedCC = new List<string>();
+            // Check CCs for special clusters
+            var adjustedCC = new List<string>();
             for (var i = 0; i < cc.Length; i++) {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);

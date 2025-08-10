@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// </summary>
     [Phonemizer("German Diphone Phonemizer", "DE DIPHONE", "Lotte V", language: "DE")]
     public class GermanDiphonePhonemizer : LatinDiphonePhonemizer {
-        
+
         public GermanDiphonePhonemizer() {
             try {
                 Initialize();

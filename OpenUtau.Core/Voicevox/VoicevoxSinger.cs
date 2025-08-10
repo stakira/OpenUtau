@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,8 +74,8 @@ namespace OpenUtau.Core.Voicevox {
             if (voicevoxConfig.version.Equals("1.15.0")) {
                 Log.Error("It differs from the supported version.");
             }
-            if(voicevoxConfig.style_infos == null) {
-                voicevoxConfig.LoadInfo(voicevoxConfig,this.Location);
+            if (voicevoxConfig.style_infos == null) {
+                voicevoxConfig.LoadInfo(voicevoxConfig, this.Location);
             }
             phonemes.Clear();
             table.Clear();
@@ -155,7 +155,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public override bool TryGetOto(string phoneme, out UOto oto) {
-            if(phoneme != null) {
+            if (phoneme != null) {
                 var parts = phoneme.Split();
                 if (parts.All(p => phonemes.Contains(p))) {
                     oto = UOto.OfDummy(phoneme);

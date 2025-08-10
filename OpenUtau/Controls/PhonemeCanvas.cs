@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
@@ -164,7 +164,7 @@ namespace OpenUtau.App.Controls {
                 if (viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
                     string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
                     if (!string.IsNullOrEmpty(phonemeText)) {
-                        (double textX, double textY, Size size, TextLayout textLayout) 
+                        (double textX, double textY, Size size, TextLayout textLayout)
                         = PhonemeUIRender.AliasPosition(viewModel, phoneme, langCode, ref lastTextEndX, ref raiseText);
                         using (var state = context.PushTransform(Matrix.CreateTranslation(textX + 2, textY))) {
                             var pen = mouseoverPhoneme == phoneme ? ThemeManager.AccentPen1Thickness2 : ThemeManager.NeutralAccentPenSemi;

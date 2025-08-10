@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Linq;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -16,7 +16,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Finish() {
-            if(SelectedColor.Name != track.TrackColor) {
+            if (SelectedColor.Name != track.TrackColor) {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangeTrackColorCommand(DocManager.Inst.Project, track, SelectedColor.Name));
                 DocManager.Inst.EndUndoGroup();

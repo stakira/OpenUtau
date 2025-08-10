@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using Serilog;
 using OpenUtau.App.ViewModels;
+using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class SingerPublishDialog : Window {
@@ -13,17 +13,17 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
-        async void PublishClicked(object sender, RoutedEventArgs arg){
+        async void PublishClicked(object sender, RoutedEventArgs arg) {
             var viewModel = DataContext as SingerPublishViewModel;
             if (viewModel == null) {
                 return;
             }
             var singer = viewModel.singer;
-            if(singer == null){
+            if (singer == null) {
                 return;
             }
             var types = FilePicker.ZIP;
-            if(File.Exists(singer.Location)){
+            if (File.Exists(singer.Location)) {
                 var suffix = Path.GetExtension(singer.Location);
                 types = new FilePickerFileType(suffix.ToUpper()) {
                     Patterns = new[] { "*" + suffix },
@@ -37,7 +37,7 @@ namespace OpenUtau.App.Views {
             Publish(outputFile);
         }
 
-        void Publish(string outputFile){
+        void Publish(string outputFile) {
             var viewModel = DataContext as SingerPublishViewModel;
             if (viewModel == null) {
                 return;

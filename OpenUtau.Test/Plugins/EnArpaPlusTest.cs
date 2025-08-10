@@ -1,4 +1,4 @@
-﻿using OpenUtau.Api;
+using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,16 +53,18 @@ namespace OpenUtau.Plugins {
                 }
             }, new string[] { "- hh_C3", "hh ay_W", "ay -_C3" });
         }
-        public void SyllableTest(string lyric, string hint, string[] aliases) {
-            RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
-        }
+
+        // [Theory]
+        // public void SyllableTest(string lyric, string hint, string[] aliases) {
+        //     RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
+        // }
+
         [Theory]
         [InlineData("read", "", new string[] { "- r_C3", "r eh_C3", "eh d_C3", "d -_C3" })]
         [InlineData("read", "r iy d", new string[] { "- r_C3", "r iy_C3", "iy d_C3", "d -_C3" })]
 
         [InlineData("asdfjkl", "r iy d", new string[] { "- r_C3", "r iy_C3", "iy d_C3", "d -_C3" })]
         [InlineData("", "r iy d", new string[] { "- r_C3", "r iy_C3", "iy d_C3", "d -_C3" })]
-
         public void SyllableExternalEndingTest(string lyric, string hint, string[] aliases) {
             RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
         }
@@ -82,10 +84,10 @@ namespace OpenUtau.Plugins {
         }
         [Theory]
         [InlineData("kroidroi", "", new string[] { "- kr_C3", "kr oy_C3", "iy dr_C3", "dr oy_C3", "oy -_C3" })]
-        [InlineData("whhat", "",  new string[] { "- hh_C3", "hh uw_C3", "w ah_C3", "ah t_C3", "t -_C3" })]
+        [InlineData("whhat", "", new string[] { "- hh_C3", "hh uw_C3", "w ah_C3", "ah t_C3", "t -_C3" })]
 
         public void HintTest(string lyric, string hint, string[] aliases) {
-            RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "")} }, aliases);
+            RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
         }
     }
 }

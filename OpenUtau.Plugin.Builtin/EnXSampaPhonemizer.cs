@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
@@ -41,7 +41,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
         protected override string[] GetVowels() => vowels;
-        protected override string[] GetConsonants() => consonants; 
+        protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
@@ -359,7 +359,7 @@ namespace OpenUtau.Plugin.Builtin {
             var lastC = cc.Length - 1;
             var firstC = 0;
             var rv = $"- {v}";
-            
+
             // Switch between phonetic systems, depending on certain aliases in the bank
             if (replacements.ContainsKey(syllable.v) || replacements.ContainsKey(syllable.prevV)) {
                 isReplacements = true;

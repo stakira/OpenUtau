@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using DynamicData.Binding;
 using OpenUtau.Classic;

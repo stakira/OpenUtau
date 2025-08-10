@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +23,8 @@ namespace OpenUtau.Plugin.Builtin {
                 if (vowels.TryGetValue(prevLyric, out var vowel)) {
                     prevVowel = vowel;
                 }
-            };
+            }
+            ;
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
             var attr2 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 2) ?? default;
@@ -222,7 +223,7 @@ namespace OpenUtau.Plugin.Builtin {
                 Log.Error(e, "failed to load presamp.ini");
             }
         }
-    
+
         public static Note[] ChangeLyric(Note[] group, string lyric) {
             var oldNote = group[0];
             group[0] = new Note {

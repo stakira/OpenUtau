@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -204,12 +204,12 @@ namespace OpenUtau.App.Views {
         /// operations to be performed once the asynchronous action completes.
         /// </remarks>
         public static Task<MessageBoxResult> ShowProcessing(
-                Window parent, 
-                string text, 
-                string title, 
-                Action<MessageBox, 
+                Window parent,
+                string text,
+                string title,
+                Action<MessageBox,
                 CancellationToken> action,
-                Action<Task>? onFinished= null) {
+                Action<Task>? onFinished = null) {
             var msgbox = new MessageBox() {
                 Title = title
             };

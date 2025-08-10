@@ -1,6 +1,6 @@
-﻿using Microsoft.ML.OnnxRuntime;
-using OpenUtau.Api;
 using System;
+using Microsoft.ML.OnnxRuntime;
+using OpenUtau.Api;
 
 namespace OpenUtau.Core.Vogen {
     [Phonemizer("Vogen Chinese Yue Phonemizer", "VOGEN ZH-YUE", language: "ZH-YUE")]

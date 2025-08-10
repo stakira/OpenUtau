@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using OpenUtau.Core.Ustx;
 
@@ -140,7 +140,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class KeyCommand : ProjectCommand{
+    public class KeyCommand : ProjectCommand {
         public readonly int oldKey;
         public readonly int newKey;
         public KeyCommand(UProject project, int key) : base(project) {

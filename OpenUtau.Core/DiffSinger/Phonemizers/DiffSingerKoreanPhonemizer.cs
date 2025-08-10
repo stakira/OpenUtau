@@ -1,15 +1,13 @@
-using OpenUtau.Api;
-using OpenUtau.Core.Ustx;
 using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Api;
+using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.DiffSinger
-{
-    [Phonemizer("DiffSinger Korean Phonemizer", "DIFFS KO","EX3", language:"KO")]
-    public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer
-    {
-        protected override string GetDictionaryName()=>"dsdict-ko.yaml";
-        public override string GetLangCode()=>"ko";
+namespace OpenUtau.Core.DiffSinger {
+    [Phonemizer("DiffSinger Korean Phonemizer", "DIFFS KO", "EX3", language: "KO")]
+    public class DiffSingerKoreanPhonemizer : DiffSingerBasePhonemizer {
+        protected override string GetDictionaryName() => "dsdict-ko.yaml";
+        public override string GetLangCode() => "ko";
 
         public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             if (groups.Length == 0) {

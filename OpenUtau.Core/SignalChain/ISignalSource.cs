@@ -1,4 +1,4 @@
-﻿namespace OpenUtau.Core.SignalChain {
+namespace OpenUtau.Core.SignalChain {
     public interface ISignalSource {
         bool IsReady(int position, int count);
         /// <summary>

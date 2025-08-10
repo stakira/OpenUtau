@@ -1,8 +1,8 @@
-﻿using Xunit;
-using Xunit.Abstractions;
 using System.IO;
 using System.Reflection;
 using NAudio.Wave;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace OpenUtau.Core.SignalChain {
     public class WaveSourceTest {

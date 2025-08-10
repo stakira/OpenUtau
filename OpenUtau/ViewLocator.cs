@@ -1,7 +1,7 @@
-﻿using Avalonia.Controls;
+using System;
+using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using OpenUtau.App.ViewModels;
-using System;
 
 namespace OpenUtau.App {
     public class ViewLocator : IDataTemplate {

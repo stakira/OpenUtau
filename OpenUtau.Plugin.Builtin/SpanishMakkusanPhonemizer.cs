@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using System.Linq;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Spanish Makkusan Phonemizer", "ES MAKKU", "Lotte V", language:"ES")]
+    [Phonemizer("Spanish Makkusan Phonemizer", "ES MAKKU", "Lotte V", language: "ES")]
     public class SpanishMakkusanPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// Spanish phonemizer, based on Makkusan's Italian reclist.
@@ -31,8 +31,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
-        protected override List<string> ProcessSyllable(Syllable syllable)
-        {
+        protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
@@ -103,23 +102,23 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else {
                 basePhoneme = cc.Last() + v;
-                    // try CCV
-                    if (cc.Length - firstC > 1) {
-                        for (var i = firstC; i < cc.Length; i++) {
-                            var ccv = $"{string.Join("", cc.Skip(i))}{v}";
-                            if (HasOto(ccv, syllable.vowelTone) && !ccv.Contains("bre")) {
+                // try CCV
+                if (cc.Length - firstC > 1) {
+                    for (var i = firstC; i < cc.Length; i++) {
+                        var ccv = $"{string.Join("", cc.Skip(i))}{v}";
+                        if (HasOto(ccv, syllable.vowelTone) && !ccv.Contains("bre")) {
+                            lastC = i;
+                            basePhoneme = ccv;
+                            if (!HasOto(ccv, syllable.vowelTone)) {
+                                ccv = ValidateAlias(ccv);
                                 lastC = i;
                                 basePhoneme = ccv;
-                                if (!HasOto(ccv, syllable.vowelTone)) {
-                                    ccv = ValidateAlias(ccv);
-                                    lastC = i;
-                                    basePhoneme = ccv;
-                                    break;
-                                }
                                 break;
                             }
+                            break;
                         }
                     }
+                }
                 phonemes.Add($"{prevV} {cc[0]}");
             }
             for (var i = firstC; i < lastC; i++) {
@@ -153,7 +152,7 @@ namespace OpenUtau.Plugin.Builtin {
                             cc2 = ValidateAlias(cc2);
                         }
                         if (!HasOto(cc2, syllable.tone)) {
-                           cc2 = $"{cc[i + 1]}{cc[i + 2]}";
+                            cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                         }
                         if (!HasOto(cc2, syllable.tone)) {
                             cc2 = ValidateAlias(cc2);
@@ -177,7 +176,7 @@ namespace OpenUtau.Plugin.Builtin {
                             // like [V C1] [C1 C2-] [C3 ..]
                         }
                     } else {
-                       // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
+                        // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc1, ValidateAlias(cc1));
                     }
                 }
@@ -186,8 +185,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        protected override List<string> ProcessEnding(Ending ending)
-        {
+        protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc;
             string v = ending.prevV;
 

@@ -1,9 +1,8 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using System.Collections.Generic;
-
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {

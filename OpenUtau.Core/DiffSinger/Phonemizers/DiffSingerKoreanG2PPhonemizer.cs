@@ -1,13 +1,11 @@
-﻿using OpenUtau.Api;
+using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
-namespace OpenUtau.Core.DiffSinger
-{
+namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger Korean G2P Phonemizer", "DIFFS KO", language: "KO", author: "Cardroid6")]
-    public class DiffSingerKoreanG2PPhonemizer : DiffSingerG2pPhonemizer
-    {
+    public class DiffSingerKoreanG2PPhonemizer : DiffSingerG2pPhonemizer {
         protected override string GetDictionaryName() => "dsdict-ko.yaml";
-        public override string GetLangCode()=>"ko";
+        public override string GetLangCode() => "ko";
         protected override IG2p LoadBaseG2p() => new KoreanG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "a", "e", "eo", "eu", "i", "o", "u", "w", "y"

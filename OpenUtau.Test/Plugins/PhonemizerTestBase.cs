@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace OpenUtau.Plugins {
 
         public void RunPhonemizeTest(string singerName, NoteParams[] inputs, string[] aliases) {
             var groups = GetMultiPhonemeNotes(inputs);
-            RunPhonemizeTest(singerName,groups, aliases);
+            RunPhonemizeTest(singerName, groups, aliases);
         }
 
         void RunPhonemizeTest(string singerName, List<Phonemizer.Note[]> groups, string[] aliases) {
@@ -142,7 +142,7 @@ namespace OpenUtau.Plugins {
                     group.Clear();
                 }
                 var attr = new Phonemizer.PhonemeAttributes[noteParams.phonemes.Length];
-                for (var j = 0;j < noteParams.phonemes.Length; j++) {
+                for (var j = 0; j < noteParams.phonemes.Length; j++) {
                     var phonemeParams = noteParams.phonemes[j];
                     attr[j] = new Phonemizer.PhonemeAttributes {
                         index = j,

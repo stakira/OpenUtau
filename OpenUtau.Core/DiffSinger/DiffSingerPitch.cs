@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,10 +11,8 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
 using Serilog;
 
-namespace OpenUtau.Core.DiffSinger
-{
-    public class DsPitch : IDisposable
-    {
+namespace OpenUtau.Core.DiffSinger {
+    public class DsPitch : IDisposable {
         string rootPath;
         DsConfig dsConfig;
         Dictionary<string, int> languageIds = new Dictionary<string, int>();
@@ -29,18 +27,17 @@ namespace OpenUtau.Core.DiffSinger
         const float tailMs = DiffSingerUtils.tailMs;
         const string PEXP = DiffSingerUtils.PEXP;
 
-        public DsPitch(string rootPath)
-        {
+        public DsPitch(string rootPath) {
             this.rootPath = rootPath;
             dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     System.Text.Encoding.UTF8));
-            if(dsConfig.pitch == null){
+            if (dsConfig.pitch == null) {
                 throw new Exception("This voicebank doesn't contain a pitch model");
             }
             //Load language id if needed
-            if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null) {
+            if (dsConfig.use_lang_id) {
+                if (dsConfig.languages == null) {
                     throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
@@ -75,7 +72,7 @@ namespace OpenUtau.Core.DiffSinger
         protected IG2p LoadG2p(string rootPath) {
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
-            if(!File.Exists(file)){
+            if (!File.Exists(file)) {
                 throw new Exception($"File not found: {file}");
             }
             var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
@@ -85,28 +82,28 @@ namespace OpenUtau.Core.DiffSinger
             return g2pBuilder.Build();
         }
 
-        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
-            if(speakerEmbedManager is null) {
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager() {
+            if (speakerEmbedManager is null) {
                 speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
             }
             return speakerEmbedManager;
         }
 
-        void SetRange<T>(T[] list, T value, int startIndex, int endIndex){
-            for(int i=startIndex;i<endIndex;i++){
+        void SetRange<T>(T[] list, T value, int startIndex, int endIndex) {
+            for (int i = startIndex; i < endIndex; i++) {
                 list[i] = value;
             }
         }
 
-        int PhonemeTokenize(string phoneme){
+        int PhonemeTokenize(string phoneme) {
             bool success = phonemeTokens.TryGetValue(phoneme, out int token);
-            if(!success){
+            if (!success) {
                 throw new Exception($"Phoneme \"{phoneme}\" isn't supported by pitch model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
             }
             return token;
         }
-        
-        public RenderPitchResult Process(RenderPhrase phrase){
+
+        public RenderPitchResult Process(RenderPhrase phrase) {
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
             var endMs = phrase.notes[^1].endMs + tailMs;
             int headFrames = (int)Math.Round(headMs / frameMs);
@@ -127,7 +124,7 @@ namespace OpenUtau.Core.DiffSinger
                 .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
             var ph_dur = phrase.phones
-                .Select(p=>(int)Math.Round(p.endMs/frameMs) - (int)Math.Round(p.positionMs/frameMs))
+                .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))
                 .Prepend(headFrames)
                 .Append(tailFrames)
                 .ToArray();
@@ -135,22 +132,22 @@ namespace OpenUtau.Core.DiffSinger
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
                 new DenseTensor<Int64>(tokens, new int[] { tokens.Length }, false)
                 .Reshape(new int[] { 1, tokens.Length })));
-            if(dsConfig.predict_dur){
+            if (dsConfig.predict_dur) {
                 //if predict_dur is true, use word encode mode
-                var vowelIds = Enumerable.Range(0,phrase.phones.Length)
-                    .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
+                var vowelIds = Enumerable.Range(0, phrase.phones.Length)
+                    .Where(i => g2p.IsVowel(phrase.phones[i].phoneme))
                     .ToArray();
-                if(vowelIds.Length == 0){
-                    vowelIds = new int[]{phrase.phones.Length-1};
+                if (vowelIds.Length == 0) {
+                    vowelIds = new int[] { phrase.phones.Length - 1 };
                 }
-                var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
+                var word_div = vowelIds.Zip(vowelIds.Skip(1), (a, b) => (Int64)(b - a))
                     .Prepend(vowelIds[0] + 1)
                     .Append(phrase.phones.Length - vowelIds[^1] + 1)
                     .ToArray();
                 var word_dur = vowelIds.Zip(vowelIds.Skip(1),
-                        (a,b)=>(Int64)(phrase.phones[b-1].endMs/frameMs) - (Int64)(phrase.phones[a].positionMs/frameMs))
-                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs/frameMs) - (Int64)(phrase.phones[0].positionMs/frameMs) + headFrames)
-                    .Append((Int64)(phrase.notes[^1].endMs/frameMs) - (Int64)(phrase.phones[vowelIds[^1]].positionMs/frameMs) + tailFrames)
+                        (a, b) => (Int64)(phrase.phones[b - 1].endMs / frameMs) - (Int64)(phrase.phones[a].positionMs / frameMs))
+                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs / frameMs) - (Int64)(phrase.phones[0].positionMs / frameMs) + headFrames)
+                    .Append((Int64)(phrase.notes[^1].endMs / frameMs) - (Int64)(phrase.phones[vowelIds[^1]].positionMs / frameMs) + tailFrames)
                     .ToArray();
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("word_div",
                     new DenseTensor<Int64>(word_div, new int[] { word_div.Length }, false)
@@ -161,14 +158,14 @@ namespace OpenUtau.Core.DiffSinger
             } else {
                 //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                    new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
+                    new DenseTensor<Int64>(ph_dur.Select(x => (Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
             //Language id
-            if(dsConfig.use_lang_id){
+            if (dsConfig.use_lang_id) {
                 var langIdByPhone = phrase.phones
                     .Select(p => (long)languageIds.GetValueOrDefault(
-                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
+                        DiffSingerUtils.PhonemeLanguage(p.phoneme), 0
                         ))
                     .Prepend(0)
                     .Append(0)
@@ -196,19 +193,19 @@ namespace OpenUtau.Core.DiffSinger
                 .Where(o => o.Name == "x_masks")
                 .First()
                 .AsTensor<bool>();
-            
+
             //Pitch Predictor   
-            var note_rest = new List<bool>{true};
+            var note_rest = new List<bool> { true };
             bool prevNoteRest = true;
             int phIndex = 0;
-            foreach(var note in phrase.notes) {
+            foreach (var note in phrase.notes) {
                 //Slur notes follow the previous note's rest status
-                if(note.lyric.StartsWith("+")) {
+                if (note.lyric.StartsWith("+")) {
                     note_rest.Add(prevNoteRest);
                     continue;
                 }
                 //find all the phonemes in the note's time range
-                while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
+                while (phIndex < phrase.phones.Length && phrase.phones[phIndex].endMs <= note.endMs) {
                     phIndex++;
                 }
                 var phs = phrase.phones
@@ -224,11 +221,11 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             var note_midi = phrase.notes
-                .Select(n=>(float)n.tone)
+                .Select(n => (float)n.tone)
                 .Prepend((float)phrase.notes[0].tone)
                 .ToArray();
             //get the index of groups of consecutive rest notes
-            var restGroups = new List<Tuple<int,int>>();
+            var restGroups = new List<Tuple<int, int>>();
             for (var i = 0; i < note_rest.Count; ++i) {
                 if (!note_rest[i]) continue;
                 var j = i + 1;
@@ -237,27 +234,27 @@ namespace OpenUtau.Core.DiffSinger
                 i = j;
             }
             //Set tone for each rest group
-            foreach(var restGroup in restGroups){
-                if(restGroup.Item1 == 0 && restGroup.Item2 == note_rest.Count){
+            foreach (var restGroup in restGroups) {
+                if (restGroup.Item1 == 0 && restGroup.Item2 == note_rest.Count) {
                     //If All the notes are rest notes, don't set tone
                     break;
                 }
-                if(restGroup.Item1 == 0){
+                if (restGroup.Item1 == 0) {
                     //If the first note is a rest note, set the tone to the tone of the first non-rest note
                     SetRange<float>(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
-                } else if(restGroup.Item2 == note_rest.Count){
+                } else if (restGroup.Item2 == note_rest.Count) {
                     //If the last note is a rest note, set the tone to the tone of the last non-rest note
-                    SetRange<float>(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count);
+                    SetRange<float>(note_midi, note_midi[restGroup.Item1 - 1], restGroup.Item1, note_rest.Count);
                 } else {
                     //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
-                    SetRange<float>(note_midi, 
-                        note_midi[restGroup.Item1-1], 
-                        restGroup.Item1, 
-                        (restGroup.Item1 + restGroup.Item2 + 1)/2
+                    SetRange<float>(note_midi,
+                        note_midi[restGroup.Item1 - 1],
+                        restGroup.Item1,
+                        (restGroup.Item1 + restGroup.Item2 + 1) / 2
                     );
-                    SetRange<float>(note_midi, 
-                        note_midi[restGroup.Item2], 
-                        (restGroup.Item1 + restGroup.Item2 + 1)/2, 
+                    SetRange<float>(note_midi,
+                        note_midi[restGroup.Item2],
+                        (restGroup.Item1 + restGroup.Item2 + 1) / 2,
                         restGroup.Item2
                     );
                 }
@@ -266,11 +263,11 @@ namespace OpenUtau.Core.DiffSinger
             //use the delta of the positions of the next note and the current note
             //to prevent incorrect timing when there is a small space between two notes
             var note_dur = phrase.notes.Zip(phrase.notes.Skip(1),
-                    (curr,next)=> (int)Math.Round(next.positionMs/frameMs) - (int)Math.Round(curr.positionMs/frameMs))
-                .Prepend((int)Math.Round(phrase.notes[0].positionMs/frameMs) - (int)Math.Round(startMs/frameMs))
+                    (curr, next) => (int)Math.Round(next.positionMs / frameMs) - (int)Math.Round(curr.positionMs / frameMs))
+                .Prepend((int)Math.Round(phrase.notes[0].positionMs / frameMs) - (int)Math.Round(startMs / frameMs))
                 .Append(0)
                 .ToList();
-            note_dur[^1]=totalFrames-note_dur.Sum();
+            note_dur[^1] = totalFrames - note_dur.Sum();
             var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
             var retake = Enumerable.Repeat(true, totalFrames).ToArray();
             var pitchInputs = new List<NamedOnnxValue>();
@@ -279,10 +276,10 @@ namespace OpenUtau.Core.DiffSinger
                 new DenseTensor<float>(note_midi, new int[] { note_midi.Length }, false)
                 .Reshape(new int[] { 1, note_midi.Length })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_dur",
-                new DenseTensor<Int64>(note_dur.Select(x=>(Int64)x).ToArray(), new int[] { note_dur.Count }, false)
+                new DenseTensor<Int64>(note_dur.Select(x => (Int64)x).ToArray(), new int[] { note_dur.Count }, false)
                 .Reshape(new int[] { 1, note_dur.Count })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
+                new DenseTensor<Int64>(ph_dur.Select(x => (Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
@@ -301,7 +298,7 @@ namespace OpenUtau.Core.DiffSinger
                     speedup--;
                 }
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 }, false)));
             }
 
             //expressiveness
@@ -321,14 +318,14 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             //Speaker
-            if(dsConfig.speakers != null) {
+            if (dsConfig.speakers != null) {
                 var speakerEmbedManager = getSpeakerEmbedManager();
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
 
             //Melody encoder
-            if(dsConfig.use_note_rest) {
+            if (dsConfig.use_note_rest) {
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_rest",
                 new DenseTensor<bool>(note_rest.ToArray(), new int[] { note_rest.Count }, false)
                 .Reshape(new int[] { 1, note_rest.Count })));
@@ -338,18 +335,18 @@ namespace OpenUtau.Core.DiffSinger
             var pitchOutputs = pitchModel.Run(pitchInputs);
             var pitch_out = pitchOutputs.First().AsTensor<float>().ToArray();
             var pitchEnd = phrase.timeAxis.MsPosToTickPos(startMs + (totalFrames - 1) * frameMs) - phrase.position;
-            if(pitchEnd<=phrase.duration){
-                return new RenderPitchResult{
-                    ticks = Enumerable.Range(0,totalFrames)
-                    .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
+            if (pitchEnd <= phrase.duration) {
+                return new RenderPitchResult {
+                    ticks = Enumerable.Range(0, totalFrames)
+                    .Select(i => (float)phrase.timeAxis.MsPosToTickPos(startMs + i * frameMs) - phrase.position)
                     .Append((float)phrase.duration + 1)
                     .ToArray(),
                     tones = pitch_out.Append(pitch_out[^1]).ToArray()
                 };
-            }else{
-                return new RenderPitchResult{
-                    ticks = Enumerable.Range(0,totalFrames)
-                    .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
+            } else {
+                return new RenderPitchResult {
+                    ticks = Enumerable.Range(0, totalFrames)
+                    .Select(i => (float)phrase.timeAxis.MsPosToTickPos(startMs + i * frameMs) - phrase.position)
                     .ToArray(),
                     tones = pitch_out
                 };
@@ -357,7 +354,7 @@ namespace OpenUtau.Core.DiffSinger
         }
 
         private bool disposedValue;
-        
+
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {

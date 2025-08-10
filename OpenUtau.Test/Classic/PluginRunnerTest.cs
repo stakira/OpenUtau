@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +49,7 @@ namespace OpenUtau.Classic {
 
                 // Any flag must be registered in the project
                 Ustx.AddDefaultExpressions(project);
-     
+
                 var before = UNote.Create();
                 before.lyric = "a";
                 before.duration = 10;
@@ -157,7 +157,7 @@ Envelope=5,0,0,100,100,100,100,%,35
                     // Different line feed code for each OS
                     var eol = Environment.NewLine;
                     expected = expected.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", eol);
-                
+
                     Assert.Equal(expected, text);
                     writer.Write(text);
                 };

@@ -1,25 +1,24 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
-using Serilog;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
+using Serilog;
 
-namespace OpenUtau.Core.DiffSinger{
-    public struct VarianceResult{
+namespace OpenUtau.Core.DiffSinger {
+    public struct VarianceResult {
         public float[]? energy;
         public float[]? breathiness;
         public float[]? voicing;
         public float[]? tension;
     }
-    public class DsVariance : IDisposable{
+    public class DsVariance : IDisposable {
         string rootPath;
         DsConfig dsConfig;
         Dictionary<string, int> languageIds = new Dictionary<string, int>();
@@ -36,18 +35,17 @@ namespace OpenUtau.Core.DiffSinger{
 
         public float FrameMs => frameMs;
 
-        public DsVariance(string rootPath)
-        {
+        public DsVariance(string rootPath) {
             this.rootPath = rootPath;
             dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
                     Encoding.UTF8));
-            if(dsConfig.variance == null){
+            if (dsConfig.variance == null) {
                 throw new Exception("This voicebank doesn't contain a variance model");
             }
             //Load language id if needed
-            if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
+            if (dsConfig.use_lang_id) {
+                if (dsConfig.languages == null) {
                     throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
@@ -84,32 +82,32 @@ namespace OpenUtau.Core.DiffSinger{
         protected IG2p LoadG2p(string rootPath) {
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
-            if(!File.Exists(file)){
+            if (!File.Exists(file)) {
                 throw new Exception($"File not found: {file}");
             }
             var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
             //SP and AP should always be vowel
             g2pBuilder.AddSymbol("SP", true);
             g2pBuilder.AddSymbol("AP", true);
-            return g2pBuilder.Build(); 
+            return g2pBuilder.Build();
         }
 
-        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
-            if(speakerEmbedManager is null) {
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager() {
+            if (speakerEmbedManager is null) {
                 speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, rootPath);
             }
             return speakerEmbedManager;
         }
 
-        int PhonemeTokenize(string phoneme){
+        int PhonemeTokenize(string phoneme) {
             bool success = phonemeTokens.TryGetValue(phoneme, out int token);
-            if(!success){
+            if (!success) {
                 throw new Exception($"Phoneme \"{phoneme}\" isn't supported by variance model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
             }
             return token;
         }
 
-        public VarianceResult Process(RenderPhrase phrase){
+        public VarianceResult Process(RenderPhrase phrase) {
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
             if (dsConfig.predict_dur) {
@@ -137,22 +135,22 @@ namespace OpenUtau.Core.DiffSinger{
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
                 new DenseTensor<Int64>(tokens, new int[] { tokens.Length }, false)
                 .Reshape(new int[] { 1, tokens.Length })));
-            if(dsConfig.predict_dur){
+            if (dsConfig.predict_dur) {
                 //if predict_dur is true, use word encode mode
-                var vowelIds = Enumerable.Range(0,phrase.phones.Length)
-                    .Where(i=>g2p.IsVowel(phrase.phones[i].phoneme))
+                var vowelIds = Enumerable.Range(0, phrase.phones.Length)
+                    .Where(i => g2p.IsVowel(phrase.phones[i].phoneme))
                     .ToArray();
-                if(vowelIds.Length == 0){
-                    vowelIds = new int[]{phrase.phones.Length-1};
+                if (vowelIds.Length == 0) {
+                    vowelIds = new int[] { phrase.phones.Length - 1 };
                 }
-                var word_div = vowelIds.Zip(vowelIds.Skip(1),(a,b)=>(Int64)(b-a))
+                var word_div = vowelIds.Zip(vowelIds.Skip(1), (a, b) => (Int64)(b - a))
                     .Prepend(vowelIds[0] + 1)
                     .Append(phrase.phones.Length - vowelIds[^1] + 1)
                     .ToArray();
                 var word_dur = vowelIds.Zip(vowelIds.Skip(1),
-                        (a,b)=>(Int64)(phrase.phones[b-1].endMs/frameMs) - (Int64)(phrase.phones[a].positionMs/frameMs))
-                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs/frameMs) - (Int64)(phrase.phones[0].positionMs/frameMs) + headFrames)
-                    .Append((Int64)(phrase.notes[^1].endMs/frameMs) - (Int64)(phrase.phones[vowelIds[^1]].positionMs/frameMs) + tailFrames)
+                        (a, b) => (Int64)(phrase.phones[b - 1].endMs / frameMs) - (Int64)(phrase.phones[a].positionMs / frameMs))
+                    .Prepend((Int64)(phrase.phones[vowelIds[0]].positionMs / frameMs) - (Int64)(phrase.phones[0].positionMs / frameMs) + headFrames)
+                    .Append((Int64)(phrase.notes[^1].endMs / frameMs) - (Int64)(phrase.phones[vowelIds[^1]].positionMs / frameMs) + tailFrames)
                     .ToArray();
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("word_div",
                     new DenseTensor<Int64>(word_div, new int[] { word_div.Length }, false)
@@ -160,17 +158,17 @@ namespace OpenUtau.Core.DiffSinger{
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("word_dur",
                     new DenseTensor<Int64>(word_dur, new int[] { word_dur.Length }, false)
                     .Reshape(new int[] { 1, word_dur.Length })));
-            }else{
+            } else {
                 //if predict_dur is false, use phoneme encode mode
                 linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                    new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
+                    new DenseTensor<Int64>(ph_dur.Select(x => (Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                     .Reshape(new int[] { 1, ph_dur.Length })));
             }
             //Language id
-            if(dsConfig.use_lang_id){
+            if (dsConfig.use_lang_id) {
                 var langIdByPhone = phrase.phones
                     .Select(p => (long)languageIds.GetValueOrDefault(
-                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
+                        DiffSingerUtils.PhonemeLanguage(p.phoneme), 0
                         ))
                     .Prepend(0)
                     .Append(0)
@@ -196,7 +194,7 @@ namespace OpenUtau.Core.DiffSinger{
                 .AsTensor<float>();
 
             //Variance Predictor
-            var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
+            var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
                 x => x * 0.01).Select(f => (float)f).ToArray();
             var toneShift = DiffSingerUtils.SampleCurve(phrase, phrase.toneShift, 0, frameMs, totalFrames, headFrames, tailFrames,
                 x => x * 0.01).Select(f => (float)f).ToArray();
@@ -205,7 +203,7 @@ namespace OpenUtau.Core.DiffSinger{
             var varianceInputs = new List<NamedOnnxValue>();
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
+                new DenseTensor<Int64>(ph_dur.Select(x => (Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
             varianceInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
@@ -256,10 +254,10 @@ namespace OpenUtau.Core.DiffSinger{
                     speedup--;
                 }
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 }, false)));
             }
             //Speaker
-            if(dsConfig.speakers != null) {
+            if (dsConfig.speakers != null) {
                 var speakerEmbedManager = getSpeakerEmbedManager();
                 var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
                 varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
@@ -298,7 +296,7 @@ namespace OpenUtau.Core.DiffSinger{
                     .First()
                     .AsTensor<float>()
                 : null;
-            return new VarianceResult{
+            return new VarianceResult {
                 energy = energy_pred?.ToArray(),
                 breathiness = breathiness_pred?.ToArray(),
                 voicing = voicing_pred?.ToArray(),

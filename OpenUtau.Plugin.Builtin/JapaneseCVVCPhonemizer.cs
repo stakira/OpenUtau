@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -6,9 +6,9 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Japanese CVVC Phonemizer (legacy)", "JA CVVC", "TUBS",language:"JA")]
+    [Phonemizer("Japanese CVVC Phonemizer (legacy)", "JA CVVC", "TUBS", language: "JA")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
-        static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","を","ん","ン"};
+        static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "を", "ん", "ン" };
         static readonly string[] nonVowels = new string[]{"息","吸","R","-","k","ky","g","gy",
                                                            "s","sh","z","j","t","ch","ty","ts",
                                                            "d","dy","n","ny","h","hy","f","b",
@@ -66,7 +66,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
 
         // in case voicebank is missing certain symbols
-        static readonly string[] substitution = new string[] {  
+        static readonly string[] substitution = new string[] {
             "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "my=m", "hy,f=h", "by,v=b", "dz=z", "l=r", "ly=l"
         };
 
@@ -189,14 +189,14 @@ namespace OpenUtau.Plugin.Builtin {
                 if (vowelLookup.TryGetValue(prevLyric.LastOrDefault().ToString() ?? string.Empty, out var vow)) {
                     var vowLyric = $"{vow} {currentLyric}";
                     // try vowlyric before cflyric, if both fail try currentlyric
-                    string[] tests = new string[] {vowLyric, cfLyric, currentLyric};
-                    if (checkOtoUntilHit(tests, note, out var oto)){
+                    string[] tests = new string[] { vowLyric, cfLyric, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
                 }
             } else {
-                string[] tests = new string[] {cfLyric, currentLyric};
-                if (checkOtoUntilHit(tests, note, out var oto)){
+                string[] tests = new string[] { cfLyric, currentLyric };
+                if (checkOtoUntilHit(tests, note, out var oto)) {
                     currentLyric = oto.Alias;
                 }
             }
@@ -240,10 +240,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
-                var vcPhonemes = new string[] {vcPhoneme, ""};
+                var vcPhonemes = new string[] { vcPhoneme, "" };
                 // find potential substitute symbol
-                if (substituteLookup.TryGetValue(consonant ?? string.Empty, out con)){
-                        vcPhonemes[1] = $"{vowel} {con}";
+                if (substituteLookup.TryGetValue(consonant ?? string.Empty, out con)) {
+                    vcPhonemes[1] = $"{vowel} {con}";
                 }
                 //if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                 if (checkOtoUntilHitVc(vcPhonemes, note, out var oto1)) {

@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace OpenUtau.Classic.Flags {
     public class UstFlagParserTest {

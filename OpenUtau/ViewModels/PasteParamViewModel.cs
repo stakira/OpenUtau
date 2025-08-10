@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using OpenUtau.Core;
 using ReactiveUI.Fody.Helpers;
 
@@ -8,8 +8,8 @@ namespace OpenUtau.App.ViewModels {
         public PasteParamViewModel() {
             Params.Add(new PasteParameter("pitch points", ""));
             Params.Add(new PasteParameter("vibrato", ""));
-            foreach(var exp in DocManager.Inst.Project.expressions) {
-                if(exp.Value.type != Core.Ustx.UExpressionType.Curve) {
+            foreach (var exp in DocManager.Inst.Project.expressions) {
+                if (exp.Value.type != Core.Ustx.UExpressionType.Curve) {
                     Params.Add(new PasteParameter(exp.Value.name, exp.Key));
                 }
             }

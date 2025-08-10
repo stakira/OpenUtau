@@ -1,4 +1,4 @@
-﻿namespace OpenUtau.Api {
+namespace OpenUtau.Api {
     /// <summary>
     /// Data class used to deserialize yaml dictionary.
     /// </summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
@@ -78,7 +78,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        int mod(int a, int b){
+        int mod(int a, int b) {
             return (a % b + b) % b;
         }
 
@@ -89,7 +89,7 @@ namespace OpenUtau.App.Controls {
             int track = (int)TrackOffset;
             double top = TrackHeight * (track - TrackOffset);
             string[] degreeNames;
-            switch(Preferences.Default.DegreeStyle){
+            switch (Preferences.Default.DegreeStyle) {
                 case 1:
                     degreeNames = MusicMath.Solfeges;
                     break;
