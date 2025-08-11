@@ -141,15 +141,21 @@ namespace OpenUtau.Plugin.Builtin {
                          || loi.StartsWith("T") || loi.StartsWith("Z") || loi.StartsWith("v") || loi.StartsWith("w")
                          || loi.StartsWith("z") || loi.StartsWith("p"));
             int x = prevNeighbour?.duration ?? default(int);
-            if (x < 160 && prevNeighbour != null) { VCP = -(x * 4 / 8); } else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
-                                                                                                       || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
-                                                                                                       || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -70;
-            else VCP = -110;
+            if (x < 160 && prevNeighbour != null) {
+                VCP = -(x * 4 / 8);
+            } else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
+                       || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
+                       || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) {
+                VCP = -70;
+            } else {
+                VCP = -110;
+            }
             bool kocoC;
             if (tontaiC == true) {
                 kocoC = false;
-            } else
+            } else {
                 kocoC = true;
+            }
             bool BR = note.lyric.StartsWith("breath");
             bool tontaiVV = (loi.EndsWith("ai") || loi.EndsWith("ơi") || loi.EndsWith("oi") || loi.EndsWith("ôi") || loi.EndsWith("ui") || loi.EndsWith("ưi")
                           || loi.EndsWith("ao") || loi.EndsWith("eo") || loi.EndsWith("êu") || loi.EndsWith("iu")

@@ -125,15 +125,21 @@ namespace OpenUtau.Plugin.Builtin {
                            || loi.Contains("uôn") || loi.Contains("uôN") || loi.Contains("uôm") || loi.Contains("uôt") || loi.Contains("uôk") || loi.Contains("uôi")
                            || loi.Contains("ươn") || loi.Contains("ươN") || loi.Contains("ươm") || loi.Contains("ươt") || loi.Contains("ươk") || loi.Contains("ươp") || loi.Contains("ươi") || loi.Contains("ươu");
             int x = prevNeighbour?.duration ?? default(int);
-            if (x < 160 && prevNeighbour != null) { VCP = -(x * 4 / 8); } else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
-                                                                              || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
-                                                                               || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -70;
-            else VCP = -110;
+            if (x < 160 && prevNeighbour != null) {
+                VCP = -(x * 4 / 8);
+            } else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
+                       || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
+                       || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) {
+                VCP = -70;
+            } else {
+                VCP = -110;
+            }
             bool koVVCchia;
             if (tontaiVVC == true) {
                 koVVCchia = false;
-            } else
+            } else {
                 koVVCchia = true;
+            }
             bool tontaiCcuoi = (loi.EndsWith("k") || loi.EndsWith("t") || loi.EndsWith("C") || loi.EndsWith("p") || loi.EndsWith("."));
             bool tontaiC = loi.StartsWith("b") || loi.StartsWith("C") || loi.StartsWith("d") || loi.StartsWith("f")
                          || loi.StartsWith("g") || loi.StartsWith("h") || loi.StartsWith("k") || loi.StartsWith("K")

@@ -100,8 +100,13 @@ namespace OpenUtau.Plugin.Builtin {
             KoreanPhonemizerUtil.RomanizeNotes(groups, false);
         }
 
+        static readonly string[] alphaConsonants = new string[] {
+            "gg", "dd", "bb", "ss", "f", "v", "z", "th", "rr",
+            "g", "n", "d", "r", "m", "b", "s", "j", "ch",
+            "k", "t", "p", "h"
+        };
         bool isAlphaCon(string str) {
-            if (str == "gg") { return true; } else if (str == "dd") { return true; } else if (str == "bb") { return true; } else if (str == "ss") { return true; } else if (str == "f") { return true; } else if (str == "v") { return true; } else if (str == "z") { return true; } else if (str == "th") { return true; } else if (str == "rr") { return true; } else if (str == "g") { return true; } else if (str == "n") { return true; } else if (str == "d") { return true; } else if (str == "r") { return true; } else if (str == "m") { return true; } else if (str == "b") { return true; } else if (str == "s") { return true; } else if (str == "j") { return true; } else if (str == "ch") { return true; } else if (str == "k") { return true; } else if (str == "t") { return true; } else if (str == "p") { return true; } else if (str == "h") { return true; } else { return false; }
+            return alphaConsonants.Contains(str);
         }
 
         static KoreanCVCPhonemizer() {
@@ -291,7 +296,114 @@ namespace OpenUtau.Plugin.Builtin {
 
                     if (prevExist && prevHangeul && (CLconsonant == 11) && (TPLfinal != "")) {
                         int temp = PLfinal;
-                        if (temp == 1) { TCLtemp = naConsonants[0].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 2) { TCLtemp = naConsonants[1].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 3) { TCLtemp = naConsonants[10].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 4) { TCLtemp = naConsonants[2].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 5) { TCLtemp = naConsonants[12].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 6) { TCLtemp = naConsonants[18].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 7) { TCLtemp = naConsonants[3].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 8) { TCLtemp = naConsonants[5].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 9) { TCLtemp = naConsonants[0].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 10) { TCLtemp = naConsonants[6].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 11) { TCLtemp = naConsonants[7].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 12) { TCLtemp = naConsonants[9].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 13) { TCLtemp = naConsonants[16].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 14) { TCLtemp = naConsonants[17].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 15) { TCLtemp = naConsonants[18].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 16) { TCLtemp = naConsonants[6].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 17) { TCLtemp = naConsonants[7].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 18) { TCLtemp = naConsonants[9].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 19) { TCLtemp = naConsonants[9].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 20) { TCLtemp = naConsonants[10].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 21) { tempTCLconsonant = ""; yeoneum = true; } else if (temp == 22) { TCLtemp = naConsonants[12].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 23) { TCLtemp = naConsonants[14].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 24) { TCLtemp = naConsonants[15].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 25) { TCLtemp = naConsonants[16].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 26) { TCLtemp = naConsonants[17].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; } else if (temp == 27) { TCLtemp = naConsonants[18].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; }
+                        if (temp == 1) {
+                            TCLtemp = naConsonants[0].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 2) {
+                            TCLtemp = naConsonants[1].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 3) {
+                            TCLtemp = naConsonants[10].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 4) {
+                            TCLtemp = naConsonants[2].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 5) {
+                            TCLtemp = naConsonants[12].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 6) {
+                            TCLtemp = naConsonants[18].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 7) {
+                            TCLtemp = naConsonants[3].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 8) {
+                            TCLtemp = naConsonants[5].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 9) {
+                            TCLtemp = naConsonants[0].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 10) {
+                            TCLtemp = naConsonants[6].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 11) {
+                            TCLtemp = naConsonants[7].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 12) {
+                            TCLtemp = naConsonants[9].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 13) {
+                            TCLtemp = naConsonants[16].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 14) {
+                            TCLtemp = naConsonants[17].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 15) {
+                            TCLtemp = naConsonants[18].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 16) {
+                            TCLtemp = naConsonants[6].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 17) {
+                            TCLtemp = naConsonants[7].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 18) {
+                            TCLtemp = naConsonants[9].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 19) {
+                            TCLtemp = naConsonants[9].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 20) {
+                            TCLtemp = naConsonants[10].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 21) {
+                            tempTCLconsonant = "";
+                            yeoneum = true;
+                        } else if (temp == 22) {
+                            TCLtemp = naConsonants[12].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 23) {
+                            TCLtemp = naConsonants[14].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 24) {
+                            TCLtemp = naConsonants[15].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 25) {
+                            TCLtemp = naConsonants[16].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 26) {
+                            TCLtemp = naConsonants[17].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        } else if (temp == 27) {
+                            TCLtemp = naConsonants[18].Split(":");
+                            tempTCLconsonant = TCLtemp[1];
+                            yeoneum = true;
+                        }
                     }
 
                     if (nextExist && nextHangeul && (TCLfinal != "") && (TNLconsonant == "")) {
@@ -375,9 +487,42 @@ namespace OpenUtau.Plugin.Builtin {
                             tempTCLfinal = TCLtemp[1];
                             TCLfinal = "";
                             yeoneum2 = true;
+                            // } else if (temp == 21) {
+                            //     TCLtemp = naConsonants[11].Split(":");
+                            //     tempTCLfinal = TCLtemp[1];
+                            //     TCLfinal = "";
+                            //     yeoneum2 = true;
+                        } else if (temp == 22) {
+                            TCLtemp = naConsonants[12].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
+                        } else if (temp == 23) {
+                            TCLtemp = naConsonants[14].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
+                        } else if (temp == 24) {
+                            TCLtemp = naConsonants[15].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
+                        } else if (temp == 25) {
+                            TCLtemp = naConsonants[16].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
+                        } else if (temp == 26) {
+                            TCLtemp = naConsonants[17].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
+                        } else if (temp == 27) {
+                            TCLtemp = naConsonants[18].Split(":");
+                            tempTCLfinal = TCLtemp[1];
+                            TCLfinal = "";
+                            yeoneum2 = true;
                         }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //else if (temp == 21) { TCLtemp = naConsonants[11].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    else if (temp == 22) { TCLtemp = naConsonants[12].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 23) { TCLtemp = naConsonants[14].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 24) { TCLtemp = naConsonants[15].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 25) { TCLtemp = naConsonants[16].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 26) { TCLtemp = naConsonants[17].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 27) { TCLtemp = naConsonants[18].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
 
                     }
                     if (yeoneum) { TCLconsonant = tempTCLconsonant; }
@@ -716,7 +861,15 @@ namespace OpenUtau.Plugin.Builtin {
                     if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = TCLplainvowel + "l"; } }
                     if ((VC != "") && (TNLconsonant != "")) {
                         int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; } else if (TNLconsonant == "s") { vcLength = totalDuration / 3; } else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; } else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) {
+                            vcLength = 30;
+                        } else if (TNLconsonant == "s") {
+                            vcLength = totalDuration / 3;
+                        } else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) {
+                            vcLength = totalDuration / 2;
+                        } else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) {
+                            vcLength = totalDuration / 2;
+                        }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
 
                         if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
@@ -991,7 +1144,15 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
-                } else if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; } else if (TNLconsonant == "s") { vcLength = totalDuration / 3; } else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; } else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                } else if ((TNLconsonant == "r") || (TNLconsonant == "h")) {
+                    vcLength = 30;
+                } else if (TNLconsonant == "s") {
+                    vcLength = totalDuration / 3;
+                } else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) {
+                    vcLength = totalDuration / 2;
+                } else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) {
+                    vcLength = totalDuration / 2;
+                }
                 vcLength = Math.Min(totalDuration / 2, vcLength);
 
                 return new Result {
