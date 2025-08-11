@@ -256,7 +256,6 @@ namespace OpenUtau.Core.Ustx {
                 if (string.IsNullOrEmpty(RendererSettings.renderer)) {
                     RendererSettings.renderer = Renderers.GetDefaultRenderer(Singer.SingerType);
                 }
-                ;
             }
             TrackNo = project.tracks.IndexOf(this);
             if (!Solo && Mute) {

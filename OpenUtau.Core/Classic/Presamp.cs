@@ -335,7 +335,6 @@ namespace Classic {
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
                 }
-                ;
             });
             Appends.ForEach(a => {
                 if (phoneme.Contains(a)) {
@@ -343,7 +342,6 @@ namespace Classic {
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
                 }
-                ;
             });
             Pitches.ForEach(p => {
                 if (phoneme.Contains(p)) {
@@ -351,7 +349,6 @@ namespace Classic {
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
                 }
-                ;
             });
             if (phoneme.Contains("_")) {
                 var split = phoneme.Split("_");

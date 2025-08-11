@@ -324,9 +324,9 @@ namespace OpenUtau.Plugin.Builtin {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme {
-                        phoneme = currentLyric,
+                            phoneme = currentLyric,
+                        }
                     }
-                }
                 };
             }
 
@@ -633,7 +633,6 @@ namespace OpenUtau.Plugin.Builtin {
 
                         break;
                 }
-                ;
 
             } else {
                 // 뒷글자 없음

@@ -1319,7 +1319,6 @@ namespace OpenUtau.Core {
                         this.blocks = blocks;
                         IniSetUp(iniSetting); // you can override IniSetUp() to use.
                     }
-                    ;
                 } catch (IOException e) {
                     Log.Error(e, $"failed to read {iniFileName}, Making new {iniFileName}...");
                     using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8)) {
@@ -1331,12 +1330,10 @@ namespace OpenUtau.Core {
                             Log.Error(e_, $"[{iniFileName}] Failed to Write new {iniFileName}.");
                         }
                     }
-                    ;
                     using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8)) {
                         List<IniBlock> blocks = Ini.ReadBlocks(reader, filePath, @"\[\w+\]");
                         this.blocks = blocks;
                     }
-                    ;
                 }
             }
 
@@ -1405,7 +1402,6 @@ namespace OpenUtau.Core {
 
                         Log.Information($"[{iniFileName}] failed to parse setting '{keyName}', modified {defaultValue} as default value.");
                     }
-                    ;
                 }
             }
 

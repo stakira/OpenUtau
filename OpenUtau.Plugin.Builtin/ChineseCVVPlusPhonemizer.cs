@@ -349,7 +349,6 @@ namespace OpenUtau.Plugin.Builtin {
                         };
                     }
                 }
-                ;
 
                 // If it does not match any of the above if statements,
                 return new Result {

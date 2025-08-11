@@ -595,9 +595,7 @@ namespace OpenUtau.Plugin.Builtin {
                 lock (builder) {
                     builder.AddEntry(key, values);
                 }
-                ;
             }
-            ;
         }
 
         #region helpers
