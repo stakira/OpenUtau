@@ -358,7 +358,7 @@ namespace OpenUtau.App.Views {
                 }
                 if (fromStart) {
                     DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, note, -deltaDuration, 0));
-                } else if (ripple) {
+                } else if (ripple == true) {
                     var rippleNotes = part.notes.Where(n => n.position > note.position).ToList();
                     DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, rippleNotes, deltaDuration, 0));
                 }
