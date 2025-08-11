@@ -419,7 +419,7 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, NotePresets.Default.SplittedLyric));
         }
 
         public override void Update(IPointer pointer, Point point) {
