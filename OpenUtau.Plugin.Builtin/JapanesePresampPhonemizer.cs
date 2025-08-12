@@ -216,10 +216,8 @@ namespace OpenUtau.Plugin.Builtin {
                     if (color != null) {
                         result[0].expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.CLR, value = (int)color });
                     }
-                    {
-                        string Cflags = presamp.CFlags;
-                        float PValue = int.Parse(Cflags.TrimEnd('p'));
-                        result.First(p => p.index == 2).expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.NORM, value = PValue });
+                    if (presamp.CFlags == "p0") {
+                        result.First(p => p.index == 2).expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.NORM, value = 0 });
                     }
                 }
             }
