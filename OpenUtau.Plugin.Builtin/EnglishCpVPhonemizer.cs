@@ -76,10 +76,12 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
         private string[] tails = "-,R".Split(',');
+        private bool isTails = false;
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
             if (tails.Contains(note.lyric)) {
+                isTails = true;
                 return new string[] { note.lyric };
             }
             if (original == null) {
@@ -562,7 +564,15 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 // [V] to [-V] to [- V]
                 basePhoneme = AliasFormat(v, "cv", syllable.vowelTone, "");
-
+                if (isTails) {
+                    if (HasOto($"{cc.Last()} -", syllable.tone) || HasOto($"{cc.Last()}-", syllable.tone)
+                    || HasOto($"{cc.Last()}_", syllable.tone)) {
+                        // like [C1 -]
+                        basePhoneme = AliasFormat($"{cc.Last()}", "cc_end", syllable.tone, "");
+                    } else {
+                        basePhoneme = null;
+                    }
+                }
                 // try [V C], [V CC], [VC C], [V -][- C]
                 for (var i = lastC + 1; i >= 0; i--) {
                     var vr = $"_{prevV}";

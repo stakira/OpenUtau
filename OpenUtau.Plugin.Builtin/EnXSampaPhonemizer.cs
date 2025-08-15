@@ -191,6 +191,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"3", "r"}
             };
         private string[] tails = "-,R".Split(',');
+        private bool isTails = false;
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -377,6 +378,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
             if (tails.Contains(note.lyric)) {
+                isTails = true;
                 return new string[] { note.lyric };
             }
             if (original == null) {
@@ -681,6 +683,46 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
+                    // CC Endings (trailing)
+                    if (isTails && basePhoneme.Contains("-")) {
+                        for (int clusterLength = 3; clusterLength >= 2; clusterLength--) {
+                            if (clusterLength > cc.Length) {
+                                continue;
+                            }
+
+                            var cluster = new string[clusterLength];
+                            Array.Copy(cc, 0, cluster, 0, clusterLength);
+
+                            // All possible spacing patterns for the consonants.
+                            var consonantPatterns = new List<string>();
+
+                            if (clusterLength >= 3) {
+                                consonantPatterns.Add($"{cluster[0]} {cluster[1]}{cluster[2]}");
+                                consonantPatterns.Add($"{cluster[0]}{cluster[1]} {cluster[2]}");
+                                consonantPatterns.Add($"{cluster[0]} {cluster[1]} {cluster[2]}");
+                            } else if (clusterLength == 2) {
+                                consonantPatterns.Add($"{cluster[0]} {cluster[1]}");
+                                consonantPatterns.Add($"{cluster[0]}{cluster[1]}");
+                            }
+
+                            // Check for all possible patterns with the ending hyphen.
+                            foreach (var consPattern in consonantPatterns) {
+                                string[] endPatterns = { "-", $" -" };
+                                foreach (var end in endPatterns) {
+                                    string endingcc = $"{consPattern}{end}";
+
+                                    if (HasOto(endingcc, syllable.tone)) {
+                                        basePhoneme = endingcc;
+                                        lastC = 0;
+                                        goto FoundMatch;
+                                    } else {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    FoundMatch:;
                     // try vcc
                     for (var i = lastC + 1; i >= 0; i--) {
                         var vr = $"{prevV} -";
