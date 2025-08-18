@@ -9,7 +9,6 @@
     <ResourceDictionary>
       <ResourceInclude x:Key="strings-en-US" Source="/Strings/Strings.axaml"/>
       <ResourceInclude x:Key="strings-de-DE" Source="/Strings/Strings.de-DE.axaml"/>
-      <ResourceInclude x:Key="strings-es-ES" Source="/Strings/Strings.es-ES.axaml"/>
       <ResourceInclude x:Key="strings-es-MX" Source="/Strings/Strings.es-MX.axaml"/>
       <ResourceInclude x:Key="strings-fi-FI" Source="/Strings/Strings.fi-FI.axaml"/>
       <ResourceInclude x:Key="strings-fr-FR" Source="/Strings/Strings.fr-FR.axaml"/>
