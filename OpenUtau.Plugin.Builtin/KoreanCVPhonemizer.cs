@@ -311,7 +311,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             
-            batchim = _batchim;;
+            batchim = _batchim;
 
             if (thisLyric[2] == "ㅁ" || !HARD_BATCHIMS.Contains(thisLyric[2])) { // batchim ㅁ + ㄴ ㄹ ㅇ
                 if (isItNeedsFrontCV) {
