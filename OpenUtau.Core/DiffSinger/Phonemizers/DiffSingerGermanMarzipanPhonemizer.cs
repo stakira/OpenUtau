@@ -6,7 +6,7 @@ namespace OpenUtau.Core.DiffSinger
     [Phonemizer("DiffSinger German Marzipan Phonemizer", "DIFFS DE MARZ", language: "DE")]
     public class DiDiffSingerGermanMarzipanPhonemizerr : DiffSingerG2pPhonemizer
     {
-        protected override string GetDictionaryName()=>"dsdict-de.yaml";
+        protected override string GetDictionaryName()=> "dsdict-de-marzipan.yaml";
         public override string GetLangCode()=>"de";
         protected override IG2p LoadBaseG2p() => new GermanMarzipanG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {

@@ -145,6 +145,9 @@
   <data name="g2p-ko" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-ko.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="g2p-nl-tompoes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-nl-tompoes.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="g2p-pt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-pt.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
