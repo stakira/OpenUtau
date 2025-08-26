@@ -99,6 +99,7 @@ namespace OpenUtau.App.Views {
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
                 new AutoLegato(),
                 new CommonnoteCopy(),
+                new CommonnotePaste(),
                 new FixOverlap(),
                 new BakePitch(),
             }.Select(edit => new MenuItemViewModel() {

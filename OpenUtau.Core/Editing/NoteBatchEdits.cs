@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using Newtonsoft.Json;
-using static System.Net.Mime.MediaTypeNames;
-using OpenUtau.Classic;
-using TextCopy;
+using OpenUtau.Core.Format;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -236,37 +232,47 @@ namespace OpenUtau.Core.Editing {
         public virtual string Name => name;
 
         private string name;
-        public class header {
-            public int resolution { get; set; }
-            public string origin { get; set; }
-        }
-        public static string identifier { get; set; }
-        public static List<object> notes { get; set; } = new List<object>();
 
         public CommonnoteCopy() {
-            name = $"pianoroll.menu.notes.commonnotecoppy";
+            name = $"pianoroll.menu.notes.commonnotecopy";
         }
+
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
-            CommonnoteCopy result = new CommonnoteCopy();
-            CommonnoteCopy.identifier = "commonnote";
-            notes = new List<object>();
-            var note = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            header header = new header { resolution = 480, origin = "OpenUTAU" };
-            for (int i = 0; i < selectedNotes.Count(); i++) {
-                notes.Add(new { start = note[i].position, length = note[i].duration, label = note[i].lyric, pitch = note[i].tone });
-            }
-
-
-            var data = new {
-                identifier = CommonnoteCopy.identifier,
-                header = header,
-                notes = CommonnoteCopy.notes
-            };
-            string output = JsonConvert.SerializeObject(data);
-            ClipboardService.SetText(output);
-
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            Commonnote.CopyToClipboard(notes);
         }
     }
+
+    public class CommonnotePaste : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public CommonnotePaste() {
+            name = $"pianoroll.menu.notes.commonnotepaste";
+        }
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = Commonnote.LoadFromClipboard(project);
+            if (notes == null) {
+                return;
+            }
+            int left = DocManager.Inst.playPosTick;
+            int minPosition = notes.Select(note => note.position).Min();
+            if (left < part.position) {
+                return;
+            }
+            int offset = left - minPosition - part.position;
+            notes.ForEach(note => note.position += offset);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, notes));
+            int minDurTick = part.GetMinDurTick(project);
+            if (part.Duration < minDurTick) {
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, minDurTick - part.Duration, false));
+            }
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
     public class HanziToPinyin : BatchEdit {
         public virtual string Name => name;
 
