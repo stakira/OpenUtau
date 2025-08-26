@@ -4,6 +4,10 @@ using System.Linq;
 using System.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using Newtonsoft.Json;
+using static System.Net.Mime.MediaTypeNames;
+using OpenUtau.Classic;
+using TextCopy;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -228,6 +232,41 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class CommonnoteCopy : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+        public class header {
+            public int resolution { get; set; }
+            public string origin { get; set; }
+        }
+        public static string identifier { get; set; }
+        public static List<object> notes { get; set; } = new List<object>();
+
+        public CommonnoteCopy() {
+            name = $"pianoroll.menu.notes.commonnotecoppy";
+        }
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            CommonnoteCopy result = new CommonnoteCopy();
+            CommonnoteCopy.identifier = "commonnote";
+            notes = new List<object>();
+            var note = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            header header = new header { resolution = 480, origin = "OpenUTAU" };
+            for (int i = 0; i < selectedNotes.Count(); i++) {
+                notes.Add(new { start = note[i].position, length = note[i].duration, label = note[i].lyric, pitch = note[i].tone });
+            }
+
+
+            var data = new {
+                identifier = CommonnoteCopy.identifier,
+                header = header,
+                notes = CommonnoteCopy.notes
+            };
+            string output = JsonConvert.SerializeObject(data);
+            ClipboardService.SetText(output);
+
+        }
+    }
     public class HanziToPinyin : BatchEdit {
         public virtual string Name => name;
 
