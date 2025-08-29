@@ -567,14 +567,19 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     } else {
                         // VV to V
-                        if (HasOto(vv, syllable.vowelTone) || HasOto(ValidateAlias(vv), syllable.vowelTone)) {
-                            basePhoneme = vv;
+                        if (HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone)) {
+                            basePhoneme = $"{prevV} {v}";
+                        } else if (HasOto($"{prevV}{v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV}{v}"), syllable.vowelTone)) {
+                            basePhoneme = $"{prevV}{v}";
                         } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
                             basePhoneme = v;
                         }
                     }
+                 // EXTEND AS [V]
+                } else if (HasOto($"{v}", syllable.vowelTone) && HasOto(ValidateAlias($"{v}"), syllable.vowelTone)) {
+                    basePhoneme = v;
                 } else {
-                    // Previous alias will extend
+                    // PREVIOUS ALIAS WILL EXTEND as [V V]
                     basePhoneme = null;
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
