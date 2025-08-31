@@ -246,8 +246,8 @@ namespace OpenUtau.Core.Voicevox {
                     vqnindex = -1
                 });
 
-            } catch (VoicevoxException e) {
-                Log.Error($"VoicevoxQueryNotes setup error.");
+            } catch (Exception e) {
+                Log.Error(e, $"VoicevoxQueryNotes setup error: {e.Message}");
             }
             return vqMain;
         }
