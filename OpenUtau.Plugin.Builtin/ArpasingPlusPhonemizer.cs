@@ -526,10 +526,10 @@ namespace OpenUtau.Plugin.Builtin {
                     /// CV
                 } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
                     basePhoneme = AliasFormat($"{cc[0]} {v}", "dynMid", syllable.vowelTone, "");
-                    TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""));
+                    TryAddPhoneme(phonemes, syllable.tone, ValidateAlias(AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, "")));
                 } else {
                     basePhoneme = AliasFormat($"{cc[0]} {v}", "dynMid", syllable.vowelTone, "");
-                    TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""));
+                    TryAddPhoneme(phonemes, syllable.tone, ValidateAlias(AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, "")));
                 }
                 // [CCV/CC V] or [C C] + [CV/C V]
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
@@ -557,7 +557,7 @@ namespace OpenUtau.Plugin.Builtin {
                     // TRY RCC [- CC]
                     for (var i = cc.Length; i > 1; i--) {
                         if (!ccvException.Contains(cc[0])) {
-                            if (TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{string.Join("", cc.Take(i))}", "cc_start", syllable.vowelTone, ""))) {
+                            if (TryAddPhoneme(phonemes, syllable.tone, ValidateAlias(AliasFormat($"{string.Join("", cc.Take(i))}", "cc_start", syllable.vowelTone, "")))) {
                                 firstC = i - 1;
                             }
                         }
@@ -565,7 +565,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     // [- C]
                     if (phonemes.Count == 0) {
-                        TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""));
+                        TryAddPhoneme(phonemes, syllable.tone, ValidateAlias(AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, "")));
                     }
                 }
             } else {
