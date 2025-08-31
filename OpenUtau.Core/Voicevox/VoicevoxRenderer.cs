@@ -141,18 +141,14 @@ namespace OpenUtau.Core.Voicevox {
                         }
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
-                    try {
-                        if (File.Exists(wavPath)) {
-                            using (var waveStream = new WaveFileReader(wavPath)) {
+                    if (File.Exists(wavPath)) {
+                        using (var waveStream = new WaveFileReader(wavPath)) {
 
-                                result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
-                            }
-                            if (result.samples != null) {
-                                Renderers.ApplyDynamics(phrase, result);
-                            }
+                            result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                         }
-                    } catch (Exception e) {
-                        throw new VoicevoxException("The WAV file could not be read.", e);
+                        if (result.samples != null) {
+                            Renderers.ApplyDynamics(phrase, result);
+                        }
                     }
                     return result;
                 }
