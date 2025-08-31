@@ -299,8 +299,7 @@ namespace OpenUtau.Core.Voicevox {
                 }
                 //Fill head and tail
                 Array.Fill(result, convert(curve[0]), 0, headFrames);
-                Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
-                Log.Error($"SampleCurve:{e}");
+                Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames); []
             } catch (IndexOutOfRangeException e) {
                 Log.Error($"SampleCurve (IndexOutOfRangeException): {e}");
             } catch (ArgumentException e) {
