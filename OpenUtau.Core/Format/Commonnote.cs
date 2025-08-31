@@ -1,4 +1,4 @@
-using Melanchall.DryWetMidi.Core;
+﻿using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using Newtonsoft.Json;
 using OpenUtau.Core.Ustx;
@@ -13,19 +13,19 @@ using TextCopy;
 //Commonnote format definition: https://github.com/ExpressiveLabs/commonnote
 namespace OpenUtau.Core.Format {
     public struct CommonnoteNote {
-        public int start;
-        public int length;
+        public long start;
+        public long length;
         public string label;
         public int pitch;
     }
 
     public struct CommonnoteHeader {
-        public int resolution;
+        public long resolution;
         public string origin;
     }
 
     public struct CommonnoteData {
-        public static string identifier = "commonnote";
+        public string identifier;
         public CommonnoteHeader header;
         public List<CommonnoteNote> notes;
     }
@@ -41,8 +41,8 @@ namespace OpenUtau.Core.Format {
         }
 
         static UNote LoadNote(CommonnoteNote cNote, int resolution, UProject project) {
-            int position = cNote.start * 480 / resolution;
-            int duration = (cNote.start + cNote.length) * 480 / resolution - position;
+            int position = (int)(cNote.start * 480 / resolution);
+            int duration = (int)((cNote.start + cNote.length) * 480 / resolution - position);
             string lyric = cNote.label;
             if (string.IsNullOrEmpty(cNote.label)) {
                 lyric = NotePresets.Default.DefaultLyric;
@@ -54,6 +54,7 @@ namespace OpenUtau.Core.Format {
 
         public static string Dumps(List<UNote> uNotes) {
             var data = new CommonnoteData {
+                identifier = "commonnote",
                 header = new CommonnoteHeader {
                     resolution = 480,
                     origin = "openutau",
@@ -65,7 +66,7 @@ namespace OpenUtau.Core.Format {
 
         public static List<UNote> Loads(string text, UProject project) {
             var data = JsonConvert.DeserializeObject<CommonnoteData>(text);
-            int resolution = data.header.resolution > 0 ? data.header.resolution : 480;
+            int resolution = (int)(data.header.resolution > 0 ? data.header.resolution : 480);
             return data.notes.Select(n => LoadNote(n, resolution, project)).ToList();
         }
 
