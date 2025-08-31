@@ -128,7 +128,7 @@ namespace OpenUtau.Core.Voicevox {
                     }
 
                 }
-            } catch (VoicevoxException e) {
+            } catch (Exception e) {
                 Log.Error($"Failed to read dictionary file. : {e}");
             }
         }
