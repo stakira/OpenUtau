@@ -133,7 +133,6 @@ namespace OpenUtau.Core.Voicevox {
                                 }
                             } catch (Exception e) {
                                 Log.Error(e, "Failed to create a voice base.");
-                                return new RenderResult();
                             }
                             if (cancellation.IsCancellationRequested) {
                                 return new RenderResult();
