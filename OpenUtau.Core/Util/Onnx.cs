@@ -16,6 +16,8 @@ namespace OpenUtau.Core {
     }
 
     public class Onnx {
+        private static bool cudaAvailable = OS.IsLinux() && CudaGpuDetector.IsCudaAvailable() && CudaGpuDetector.IsCuDnnAvailable();
+
         public static List<string> getRunnerOptions() {
             if (OS.IsWindows()) {
                 return new List<string> {
@@ -27,10 +29,14 @@ namespace OpenUtau.Core {
                 "CPU",
                 "CoreML"
                 };
-            }
-            return new List<string> {
+            } else if (cudaAvailable) {
+                return new List<string> {
                 "CPU",
                 "CUDA"
+                };
+            }
+            return new List<string> {
+                "CPU"        
             };
         }
 
@@ -48,7 +54,7 @@ namespace OpenUtau.Core {
                         description = adapterOut.Description.Description
                     }) ;
                 }
-            } else if (OS.IsLinux()) {
+            } else if (cudaAvailable) {
                 gpuList.AddRange(CudaGpuDetector.GetCudaDevices());
             }
 
