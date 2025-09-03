@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using Serilog;
 
 namespace OpenUtau.Core.Util {
     public static class CudaGpuDetector {
@@ -27,23 +28,23 @@ namespace OpenUtau.Core.Util {
         public static bool IsCudaAvailable() {
             try {
                 int res = cuInit(0);
-                Console.Error.WriteLine($"[CUDA DETECTOR] cuInit -> {res}");
+                Log.Debug($"[CUDA DETECTOR] cuInit -> {res}");
                 if (res != 0) return false;
 
                 res = cuDriverGetVersion(out int version);
-                Console.Error.WriteLine($"[CUDA DETECTOR] cuDriverGetVersion -> {res}, version={version}");
+                Log.Debug($"[CUDA DETECTOR] cuDriverGetVersion -> {res}, version={version}");
                 if (res != 0) return false;
 
                 int major = version / 1000;
                 int minor = (version % 1000) / 10;
-                Console.Error.WriteLine($"[CUDA DETECTOR] Detected CUDA driver version {major}.{minor}");
+                Log.Information($"[CUDA DETECTOR] Detected CUDA driver version {major}.{minor}");
 
                 return major >= 12;
             } catch (DllNotFoundException ex) {
-                Console.Error.WriteLine($"[CUDA DETECTOR] libcuda.so not found: {ex.Message}");
+                Log.Error($"[CUDA DETECTOR] libcuda.so not found: {ex.Message}");
                 return false;
             } catch (Exception ex) {
-                Console.Error.WriteLine($"[CUDA DETECTOR] Exception in IsCudaAvailable: {ex}");
+                Log.Error($"[CUDA DETECTOR] Exception in IsCudaAvailable: {ex}");
                 return false;
             }
         }
@@ -53,14 +54,14 @@ namespace OpenUtau.Core.Util {
                 long version = cudnnGetVersion();
                 int major = (int)(version / 1000);
                 int minor = (int)((version % 1000) / 100);
-                Console.Error.WriteLine($"[CUDA DETECTOR] cuDNN version {major}.{minor} (raw {version})");
+                Log.Information($"[CUDA DETECTOR] cuDNN version {major}.{minor} (raw {version})");
 
                 return major >= 9;
             } catch (DllNotFoundException ex) {
-                Console.Error.WriteLine($"[CUDA DETECTOR] libcudnn.so not found: {ex.Message}");
+                Log.Error($"[CUDA DETECTOR] libcudnn.so not found: {ex.Message}");
                 return false;
             } catch (Exception ex) {
-                Console.Error.WriteLine($"[CUDA DETECTOR] Exception in IsCuDnnAvailable: {ex}");
+                Log.Error($"[CUDA DETECTOR] Exception in IsCuDnnAvailable: {ex}");
                 return false;
             }
         }
@@ -69,16 +70,16 @@ namespace OpenUtau.Core.Util {
             var list = new List<GpuInfo>();
             try {
                 int res = cuDeviceGetCount(out int count);
-                Console.Error.WriteLine($"[CUDA DETECTOR] cuDeviceGetCount -> {res}, count={count}");
+                Log.Debug($"[CUDA DETECTOR] cuDeviceGetCount -> {res}, count={count}");
                 if (res != 0) return list;
 
                 for (int i = 0; i < count; i++) {
                     var nameBytes = new byte[256];
                     res = cuDeviceGetName(nameBytes, nameBytes.Length, i);
-                    Console.Error.WriteLine($"[CUDA DETECTOR] cuDeviceGetName(dev={i}) -> {res}");
+                    Log.Debug($"[CUDA DETECTOR] cuDeviceGetName(dev={i}) -> {res}");
                     if (res == 0) {
                         string name = Encoding.ASCII.GetString(nameBytes).TrimEnd('\0');
-                        Console.Error.WriteLine($"[CUDA DETECTOR] Device {i}: {name}");
+                        Log.Debug($"[CUDA DETECTOR] Device {i}: {name}");
                         list.Add(new GpuInfo {
                             deviceId = i,
                             description = name
@@ -86,7 +87,7 @@ namespace OpenUtau.Core.Util {
                     }
                 }
             } catch (Exception ex) {
-                Console.Error.WriteLine($"[CUDA DETECTOR] Exception in GetCudaDevices: {ex}");
+                Log.Error($"[CUDA DETECTOR] Exception in GetCudaDevices: {ex}");
             }
             return list;
         }
