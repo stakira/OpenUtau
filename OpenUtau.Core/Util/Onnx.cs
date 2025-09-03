@@ -29,7 +29,8 @@ namespace OpenUtau.Core {
                 };
             }
             return new List<string> {
-                "CPU"
+                "CPU",
+                "CUDA"
             };
         }
 
@@ -47,7 +48,10 @@ namespace OpenUtau.Core {
                         description = adapterOut.Description.Description
                     }) ;
                 }
+            } else if (OS.IsLinux()) {
+                gpuList.AddRange(CudaGpuDetector.GetCudaDevices());
             }
+
             if (gpuList.Count == 0) {
                 gpuList.Add(new GpuInfo {
                     deviceId = 0,
@@ -72,6 +76,9 @@ namespace OpenUtau.Core {
                     break;
                 case "CoreML":
                     options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
+                    break;
+                case "CUDA":
+                    options.AppendExecutionProvider_CUDA(Preferences.Default.OnnxGpu);
                     break;
             }
             return options;
