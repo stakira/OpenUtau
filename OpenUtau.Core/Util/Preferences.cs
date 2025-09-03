@@ -94,6 +94,20 @@ namespace OpenUtau.Core.Util {
                         return;
                     }
 
+                    if (!string.IsNullOrWhiteSpace(Default.CustomDataPath)){
+                        if (!Directory.Exists(Default.CustomDataPath)) {
+                            Log.Error("Data directory does not exist.");
+                            Default.CustomDataPath = string.Empty;
+                        }
+                        try {
+                            File.WriteAllText(Path.Combine(Default.CustomDataPath, "temp.txt"), "custom data directory");
+                        } catch {
+                            Log.Error($"Cannot access data directory: {Default.CustomDataPath}");
+                            Default.CustomDataPath = string.Empty;
+                        } finally {
+                            File.Delete(Path.Combine(Default.CustomDataPath, "temp.txt"));
+                        }
+                    }
                     if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
                     if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
                     if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
@@ -118,6 +132,7 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
+            public string CustomDataPath = string.Empty;
             public const int MidiWidth = 1024;
             public const int MidiHeight = 768;
             public int MainWidth = 1024;
