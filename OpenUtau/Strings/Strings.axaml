@@ -187,6 +187,8 @@
   <system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>
   <system:String x:Key="menu.file.exportproject">Export Project</system:String>
+  <system:String x:Key="menu.file.exportroughmix">RoughMix To Wav Files</system:String>
+  <system:String x:Key="menu.file.exportroughmixto">RoughMix To Wav Files To...</system:String>
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>
   <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>
@@ -426,6 +428,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.diffsinger">DiffSinger</system:String>
   <system:String x:Key="prefs.editing">Editing</system:String>
+  <system:String x:Key="prefs.export">Export</system:String>
+  <system:String x:Key="prefs.export.channel.stereo">Stereo</system:String>
+  <system:String x:Key="prefs.export.channel.monaural">Monaural</system:String>
+  <system:String x:Key="prefs.export.mixdown">Mixdown Export Audio Channel</system:String>
+  <system:String x:Key="prefs.export.mixdown.samplingrate">Mixdown Export Audio SamplingRate</system:String>
+  <system:String x:Key="prefs.export.parallel">Parallel Export Audio Channel</system:String>
+  <system:String x:Key="prefs.export.parallel.samplingrate">Parallel Export Audio SamplingRate</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
