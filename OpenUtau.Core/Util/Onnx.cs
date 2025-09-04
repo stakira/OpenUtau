@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Core.Util;
 using Vortice.DXGI;
+using Serilog;
 
 namespace OpenUtau.Core {
     public class GpuInfo {
@@ -16,7 +19,42 @@ namespace OpenUtau.Core {
     }
 
     public class Onnx {
+        static Onnx() {
+            ConfigureOnnxRuntimeLibrary();
+        }
+
         private static bool cudaAvailable = OS.IsLinux() && CudaGpuDetector.IsCudaAvailable() && CudaGpuDetector.IsCuDnnAvailable();
+
+    private static void ConfigureOnnxRuntimeLibrary() {
+        if (OS.IsLinux()) {
+            string runner = Preferences.Default.OnnxRunner ?? "CPU";
+            string basePath = AppContext.BaseDirectory;
+            string soPath;
+
+            if (runner == "CUDA" && cudaAvailable) {
+                soPath = Path.Combine(basePath, "runtimes", "linux-x64", "native", "CUDA", "libonnxruntime.so");
+            } else {
+                soPath = Path.Combine(basePath, "runtimes", "linux-x64", "native", "CPU", "libonnxruntime.so");
+            }
+
+            // Register resolver for the ONNX Runtime managed assembly
+            NativeLibrary.SetDllImportResolver(
+                typeof(InferenceSession).Assembly,  // use the public InferenceSession type
+                (libraryName, assembly, searchPath) => {
+                    if (libraryName == "onnxruntime") {
+                        if (NativeLibrary.TryLoad(soPath, out IntPtr handle)) {
+                            return handle;
+                        }
+                        throw new DllNotFoundException($"Could not load ONNX Runtime library from {soPath}");
+                    }
+                    return IntPtr.Zero;
+                }
+            );
+
+            Log.Debug($"ONNX Runtime library set to: {soPath}");
+        }
+    }
+
 
         public static List<string> getRunnerOptions() {
             if (OS.IsWindows()) {
