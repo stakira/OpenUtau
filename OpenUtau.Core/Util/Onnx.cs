@@ -39,7 +39,7 @@ namespace OpenUtau.Core {
 
             // Register resolver for the ONNX Runtime managed assembly
             NativeLibrary.SetDllImportResolver(
-                typeof(InferenceSession).Assembly,  // use the public InferenceSession type
+                typeof(InferenceSession).Assembly,
                 (libraryName, assembly, searchPath) => {
                     if (libraryName == "onnxruntime") {
                         if (NativeLibrary.TryLoad(soPath, out IntPtr handle)) {
