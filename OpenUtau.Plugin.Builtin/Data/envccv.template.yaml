@@ -83,6 +83,9 @@ replacements:
   - {from: ['@', ng], to: [A, ng]}
   - {from: [O, l], to: [0, l]}
 
+fallbacks: 
+  - {from: h, to: hh}
+
 entries:
   - grapheme: openutau
     phonemes: [ow, p, eh, n, w, uw, t, ah, w, uw]
