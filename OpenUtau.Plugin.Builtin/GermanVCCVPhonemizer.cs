@@ -250,7 +250,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse de_vccv.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                       Log.Error($"Failed to parse de_vccv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();

@@ -376,7 +376,7 @@ namespace OpenUtau.Plugin.Builtin {
                             Log.Error($"Failed to load fallbacks from arpasing.yaml: {ex.Message}");
                         }
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse arpasing.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                       Log.Error($"Failed to parse arpasing.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 

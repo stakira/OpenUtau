@@ -475,7 +475,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                        Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                        Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();

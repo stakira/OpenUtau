@@ -304,7 +304,7 @@ namespace OpenUtau.Plugin.Builtin {
                     // Write a fresh template if necessary
                     if (shouldWriteTemplate) {
                         try {
-                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
+                            File.WriteAllBytes(file, Data.Resources.envccv_template);
                             Log.Information($"'{file}' created or updated to latest version {LatestVersion}");
                         }
                         catch (Exception e) {
@@ -393,7 +393,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();
