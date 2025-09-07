@@ -8,12 +8,15 @@ using OpenUtau.Classic;
 using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English C+V Phonemizer", "EN C+V", "Cadlaxa", language: "EN")]
     // Custom C+V Phonemizer for OU
     // Arpabet only but in the future update, it can be customize the phoneme set
     public class EnglishCpVPhonemizer : SyllableBasedPhonemizer {
+        private const string LatestVersion = "1.1";
         private string[] vowels = {
         "aa", "ax", "ae", "ah", "ao", "aw", "ay", "eh", "er", "ey", "ih", "iy", "ow", "oy", "uh", "uw", "a", "e", "i", "o", "u", "ai", "ei", "oi", "au", "ou", "ix", "ux",
         "aar", "ar", "axr", "aer", "ahr", "aor", "or", "awr", "aur", "ayr", "air", "ehr", "eyr", "eir", "ihr", "iyr", "ir", "owr", "our", "oyr", "oir", "uhr", "uwr", "ur",
@@ -247,18 +250,80 @@ namespace OpenUtau.Plugin.Builtin {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
                     file = Path.Combine(singer.Location, "en-cPv.yaml");
-                    if (!File.Exists(file)) {
+                }
+                else if (!string.IsNullOrEmpty(PluginDir)) {
+                    file = Path.Combine(PluginDir, "en-cPv.yaml");
+                }
+                else {
+                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'en-cPv.yaml'.");
+                    return;
+                }
+                try {
+                    bool shouldWriteTemplate = false;
+                    bool shouldBackupOldFile = false;
+
+                    if (File.Exists(file)) {
                         try {
-                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to write 'en-cPv.yaml' to singer folder at {file}");
+                            // Build YAML deserializer
+                            var deserializer = new DeserializerBuilder()
+                                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                                .Build();
+
+                            using var reader = new StreamReader(file);
+                            var config = deserializer.Deserialize<Dictionary<string, object>>(reader);
+
+                            if (config == null || !config.ContainsKey("version")) {
+                                shouldWriteTemplate = true;
+                                shouldBackupOldFile = true; // No version → backup old
+                            }
+                            else {
+                                string currentVersion = config["version"]?.ToString()?.Trim() ?? "";
+
+                                // If version is missing OR outdated → backup old + write new
+                                if (string.IsNullOrWhiteSpace(currentVersion) || currentVersion != LatestVersion) {
+                                    shouldWriteTemplate = true;
+                                    shouldBackupOldFile = true;
+                                }
+                            }
+                        }
+                        catch (Exception ex) {
+                            Log.Error(ex, $"Failed to read '{file}', backing up old file and writing a fresh one...");
+                            shouldWriteTemplate = true;
+                            shouldBackupOldFile = true;
                         }
                     }
-                } else if (!string.IsNullOrEmpty(PluginDir)) {
-                    file = Path.Combine(PluginDir, "en-cPv.yaml");
-                } else {
-                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'en-cPv.yaml'.");
-                    return; // Exit early to avoid null file issues
+                    else {
+                        shouldWriteTemplate = true;
+                    }
+
+                    // If needed, back up the old file
+                    if (shouldBackupOldFile && File.Exists(file)) {
+                        try {
+                            string backupFile = Path.Combine(
+                                Path.GetDirectoryName(file)!,
+                                $"en-cPv_backup.yaml"
+                            );
+                            File.Move(file, backupFile);
+                            Log.Warning($"Old en-cPv.yaml has been backed up as: {backupFile}");
+                        }
+                        catch (Exception e) {
+                            Log.Error(e, "Failed to back up old en-cPv.yaml. Proceeding with new template anyway.");
+                        }
+                    }
+
+                    // Write a fresh template if necessary
+                    if (shouldWriteTemplate) {
+                        try {
+                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
+                            Log.Information($"'{file}' created or updated to latest version {LatestVersion}");
+                        }
+                        catch (Exception e) {
+                            Log.Error(e, $"Failed to write 'en-cPv.yaml' to {file}");
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    Log.Error(ex, $"Unexpected error while ensuring en-cPv.yaml at {file}");
                 }
 
                 if (File.Exists(file)) {

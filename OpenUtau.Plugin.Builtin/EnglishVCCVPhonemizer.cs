@@ -10,6 +10,8 @@ using OpenUtau.Core.G2p;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using YamlDotNet.Core.Tokens;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English VCCV Phonemizer", "EN VCCV", "cubialpha & Mim", language: "EN")]
@@ -20,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin {
     // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and Anjo for their help.
     // cadlaxa here ^_^
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
-
+        private const string LatestVersion = "1.1";
         private string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
         private Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
@@ -238,18 +240,80 @@ namespace OpenUtau.Plugin.Builtin {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
                     file = Path.Combine(singer.Location, "envccv.yaml");
-                    if (!File.Exists(file)) {
+                }
+                else if (!string.IsNullOrEmpty(PluginDir)) {
+                    file = Path.Combine(PluginDir, "envccv.yaml");
+                }
+                else {
+                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'envccv.yaml'.");
+                    return;
+                }
+                try {
+                    bool shouldWriteTemplate = false;
+                    bool shouldBackupOldFile = false;
+
+                    if (File.Exists(file)) {
                         try {
-                            File.WriteAllBytes(file, Data.Resources.envccv_template);
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to write 'envccv.yaml' to singer folder at {file}");
+                            // Build YAML deserializer
+                            var deserializer = new DeserializerBuilder()
+                                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                                .Build();
+
+                            using var reader = new StreamReader(file);
+                            var config = deserializer.Deserialize<Dictionary<string, object>>(reader);
+
+                            if (config == null || !config.ContainsKey("version")) {
+                                shouldWriteTemplate = true;
+                                shouldBackupOldFile = true; // No version → backup old
+                            }
+                            else {
+                                string currentVersion = config["version"]?.ToString()?.Trim() ?? "";
+
+                                // If version is missing OR outdated → backup old + write new
+                                if (string.IsNullOrWhiteSpace(currentVersion) || currentVersion != LatestVersion) {
+                                    shouldWriteTemplate = true;
+                                    shouldBackupOldFile = true;
+                                }
+                            }
+                        }
+                        catch (Exception ex) {
+                            Log.Error(ex, $"Failed to read '{file}', backing up old file and writing a fresh one...");
+                            shouldWriteTemplate = true;
+                            shouldBackupOldFile = true;
                         }
                     }
-                } else if (!string.IsNullOrEmpty(PluginDir)) {
-                    file = Path.Combine(PluginDir, "envccv.yaml");
-                } else {
-                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'envccv.yaml'.");
-                    return; // Exit early to avoid null file issues
+                    else {
+                        shouldWriteTemplate = true;
+                    }
+
+                    // If needed, back up the old file
+                    if (shouldBackupOldFile && File.Exists(file)) {
+                        try {
+                            string backupFile = Path.Combine(
+                                Path.GetDirectoryName(file)!,
+                                $"envccv_backup.yaml"
+                            );
+                            File.Move(file, backupFile);
+                            Log.Warning($"Old envccv.yaml has been backed up as: {backupFile}");
+                        }
+                        catch (Exception e) {
+                            Log.Error(e, "Failed to back up old envccv.yaml. Proceeding with new template anyway.");
+                        }
+                    }
+
+                    // Write a fresh template if necessary
+                    if (shouldWriteTemplate) {
+                        try {
+                            File.WriteAllBytes(file, Data.Resources.en_cPv_template);
+                            Log.Information($"'{file}' created or updated to latest version {LatestVersion}");
+                        }
+                        catch (Exception e) {
+                            Log.Error(e, $"Failed to write 'envccv.yaml' to {file}");
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    Log.Error(ex, $"Unexpected error while ensuring envccv.yaml at {file}");
                 }
 
                 if (File.Exists(file)) {

@@ -1,5 +1,6 @@
 %YAML 1.2
 ---
+version: 1.1
 symbols:
   - {symbol: a, type: vowel}
   - {symbol: aa, type: vowel}
@@ -77,6 +78,25 @@ symbols:
   - {symbol: y, type: semivowel}
   - {symbol: z, type: fricative}
   - {symbol: zh, type: fricative}
+
+diphthongs:
+# Default diphthong split is [V-] even without this section
+# you can change them by editing this section.
+  - {from: ay, to: ay-}
+  - {from: ey, to: ey-}
+  - {from: oy, to: oy-}
+  - {from: aw, to: aw-}
+  - {from: uw, to: w}
+  - {from: ow, to: ow-}
+
+replacements:
+  - {from: h, to: hh}
+  - {from: a, to: aa}
+  - {from: i, to: iy}
+  - {from: u, to: uw}
+  - {from: e, to: eh}
+  - {from: o, to: ao}
+
 entries:
   - grapheme: b
     phonemes: [b]
