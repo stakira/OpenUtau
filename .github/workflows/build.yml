@@ -67,7 +67,7 @@ jobs:
         if: ${{ matrix.arch.os != 'osx' }}
       
       - name: Write release channel info
-        run: "@{Beta=[System.Convert]::ToBoolean(${{ inputs.beta }})} | ConvertTo-Json > bin/${{ matrix.arch.name }}/prefs-default.json"
+        run: "@{Beta=$${{ inputs.beta }}} | ConvertTo-Json > bin/${{ matrix.arch.name }}/prefs-default.json"
         shell: pwsh
 
       # Create Zip
