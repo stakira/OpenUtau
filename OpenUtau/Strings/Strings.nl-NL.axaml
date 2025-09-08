@@ -67,6 +67,7 @@
 
   <system:String x:Key="errors.caption">Fout</system:String>
   <system:String x:Key="errors.details">Fout details</system:String>
+  <!--<system:String x:Key="errors.diffsinger.downloadvocoder">Error loading vocoder "{0}". Please download vocoder from {1}</system:String>-->
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Fout tijdens het laden van vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">Download vocoder van </system:String>
   <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
@@ -88,14 +89,28 @@
   <system:String x:Key="errors.failed.loadprefs">Laden van de voorkeuren mislukt. Initialiseer het.</system:String>
   <system:String x:Key="errors.failed.openfile">Openen mislukt</system:String>
   <system:String x:Key="errors.failed.openlocation">Openen van locatie mislukt</system:String>
-  <system:String x:Key="errors.failed.render">Renderen mislukt</system:String>
+  <!--<system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>-->
+  <!--<system:String x:Key="errors.failed.render">Failed to render.</system:String>-->
   <system:String x:Key="errors.failed.runeditingmacro">Uitvoering van bewerkingsmacro mislukt</system:String>
   <system:String x:Key="errors.failed.save">Opslaan mislukt</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">Opslaan van zanger configuratiebestand mislukt</system:String>
   <system:String x:Key="errors.failed.searchsinger">Zoeken naar zangers is mislukt</system:String>
+  <!--<system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>-->
+  <!--<system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>-->
   <system:String x:Key="errors.install.cpp">Probeer de nieuwste versie van Visual C++ Redistributable te installeren. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
   <system:String x:Key="errors.lyrics.regex">Teken niet toegestaan ​​in reguliere expressie</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- fout in reguliere expressie -</system:String>
+
+  <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
+  <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
+1. Install wine from {0}
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
+1. Install wine using following commands
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.resampler">Install as resampler</system:String>-->
+  <!--<system:String x:Key="exesetup.title">Installing Exe File</system:String>-->
+  <!--<system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>-->
 
   <system:String x:Key="exps.abbr">Afkorting</system:String>
   <system:String x:Key="exps.apply">Toepassen</system:String>
@@ -117,6 +132,7 @@
   <system:String x:Key="languages.de">Duits</system:String>
   <system:String x:Key="languages.en">Engels</system:String>
   <system:String x:Key="languages.es">Spaans</system:String>
+  <!--<system:String x:Key="languages.fil">Filipino</system:String>-->
   <system:String x:Key="languages.fr">Frans</system:String>
   <system:String x:Key="languages.invariant">Niet vertalen</system:String>
   <system:String x:Key="languages.it">Italiaans</system:String>
@@ -126,6 +142,7 @@
   <system:String x:Key="languages.pt">Portugees</system:String>
   <system:String x:Key="languages.ru">Russisch</system:String>
   <system:String x:Key="languages.th">Thais</system:String>
+  <!--<system:String x:Key="languages.tr">Turkish</system:String>-->
   <system:String x:Key="languages.vi">Vietnamees</system:String>
   <system:String x:Key="languages.zh">Chinees</system:String>
   <system:String x:Key="languages.zh-yue">Kantonees</system:String>
@@ -216,7 +233,19 @@
   <system:String x:Key="menu.tools.singer.install">installeer Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">installeer Singer (Geavanceerd)...</system:String>
   <system:String x:Key="menu.tools.singers">Singer...</system:String>
+  <!--<system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>-->
   <system:String x:Key="menu.view">Weergave</system:String>
+
+  <!--<system:String x:Key="mergevoicebank.back">Back</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.merge">Merge</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.next">Next</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
+Choose the voicebank that you want to merge into current voicebank</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
+Syntax: prefix,suffix</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">Tekst</system:String>
   <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
@@ -304,6 +333,7 @@ Waarschuwing: deze optie verwijdert aangepaste voorinstellingen.</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>-->
@@ -320,10 +350,13 @@ Waarschuwing: deze optie verwijdert aangepaste voorinstellingen.</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">Herlaad</system:String>
   <system:String x:Key="pianoroll.menu.reset">Opnieuw instellen</system:String>
   <!--<system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>-->
   <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">Bekijk de final toonhoogte om te renderen (R)</system:String>
   <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
@@ -336,8 +369,7 @@ Waarschuwing: deze optie verwijdert aangepaste voorinstellingen.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">schakel noot toon (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Vibrato weergeven (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Golfvorm weergeven (W)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">
-    Line Draw Pitch Tool (Shift + 4)
+  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (Shift + 4)
     Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
@@ -363,10 +395,6 @@ Ctrl ingedrukt houden om te selecteren</system:String>
 
   <system:String x:Key="prefs.advanced">Geavanceerd</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.importtempo">When importing tracks, use the tempos of the imported project</system:String>-->
-  <system:String x:Key="prefs.advanced.importtempo.always">Altijd</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">Vraag het elke keer</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">Nooit</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Songtekst helper</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
@@ -374,11 +402,13 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Slaat de uitvoer van de resampler op in logbestanden. Deze optie vertraagt de UI en rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabiel</system:String>
   <!--<system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.winepath">Wine Path (set to enable wine for compatibility)</system:String>-->
   <system:String x:Key="prefs.appearance">Uiterlijk</system:String>
   <!--<system:String x:Key="prefs.appearance.degree">Scale degree display style</system:String>-->
   <!--<system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>-->
   <!--<system:String x:Key="prefs.appearance.degree.off">Off</system:String>-->
   <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>-->
   <system:String x:Key="prefs.appearance.lang">Taal</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
@@ -403,6 +433,7 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="prefs.paths">Paden</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Extra Zangerspad</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Installeren naar extra Singer-pad</system:String>
+  <!--<system:String x:Key="prefs.paths.detect">Detect</system:String>-->
   <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
   <system:String x:Key="prefs.paths.reset">Reseiten</system:String>
   <system:String x:Key="prefs.paths.select">Selecteer</system:String>
@@ -469,6 +500,7 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
   <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">Plaats</system:String>
+  <!--<system:String x:Key="singers.merge">Merge with another voicebank</system:String>-->
   <system:String x:Key="singers.otoview.moveleft">Naar links</system:String>
   <system:String x:Key="singers.otoview.moveright">Naar rechts</system:String>
   <system:String x:Key="singers.otoview.selectnext">Kies Volgende</system:String>
@@ -476,7 +508,8 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="singers.otoview.showall">Toon all</system:String>
   <system:String x:Key="singers.otoview.zoomin">Inzoomen</system:String>
   <system:String x:Key="singers.otoview.zoomout">Uitzoomen</system:String>
-  <system:String x:Key="singers.playsample">Speel sample af</system:String>
+  <!--<system:String x:Key="singers.playsample">Play Sample</system:String>-->
+  <!--<system:String x:Key="singers.playselectedfile">Play Selected File</system:String>-->
   <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
   <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
   <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
@@ -519,8 +552,15 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Overschrijf Alias</system:String>
-  <system:String x:Key="tip.exps">Linker knop tekenen: Stel Expressies in
-Rechter knop tekenen: Expressiesn resetten</system:String>
+  <!--<system:String x:Key="tip.exps">Numerical,Options Type
+    Left Button Draw: Set expressions
+    Shift + Left Button Draw: Set uniform expressions
+    Right Button Draw: Reset expressions
+Curve Type
+    Left Button Draw: Draw
+    Shift + Ctrl + Left Button Draw: Line Draw
+    Shift + Left Button Draw: Horizontal Line Draw
+    Right Button Draw: Reset Line</system:String>-->
   <system:String x:Key="tip.exps.notsupported">Uitdrukking niet ondersteund door renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Volgende noot</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Vorige Noot</system:String>
@@ -544,6 +584,7 @@ Algemeen
 
   <system:String x:Key="tracks.duplicate">Dupliceer track</system:String>
   <system:String x:Key="tracks.duplicatesettings">Dupliceer track instellingen</system:String>
+  <!--<system:String x:Key="tracks.favorite">Favorites</system:String>-->
   <system:String x:Key="tracks.installsinger">Installeer zanger</system:String>
   <system:String x:Key="tracks.more">Meer</system:String>
   <system:String x:Key="tracks.movedown">Naar beneden</system:String>
@@ -580,4 +621,12 @@ Algemeen
   <system:String x:Key="warning">Waarschuwing</system:String>
   <system:String x:Key="warning.asciipath">Uw OpenUtau home path "{0}" bevat geen ASCII tekens. Exe resamplers werken mogelijk niet.</system:String>
   <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
+
+  <!--<system:String x:Key="welcome.new">New</system:String>-->
+  <!--<system:String x:Key="welcome.new.description">Create a new project</system:String>-->
+  <!--<system:String x:Key="welcome.open">Open</system:String>-->
+  <!--<system:String x:Key="welcome.open.description">Open a local project</system:String>-->
+  <!--<system:String x:Key="welcome.recent">Recent</system:String>-->
+  <!--<system:String x:Key="welcome.start">Start</system:String>-->
+  <!--<system:String x:Key="welcome.template">Template</system:String>-->
 </ResourceDictionary>

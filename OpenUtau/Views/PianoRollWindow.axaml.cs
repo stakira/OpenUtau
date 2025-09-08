@@ -136,13 +136,13 @@ namespace OpenUtau.App.Views {
             }));
             DocManager.Inst.AddSubscriber(this);
 
-            ViewModel.NoteBatchEdits.Insert(5, new MenuItemViewModel() {
+            ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
-            ViewModel.NoteBatchEdits.Insert(8, new MenuItemViewModel() {
+            ViewModel.NoteBatchEdits.Insert(9, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
                 Command = ReactiveCommand.Create(() => {
                     QuantizeNotes();
@@ -1124,11 +1124,20 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
-            if (FocusManager != null && FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
-                if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+            if (FocusManager != null) {
+                if (FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
+                    if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
+                        args.Handled = false;
+                        return;
+                    }
+                } else if (FocusManager.GetFocusedElement() is ComboBox || FocusManager.GetFocusedElement() is ComboBoxItem) {
                     args.Handled = false;
                     return;
                 }
+            }
+            if (LyricBox.IsVisible) {
+                args.Handled = false;
+                return;
             }
 
             if (args.Key == Key.R && args.KeyModifiers == KeyModifiers.Control) {
