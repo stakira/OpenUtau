@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string releaseChannelPath = Path.Combine(exePath, "release-channel.txt");
+                if (File.Exists(releaseChannelPath)) {
+                    string channel = File.ReadAllText(releaseChannelPath).Trim();
+                    if (channel == "beta")
+                    {
+                        Default.Beta = true;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "Failed to load release-channel.txt");
+            }
             Save();
         }
 
