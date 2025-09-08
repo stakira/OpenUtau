@@ -65,12 +65,13 @@ jobs:
       - name: Publish
         run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
+      
+      - name: Write release channel info
+        run: "@{Beta=$true} | ConvertTo-Json > bin/${{ matrix.arch.name }}/prefs-default.json"
+        shell: pwsh
+        if: ${{ inputs.beta }}
 
       # Create Zip
-      - name: Write release channel info
-        run: echo "${{ inputs.beta && 'beta' || 'stable' }}" > bin/${{ matrix.arch.name }}/release-channel.txt
-        if: ${{ matrix.arch.os != 'osx' }}
-        
       - name: DirectML
         shell: cmd
         run: |
@@ -107,7 +108,6 @@ jobs:
       - name: Create Dmg
         run: |
           dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:SelfContained=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
-          echo "${{ inputs.beta && 'beta' || 'stable' }}" > bin/${{ matrix.arch.name }}/release-channel.txt
           npm install -g create-dmg
           cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.arch.name }}/publish/OpenUtau.app/Contents/Resources/
           create-dmg bin/${{ matrix.arch.name }}/publish/OpenUtau.app || true

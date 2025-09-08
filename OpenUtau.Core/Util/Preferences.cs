@@ -32,16 +32,16 @@ namespace OpenUtau.Core.Util {
             try
             {
                 string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-                string releaseChannelPath = Path.Combine(exePath, "release-channel.txt");
-                if (File.Exists(releaseChannelPath)) {
-                    string channel = File.ReadAllText(releaseChannelPath).Trim();
-                    if (channel == "beta")
-                    {
-                        Default.Beta = true;
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
                     }
                 }
             } catch(Exception e){
-                Log.Error(e, "Failed to load release-channel.txt");
+                Log.Error(e, "failed to load prefs-default.json");
             }
             Save();
         }
