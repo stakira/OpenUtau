@@ -1237,6 +1237,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnWelcomeRecovery(object sender, RoutedEventArgs args) {
+            viewModel.OpenProject(new string[] { viewModel.RecoveryPath });
+            viewModel.Page = 1;
+        }
+
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
             if (sender is StackPanel panel &&
                 panel.DataContext is RecentFileInfo fileInfo) {
