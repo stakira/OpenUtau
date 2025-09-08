@@ -51,7 +51,7 @@ jobs:
           node-version: 20
       - uses: repolevedavaj/install-nsis@v1.0.3
         with:
-          nsis-version: '3.10'
+          nsis-version: '3.11'
         if: ${{ matrix.arch.os == 'win' }}
       - uses: justalemon/VersionPatcher@v0.7.1
         with:
