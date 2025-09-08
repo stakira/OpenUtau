@@ -52,6 +52,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int Page { get; set; } = 0;
         ObservableCollectionExtended<RecentFileInfo> RecentFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
         ObservableCollectionExtended<RecentFileInfo> TemplateFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
+        [Reactive] public bool HasRecovery { get; set; } = false;
+        [Reactive] public string RecoveryPath { get; set; } = String.Empty;
+        [Reactive] public string RecoveryString { get; set; } = String.Empty;
 
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
@@ -106,9 +109,10 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
 
-        public async void InitProject(MainWindow window) {
+        public void InitProject(MainWindow window) {
             var recPath = Preferences.Default.RecoveryPath;
             if (!string.IsNullOrWhiteSpace(recPath) && File.Exists(recPath)) {
+                /*
                 var result = await MessageBox.Show(
                     window,
                     $"{ThemeManager.GetString("dialogs.recovery")}\n{recPath}",
@@ -127,6 +131,11 @@ namespace OpenUtau.App.ViewModels {
                     }
                     return;
                 }
+                */
+                RecoveryPath = recPath;
+                RecoveryString = ThemeManager.GetString("dialogs.recovery") + "\n" + recPath;
+                HasRecovery = true;
+                return;
             }
           
             var args = Environment.GetCommandLineArgs();
