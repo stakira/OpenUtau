@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection.Emit;
 using TextCopy;
+using Serilog;
 
 //Commonnote format definition: https://github.com/ExpressiveLabs/commonnote
 namespace OpenUtau.Core.Format {
@@ -41,8 +42,8 @@ namespace OpenUtau.Core.Format {
         }
 
         static UNote LoadNote(CommonnoteNote cNote, int resolution, UProject project) {
-            int position = (int)(cNote.start * 480 / resolution);
-            int duration = (int)((cNote.start + cNote.length) * 480 / resolution - position);
+            int position = (int)(cNote.start * project.resolution / resolution);
+            int duration = (int)((cNote.start + cNote.length) * project.resolution / resolution - position);
             string lyric = cNote.label;
             if (string.IsNullOrEmpty(cNote.label)) {
                 lyric = NotePresets.Default.DefaultLyric;
@@ -52,11 +53,11 @@ namespace OpenUtau.Core.Format {
             return note;
         }
 
-        public static string Dumps(List<UNote> uNotes) {
+        public static string Dumps(List<UNote> uNotes, UProject project) {
             var data = new CommonnoteData {
                 identifier = "commonnote",
                 header = new CommonnoteHeader {
-                    resolution = 480,
+                    resolution = project.resolution,
                     origin = "openutau",
                 },
                 notes = uNotes.Select(DumpNote).ToList(),
@@ -66,12 +67,16 @@ namespace OpenUtau.Core.Format {
 
         public static List<UNote> Loads(string text, UProject project) {
             var data = JsonConvert.DeserializeObject<CommonnoteData>(text);
-            int resolution = (int)(data.header.resolution > 0 ? data.header.resolution : 480);
+            if (data.identifier != "commonnote") {
+                Log.Error($"Clipboard is missing commonnote header");
+                return null;
+            }
+            int resolution = (int)(data.header.resolution > 0 ? data.header.resolution : project.resolution);
             return data.notes.Select(n => LoadNote(n, resolution, project)).ToList();
         }
 
-        public static void CopyToClipboard(List<UNote> uNotes) {
-            var text = Dumps(uNotes);
+        public static void CopyToClipboard(List<UNote> uNotes, UProject project) {
+            var text = Dumps(uNotes, project);
             ClipboardService.SetText(text);
         }
 

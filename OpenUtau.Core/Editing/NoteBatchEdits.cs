@@ -239,7 +239,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            Commonnote.CopyToClipboard(notes);
+            Commonnote.CopyToClipboard(notes, project);
         }
     }
 
