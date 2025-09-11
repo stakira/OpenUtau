@@ -47,18 +47,18 @@ namespace OpenUtau.Classic {
             };
         }
 
-        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, UProject project, bool isPreRender) {
             if (phrase.wavtool == SharpWavtool.nameConvergence || phrase.wavtool == SharpWavtool.nameSimple) {
-                return RenderInternal(phrase, progress, trackNo, cancellation, isPreRender);
+                return RenderInternal(phrase, progress, trackNo, cancellation, project, isPreRender);
             } else {
-                return RenderExternal(phrase, progress, trackNo, cancellation, isPreRender);
+                return RenderExternal(phrase, progress, trackNo, cancellation, project, isPreRender);
             }
         }
 
-        public Task<RenderResult> RenderInternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> RenderInternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, UProject project, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
-                resamplerItems.Add(new ResamplerItem(phrase, phone));
+                resamplerItems.Add(new ResamplerItem(phrase, phone, project));
             }
             var task = Task.Run(() => {
                 Parallel.ForEach(source: resamplerItems, parallelOptions: new ParallelOptions() {
@@ -94,10 +94,10 @@ namespace OpenUtau.Classic {
             return task;
         }
 
-        public Task<RenderResult> RenderExternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> RenderExternal(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, UProject project, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
-                resamplerItems.Add(new ResamplerItem(phrase, phone));
+                resamplerItems.Add(new ResamplerItem(phrase, phone, project));
             }
             var task = Task.Run(() => {
                 string progressInfo = $"Track {trackNo + 1} : {phrase.wavtool} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";

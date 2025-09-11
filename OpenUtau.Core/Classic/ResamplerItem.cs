@@ -7,6 +7,7 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
     public class ResamplerItem {
@@ -38,7 +39,7 @@ namespace OpenUtau.Classic {
 
         public ulong hash;
 
-        public ResamplerItem(RenderPhrase phrase, RenderPhone phone) {
+        public ResamplerItem(RenderPhrase phrase, RenderPhone phone, UProject project) {
             this.phrase = phrase;
             this.phone = phone;
 
@@ -68,14 +69,14 @@ namespace OpenUtau.Classic {
             tempo = phone.adjustedTempo;
 
             double pitchCountMs = (phone.positionMs + phone.envelope[4].X) - (phone.positionMs - pitchLeadingMs);
-            int pitchCount = (int)Math.Ceiling(MusicMath.TempoMsToTick(tempo, pitchCountMs) / 5.0);
+            int pitchCount = (int)Math.Ceiling(MusicMath.TempoMsToTick(tempo, pitchCountMs, project) / 5.0);
             pitchCount = Math.Max(pitchCount, 0);
             pitches = new int[pitchCount];
 
             var phrasePitchStartMs = phrase.positionMs - phrase.leadingMs;
             var phrasePitchStartTick = (int)Math.Floor(phrase.timeAxis.MsPosToNonExactTickPos(phrasePitchStartMs));
 
-            var pitchIntervalMs = MusicMath.TempoTickToMs(tempo, 5);
+            var pitchIntervalMs = MusicMath.TempoTickToMs(tempo, 5, project);
             var pitchSampleStartMs = phone.positionMs - pitchLeadingMs;
 
             for (int i = 0; i < pitches.Length; i++) {

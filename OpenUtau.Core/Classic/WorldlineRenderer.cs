@@ -48,10 +48,10 @@ namespace OpenUtau.Classic {
             };
         }
 
-        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender) {
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, UProject project, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
-                resamplerItems.Add(new ResamplerItem(phrase, phone));
+                resamplerItems.Add(new ResamplerItem(phrase, phone, project));
             }
             var task = Task.Run(() => {
                 var result = Layout(phrase);
