@@ -546,7 +546,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>
   <system:String x:Key="singersetup.back">Back</system:String>
-  <system:String x:Key="singersetup.failed">Installation failed.</system:String>
+  <system:String x:Key="singersetup.failed">Failed to install singer.</system:String>
   <system:String x:Key="singersetup.install">Install</system:String>
   <system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>
   <system:String x:Key="singersetup.next">Next</system:String>

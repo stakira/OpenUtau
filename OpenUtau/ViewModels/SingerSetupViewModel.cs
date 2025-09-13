@@ -172,6 +172,7 @@ namespace OpenUtau.App.ViewModels {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("singersetup.failed")));
                         DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
                     }).Start(DocManager.Inst.MainScheduler);
+                    throw;
                 }
             });
         }
