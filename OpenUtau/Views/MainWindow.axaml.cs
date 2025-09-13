@@ -1384,10 +1384,11 @@ namespace OpenUtau.App.Views {
                     ValidateTracksVoiceColor();
                 } else {
                     UTrack track = DocManager.Inst.Project.tracks[voicecolorNotif.TrackNo];
-                    if (!voicecolorNotif.Validate) {
-                        VoiceColorRemapping(track, track.VoiceColorNames, track.VoiceColorExp.options);
-                    } else if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
+                    if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
                         VoiceColorRemapping(track, oldColors, newColors);
+                    } else if (!voicecolorNotif.Validate) {
+                        // Cases where this function was intentionally invoked
+                        MessageBox.Show(this, ThemeManager.GetString("dialogs.voicecolorremapping.error"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
                     }
                 }
             }
