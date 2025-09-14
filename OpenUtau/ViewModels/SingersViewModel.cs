@@ -261,7 +261,7 @@ namespace OpenUtau.App.ViewModels {
                         writer.WriteLine();
                         for (var i = 0; i < checker.Infos.Count; i++) {
                             writer.WriteLine($"--- Info {i + 1} ---");
-                            writer.WriteLine(checker.Infos[i].ToString());
+                            writer.WriteLine(GetErrorText(checker.Infos[i]));
                         }
                         writer.WriteLine();
                         writer.WriteLine($"------ Errors ------");
@@ -269,7 +269,7 @@ namespace OpenUtau.App.ViewModels {
                         writer.WriteLine();
                         for (var i = 0; i < checker.Errors.Count; i++) {
                             writer.WriteLine($"--- Error {i + 1} ---");
-                            writer.WriteLine(checker.Errors[i].ToString());
+                            writer.WriteLine(GetErrorText(checker.Errors[i]));
                         }
                     }
                 }
@@ -281,6 +281,24 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(task.Exception));
                 }
             });
+
+            string GetErrorText(VoicebankError error) {
+                var builder = new StringBuilder();
+                if (!string.IsNullOrEmpty(error.messageKey)) {
+                    var message = ThemeManager.GetString(error.messageKey);
+                    builder.AppendLine(string.Format(message, error.strings));
+                }
+                if (error.trace != null) {
+                    builder.AppendLine(error.trace.ToString());
+                }
+                if (!string.IsNullOrEmpty(error.soundFile)) {
+                    builder.AppendLine(error.soundFile);
+                }
+                if (error.e != null) {
+                    builder.AppendLine(error.e.ToString());
+                }
+                return builder.ToString();
+            }
         }
 
         public void Refresh() {

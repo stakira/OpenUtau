@@ -30,8 +30,7 @@
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
-  </system:String>
+OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.</system:String>
   <system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>
   <system:String x:Key="dialogs.export.caption">Export</system:String>
@@ -373,8 +372,7 @@ Warning: this option removes custom presets.</system:String>
     Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
-    Hold Alt to smoothen
-  </system:String>
+    Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
     Left click to draw
     Right click to reset
@@ -386,8 +384,7 @@ Warning: this option removes custom presets.</system:String>
     Left click to draw (overwrites vibrato or mod+)
     Right click to reset
     Hold Ctrl to select
-    Hold Alt to smoothen
-  </system:String>
+    Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
@@ -468,19 +465,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
-  <system:String x:Key="prefs.rendering.resampler.morewarn">
-    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-    3. Patiently wait for moresampler to generate missing llsm files.
-  </system:String>
-  <system:String x:Key="prefs.rendering.resampler.note">
-    Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
-  </system:String>
+  <system:String x:Key="prefs.rendering.resampler.morewarn">Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+  1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+  2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+  3. Patiently wait for moresampler to generate missing llsm files.</system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.</system:String>
   <system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>
-  <system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Warning: too many render threads may cause OpenUtau to run slowly.
-  </system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">Warning: too many render threads may cause OpenUtau to run slowly.</system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
   <system:String x:Key="prefs.utau">UTAU</system:String>
@@ -491,6 +482,39 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
+  <system:String x:Key="singererror.aliasfullwidthspaces">Alias contains full-width spaces.</system:String>
+  <system:String x:Key="singererror.aliasisnfd">Alias is NFD.</system:String>
+  <system:String x:Key="singererror.aliasmultiplespaces">Alias contains multiple spaces.</system:String>
+  <system:String x:Key="singererror.aliasstartwithspace">Alias starts or ends with a space.</system:String>
+  <system:String x:Key="singererror.bitdepth">Bit depth of the sound file is not 16bit.</system:String>
+  <system:String x:Key="singererror.consonantoutofduration">Consonant out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.consonantshort">Consonant must be >= 0.</system:String>
+  <system:String x:Key="singererror.cutoffconsonant">Cutoff must be to the right of consonant.</system:String>
+  <system:String x:Key="singererror.cutoffoverlap">Cutoff must be to the right of overlap.</system:String>
+  <system:String x:Key="singererror.cutoffpreutter">Cutoff must be to the right of preutter.</system:String>
+  <system:String x:Key="singererror.duplicatealias">There are duplicate aliases.{0}</system:String>
+  <system:String x:Key="singererror.duplicatename">Duplicated file names found when ignoreing case in oto set "{0}": {1}.
+The voicebank may not work on another OS with case-sensitivity.</system:String>
+  <system:String x:Key="singererror.failedload">Failed to load voicebank.</system:String>
+  <system:String x:Key="singererror.invalidduration">Invalid duration {0}.</system:String>
+  <system:String x:Key="singererror.invalidoto">Invalid oto format.</system:String>
+  <system:String x:Key="singererror.mono">Sound file is not mono channel.</system:String>
+  <system:String x:Key="singererror.offsetoutofduration">Offset out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.offsetshort">Offset must be >= 0.</system:String>
+  <system:String x:Key="singererror.overlapoutofduration">Overlap out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.preutteroutofduration">Preutter out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.preuttershort">Preutter must be >= 0.</system:String>
+  <system:String x:Key="singererror.samplerate">Sample rate of the sound file is not 44100Hz.</system:String>
+  <system:String x:Key="singererror.soundmissing">Sound file missing</system:String>
+  <system:String x:Key="singererror.soundnotopened">Cannot open sound file.</system:String>
+  <system:String x:Key="singererror.txtnotfound">character.txt not found.</system:String>
+  <system:String x:Key="singererror.wavisnfd">Wav filename is NFD.</system:String>
+  <system:String x:Key="singererror.wrongcase">Wrong case in file name:
+expected: {0}
+Actual: {1}
+The voicebank may not work on another OS.</system:String>
+  <system:String x:Key="singererror.yamlnotfound">character.yaml not found.</system:String>
+  
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
