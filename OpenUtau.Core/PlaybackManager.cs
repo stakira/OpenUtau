@@ -10,6 +10,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -218,6 +219,21 @@ namespace OpenUtau.Core {
         public void EndAllTones() {
             toneGenerator.EndAllTones();
         }
+
+        public void PlayFile(string file) {
+            masterMix = null;
+            if (AudioOutput.PlaybackState == PlaybackState.Playing) {
+                AudioOutput.Stop();
+            }
+            try{
+                var playSound = Wave.OpenFile(file);
+                AudioOutput.Init(playSound.ToSampleProvider());
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to load sample {file}.");
+                return;
+            }
+            AudioOutput.Play();
+        } 
 
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
             if (PlayingMaster) {
