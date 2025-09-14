@@ -8,6 +8,7 @@
   <system:String x:Key="context.note.pasteparameters">Select and paste parameters</system:String>
   <system:String x:Key="context.part.delete">Delete part</system:String>
   <system:String x:Key="context.part.gotofile">View file location</system:String>
+  <system:String x:Key="context.part.merge">Merge parts</system:String>
   <system:String x:Key="context.part.rename">Rename part</system:String>
   <system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>
   <system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>
@@ -41,6 +42,8 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="dialogs.installdependency.message">Installing </system:String>
   <system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>
   <system:String x:Key="dialogs.installdll.message">Installing </system:String>
+  <system:String x:Key="dialogs.merge.caption">Merging Parts</system:String>
+  <system:String x:Key="dialogs.merge.multitracks">Parts on different tracks cannot be merged.</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>
   <system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
