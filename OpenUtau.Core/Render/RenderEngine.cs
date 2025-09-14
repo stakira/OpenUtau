@@ -239,7 +239,7 @@ namespace OpenUtau.Core.Render {
                 var phrase = tuple.Item1;
                 var source = tuple.Item2;
                 var request = tuple.Item3;
-                var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true);
+                var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, project, true);
                 task.Wait();
                 if (cancellation.IsCancellationRequested) {
                     break;

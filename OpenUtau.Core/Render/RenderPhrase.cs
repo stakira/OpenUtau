@@ -319,14 +319,14 @@ namespace OpenUtau.Core.Render {
                         var frq = phoneme.oto.Frq;
                         UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
                         var tempo = noteTempos.Length > 0 ? noteTempos[0].bpm : project.tempos[0].bpm; // compromise 妥協！
-                        var frqIntervalTick = MusicMath.TempoMsToTick(tempo, (double)1 * 1000 / 44100 * frq.hopSize);
+                        var frqIntervalTick = MusicMath.TempoMsToTick(tempo, (double)1 * 1000 / 44100 * frq.hopSize, project);
                         double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
 
-                        var preutter = MusicMath.TempoMsToTick(tempo, Math.Min(phoneme.preutter, phoneme.oto.Preutter * consonantStretch));
+                        var preutter = MusicMath.TempoMsToTick(tempo, Math.Min(phoneme.preutter, phoneme.oto.Preutter * consonantStretch), project);
                         int startIndex = Math.Max(0, (int)Math.Floor((phoneme.position - pitchStart - preutter) / pitchInterval));
                         int position = (int)Math.Round((double)((phoneme.position - pitchStart) / pitchInterval));
-                        int startStretch = position + (int)Math.Round(MusicMath.TempoMsToTick(tempo, (phoneme.oto.Consonant - phoneme.oto.Preutter) * consonantStretch) / pitchInterval);
-                        int endIndex = Math.Min(pitches.Length, (int)Math.Ceiling(phoneme.End - pitchStart - MusicMath.TempoMsToTick(tempo, phoneme.tailIntrude - phoneme.tailOverlap)) / pitchInterval);
+                        int startStretch = position + (int)Math.Round(MusicMath.TempoMsToTick(tempo, (phoneme.oto.Consonant - phoneme.oto.Preutter) * consonantStretch, project) / pitchInterval);
+                        int endIndex = Math.Min(pitches.Length, (int)Math.Ceiling(phoneme.End - pitchStart - MusicMath.TempoMsToTick(tempo, phoneme.tailIntrude - phoneme.tailOverlap, project)) / pitchInterval);
 
                         double stretch = 1;
                         if (frq.toneDiffStretch.Length * frqIntervalTick < ((double)endIndex - startStretch) * pitchInterval) {

@@ -90,11 +90,11 @@ namespace OpenUtau.Core.Editing {
                 if (note.lyric != lyric) {
                     int duration;
                     if (note.Prev == null) {
-                        duration = 480;
-                    } else if (note.Prev.lyric == lyric || note.position - 120 <= note.Prev.End) {
+                        duration = project.resolution;
+                    } else if (note.Prev.lyric == lyric || note.position - (project.resolution / 4) <= note.Prev.End) {
                         continue;
-                    } else if (note.Prev.End < note.position - 960) {
-                        duration = 480;
+                    } else if (note.Prev.End < note.position - (project.resolution * 2)) {
+                        duration = project.resolution;
                     } else {
                         duration = note.position - note.Prev.End;
                     }
