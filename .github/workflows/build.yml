@@ -35,8 +35,8 @@ jobs:
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
           - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13 }
           - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest }
-          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, linuxarch: x86_64}
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest, linuxarch: aarch64}
 
     steps:
       # Setup
@@ -49,6 +49,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: repolevedavaj/install-nsis@v1.0.3
+        with:
+          nsis-version: '3.11'
+        if: ${{ matrix.arch.os == 'win' }}
       - uses: justalemon/VersionPatcher@v0.7.1
         with:
           version: ${{ inputs.version }}
@@ -92,7 +96,13 @@ jobs:
         run: |
           cd bin/${{ matrix.arch.name }}
           7z a ../../OpenUtau-${{ matrix.arch.name }}.zip *
-        if: ${{ matrix.arch.os != 'osx' }}
+        if: ${{ matrix.arch.os == 'win' }}
+
+      - name: Tar.gz
+        run: |
+          cd bin/${{ matrix.arch.name }}
+          tar -czf ../../OpenUtau-${{ matrix.arch.name }}.tar.gz *
+        if: ${{ matrix.arch.os == 'linux' }}
 
       # Create Installer
       - name: Get VC Redist
@@ -117,18 +127,48 @@ jobs:
           codesign -fvs - OpenUtau-${{ matrix.arch.name }}.dmg
         if: ${{ matrix.arch.os == 'osx' }}
 
+      # Create Appimage
+      - name: Install LinuxDeploy
+        uses: AnimMouse/setup-appimage@v1
+        with:
+          name: linuxdeploy
+          url: https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+        if: ${{ matrix.arch.os == 'linux' }}
+
+      - name: Create appimage
+        run: |
+          cp OpenUtau/Assets/OpenUtau.desktop bin/${{ matrix.arch.name }}
+          cp OpenUtau/Assets/OpenUtau.png bin/${{ matrix.arch.name }}
+          cp OpenUtau/Assets/OpenUtau.png bin/${{ matrix.arch.name }}/.DirIcon
+          cp OpenUtau/Assets/AppRun bin/${{ matrix.arch.name }}
+          chmod 755 bin/${{ matrix.arch.name }}/AppRun
+          ARCH=${{ matrix.arch.linuxarch }} linuxdeploy --appdir bin/${{ matrix.arch.name }} --output appimage
+        if: ${{ matrix.arch.os == 'linux' }}
+
       # Upload Artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.arch.name }}.tar.gz
+          path: OpenUtau-${{ matrix.arch.name }}.tar.gz
+        if: ${{ !inputs.release && matrix.arch.os == 'linux' }}
+
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.zip
           path: OpenUtau-${{ matrix.arch.name }}.zip
-        if: ${{ !inputs.release && matrix.arch.os != 'osx' }}
+        if: ${{ !inputs.release && matrix.arch.os == 'win' }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.exe
           path: OpenUtau-${{ matrix.arch.name }}.exe
         if: ${{ !inputs.release && matrix.arch.os == 'win' }}
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtau-${{ matrix.arch.name }}.AppImage
+          path: OpenUtau-${{ matrix.arch.linuxarch }}.AppImage
+        if: ${{ !inputs.release && matrix.arch.os == 'linux' }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -151,7 +191,7 @@ jobs:
 
       - name: Appcast Linux
         run: |
-          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.zip
+          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.tar.gz
         if: ${{ inputs.release && matrix.arch.os == 'linux' }}
 
       # Release
