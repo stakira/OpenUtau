@@ -30,17 +30,19 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest }
-          - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest }
-          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
-          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13 }
-          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
-          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest }
-          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest }
+          - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest, daw-plugin: true }
+          - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest, daw-plugin: false }
+          - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest, daw-plugin: true }
+          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13, daw-plugin: false }
+          - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-24.04, daw-plugin: false }
+          - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-24.04, daw-plugin: false }
 
     steps:
       # Setup
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
@@ -58,13 +60,63 @@ jobs:
       - name: Test
         run: dotnet test OpenUtau.Test
 
-      # Build
+      # Build: Main
       - name: Restore
         run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
 
       - name: Publish
         run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
+
+      # Build: Daw Plugin
+
+      - name: Build Daw Plugin (Windows)
+        run: |
+          cd ./DawPlugin
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'win' }}
+
+      - name: Build Daw Plugin (Mac)
+        run: |
+          cd ./DawPlugin
+
+          brew install llvm
+          export PATH="/usr/local/opt/llvm/bin:$PATH"
+          export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib -lunwind -fexperimental-library"
+          export CPPFLAGS="-I/usr/local/opt/llvm/include -fexperimental-library"
+
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+             -DCMAKE_CXX_FLAGS="-stdlib=libc++ -fexperimental-library"
+          cmake --build build --config Release
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
+
+      - name: Build Daw Plugin (Linux)
+        run: |
+          cd ./DawPlugin
+
+          # Install OpenGL
+          sudo apt-get install libgl1-mesa-dev
+
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release \
+             -DCMAKE_C_COMPILER=gcc-14 -DCMAKE_CXX_COMPILER=g++-14
+          cmake --build build --config Release
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'linux' }}
+
+      - name: Package Daw Plugin
+        shell: bash
+        run: |
+          cd DawPlugin/build/bin
+          7z a openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip openutau_daw_plugin.vst3
+        if: ${{ matrix.arch.daw-plugin }}
+
+      - name: Package Daw Plugin (Mac)
+        shell: bash
+        run: |
+          cd DawPlugin/build/bin
+          7z a openutau_daw_plugin-${{ matrix.arch.name }}.au.zip openutau_daw_plugin.component
+        if: ${{ matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
 
       # Create Zip
       - name: DirectML
@@ -129,6 +181,18 @@ jobs:
           path: OpenUtau-${{ matrix.arch.name }}.dmg
         if: ${{ !inputs.release && matrix.arch.os == 'osx' }}
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
+          path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
+        if: ${{ !inputs.release && matrix.arch.daw-plugin }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
+          path: DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
+        if: ${{ !inputs.release && matrix.arch.daw-plugin && matrix.arch.os == 'osx' }}
+
       # Appcast
       - name: Appcast Windows
         shell: cmd
@@ -158,6 +222,8 @@ jobs:
           files: |
             appcast.${{ matrix.arch.name }}*.xml
             OpenUtau-${{ matrix.arch.name }}.*
+            DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.vst3.zip
+            DawPlugin/build/bin/openutau_daw_plugin-${{ matrix.arch.name }}.au.zip
           body: |
             See [Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) for how to use.
 

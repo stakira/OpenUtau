@@ -96,10 +96,9 @@ namespace OpenUtau.Core.Format {
 
         public static void Save(string filePath, UProject project) {
             try {
-                project.ustxVersion = kUstxVersion;
                 project.FilePath = filePath;
                 project.BeforeSave();
-                File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+                File.WriteAllText(filePath, FromProject(project), Encoding.UTF8);
                 project.Saved = true;
                 project.AfterSave();
                 Preferences.Default.RecoveryPath = string.Empty;
@@ -109,6 +108,16 @@ namespace OpenUtau.Core.Format {
                 var e = new MessageCustomizableException($"Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
+        }
+
+        public static string FromProject(UProject project) {
+            project.ustxVersion = kUstxVersion;
+            // BeforeSave and AfterSave are used to serialize existing fields.
+            project.BeforeSave();
+            var ustx = Yaml.DefaultSerializer.Serialize(project);
+            project.AfterSave();
+
+            return ustx;
         }
 
         public static void AutoSave(string filePath, UProject project) {
@@ -125,15 +134,32 @@ namespace OpenUtau.Core.Format {
         }
 
         public static UProject Load(string filePath) {
-            string text = File.ReadAllText(filePath, Encoding.UTF8);
+            var text = File.ReadAllText(filePath, Encoding.UTF8);
+            try {
+                var project = LoadText(text);
+                project.FilePath = filePath;
+
+                return project;
+            } catch (FileFormatException ex) {
+                if (ex.Message == "Project file is newer than software.") {
+                    // Keep the original behavior
+                    throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", ex);
+                } else {
+                    throw ex;
+                }
+            } catch (Exception ex) {
+                throw ex;
+            }
+        }
+
+        public static UProject LoadText(string text) {
             UProject project = Yaml.DefaultDeserializer.Deserialize<UProject>(text);
             AddDefaultExpressions(project);
-            project.FilePath = filePath;
             project.Saved = true;
             project.AfterLoad();
             project.ValidateFull();
             if (project.ustxVersion > kUstxVersion) {
-                throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", new FileFormatException("Project file is newer than software."));
+                throw new FileFormatException($"Project file is newer than software.");
             }
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");

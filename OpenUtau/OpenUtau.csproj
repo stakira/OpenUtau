@@ -49,6 +49,12 @@
         </array>          
   </CFBundleDocumentTypes>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
@@ -66,7 +72,7 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
@@ -116,6 +122,9 @@
     </Compile>
     <Compile Update="Views\TrackColorDialog.axaml.cs">
       <DependentUpon>TrackColorDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\DawIntegrationTerminalDialog.axaml.cs">
+      <DependentUpon>DawIntegrationTerminalDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
