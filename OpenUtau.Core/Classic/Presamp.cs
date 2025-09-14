@@ -231,7 +231,7 @@ namespace Classic {
                         }
                     }
                 }
-                
+
             } catch (Exception e) {
                 Log.Error(e, "failed to load presamp.ini");
             }
@@ -322,7 +322,7 @@ namespace Classic {
                 preVowel = split[0];
                 phoneme = split[1];
             }
-            if(phoneme == "") {
+            if (phoneme == "") {
                 return new string[] { preVowel, phoneme, suffix };
             }
 
@@ -334,21 +334,21 @@ namespace Classic {
                     var split = phoneme.Split(n);
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
-                };
+                }
             });
             Appends.ForEach(a => {
                 if (phoneme.Contains(a)) {
                     var split = phoneme.Split(a);
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
-                };
+                }
             });
             Pitches.ForEach(p => {
                 if (phoneme.Contains(p)) {
                     var split = phoneme.Split(p);
                     suffix = new Regex(split[0]).Replace(phoneme, "", 1) + suffix;
                     phoneme = split[0];
-                };
+                }
             });
             if (phoneme.Contains("_")) {
                 var split = phoneme.Split("_");

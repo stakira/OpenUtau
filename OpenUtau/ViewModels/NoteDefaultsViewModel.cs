@@ -59,7 +59,7 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(vm => vm.DefaultLyric)
                     .Subscribe(defaultLyric => {
-                        if(defaultLyric == null){
+                        if (defaultLyric == null) {
                             return;
                         }
                         NotePresets.Default.DefaultLyric = defaultLyric;
@@ -67,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
                     });
             this.WhenAnyValue(vm => vm.SplittedLyric)
                     .Subscribe(splittedLyric => {
-                        if(splittedLyric == null){
+                        if (splittedLyric == null) {
                             return;
                         }
                         NotePresets.Default.SplittedLyric = splittedLyric;

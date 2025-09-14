@@ -79,7 +79,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"oa", "oa"},
             {"ua", "ua"}
         };
-            
+
         // Final consonants
         private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
 
@@ -279,7 +279,7 @@ namespace OpenUtau.Plugin.Builtin {
             return new G2pFallbacks(g2ps.ToArray());
         }
 
-    public override void SetSinger(USinger singer) {
+        public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
@@ -342,7 +342,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}");
+                        Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}");
                     }
                 }
                 ReadDictionaryAndInit();
@@ -657,7 +657,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         /// add additional c to those consonants on the top
                     } else if (c_cR.Contains(cc.Last())) {
-                        if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) { 
+                        if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) {
                             TryAddPhoneme(phonemes, ending.tone, vc);
                             //TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
                             TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));

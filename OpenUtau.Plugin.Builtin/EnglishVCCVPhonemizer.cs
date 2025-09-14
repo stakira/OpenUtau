@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
@@ -30,7 +30,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
-        
+
         private readonly Dictionary<string, string> replacements = "ax=x".Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
@@ -113,7 +113,7 @@ namespace OpenUtau.Plugin.Builtin {
         //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
-        private readonly string[] ucvCs = { "r", "l", "w", "y", "f"};
+        private readonly string[] ucvCs = { "r", "l", "w", "y", "f" };
         private readonly string[] starlightccs = { "rl", "ll", "nn", "mm" };
 
         protected override string[] GetVowels() => vowels;
@@ -214,7 +214,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}");
+                        Log.Error($"Failed to parse envccv.yaml: {ex.Message}");
                     }
                 }
                 ReadDictionaryAndInit();
@@ -470,204 +470,204 @@ namespace OpenUtau.Plugin.Builtin {
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                         parsingVCC = CheckVCExceptions(parsingVCC);
                                     }
+                                    if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                        parsingVCC = $"{prevV} {cc[0]}";
+                                    }
+
+                                    // sp fix
+                                    if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                        parsingVCC = $"{prevV} sp";
+                                    }
+                                    phonemes.Add(parsingVCC);
+                                    phonemes.Add(parsingCC);
+                                } else {
+                                    // backpack [@k] + [p@]
+
+                                    // sp fix
+                                    if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
+                                        parsingVCC = $"{prevV} sp";
+                                    } else
+                                        parsingVCC = $"{prevV}{cc[0]}";
+                                    phonemes.Add(parsingVCC);
+                                }
+                            }
+                        }
+                    }
+
+                    // LOGIC FOR MORE THAN 2 CONSONANTS
+                    if (cc.Length > 2 && phonemes.Count == 0) {
+                        // also [VC CC] exceptions
+                        var vccExceptions = $"{prevV}{cc[0]}{cc[1]} {cc[2]}";
+                        var startingC = 2;
+                        // 1nks exception
+                        bool ing = false;
+                        if (exIng || ex1ng || ex1nk) {
+                            vccExceptions = $"1ng {cc[1]}";
+                            ing = true;
+                            startingC = 1;
+                            if (lastCPrevWord == 2) {
+                                vccExceptions = $"1ng{cc[1]}";
+                            }
+                            if ($"{cc[1]}" == "k" && lastCPrevWord >= 2) {
+                                vccExceptions = $"1nk";
+                                startingC = 2;
+                                if ($"{cc[2]}" == "s" && lastCPrevWord == 3) {
+                                    vccExceptions = $"1nks";
+                                    startingC = 3;
+                                }
+                            }
+                        }
+
+                        var ccNoParse = $"{cc[cc.Length - 3]}{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
+                        bool dontParse = false;
+                        var lastCforLoop = cc.Length - 1;
+
+                        // str exceptions
+                        if (cccExceptions.Contains($"{ccNoParse}") && cc.Length - 3 >= lastCPrevWord) {
+                            var vc = $"{prevV}{cc[0]}-";
+                            if (cc.Length == 3) {
+                                var vccE = vcccExceptions[ccNoParse];
+                                vc = $"{prevV} {vccE}";
+                            }
+                            if (cc.Length == 4) {
+                                vc = $"{prevV}{cc[0]}";
+                            }
+
+                            if (vc == "ing")
+                                vc = "1ng";
+
+                            phonemes.Add(vc);
+                            startingC = 0;
+                            lastCforLoop -= 2;
+                        } else {
+                            ccNoParse = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
+                            var ccSP = $"{cc[0]}{cc[1]}";
+
+                            // sk, sm, sn, sp & st exceptions
+                            if (cc.Length - lastCPrevWord > 1) {
+                                for (int i = 0; i < ccNoParsing.Length; i++) {
+                                    if (ccNoParsing.Contains(ccNoParse)) {
+                                        dontParse = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (dontParse) {
+
+                                basePhoneme = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
+                                vccExceptions = $"1ng {cc[1]}{cc[2]}";
+
+                                if (ing && HasOto(vccExceptions, syllable.vowelTone)) {
+                                    vccExceptions = $"1ng {cc[1]}{cc[2]}";
+                                    phonemes.Add(vccExceptions);
+                                    startingC = 2;
+                                } else {
+
+                                    vccExceptions = $"{prevV}{cc[0]}-";
+
+                                    if (vccExceptions == "ing-") {
+                                        vccExceptions = "1ng-";
+                                    }
+                                    phonemes.Add(vccExceptions);
+                                    if (HasOto($"{cc[0]} {cc[1]}{cc[2]}", syllable.vowelTone)) {
+                                        phonemes.Add($"{cc[0]} {cc[1]}{cc[2]}");
+                                        startingC = 2;
+                                    } else {
+                                        basePhoneme = $"-{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
+                                        startingC = 0;
+                                    }
+                                }
+                            }
+
+                            if (phonemes.Count == 0) {
+
+                                if (HasOto(vccExceptions, syllable.vowelTone)) {
+                                    phonemes.Add(vccExceptions);
+                                } else { startingC = 0; }
+
+                                if (phonemes.Count == 0) {
+                                    parsingVCC = $"{prevV}{cc[0]}-";
+                                    if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                        parsingVCC = CheckVCExceptions($"{prevV}{cc[0]}") + "-";
                                         if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                             parsingVCC = $"{prevV} {cc[0]}";
                                         }
-
-                                        // sp fix
-                                        if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
-                                            parsingVCC = $"{prevV} sp";
-                                        }
-                                        phonemes.Add(parsingVCC);
-                                        phonemes.Add(parsingCC);
-                                    } else {
-                                        // backpack [@k] + [p@]
-
-                                        // sp fix
-                                        if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
-                                            parsingVCC = $"{prevV} sp";
-                                        } else
-                                            parsingVCC = $"{prevV}{cc[0]}";
-                                        phonemes.Add(parsingVCC);
                                     }
+                                    if (lastCPrevWord == 1 && stopCs.Contains($"{cc[0]}")) {
+                                        parsingVCC = $"{prevV}{cc[0]}";
+                                    }
+
+                                    if (ccSP == "sp") {
+                                        parsingVCC = $"{prevV} sp";
+                                    }
+
+
+                                    phonemes.Add(parsingVCC);
                                 }
                             }
                         }
 
-                        // LOGIC FOR MORE THAN 2 CONSONANTS
-                        if (cc.Length > 2 && phonemes.Count == 0) {
-                            // also [VC CC] exceptions
-                            var vccExceptions = $"{prevV}{cc[0]}{cc[1]} {cc[2]}";
-                            var startingC = 2;
-                            // 1nks exception
-                            bool ing = false;
-                            if (exIng || ex1ng || ex1nk) {
-                                vccExceptions = $"1ng {cc[1]}";
-                                ing = true;
-                                startingC = 1;
-                                if (lastCPrevWord == 2) {
-                                    vccExceptions = $"1ng{cc[1]}";
-                                }
-                                if ($"{cc[1]}" == "k" && lastCPrevWord >= 2) {
-                                    vccExceptions = $"1nk";
-                                    startingC = 2;
-                                    if ($"{cc[2]}" == "s" && lastCPrevWord == 3) {
-                                        vccExceptions = $"1nks";
-                                        startingC = 3;
-                                    }
-                                }
+
+                        for (int i = startingC; i < lastCforLoop; i++) {
+                            parsingCC = $"{cc[i]}{cc[i + 1]}-";
+
+                            if (dontParse && i == cc.Length - 3) {
+                                parsingCC = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
                             }
 
-                            var ccNoParse = $"{cc[cc.Length - 3]}{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
-                            bool dontParse = false;
-                            var lastCforLoop = cc.Length - 1;
-
-                            // str exceptions
-                            if (cccExceptions.Contains($"{ccNoParse}") && cc.Length - 3 >= lastCPrevWord) {
-                                var vc = $"{prevV}{cc[0]}-";
-                                if (cc.Length == 3) {
-                                    var vccE = vcccExceptions[ccNoParse];
-                                    vc = $"{prevV} {vccE}";
-                                }
-                                if (cc.Length == 4) {
-                                    vc = $"{prevV}{cc[0]}";
-                                }
-
-                                if (vc == "ing")
-                                    vc = "1ng";
-
-                                phonemes.Add(vc);
-                                startingC = 0;
-                                lastCforLoop -= 2;
-                            } else {
-                                ccNoParse = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
-                                var ccSP = $"{cc[0]}{cc[1]}";
-
-                                // sk, sm, sn, sp & st exceptions
-                                if (cc.Length - lastCPrevWord > 1) {
-                                    for (int i = 0; i < ccNoParsing.Length; i++) {
-                                        if (ccNoParsing.Contains(ccNoParse)) {
-                                            dontParse = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (dontParse) {
-
-                                    basePhoneme = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
-                                    vccExceptions = $"1ng {cc[1]}{cc[2]}";
-
-                                    if (ing && HasOto(vccExceptions, syllable.vowelTone)) {
-                                        vccExceptions = $"1ng {cc[1]}{cc[2]}";
-                                        phonemes.Add(vccExceptions);
-                                        startingC = 2;
-                                    } else {
-
-                                        vccExceptions = $"{prevV}{cc[0]}-";
-
-                                        if (vccExceptions == "ing-") {
-                                            vccExceptions = "1ng-";
-                                        }
-                                        phonemes.Add(vccExceptions);
-                                        if (HasOto($"{cc[0]} {cc[1]}{cc[2]}", syllable.vowelTone)) {
-                                            phonemes.Add($"{cc[0]} {cc[1]}{cc[2]}");
-                                            startingC = 2;
-                                        } else {
-                                            basePhoneme = $"-{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
-                                            startingC = 0;
-                                        }
-                                    }
-                                }
-
-                                if (phonemes.Count == 0) {
-
-                                    if (HasOto(vccExceptions, syllable.vowelTone)) {
-                                        phonemes.Add(vccExceptions);
-                                    } else { startingC = 0; }
-
-                                    if (phonemes.Count == 0) {
-                                        parsingVCC = $"{prevV}{cc[0]}-";
-                                        if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                            parsingVCC = CheckVCExceptions($"{prevV}{cc[0]}") + "-";
-                                            if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                                parsingVCC = $"{prevV} {cc[0]}";
-                                            }
-                                        }
-                                        if (lastCPrevWord == 1 && stopCs.Contains($"{cc[0]}")) {
-                                            parsingVCC = $"{prevV}{cc[0]}";
-                                        }
-
-                                        if (ccSP == "sp") {
-                                            parsingVCC = $"{prevV} sp";
-                                        }
-
-
-                                        phonemes.Add(parsingVCC);
-                                    }
-                                }
+                            if (i == lastCPrevWord - 1) {
+                                parsingCC = $"{cc[i]} {cc[i + 1]}";
                             }
 
 
-                            for (int i = startingC; i < lastCforLoop; i++) {
-                                parsingCC = $"{cc[i]}{cc[i + 1]}-";
-
-                                if (dontParse && i == cc.Length - 3) {
-                                    parsingCC = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
-                                }
-
-                                if (i == lastCPrevWord - 1) {
-                                    parsingCC = $"{cc[i]} {cc[i + 1]}";
-                                }
-
-
-                                if (i == lastCPrevWord - 2) {
-                                    parsingCC = $"{cc[i]}{cc[i + 1]}";
+                            if (i == lastCPrevWord - 2) {
+                                parsingCC = $"{cc[i]}{cc[i + 1]}";
+                                if (!HasOto(parsingCC, syllable.vowelTone)) {
+                                    parsingCC = $"{cc[i]}{cc[i + 1]}-";
                                     if (!HasOto(parsingCC, syllable.vowelTone)) {
-                                        parsingCC = $"{cc[i]}{cc[i + 1]}-";
-                                        if (!HasOto(parsingCC, syllable.vowelTone)) {
-                                            parsingCC = $"{cc[i]} {cc[i + 1]}-";
-                                        }
+                                        parsingCC = $"{cc[i]} {cc[i + 1]}-";
                                     }
                                 }
-                                if (!HasOto(parsingCC, syllable.vowelTone) && i != lastCPrevWord - 1) {
+                            }
+                            if (!HasOto(parsingCC, syllable.vowelTone) && i != lastCPrevWord - 1) {
 
-                                    parsingCC = $"{cc[i]}{cc[i + 1]}";
-                                }
-
-                                //if (i + 1 != lastCforLoop - 1) {
-                                //    parsingCC = $"{cc[i]}{cc[i + 1]}";
-                                if (dontParse && i == cc.Length - 2) {
-                                    parsingCC = "";
-                                }
-                                //}
-
-                                //ng to nk exception
-                                if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i + 1 != lastCPrevWord) {
-                                    parsingCC = $"nkth";
-                                }
-
-                                if (parsingCC != "" && HasOto(parsingCC, syllable.vowelTone)) {
-                                    phonemes.Add(parsingCC);
-                                }
+                                parsingCC = $"{cc[i]}{cc[i + 1]}";
                             }
 
-                            if (cc.Length - lastCPrevWord - 1 > 0 && !dontParse) {
-                                basePhoneme = $"_{cc.Last()}{v}";
+                            //if (i + 1 != lastCforLoop - 1) {
+                            //    parsingCC = $"{cc[i]}{cc[i + 1]}";
+                            if (dontParse && i == cc.Length - 2) {
+                                parsingCC = "";
+                            }
+                            //}
+
+                            //ng to nk exception
+                            if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i + 1 != lastCPrevWord) {
+                                parsingCC = $"nkth";
                             }
 
-                            //if (ccNoParse == "str") {
-                            if (cccExceptions.Contains($"{ccNoParse}")) {
-                                phonemes.Add(ccNoParse);
+                            if (parsingCC != "" && HasOto(parsingCC, syllable.vowelTone)) {
+                                phonemes.Add(parsingCC);
                             }
                         }
 
-                    }
-                }
+                        if (cc.Length - lastCPrevWord - 1 > 0 && !dontParse) {
+                            basePhoneme = $"_{cc.Last()}{v}";
+                        }
 
-                if (!HasOto(basePhoneme, syllable.vowelTone)) { basePhoneme = $"{cc.Last()}{v}"; }
-                phonemes.Add(basePhoneme);
-                return phonemes;
+                        //if (ccNoParse == "str") {
+                        if (cccExceptions.Contains($"{ccNoParse}")) {
+                            phonemes.Add(ccNoParse);
+                        }
+                    }
+
+                }
             }
+
+            if (!HasOto(basePhoneme, syllable.vowelTone)) { basePhoneme = $"{cc.Last()}{v}"; }
+            phonemes.Add(basePhoneme);
+            return phonemes;
+        }
 
         protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc.Select(ReplacePhoneme).ToArray();
@@ -781,7 +781,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
 
-                
+
                 }
             }
 
@@ -808,7 +808,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (var consonant in new[] { "6r" }) {
                 alias = alias.Replace(consonant, "3");
-                }
+            }
 
             return alias;
         }

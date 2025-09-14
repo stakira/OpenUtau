@@ -1,9 +1,9 @@
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.Util;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
@@ -18,21 +18,20 @@ namespace OpenUtau.App.ViewModels {
             IgnoreTypes = Preferences.Default.VoicebankPublishIgnores;
         }
 
-        public Task Publish(string outputFile){
+        public Task Publish(string outputFile) {
             return Task.Run(() => {
                 try {
                     Preferences.Default.VoicebankPublishUseIgnore = UseIgnore;
-                    if(UseIgnore){
+                    if (UseIgnore) {
                         Preferences.Default.VoicebankPublishIgnores = IgnoreTypes;
                     }
                     Preferences.Save();
-                    if(Directory.Exists(singer.Location)){
+                    if (Directory.Exists(singer.Location)) {
                         var publisher = new VoicebankPublisher((progress, info) => {
                             DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                         }, UseIgnore ? IgnoreTypes : null);
-                        publisher.Publish(singer, outputFile);    
-                    }
-                    else if(File.Exists(singer.Location)){
+                        publisher.Publish(singer, outputFile);
+                    } else if (File.Exists(singer.Location)) {
                         File.Copy(singer.Location, outputFile);
                     }
                 } finally {

@@ -458,7 +458,7 @@ namespace OpenUtau.Plugin.Builtin {
                                         phoneme = currPhoneme
                                     }
                                 }
-                            };
+                                };
                         } else prevIMF = GetIMFFromHint(prevNeighbour.Value.phoneticHint);
 
                         if (string.IsNullOrEmpty(prevIMF[2])) {

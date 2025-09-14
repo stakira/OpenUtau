@@ -1,9 +1,9 @@
-using Serilog;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
+using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class MergeVoicebankDialog : Window {
@@ -11,31 +11,25 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
-        void OnEditedFolder(object sender, DataGridCellEditEndedEventArgs e)
-        {
+        void OnEditedFolder(object sender, DataGridCellEditEndedEventArgs e) {
             var viewModel = DataContext as MergeVoicebankViewModel;
-            if (viewModel == null)
-            {
+            if (viewModel == null) {
                 return;
             }
             viewModel.CheckFolderNames();
         }
 
-        void OnEditedSubbank(object sender, DataGridCellEditEndedEventArgs e)
-        {
+        void OnEditedSubbank(object sender, DataGridCellEditEndedEventArgs e) {
             var viewModel = DataContext as MergeVoicebankViewModel;
-            if (viewModel == null)
-            {
+            if (viewModel == null) {
                 return;
             }
             viewModel.CheckSubbankNames();
         }
 
-        void OnEditedVoiceColor(object sender, DataGridCellEditEndedEventArgs e)
-        {
+        void OnEditedVoiceColor(object sender, DataGridCellEditEndedEventArgs e) {
             var viewModel = DataContext as MergeVoicebankViewModel;
-            if (viewModel == null)
-            {
+            if (viewModel == null) {
                 return;
             }
             viewModel.CheckVoiceColorNames();

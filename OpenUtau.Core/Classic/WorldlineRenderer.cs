@@ -79,13 +79,13 @@ namespace OpenUtau.Classic {
                         try {
                             phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
                         } catch (SynthRequestError e) {
-                            if(e is CutOffExceedDurationError cee) {
+                            if (e is CutOffExceedDurationError cee) {
                                 throw new MessageCustomizableException(
                                     $"Failed to render\n Oto error: cutoff exceeds audio duration \n{item.phone.phoneme}",
                                     $"<translate:errors.failed.synth.cutoffexceedduration>\n{item.phone.phoneme}",
                                     e);
                             }
-                            if(e is CutOffBeforeOffsetError cbe) {
+                            if (e is CutOffBeforeOffsetError cbe) {
                                 throw new MessageCustomizableException(
                                     $"Failed to render\n Oto error: cutoff before offset \n{item.phone.phoneme}",
                                     $"<translate:errors.failed.synth.cutoffbeforeoffset>\n{item.phone.phoneme}",

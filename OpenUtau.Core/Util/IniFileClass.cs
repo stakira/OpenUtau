@@ -6,17 +6,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenUtau.Core.Util
-{
+namespace OpenUtau.Core.Util {
     /// <summary>
     /// ini文件操作类
     /// </summary>
-    class IniFileClass
-    {
+    class IniFileClass {
 
         public IniFileClass() { }
-        public IniFileClass(string szPath)
-        {
+        public IniFileClass(string szPath) {
             m_Path = szPath;
         }
         #region 段信息的获取
@@ -60,8 +57,7 @@ namespace OpenUtau.Core.Util
         /// <summary>
         /// ini文件路径
         /// </summary>
-        private string Path
-        {
+        private string Path {
             set { m_Path = value; }
             get { return m_Path; }
         }
@@ -69,14 +65,11 @@ namespace OpenUtau.Core.Util
         /// <summary>
         /// 读取所有段名
         /// </summary>
-        public string[] SectionNames
-        {
-            get
-            {
+        public string[] SectionNames {
+            get {
                 string buffer = new string('\0', 32768);
                 int nlen = getSectionNames(buffer, 32768 - 1, m_Path) - 1;
-                if (nlen > 0)
-                {
+                if (nlen > 0) {
                     return buffer.Substring(0, nlen).Split(sept);
                 }
                 return null;
@@ -89,18 +82,15 @@ namespace OpenUtau.Core.Util
         /// <param name="section">段名</param>
         /// <param name="bufferSize">读取的数据大小(字节)</param>
         /// <returns>成功则不为null</returns>
-        public string[] SectionValues(string section, int bufferSize)
-        {
+        public string[] SectionValues(string section, int bufferSize) {
             string buffer = new string('\0', bufferSize);
             int nlen = getSectionValues(section, buffer, bufferSize, m_Path) - 1;
-            if (nlen > 0)
-            {
+            if (nlen > 0) {
                 return buffer.Substring(0, nlen).Split(sept);
             }
             return null;
         }
-        public string[] SectionValues(string section)
-        {
+        public string[] SectionValues(string section) {
             return SectionValues(section, 32768);
         }
 
@@ -110,20 +100,15 @@ namespace OpenUtau.Core.Util
         /// <param name="section">段名</param>
         /// <param name="bufferSize">读取的数据大小(字节)</param>
         /// <returns>成功则不为null</returns>
-        public Dictionary<string, string> SectionValuesEx(string section, int bufferSize)
-        {
+        public Dictionary<string, string> SectionValuesEx(string section, int bufferSize) {
             string[] sztmp = SectionValues(section, bufferSize);
-            if (sztmp != null)
-            {
+            if (sztmp != null) {
                 int ArrayLen = sztmp.Length;
-                if (ArrayLen > 0)
-                {
+                if (ArrayLen > 0) {
                     Dictionary<string, string> dtRet = new Dictionary<string, string>();
-                    for (int i = 0; i < ArrayLen; i++)
-                    {
+                    for (int i = 0; i < ArrayLen; i++) {
                         int pos1 = sztmp[i].IndexOf('=');
-                        if (pos1 > 1)
-                        {
+                        if (pos1 > 1) {
                             int nlen = sztmp[i].Length;
                             //	取键名,键值
                             pos1++;
@@ -136,8 +121,7 @@ namespace OpenUtau.Core.Util
             }
             return null;
         }
-        public Dictionary<string, string> SectionValuesEx(string section)
-        {
+        public Dictionary<string, string> SectionValuesEx(string section) {
             return SectionValuesEx(section, 32768);
         }
 
@@ -147,8 +131,7 @@ namespace OpenUtau.Core.Util
         /// <param name="section"></param>
         /// <param name="szValue">段的数据(如果为null则删除这个段)</param>
         /// <returns>成功则为true</returns>
-        public bool setSectionValue(string section, string szValue)
-        {
+        public bool setSectionValue(string section, string szValue) {
             return setSectionValue(section, szValue, m_Path);
         }
 
@@ -158,8 +141,7 @@ namespace OpenUtau.Core.Util
         /// <param name="section"></param>
         /// <param name="key"></param>
         /// <returns>成功则不为-1</returns>
-        public int getKeyIntValue(string section, string key)
-        {
+        public int getKeyIntValue(string section, string key) {
             return getKeyIntValue(section, key, -1, m_Path);
         }
 
@@ -170,8 +152,7 @@ namespace OpenUtau.Core.Util
         /// <param name="key"></param>
         /// <param name="dwValue"></param>
         /// <returns>成功则为true</returns>
-        public bool setKeyIntValue(string section, string key, int dwValue)
-        {
+        public bool setKeyIntValue(string section, string key, int dwValue) {
             return setKeyValue(section, key, dwValue.ToString(), m_Path);
         }
 
@@ -181,8 +162,7 @@ namespace OpenUtau.Core.Util
         /// <param name="section"></param>
         /// <param name="key"></param>
         /// <returns>成功则不为null</returns>
-        public string getKeyValue(string section, string key)
-        {
+        public string getKeyValue(string section, string key) {
             string szBuffer = new string('0', 256);
             int nlen = getKeyValue(section, key, string.Empty, szBuffer, 256, m_Path);
             string ret = szBuffer.Substring(0, nlen);
@@ -196,8 +176,7 @@ namespace OpenUtau.Core.Util
         /// <param name="key"></param>
         /// <param name="szValue"></param>
         /// <returns>成功则为true</returns>
-        public bool setKeyValue(string Section, string key, string szValue)
-        {
+        public bool setKeyValue(string Section, string key, string szValue) {
             return setKeyValue(Section, key, szValue, m_Path);
         }
     }//end class CIni

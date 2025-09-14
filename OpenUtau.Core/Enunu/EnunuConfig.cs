@@ -191,7 +191,7 @@ namespace OpenUtau.Core.Enunu {
                     if (kvp.Key is string key) {
                         if (kvp.Value is Dictionary<object, object> innerDict) {
                             foreach (var item in innerDict) {
-                                if(item.Key is string key2) {
+                                if (item.Key is string key2) {
                                     if (key2.Equals("format") && item.Value is string format) {
                                         dict.format = format;
                                         flag = true;

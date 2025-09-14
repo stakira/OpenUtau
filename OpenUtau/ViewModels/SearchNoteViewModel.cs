@@ -18,9 +18,9 @@ namespace OpenUtau.App.ViewModels {
         NotesViewModel notesViewModel { get; }
         List<UNote> notes = new List<UNote>();
         int selection = -1;
-        [Reactive]public string ResultCount { get; private set; } = "";
-        bool CaseSensitive{ get; set; } = true;
-        bool WholeWord{ get; set; } = false;
+        [Reactive] public string ResultCount { get; private set; } = "";
+        bool CaseSensitive { get; set; } = true;
+        bool WholeWord { get; set; } = false;
 
         public SearchNoteViewModel(NotesViewModel notesViewModel) {
             this.notesViewModel = notesViewModel;
@@ -97,7 +97,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Next() {
-            if(notes.Count() == 0) {
+            if (notes.Count() == 0) {
                 selection = -1;
             } else if (notes.Count() == 1) {
                 selection = 0;
@@ -124,10 +124,10 @@ namespace OpenUtau.App.ViewModels {
             MessageBus.Current.SendMessage(new NotesSelectionEvent(notesViewModel.Selection));
         }
 
-        public void UpdateResult(){
+        public void UpdateResult() {
             if (selection >= 0) {
                 ResultCount = $"{selection + 1}/{Count}";
-            }else{
+            } else {
                 ResultCount = $"{Count}";
             }
         }

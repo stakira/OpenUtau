@@ -22,7 +22,7 @@ namespace OpenUtau.Classic {
                 }
             }
 
-            if(frq != null) {
+            if (frq != null) {
                 hopSize = frq.hopSize;
                 int offset = ConvertMsToFrqLength(frq, oto.Offset);
                 int consonant = ConvertMsToFrqLength(frq, oto.Offset + oto.Consonant);

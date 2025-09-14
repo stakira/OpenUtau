@@ -5,38 +5,38 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Editing {
-    class TickRange{
+    class TickRange {
         public int start;
         public int end;
 
-        public TickRange(int start, int end){
+        public TickRange(int start, int end) {
             this.start = start;
             this.end = end;
         }
 
-        public TickRange copy(){
+        public TickRange copy() {
             return new TickRange(start, end);
         }
     }
 
-    static class SelectionUtils{
+    static class SelectionUtils {
         /// <summary>
         /// Simplify the time selection by merging overlapping ranges.
         /// </summary>
         /// <param name="ranges">Time selection to be simplified</param>
         /// <returns></returns>
-        public static List<TickRange> SimplifyTimeSelection(List<TickRange> ranges){
+        public static List<TickRange> SimplifyTimeSelection(List<TickRange> ranges) {
             var result = new List<TickRange>();
-            if(ranges.Count == 0){
+            if (ranges.Count == 0) {
                 return result;
             }
             ranges.Sort((a, b) => a.start - b.start);
             var current = ranges[0].copy();
-            for(int i = 1; i < ranges.Count; i++){
+            for (int i = 1; i < ranges.Count; i++) {
                 var next = ranges[i];
-                if(next.start <= current.end){
+                if (next.start <= current.end) {
                     current.end = Math.Max(current.end, next.end);
-                }else{
+                } else {
                     result.Add(current);
                     current = next;
                 }
@@ -44,20 +44,20 @@ namespace OpenUtau.Core.Editing {
             result.Add(current);
             return result;
         }
-        
-        public static Dictionary<UNote, List<UPhoneme>> NotePhonemes(UVoicePart part){
+
+        public static Dictionary<UNote, List<UPhoneme>> NotePhonemes(UVoicePart part) {
             var result = new Dictionary<UNote, List<UPhoneme>>();
-            foreach(var phoneme in part.phonemes){
+            foreach (var phoneme in part.phonemes) {
                 var note = phoneme.Parent;
-                if(result.ContainsKey(note)){
+                if (result.ContainsKey(note)) {
                     result[note].Add(phoneme);
-                }else{
-                    result[note] = new List<UPhoneme>(){phoneme};
+                } else {
+                    result[note] = new List<UPhoneme>() { phoneme };
                 }
             }
             return result;
         }
-        
+
         /// <summary>
         /// Get the tick ranges of the selected notes, relative to the beginning of the part.
         /// </summary>
@@ -68,10 +68,10 @@ namespace OpenUtau.Core.Editing {
             var notePhonemes = NotePhonemes(part);
             var result = selectedNotes.Select(note => {
                 int start = note.position;
-                if(note.Prev.End < note.position 
-                    && notePhonemes.TryGetValue(note, out var phonemes) 
+                if (note.Prev.End < note.position
+                    && notePhonemes.TryGetValue(note, out var phonemes)
                     && phonemes.Count > 0
-                    ){
+                    ) {
                     start = Math.Min(start, phonemes[0].position);
                 }
                 int end = note.End;
@@ -120,23 +120,22 @@ namespace OpenUtau.Core.Editing {
             }
             //reset curve expressions
             var curveAbbrs = part.curves.Select(c => c.abbr).ToArray();
-            foreach (var abbr in curveAbbrs) {    
-                if(notes.Count == part.notes.Count){
+            foreach (var abbr in curveAbbrs) {
+                if (notes.Count == part.notes.Count) {
                     //All notes are selected
                     docManager.ExecuteCmd(new ClearCurveCommand(part, abbr));
-                }
-                else{
+                } else {
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
                     int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
-                    foreach(var range in selectedTickRanges){
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
+                    foreach (var range in selectedTickRanges) {
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
                             range.start, defaultValue,
                             range.start, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.end, defaultValue, 
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
+                            range.end, defaultValue,
                             range.end, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.start, defaultValue, 
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
+                            range.start, defaultValue,
                             range.end, defaultValue));
                     }
                 }
@@ -285,23 +284,22 @@ namespace OpenUtau.Core.Editing {
             }
             //curve expressions
             var curveAbbrs = part.curves.Select(c => c.abbr).ToArray();
-            foreach (var abbr in curveAbbrs) {    
-                if(notes.Count == part.notes.Count){
+            foreach (var abbr in curveAbbrs) {
+                if (notes.Count == part.notes.Count) {
                     //All notes are selected
                     docManager.ExecuteCmd(new ClearCurveCommand(part, abbr));
-                }
-                else{
+                } else {
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
                     int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
-                    foreach(var range in selectedTickRanges){
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
+                    foreach (var range in selectedTickRanges) {
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
                             range.start, defaultValue,
                             range.start, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.end, defaultValue, 
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
+                            range.end, defaultValue,
                             range.end, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.start, defaultValue, 
+                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr,
+                            range.start, defaultValue,
                             range.end, defaultValue));
                     }
                 }

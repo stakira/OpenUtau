@@ -90,7 +90,7 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(e => {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
-                            if(e.trackNo == -1) {
+                            if (e.trackNo == -1) {
                                 header.ViewModel.ToggleMute(e.allmute);
                             } else if (track.TrackNo == e.trackNo) {
                                 header.ViewModel.ToggleMute();

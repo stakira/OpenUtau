@@ -18,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
 
         public static EnunuConfig Load(string configPath, Encoding encoding = null) {
             encoding = encoding ?? Encoding.UTF8;
-            var configTxt = File.ReadAllText(configPath,encoding);
+            var configTxt = File.ReadAllText(configPath, encoding);
             RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
             return config.Convert();
         }

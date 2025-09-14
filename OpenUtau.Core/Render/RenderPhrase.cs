@@ -369,7 +369,7 @@ namespace OpenUtau.Core.Render {
                             }
                             return diff;
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         Log.Error(e, "Failed to compute mod plus.");
                     }
                 }
@@ -386,8 +386,8 @@ namespace OpenUtau.Core.Render {
 
             var curves = new List<Tuple<string, float[]>>();
 
-            foreach(var descriptor in project.expressions.Values) {
-                if(descriptor.type != UExpressionType.Curve) {
+            foreach (var descriptor in project.expressions.Values) {
+                if (descriptor.type != UExpressionType.Curve) {
                     continue;
                 }
                 var curve = part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
@@ -405,14 +405,14 @@ namespace OpenUtau.Core.Render {
                 var curveSampled = SampleCurve(curve, pitchStart, pitches.Length, convert);
                 switch (curve.abbr) {
                     case Format.Ustx.PITD: break;
-                    case Format.Ustx.DYN : dynamics = curveSampled; break;
+                    case Format.Ustx.DYN: dynamics = curveSampled; break;
                     case Format.Ustx.SHFC: toneShift = curveSampled; break;
                     case Format.Ustx.GENC: gender = curveSampled; break;
                     case Format.Ustx.TENC: tension = curveSampled; break;
                     case Format.Ustx.BREC: breathiness = curveSampled; break;
                     case Format.Ustx.VOIC: voicing = curveSampled; break;
                     default:
-                        curves.Add(Tuple.Create(curve.abbr,curveSampled));
+                        curves.Add(Tuple.Create(curve.abbr, curveSampled));
                         break;
                 }
             }
@@ -476,9 +476,9 @@ namespace OpenUtau.Core.Render {
                                 }
                             }
                         }
-                        foreach(var curve in curves) {
+                        foreach (var curve in curves) {
                             writer.Write(curve.Item1);
-                            foreach(var v in curve.Item2) {
+                            foreach (var v in curve.Item2) {
                                 writer.Write(v);
                             }
                         }

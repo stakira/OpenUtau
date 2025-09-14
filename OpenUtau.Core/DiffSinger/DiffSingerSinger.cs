@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
+using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
     class DiffSingerSinger : USinger {
@@ -52,7 +52,7 @@ namespace OpenUtau.Core.DiffSinger {
         public DiffSingerSpeakerEmbedManager speakerEmbedManager = null;
         public DsVariance variancePredictor = null;
         public bool HasPitchPredictor => File.Exists(Path.Join(Location, "dspitch", "dsconfig.yaml"));
-        public bool HasVariancePredictor => File.Exists(Path.Join(Location,"dsvariance", "dsconfig.yaml"));
+        public bool HasVariancePredictor => File.Exists(Path.Join(Location, "dsvariance", "dsconfig.yaml"));
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -80,7 +80,7 @@ namespace OpenUtau.Core.DiffSinger {
 
             //Load diffsinger config of a voicebank
             string configPath = Path.Combine(Location, "dsconfig.yaml");
-            if(configPath != null && File.Exists(configPath)){
+            if (configPath != null && File.Exists(configPath)) {
                 try {
                     dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                         File.ReadAllText(configPath, Encoding.UTF8));
@@ -95,11 +95,11 @@ namespace OpenUtau.Core.DiffSinger {
 
             //Load phoneme list
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
-            if(phonemesPath != null && File.Exists(phonemesPath)){
+            if (phonemesPath != null && File.Exists(phonemesPath)) {
                 try {
                     phonemeTokens = DiffSingerUtils.LoadPhonemes(phonemesPath);
                     phonemes = phonemeTokens.Keys.ToList();
-                } catch (Exception e){
+                } catch (Exception e) {
                     Log.Error(e, $"Failed to load phoneme list for {Name} from {phonemesPath}");
                 }
             } else {
@@ -107,11 +107,11 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //Load language Id if needed
-            if(dsConfig.use_lang_id){
-                if(dsConfig.languages == null){
+            if (dsConfig.use_lang_id) {
+                if (dsConfig.languages == null) {
                     Log.Error("\"languages\" field is not specified in dsconfig.yaml");
                 } else {
-                var langIdPath = Path.Join(Location, dsConfig.languages);
+                    var langIdPath = Path.Join(Location, dsConfig.languages);
                     try {
                         languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
                     } catch (Exception e) {
@@ -172,8 +172,8 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DsVocoder getVocoder() {
-            if(vocoder is null) {
-                if(File.Exists(Path.Join(Location, "dsvocoder", "vocoder.yaml"))) {
+            if (vocoder is null) {
+                if (File.Exists(Path.Join(Location, "dsvocoder", "vocoder.yaml"))) {
                     vocoder = new DsVocoder(Path.Join(Location, "dsvocoder"));
                     return vocoder;
                 }
@@ -182,61 +182,61 @@ namespace OpenUtau.Core.DiffSinger {
             return vocoder;
         }
 
-        public DsPitch? getPitchPredictor(){
-            if(pitchPredictor is null) {
-                if(HasPitchPredictor){
+        public DsPitch? getPitchPredictor() {
+            if (pitchPredictor is null) {
+                if (HasPitchPredictor) {
                     pitchPredictor = new DsPitch(Path.Join(Location, "dspitch"));
                 }
             }
             return pitchPredictor;
         }
-       
-        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
-            if(speakerEmbedManager is null) {
+
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager() {
+            if (speakerEmbedManager is null) {
                 speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, Location);
             }
             return speakerEmbedManager;
         }
 
-        public DsVariance? getVariancePredictor(){
-            if(variancePredictor is null) {
-                if(HasVariancePredictor){
+        public DsVariance? getVariancePredictor() {
+            if (variancePredictor is null) {
+                if (HasVariancePredictor) {
                     variancePredictor = new DsVariance(Path.Join(Location, "dsvariance"));
                 }
             }
             return variancePredictor;
         }
 
-        public int PhonemeTokenize(string phoneme){
+        public int PhonemeTokenize(string phoneme) {
             bool success = phonemeTokens.TryGetValue(phoneme, out int token);
-            if(!success){
+            if (!success) {
                 throw new Exception($"Phoneme \"{phoneme}\" isn't supported by acoustic model. Please check {Path.Combine(Location, dsConfig.phonemes)}");
             }
             return token;
         }
 
-        public override void FreeMemory(){
+        public override void FreeMemory() {
             Log.Information($"Freeing memory for singer {Id}");
-            if(acousticSession != null) {
-                lock(acousticSession) {
+            if (acousticSession != null) {
+                lock (acousticSession) {
                     acousticSession?.Dispose();
                 }
                 acousticSession = null;
             }
-            if(vocoder != null) {
-                lock(vocoder) {
+            if (vocoder != null) {
+                lock (vocoder) {
                     vocoder?.Dispose();
                 }
                 vocoder = null;
             }
-            if(pitchPredictor != null) {
-                lock(pitchPredictor) {
+            if (pitchPredictor != null) {
+                lock (pitchPredictor) {
                     pitchPredictor?.Dispose();
                 }
                 pitchPredictor = null;
             }
-            if(variancePredictor != null){
-                lock(variancePredictor) {
+            if (variancePredictor != null) {
+                lock (variancePredictor) {
                     variancePredictor?.Dispose();
                 }
                 variancePredictor = null;

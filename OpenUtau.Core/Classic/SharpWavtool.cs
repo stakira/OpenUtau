@@ -46,7 +46,7 @@ namespace OpenUtau.Classic {
             var segments = new List<Segment>();
             foreach (var item in resamplerItems) {
                 var segment = new Segment();
-                if(item.phone.direct){
+                if (item.phone.direct) {
                     using (var waveStream = Wave.OpenFile(item.inputFile)) {
                         float[] samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                         int offset = (int)(item.phone.oto.Offset / 1000 * 44100);
@@ -54,7 +54,7 @@ namespace OpenUtau.Classic {
                         int length = cutoff >= 0 ? (samples.Length - offset - cutoff) : -cutoff;
                         segment.samples = samples.Skip(offset).Take(length).ToArray();
                     }
-                } else { 
+                } else {
                     if (!File.Exists(item.outputFile)) {
                         continue;
                     }

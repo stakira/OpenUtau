@@ -6,12 +6,12 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
 using OpenUtau.Core.Editing;
-using OpenUtau.Core.Ustx;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", "O3", language:"EN")]
+    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", "O3", language: "EN")]
     public class EnunuEnglishPhonemizer : EnunuPhonemizer {
         readonly string PhonemizerType = "ENUNU EN";
 
@@ -23,7 +23,7 @@ namespace OpenUtau.Core.Enunu {
             var g2ps = new List<IG2p>();
 
             // Load dictionary from plugin folder.
-            
+
             string path = Path.Combine(PluginDir, "arpasing.yaml");
             /*
             if (!File.Exists(path)) {
@@ -76,7 +76,7 @@ namespace OpenUtau.Core.Enunu {
                 .ToArray();
         }
 
-        protected EnunuNote[] MakeSimpleResult(string lyric,int length, int noteNum) {
+        protected EnunuNote[] MakeSimpleResult(string lyric, int length, int noteNum) {
             return new EnunuNote[]{new EnunuNote {
                     lyric = lyric,
                     length = length,
@@ -107,7 +107,7 @@ namespace OpenUtau.Core.Enunu {
             // - "+n" manually aligns to n-th phoneme.
             alignments.Clear();
             //notes except those whose lyrics start witn "+*" or "+~"
-            var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
+            var nonExtensionNotes = notes.Where(n => !IsSyllableVowelExtensionNote(n)).ToArray();
             for (int i = 0; i < symbols.Length; i++) {
                 if (isVowel[i] && alignments.Count < nonExtensionNotes.Length) {
                     alignments.Add(Tuple.Create(i, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
@@ -145,21 +145,21 @@ namespace OpenUtau.Core.Enunu {
 
             foreach (var alignment in alignments) {
                 // Distributes phonemes between two aligment points.
-                EnunuNote enunuNote= new EnunuNote {
+                EnunuNote enunuNote = new EnunuNote {
                     lyric = "",
-                    length = alignment.Item2-startTick,
+                    length = alignment.Item2 - startTick,
                     noteNum = note.tone,
                     noteIndex = noteIndex,
 
                 };
-                endIndex= alignment.Item1;
+                endIndex = alignment.Item1;
 
-                for(int index = startIndex; index < endIndex; index++) {
+                for (int index = startIndex; index < endIndex; index++) {
                     enunuNote.lyric += symbols[index] + " ";
                 }
                 enunuNotes.Add(enunuNote);
                 startIndex = endIndex;
-                
+
                 startTick = alignment.Item2;
             }
             alignments.Clear();
@@ -193,9 +193,9 @@ namespace OpenUtau.Core.Enunu {
                     if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
                         lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
                     }*/
-                    var wordEnunuNotes = ProcessWord(notes[index],index);
+                    var wordEnunuNotes = ProcessWord(notes[index], index);
                     result.AddRange(wordEnunuNotes);
-                    foreach(var enunuNote in wordEnunuNotes) {
+                    foreach (var enunuNote in wordEnunuNotes) {
                         position += enunuNote.length;
                     }
                     index++;

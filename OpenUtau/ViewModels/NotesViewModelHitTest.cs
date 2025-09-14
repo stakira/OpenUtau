@@ -376,7 +376,7 @@ namespace OpenUtau.App.ViewModels {
                 if (string.IsNullOrEmpty(phonemeText)) {
                     continue;
                 }
-                (double textX, double textY, Size size, TextLayout textLayout) 
+                (double textX, double textY, Size size, TextLayout textLayout)
                     = PhonemeUIRender.AliasPosition(viewModel, phoneme, langCode, ref lastTextEndX, ref raiseText);
                 var rect = new Rect(new Point(textX - 2, textY + 1.5), size);
                 if (rect.Contains(mousePos)) {

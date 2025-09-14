@@ -15,14 +15,14 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     }
 
     class EnunuOnnxConfig {
-        
+
         public RedirectionData[] redirections;
 
         public static EnunuOnnxConfig Load(string configPath, Encoding encoding = null) {
             encoding = encoding ?? Encoding.UTF8;
             var configTxt = File.ReadAllText(configPath, encoding);
             EnunuOnnxConfig config = Yaml.DefaultDeserializer.Deserialize<EnunuOnnxConfig>(configTxt);
-            if(config.redirections == null) {
+            if (config.redirections == null) {
                 config.redirections = new RedirectionData[] { };
             }
             return config;
@@ -40,12 +40,12 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
                 return;
             }
             //sort redirection keys from long to short
-            Array.Sort(datas, (x1,x2)=>- x1.from.Length.CompareTo(x2.from.Length));
+            Array.Sort(datas, (x1, x2) => -x1.from.Length.CompareTo(x2.from.Length));
             StringBuilder regexBuilder = new StringBuilder("(");
-            foreach(var line in datas) {
+            foreach (var line in datas) {
                 string key = string.Join("\n", line.from);
-                replacements[key] = line.to + new string('\n',line.from.Length - 1);
-                regexBuilder.Append(Regex.Escape(key)+"|");
+                replacements[key] = line.to + new string('\n', line.from.Length - 1);
+                regexBuilder.Append(Regex.Escape(key) + "|");
             }
             regexBuilder[^1] = ')';
             regex = new Regex(regexBuilder.ToString());

@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Vietnamese VINA Phonemizer", "VIE VINA", "Jani Tran - Hoang Phuc", language:"VI")]
+    [Phonemizer("Vietnamese VINA Phonemizer", "VIE VINA", "Jani Tran - Hoang Phuc", language: "VI")]
     public class VietnameseVINAPhonemizer : Phonemizer {
         /// <summary>
         /// The lookup table to convert a hiragana to its tail vowel.
@@ -125,16 +125,21 @@ namespace OpenUtau.Plugin.Builtin {
                            || loi.Contains("uôn") || loi.Contains("uôN") || loi.Contains("uôm") || loi.Contains("uôt") || loi.Contains("uôk") || loi.Contains("uôi")
                            || loi.Contains("ươn") || loi.Contains("ươN") || loi.Contains("ươm") || loi.Contains("ươt") || loi.Contains("ươk") || loi.Contains("ươp") || loi.Contains("ươi") || loi.Contains("ươu");
             int x = prevNeighbour?.duration ?? default(int);
-            if (x < 160 && prevNeighbour != null) { VCP = - (x * 4 / 8); }
-            else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
-                || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
-                 || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -70;
-            else VCP = -110;
+            if (x < 160 && prevNeighbour != null) {
+                VCP = -(x * 4 / 8);
+            } else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
+                       || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
+                       || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) {
+                VCP = -70;
+            } else {
+                VCP = -110;
+            }
             bool koVVCchia;
             if (tontaiVVC == true) {
                 koVVCchia = false;
-            } else
+            } else {
                 koVVCchia = true;
+            }
             bool tontaiCcuoi = (loi.EndsWith("k") || loi.EndsWith("t") || loi.EndsWith("C") || loi.EndsWith("p") || loi.EndsWith("."));
             bool tontaiC = loi.StartsWith("b") || loi.StartsWith("C") || loi.StartsWith("d") || loi.StartsWith("f")
                          || loi.StartsWith("g") || loi.StartsWith("h") || loi.StartsWith("k") || loi.StartsWith("K")
@@ -622,10 +627,10 @@ namespace OpenUtau.Plugin.Builtin {
                                     phonemes.Add(
                             new Phoneme { phoneme = $"{C}wA{N}" }
                             );
-                                phonemes.Add(
-                            new Phoneme { phoneme = $"{N_} -", position = End }
-                            );
-                                        }
+                                    phonemes.Add(
+                                new Phoneme { phoneme = $"{N_} -", position = End }
+                                );
+                                }
                             } else { //
                                 if (loi.StartsWith(".")) {
                                     phonemes.Add(
@@ -731,9 +736,9 @@ namespace OpenUtau.Plugin.Builtin {
                             } else {
                                 phonemes.Add(
                             new Phoneme { phoneme = $"{C}{V1}{V2}" });
-                            phonemes.Add(
-                            new Phoneme { phoneme = $"{V2}{N}", position = ViTri });
-                                        }
+                                phonemes.Add(
+                                new Phoneme { phoneme = $"{V2}{N}", position = ViTri });
+                            }
                         } else { // ko có VV -
                             if (_C) {
                                 phonemes.Add(
@@ -745,9 +750,9 @@ namespace OpenUtau.Plugin.Builtin {
                             } else {
                                 phonemes.Add(
                             new Phoneme { phoneme = $"{C}{V1}{V2}" });
-                            phonemes.Add(
-                            new Phoneme { phoneme = $"{V2_2}{N}", position = ViTri });
-                                        }
+                                phonemes.Add(
+                                new Phoneme { phoneme = $"{V2_2}{N}", position = ViTri });
+                            }
                         }
                     }
                 }
@@ -853,9 +858,9 @@ namespace OpenUtau.Plugin.Builtin {
                         } else {
                             phonemes.Add(
                             new Phoneme { phoneme = $"{C}{V1}{V2}" });
-                        phonemes.Add(
-                            new Phoneme { phoneme = $"{VVC}", position = ViTri });
-                                    }
+                            phonemes.Add(
+                                new Phoneme { phoneme = $"{VVC}", position = ViTri });
+                        }
                     } else
                         if (NoNext) { // ko có note kế tiếp
                         if (_C) {
@@ -1036,9 +1041,9 @@ namespace OpenUtau.Plugin.Builtin {
                                 phonemes.Add(
                             new Phoneme { phoneme = $"- {V1}" });
                                 phonemes.Add(
-                            new Phoneme { phoneme = $"{V1_}{V2}",position = ViTri  });
+                            new Phoneme { phoneme = $"{V1_}{V2}", position = ViTri });
                                 phonemes.Add(
-                            new Phoneme { phoneme = $"{N} -", position = End  });
+                            new Phoneme { phoneme = $"{N} -", position = End });
                             }
                         } else {  // co note ke tiep
                             if (wV) { // oa oe uê ,...
@@ -1151,7 +1156,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
                 }
-        } else
+            } else
             if (prevNeighbour != null) {
                 var lyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
                 var unicode = ToUnicodeElements(lyric);
@@ -1530,8 +1535,8 @@ namespace OpenUtau.Plugin.Builtin {
                                         } else if (wV) {
                                             phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{Cw}", position = VCP });
-                                          phonemes.Add(
-                            new Phoneme { phoneme = $"{C}{V1}{V2_2}" });
+                                            phonemes.Add(
+                              new Phoneme { phoneme = $"{C}{V1}{V2_2}" });
                                         } else { // bths
                                             phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{Cw}", position = VCP });
@@ -2001,7 +2006,7 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{V} -", position = End });
                                         } else phonemes.Add(
                             new Phoneme { phoneme = $"- {C}{V}" });
-                                    } else 
+                                    } else
                                     if (NoNext) {
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{C}", position = VCP });
@@ -2014,7 +2019,7 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{vow}{C}", position = VCP });
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{C}{V}" });
-                                        }
+                                    }
                                 } else if (dem == 3) {
                                     string C = note.lyric.Substring(0, 1);
                                     string V1 = note.lyric.Substring(1, 1);
@@ -2128,9 +2133,8 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{V1}{V2}", position = ViTri });
                                     }
                                 }
-                            }
-                            else { // nếu ko phải phụ âm y
-                                   // 2 âm VV, ví dụ: "oa"
+                            } else { // nếu ko phải phụ âm y
+                                     // 2 âm VV, ví dụ: "oa"
                                 if (fry) { } else
                                 if ((dem == 2) && kocoC) {
                                     string V1 = loi.Substring(0, 1);
@@ -2389,8 +2393,8 @@ namespace OpenUtau.Plugin.Builtin {
                                     } else {
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{V1}" });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{VVC}", position = ViTri });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{VVC}", position = ViTri });
                                     }
                                 }
                             }

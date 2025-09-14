@@ -209,7 +209,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                     result.Insert(0, new Phoneme() {
                         phoneme = cOto.Alias,
-                        position = Convert.ToInt32(- cLength),
+                        position = Convert.ToInt32(-cLength),
                         index = 2,
                         expressions = new List<PhonemeExpression>()
                     });

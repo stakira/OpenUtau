@@ -456,7 +456,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
-            
+
             if (ending.IsEndingV) {
                 TryAddPhoneme(phonemes, ending.tone, $"{prevV} R", $"{prevV} -", $"{prevV}-");
             }
@@ -482,7 +482,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             var vc = $"{vowel} {cons}";
             var altVc = $"{vowel} {cons[0]}";
-            
+
             if (HasOto(vc, tone)) {
                 phonemes.Add(vc);
             } else if (HasOto(altVc, tone)) {

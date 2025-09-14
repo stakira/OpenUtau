@@ -1,9 +1,7 @@
-using OpenUtau.Api;
+﻿using OpenUtau.Api;
 
-namespace OpenUtau.Core.DiffSinger
-{
+namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger Phonemizer", "DIFFS")]
-    public class DiffSingerPhonemizer : DiffSingerBasePhonemizer
-    {
+    public class DiffSingerPhonemizer : DiffSingerBasePhonemizer {
     }
 }

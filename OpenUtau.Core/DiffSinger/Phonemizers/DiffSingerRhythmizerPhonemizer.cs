@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using System.IO;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using System.Text;
-using System.Linq;
 
 namespace OpenUtau.Core.DiffSinger {
 
@@ -68,7 +68,7 @@ namespace OpenUtau.Core.DiffSinger {
         USinger singer;
         DsRhythmizer rhythmizer;
         Dictionary<string, string[]> phoneDict;
-        
+
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {
                 return;
@@ -81,9 +81,9 @@ namespace OpenUtau.Core.DiffSinger {
             try {
                 //if rhythmizer is packed within the voicebank
                 var packedRhythmizerPath = Path.Combine(singer.Location, "rhythmizer");
-                if(Directory.Exists(packedRhythmizerPath)) {
+                if (Directory.Exists(packedRhythmizerPath)) {
                     rhythmizer = new DsRhythmizer(packedRhythmizerPath);
-                } else { 
+                } else {
                     string rhythmizerName;
                     string rhythmizerYamlPath = Path.Combine(singer.Location, "dsrhythmizer.yaml");
                     if (File.Exists(rhythmizerYamlPath)) {
@@ -92,7 +92,7 @@ namespace OpenUtau.Core.DiffSinger {
                     } else {
                         rhythmizerName = DsRhythmizer.DefaultRhythmizer;
                     }
-                        rhythmizer = DsRhythmizer.FromName(rhythmizerName);
+                    rhythmizer = DsRhythmizer.FromName(rhythmizerName);
                 }
                 //Load pinyin to phoneme dictionary from rhythmizer package
                 phoneDict = rhythmizer.phoneDict;
@@ -110,17 +110,17 @@ namespace OpenUtau.Core.DiffSinger {
             var midi_dur = new List<float> { padding };//List of parent note duration for each phoneme
             var is_slur = new List<bool> { false };//Whether the phoneme is slur
             List<double> ph_dur;//Phoneme durations output by the model
-            var notePhIndex = new List<int>{ 1 };//The position of the first phoneme of each note in the phoneme list
+            var notePhIndex = new List<int> { 1 };//The position of the first phoneme of each note in the phoneme list
             var phAlignPoints = new List<Tuple<int, double>>();//Phoneme alignment position, s, absolute time
             double offsetMs = timeAxis.TickPosToMsPos(phrase[0][0].position);
 
             //Convert note list to phoneme list
-            foreach (int groupIndex in Enumerable.Range(0,phrase.Length)) {
+            foreach (int groupIndex in Enumerable.Range(0, phrase.Length)) {
                 string[] notePhonemes;
                 Note[] group = phrase[groupIndex];
                 if (group[0].phoneticHint is null) {
                     var lyric = group[0].lyric;
-                    
+
                     if (phoneDict.ContainsKey(lyric)) {
                         notePhonemes = phoneDict[lyric];
                     } else {
@@ -130,7 +130,7 @@ namespace OpenUtau.Core.DiffSinger {
                     notePhonemes = group[0].phoneticHint.Split(" ");
                 }
                 is_slur.AddRange(Enumerable.Repeat(false, notePhonemes.Length));
-                phAlignPoints.Add(new Tuple<int,double>(
+                phAlignPoints.Add(new Tuple<int, double>(
                     phonemes.Count + (notePhonemes.Length > 1 ? 1 : 0),//TODO
                     timeAxis.TickPosToMsPos(group[0].position) / 1000
                     ));
@@ -177,23 +177,23 @@ namespace OpenUtau.Core.DiffSinger {
             //The other phonemes are scaled according to the ratio of the time difference 
             //between the two alignment points and the duration of the phoneme
             //pairwise(alignGroups)
-            foreach(var pair in phAlignPoints.Zip(phAlignPoints.Skip(1), (a, b) => Tuple.Create(a, b))){
+            foreach (var pair in phAlignPoints.Zip(phAlignPoints.Skip(1), (a, b) => Tuple.Create(a, b))) {
                 var currAlignPoint = pair.Item1;
                 var nextAlignPoint = pair.Item2;
                 alignGroup = ph_dur.GetRange(currAlignPoint.Item1, nextAlignPoint.Item1 - currAlignPoint.Item1);
-                double ratio = (nextAlignPoint.Item2 - currAlignPoint.Item2)/alignGroup.Sum();
+                double ratio = (nextAlignPoint.Item2 - currAlignPoint.Item2) / alignGroup.Sum();
                 positions.AddRange(stretch(alignGroup, ratio, nextAlignPoint.Item2));
             }
             //Convert the position sequence to tick and fill into the result list
             int index = 1;
-            foreach(int groupIndex in Enumerable.Range(0, phrase.Length)) {
+            foreach (int groupIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] group = phrase[groupIndex];
                 var noteResult = new List<Tuple<string, int>>();
                 if (group[0].lyric.StartsWith("+")) {
                     continue;
                 }
                 double notePos = timeAxis.TickPosToMsPos(group[0].position);//音符起点位置，单位ms
-                for(int phIndex = notePhIndex[groupIndex]; phIndex < notePhIndex[groupIndex + 1]; ++phIndex) {
+                for (int phIndex = notePhIndex[groupIndex]; phIndex < notePhIndex[groupIndex + 1]; ++phIndex) {
                     noteResult.Add(Tuple.Create(phonemes[phIndex], timeAxis.TicksBetweenMsPos(
                        notePos, positions[phIndex] * 1000)));
                 }
@@ -208,7 +208,7 @@ namespace OpenUtau.Core.DiffSinger {
                 yield return sum;
             }
         }
-        
+
         //Stretch phoneme duration sequence with a certain ratio
         public List<double> stretch(IList<double> source, double ratio, double endPos) {
             //source: phoneme duration sequence, unit: s
@@ -216,7 +216,7 @@ namespace OpenUtau.Core.DiffSinger {
             //endPos: target end time, unit: s
             //output: scaled phoneme position, unit: s
             double startPos = endPos - source.Sum() * ratio;
-            var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0),startPos).ToList();
+            var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0), startPos).ToList();
             result.RemoveAt(result.Count - 1);
             return result;
         }

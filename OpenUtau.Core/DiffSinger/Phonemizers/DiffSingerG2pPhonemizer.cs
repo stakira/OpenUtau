@@ -1,25 +1,23 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using OpenUtau.Api;
 using OpenUtau.Classic;
+using Serilog;
 
-namespace OpenUtau.Core.DiffSinger
-{
-    class DiffSingerG2pDictionaryData : G2pDictionaryData{
-        public struct Replacement{
+namespace OpenUtau.Core.DiffSinger {
+    class DiffSingerG2pDictionaryData : G2pDictionaryData {
+        public struct Replacement {
             public string from;
             public string to;
         }
         public Replacement[]? replacements;
 
-        public Dictionary<string, string> replacementsDict(){
+        public Dictionary<string, string> replacementsDict() {
             var dict = new Dictionary<string, string>();
-            if(replacements!=null){
-                foreach(var r in replacements){
+            if (replacements != null) {
+                foreach (var r in replacements) {
                     dict[r.from] = r.to;
                 }
             }
@@ -30,12 +28,11 @@ namespace OpenUtau.Core.DiffSinger
     /// <summary>
     /// Base class for DiffSinger phonemizers based on OpenUtau's builtin G2p.
     /// </summary>
-    public abstract class DiffSingerG2pPhonemizer : DiffSingerBasePhonemizer
-    {
-        protected virtual IG2p LoadBaseG2p()=>null;
+    public abstract class DiffSingerG2pPhonemizer : DiffSingerBasePhonemizer {
+        protected virtual IG2p LoadBaseG2p() => null;
         //vowels and consonants of BaseG2p
-        protected virtual string[] GetBaseG2pVowels()=>new string[]{};
-        protected virtual string[] GetBaseG2pConsonants()=>new string[]{};
+        protected virtual string[] GetBaseG2pVowels() => new string[] { };
+        protected virtual string[] GetBaseG2pConsonants() => new string[] { };
 
         private Dictionary<string, bool> phonemeSymbols = new Dictionary<string, bool>();
         protected bool HasPhoneme(string phoneme) {
@@ -46,13 +43,13 @@ namespace OpenUtau.Core.DiffSinger
             //Each phonemizer has a delicated dictionary name, such as dsdict-en.yaml, dsdict-ru.yaml.
             //If this dictionary exists, load it.
             //If not, load dsdict.yaml.
-            var dictionaryNames = new string[] {GetDictionaryName(), "dsdict.yaml"};
+            var dictionaryNames = new string[] { GetDictionaryName(), "dsdict.yaml" };
             var g2ps = new List<IG2p>();
 
             // Load dictionary from singer folder.
             G2pDictionary.Builder g2pBuilder = new G2pDictionary.Builder();
-            var replacements = new Dictionary<string,string>();
-            foreach(var dictionaryName in dictionaryNames){
+            var replacements = new Dictionary<string, string>();
+            foreach (var dictionaryName in dictionaryNames) {
                 string dictionaryPath = Path.Combine(rootPath, dictionaryName);
                 if (File.Exists(dictionaryPath)) {
                     try {
@@ -80,31 +77,31 @@ namespace OpenUtau.Core.DiffSinger
 
             // Load base g2p.
             var baseG2p = LoadBaseG2p();
-            if(baseG2p == null){
+            if (baseG2p == null) {
                 return new G2pFallbacks(g2ps.ToArray());
             }
-            foreach(var v in GetBaseG2pVowels()){
-                phonemeSymbols[v]=true;
+            foreach (var v in GetBaseG2pVowels()) {
+                phonemeSymbols[v] = true;
             }
-            foreach(var c in GetBaseG2pConsonants()){
-                phonemeSymbols[c]=false;
+            foreach (var c in GetBaseG2pConsonants()) {
+                phonemeSymbols[c] = false;
             }
-            if(useLangId){
+            if (useLangId) {
                 //For diffsinger multi dict voicebanks, the replacements of g2p phonemes default to the <langcode>/<phoneme>
                 var langCode = GetLangCode();
-                foreach(var ph in GetBaseG2pVowels().Concat(GetBaseG2pConsonants())){
-                    if(!replacements.ContainsKey(ph)){
-                        replacements[ph]=langCode + "/" + ph;
+                foreach (var ph in GetBaseG2pVowels().Concat(GetBaseG2pConsonants())) {
+                    if (!replacements.ContainsKey(ph)) {
+                        replacements[ph] = langCode + "/" + ph;
                     }
                 }
             }
-            foreach(var from in replacements.Keys){
+            foreach (var from in replacements.Keys) {
                 var to = replacements[from];
-                if(baseG2p.IsValidSymbol(to)){
-                    if(baseG2p.IsVowel(to)){
-                        phonemeSymbols[from]=true;
-                    }else{
-                        phonemeSymbols[from]=false;
+                if (baseG2p.IsValidSymbol(to)) {
+                    if (baseG2p.IsVowel(to)) {
+                        phonemeSymbols[from] = true;
+                    } else {
+                        phonemeSymbols[from] = false;
                     }
                 }
             }

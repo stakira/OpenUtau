@@ -24,14 +24,12 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new List<string>();
             if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
-            }
-            else if (syllable.IsStartingCV) {
+            } else if (syllable.IsStartingCV) {
                 basePhoneme = $"- {cc.Last()}{v}";
                 for (var i = 0; i < cc.Length - 1; i++) {
                     phonemes.Add($"- {cc[i]}");
                 }
-            }
-            else if (syllable.IsVV) {
+            } else if (syllable.IsVV) {
                 if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = v;
                 } else {

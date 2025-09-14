@@ -88,81 +88,81 @@ namespace OpenUtau.Core.DiffSinger {
             }
             // name
             writer.Write(namedOnnxValue.Name);
-            var tensorBase = (TensorBase) namedOnnxValue.Value;
+            var tensorBase = (TensorBase)namedOnnxValue.Value;
             var elementType = tensorBase.GetTypeInfo().ElementType;
             // dtype
             writer.Write((int)elementType);
             switch (elementType) {
                 case TensorElementType.Float: {
-                    var tensor = namedOnnxValue.AsTensor<float>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<float>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt8: {
-                    var tensor = namedOnnxValue.AsTensor<byte>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<byte>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Int8: {
-                    var tensor = namedOnnxValue.AsTensor<sbyte>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<sbyte>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt16: {
-                    var tensor = namedOnnxValue.AsTensor<ushort>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<ushort>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Int16: {
-                    var tensor = namedOnnxValue.AsTensor<short>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<short>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Int32: {
-                    var tensor = namedOnnxValue.AsTensor<int>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<int>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Int64: {
-                    var tensor = namedOnnxValue.AsTensor<long>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<long>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.String: {
-                    var tensor = namedOnnxValue.AsTensor<string>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<string>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Bool: {
-                    var tensor = namedOnnxValue.AsTensor<bool>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<bool>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Float16: {
-                    var tensor = namedOnnxValue.AsTensor<Float16>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<Float16>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Double: {
-                    var tensor = namedOnnxValue.AsTensor<double>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<double>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt32: {
-                    var tensor = namedOnnxValue.AsTensor<uint>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<uint>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt64: {
-                    var tensor = namedOnnxValue.AsTensor<ulong>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<ulong>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.BFloat16: {
-                    var tensor = namedOnnxValue.AsTensor<BFloat16>();
-                    SerializeTensor(writer, tensor);
-                    break;
-                }
+                        var tensor = namedOnnxValue.AsTensor<BFloat16>();
+                        SerializeTensor(writer, tensor);
+                        break;
+                    }
                 case TensorElementType.Complex64:
                 case TensorElementType.Complex128:
                 case TensorElementType.DataTypeMax:
@@ -216,80 +216,80 @@ namespace OpenUtau.Core.DiffSinger {
             NamedOnnxValue namedOnnxValue;
             switch (dtype) {
                 case TensorElementType.Float: {
-                    var tensor = DeserializeTensor<float>(reader, size, sizeof(float), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.UInt8: {
-                    var tensor = DeserializeTensor<byte>(reader, size, sizeof(byte), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.Int8: {
-                    var tensor = DeserializeTensor<sbyte>(reader, size, sizeof(sbyte), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.UInt16: {
-                    var tensor = DeserializeTensor<ushort>(reader, size, sizeof(ushort), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.Int16: {
-                    var tensor = DeserializeTensor<short>(reader, size, sizeof(short), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.Int32: {
-                    var tensor = DeserializeTensor<int>(reader, size, sizeof(int), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.Int64: {
-                    var tensor = DeserializeTensor<long>(reader, size, sizeof(long), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
-                case TensorElementType.String: {
-                    // string tensor
-                    Tensor<string> tensor = new DenseTensor<string>(size);
-                    for (var i = 0; i < size; ++i) {
-                        tensor[i] = reader.ReadString();
+                        var tensor = DeserializeTensor<float>(reader, size, sizeof(float), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
                     }
-                    tensor = tensor.Reshape(shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                case TensorElementType.UInt8: {
+                        var tensor = DeserializeTensor<byte>(reader, size, sizeof(byte), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.Int8: {
+                        var tensor = DeserializeTensor<sbyte>(reader, size, sizeof(sbyte), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.UInt16: {
+                        var tensor = DeserializeTensor<ushort>(reader, size, sizeof(ushort), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.Int16: {
+                        var tensor = DeserializeTensor<short>(reader, size, sizeof(short), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.Int32: {
+                        var tensor = DeserializeTensor<int>(reader, size, sizeof(int), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.Int64: {
+                        var tensor = DeserializeTensor<long>(reader, size, sizeof(long), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
+                case TensorElementType.String: {
+                        // string tensor
+                        Tensor<string> tensor = new DenseTensor<string>(size);
+                        for (var i = 0; i < size; ++i) {
+                            tensor[i] = reader.ReadString();
+                        }
+                        tensor = tensor.Reshape(shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.Bool: {
-                    var tensor = DeserializeTensor<bool>(reader, size, sizeof(bool), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<bool>(reader, size, sizeof(bool), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.Float16: {
-                    var tensor = DeserializeTensor<Float16>(reader, size, sizeof(ushort), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<Float16>(reader, size, sizeof(ushort), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.Double: {
-                    var tensor = DeserializeTensor<double>(reader, size, sizeof(double), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<double>(reader, size, sizeof(double), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt32: {
-                    var tensor = DeserializeTensor<uint>(reader, size, sizeof(uint), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<uint>(reader, size, sizeof(uint), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.UInt64: {
-                    var tensor = DeserializeTensor<ulong>(reader, size, sizeof(ulong), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<ulong>(reader, size, sizeof(ulong), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.BFloat16: {
-                    var tensor = DeserializeTensor<BFloat16>(reader, size, sizeof(ushort), shape);
-                    namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
-                    break;
-                }
+                        var tensor = DeserializeTensor<BFloat16>(reader, size, sizeof(ushort), shape);
+                        namedOnnxValue = NamedOnnxValue.CreateFromTensor(name, tensor);
+                        break;
+                    }
                 case TensorElementType.Complex64:
                 case TensorElementType.Complex128:
                 case TensorElementType.DataTypeMax:
@@ -300,8 +300,7 @@ namespace OpenUtau.Core.DiffSinger {
             return namedOnnxValue;
         }
 
-        private static Tensor<T> DeserializeTensor<T>(BinaryReader reader, int size, int typeSize, ReadOnlySpan<int> shape)
-        {
+        private static Tensor<T> DeserializeTensor<T>(BinaryReader reader, int size, int typeSize, ReadOnlySpan<int> shape) {
             var bytes = reader.ReadBytes(size * typeSize);
             var data = new T[size];
             Buffer.BlockCopy(bytes, 0, data, 0, bytes.Length);

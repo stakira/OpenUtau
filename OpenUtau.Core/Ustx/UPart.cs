@@ -66,7 +66,7 @@ namespace OpenUtau.Core.Ustx {
             project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
             return project.timeAxis.BarBeatToTickPos(bar, beat + 1) - position;
         }
-        
+
         public override int GetMaxPosiTick(UProject project) {
             int maxStartTick = position + (notes.FirstOrDefault()?.position ?? Duration);
             project.timeAxis.TickPosToBarBeat(maxStartTick, out int bar, out int beat, out int remainingTicks);

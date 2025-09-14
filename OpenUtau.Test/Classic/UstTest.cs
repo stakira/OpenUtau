@@ -78,11 +78,13 @@ PBY=-20.7,
                     Assert.Single(part.notes);
                     Assert.Equal("A==B[C=D],EFG", part.notes.First().lyric);
                     Assert.Equal(60, part.notes.First().tone);
-                    Assert.Equivalent(new UPitch {data = new List<PitchPoint> {
+                    Assert.Equivalent(new UPitch {
+                        data = new List<PitchPoint> {
                             new PitchPoint { X = -222, Y = -19, shape = PitchPointShape.io},
                             new PitchPoint { X = 70, Y = -20.7f, shape = PitchPointShape.io}, // X = -222 + 292 = 70
                             new PitchPoint { X = 253, Y = 0, shape = PitchPointShape.io} // X = 70 + 183 = 253
-                        }, snapFirst = false } , part.notes.First().pitch);
+                        }, snapFirst = false
+                    }, part.notes.First().pitch);
                     Assert.Equivalent(new UVibrato { length = 80, period = 200, depth = 20, @in = 20, @out = 20, shift = 0, drift = -50, volLink = 0 }, part.notes.First().vibrato);
                 }
             }
@@ -106,7 +108,7 @@ PBY=-20.7,
             var before = UNote.Create();
             before.lyric = "a";
             before.duration = 100;
-            
+
             var first = UNote.Create();
             first.lyric = "ka";
             first.duration = 200;
@@ -116,11 +118,11 @@ PBY=-20.7,
                             new PitchPoint { X = 93.75f, Y = -12.2f, shape = PitchPointShape.io},
                             new PitchPoint { X = 194.7f, Y = 0, shape = PitchPointShape.io}
             };
-            
+
             var second = UNote.Create();
             second.lyric = "r";
             second.duration = 300;
-            
+
             var third = UNote.Create();
             third.lyric = "ta";
             third.duration = 400;
@@ -132,11 +134,11 @@ PBY=-20.7,
             var last = UNote.Create();
             last.lyric = "na";
             last.duration = 500;
-            
+
             var after = UNote.Create();
             after.lyric = "ha";
             after.duration = 600;
-            
+
             part.notes.Add(before);
             part.notes.Add(first);
             part.notes.Add(second);

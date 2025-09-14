@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using System.Linq;
 using Serilog;
-using System.IO;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>

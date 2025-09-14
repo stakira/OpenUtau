@@ -33,7 +33,7 @@ namespace OpenUtau.Plugins {
 
         [Fact]
         public void ColorTest() {
-            RunPhonemizeTest("ja_cvvc", new NoteParams[] { 
+            RunPhonemizeTest("ja_cvvc", new NoteParams[] {
                new NoteParams {
                    lyric = "あ",
                    hint = "",

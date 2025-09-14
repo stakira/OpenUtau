@@ -16,7 +16,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public ExpDisMode DisplayMode { get; set; }
         [Reactive] public UExpressionDescriptor? Descriptor { get; set; }
         public string Abbr {
-            get{
+            get {
                 if (Descriptor == null) {
                     return "";
                 }
@@ -52,7 +52,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public bool SetExp(string abbr) {
-            if(Descriptors.Any(d => d.abbr == abbr)) {
+            if (Descriptors.Any(d => d.abbr == abbr)) {
                 Descriptor = Descriptors.First(d => d.abbr == abbr);
                 return true;
             } else {
@@ -67,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
             if (DisplayMode != ExpDisMode.Visible && Descriptor != null) {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Descriptor.abbr, Index, true));
             }
-            if(store) {
+            if (store) {
                 var project = DocManager.Inst.Project;
                 project.expSecondary = project.expPrimary;
                 project.expPrimary = Index;

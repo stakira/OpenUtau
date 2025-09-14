@@ -459,7 +459,7 @@ namespace OpenUtau.Classic {
                 .ToList();
             return (toRemove, toAdd);
         }
-        
+
         public static void WriteForSetParam(UProject project, string filePath, List<UOto> otos) {
             using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding("shift_jis"))) {
                 writer.WriteLine("[#SETTING]");

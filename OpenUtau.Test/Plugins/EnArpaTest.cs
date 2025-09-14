@@ -61,7 +61,7 @@ namespace OpenUtau.Plugins {
         [InlineData("asdfjkl", "r iy d", new string[] { "- r_3", "r iy_3", "iy d_3", "d -_3" })]
         [InlineData("", "r iy d", new string[] { "- r_3", "r iy_3", "iy d_3", "d -_3" })]
         public void HintTest(string lyric, string hint, string[] aliases) {
-            RunPhonemizeTest("en_arpa", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "")} }, aliases);
+            RunPhonemizeTest("en_arpa", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnFinish(object? sender, RoutedEventArgs e) {
-            if((DataContext as LyricsReplaceViewModel)!.Finish()) {
+            if ((DataContext as LyricsReplaceViewModel)!.Finish()) {
                 Close();
             }
         }

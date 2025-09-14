@@ -54,7 +54,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (presamp.PhonemeList.TryGetValue(prevLyric, out PresampPhoneme prevPhoneme)) {
                     prevVowel = prevPhoneme.Vowel;
                 }
-            };
+            }
             string vcpad = presamp.AliasRules.VCPAD;
 
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;

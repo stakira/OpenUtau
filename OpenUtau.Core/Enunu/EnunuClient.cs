@@ -9,7 +9,7 @@ namespace OpenUtau.Core.Enunu {
         internal T SendRequest<T>(string[] args) {
             return SendRequest<T>(args, "15555");
         }
-        internal T SendRequest<T>(string[] args, string port,int second = 300 ) {
+        internal T SendRequest<T>(string[] args, string port, int second = 300) {
             using (var client = new RequestSocket()) {
                 client.Connect($"tcp://localhost:{port}");
                 string request = JsonConvert.SerializeObject(args);

@@ -54,7 +54,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // The alias for no previous neighbour note. For example, "- な" for "な".
-            string[] tests = new string[] { $"- {currentLyric}" , currentLyric};
+            string[] tests = new string[] { $"- {currentLyric}", currentLyric };
             if (prevNeighbour != null) {
                 // If there is a previous neighbour note, first get its hint or lyric.
                 var prevLyric = prevNeighbour.Value.lyric.Normalize();

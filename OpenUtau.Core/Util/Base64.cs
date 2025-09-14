@@ -5,31 +5,22 @@ using System.Text;
 using Serilog;
 
 namespace OpenUtau.Core.Util {
-    public static class Base64
-    {
-        public static string Base64EncodeInt12(int[] data)
-        {
+    public static class Base64 {
+        public static string Base64EncodeInt12(int[] data) {
             List<string> l = new List<string>();
-            foreach (int d in data)
-            {
+            foreach (int d in data) {
                 l.Add(Base64EncodeInt12(d));
             }
 
             StringBuilder base64 = new StringBuilder();
             string last = string.Empty;
             int dups = 0;
-            foreach (string b in l)
-            {
-                if (last == b)
-                {
+            foreach (string b in l) {
+                if (last == b) {
                     dups++;
-                }
-                else if (dups == 0)
-                {
+                } else if (dups == 0) {
                     base64.Append(b);
-                }
-                else
-                {
+                } else {
                     base64.Append('#');
                     base64.Append(dups);
                     base64.Append('#');
@@ -38,8 +29,7 @@ namespace OpenUtau.Core.Util {
                 }
                 last = b;
             }
-            if (dups != 0)
-            {
+            if (dups != 0) {
                 base64.Append('#');
                 base64.Append(dups);
                 base64.Append('#');
@@ -49,10 +39,8 @@ namespace OpenUtau.Core.Util {
 
         private const string intToBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-        private static string Base64EncodeInt12(int data)
-        {
-            if (data < 0)
-            {
+        private static string Base64EncodeInt12(int data) {
+            if (data < 0) {
                 data += 4096;
             }
 
@@ -62,7 +50,7 @@ namespace OpenUtau.Core.Util {
             return new string(base64);
         }
 
-        public static void Base64ToFile(string base64str,string filePath) {
+        public static void Base64ToFile(string base64str, string filePath) {
             try {
                 byte[] bytes = Convert.FromBase64String(base64str);
 

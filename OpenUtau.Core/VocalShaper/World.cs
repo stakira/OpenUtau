@@ -1,9 +1,7 @@
 ﻿using System;
 
-namespace VocalShaper.World
-{
-    public static class World
-    {
+namespace VocalShaper.World {
+    public static class World {
         /// <summary>
         /// 合成
         /// </summary>
@@ -33,19 +31,16 @@ namespace VocalShaper.World
             double[] voicing,
             double[] gender,
             double phase = 0,
-            int noiseIndex = 0)
-        {
+            int noiseIndex = 0) {
             double f2i = (double)fftSize / fs;
             return vsVocoder.Synthesis(out result,
-                (i, f) =>
-                {
+                (i, f) => {
                     double fi = f * f2i;
                     int floorIndex = (int)fi;
                     int ceillingIndex = floorIndex + 1;
                     return Math.Sqrt(VSMath.LineLerp(sp[i, floorIndex], sp[i, ceillingIndex], fi - floorIndex));
                 },
-                (i, f) =>
-                {
+                (i, f) => {
                     double fi = f * f2i;
                     int floorIndex = (int)fi;
                     int ceillingIndex = floorIndex + 1;

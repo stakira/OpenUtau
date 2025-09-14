@@ -32,7 +32,7 @@ namespace OpenUtau.Core {
             { "B", 11 },
         };
 
-        public static readonly string[] Solfeges = { 
+        public static readonly string[] Solfeges = {
             "do",
             "",
             "re",
@@ -121,7 +121,7 @@ namespace OpenUtau.Core {
         const double ep = 0.001;
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x) {
-            if(x1 - x0 < ep){
+            if (x1 - x0 < ep) {
                 return y1;
             }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
@@ -132,7 +132,7 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingIn(double x0, double x1, double y0, double y1, double x) {
-            if(x1 - x0 < ep){
+            if (x1 - x0 < ep) {
                 return y1;
             }
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));
@@ -143,7 +143,7 @@ namespace OpenUtau.Core {
         }
 
         public static double SinEasingOut(double x0, double x1, double y0, double y1, double x) {
-            if(x1 - x0 < ep){
+            if (x1 - x0 < ep) {
                 return y1;
             }
             return y0 + (y1 - y0) * Math.Sin((x - x0) / (x1 - x0) * Math.PI / 2);
@@ -154,7 +154,7 @@ namespace OpenUtau.Core {
         }
 
         public static double Linear(double x0, double x1, double y0, double y1, double x) {
-            if(x1 - x0 < ep){
+            if (x1 - x0 < ep) {
                 return y1;
             }
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);

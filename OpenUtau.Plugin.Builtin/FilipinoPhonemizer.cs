@@ -36,7 +36,7 @@ namespace OpenUtau.Plugin.Builtin {
         // Store the merging replacements
         private List<Replacement> mergingReplacements = new List<Replacement>();
 
-        string[] diphthongs = new[] { "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw"  };
+        string[] diphthongs = new[] { "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw" };
 
         // For banks with missing vowels
         private readonly Dictionary<string, string> missingVphonemes = "ax=a".Split(',')
@@ -67,7 +67,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"uy","u"},
                 {"ew","e"},
             };
-        
+
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
                 {"aw","w"},
@@ -327,7 +327,7 @@ namespace OpenUtau.Plugin.Builtin {
                             Log.Error($"Failed to load fallbacks from filipino.yaml: {ex.Message}");
                         }
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse filipino.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
+                        Log.Error($"Failed to parse filipino.yaml: {ex.Message}, content: {File.ReadAllText(file)}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();

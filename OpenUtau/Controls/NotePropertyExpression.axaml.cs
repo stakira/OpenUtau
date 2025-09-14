@@ -10,7 +10,7 @@ namespace OpenUtau.App.Controls {
 
         public NotePropertyExpression() {
             InitializeComponent();
-            
+
             slider.AddHandler(PointerPressedEvent, SliderPointerPressed, RoutingStrategies.Tunnel);
             slider.AddHandler(PointerReleasedEvent, SliderPointerReleased, RoutingStrategies.Tunnel);
             slider.AddHandler(PointerMovedEvent, SliderPointerMoved, RoutingStrategies.Tunnel);

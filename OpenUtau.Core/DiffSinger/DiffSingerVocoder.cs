@@ -30,8 +30,7 @@ namespace OpenUtau.Core.DiffSinger {
                     File.ReadAllText(Path.Combine(Location, "vocoder.yaml"),
                         System.Text.Encoding.UTF8));
                 model = File.ReadAllBytes(Path.Combine(Location, config.model));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new MessageCustomizableException(
                     $"Error loading vocoder \"{name}\"",
                     $"<translate:errors.diffsinger.downloadvocoder>",

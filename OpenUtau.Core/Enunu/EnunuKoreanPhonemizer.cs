@@ -10,13 +10,13 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu Korean Phonemizer", "ENUNU KO", "EX3", language:"KO")]
+    [Phonemizer("Enunu Korean Phonemizer", "ENUNU KO", "EX3", language: "KO")]
     public class EnunuKoreanPhonemizer : EnunuPhonemizer {
         readonly string PhonemizerType = "ENUNU KO";
         public string semivowelSep;
         private KoreanENUNUSetting koreanENUNUSetting; // Manages Settings
         private bool isSeparateSemiVowels; // Nanages n y a or ny a
-        
+
         /// <summary>
         /// Default KO ENUNU first consonants table
         /// </summary>
@@ -166,7 +166,7 @@ namespace OpenUtau.Core.Enunu {
             {" ", new string[3]{"", "", BatchimType.NO_END.ToString()}},
             {"null", new string[3]{"", "", BatchimType.PHONEME_IS_NULL.ToString()}} // 뒤 글자가 없을 때를 대비
             };
-    
+
         struct TimingResult {
             public string path_full_timing;
             public string path_mono_timing;
@@ -177,12 +177,12 @@ namespace OpenUtau.Core.Enunu {
             public TimingResult result;
         }
         public override void SetSinger(USinger singer) {
-            if (singer.SingerType != USingerType.Enunu) {return;}
+            if (singer.SingerType != USingerType.Enunu) { return; }
 
             this.singer = singer as EnunuSinger;
 
             koreanENUNUSetting = new KoreanENUNUSetting("jamo_dict.yaml");
-            
+
             koreanENUNUSetting.Initialize(singer, "ko-ENUNU.ini", new Hashtable(){
                 {
                     "SETTING", new Hashtable(){
@@ -193,7 +193,7 @@ namespace OpenUtau.Core.Enunu {
             );
 
             isSeparateSemiVowels = koreanENUNUSetting.isSeparateSemiVowels;
-            semivowelSep = isSeparateSemiVowels ? " ": "";
+            semivowelSep = isSeparateSemiVowels ? " " : "";
 
             // Modify Phoneme Tables
             // First Consonants
@@ -217,7 +217,7 @@ namespace OpenUtau.Core.Enunu {
             FirstConsonants["ㅍ"][0] = $"{koreanENUNUSetting.GetFirstConsonantPhoneme("ㅍ")}";
             FirstConsonants["ㅎ"][0] = $"{koreanENUNUSetting.GetFirstConsonantPhoneme("ㅎ")}";
 
-            
+
             // Vowels
             MiddleVowels["ㅑ"][1] = koreanENUNUSetting.GetSemiVowelPhoneme("y");
             MiddleVowels["ㅒ"][1] = koreanENUNUSetting.GetSemiVowelPhoneme("y");
@@ -253,8 +253,8 @@ namespace OpenUtau.Core.Enunu {
             MiddleVowels["ㅡ"][2] = $"{koreanENUNUSetting.GetPlainVowelPhoneme("ㅡ")}";
             MiddleVowels["ㅢ"][2] = $"{koreanENUNUSetting.GetPlainVowelPhoneme("ㅣ")}"; // ㅢ는 ㅣ로 발음
             MiddleVowels["ㅣ"][2] = $"{koreanENUNUSetting.GetPlainVowelPhoneme("ㅣ")}";
-        
-        // final consonants
+
+            // final consonants
             LastConsonants["ㄱ"][0] = $" {koreanENUNUSetting.GetFinalConsonantPhoneme("ㄱ")}";
             LastConsonants["ㄲ"][0] = $" {koreanENUNUSetting.GetFinalConsonantPhoneme("ㄱ")}";
             LastConsonants["ㄳ"][0] = $" {koreanENUNUSetting.GetFinalConsonantPhoneme("ㄱ")}";
@@ -284,7 +284,7 @@ namespace OpenUtau.Core.Enunu {
             LastConsonants["ㅎ"][0] = $" {koreanENUNUSetting.GetFinalConsonantPhoneme("ㄷ")}";
 
         }
-        private class KoreanENUNUSetting : KoreanPhonemizerUtil.BaseIniManager{
+        private class KoreanENUNUSetting : KoreanPhonemizerUtil.BaseIniManager {
             // uses KO-ENUNU.ini, jamo_dict.yaml
             public bool isSeparateSemiVowels;
             public string yamlFileName;
@@ -296,21 +296,20 @@ namespace OpenUtau.Core.Enunu {
                 // ko-ENUNU.ini + jamo_dict.yaml
                 SetOrReadThisValue("SETTING", "Separate semivowels, like 'n y a'(otherwise 'ny a')", false, out var resultValue); // 반자음 떼기 유무 - 기본값 false
                 isSeparateSemiVowels = resultValue;
-                
+
                 try {
                     jamoDict = Yaml.DefaultDeserializer.Deserialize<KoreanPhonemizerUtil.JamoDictionary>(File.ReadAllText(Path.Combine(singer.Location, yamlFileName)));
                     if (jamoDict == null) {
                         throw new IOException("yaml file is null");
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Log.Error(e, $"Failed to read {Path.Combine(singer.Location, yamlFileName)}");
 
                     jamoDict = new KoreanPhonemizerUtil.JamoDictionary(firstDefaultConsonants.ToArray(), plainDefaultVowels.ToArray(), semiDefaultVowels.ToArray(), finalDefaultConsonants.ToArray());
 
                     File.WriteAllText(Path.Combine(singer.Location, yamlFileName), Yaml.DefaultSerializer.Serialize(jamoDict));
                 }
-                
+
             }
 
 
@@ -340,7 +339,7 @@ namespace OpenUtau.Core.Enunu {
                 }
                 return result.Trim();
             }
-            
+
             public string GetFinalConsonantPhoneme(string Phoneme) {
                 KoreanPhonemizerUtil.JamoDictionary.FinalConsonantData results = jamoDict.finalConsonants.ToList().Find(c => c.grapheme == Phoneme);
                 string result = results.phoneme;
@@ -351,49 +350,49 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        public enum ConsonantType{ 
-                /// <summary>예사소리</summary>
-                NORMAL, 
-                /// <summary>거센소리</summary>
-                ASPIRATE, 
-                /// <summary>된소리</summary>
-                FORTIS, 
-                /// <summary>마찰음</summary>
-                FRICATIVE, 
-                /// <summary>비음</summary>
-                NASAL,
-                /// <summary>유음</summary>
-                LIQUID, 
-                /// <summary>ㅎ</summary>
-                H,
-                /// <summary>자음의 음소값 없음(ㅇ)</summary>
-                NOCONSONANT, 
-                /// <summary>음소 자체가 없음</summary>
-                PHONEME_IS_NULL
-            }
-            
-            /// <summary>
-            /// Last Consonant's type.
-            /// </summary>
-            public enum BatchimType{ 
-                /// <summary>예사소리 받침</summary>
-                NORMAL_END, 
-                /// <summary>비음 받침</summary>
-                NASAL_END,
-                /// <summary>유음 받침</summary>
-                LIQUID_END, 
-                /// <summary>ㅇ받침</summary>
-                NG_END, 
-                /// <summary>ㅎ받침</summary>
-                H_END,
-                /// <summary>받침이 없음</summary>
-                NO_END,
-                /// <summary>음소 자체가 없음</summary>
-                PHONEME_IS_NULL
-            }
-            
+        public enum ConsonantType {
+            /// <summary>예사소리</summary>
+            NORMAL,
+            /// <summary>거센소리</summary>
+            ASPIRATE,
+            /// <summary>된소리</summary>
+            FORTIS,
+            /// <summary>마찰음</summary>
+            FRICATIVE,
+            /// <summary>비음</summary>
+            NASAL,
+            /// <summary>유음</summary>
+            LIQUID,
+            /// <summary>ㅎ</summary>
+            H,
+            /// <summary>자음의 음소값 없음(ㅇ)</summary>
+            NOCONSONANT,
+            /// <summary>음소 자체가 없음</summary>
+            PHONEME_IS_NULL
+        }
+
+        /// <summary>
+        /// Last Consonant's type.
+        /// </summary>
+        public enum BatchimType {
+            /// <summary>예사소리 받침</summary>
+            NORMAL_END,
+            /// <summary>비음 받침</summary>
+            NASAL_END,
+            /// <summary>유음 받침</summary>
+            LIQUID_END,
+            /// <summary>ㅇ받침</summary>
+            NG_END,
+            /// <summary>ㅎ받침</summary>
+            H_END,
+            /// <summary>받침이 없음</summary>
+            NO_END,
+            /// <summary>음소 자체가 없음</summary>
+            PHONEME_IS_NULL
+        }
+
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
-        
+
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
             partResult.Clear();
             if (notes.Length == 0 || singer == null || !singer.Found) {
@@ -426,7 +425,7 @@ namespace OpenUtau.Core.Enunu {
                     }
                 });
         }
-        
+
         ulong HashNoteGroups(Note[][] notes, double bpm) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
@@ -436,8 +435,8 @@ namespace OpenUtau.Core.Enunu {
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
-                            if(n.phoneticHint!= null) {
-                                writer.Write("["+n.phoneticHint+"]");
+                            if (n.phoneticHint != null) {
+                                writer.Write("[" + n.phoneticHint + "]");
                             }
                             writer.Write(n.position);
                             writer.Write(n.duration);
@@ -488,7 +487,7 @@ namespace OpenUtau.Core.Enunu {
             var result = new List<EnunuNote>();
             int position = 0;
             int index = 0;
-            
+
             while (index < notes.Length) {
                 if (position < notes[index][0].position) {
                     result.Add(new EnunuNote {
@@ -516,10 +515,10 @@ namespace OpenUtau.Core.Enunu {
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             if (partResult.TryGetValue(notes, out var phonemes)) {
                 var phonemes_ = phonemes.Select(p => {
-                        double posMs = p.position * 0.1;
-                        p.position = MsToTick(posMs) - notes[0].position;
-                        return p;
-                    }).ToArray();
+                    double posMs = p.position * 0.1;
+                    p.position = MsToTick(posMs) - notes[0].position;
+                    return p;
+                }).ToArray();
 
                 return new Result {
                     phonemes = phonemes_,

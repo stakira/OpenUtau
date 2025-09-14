@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Media;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using NWaves.Signals;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
-using Avalonia.Media.Imaging;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Serilog;
-using System.Threading;
-using NWaves.Signals;
 
 namespace OpenUtau.App.Controls {
     class PartControl : Control, IDisposable, IProgress<int> {

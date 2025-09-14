@@ -1,13 +1,13 @@
-﻿using Melanchall.DryWetMidi.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Melanchall.DryWetMidi.Common;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using System.Text;
-using System.IO;
 using UtfUnknown;
-using System.Linq;
 
 namespace OpenUtau.Core.Format {
     public class EncodingDetector {
@@ -16,9 +16,9 @@ namespace OpenUtau.Core.Format {
 
         public void ReadFile(string file) {
             var ReadingSettings = MidiWriter.BaseReadingSettings();
-            
+
             ReadingSettings.DecodeTextCallback = new DecodeTextCallback(AddText);
-            var midi = MidiFile.Read(file,ReadingSettings);
+            var midi = MidiFile.Read(file, ReadingSettings);
         }
 
         string AddText(byte[] bytes, ReadingSettings settings) {
@@ -72,7 +72,7 @@ namespace OpenUtau.Core.Format {
                     TrackNo = project.tracks.Count
                 };
                 part.trackNo = track.TrackNo;
-                if(part.name != "New Part"){
+                if (part.name != "New Part") {
                     track.TrackName = part.name;
                 }
                 part.AfterLoad(project, track);
@@ -98,7 +98,7 @@ namespace OpenUtau.Core.Format {
             };
         }
 
-        
+
         //Import tracks to an existing project
         static public List<UVoicePart> Load(string file, UProject project) {
             // Detects lyric encoding
@@ -106,7 +106,7 @@ namespace OpenUtau.Core.Format {
             var encodingDetector = new EncodingDetector();
             encodingDetector.ReadFile(file);
             var encodingResult = encodingDetector.Detect();
-            if(encodingResult != null) {
+            if (encodingResult != null) {
                 lyricEncoding = encodingResult;
             }
             //Get midifile resolution
@@ -189,7 +189,7 @@ namespace OpenUtau.Core.Format {
                         //{position of lyric: lyric text}
                         Dictionary<long, string> lyrics = events.Where(e => e.Event is LyricEvent)
                             .GroupBy(e => e.Time)
-                            .ToDictionary(g=> g.Key, g => ((LyricEvent)g.First().Event).Text);
+                            .ToDictionary(g => g.Key, g => ((LyricEvent)g.First().Event).Text);
                         var trackName = events.Where(e => e.Event is SequenceTrackNameEvent)
                             .Select(e => ((SequenceTrackNameEvent)e.Event).Text).FirstOrDefault();
                         if (trackName != null) {
@@ -243,7 +243,7 @@ namespace OpenUtau.Core.Format {
                     lastUTimeSignature = uTimeSignature;
                     lastTime = time;
                 }
-                foreach(UTempo uTempo in project.tempos){
+                foreach (UTempo uTempo in project.tempos) {
                     tempoMapManager.SetTempo(uTempo.position, Tempo.FromBeatsPerMinute(uTempo.bpm));
                 }
             }
@@ -265,7 +265,7 @@ namespace OpenUtau.Core.Format {
                         var events = objectsManager.Objects;
                         foreach (UNote note in voicePart.notes) {
                             //Ignore notes whose pitch is out of midi range
-                            if(note.tone < 0 || note.tone > 127){
+                            if (note.tone < 0 || note.tone > 127) {
                                 continue;
                             }
                             string lyric = note.lyric;
@@ -279,14 +279,14 @@ namespace OpenUtau.Core.Format {
                     }
                 }
             }
-            
-            foreach(TrackChunk trackChunk in trackChunks) {
+
+            foreach (TrackChunk trackChunk in trackChunks) {
                 midiFile.Chunks.Add(trackChunk);
             }
 
-            midiFile.Write(filePath,true,settings: new WritingSettings {
+            midiFile.Write(filePath, true, settings: new WritingSettings {
                 TextEncoding = System.Text.Encoding.UTF8,
-            }) ;
+            });
         }
     }
 }

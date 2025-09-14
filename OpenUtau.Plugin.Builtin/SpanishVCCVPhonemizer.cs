@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using System.Linq;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -242,7 +242,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
                     var cc2 = $"{string.Join("", cc.Skip(i))}";
-                    if (i + 1 < lastC && !vowels.Contains(cc2)) { 
+                    if (i + 1 < lastC && !vowels.Contains(cc2)) {
                         if (!HasOto(cc2, syllable.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
@@ -425,7 +425,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
-            foreach (var c in shortConsonants ) {
+            foreach (var c in shortConsonants) {
                 if (alias.Contains(c) && !alias.Contains("rr") && !alias.StartsWith(c) && !alias.Contains("ar") && !alias.Contains("er") && !alias.Contains("ir") && !alias.Contains("or") && !alias.Contains("ur")) {
                     return base.GetTransitionBasicLengthMs() * 0.50;
                 }

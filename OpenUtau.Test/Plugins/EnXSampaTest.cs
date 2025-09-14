@@ -49,7 +49,7 @@ namespace OpenUtau.Plugins {
         [InlineData("read", "r i d", new string[] { "- ri", "i d-" })]
 
         [InlineData("asdfjkl", "r i d", new string[] { "- ri", "i d-" })]
-        [InlineData("", "r i d", new string[] {"- ri", "i d-" })]
+        [InlineData("", "r i d", new string[] { "- ri", "i d-" })]
         public void HintTest(string lyric, string hint, string[] aliases) {
             RunPhonemizeTest("en_delta0", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C4", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
         }

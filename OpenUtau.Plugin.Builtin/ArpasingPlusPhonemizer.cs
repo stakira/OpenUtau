@@ -93,7 +93,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"ey","eh"},
                 {"oy","ao"},
             };
-        
+
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
                 {"aw","w"},
@@ -268,7 +268,7 @@ namespace OpenUtau.Plugin.Builtin {
                             Log.Error($"Failed to load fallbacks from arpasing.yaml: {ex.Message}");
                         }
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse arpasing.yaml: {ex.Message}");
+                        Log.Error($"Failed to parse arpasing.yaml: {ex.Message}");
                     }
                 }
                 ReadDictionaryAndInit();

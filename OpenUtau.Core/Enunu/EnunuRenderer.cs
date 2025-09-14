@@ -273,7 +273,7 @@ namespace OpenUtau.Core.Enunu {
                             datas.Add(matchingFlag.Item2.ToString());
                         }
                     }
-                    if (i > 2 && datas.Count == (i-1)) {
+                    if (i > 2 && datas.Count == (i - 1)) {
                         part += String.Format(styleFormats.format, datas.ToArray());
                     } else {
                         Log.Warning($"Invalid format for {key}: {styleFormats.format}");

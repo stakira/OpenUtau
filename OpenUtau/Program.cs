@@ -55,8 +55,7 @@ namespace OpenUtau.App {
         public static AppBuilder BuildAvaloniaApp() {
             FontManagerOptions fontOptions = new();
             if (OS.IsLinux()) {
-                using Process process = Process.Start(new ProcessStartInfo("fc-match")
-                {
+                using Process process = Process.Start(new ProcessStartInfo("fc-match") {
                     ArgumentList = { "-f", "%{family}" },
                     RedirectStandardOutput = true
                 })!;
@@ -64,7 +63,7 @@ namespace OpenUtau.App {
 
                 string fontFamily = process.StandardOutput.ReadToEnd();
                 if (!string.IsNullOrEmpty(fontFamily)) {
-                    string [] fontFamilies = fontFamily.Split(',');
+                    string[] fontFamilies = fontFamily.Split(',');
                     fontOptions.DefaultFamilyName = fontFamilies[0];
                 }
             } else if (OS.IsMacOS()) {
@@ -77,7 +76,7 @@ namespace OpenUtau.App {
                 .LogToTrace()
                 .UseReactiveUI()
                 .With(fontOptions)
-                .With(new X11PlatformOptions {EnableIme = true});
+                .With(new X11PlatformOptions { EnableIme = true });
         }
 
         public static void Run(string[] args)

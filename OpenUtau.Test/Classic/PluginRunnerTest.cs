@@ -49,7 +49,7 @@ namespace OpenUtau.Classic {
 
                 // Any flag must be registered in the project
                 Ustx.AddDefaultExpressions(project);
-     
+
                 var before = UNote.Create();
                 before.lyric = "a";
                 before.duration = 10;
@@ -151,7 +151,7 @@ PreUtterance=
                     // Different line feed code for each OS
                     var eol = Environment.NewLine;
                     expected = expected.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", eol);
-                
+
                     Assert.Equal(expected, text);
                     writer.Write(text);
                 };

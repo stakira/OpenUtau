@@ -116,7 +116,7 @@ namespace OpenUtau.Core.DiffSinger {
                 return true;
             }
 
-            return false; 
+            return false;
         }
 
     }

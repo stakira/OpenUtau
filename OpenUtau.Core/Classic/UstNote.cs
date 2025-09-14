@@ -277,7 +277,7 @@ namespace OpenUtau.Classic {
         }
 
         void ParsePitchBend(string pbs, string pbw, string pby, string pbm) {
-            var pitch = this.pitch != null ? this.pitch.Clone() : new UPitch() ;
+            var pitch = this.pitch != null ? this.pitch.Clone() : new UPitch();
             var points = pitch.data;
 
             // PBS
@@ -285,7 +285,7 @@ namespace OpenUtau.Classic {
                 var parts = pbs.Contains(';') ? pbs.Split(';') : pbs.Split(',');
                 float pbsX = parts.Length >= 1 && ParseFloat(parts[0], out pbsX) ? pbsX : 0;
                 float pbsY = parts.Length >= 2 && ParseFloat(parts[1], out pbsY) ? pbsY : 0;
-                if(points.Count > 0) {
+                if (points.Count > 0) {
                     points[0] = new PitchPoint(pbsX, pbsY);
                 } else {
                     points.Add(new PitchPoint(pbsX, pbsY));

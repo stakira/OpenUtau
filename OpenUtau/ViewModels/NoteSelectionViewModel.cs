@@ -5,8 +5,8 @@ using System.Linq;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.ViewModels {
-    public class NoteSelectionViewModel: IEnumerable<UNote> {
-        public NoteSelectionViewModel() {}
+    public class NoteSelectionViewModel : IEnumerable<UNote> {
+        public NoteSelectionViewModel() { }
 
 
         /// <summary>
@@ -26,13 +26,13 @@ namespace OpenUtau.App.ViewModels {
         /// The selection move/change point (either first/last of selection)
         /// </summary>
         public UNote? Head => IsReversed ? FirstOrDefault() : LastOrDefault();
-        
+
         public int Count => _notes.Count;
         public bool IsEmpty => _notes.Count == 0;
         private bool IsMultiple => _notes.Count > 1;
         public UNote? FirstOrDefault() { return _notes.FirstOrDefault(); }
         public UNote? LastOrDefault() { return _notes.LastOrDefault(); }
-        
+
         /// <summary>
         /// Add note to selection
         /// </summary>
@@ -259,7 +259,7 @@ namespace OpenUtau.App.ViewModels {
                     if (_notes.Count == 1) {
                         IsReversed = !isForwardMove;
                     }
-                    
+
                     // shrink selection if move is towards center
                     bool isShrink = IsReversed ? isForwardMove : !isForwardMove;
 

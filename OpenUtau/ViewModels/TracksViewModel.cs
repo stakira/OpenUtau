@@ -187,7 +187,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void TickToLineTick(int tick, out int left, out int right) {
-            if(tick < 0 || SnapUnit <= 0){
+            if (tick < 0 || SnapUnit <= 0) {
                 left = right = 0;
                 return;
             }

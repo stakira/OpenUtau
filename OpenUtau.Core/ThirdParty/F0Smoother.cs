@@ -124,7 +124,7 @@ namespace ThirdParty {
         private List<int> GetAdjustedWidths(List<double> f0List, List<int> rapidF0ChangeIndices) {
             var adjustedWidths = new List<int>();
             int len = f0List.Count;
-            for(int i = 0;i< rapidF0ChangeIndices.Count;i++) {
+            for (int i = 0; i < rapidF0ChangeIndices.Count; i++) {
                 var idx = rapidF0ChangeIndices[i];
                 int width = SmoothenWidthList[idx];
                 while ((idx - width) < 0 || (idx + width + 1) > len)

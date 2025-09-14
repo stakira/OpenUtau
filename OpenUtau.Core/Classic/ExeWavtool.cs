@@ -1,15 +1,15 @@
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Util;
 using Serilog;
-using System.Text.RegularExpressions;
-using System;
 
 namespace OpenUtau.Classic {
     class ExeWavtool : IWavtool {
@@ -37,8 +37,8 @@ namespace OpenUtau.Classic {
             }
             //The builtin worldline resampler can't be called from bat script,
             //so we need to call it directly from C#
-            foreach(var item in resamplerItems){
-                if(!(item.resampler is ExeResampler) && !cancellation.IsCancellationRequested && !File.Exists(item.outputFile)){
+            foreach (var item in resamplerItems) {
+                if (!(item.resampler is ExeResampler) && !cancellation.IsCancellationRequested && !File.Exists(item.outputFile)) {
                     lock (Renderers.GetCacheLock(item.outputFile)) {
                         item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                     }
@@ -132,7 +132,7 @@ namespace OpenUtau.Classic {
             string dur = $"{item.phone.duration:G999}@{item.phone.adjustedTempo:G999}{(item.durCorrection >= 0 ? "+" : "")}{item.durCorrection}";
             string relInputTemp = Path.GetRelativePath(PathManager.Inst.CachePath, item.inputTemp);
             writer.WriteLine($"@echo {MakeProgressBar(index + 1, total)}");
-            if(item.phone.direct){
+            if (item.phone.direct) {
                 writer.WriteLine($"@\"%tool%\" \"%output%\" \"%oto%\\{ConvertIfNeeded(relInputTemp)}\" {item.offset} {item.phone.durationMs:F1} %env%");
             } else {
                 writer.WriteLine($"@call %helper% \"%oto%\\{ConvertIfNeeded(relInputTemp)}\" {toneName} {dur} {item.preutter} {item.offset} {item.durRequired} {item.consonant} {item.cutoff} {index}");
@@ -162,8 +162,7 @@ namespace OpenUtau.Classic {
             // Remove "https://" case-insensitively
             if (flag.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) {
                 flag = flag.Substring(8);
-            }
-            else if (flag.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) {
+            } else if (flag.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) {
                 flag = flag.Substring(7);
             }
             return flag;
@@ -198,15 +197,15 @@ namespace OpenUtau.Classic {
         string ConvertIfNeeded(string path) {
             if (!OS.IsWindows()) return ConvertToWindowsPath(path);
             else return path;
-        } 
+        }
 
-        string ConvertToWindowsPath (string linuxPath) {
+        string ConvertToWindowsPath(string linuxPath) {
             List<char> path = new List<char>(linuxPath.ToCharArray());
             bool absolutePath = false;
             if (path[0] == '/') absolutePath = true;
             for (int i = path.Count - 1; i > 0; i--) {
-                if (path[i] == ' ' && path[i-1] == '\\') {
-                    path.RemoveAt(i-1);
+                if (path[i] == ' ' && path[i - 1] == '\\') {
+                    path.RemoveAt(i - 1);
                     i--;
                 }
             }

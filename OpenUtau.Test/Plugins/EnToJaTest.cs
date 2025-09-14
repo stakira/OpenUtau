@@ -1,10 +1,10 @@
-﻿using System.Xml.Linq;
-using System;
+﻿using System;
+using System.Linq;
+using System.Xml.Linq;
 using OpenUtau.Api;
 using OpenUtau.Plugin.Builtin;
 using Xunit;
 using Xunit.Abstractions;
-using System.Linq;
 
 namespace OpenUtau.Plugins {
     public class EnToJaTest : PhonemizerTestBase {
@@ -44,10 +44,10 @@ namespace OpenUtau.Plugins {
         new string[] { "- ごCA3", "o うA3" })]
         public void VoiceColorTest(string singerName, string color, string[] aliases) {
             RunPhonemizeTest(singerName, new NoteParams[] {
-                new NoteParams { 
-                    lyric = "go", 
-                    hint = "", 
-                    tone = "C4", 
+                new NoteParams {
+                    lyric = "go",
+                    hint = "",
+                    tone = "C4",
                     phonemes = new PhonemeParams[] {
                         new PhonemeParams {
                             shift = 0,

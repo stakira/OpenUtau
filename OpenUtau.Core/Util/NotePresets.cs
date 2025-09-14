@@ -72,7 +72,7 @@ namespace OpenUtau.Core.Util {
             public int PortamentoLength = 80;
             public int PortamentoStart = -40;
 
-            public PortamentoPreset (string name, int length, int start) {
+            public PortamentoPreset(string name, int length, int start) {
                 Name = name;
                 PortamentoLength = length;
                 PortamentoStart = start;

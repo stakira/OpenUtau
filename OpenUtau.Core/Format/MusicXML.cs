@@ -1,20 +1,17 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using System.IO;
-using System.Collections.Generic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using UtfUnknown;
 
-namespace OpenUtau.Core.Format
-{
-    public static class MusicXML
-    {
-        static public UProject LoadProject(string file)
-        {
+namespace OpenUtau.Core.Format {
+    public static class MusicXML {
+        static public UProject LoadProject(string file) {
             UProject uproject = new UProject();
             Ustx.AddDefaultExpressions(uproject);
 
@@ -25,8 +22,7 @@ namespace OpenUtau.Core.Format
 
             var score = ReadXMLScore(file);
 
-            foreach (var part in score.Part)
-            {
+            foreach (var part in score.Part) {
                 var utrack = new UTrack(uproject);
                 utrack.TrackNo = uproject.tracks.Count;
                 uproject.tracks.Add(utrack);
@@ -38,8 +34,7 @@ namespace OpenUtau.Core.Format
                 int divisions = (int)part.Measure[0].Attributes[0].Divisions;
                 int currPosTick = 0;
 
-                foreach (var measure in part.Measure)
-                {
+                foreach (var measure in part.Measure) {
                     // BPM
                     double? bpm;
                     if ((bpm = MeasureBPM(measure)).HasValue) {
@@ -62,13 +57,12 @@ namespace OpenUtau.Core.Format
                     }
 
                     // Note
-                    foreach(var note in measure.Note) {
+                    foreach (var note in measure.Note) {
                         int durTick = (int)note.Duration * uproject.resolution / divisions;
 
                         if (note.Rest != null) {
                             // pass
-                        }
-                        else {
+                        } else {
                             var pitch = note.Pitch.Step.ToString() + note.Pitch.Octave.ToString();
                             int tone = MusicMath.NameToTone(pitch) + (int)note.Pitch.Alter;
                             UNote unote = uproject.CreateNote(tone, currPosTick, durTick);
@@ -83,10 +77,10 @@ namespace OpenUtau.Core.Format
                 }
                 upart.Duration = upart.GetMinDurTick(uproject);
             }
-            if(uproject.tempos.Count == 0){
+            if (uproject.tempos.Count == 0) {
                 uproject.tempos.Add(new UTempo(0, 120));
             }
-            if(uproject.tempos[0].position > 0){
+            if (uproject.tempos[0].position > 0) {
                 uproject.tempos[0].position = 0;
             }
             uproject.AfterLoad();
@@ -94,28 +88,24 @@ namespace OpenUtau.Core.Format
             return uproject;
         }
 
-        static public Encoding DetectXMLEncoding(string file)
-        {
+        static public Encoding DetectXMLEncoding(string file) {
             Encoding xmlEncoding = Encoding.UTF8;
             var detectionResult = CharsetDetector.DetectFromFile(file);
 
-            if (detectionResult.Detected != null && detectionResult.Detected.Confidence > 0.5)
-            {
+            if (detectionResult.Detected != null && detectionResult.Detected.Confidence > 0.5) {
                 xmlEncoding = detectionResult.Detected.Encoding;
             }
             return xmlEncoding;
         }
 
-        static public double? MeasureBPM(MusicXMLSchema.ScorePartwisePartMeasure measure)
-        {
+        static public double? MeasureBPM(MusicXMLSchema.ScorePartwisePartMeasure measure) {
             foreach (var direction in measure.Direction) {
                 if (direction.Sound != null) { return (double)direction.Sound.Tempo; }
             }
             return null;
         }
 
-        static public MusicXMLSchema.ScorePartwise ReadXMLScore(string xmlFile)
-        {
+        static public MusicXMLSchema.ScorePartwise ReadXMLScore(string xmlFile) {
             Log.Information($"MusicXML Character Encoding: {DetectXMLEncoding(xmlFile)}");
 
             XmlReaderSettings settings = new XmlReaderSettings();
@@ -123,8 +113,7 @@ namespace OpenUtau.Core.Format
             settings.MaxCharactersFromEntities = 1024;
 
             using (var fs = new FileStream(xmlFile, FileMode.Open))
-            using (var xmlReader = XmlReader.Create(fs, settings))
-            {
+            using (var xmlReader = XmlReader.Create(fs, settings)) {
                 XmlSerializer s = new XmlSerializer(typeof(MusicXMLSchema.ScorePartwise));
 
                 var score = s.Deserialize(xmlReader) as MusicXMLSchema.ScorePartwise;

@@ -259,9 +259,9 @@ namespace OpenUtau.Core {
             newPitch = pitch;
         }
         public override string ToString() => "Set pitch points";
-        public override void Execute(){
+        public override void Execute() {
             lock (Part) {
-                for (var i=0; i<Notes.Length; i++) {
+                for (var i = 0; i < Notes.Length; i++) {
                     Notes[i].pitch = newPitch.Clone();
                 }
             }

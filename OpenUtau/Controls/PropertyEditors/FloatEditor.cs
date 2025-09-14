@@ -6,9 +6,8 @@ using Avalonia.Data;
 using Avalonia.Interactivity;
 using ReactiveUI;
 
-namespace OpenUtau.Controls{
-    public class FloatEditor : TextBox
-    {
+namespace OpenUtau.Controls {
+    public class FloatEditor : TextBox {
         protected override Type StyleKeyOverride => typeof(TextBox);
         public static readonly DirectProperty<FloatEditor, float> ValueProperty =
             AvaloniaProperty.RegisterDirect<FloatEditor, float>(
@@ -18,43 +17,36 @@ namespace OpenUtau.Controls{
                 defaultBindingMode: BindingMode.TwoWay);
         private float _value = 0;
 
-        public FloatEditor()
-        {
+        public FloatEditor() {
             Text = "0";
             this.WhenAnyValue(x => x.Text)
-                .Subscribe((text => { 
+                .Subscribe((text => {
                     OnTextChanged(text);
                 }));
         }
 
-        public float Value
-        {
+        public float Value {
             get => _value;
-            set
-            {
-                if (SetAndRaise(ValueProperty, ref _value, value))
-                {
+            set {
+                if (SetAndRaise(ValueProperty, ref _value, value)) {
                     Text = value.ToString();
                 }
             }
         }
 
-        protected void OnTextChanged(string? newText)
-        {
-            if (!IsKeyboardFocusWithin){
+        protected void OnTextChanged(string? newText) {
+            if (!IsKeyboardFocusWithin) {
                 return;
             }
 
-            if( newText != null && float.TryParse(newText, out float newValue))
-            {
-                Value = newValue;  
+            if (newText != null && float.TryParse(newText, out float newValue)) {
+                Value = newValue;
             }
         }
 
         protected override void OnLostFocus(RoutedEventArgs e) {
             base.OnLostFocus(e);
-            if (!float.TryParse(Text, out float newValue))
-            {
+            if (!float.TryParse(Text, out float newValue)) {
                 Text = Value.ToString();
             }
         }

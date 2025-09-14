@@ -49,7 +49,7 @@ namespace OpenUtau.Classic {
                                 plugin.AllNotes = true;
                             } else if (s[0] == "shell" && s[1] == "use") {
                                 plugin.UseShell = true;
-                            } else if (s[0] == "encoding"){
+                            } else if (s[0] == "encoding") {
                                 plugin.Encoding = s[1];
                             } else {
                                 otherLines.Add(line);
