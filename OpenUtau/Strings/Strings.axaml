@@ -61,6 +61,7 @@
   <system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>
   <system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>
   <system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.error">This singer has no voice color</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>
 
   <system:String x:Key="errors.caption">Error</system:String>
