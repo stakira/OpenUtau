@@ -608,9 +608,9 @@ namespace OpenUtau.App.Views {
                 deltaY = -pitchPoint.Y;
             } else if (isFirst && note.pitch.snapFirst) {
                 var snapTo = note.Prev == null ? note : note.Prev.End == note.position ? note.Prev : note;
-                deltaY = (snapTo.tone - note.tone) * 10 - pitchPoint.Y;
+                deltaY = (snapTo.AdjustedTone - note.AdjustedTone) * 10 - pitchPoint.Y;
             } else {
-                deltaY = (notesVm.PointToToneDouble(point) - note.tone) * 10 - pitchPoint.Y;
+                deltaY = (notesVm.PointToToneDouble(point) - note.AdjustedTone) * 10 - pitchPoint.Y;
             }
             if (deltaX == 0 && deltaY == 0) {
                 return;
