@@ -183,7 +183,8 @@ namespace OpenUtau.Core.DiffSinger
                 ? new DiffSingerCache(linguisticHash, linguisticInputs)
                 : null;
             var linguisticOutputs = linguisticCache?.Load();
-            if (linguisticOutputs is null) {
+            bool linguisticCacheHit = linguisticOutputs != null;
+            if (!linguisticCacheHit){
                 linguisticOutputs = linguisticModel.Run(linguisticInputs).Cast<NamedOnnxValue>().ToList();
                 linguisticCache?.Save(linguisticOutputs);
                 phrase.AddCacheFile(linguisticCache?.Filename);
@@ -271,8 +272,6 @@ namespace OpenUtau.Core.DiffSinger
                 .Append(0)
                 .ToList();
             note_dur[^1]=totalFrames-note_dur.Sum();
-            var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
-            var retake = Enumerable.Repeat(true, totalFrames).ToArray();
             var pitchInputs = new List<NamedOnnxValue>();
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("note_midi",
@@ -284,12 +283,25 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                 new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
+            var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
+                x => x * 0.01).Select(f => (float)f).ToArray();
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, pitch.Length })));
+            bool isRetakeActive = phrase.phones.Any(p => p.retake);
+            bool[] retakeMask;
+            //Not checking linguisticCache can bring higher flexibility
+            //if (isRetakeActive && linguisticCacheHit){
+            if (isRetakeActive){
+                retakeMask = DiffSingerUtils.GenerateRetakeMask(phrase, totalFrames, headFrames, ph_dur);
+            }
+            else
+            {
+                retakeMask = Enumerable.Repeat(true, totalFrames).ToArray();
+            }
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
-                new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
-                .Reshape(new int[] { 1, retake.Length })));
+                new DenseTensor<bool>(retakeMask, new int[] { retakeMask.Length }, false)
+                .Reshape(new int[] { 1, totalFrames })));
             var steps = Preferences.Default.DiffSingerStepsPitch;
             if (dsConfig.useContinuousAcceleration) {
                 pitchInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
