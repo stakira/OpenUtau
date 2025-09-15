@@ -79,6 +79,9 @@ namespace OpenUtau.App.ViewModels {
         private ObservableCollectionExtended<MenuItemViewModel> openTemplatesMenuItems
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
+        // view will set this to the real AskIfSaveAndContinue implementation
+        public Func<Task<bool>>? AskIfSaveAndContinue { get; set; }
+
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
@@ -92,8 +95,22 @@ namespace OpenUtau.App.ViewModels {
             Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
             TemplateFiles.AddRange(Directory.GetFiles(PathManager.Inst.TemplatesPath, "*.ustx")
                 .Select(file => new RecentFileInfo(file)));
-            OpenRecentCommand = ReactiveCommand.Create<string>(OpenRecent);
-            OpenTemplateCommand = ReactiveCommand.Create<string>(OpenTemplate);
+
+            // create async commands that consult the view's save prompt
+            OpenRecentCommand = ReactiveCommand.CreateFromTask<string>(async file => {
+                if (!DocManager.Inst.ChangesSaved && AskIfSaveAndContinue != null) {
+                    if (!await AskIfSaveAndContinue()) return;
+                }
+                OpenRecent(file);
+            });
+
+            OpenTemplateCommand = ReactiveCommand.CreateFromTask<string>(async file => {
+                if (!DocManager.Inst.ChangesSaved && AskIfSaveAndContinue != null) {
+                    if (!await AskIfSaveAndContinue()) return;
+                }
+                OpenTemplate(file);
+            });
+
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
                 TracksViewModel.DeleteSelectedParts();
             });
