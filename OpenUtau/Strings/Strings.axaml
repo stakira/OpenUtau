@@ -446,6 +446,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.paths.singer">Singer Path</system:String>
   <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
+  <system:String x:Key="prefs.nonotesizecap">Disable Note Size Cap</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>

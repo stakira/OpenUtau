@@ -257,6 +257,9 @@ namespace OpenUtau.App.Views {
             }
             int deltaDuration = newEnd - note.End;
             int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
+            if (Preferences.Default.NoNoteSizeCap) {
+                minNoteTicks = notesVm.IsSnapOn ? snapUnit : 1;
+            }
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
                 if (notesVm.Selection.Count > 0) {
@@ -337,6 +340,9 @@ namespace OpenUtau.App.Views {
                 ? note.position - newTick
                 : newTick - note.End;
             int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
+            if (Preferences.Default.NoNoteSizeCap) {
+                minNoteTicks = snapUnit = 1;
+            }
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
                 if (notesVm.Selection.Count > 0) {

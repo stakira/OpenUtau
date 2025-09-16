@@ -73,6 +73,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
         [Reactive] public bool LyricsHelperBrackets { get; set; }
         [Reactive] public bool PenPlusDefault { get; set; }
+        [Reactive] public bool NoNoteSizeCap { get; set; }
+
 
         // Render
         [Reactive] public bool PreRender { get; set; }
@@ -171,6 +173,7 @@ namespace OpenUtau.App.ViewModels {
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
+            NoNoteSizeCap = Preferences.Default.NoNoteSizeCap;
             DegreeStyle = Preferences.Default.DegreeStyle;
             UseTrackColor = Preferences.Default.UseTrackColor;
             ShowPortrait = Preferences.Default.ShowPortrait;

@@ -169,6 +169,10 @@
             <TextBlock Text="{DynamicResource prefs.penplus}" HorizontalAlignment="Left"/>
             <ToggleSwitch IsChecked="{Binding PenPlusDefault}"/>
           </Grid>
+          <Grid>
+            <TextBlock Text="{DynamicResource prefs.nonotesizecap}" HorizontalAlignment="Left"/>
+            <ToggleSwitch IsChecked="{Binding NoNoteSizeCap}"/>
+          </Grid>
         </StackPanel>
 
         <!-- Rendering -->
