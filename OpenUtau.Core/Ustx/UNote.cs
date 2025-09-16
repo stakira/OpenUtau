@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
+using Melanchall.DryWetMidi.MusicTheory;
 using OpenUtau.Api;
 using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
@@ -85,7 +86,13 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part) {
-            duration = Math.Max(10, duration);
+            int max;
+            if (Preferences.Default.NoNoteSizeCap) {
+                max = 1;
+            } else { 
+                max = 10; 
+            }
+            duration = Math.Max(max, duration);
             PositionMs = project.timeAxis.TickPosToMsPos(part.position + position);
             EndMs = project.timeAxis.TickPosToMsPos(part.position + End);
             if (Prev != null && Prev.End > position) {
