@@ -112,6 +112,10 @@ namespace OpenUtau.Core.DiffSinger{
         public VarianceResult Process(RenderPhrase phrase){
             int headFrames = (int)Math.Round(headMs / frameMs);
             int tailFrames = (int)Math.Round(tailMs / frameMs);
+            Tensor<float>? energy_pred = null;
+            Tensor<float>? breathiness_pred = null;
+            Tensor<float>? voicing_pred = null;
+            Tensor<float>? tension_pred = null;
             if (dsConfig.predict_dur) {
                 //Check if all phonemes are defined in dsdict.yaml (for their types)
                 foreach (var phone in phrase.phones) {
@@ -202,102 +206,254 @@ namespace OpenUtau.Core.DiffSinger{
                 x => x * 0.01).Select(f => (float)f).ToArray();
             pitch = pitch.Zip(toneShift, (x, d) => x + d).ToArray();
 
-            var varianceInputs = new List<NamedOnnxValue>();
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
-                new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
+            // 1. Prepare IDENTITY INPUTS. These define the stable cache key.
+            var identityInputs = new List<NamedOnnxValue>();
+            identityInputs.Add(NamedOnnxValue.CreateFromTensor("encoder_out", encoder_out));
+            identityInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
+                new DenseTensor<Int64>(ph_dur.Select(x => (Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
+            identityInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, totalFrames })));
-            if (dsConfig.predict_energy) {
-                var energy = Enumerable.Repeat(0f, totalFrames).ToArray();
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
-                    new DenseTensor<float>(energy, new int[] { energy.Length }, false)
-                        .Reshape(new int[] { 1, totalFrames })));
-            }
-            if (dsConfig.predict_breathiness) {
-                var breathiness = Enumerable.Repeat(0f, totalFrames).ToArray();
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
-                    new DenseTensor<float>(breathiness, new int[] { breathiness.Length }, false)
-                        .Reshape(new int[] { 1, totalFrames })));
-            }
-            if (dsConfig.predict_voicing) {
-                var voicing = Enumerable.Repeat(0f, totalFrames).ToArray();
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
-                    new DenseTensor<float>(voicing, new int[] { voicing.Length }, false)
-                        .Reshape(new int[] { 1, totalFrames })));
-            }
-            if (dsConfig.predict_tension) {
-                var tension = Enumerable.Repeat(0f, totalFrames).ToArray();
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
-                    new DenseTensor<float>(tension, new int[] { tension.Length }, false)
-                        .Reshape(new int[] { 1, totalFrames })));
+            
+            if (dsConfig.speakers != null) {
+                var speakerEmbedManager = getSpeakerEmbedManager();
+                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
+                identityInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
 
+            var steps = Preferences.Default.DiffSingerStepsVariance;
+            if (dsConfig.useContinuousAcceleration) {
+                identityInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
+                    new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
+            } else {
+                long speedup = Math.Max(1, 1000 / steps);
+                while (1000 % speedup != 0 && speedup > 1) {
+                    speedup--;
+                }
+                identityInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
+                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 }, false)));
+            }
+
+            // 2. Create the cache object based on identity.
+            var varianceCache = Preferences.Default.DiffSingerTensorCache
+                ? new DiffSingerCache(varianceHash, identityInputs)
+                : null;
+            
+            bool isRetakeActive = phrase.phones.Any(p => p.retake);
+            var previousBaseOutput = varianceCache?.Load();
+
+            // Fast path for non-retake mode with a valid cache.
+            if (!isRetakeActive && previousBaseOutput != null) {
+                energy_pred = dsConfig.predict_energy
+                    ? previousBaseOutput
+                        .Where(o => o.Name == "energy_pred")
+                        .First()
+                        .AsTensor<float>()
+                    : null;
+                breathiness_pred = dsConfig.predict_breathiness
+                    ? previousBaseOutput
+                        .Where(o => o.Name == "breathiness_pred")
+                        .First()
+                        .AsTensor<float>()
+                    : null;
+                voicing_pred = dsConfig.predict_voicing
+                    ? previousBaseOutput
+                        .Where(o => o.Name == "voicing_pred")
+                        .First()
+                        .AsTensor<float>()
+                    : null;
+                tension_pred = dsConfig.predict_tension
+                    ? previousBaseOutput
+                        .Where(o => o.Name == "tension_pred")
+                        .First()
+                        .AsTensor<float>()
+                    : null;
+
+                return new VarianceResult {
+                    energy = energy_pred?.ToArray(),
+                    breathiness = breathiness_pred?.ToArray(),
+                    voicing = voicing_pred?.ToArray(),
+                    tension = tension_pred?.ToArray(),
+                };
+            }
+            
+            // This list will hold all inputs for the model run.
+            var varianceInputs = new List<NamedOnnxValue>(identityInputs);
+            var baseCurves = new Dictionary<string, float[]>();
+
+            // 4. Prepare STATEFUL INPUTS.
+            if (dsConfig.predict_energy) {
+                float[] baseCurve;
+                float[] modelInput;
+                if (previousBaseOutput != null) {
+                    baseCurve = previousBaseOutput.First(o => o.Name == "energy_pred").AsTensor<float>().ToArray();
+                    var energyCurve = phrase.curves.FirstOrDefault(c => c.Item1 == DiffSingerUtils.ENE);
+                    IEnumerable<float> userEnergy = (energyCurve != null)
+                        ? DiffSingerUtils.SampleCurve(phrase, energyCurve.Item2, 0, frameMs, totalFrames, headFrames, tailFrames, x => x).Select(x=>(float)x)
+                        : Enumerable.Repeat(0f, totalFrames);
+                    modelInput = baseCurve.Zip(userEnergy, (x, y) => x + y * 12 / 100).ToArray();
+                } else {
+                    baseCurve = Enumerable.Repeat(0f, totalFrames).ToArray();
+                    modelInput = baseCurve;
+                }
+                baseCurves["energy"] = baseCurve;
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
+                    new DenseTensor<float>(modelInput, new int[] { 1, totalFrames })));
+            }
+
+            if (dsConfig.predict_breathiness) {
+                float[] baseCurve;
+                float[] modelInput;
+                if (previousBaseOutput != null) {
+                    baseCurve = previousBaseOutput.First(o => o.Name == "breathiness_pred").AsTensor<float>().ToArray();
+                    var userBreathiness = DiffSingerUtils.SampleCurve(phrase, phrase.breathiness, 0, frameMs, totalFrames, headFrames, tailFrames, x => x).Select(x => (float)x);
+                    modelInput = baseCurve.Zip(userBreathiness, (x, y) => x + y * 12 / 100).ToArray();
+                } else {
+                    baseCurve = Enumerable.Repeat(0f, totalFrames).ToArray();
+                    modelInput = baseCurve;
+                }
+                baseCurves["breathiness"] = baseCurve;
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
+                    new DenseTensor<float>(modelInput, new int[] { 1, totalFrames })));
+            }
+
+            if (dsConfig.predict_voicing) {
+                float[] baseCurve;
+                float[] modelInput;
+                if (previousBaseOutput != null) {
+                    baseCurve = previousBaseOutput.First(o => o.Name == "voicing_pred").AsTensor<float>().ToArray();
+                    var userVoicing = DiffSingerUtils.SampleCurve(phrase, phrase.voicing, 0, frameMs, totalFrames, headFrames, tailFrames, x => x).Select(x => (float)x);
+                    modelInput = baseCurve.Zip(userVoicing, (x, y) => x + (y - 100) * 12 / 100).ToArray();
+                } else {
+                    baseCurve = Enumerable.Repeat(0f, totalFrames).ToArray();
+                    modelInput = baseCurve;
+                }
+                baseCurves["voicing"] = baseCurve;
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
+                    new DenseTensor<float>(modelInput, new int[] { 1, totalFrames })));
+            }
+
+            if (dsConfig.predict_tension) {
+                float[] baseCurve;
+                float[] modelInput;
+                if (previousBaseOutput != null) {
+                    baseCurve = previousBaseOutput.First(o => o.Name == "tension_pred").AsTensor<float>().ToArray();
+                    var userTension = DiffSingerUtils.SampleCurve(phrase, phrase.tension, 0, frameMs, totalFrames, headFrames, tailFrames, x => x).Select(x => (float)x);
+                    modelInput = baseCurve.Zip(userTension, (x, y) => x + y / 20).ToArray();
+                } else {
+                    baseCurve = Enumerable.Repeat(0f, totalFrames).ToArray();
+                    modelInput = baseCurve;
+                }
+                baseCurves["tension"] = baseCurve;
+                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
+                    new DenseTensor<float>(modelInput, new int[] { 1, totalFrames })));
+            }
+
+            // 5. Prepare retake mask.
             var numVariances = new[] {
                 dsConfig.predict_energy,
                 dsConfig.predict_breathiness,
                 dsConfig.predict_voicing,
                 dsConfig.predict_tension,
             }.Sum(Convert.ToInt32);
-            var retake = Enumerable.Repeat(true, totalFrames * numVariances).ToArray();
-            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
-                new DenseTensor<bool>(retake, new int[] { retake.Length }, false)
-                .Reshape(new int[] { 1, totalFrames, numVariances })));
-            var steps = Preferences.Default.DiffSingerStepsVariance;
-            if (dsConfig.useContinuousAcceleration) {
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("steps",
-                    new DenseTensor<long>(new long[] { steps }, new int[] { 1 }, false)));
+
+            bool[] perFrameMask;
+            if (isRetakeActive && previousBaseOutput != null) {
+                perFrameMask = DiffSingerUtils.GenerateRetakeMask(phrase, totalFrames, headFrames, ph_dur);
             } else {
-                // find a largest integer speedup that are less than 1000 / steps and is a factor of 1000
-                long speedup = Math.Max(1, 1000 / steps);
-                while (1000 % speedup != 0 && speedup > 1) {
-                    speedup--;
-                }
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                    new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+                perFrameMask = Enumerable.Repeat(true, totalFrames).ToArray();
             }
-            //Speaker
-            if(dsConfig.speakers != null) {
-                var speakerEmbedManager = getSpeakerEmbedManager();
-                var spkEmbedTensor = speakerEmbedManager.PhraseSpeakerEmbedByFrame(phrase, ph_dur, frameMs, totalFrames, headFrames, tailFrames);
-                varianceInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
-            }
+
+            var expandedRetakeMask = perFrameMask
+                .SelectMany(shouldRetake => Enumerable.Repeat(shouldRetake, numVariances))
+                .ToArray();
+            varianceInputs.Add(NamedOnnxValue.CreateFromTensor("retake",
+                new DenseTensor<bool>(expandedRetakeMask, new int[] { 1, totalFrames, numVariances })));
+
+            // 6. Run the model.
             Onnx.VerifyInputNames(varianceModel, varianceInputs);
-            var varianceCache = Preferences.Default.DiffSingerTensorCache
-                ? new DiffSingerCache(varianceHash, varianceInputs)
-                : null;
-            var varianceOutputs = varianceCache?.Load();
-            if (varianceOutputs is null) {
-                varianceOutputs = varianceModel.Run(varianceInputs).Cast<NamedOnnxValue>().ToList();
-                varianceCache?.Save(varianceOutputs);
-                phrase.AddCacheFile(varianceCache?.Filename);
+            var modelOutputs = varianceModel.Run(varianceInputs).Cast<NamedOnnxValue>().ToList();
+
+            // 7. Post-process to get the new base curves.
+            var newBaseOutputs = new List<NamedOnnxValue>();
+
+            if (dsConfig.predict_energy) {
+                var mixedCurve = modelOutputs.First(o => o.Name == "energy_pred").AsTensor<float>().ToArray();
+                var oldBaseCurve = baseCurves["energy"];
+                var newBaseCurve = new float[totalFrames];
+                for (int i = 0; i < totalFrames; ++i) {
+                    newBaseCurve[i] = perFrameMask[i] ? mixedCurve[i] : oldBaseCurve[i];
+                }
+                newBaseOutputs.Add(NamedOnnxValue.CreateFromTensor("energy_pred",
+                    new DenseTensor<float>(newBaseCurve, new int[] { 1, totalFrames })));
             }
-            Tensor<float>? energy_pred = dsConfig.predict_energy
-                ? varianceOutputs
+
+            if (dsConfig.predict_breathiness) {
+                var mixedCurve = modelOutputs.First(o => o.Name == "breathiness_pred").AsTensor<float>().ToArray();
+                var oldBaseCurve = baseCurves["breathiness"];
+                var newBaseCurve = new float[totalFrames];
+                for (int i = 0; i < totalFrames; ++i) {
+                    newBaseCurve[i] = perFrameMask[i] ? mixedCurve[i] : oldBaseCurve[i];
+                }
+                newBaseOutputs.Add(NamedOnnxValue.CreateFromTensor("breathiness_pred",
+                    new DenseTensor<float>(newBaseCurve, new int[] { 1, totalFrames })));
+            }
+            
+            if (dsConfig.predict_voicing) {
+                var mixedCurve = modelOutputs.First(o => o.Name == "voicing_pred").AsTensor<float>().ToArray();
+                var oldBaseCurve = baseCurves["voicing"];
+                var newBaseCurve = new float[totalFrames];
+                for (int i = 0; i < totalFrames; ++i) {
+                    newBaseCurve[i] = perFrameMask[i] ? mixedCurve[i] : oldBaseCurve[i];
+                }
+                newBaseOutputs.Add(NamedOnnxValue.CreateFromTensor("voicing_pred",
+                    new DenseTensor<float>(newBaseCurve, new int[] { 1, totalFrames })));
+            }
+
+            if (dsConfig.predict_tension) {
+                var mixedCurve = modelOutputs.First(o => o.Name == "tension_pred").AsTensor<float>().ToArray();
+                var oldBaseCurve = baseCurves["tension"];
+                var newBaseCurve = new float[totalFrames];
+                for (int i = 0; i < totalFrames; ++i) {
+                    newBaseCurve[i] = perFrameMask[i] ? mixedCurve[i] : oldBaseCurve[i];
+                }
+                newBaseOutputs.Add(NamedOnnxValue.CreateFromTensor("tension_pred",
+                    new DenseTensor<float>(newBaseCurve, new int[] { 1, totalFrames })));
+            }
+
+            // 8. Save the new base curves to cache.
+            varianceCache?.Save(newBaseOutputs);
+            if (varianceCache?.Filename != null) {
+                phrase.AddCacheFile(varianceCache.Filename);
+            }
+
+            // 9. Parse and return the new base curves.
+            energy_pred = dsConfig.predict_energy
+                ? newBaseOutputs
                     .Where(o => o.Name == "energy_pred")
                     .First()
                     .AsTensor<float>()
                 : null;
-            Tensor<float>? breathiness_pred = dsConfig.predict_breathiness
-                ? varianceOutputs
+            breathiness_pred = dsConfig.predict_breathiness
+                ? newBaseOutputs
                     .Where(o => o.Name == "breathiness_pred")
                     .First()
                     .AsTensor<float>()
                 : null;
-            Tensor<float>? voicing_pred = dsConfig.predict_voicing
-                ? varianceOutputs
+            voicing_pred = dsConfig.predict_voicing
+                ? newBaseOutputs
                     .Where(o => o.Name == "voicing_pred")
                     .First()
                     .AsTensor<float>()
                 : null;
-            Tensor<float>? tension_pred = dsConfig.predict_tension
-                ? varianceOutputs
+            tension_pred = dsConfig.predict_tension
+                ? newBaseOutputs
                     .Where(o => o.Name == "tension_pred")
                     .First()
                     .AsTensor<float>()
                 : null;
+
             return new VarianceResult{
                 energy = energy_pred?.ToArray(),
                 breathiness = breathiness_pred?.ToArray(),

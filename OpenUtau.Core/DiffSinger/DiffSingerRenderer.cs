@@ -22,6 +22,7 @@ namespace OpenUtau.Core.DiffSinger {
         const string VELC = DiffSingerUtils.VELC;
         const string ENE = DiffSingerUtils.ENE;
         const string PEXP = DiffSingerUtils.PEXP;
+        const string RTK = DiffSingerUtils.RTK;
         const string VoiceColorHeader = DiffSingerUtils.VoiceColorHeader;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -36,6 +37,7 @@ namespace OpenUtau.Core.DiffSinger {
             ENE,
             PEXP,
             Format.Ustx.SHFC,
+            RTK,
         };
 
         private static readonly Dictionary<string, Func<float, float, float>> varianceDeltaFunctions =
@@ -567,6 +569,17 @@ namespace OpenUtau.Core.DiffSinger {
                     max = 100,
                     defaultValue = 100,
                     isFlag = false
+                },
+                //retake
+                new UExpressionDescriptor {
+                    name = "retake",
+                    abbr = RTK,
+                    type = UExpressionType.Options,
+                    min = 0, // false
+                    max = 1, // true
+                    defaultValue = 0, // default false
+                    isFlag = false,
+                    options = new string[] {"False", "True"},
                 },
             };
             //speakers

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Linq;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Newtonsoft.Json;
 using OpenUtau.Core.Render;
@@ -11,6 +12,7 @@ namespace OpenUtau.Core.DiffSinger {
         public const string VELC = "velc";
         public const string ENE = "ene";
         public const string PEXP = "pexp";
+        public const string RTK = "rtk";
         public const string VoiceColorHeader = "cl";
         public const float headMs = 100;
         public const float tailMs = 100;
@@ -126,6 +128,28 @@ namespace OpenUtau.Core.DiffSinger {
         public static Dictionary<string, int> LoadLanguageIds(string filePath){
             var json = File.ReadAllText(filePath, Encoding.UTF8);
             return JsonConvert.DeserializeObject<Dictionary<string, int>>(json);
+        }
+
+        public static bool[] GenerateRetakeMask(RenderPhrase phrase, int totalFrames, int headFrames, int[] durations){
+            var retakeMask = new bool[totalFrames];
+            bool[] phoneRetakeFlags = phrase.phones.Select(p => p.retake).ToArray();
+            int currentFrame = 0;
+            bool headRetakeState = phrase.phones.Length > 0 ? phoneRetakeFlags[0] : true;
+            for (int i = 0; i < headFrames; i++){
+                if (currentFrame < totalFrames) retakeMask[currentFrame++] = headRetakeState;
+            }
+            for (int i = 0; i < phrase.phones.Length; i++){
+                bool retakeThisPhone = phoneRetakeFlags[i];
+                int durationInFrames = durations[i + 1]; // durations[0] is headFrames
+                for (int j = 0; j < durationInFrames; j++){
+                    if (currentFrame < totalFrames) retakeMask[currentFrame++] = retakeThisPhone;
+                }
+            }
+            bool tailRetakeState = phrase.phones.Length > 0 ? phoneRetakeFlags[^1] : true;
+            while (currentFrame < totalFrames){
+                retakeMask[currentFrame++] = tailRetakeState;
+            }
+            return retakeMask;
         }
 
         public static string PhonemeLanguage(string phoneme){
