@@ -36,16 +36,17 @@ namespace OpenUtau.App.ViewModels {
 
         public ExpressionBuilder(UExpressionDescriptor descriptor)
             : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.isFlag, descriptor.flag,
-                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
+                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options), null) {
             ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
         }
 
         public ExpressionBuilder()
-            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty) {
+            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty, null) {
         }
 
-        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues) {
+        // Allow singer to be nullable and guard calls that use it.
+        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues, USinger? singer) {
             Name = name;
             Abbr = abbr;
             Min = min;
@@ -55,7 +56,7 @@ namespace OpenUtau.App.ViewModels {
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
+                .Select(abbr => singer == null || !Core.Format.Ustx.GetRequiredExpressions(singer).Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)

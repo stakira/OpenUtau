@@ -35,7 +35,12 @@ namespace OpenUtau.Core.Format {
         public const string TENC = "tenc";
         public const string VOIC = "voic";
 
-        public static readonly string[] required = { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC };
+        public static string[] GetRequiredExpressions(USinger? singer) {
+            if (SingerTypeUtils.SingerTypeNames[singer.SingerType] != "utau") {
+                return new string[] { DYN, PITD, CLR };
+            }
+            return new string[] { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC };
+        }
 
         public static void AddDefaultExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("dynamics (curve)", DYN, -240, 120, 0) { type = UExpressionType.Curve });
@@ -183,6 +188,6 @@ namespace OpenUtau.Core.Format {
             }
             project.ustxVersion = kUstxVersion;
             return project;
+            }
         }
     }
-}
