@@ -299,8 +299,8 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 // If the note is an End Breath note
-                if (Config.SupportedTailBreath.Contains(phoneme) && prev != null) {
-                    phoneme = GetOtoAlias(singer, $"{GetLyricVowel(prev?.lyric)} {phoneme}", notes[0]);
+                if (Config.SupportedTailBreath.Contains(phoneme) && prevNeighbour != null) {
+                    phoneme = GetOtoAlias(singer, $"{GetLyricVowel(prevNeighbour?.lyric)} {phoneme}", notes[0]);
                     
                     return new Result {
                         // Output in the form "Basic vowel shape + End Breath written with lyrics"
