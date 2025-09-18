@@ -283,8 +283,20 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                 new DenseTensor<Int64>(ph_dur.Select(x=>(Int64)x).ToArray(), new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
-            var pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
-                x => x * 0.01).Select(f => (float)f).ToArray();
+            float[] pitch;
+            // First, try to use the pitch curve from the phrase, which may contain user edits.
+            // Check if phrase.pitches is valid. A simple check for null or empty is sufficient.
+            if (phrase.pitches != null && phrase.pitches.Length > 0) {
+                pitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
+                    x => x * 0.01)
+                    .Select(f => (float)f)
+                    .ToArray();
+            } else {
+                // Fallback for the initial render when phrase.pitches is not yet populated.
+                // Use a constant pitch as a placeholder to break the dependency loop.
+                // This mimics the behavior before the retake mechanism was introduced.
+                pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
+            }
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, pitch.Length })));

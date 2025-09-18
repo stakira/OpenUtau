@@ -123,7 +123,12 @@ namespace OpenUtau.Core.Render {
             envelope = phoneme.envelope.data.ToArray();
             direct = phoneme.GetExpression(project, track, Format.Ustx.DIR).Item1 == 1;
             toneShift = (int)phoneme.GetExpression(project, track, Format.Ustx.SHFT).Item1;
-            retake = phoneme.GetExpression(project, track, DiffSinger.DiffSingerUtils.RTK).Item1 == 1;
+            if (project.expressions.ContainsKey(DiffSinger.DiffSingerUtils.RTK)){
+                retake = phoneme.GetExpression(project, track, DiffSinger.DiffSingerUtils.RTK).Item1 == 1;
+            } else {
+                // Fallback if the renderer hasn't registered the RTK expression yet.
+                retake = false;
+            }
             oto = phoneme.oto;
             hash = Hash();
         }
