@@ -309,7 +309,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 // If retan is set to True in zhcvvplus.yaml, there is no previous note, and the "- lyrics" alias exists in oto.ini
-                if (Config.UseRetan && prev == null && isExistPhonemeInOto(singer, $"- {phoneme}", notes[0])) {
+                if (Config.UseRetan && prevNeighbour == null && isExistPhonemeInOto(singer, $"- {phoneme}", notes[0])) {
                     // 가사를 "- 가사"로 변경
                     phoneme = $"- {phoneme}";
                     phoneme = GetOtoAlias(singer, phoneme, notes[0]);
