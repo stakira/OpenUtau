@@ -7,6 +7,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
+using ZstdSharp;
 
 namespace OpenUtau.Core.Format {
     public class Ustx {
@@ -36,6 +37,9 @@ namespace OpenUtau.Core.Format {
         public const string VOIC = "voic";
 
         public static string[] GetRequiredExpressions(USinger? singer) {
+            if (singer == null) {
+                return new string[] { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC };
+            }
             if (SingerTypeUtils.SingerTypeNames[singer.SingerType] != "utau") {
                 return new string[] { DYN, PITD, CLR };
             }
