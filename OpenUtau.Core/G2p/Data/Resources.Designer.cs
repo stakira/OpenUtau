@@ -179,5 +179,15 @@ namespace OpenUtau.Core.G2p.Data {
                 return ((byte[])(obj));
             }
         }
+
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] g2p_th {
+            get {
+                object obj = ResourceManager.GetObject("g2p-th", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
