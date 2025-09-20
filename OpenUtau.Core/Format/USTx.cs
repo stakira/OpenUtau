@@ -36,8 +36,8 @@ namespace OpenUtau.Core.Format {
         public const string TENC = "tenc";
         public const string VOIC = "voic";
 
-        public static string[] GetRequiredExpressions(USinger? singer) {
-            if (singer == null) {
+        public static string[] GetRequiredExpressions(USinger singer) {
+            if (singer.Found == false) {
                 return new string[] { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC };
             }
             if (SingerTypeUtils.SingerTypeNames[singer.SingerType] != "utau") {
