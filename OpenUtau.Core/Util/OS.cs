@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace OpenUtau {
@@ -75,12 +76,13 @@ namespace OpenUtau {
             throw new NotSupportedException();
         }
 
-        public static string WhereIs(string filename) {
+        public static string WhereIs(string filename, string[]? extraPaths = null) {
             if (File.Exists(filename)) {
                 return Path.GetFullPath(filename);
             }
+            extraPaths ??= new string[0];
             var values = Environment.GetEnvironmentVariable("PATH");
-            foreach (var path in values.Split(Path.PathSeparator)) {
+            foreach (var path in values.Split(Path.PathSeparator).Concat(extraPaths)) {
                 var fullPath = Path.Combine(path, filename);
                 if (File.Exists(fullPath)) {
                     return fullPath;

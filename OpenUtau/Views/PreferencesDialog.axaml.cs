@@ -101,11 +101,11 @@ namespace OpenUtau.App.Views {
         }
 
         void DetectWinePath(object sender, RoutedEventArgs e) {
-            string[] wineNames = { "wine", "wine64", "wine32", "wine32on64" };
+            string[] wineNames = ["wine", "wine64", "wine32", "wine32on64"];
             string winePath = string.Empty;
 
             foreach (string wineName in wineNames) {
-                winePath = OS.WhereIs(wineName);
+                winePath = OS.WhereIs(wineName, extraPaths: ["/opt/homebrew/bin"]);
                 if (!string.IsNullOrEmpty(winePath)) {
                     break;
                 }
