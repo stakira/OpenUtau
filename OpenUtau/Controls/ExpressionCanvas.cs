@@ -109,8 +109,8 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             DrawBackgroundForHitTest(context);
-            double leftTick = TickOffset - (uProject != null ? uProject.resolution : 480);
-            double rightTick = TickOffset + Bounds.Width / TickWidth + (uProject != null ? uProject.resolution : 480);
+            double leftTick = TickOffset - (uProject?.resolution ?? 480);
+            double rightTick = TickOffset + Bounds.Width / TickWidth + (uProject?.resolution ?? 480);
             double optionHeight = descriptor.type == UExpressionType.Options
                 ? Bounds.Height / descriptor.options.Length
                 : 0;

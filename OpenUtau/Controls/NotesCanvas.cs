@@ -151,8 +151,8 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             DrawBackgroundForHitTest(context);
-            double leftTick = TickOffset - (project != null ? project.resolution : 480);
-            double rightTick = TickOffset + Bounds.Width / TickWidth + (project != null ? project.resolution : 480);
+            double leftTick = TickOffset - (project?.resolution ?? 480);
+            double rightTick = TickOffset + Bounds.Width / TickWidth + (project?.resolution ?? 480);
             bool hidePitch = viewModel.TickWidth <= ViewConstants?.PianoRollTickWidthShowDetails * 0.5;
 
             if (showGhostNotes) {

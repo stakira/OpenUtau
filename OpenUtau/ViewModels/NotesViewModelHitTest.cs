@@ -58,6 +58,7 @@ namespace OpenUtau.App.ViewModels {
     class NotesViewModelHitTest {
         private readonly NotesViewModel viewModel;
         public ViewConstants ViewConstants = new ViewConstants();
+        public Core.Ustx.UProject? project = new UProject();
 
         public NotesViewModelHitTest(NotesViewModel viewModel) {
             this.viewModel = viewModel;
@@ -147,8 +148,8 @@ namespace OpenUtau.App.ViewModels {
             if (viewModel.Part == null || !viewModel.ShowPitch) {
                 return default;
             }
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project?.resolution ?? 480);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project?.resolution ?? 480);
             foreach (var note in viewModel.Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
                     continue;
@@ -309,8 +310,8 @@ namespace OpenUtau.App.ViewModels {
             var timeAxis = viewModel.Project.timeAxis;
             PhonemeHitInfo result = default;
             result.point = mousePos;
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project?.resolution ?? 480);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project?.resolution ?? 480);
             foreach (var phoneme in viewModel.Part.phonemes) {
                 double leftBound = timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
                 double rightBound = phoneme.End;
@@ -355,8 +356,8 @@ namespace OpenUtau.App.ViewModels {
             result.point = mousePos;
             double lastTextEndX = double.NegativeInfinity;
             bool raiseText = false;
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project?.resolution ?? 480);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project?.resolution ?? 480);
             string langCode = PhonemeUIRender.getLangCode(viewModel.Part);
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
             foreach (var phoneme in viewModel.Part.phonemes) {

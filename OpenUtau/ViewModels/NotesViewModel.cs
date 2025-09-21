@@ -36,7 +36,7 @@ namespace OpenUtau.App.ViewModels {
         public ViewConstants? ViewConstants;
         public Core.Ustx.UProject? project;
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Part?.Duration ?? 480 * 4;
+        public int TickCount => Part?.Duration ?? (project?.resolution ?? 480) * 4;
         public int TrackCount => ViewConstants.MaxTone;
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
@@ -108,7 +108,7 @@ namespace OpenUtau.App.ViewModels {
         public readonly NoteSelectionViewModel Selection = new NoteSelectionViewModel();
 
         internal NotesViewModelHitTest HitTest;
-        private int _lastNoteLength => project != null ? project.resolution: 480;
+        private int _lastNoteLength => (project?.resolution ?? 480);
         private string? portraitSource;
         private readonly object portraitLock = new object();
         private int userSnapDiv = -2;

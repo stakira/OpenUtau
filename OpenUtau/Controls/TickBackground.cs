@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -14,8 +15,7 @@ namespace OpenUtau.App.Controls {
         public static readonly DirectProperty<TickBackground, int> ResolutionProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, int>(
                 nameof(Resolution),
-                o => o.Resolution,
-                (o, v) => o.Resolution = v);
+                o => o.Resolution);
         public static readonly DirectProperty<TickBackground, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, double>(
                 nameof(TickWidth),
@@ -47,10 +47,8 @@ namespace OpenUtau.App.Controls {
                 o => o.ShowBarNumber,
                 (o, v) => o.ShowBarNumber = v);
 
-        public int Resolution {
-            get => _resolution;
-            private set => SetAndRaise(ResolutionProperty, ref _resolution, value);
-        }
+        public int Resolution => (project?.resolution ?? 480);
+        
         // Tick width in pixel.
         public double TickWidth {
             get => _tickWidth;
@@ -77,7 +75,7 @@ namespace OpenUtau.App.Controls {
             set => SetAndRaise(ShowBarNumberProperty, ref _showBarNumber, value);
         }
 
-        private int _resolution = 480;
+        private Core.Ustx.UProject? project = new UProject();
         private double _tickWidth;
         private double _tickOffset;
         private int _tickOrigin;
