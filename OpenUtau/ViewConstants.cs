@@ -1,10 +1,12 @@
 ﻿using Avalonia.Input;
 
-namespace OpenUtau.App {
-    static class ViewConstants {
-        public const double TickWidthMax = 256.0 / 480.0;
-        public const double TickWidthMin = 4.0 / 480.0;
-        public const double TickWidthDefault = 24.0 / 480.0;
+namespace OpenUtau.App { 
+    public class ViewConstants {
+        public Core.Ustx.UProject? project;
+
+        public double TickWidthMax => project != null ? 256.0 / project.resolution : 256.0 / 480.0;
+        public double TickWidthMin => project != null ? 4.0 / project.resolution : 4.0 / 480.0;
+        public double TickWidthDefault => project != null ? 24.0 / project.resolution : 24.0 / 480.0;
         public const double MinTicklineWidth = 12.0;
 
         public const double TrackHeightMax = 144;
@@ -12,10 +14,10 @@ namespace OpenUtau.App {
         public const double TrackHeightDefault = 104;
         public const double TrackHeightDelta = 20;
 
-        public const double PianoRollTickWidthMax = 640.0 / 480.0;
-        public const double PianoRollTickWidthMin = 4.0 / 480.0;
-        public const double PianoRollTickWidthDefault = 128.0 / 480.0;
-        public const double PianoRollTickWidthShowDetails = 64.0 / 480.0;
+        public double PianoRollTickWidthMax => project != null ? 640.0 / project.resolution : 640.0 / 480.0;
+        public double PianoRollTickWidthMin => project != null ? 4.0 / project.resolution : 4.0 / 480.0;
+        public double PianoRollTickWidthDefault => project != null ? 128.0 / project.resolution : 128.0 / 480.0;
+        public double PianoRollTickWidthShowDetails => project != null ? 64.0 / project.resolution : 64.0 / 480.0;
         public const double PianoRollMinTicklineWidth = 12.0;
 
         public const double NoteHeightMax = 128;

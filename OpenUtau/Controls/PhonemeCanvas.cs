@@ -63,6 +63,7 @@ namespace OpenUtau.App.Controls {
         private double tickOffset;
         private UVoicePart? part;
         private bool showPhoneme = true;
+        public ViewConstants ViewConstants = new ViewConstants();
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -161,7 +162,7 @@ namespace OpenUtau.App.Controls {
                 context.DrawLine(penPos, new Point(x, y), new Point(x, y + height));
 
                 // FIXME: Changing code below may break `HitTestAlias`.
-                if (viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
+                if (viewModel.TickWidth > ViewConstants?.PianoRollTickWidthShowDetails) {
                     string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
                     if (!string.IsNullOrEmpty(phonemeText)) {
                         (double textX, double textY, Size size, TextLayout textLayout) 

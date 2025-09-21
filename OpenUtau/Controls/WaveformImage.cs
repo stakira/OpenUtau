@@ -43,6 +43,7 @@ namespace OpenUtau.App.Controls {
         private double tickWidth;
         private double tickOffset;
         private bool showWaveform;
+        public ViewConstants ViewConstants = new ViewConstants();
 
         private WriteableBitmap? bitmap;
         private float[] sampleData = new float[0];
@@ -75,7 +76,7 @@ namespace OpenUtau.App.Controls {
                 Array.Clear(bitmapData, 0, bitmapData.Length);
                 var viewModel = (NotesViewModel?)DataContext;
                 if (viewModel != null && ShowWaveform &&
-                    viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
+                    viewModel.TickWidth > ViewConstants?.PianoRollTickWidthShowDetails) {
                     var project = viewModel.Project;
                     var part = viewModel.Part;
                     if (project != null && part != null && part.Mix != null) {

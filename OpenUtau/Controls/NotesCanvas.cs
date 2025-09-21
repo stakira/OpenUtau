@@ -96,6 +96,7 @@ namespace OpenUtau.App.Controls {
         private bool showVibrato = true;
         private PolylineGeometry polylineGeometry = new PolylineGeometry();
         private Points points = new Points();
+        public ViewConstants ViewConstants = new ViewConstants();
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -151,7 +152,7 @@ namespace OpenUtau.App.Controls {
             DrawBackgroundForHitTest(context);
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
-            bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
+            bool hidePitch = viewModel.TickWidth <= ViewConstants?.PianoRollTickWidthShowDetails * 0.5;
 
             if (showGhostNotes) {
                 foreach (UPart otherPart in otherPartsInView) {

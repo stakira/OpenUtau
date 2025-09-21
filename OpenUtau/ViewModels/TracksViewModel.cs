@@ -49,6 +49,7 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
+        public ViewConstants? ViewConstants;
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
         public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick + 23040);
@@ -125,7 +126,7 @@ namespace OpenUtau.App.ViewModels {
                     SetPlayPos(DocManager.Inst.playPosTick, false);
                 });
 
-            TickWidth = ViewConstants.TickWidthDefault;
+            TickWidth = ViewConstants?.TickWidthDefault ?? 0.05;
             TrackHeight = ViewConstants.TrackHeightDefault;
             Notify();
 
@@ -154,7 +155,7 @@ namespace OpenUtau.App.ViewModels {
             }
             double center = TickOffset + position.X * ViewportTicks;
             double tickWidth = TickWidth * (1.0 + delta * 2);
-            tickWidth = Math.Clamp(tickWidth, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax);
+            tickWidth = Math.Clamp(tickWidth, ViewConstants?.TickWidthMin ?? 4.0 / 480.0, ViewConstants?.TickWidthMax ?? 640.0 / 480.0);
             tickWidth = Math.Max(tickWidth, Bounds.Width / TickCount);
             TickWidth = tickWidth;
             double tickOffset = recenter

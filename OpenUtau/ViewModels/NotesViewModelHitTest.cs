@@ -57,6 +57,7 @@ namespace OpenUtau.App.ViewModels {
 
     class NotesViewModelHitTest {
         private readonly NotesViewModel viewModel;
+        public ViewConstants ViewConstants = new ViewConstants();
 
         public NotesViewModelHitTest(NotesViewModel viewModel) {
             this.viewModel = viewModel;
@@ -369,7 +370,7 @@ namespace OpenUtau.App.ViewModels {
                     continue;
                 }
                 // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
-                if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
+                if (viewModel.TickWidth <= ViewConstants?.PianoRollTickWidthShowDetails) {
                     continue;
                 }
                 string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
