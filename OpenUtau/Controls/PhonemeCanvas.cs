@@ -64,6 +64,7 @@ namespace OpenUtau.App.Controls {
         private UVoicePart? part;
         private bool showPhoneme = true;
         public ViewConstants ViewConstants = new ViewConstants();
+        public Core.Ustx.UProject? project = new UProject();
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -106,8 +107,8 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             context.DrawRectangle(Background, null, Bounds.WithX(0).WithY(0));
-            double leftTick = TickOffset - 480;
-            double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
+            double leftTick = TickOffset - (project != null ? project.resolution : 480);
+            double rightTick = TickOffset + Bounds.Width / TickWidth + (project != null ? project.resolution : 480);
             bool raiseText = false;
             double lastTextEndX = double.NegativeInfinity;
 

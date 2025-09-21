@@ -63,6 +63,7 @@ namespace OpenUtau.App.Controls {
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
+        public Core.Ustx.UProject? uProject = new UProject();
         private string key = string.Empty;
         private bool showRealCurve = true;
 
@@ -108,8 +109,8 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             DrawBackgroundForHitTest(context);
-            double leftTick = TickOffset - 480;
-            double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
+            double leftTick = TickOffset - (uProject != null ? uProject.resolution : 480);
+            double rightTick = TickOffset + Bounds.Width / TickWidth + (uProject != null ? uProject.resolution : 480);
             double optionHeight = descriptor.type == UExpressionType.Options
                 ? Bounds.Height / descriptor.options.Length
                 : 0;
