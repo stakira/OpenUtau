@@ -72,7 +72,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
   <system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>
-  <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
+  <system:String x:Key="errors.encryptedarchive">Encrypted archive files are not supported. Please open the Singer folder from Tools > Preferences > Paths and extract the archive file manually to this location.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
