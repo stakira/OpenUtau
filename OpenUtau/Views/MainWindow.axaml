@@ -367,6 +367,10 @@
                           IsVisible="{Binding IsWavePart}"
                           Command="{Binding PartTranscribeCommand}"
                           CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.merge}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartMergeCommand}"
+                          CommandParameter="{Binding Part}"/>
               </ContextMenu>
             </c:PartsCanvas.ContextMenu>
           </c:PartsCanvas>

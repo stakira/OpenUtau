@@ -23,6 +23,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartGotoFileCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartMergeCommand { get; set; }
     }
 
     public class RecentFileInfo {
