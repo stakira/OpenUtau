@@ -49,6 +49,7 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
         private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
         private readonly ReactiveCommand<UPart, Unit> PartMergeCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartSplitCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -82,6 +83,7 @@ namespace OpenUtau.App.Views {
             PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(part => ReplaceAudio(part));
             PartTranscribeCommand = ReactiveCommand.Create<UPart>(part => Transcribe(part));
             PartMergeCommand = ReactiveCommand.Create<UPart>(part => MergePart(part));
+            PartSplitCommand = ReactiveCommand.Create<UPart>(part => SplitPart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -1081,6 +1083,7 @@ namespace OpenUtau.App.Views {
                             PartRenameCommand = PartRenameCommand,
                             PartTranscribeCommand = PartTranscribeCommand,
                             PartMergeCommand = PartMergeCommand,
+                            PartSplitCommand = PartSplitCommand
                         };
                         shouldOpenPartsContextMenu = true;
                     }
@@ -1369,7 +1372,57 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, mergedPart));
             DocManager.Inst.EndUndoGroup();
         }
+        // ToDo: Add warning and implement splitting in the middle of a note
+        void SplitPart(UPart part) {
+            int tick = DocManager.Inst.playPosTick;
+            if (part.position >= tick || part.End <= tick) return;
+            if (part is not UVoicePart vp) return;
+            int relTick = tick - vp.position;
 
+            static SortedSet<UNote> GetNotes(IEnumerable<UNote> notes, int relTick, bool right) =>
+                new SortedSet<UNote>(
+                    right
+                        ? notes.Where(n => n.position >= relTick).Select(n => { var rn = n.Clone(); rn.position -= relTick; return rn; })
+                        : notes.Where(n => n.position < relTick).Select(n => n.Clone())
+                );
+            static List<UCurve> GetCurves(IEnumerable<UCurve> curves, int relTick, bool right) =>
+                curves.Select(c => {
+                    var cloned = c.Clone();
+                    var zipped = cloned.xs.Zip(cloned.ys, (x, y) => (x, y));
+                    var filtered = right
+                        ? zipped.Where(z => z.x >= relTick).Select(z => (x: z.x - relTick, z.y))
+                        : zipped.Where(z => z.x < relTick);
+                    cloned.xs = [.. filtered.Select(z => z.x)];
+                    cloned.ys = [.. filtered.Select(z => z.y)];
+                    return cloned;
+                }).ToList();
+
+            var rightNotes = GetNotes(vp.notes, relTick, right: true);
+            var leftNotes = GetNotes(vp.notes, relTick, right: false);
+            var rightCurves = GetCurves(vp.curves, relTick, right: true);
+            var leftCurves = GetCurves(vp.curves, relTick, right: false);
+
+            var rightPart = new UVoicePart {
+                name = vp.name + "-R",
+                comment = vp.comment,
+                trackNo = vp.trackNo,
+                position = tick,
+                notes = rightNotes,
+                curves = rightCurves,
+                Duration = vp.End - tick,
+            };
+
+            var leftPart = (UVoicePart)vp.Clone();
+            leftPart.name += "-L";
+            leftPart.notes = leftNotes;
+            leftPart.curves = leftCurves;
+            leftPart.Duration = relTick;
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, vp, leftPart));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, rightPart));
+            DocManager.Inst.EndUndoGroup();
+        }
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
             if (sender is StackPanel panel &&
                 panel.DataContext is RecentFileInfo fileInfo) {
