@@ -97,6 +97,12 @@ replacements:
   - {from: e, to: eh}
   - {from: o, to: ao}
 
+timings:
+# example entries, you can further customize each phoneme lengths in seconds
+  - {symbol: l, value: 2.0}
+  - {symbol: r, value: 2.0}
+  - {symbol: s, value: 2.0}
+
 entries:
   - grapheme: b
     phonemes: [b]
