@@ -629,7 +629,7 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 // [V] to [-V] to [- V]
                 basePhoneme = AliasFormat(v, "cv", syllable.vowelTone, "");
-                if (isTails) {
+                if (isTails && basePhoneme.Contains("-")) {
                     if (HasOto($"{cc.Last()} -", syllable.tone) || HasOto($"{cc.Last()}-", syllable.tone)
                     || HasOto($"{cc.Last()}_", syllable.tone)) {
                         // like [C1 -]
