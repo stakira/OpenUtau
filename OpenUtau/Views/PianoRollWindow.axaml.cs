@@ -115,6 +115,7 @@ namespace OpenUtau.App.Views {
                 new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
+                new DashToPlusTilda(),
                 new InsertSlur(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
@@ -1365,6 +1366,12 @@ namespace OpenUtau.App.Views {
                 case Key.O:
                     if (isNone) {
                         notesVm.ShowPhoneme = !notesVm.ShowPhoneme;
+                        return true;
+                    }
+                    break;
+                case Key.L:
+                    if (isNone) {
+                        notesVm.ShowExpressions = !notesVm.ShowExpressions;
                         return true;
                     }
                     break;
