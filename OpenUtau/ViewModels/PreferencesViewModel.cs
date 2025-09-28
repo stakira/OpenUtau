@@ -240,6 +240,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.PenPlusDefault = penPlusDefault;
                     Preferences.Save();
                 });
+                        this.WhenAnyValue(vm => vm.NoNoteSizeCap)
+                .Subscribe(noNoteSizeCap => {
+                    Preferences.Default.NoNoteSizeCap = noNoteSizeCap;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.Language)
                 .Subscribe(lang => {
                     Preferences.Default.Language = lang?.Name ?? string.Empty;
