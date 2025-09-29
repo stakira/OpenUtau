@@ -92,7 +92,7 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             return releases
-                .Where(r => !r.draft && r.prerelease == Preferences.Default.Beta)
+                .Where(r => !r.draft && (!r.prerelease || r.prerelease == Preferences.Default.Beta))
                 .OrderByDescending(r => r.id)
                 .FirstOrDefault();
         }
