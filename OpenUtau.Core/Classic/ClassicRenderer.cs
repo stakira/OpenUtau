@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using NAudio.Wave;
 using OpenUtau.Core;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
@@ -138,11 +140,16 @@ namespace OpenUtau.Classic {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            var manifest= renderSettings.Resampler.Manifest;
-            if (manifest == null) {
-                return new UExpressionDescriptor[] { };
-            }
-            return manifest.expressions.Values.ToArray();
+            var yamlFile = Path.Combine(singer.Location, "character.yaml");
+            try {
+                if (File.Exists(yamlFile)) {
+                    using var stream = File.OpenRead(yamlFile);
+                    var config = VoicebankConfig.Load(stream);
+                    return config.expressions;
+                }
+            } catch (Exception e) { 
+            Log.Error($"{e}");}
+            return new UExpressionDescriptor[] { };
         }
 
         public override string ToString() => Renderers.CLASSIC;
