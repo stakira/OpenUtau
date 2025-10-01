@@ -22,6 +22,14 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
+        private readonly Dictionary<string, string> fallBacks = "n dz=n d;n ts=n t;n dZ=n d;n tS=n t".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool isFallBack = false;
+
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_it.txt";
@@ -39,6 +47,10 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+
+            if (!HasOto($"n dz", syllable.tone) && !HasOto($"n dZ", syllable.tone) && !HasOto($"n ts", syllable.tone) && !HasOto($"n tS", syllable.tone)) {
+                isFallBack = true;
+            }
 
             if (syllable.IsStartingV) {
                 basePhoneme = $"-{v}";
@@ -110,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
                         cc1 = $"{cc[i]}{cc[i + 1]}";
                     }
                     if (!HasOto($"{cc[i]}{cc[i + 1]}", syllable.tone) && !HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone)) {
-                        cc1 = $"{cc[i]} {cc[i + 1]}";
+                        cc1 = ValidateAlias($"{cc[i]} {cc[i + 1]}");
                     }
                     if (HasOto(_cv, syllable.vowelTone) && HasOto(cc1, syllable.tone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
                         basePhoneme = _cv;
@@ -121,7 +133,7 @@ namespace OpenUtau.Plugin.Builtin {
                            cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                         }
                         if (!HasOto($"{cc[i + 1]}{cc[i + 2]}", syllable.tone) && !HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone)) {
-                            cc2 = $"{cc[i + 1]} {cc[i + 2]}";
+                            cc2 = ValidateAlias($"{cc[i + 1]} {cc[i + 2]}");
                         }
                         if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
                             basePhoneme = $"_{cc.Last()}{v}";
@@ -172,6 +184,15 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return phonemes;
+        }
+
+        protected override string ValidateAlias(string alias) {
+            if (isFallBack) {
+                foreach (var fb in fallBacks) {
+                    alias = alias.Replace(fb.Key,fb.Value);
+                }
+            }
+            return alias;
         }
     }
 }
