@@ -80,8 +80,10 @@ namespace OpenUtau.Classic {
                         if (!(item.resampler is WorldlineResampler)) {
                             VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
+                        progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{item.phone.phoneme}\"");
+                        return;
                     }
-                    progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{item.phone.phoneme}\"");
+                    progress.Complete(1);
                 });
                 var result = Layout(phrase);
                 var wavtool = new SharpWavtool(true);
@@ -101,7 +103,6 @@ namespace OpenUtau.Classic {
             }
             var task = Task.Run(() => {
                 string progressInfo = $"Track {trackNo + 1} : {phrase.wavtool} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
-                progress.Complete(0, progressInfo);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"cat-{phrase.hash:x16}.wav");
                 phrase.AddCacheFile(wavPath);
                 var result = Layout(phrase);
@@ -113,6 +114,7 @@ namespace OpenUtau.Classic {
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to render: failed to open {wavPath}");
                     }
+                    progress.Complete(phrase.phones.Length);
                 }
                 if (result.samples == null) {
                     foreach (var item in resamplerItems) {
@@ -123,8 +125,8 @@ namespace OpenUtau.Classic {
                     foreach (var item in resamplerItems) {
                         VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                     }
+                    progress.Complete(phrase.phones.Length, progressInfo);
                 }
-                progress.Complete(phrase.phones.Length, progressInfo);
                 if (result.samples != null) {
                     Renderers.ApplyDynamics(phrase, result);
                 }

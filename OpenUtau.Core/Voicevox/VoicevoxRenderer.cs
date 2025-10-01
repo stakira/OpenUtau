@@ -64,7 +64,6 @@ namespace OpenUtau.Core.Voicevox {
                         return new RenderResult();
                     }
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
-                    progress.Complete(0, progressInfo);
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vv-{phrase.hash:x16}.wav");
                     phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
@@ -138,8 +137,8 @@ namespace OpenUtau.Core.Voicevox {
                                 return new RenderResult();
                             }
                         }
+                        progress.Complete(phrase.phones.Length, progressInfo);
                     }
-                    progress.Complete(phrase.phones.Length, progressInfo);
                     if (File.Exists(wavPath)) {
                         using (var waveStream = new WaveFileReader(wavPath)) {
 
@@ -148,6 +147,7 @@ namespace OpenUtau.Core.Voicevox {
                         if (result.samples != null) {
                             Renderers.ApplyDynamics(phrase, result);
                         }
+                        progress.Complete(phrase.phones.Length);
                     }
                     return result;
                 }

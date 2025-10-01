@@ -58,11 +58,11 @@ namespace OpenUtau.Classic {
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
                 phrase.AddCacheFile(wavPath);
                 string progressInfo = $"Track {trackNo + 1}: {this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
-                progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
                     using (var waveStream = Wave.OpenFile(wavPath)) {
                         result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                     }
+                    progress.Complete(phrase.phones.Length);
                 }
                 if (result.samples == null) {
                     using var phraseSynth = new Worldline.PhraseSynth();
@@ -106,8 +106,8 @@ namespace OpenUtau.Classic {
                     var source = new WaveSource(0, 0, 0, 1);
                     source.SetSamples(result.samples);
                     WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                    progress.Complete(phrase.phones.Length, progressInfo);
                 }
-                progress.Complete(phrase.phones.Length, progressInfo);
                 if (result.samples != null) {
                     Renderers.ApplyDynamics(phrase, result);
                 }

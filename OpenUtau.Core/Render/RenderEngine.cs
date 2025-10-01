@@ -16,9 +16,11 @@ namespace OpenUtau.Core.Render {
             this.total = total;
         }
 
-        public void Complete(int n, string info) {
+        public void Complete(int n, string? info = null) {
             Interlocked.Add(ref completed, n);
-            Notify(completed * 100.0 / total, info);
+            if (!string.IsNullOrEmpty(info)) {
+                Notify(completed * 100.0 / total, info);
+            }
         }
 
         public void Clear() {
@@ -239,6 +241,7 @@ namespace OpenUtau.Core.Render {
                 var phrase = tuple.Item1;
                 var source = tuple.Item2;
                 var request = tuple.Item3;
+                
                 var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true);
                 task.Wait();
                 if (cancellation.IsCancellationRequested) {

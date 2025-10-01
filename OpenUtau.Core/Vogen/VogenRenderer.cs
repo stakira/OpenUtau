@@ -63,7 +63,6 @@ namespace OpenUtau.Core.Vogen {
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
                     phrase.AddCacheFile(wavPath);
                     string progressInfo = $"Track {trackNo + 1}: {this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
-                    progress.Complete(0, progressInfo);
                     if (File.Exists(wavPath)) {
                         try {
                             using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -72,17 +71,18 @@ namespace OpenUtau.Core.Vogen {
                         } catch (Exception e) {
                             Log.Error(e, "Failed to render.");
                         }
+                        progress.Complete(phrase.phones.Length);
                     }
                     if (result.samples == null) {
                         result.samples = InvokeVogen(phrase);
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                        progress.Complete(phrase.phones.Length, progressInfo);
                     }
                     if (result.samples != null) {
                         Renderers.ApplyDynamics(phrase, result);
                     }
-                    progress.Complete(phrase.phones.Length, progressInfo);
                     return result;
                 }
             });

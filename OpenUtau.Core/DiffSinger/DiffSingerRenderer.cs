@@ -113,6 +113,7 @@ namespace OpenUtau.Core.DiffSinger {
                         } catch (Exception e) {
                             Log.Error(e, "Failed to render.");
                         }
+                        progress.Complete(phrase.phones.Length);
                     }
                     if (result.samples == null) {
                         result.samples = InvokeDiffsinger(phrase, depth, steps, cancellation);
@@ -121,11 +122,11 @@ namespace OpenUtau.Core.DiffSinger {
                             source.SetSamples(result.samples);
                             WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                         }
+                        progress.Complete(phrase.phones.Length, progressInfo);
                     }
                     if (result.samples != null) {
                         Renderers.ApplyDynamics(phrase, result);
                     }
-                    progress.Complete(phrase.phones.Length, progressInfo);
                     return result;
                 }
             });
