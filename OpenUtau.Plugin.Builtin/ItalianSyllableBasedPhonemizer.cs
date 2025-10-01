@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 using System.Linq;
-using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Italian Syllable-Based Phonemizer", "IT SYL", "Lotte V", language:"IT")]
