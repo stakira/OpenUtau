@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
@@ -18,8 +18,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] vowels = "a,e,i,o,u,3,0".Split(',');
         private readonly string[] consonants = "b,d,dz,dZ,f,g,gn,j,k,l,m,M,n,N,p,r,rr,s,S,t,ts,tS,v,w,y,z,B,D,G,h,T,x,Y,'".Split(',');
-        private readonly Dictionary<string, string> dictionaryReplacements = ("a=a;e=e;i=i;o=o;u=u;EE=3;OO=0;" + "a1=a;e1=e;i1=i;o1=o;u1=u;" +
-                "b=b;d=d;dz=dz;dZZ=dZ;f=f;g=g;JJ=gn;k=k;l=l;LL=j;m=m;n=n;nf=M;ng=N;p=p;r=r;rr=rr;s=s;SS=S;t=t;ts=ts;tSS=tS;v=v;w=w;y=y;z=z").Split(';')
+        private readonly Dictionary<string, string> dictionaryReplacements = ("a=a;e=e;i=i;o=o;u=u;EE=3;OO=0;" +
+                "b=b;d=d;dz=dz;dZZ=dZ;f=f;g=g;j=y;" + "JJ=gn;k=k;l=l;LL=j;m=m;n=n;nf=M;ng=N;p=p;r=r;s=s;SS=S;t=t;ts=ts;tSS=tS;v=v;w=w;z=z").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -96,7 +96,11 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
-                phonemes.Add($"{prevV} {cc[0]}");
+                if (cc[0] == "r" && cc[1] == "r") {
+                    phonemes.Add($"{prevV} {cc[0]}{cc[1]}");
+                } else {
+                    phonemes.Add($"{prevV} {cc[0]}");
+                }
             }
             for (var i = firstC; i < lastC; i++) {
                 var rccv = $"-{string.Join("", cc)}{v}";
