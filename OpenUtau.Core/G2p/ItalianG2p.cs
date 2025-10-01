@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Microsoft.ML.OnnxRuntime;
-
 using OpenUtau.Api;
 
 namespace OpenUtau.Core.G2p {
