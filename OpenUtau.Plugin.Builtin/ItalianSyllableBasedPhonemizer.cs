@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        private readonly Dictionary<string, string> fallBacks = "n dz=n d;n ts=n t;n dZ=n d;n tS=n t".Split(';')
+        private readonly Dictionary<string, string> fallBacks = "dz=d;ts=t;dZ=d;tS=t".Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -48,9 +48,12 @@ namespace OpenUtau.Plugin.Builtin {
             var lastC = cc.Length - 1;
             var firstC = 0;
 
-            if (!HasOto($"n dz", syllable.tone) && !HasOto($"n dZ", syllable.tone) && !HasOto($"n ts", syllable.tone) && !HasOto($"n tS", syllable.tone)) {
-                isFallBack = true;
-            }
+
+            foreach (var cn in cc) {
+                if (!HasOto($"{cn} dz", syllable.tone) && !HasOto($"{cn} dZ", syllable.tone) && !HasOto($"{cn} ts", syllable.tone) && !HasOto($"{cn} tS", syllable.tone)) {
+                    isFallBack = true;
+                }
+            }           
 
             if (syllable.IsStartingV) {
                 basePhoneme = $"-{v}";
