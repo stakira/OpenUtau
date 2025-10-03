@@ -35,8 +35,6 @@
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
             <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
-            <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi">
-            </MenuItem>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.exportaudio}">
               <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
