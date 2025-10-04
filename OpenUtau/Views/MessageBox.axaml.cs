@@ -44,54 +44,36 @@ namespace OpenUtau.App.Views {
                 }
             }
 
-            if (e is MessageCustomizableException mce) {
-                if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
-                    var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
-                    matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
-                    try {
-                        if (mce.Replaces != null && mce.Replaces.Length > 0) {
-                            text = string.Format(mce.TranslatableMessage, mce.Replaces);
-                        } else {
-                            text = mce.TranslatableMessage;
-                        }
-                    } catch {
-                        text = mce.TranslatableMessage;
-                    }
-                    e = mce.SubstanceException;
-                }
-
-                if (!mce.ShowStackTrace) {
-                    return Show(parent, text, title, MessageBoxButtons.Ok);
-                }
-            }
-
             var builder = new StringBuilder();
             if (e != null) {
-                if (e is AggregateException ae) {
-                    ae = ae.Flatten();
-                    builder.AppendLine(ae.InnerExceptions.First().Message);
-                    builder.AppendLine();
-                    builder.Append(ae.ToString());
+                if (e is AggregateException ae && ae.Flatten().InnerExceptions.Count == 1) {
+                    e = ae.InnerExceptions.First();
+                }
 
-                    if (!string.IsNullOrWhiteSpace(text)) {
-                        text += "\n";
+                if (e is MessageCustomizableException mce) {
+                    if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
+                        text = Translate(mce);
+                        builder.AppendLine(mce.SubstanceException.Message);
+                        builder.AppendLine();
+                        builder.Append(mce.SubstanceException.ToString());
                     }
-                    if (ae.InnerExceptions.First() is MessageCustomizableException innnerMce) {
-                        if (!string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
-                            var matches = Regex.Matches(innnerMce.TranslatableMessage, "<translate:(.*?)>");
-                            matches.ForEach(m => innnerMce.TranslatableMessage = innnerMce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
-                            try {
-                                if (innnerMce.Replaces != null && innnerMce.Replaces.Length > 0) {
-                                    text += string.Format(innnerMce.TranslatableMessage, innnerMce.Replaces);
-                                } else {
-                                    text += innnerMce.TranslatableMessage;
-                                }
-                            } catch {
-                                text = text += innnerMce.TranslatableMessage;
-                            }
-                        } else {
-                            text += ae.InnerExceptions.First().Message;
+                    if (!mce.ShowStackTrace) {
+                        return Show(parent, text, title, MessageBoxButtons.Ok);
+                    }
+                } else if (e is AggregateException nestedAe) {
+                    foreach (var ie in nestedAe.Flatten().InnerExceptions) {
+                        if (!string.IsNullOrWhiteSpace(text)) {
+                            text += "\n";
                         }
+                        if (ie is MessageCustomizableException innnerMce && !string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
+                            text += Translate(innnerMce);
+                        } else {
+                            text += ie.Message;
+                        }
+                        builder.AppendLine(ie.Message);
+                        builder.AppendLine();
+                        builder.AppendLine(ie.ToString());
+                        builder.AppendLine();
                     }
                 } else {
                     builder.AppendLine(e.Message);
@@ -107,6 +89,21 @@ namespace OpenUtau.App.Views {
             builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
 
             return Show(parent, text, title, MessageBoxButtons.OkCopy, builder.ToString());
+
+            string Translate(MessageCustomizableException mce) {
+                try {
+                    var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
+                    matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
+
+                    if (mce.Replaces != null && mce.Replaces.Length > 0) {
+                        return string.Format(mce.TranslatableMessage, mce.Replaces);
+                    } else {
+                        return mce.TranslatableMessage;
+                    }
+                } catch {
+                    return mce.TranslatableMessage;
+                }
+            }
         }
 
         public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons, string? stackTrace = null) {

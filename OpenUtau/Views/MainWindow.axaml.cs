@@ -1217,9 +1217,8 @@ namespace OpenUtau.App.Views {
                     transcribeTask.ContinueWith(task => {
                         msgbox?.Close();
                         if (task.IsFaulted) {
-                            var ex = task.Exception?.InnerExceptions.Count == 1 ? task.Exception.InnerExceptions[0] : task.Exception;
-                            Log.Error(ex, $"Failed to transcribe part {part.name}");
-                            MessageBox.ShowError(this, ex);
+                            Log.Error(task.Exception, $"Failed to transcribe part {part.name}");
+                            MessageBox.ShowError(this, task.Exception);
                             return;
                         }
                         var voicePart = task.Result;
