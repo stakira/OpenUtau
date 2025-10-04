@@ -269,6 +269,10 @@ namespace OpenUtau.Core {
             PlayingMaster = false;
         }
 
+        public void StopRendering() {
+            renderCancellation?.Cancel();
+        }
+
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
             toneGenerator.EndAllTones();
 

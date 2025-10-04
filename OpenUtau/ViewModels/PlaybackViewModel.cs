@@ -39,6 +39,10 @@ namespace OpenUtau.App.ViewModels {
         public void Pause() {
             PlaybackManager.Inst.PausePlayback();
         }
+        public void Stop() {
+            PlaybackManager.Inst.StopPlayback();
+            PlaybackManager.Inst.StopRendering();
+        }
 
         public void MovePlayPos(int tick) {
             if (DocManager.Inst.playPosTick != tick) {
