@@ -72,7 +72,6 @@ namespace OpenUtau.Classic {
                     }
                     if (fileDuration <= 0) {
                         Errors.Add(new VoicebankError() {
-                            trace = oto.FileTrace,
                             soundFile = filePath,
                             messageKey = "singererror.invalidduration",
                             strings = new string[] { fileDuration.ToString() }
@@ -120,21 +119,18 @@ namespace OpenUtau.Classic {
                     var waveFormat = wav.ToSampleProvider().WaveFormat;
                     if (waveFormat.SampleRate != 44100) {
                         Errors.Add(new VoicebankError() {
-                            trace = oto.FileTrace,
                             soundFile = filePath,
                             messageKey = "singererror.samplerate"
                         });
                     }
                     if (waveFormat.Channels != 1) {
                         Infos.Add(new VoicebankError() {
-                            trace = oto.FileTrace,
                             soundFile = filePath,
                             messageKey = "singererror.mono"
                         });
                     }
                     if (waveFormat.BitsPerSample != 16) {
                         Errors.Add(new VoicebankError() {
-                            trace = oto.FileTrace,
                             soundFile = filePath,
                             messageKey = "singererror.bitdepth"
                         });
@@ -142,7 +138,6 @@ namespace OpenUtau.Classic {
                 }
             } catch (Exception e) {
                 Errors.Add(new VoicebankError() {
-                    trace = oto.FileTrace,
                     soundFile = filePath,
                     messageKey = "singererror.soundnotopened",
                     e = e,
@@ -165,8 +160,7 @@ namespace OpenUtau.Classic {
             if (oto.Offset > fileDuration) {
                 Errors.Add(new VoicebankError() {
                     trace = oto.FileTrace,
-                    messageKey = "singererror.offsetoutofduration",
-                    strings = new string[] { fileDuration.ToString() }
+                    messageKey = "singererror.offsetoutofduration"
                 });
                 valid = false;
             }
@@ -180,8 +174,7 @@ namespace OpenUtau.Classic {
             if (oto.Preutter + oto.Offset > fileDuration) {
                 Errors.Add(new VoicebankError() {
                     trace = oto.FileTrace,
-                    messageKey = "singererror.preutteroutofduration",
-                    strings = new string[] { fileDuration.ToString() }
+                    messageKey = "singererror.preutteroutofduration"
                 });
                 valid = false;
             }
@@ -195,16 +188,14 @@ namespace OpenUtau.Classic {
             if (oto.Consonant + oto.Offset > fileDuration) {
                 Errors.Add(new VoicebankError() {
                     trace = oto.FileTrace,
-                    messageKey = "singererror.consonantoutofduration",
-                    strings = new string[] { fileDuration.ToString() }
+                    messageKey = "singererror.consonantoutofduration"
                 });
                 valid = false;
             }
             if (oto.Overlap + oto.Offset > fileDuration) {
                 Errors.Add(new VoicebankError() {
                     trace = oto.FileTrace,
-                    messageKey = "singererror.overlapoutofduration",
-                    strings = new string[] { fileDuration.ToString() }
+                    messageKey = "singererror.overlapoutofduration"
                 });
                 valid = false;
             }
@@ -227,6 +218,13 @@ namespace OpenUtau.Classic {
                 Errors.Add(new VoicebankError() {
                     trace = oto.FileTrace,
                     messageKey = "singererror.cutoffconsonant",
+                });
+                valid = false;
+            }
+            if (cutoff > fileDuration) {
+                Errors.Add(new VoicebankError() {
+                    trace = oto.FileTrace,
+                    messageKey = "singererror.cutoffoutofduration"
                 });
                 valid = false;
             }

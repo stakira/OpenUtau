@@ -494,9 +494,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singererror.aliasmultiplespaces">Alias contains multiple spaces.</system:String>
   <system:String x:Key="singererror.aliasstartwithspace">Alias starts or ends with a space.</system:String>
   <system:String x:Key="singererror.bitdepth">Bit depth of the sound file is not 16bit.</system:String>
-  <system:String x:Key="singererror.consonantoutofduration">Consonant out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.consonantoutofduration">Consonant out of sound file duration.</system:String>
   <system:String x:Key="singererror.consonantshort">Consonant must be >= 0.</system:String>
   <system:String x:Key="singererror.cutoffconsonant">Cutoff must be to the right of consonant.</system:String>
+  <system:String x:Key="singererror.cutoffoutofduration">Cutoff out of sound file duration.</system:String>
   <system:String x:Key="singererror.cutoffoverlap">Cutoff must be to the right of overlap.</system:String>
   <system:String x:Key="singererror.cutoffpreutter">Cutoff must be to the right of preutter.</system:String>
   <system:String x:Key="singererror.duplicatealias">There are duplicate aliases.{0}</system:String>
@@ -506,10 +507,10 @@ The voicebank may not work on another OS with case-sensitivity.</system:String>
   <system:String x:Key="singererror.invalidduration">Invalid duration {0}.</system:String>
   <system:String x:Key="singererror.invalidoto">Invalid oto format.</system:String>
   <system:String x:Key="singererror.mono">Sound file is not mono channel.</system:String>
-  <system:String x:Key="singererror.offsetoutofduration">Offset out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.offsetoutofduration">Offset out of sound file duration.</system:String>
   <system:String x:Key="singererror.offsetshort">Offset must be >= 0.</system:String>
-  <system:String x:Key="singererror.overlapoutofduration">Overlap out of sound file duration {fileDuration}.</system:String>
-  <system:String x:Key="singererror.preutteroutofduration">Preutter out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.overlapoutofduration">Overlap out of sound file duration.</system:String>
+  <system:String x:Key="singererror.preutteroutofduration">Preutter out of sound file duration.</system:String>
   <system:String x:Key="singererror.preuttershort">Preutter must be >= 0.</system:String>
   <system:String x:Key="singererror.samplerate">Sample rate of the sound file is not 44100Hz.</system:String>
   <system:String x:Key="singererror.soundmissing">Sound file missing</system:String>
