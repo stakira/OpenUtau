@@ -402,6 +402,7 @@ namespace OpenUtau.Core {
                 }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
+                StopRendering();
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {
