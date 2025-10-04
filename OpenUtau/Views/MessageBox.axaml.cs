@@ -51,12 +51,10 @@ namespace OpenUtau.App.Views {
                 }
 
                 if (e is MessageCustomizableException mce) {
-                    if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
-                        text = Translate(mce);
-                        builder.AppendLine(mce.SubstanceException.Message);
-                        builder.AppendLine();
-                        builder.Append(mce.SubstanceException.ToString());
-                    }
+                    text = Translate(mce);
+                    builder.AppendLine(mce.SubstanceException.Message);
+                    builder.AppendLine();
+                    builder.Append(mce.SubstanceException.ToString());
                     if (!mce.ShowStackTrace) {
                         return Show(parent, text, title, MessageBoxButtons.Ok);
                     }
@@ -65,14 +63,17 @@ namespace OpenUtau.App.Views {
                         if (!string.IsNullOrWhiteSpace(text)) {
                             text += "\n";
                         }
-                        if (ie is MessageCustomizableException innnerMce && !string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
+                        if (ie is MessageCustomizableException innnerMce) {
                             text += Translate(innnerMce);
+                            builder.AppendLine(innnerMce.SubstanceException.Message);
+                            builder.AppendLine();
+                            builder.Append(innnerMce.SubstanceException.ToString());
                         } else {
                             text += ie.Message;
+                            builder.AppendLine(ie.Message);
+                            builder.AppendLine();
+                            builder.AppendLine(ie.ToString());
                         }
-                        builder.AppendLine(ie.Message);
-                        builder.AppendLine();
-                        builder.AppendLine(ie.ToString());
                         builder.AppendLine();
                     }
                 } else {
@@ -91,17 +92,30 @@ namespace OpenUtau.App.Views {
             return Show(parent, text, title, MessageBoxButtons.OkCopy, builder.ToString());
 
             string Translate(MessageCustomizableException mce) {
-                try {
-                    var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
-                    matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
-
-                    if (mce.Replaces != null && mce.Replaces.Length > 0) {
-                        return string.Format(mce.TranslatableMessage, mce.Replaces);
-                    } else {
-                        return mce.TranslatableMessage;
+                string text;
+                if (string.IsNullOrWhiteSpace(mce.TranslatableMessage)) {
+                    text = mce.Message;
+                } else {
+                    text = mce.TranslatableMessage;
+                    try {
+                        var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
+                        foreach (Match match in matches) {
+                            if (ThemeManager.TryGetString(match.Groups[1].Value, out string translated)) {
+                                text = text.Replace(match.Value, translated);
+                            } else {
+                                text = mce.Message;
+                                break;
+                            }
+                        }
+                    } catch {
+                        text = mce.Message;
                     }
-                } catch {
-                    return mce.TranslatableMessage;
+                }
+
+                if (mce.Replaces != null && mce.Replaces.Length > 0) {
+                    return string.Format(text, mce.Replaces);
+                } else {
+                    return text;
                 }
             }
         }
