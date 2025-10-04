@@ -1,4 +1,4 @@
-using Serilog;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -243,8 +243,7 @@ namespace OpenUtau.App.ViewModels {
                 try
                 {
                     Log.Information($"Merging voicebank {OtherSinger} to {thisSinger}");
-                    if (OtherSinger == null)
-                    {
+                    if (OtherSinger == null) {
                         Log.Error("Voicebank merger: other singer is null");
                         return;
                     }
@@ -258,15 +257,12 @@ namespace OpenUtau.App.ViewModels {
                         .ToList();
                     var otosToConvert = new List<ConvertItem>();
                     var filesToCopy = new List<ConvertItem>();
-                    foreach (ConvertItem folder in FolderRenames)
-                    {
-                        //Create folders
+                    foreach (ConvertItem folder in FolderRenames) {
+                        // Create folders
                         Directory.CreateDirectory(Path.Join(thisSinger.Location, folder.NewName));
-                        //Add oto.ini and audio files in one folder to list of files to copy, not recursive
-                        void AddFolder(string fromDir, string toDir)
-                        {
-                            if (File.Exists(Path.Join(fromDir, "oto.ini")))
-                            {
+                        // Add oto.ini and audio files in one folder to list of files to copy, not recursive
+                        void AddFolder(string fromDir, string toDir) {
+                            if (File.Exists(Path.Join(fromDir, "oto.ini"))) {
                                 Directory.CreateDirectory(toDir);
                                 otosToConvert.Add(new ConvertItem(
                                     Path.Join(fromDir, "oto.ini"),
@@ -280,12 +276,9 @@ namespace OpenUtau.App.ViewModels {
 
                             }
                         }
-                        if (folder.Name == ".")
-                        {
+                        if (folder.Name == ".") {
                             AddFolder(OtherSinger.Location, Path.Join(thisSinger.Location, folder.NewName));
-                        }
-                        else
-                        {
+                        } else {
                             string currentFolder = Path.Join(OtherSinger.Location, folder.Name);
                             Directory.EnumerateFiles(currentFolder, "oto.ini", SearchOption.AllDirectories)
                                 .Select(d => Path.GetDirectoryName(d)!)
@@ -295,14 +288,12 @@ namespace OpenUtau.App.ViewModels {
                     var totalFiles = otosToConvert.Count + filesToCopy.Count;
                     var progress = 0;
                     //Convert oto.ini
-                    foreach (ConvertItem oto in otosToConvert)
-                    {
+                    foreach (ConvertItem oto in otosToConvert) {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress++ * 100.0 / totalFiles, $"{oto.NewName} <= {oto.Name}"));
                         ConvertOto(oto.Name, oto.NewName, oldSubbanks, newSubbanks);
                     }
                     //Copy audio files
-                    foreach (ConvertItem file in filesToCopy)
-                    {
+                    foreach (ConvertItem file in filesToCopy) {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress++ * 100.0 / totalFiles, $"{file.NewName} <= {file.Name}"));
                         File.Copy(file.Name, file.NewName, true);
                     }
@@ -316,28 +307,26 @@ namespace OpenUtau.App.ViewModels {
                                 bankConfig = VoicebankConfig.Load(stream);
                             }
                         }
-                    } catch { 
+                    } catch {
                         Log.Error($"Voicebank merger: failed to load character.yaml from {yamlFile}");
                     }
-                    if (bankConfig == null)
-                    {
+                    if (bankConfig == null) {
                         bankConfig = new VoicebankConfig();
                     }
                     bankConfig.Subbanks = (thisSinger.Subbanks ?? new List<USubbank>())
                         .Select(s => s.subbank)
                         .Concat(newSubbanks)
                         .ToArray();
-                    foreach(var subbank in bankConfig.Subbanks) {
-                        if(subbank.ToneRanges == null || subbank.ToneRanges.Length == 0) {
+                    foreach (var subbank in bankConfig.Subbanks) {
+                        if (subbank.ToneRanges == null || subbank.ToneRanges.Length == 0) {
                             subbank.ToneRanges = ["C1-B7"];
                         }
                     }
                     using (var stream = File.Open(yamlFile, FileMode.Create)) {
                         bankConfig.Save(stream);
                     }
-
                 } catch (Exception e) {
-                    var customEx = new MessageCustomizableException("Failed to merge voicebank", "<translate:errors.failed.merge>: voicebank", e);
+                    var customEx = new MessageCustomizableException("Failed to merge singer", "<translate:mergevoicebank.error>", e);
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 } finally {
                     new Task(() =>
