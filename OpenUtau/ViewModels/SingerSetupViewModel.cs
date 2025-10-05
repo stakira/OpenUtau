@@ -119,13 +119,13 @@ namespace OpenUtau.App.ViewModels {
                 var directory = Path.Combine(basePath, destinationDir);
                 if (Directory.Exists(directory)) {
                     var ex = new MessageCustomizableException(
-                        $"Content is already exists: {directory}",
-                        $"<translate:singersetup.alreadyexists>: {directory}",
-                        new IOException($"Content is already exists:\n{directory}"),
-                        false
+                        $"The folder already exists: {directory}",
+                        $"<translate:singersetup.alreadyexists>",
+                        new IOException($"The folder already exists:\n{directory}"),
+                        false,
+                        [directory]
                     );
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-                    return;
                 }
             }
             Step++;

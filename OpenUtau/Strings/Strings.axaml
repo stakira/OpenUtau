@@ -578,7 +578,7 @@ The voicebank may not work on another OS.</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
   
   <system:String x:Key="singersetup.agreement">If you agree to the file's terms of use, press Next.</system:String>
-  <system:String x:Key="singersetup.alreadyexists">Content is already exists</system:String>
+  <system:String x:Key="singersetup.alreadyexists">Folder "{0}" already exists. Existing data and installation data will be merged.</system:String>
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>
   <system:String x:Key="singersetup.back">Back</system:String>
