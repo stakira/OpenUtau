@@ -586,18 +586,20 @@ namespace OpenUtau.App.Views {
                     return;
                 }
 
+                var vm = new SingerSetupViewModel() {
+                    ArchiveFilePath = file,
+                };
+                vm.CheckFileType();
                 var setup = new SingerSetupDialog() {
-                    DataContext = new SingerSetupViewModel() {
-                        ArchiveFilePath = file,
-                    },
+                    DataContext = vm,
                 };
                 _ = setup.ShowDialog(this);
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
             } catch (Exception e) {
-                Log.Error(e, $"Failed to install singer {file}");
-                _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
+                Log.Error(e, $"Failed to install {file}");
+                _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install {file}", $"<translate:errors.failed.install>: {file}", e));
             }
         }
 
@@ -863,18 +865,21 @@ namespace OpenUtau.App.Views {
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
                 try {
-                    var setup = new SingerSetupDialog() {
-                        DataContext = new SingerSetupViewModel() {
-                            ArchiveFilePath = file,
-                        },
+                    var vm = new SingerSetupViewModel() {
+                        ArchiveFilePath = file,
                     };
+                    vm.CheckFileType();
+                    var setup = new SingerSetupDialog() {
+                        DataContext = vm,
+                    };
+
                     _ = setup.ShowDialog(this);
                     if (setup.Position.Y < 0) {
                         setup.Position = setup.Position.WithY(0);
                     }
                 } catch (Exception e) {
-                    Log.Error(e, $"Failed to install singer {file}");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
+                    Log.Error(e, $"Failed to install {file}");
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to install {file}", $"<translate:errors.failed.install>: {file}", e));
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);

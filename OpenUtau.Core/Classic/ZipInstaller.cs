@@ -10,7 +10,7 @@ using SharpCompress.Readers;
 
 namespace OpenUtau.Classic {
 
-    public class VoicebankInstaller {
+    public class ZipInstaller {
         const string kCharacterTxt = "character.txt";
         const string kCharacterYaml = "character.yaml";
         const string kInstallTxt = "install.txt";
@@ -19,16 +19,20 @@ namespace OpenUtau.Classic {
         private readonly Action<double, string> progress;
         private readonly Encoding archiveEncoding;
         private readonly Encoding textEncoding;
+        private string destinationDir;
+        private string sourceDir;
 
-        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding, Encoding textEncoding) {
+        public ZipInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding, Encoding textEncoding, string destinationDir, string sourceDir) {
             Directory.CreateDirectory(basePath);
             this.basePath = basePath;
             this.progress = progress;
             this.archiveEncoding = archiveEncoding;
             this.textEncoding = textEncoding;
+            this.destinationDir = destinationDir;
+            this.sourceDir = sourceDir;
         }
 
-        public void Install(string path, string singerType) {
+        public void InstallSinger(string path, string singerType) {
             progress.Invoke(0, "Analyzing archive...");
             var readerOptions = new ReaderOptions {
                 ArchiveEncoding = new ArchiveEncoding {
@@ -89,16 +93,76 @@ namespace OpenUtau.Classic {
             }
         }
 
+        public void InstallPlugin(string path) {
+            progress.Invoke(0, "Analyzing archive...");
+
+            basePath = Path.Combine(basePath, destinationDir);
+            Directory.CreateDirectory(basePath);
+            var readerOptions = new ReaderOptions {
+                ArchiveEncoding = new ArchiveEncoding {
+                    Forced = archiveEncoding,
+                }
+            };
+            if (!string.IsNullOrWhiteSpace(sourceDir)) {
+                sourceDir = sourceDir + "/"; // The separator contained in IArchiveEntry is fixed.
+            }
+            var extractionOptions = new ExtractionOptions {
+                Overwrite = true,
+            };
+            using (var archive = ArchiveFactory.Open(path, readerOptions)) {
+                if (string.IsNullOrWhiteSpace(sourceDir)) {
+                    var rootDirs = archive.Entries
+                        .Where(e => e.IsDirectory)
+                        .Where(e => e.Key != null
+                                && (e.Key.IndexOf('\\') < 0 || e.Key.IndexOf('\\') == e.Key.Length - 1)
+                                && (e.Key.IndexOf('/') < 0 || e.Key.IndexOf('/') == e.Key.Length - 1))
+                        .ToArray();
+                    var rootFiles = archive.Entries
+                        .Where(e => !e.IsDirectory)
+                        .Where(e => e.Key != null && !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != kInstallTxt)
+                        .ToArray();
+                    if (rootFiles.Count() == 0 && rootDirs.Count() == 1) {
+                        sourceDir = rootDirs.First().Key!;
+                    }
+                }
+
+                var entries = archive.Entries.Where(e => !e.IsDirectory && e.Key != kInstallTxt);
+                int total = entries.Count();
+                int count = 0;
+                foreach (var entry in entries) {
+                    if (entry.Key == null) {
+                        continue;
+                    }
+                    progress.Invoke(100.0 * ++count / total, entry.Key);
+                    string relativePath = entry.Key;
+                    if (!string.IsNullOrWhiteSpace(sourceDir)) {
+                        if (!entry.Key.StartsWith(sourceDir)) {
+                            continue;
+                        }
+                        relativePath = entry.Key.Substring(sourceDir.Length);
+                    }
+
+                    string destinationPath = Path.Combine(basePath, relativePath);
+                    string dir = Path.GetDirectoryName(destinationPath);
+                    if (!Directory.Exists(dir)) {
+                        Directory.CreateDirectory(dir);
+                    }
+                    entry.WriteToFile(destinationPath, extractionOptions);
+                }
+            }
+        }
+
         private void AdjustBasePath(IArchive archive, string archivePath, List<string> touches) {
             var dirsAndFiles = archive.Entries.Select(e => e.Key).ToHashSet();
             var rootDirs = archive.Entries
                 .Where(e => e.IsDirectory)
-                .Where(e => (e.Key.IndexOf('\\') < 0 || e.Key.IndexOf('\\') == e.Key.Length - 1)
-                         && (e.Key.IndexOf('/') < 0 || e.Key.IndexOf('/') == e.Key.Length - 1))
+                .Where(e => e.Key != null
+                        && (e.Key.IndexOf('\\') < 0 || e.Key.IndexOf('\\') == e.Key.Length - 1)
+                        && (e.Key.IndexOf('/') < 0 || e.Key.IndexOf('/') == e.Key.Length - 1))
                 .ToArray();
             var rootFiles = archive.Entries
                 .Where(e => !e.IsDirectory)
-                .Where(e => !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != kInstallTxt)
+                .Where(e => e.Key != null && !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != kInstallTxt)
                 .ToArray();
             if (rootFiles.Count() > 0) {
                 // Need to create root folder.
