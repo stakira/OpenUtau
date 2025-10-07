@@ -97,6 +97,8 @@ namespace OpenUtau.Core.Format
                 int prevPosTick = 0;
                 int currPosTick = 0;
 
+                var tiedNotes = new Dictionary<int, UNote>();
+                UNote? incompletedLyricNote = null;
                 foreach (var measure in part.Measure) {
                     // BPM
                     double? bpm;
@@ -120,8 +122,6 @@ namespace OpenUtau.Core.Format
                     }
 
                     // Note
-                    var tiedNotes = new Dictionary<int, UNote>();
-                    UNote? incompletedLyricNote = null;
                     foreach (var element in measure.Content) {
                         switch (element) {
                             case Note note: {

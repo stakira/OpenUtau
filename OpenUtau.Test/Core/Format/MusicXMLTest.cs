@@ -112,6 +112,49 @@ namespace OpenUtau.Core.Format {
         }
 
         [Fact]
+        public void TieTest() {
+            var project = MusicXML.LoadProject(Path.Join(basePath, "33b-Spanners-Tie.musicxml"));
+            var part = project.parts.First() as UVoicePart;
+
+            Assert.Equal(1, part.notes.Count());
+            var note = part.notes.First();
+            Assert.Equal(0, note.position);
+            Assert.Equal(480*8, note.duration);
+        }
+
+        [Fact]
+        public void ChordsTest() {
+            var project = MusicXML.LoadProject(Path.Join(basePath, "21c-Chords-ThreeNotesDuration.musicxml"));
+            var part = project.parts.First() as UVoicePart;
+            var positions = new int[] {
+                0, 0, 0,
+                720, 720,
+                960, 960, 960,
+                1440, 1440, 1440,
+                1920, 1920, 1920,
+                2400, 2400, 2400,
+                2880, 2880, 2880,
+            };
+
+            var durations = new int[] {
+                720, 720, 720,
+                240, 240,
+                480, 480, 480,
+                480, 480, 480,
+                480, 480, 480,
+                480, 480, 480,
+                960, 960, 960,
+            };
+
+            foreach (var (n, p) in part.notes.Zip(positions)) {
+                Assert.Equal(p, n.position);
+            }
+            foreach (var (n, d) in part.notes.Zip(durations)) {
+                Assert.Equal(d, n.duration);
+            }
+        }
+
+        [Fact]
         public void LyricsTest(){
             var project = MusicXML.LoadProject(Path.Join(basePath, "61a-Lyrics.musicxml"));
             var part = project.parts.First() as UVoicePart;
