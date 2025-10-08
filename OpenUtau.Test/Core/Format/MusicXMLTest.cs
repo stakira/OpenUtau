@@ -7,7 +7,6 @@ using Xunit;
 using Xunit.Abstractions;
 
 using OpenUtau.Core.Ustx;
-using ReactiveUI;
 
 namespace OpenUtau.Core.Format {
     public class MusicXMLTest {
@@ -108,6 +107,28 @@ namespace OpenUtau.Core.Format {
             foreach(var (n, l) in part.notes.Zip(lengths)){
                 Assert.Equal(72, n.tone);
                 Assert.Equal(l, n.duration);
+            }
+        }
+
+        [Fact]
+        public void RhythmBackupTest() {
+            var project = MusicXML.LoadProject(Path.Join(basePath, "03b-Rhythm-Backup.musicxml"));
+            var part = project.parts.First() as UVoicePart;
+            var uNotes = part.notes
+                .OrderBy(n => n.position)
+                .ThenBy(n => n.tone)
+                .ToList();
+
+            var positions = new int[] { 0, 480, 480, 960 };
+            var tones = new int[] { 60, 57, 60, 57 };
+
+            Assert.Equal(4, part.notes.Count());
+            foreach (var (n, p) in uNotes.Zip(positions)) {
+                Assert.Equal(p, n.position);
+                Assert.Equal(480, n.duration);
+            }
+            foreach (var (n, t) in uNotes.Zip(tones)) {
+                Assert.Equal(t, n.tone);
             }
         }
 
