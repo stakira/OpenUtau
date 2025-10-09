@@ -28,7 +28,7 @@ Open singing synthesis platform / Open source UTAU successor
 [macOS x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-osx-x64.dmg){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Installation Guide](https://github.com/stakira/OpenUtau/wiki/Getting-Started#macos){: .btn .fs-5 .mb-4 .mb-md-0 }
 
-[Linux x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-linux-x64.tar.gz){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[Linux x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-linux-x64.zip){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [Installation Guide](https://github.com/stakira/OpenUtau/wiki/Getting-Started#linux){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 If you plan to use DiffSinger or the arm64 version for macOS, please download the latest beta from [here](https://github.com/stakira/openutau/releases).
@@ -37,6 +37,6 @@ If you plan to use DiffSinger or the arm64 version for macOS, please download th
 
 # Getting Started
 
-[Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) 
+[Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
 
 [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
