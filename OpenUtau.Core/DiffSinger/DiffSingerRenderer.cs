@@ -126,7 +126,6 @@ namespace OpenUtau.Core.DiffSinger {
                         // Apply fade to prevent noise at phrase boundaries
                         if (Preferences.Default.DiffSingerApplyPhraseFade) {
                             var vocoder = singer.getVocoder();
-                            Log.Information($"Applying phrase fade: {Preferences.Default.DiffSingerPhraseFadeMs}ms, sample_rate={vocoder.sample_rate}, samples={result.samples.Length}");
                             ApplyExponentialFades(result.samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
                         }
                         Renderers.ApplyDynamics(phrase, result);
@@ -601,10 +600,9 @@ namespace OpenUtau.Core.DiffSinger {
             int fadeSamples = (int)(sampleRate * fadeMs / 1000.0);
             fadeSamples = Math.Min(fadeSamples, samples.Length / 2);
 
-            string curve = Preferences.Default.DiffSingerPhraseFadeCurve;
-            Log.Information($"ApplyFades: curve={curve}, fadeSamples={fadeSamples}, totalSamples={samples.Length}");
-
             if (fadeSamples <= 0) return;
+
+            string curve = Preferences.Default.DiffSingerPhraseFadeCurve;
 
             // Apply fade-in
             for (int i = 0; i < fadeSamples; i++) {
@@ -620,8 +618,6 @@ namespace OpenUtau.Core.DiffSinger {
                 double fadeGain = GetFadeGain(fadeRatio, curve);
                 samples[sampleIndex] *= (float)fadeGain;
             }
-
-            Log.Information($"Fade applied successfully");
         }
 
         private double GetFadeGain(double ratio, string curve) {
