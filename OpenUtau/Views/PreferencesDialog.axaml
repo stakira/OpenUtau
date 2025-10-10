@@ -5,6 +5,7 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
         xmlns:styles="clr-namespace:Material.Styles;assembly=Material.Styles"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="460"
         x:Class="OpenUtau.App.Views.PreferencesDialog"
         Icon="/Assets/open-utau.ico"
@@ -303,8 +304,18 @@
           <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,90,10,*">
             <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadems}" />
             <TextBlock Grid.Column="2" Text="{Binding DiffSingerPhraseFadeMs, StringFormat='{}{0:0.0} ms'}" />
-            <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerPhraseFadeMs}" Minimum="0" Maximum="100"
+            <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerPhraseFadeMs}" Minimum="0" Maximum="200"
                     TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="true"/>
+          </Grid>
+          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,*">
+            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadecurve}" />
+            <ComboBox Grid.Column="2" SelectedItem="{Binding DiffSingerPhraseFadeCurve}">
+              <system:String>linear</system:String>
+              <system:String>exponential</system:String>
+              <system:String>sine</system:String>
+              <system:String>equal-power</system:String>
+              <system:String>hann</system:String>
+            </ComboBox>
           </Grid>
         </StackPanel>
 

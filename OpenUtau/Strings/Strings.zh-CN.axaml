@@ -461,6 +461,7 @@ Syntax: prefix,suffix</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
   <system:String x:Key="prefs.rendering.diffsingerapplyphrasefade">对片段边界应用淡入淡出</system:String>
   <system:String x:Key="prefs.rendering.diffsingerphrasefadems">片段淡化持续时间</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerphrasefadecurve">片段淡化曲线</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>

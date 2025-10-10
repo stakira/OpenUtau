@@ -123,6 +123,12 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples != null) {
+                        // Apply fade to prevent noise at phrase boundaries
+                        if (Preferences.Default.DiffSingerApplyPhraseFade) {
+                            var vocoder = singer.getVocoder();
+                            Log.Information($"Applying phrase fade: {Preferences.Default.DiffSingerPhraseFadeMs}ms, sample_rate={vocoder.sample_rate}, samples={result.samples.Length}");
+                            ApplyExponentialFades(result.samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
+                        }
                         Renderers.ApplyDynamics(phrase, result);
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
@@ -471,12 +477,6 @@ namespace OpenUtau.Core.DiffSinger {
                 throw new Exception($"The shape of vocoder output should be (1, length), but the actual shape is {DiffSingerUtils.ShapeString(samplesTensor)}");
             }
             var samples = samplesTensor.ToArray();
-            
-            // Apply exponential fade-in/fade-out to prevent noise at phrase boundaries
-            if (Preferences.Default.DiffSingerApplyPhraseFade) {
-                ApplyExponentialFades(samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
-            }
-            
             return samples;
         }
 
@@ -600,24 +600,48 @@ namespace OpenUtau.Core.DiffSinger {
         private void ApplyExponentialFades(float[] samples, int sampleRate, double fadeMs) {
             int fadeSamples = (int)(sampleRate * fadeMs / 1000.0);
             fadeSamples = Math.Min(fadeSamples, samples.Length / 2);
-            
+
+            string curve = Preferences.Default.DiffSingerPhraseFadeCurve;
+            Log.Information($"ApplyFades: curve={curve}, fadeSamples={fadeSamples}, totalSamples={samples.Length}");
+
             if (fadeSamples <= 0) return;
-            
-            // Apply exponential fade-in
+
+            // Apply fade-in
             for (int i = 0; i < fadeSamples; i++) {
                 double fadeRatio = (double)i / fadeSamples;
-                // Exponential curve: starts slow, accelerates
-                double fadeGain = 1.0 - Math.Exp(-5.0 * fadeRatio);
+                double fadeGain = GetFadeGain(fadeRatio, curve);
                 samples[i] *= (float)fadeGain;
             }
-            
-            // Apply exponential fade-out
+
+            // Apply fade-out
             for (int i = 0; i < fadeSamples; i++) {
                 int sampleIndex = samples.Length - 1 - i;
                 double fadeRatio = (double)i / fadeSamples;
-                // Exponential curve: starts slow, accelerates
-                double fadeGain = 1.0 - Math.Exp(-5.0 * fadeRatio);
+                double fadeGain = GetFadeGain(fadeRatio, curve);
                 samples[sampleIndex] *= (float)fadeGain;
+            }
+
+            Log.Information($"Fade applied successfully");
+        }
+
+        private double GetFadeGain(double ratio, string curve) {
+            switch (curve.ToLower()) {
+                case "linear":
+                    return ratio;
+                case "exponential":
+                    // Exponential curve: starts slow, accelerates
+                    return 1.0 - Math.Exp(-5.0 * ratio);
+                case "sine":
+                    // Quarter sine wave
+                    return Math.Sin(ratio * Math.PI / 2.0);
+                case "equal-power":
+                    // Squared sine for equal-power crossfade
+                    double sineValue = Math.Sin(ratio * Math.PI / 2.0);
+                    return sineValue * sineValue;
+                case "hann":
+                default:
+                    // Raised cosine (Hann window)
+                    return 0.5 * (1.0 - Math.Cos(Math.PI * ratio));
             }
         }
     }
