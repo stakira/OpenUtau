@@ -296,6 +296,16 @@
             <TextBlock Text="{DynamicResource prefs.appearance.diffsingerlangcodehide}" HorizontalAlignment="Left" />
             <ToggleSwitch IsChecked="{Binding DiffSingerLangCodeHide}" />
           </Grid>
+          <Grid Margin="0,5,0,0">
+            <TextBlock Text="{DynamicResource prefs.rendering.diffsingerapplyphrasefade}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding DiffSingerApplyPhraseFade}" />
+          </Grid>
+          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,90,10,*">
+            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadems}" />
+            <TextBlock Grid.Column="2" Text="{Binding DiffSingerPhraseFadeMs, StringFormat='{}{0:0.0} ms'}" />
+            <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerPhraseFadeMs}" Minimum="0" Maximum="100"
+                    TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="true"/>
+          </Grid>
         </StackPanel>
 
         <!-- Advanced -->

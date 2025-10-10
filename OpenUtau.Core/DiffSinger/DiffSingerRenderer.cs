@@ -471,6 +471,12 @@ namespace OpenUtau.Core.DiffSinger {
                 throw new Exception($"The shape of vocoder output should be (1, length), but the actual shape is {DiffSingerUtils.ShapeString(samplesTensor)}");
             }
             var samples = samplesTensor.ToArray();
+            
+            // Apply exponential fade-in/fade-out to prevent noise at phrase boundaries
+            if (Preferences.Default.DiffSingerApplyPhraseFade) {
+                ApplyExponentialFades(samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
+            }
+            
             return samples;
         }
 
@@ -590,5 +596,29 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public override string ToString() => Renderers.DIFFSINGER;
+
+        private void ApplyExponentialFades(float[] samples, int sampleRate, double fadeMs) {
+            int fadeSamples = (int)(sampleRate * fadeMs / 1000.0);
+            fadeSamples = Math.Min(fadeSamples, samples.Length / 2);
+            
+            if (fadeSamples <= 0) return;
+            
+            // Apply exponential fade-in
+            for (int i = 0; i < fadeSamples; i++) {
+                double fadeRatio = (double)i / fadeSamples;
+                // Exponential curve: starts slow, accelerates
+                double fadeGain = 1.0 - Math.Exp(-5.0 * fadeRatio);
+                samples[i] *= (float)fadeGain;
+            }
+            
+            // Apply exponential fade-out
+            for (int i = 0; i < fadeSamples; i++) {
+                int sampleIndex = samples.Length - 1 - i;
+                double fadeRatio = (double)i / fadeSamples;
+                // Exponential curve: starts slow, accelerates
+                double fadeGain = 1.0 - Math.Exp(-5.0 * fadeRatio);
+                samples[sampleIndex] *= (float)fadeGain;
+            }
+        }
     }
 }
