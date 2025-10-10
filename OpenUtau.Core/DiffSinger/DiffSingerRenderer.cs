@@ -621,23 +621,21 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         private double GetFadeGain(double ratio, string curve) {
-            switch (curve.ToLower()) {
-                case "linear":
-                    return ratio;
-                case "exponential":
-                    // Exponential curve: starts slow, accelerates
-                    return 1.0 - Math.Exp(-5.0 * ratio);
-                case "sine":
-                    // Quarter sine wave
-                    return Math.Sin(ratio * Math.PI / 2.0);
-                case "equal-power":
-                    // Squared sine for equal-power crossfade
-                    double sineValue = Math.Sin(ratio * Math.PI / 2.0);
-                    return sineValue * sineValue;
-                case "hann":
-                default:
-                    // Raised cosine (Hann window)
-                    return 0.5 * (1.0 - Math.Cos(Math.PI * ratio));
+            if (string.Equals(curve, "linear", StringComparison.OrdinalIgnoreCase)) {
+                return ratio;
+            } else if (string.Equals(curve, "exponential", StringComparison.OrdinalIgnoreCase)) {
+                // Exponential curve: starts slow, accelerates
+                return 1.0 - Math.Exp(-5.0 * ratio);
+            } else if (string.Equals(curve, "sine", StringComparison.OrdinalIgnoreCase)) {
+                // Quarter sine wave
+                return Math.Sin(ratio * Math.PI / 2.0);
+            } else if (string.Equals(curve, "equal-power", StringComparison.OrdinalIgnoreCase)) {
+                // Squared sine for equal-power crossfade
+                double sineValue = Math.Sin(ratio * Math.PI / 2.0);
+                return sineValue * sineValue;
+            } else {
+                // Raised cosine (Hann window)
+                return 0.5 * (1.0 - Math.Cos(Math.PI * ratio));
             }
         }
     }
