@@ -5,7 +5,6 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
         xmlns:styles="clr-namespace:Material.Styles;assembly=Material.Styles"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="460"
         x:Class="OpenUtau.App.Views.PreferencesDialog"
         Icon="/Assets/open-utau.ico"
@@ -313,13 +312,7 @@
           </Grid>
           <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,*">
             <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadecurve}" />
-            <ComboBox Grid.Column="2" SelectedItem="{Binding DiffSingerPhraseFadeCurve}">
-              <system:String>linear</system:String>
-              <system:String>exponential</system:String>
-              <system:String>sine</system:String>
-              <system:String>equal-power</system:String>
-              <system:String>hann</system:String>
-            </ComboBox>
+            <ComboBox Grid.Column="2" ItemsSource="{Binding DiffSingerPhraseFadeCurveOptions}" SelectedItem="{Binding DiffSingerPhraseFadeCurve}"/>
           </Grid>
         </StackPanel>
 

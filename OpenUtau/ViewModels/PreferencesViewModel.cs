@@ -120,6 +120,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double DiffSingerPhraseFadeMs { get; set; }
         [Reactive] public string DiffSingerPhraseFadeCurve { get; set; }
         [Reactive] public bool DiffSingerRemoveDCOffset { get; set; }
+        public List<string> DiffSingerPhraseFadeCurveOptions { get; } = new List<string> { "linear", "exponential", "sine", "equal-power", "hann" };
 
         // Advanced
         [Reactive] public bool RememberMid { get; set; }
