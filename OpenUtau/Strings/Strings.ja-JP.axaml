@@ -465,6 +465,8 @@
   <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps：Acoustic</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps：ピッチ</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps：Variance</system:String>
+  <system:String x:Key="prefs.rendering.postprocessing.header">フレーズ後処理</system:String>
+  <system:String x:Key="prefs.rendering.postprocessing.note">注意：これらはフレーズ境界でのクリックノイズを修正するための高度なオプションです。音声アーティファクトが発生する場合のみ有効にしてください。不明な場合は無効のままにしてください。</system:String>
   <system:String x:Key="prefs.rendering.removedcoffset">フレーズからDCオフセットを除去</system:String>
   <system:String x:Key="prefs.rendering.applyphrasefade">フレーズ境界にフェードイン/アウトを適用</system:String>
   <system:String x:Key="prefs.rendering.phrasefadems">フレーズフェード持続時間</system:String>

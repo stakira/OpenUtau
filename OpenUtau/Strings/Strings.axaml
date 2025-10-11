@@ -467,6 +467,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>
+  <system:String x:Key="prefs.rendering.postprocessing.header">Phrase Post-Processing</system:String>
+  <system:String x:Key="prefs.rendering.postprocessing.note">Note: These are advanced options to fix clicking noise at phrase boundaries. Only enable if you experience audio artifacts. Leave disabled if unsure.</system:String>
   <system:String x:Key="prefs.rendering.removedcoffset">Remove DC offset from phrases</system:String>
   <system:String x:Key="prefs.rendering.applyphrasefade">Apply fade-in/out to phrase boundaries</system:String>
   <system:String x:Key="prefs.rendering.phrasefadems">Phrase fade duration</system:String>

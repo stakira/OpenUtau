@@ -459,6 +459,8 @@ Syntax: prefix,suffix</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
+  <system:String x:Key="prefs.rendering.postprocessing.header">片段后处理</system:String>
+  <system:String x:Key="prefs.rendering.postprocessing.note">注意：这些是用于修复片段边界点击噪音的高级选项。仅在出现音频瑕疵时启用。如不确定请保持禁用。</system:String>
   <system:String x:Key="prefs.rendering.removedcoffset">从片段中移除直流偏移</system:String>
   <system:String x:Key="prefs.rendering.applyphrasefade">对片段边界应用淡入淡出</system:String>
   <system:String x:Key="prefs.rendering.phrasefadems">片段淡化持续时间</system:String>
