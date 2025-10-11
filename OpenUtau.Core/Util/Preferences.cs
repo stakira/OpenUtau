@@ -148,9 +148,10 @@ namespace OpenUtau.Core.Util {
             public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerLangCodeHide = false;
-            public bool DiffSingerApplyPhraseFade = true;
-            public double DiffSingerPhraseFadeMs = 100.0;
+            public bool DiffSingerApplyPhraseFade = false;
+            public double DiffSingerPhraseFadeMs = 10.0;
             public string DiffSingerPhraseFadeCurve = "hann"; // "linear", "sine", "equal-power", "hann"
+            public bool DiffSingerRemoveDCOffset = false;
             public bool SkipRenderingMutedTracks = false;
             public string Language = string.Empty;
             public string? SortingOrder = null;

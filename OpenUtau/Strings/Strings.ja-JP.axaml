@@ -465,6 +465,7 @@
   <system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps：Acoustic</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps：ピッチ</system:String>
   <system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps：Variance</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerremovedcoffset">フレーズからDCオフセットを除去</system:String>
   <system:String x:Key="prefs.rendering.diffsingerapplyphrasefade">フレーズ境界にフェードイン/アウトを適用</system:String>
   <system:String x:Key="prefs.rendering.diffsingerphrasefadems">フレーズフェード持続時間</system:String>
   <system:String x:Key="prefs.rendering.diffsingerphrasefadecurve">フレーズフェードカーブ</system:String>

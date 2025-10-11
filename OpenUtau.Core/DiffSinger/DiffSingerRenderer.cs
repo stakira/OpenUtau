@@ -123,6 +123,11 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples != null) {
+                        // Remove DC offset first to eliminate root cause of clicks
+                        if (Preferences.Default.DiffSingerRemoveDCOffset) {
+                            RemoveDCOffset(result.samples);
+                        }
+
                         // Apply fade to prevent noise at phrase boundaries
                         if (Preferences.Default.DiffSingerApplyPhraseFade) {
                             var vocoder = singer.getVocoder();
@@ -636,6 +641,36 @@ namespace OpenUtau.Core.DiffSinger {
             } else {
                 // Raised cosine (Hann window)
                 return 0.5 * (1.0 - Math.Cos(Math.PI * ratio));
+            }
+        }
+
+        private void RemoveDCOffset(float[] samples) {
+            if (samples == null || samples.Length == 0) return;
+
+            // Use first and last N samples to estimate DC offset at boundaries
+            int edgeSamples = Math.Min(100, samples.Length / 4);
+
+            // Calculate mean of edge samples (first + last)
+            double edgeSum = 0.0;
+            int edgeCount = 0;
+
+            // First edge
+            for (int i = 0; i < edgeSamples && i < samples.Length; i++) {
+                edgeSum += samples[i];
+                edgeCount++;
+            }
+
+            // Last edge
+            for (int i = Math.Max(0, samples.Length - edgeSamples); i < samples.Length; i++) {
+                edgeSum += samples[i];
+                edgeCount++;
+            }
+
+            float dcOffset = (float)(edgeSum / edgeCount);
+
+            // Remove DC offset
+            for (int i = 0; i < samples.Length; i++) {
+                samples[i] -= dcOffset;
             }
         }
     }

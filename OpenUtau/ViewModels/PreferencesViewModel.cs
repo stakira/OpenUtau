@@ -119,6 +119,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool DiffSingerApplyPhraseFade { get; set; }
         [Reactive] public double DiffSingerPhraseFadeMs { get; set; }
         [Reactive] public string DiffSingerPhraseFadeCurve { get; set; }
+        [Reactive] public bool DiffSingerRemoveDCOffset { get; set; }
 
         // Advanced
         [Reactive] public bool RememberMid { get; set; }
@@ -174,6 +175,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerApplyPhraseFade = Preferences.Default.DiffSingerApplyPhraseFade;
             DiffSingerPhraseFadeMs = Preferences.Default.DiffSingerPhraseFadeMs;
             DiffSingerPhraseFadeCurve = Preferences.Default.DiffSingerPhraseFadeCurve;
+            DiffSingerRemoveDCOffset = Preferences.Default.DiffSingerRemoveDCOffset;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
@@ -395,6 +397,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.DiffSingerPhraseFadeCurve)
                 .Subscribe(fadeCurve => {
                     Preferences.Default.DiffSingerPhraseFadeCurve = fadeCurve;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffSingerRemoveDCOffset)
+                .Subscribe(removeDC => {
+                    Preferences.Default.DiffSingerRemoveDCOffset = removeDC;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
