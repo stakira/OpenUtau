@@ -625,12 +625,15 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
+        private const int EDGE_SAMPLES_COUNT = 100;
+        private const double EXPONENTIAL_CURVE_FACTOR = -5.0;
+
         private double GetFadeGain(double ratio, string curve) {
             if (string.Equals(curve, "linear", StringComparison.OrdinalIgnoreCase)) {
                 return ratio;
             } else if (string.Equals(curve, "exponential", StringComparison.OrdinalIgnoreCase)) {
                 // Exponential curve: starts slow, accelerates
-                return 1.0 - Math.Exp(-5.0 * ratio);
+                return 1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR * ratio);
             } else if (string.Equals(curve, "sine", StringComparison.OrdinalIgnoreCase)) {
                 // Quarter sine wave
                 return Math.Sin(ratio * Math.PI / 2.0);
@@ -648,7 +651,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (samples == null || samples.Length == 0) return;
 
             // Use first and last N samples to estimate DC offset at boundaries
-            int edgeSamples = Math.Min(100, samples.Length / 4);
+            int edgeSamples = Math.Min(EDGE_SAMPLES_COUNT, samples.Length / 4);
 
             // Calculate mean of edge samples (first + last)
             double edgeSum = 0.0;
