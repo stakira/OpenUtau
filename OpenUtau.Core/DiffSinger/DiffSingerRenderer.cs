@@ -131,7 +131,7 @@ namespace OpenUtau.Core.DiffSinger {
                         // Apply fade to prevent noise at phrase boundaries
                         if (Preferences.Default.DiffSingerApplyPhraseFade) {
                             var vocoder = singer.getVocoder();
-                            ApplyExponentialFades(result.samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
+                            ApplyFades(result.samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
                         }
                         Renderers.ApplyDynamics(phrase, result);
                     }
@@ -601,7 +601,11 @@ namespace OpenUtau.Core.DiffSinger {
 
         public override string ToString() => Renderers.DIFFSINGER;
 
-        private void ApplyExponentialFades(float[] samples, int sampleRate, double fadeMs) {
+        private void ApplyFades(float[] samples, int sampleRate, double fadeMs) {
+            // Validate input
+            if (fadeMs < 0) return;
+            if (fadeMs > 50) fadeMs = 50; // Clamp to max allowed value
+
             int fadeSamples = (int)(sampleRate * fadeMs / 1000.0);
             fadeSamples = Math.Min(fadeSamples, samples.Length / 2);
 
@@ -633,7 +637,8 @@ namespace OpenUtau.Core.DiffSinger {
                 return ratio;
             } else if (string.Equals(curve, "exponential", StringComparison.OrdinalIgnoreCase)) {
                 // Exponential curve: starts slow, accelerates
-                return 1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR * ratio);
+                // Normalize to ensure it reaches exactly 1.0 at ratio=1.0
+                return (1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR * ratio)) / (1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR));
             } else if (string.Equals(curve, "sine", StringComparison.OrdinalIgnoreCase)) {
                 // Quarter sine wave
                 return Math.Sin(ratio * Math.PI / 2.0);
@@ -663,8 +668,9 @@ namespace OpenUtau.Core.DiffSinger {
                 edgeCount++;
             }
 
-            // Last edge
-            for (int i = Math.Max(0, samples.Length - edgeSamples); i < samples.Length; i++) {
+            // Last edge (avoid double-counting if arrays overlap)
+            int startOfLastEdge = Math.Max(edgeSamples, samples.Length - edgeSamples);
+            for (int i = startOfLastEdge; i < samples.Length; i++) {
                 edgeSum += samples[i];
                 edgeCount++;
             }
