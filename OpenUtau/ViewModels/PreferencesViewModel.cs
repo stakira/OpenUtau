@@ -116,11 +116,13 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
         [Reactive] public bool DiffSingerLangCodeHide { get; set; }
-        [Reactive] public bool DiffSingerApplyPhraseFade { get; set; }
-        [Reactive] public double DiffSingerPhraseFadeMs { get; set; }
-        [Reactive] public string DiffSingerPhraseFadeCurve { get; set; }
-        [Reactive] public bool DiffSingerRemoveDCOffset { get; set; }
-        public List<string> DiffSingerPhraseFadeCurveOptions { get; } = new List<string> { "linear", "exponential", "sine", "equal-power", "hann" };
+
+        // Rendering
+        [Reactive] public bool RemoveDCOffset { get; set; }
+        [Reactive] public bool ApplyPhraseFade { get; set; }
+        [Reactive] public double PhraseFadeMs { get; set; }
+        [Reactive] public string PhraseFadeCurve { get; set; }
+        public List<string> PhraseFadeCurveOptions { get; } = new List<string> { "linear", "exponential", "sine", "equal-power", "hann" };
 
         // Advanced
         [Reactive] public bool RememberMid { get; set; }
@@ -173,11 +175,11 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
-            DiffSingerApplyPhraseFade = Preferences.Default.DiffSingerApplyPhraseFade;
-            DiffSingerPhraseFadeMs = Preferences.Default.DiffSingerPhraseFadeMs;
-            DiffSingerPhraseFadeCurve = Preferences.Default.DiffSingerPhraseFadeCurve;
-            DiffSingerRemoveDCOffset = Preferences.Default.DiffSingerRemoveDCOffset;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
+            RemoveDCOffset = Preferences.Default.RemoveDCOffset;
+            ApplyPhraseFade = Preferences.Default.ApplyPhraseFade;
+            PhraseFadeMs = Preferences.Default.PhraseFadeMs;
+            PhraseFadeCurve = Preferences.Default.PhraseFadeCurve;
             Theme = Preferences.Default.Theme;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -385,24 +387,24 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.DiffSingerLangCodeHide = useCache;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.DiffSingerApplyPhraseFade)
-                .Subscribe(applyFade => {
-                    Preferences.Default.DiffSingerApplyPhraseFade = applyFade;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.DiffSingerPhraseFadeMs)
-                .Subscribe(fadeMs => {
-                    Preferences.Default.DiffSingerPhraseFadeMs = fadeMs;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.DiffSingerPhraseFadeCurve)
-                .Subscribe(fadeCurve => {
-                    Preferences.Default.DiffSingerPhraseFadeCurve = fadeCurve;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.DiffSingerRemoveDCOffset)
+            this.WhenAnyValue(vm => vm.RemoveDCOffset)
                 .Subscribe(removeDC => {
-                    Preferences.Default.DiffSingerRemoveDCOffset = removeDC;
+                    Preferences.Default.RemoveDCOffset = removeDC;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ApplyPhraseFade)
+                .Subscribe(applyFade => {
+                    Preferences.Default.ApplyPhraseFade = applyFade;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PhraseFadeMs)
+                .Subscribe(fadeMs => {
+                    Preferences.Default.PhraseFadeMs = fadeMs;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PhraseFadeCurve)
+                .Subscribe(fadeCurve => {
+                    Preferences.Default.PhraseFadeCurve = fadeCurve;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)

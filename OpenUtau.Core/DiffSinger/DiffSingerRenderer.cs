@@ -123,16 +123,6 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples != null) {
-                        // Remove DC offset first to eliminate root cause of clicks
-                        if (Preferences.Default.DiffSingerRemoveDCOffset) {
-                            RemoveDCOffset(result.samples);
-                        }
-
-                        // Apply fade to prevent noise at phrase boundaries
-                        if (Preferences.Default.DiffSingerApplyPhraseFade) {
-                            var vocoder = singer.getVocoder();
-                            ApplyFades(result.samples, vocoder.sample_rate, Preferences.Default.DiffSingerPhraseFadeMs);
-                        }
                         Renderers.ApplyDynamics(phrase, result);
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
@@ -600,87 +590,5 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public override string ToString() => Renderers.DIFFSINGER;
-
-        private void ApplyFades(float[] samples, int sampleRate, double fadeMs) {
-            // Validate input
-            if (fadeMs < 0) return;
-            if (fadeMs > 50) fadeMs = 50; // Clamp to max allowed value
-
-            int fadeSamples = (int)(sampleRate * fadeMs / 1000.0);
-            fadeSamples = Math.Min(fadeSamples, samples.Length / 2);
-
-            if (fadeSamples <= 0) return;
-
-            string curve = Preferences.Default.DiffSingerPhraseFadeCurve;
-
-            // Apply fade-in
-            for (int i = 0; i < fadeSamples; i++) {
-                double fadeRatio = (double)i / fadeSamples;
-                double fadeGain = GetFadeGain(fadeRatio, curve);
-                samples[i] *= (float)fadeGain;
-            }
-
-            // Apply fade-out
-            for (int i = 0; i < fadeSamples; i++) {
-                int sampleIndex = samples.Length - 1 - i;
-                double fadeRatio = (double)i / fadeSamples;
-                double fadeGain = GetFadeGain(fadeRatio, curve);
-                samples[sampleIndex] *= (float)fadeGain;
-            }
-        }
-
-        private const int EDGE_SAMPLES_COUNT = 100;
-        private const double EXPONENTIAL_CURVE_FACTOR = -5.0;
-
-        private double GetFadeGain(double ratio, string curve) {
-            if (string.Equals(curve, "linear", StringComparison.OrdinalIgnoreCase)) {
-                return ratio;
-            } else if (string.Equals(curve, "exponential", StringComparison.OrdinalIgnoreCase)) {
-                // Exponential curve: starts slow, accelerates
-                // Normalize to ensure it reaches exactly 1.0 at ratio=1.0
-                return (1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR * ratio)) / (1.0 - Math.Exp(EXPONENTIAL_CURVE_FACTOR));
-            } else if (string.Equals(curve, "sine", StringComparison.OrdinalIgnoreCase)) {
-                // Quarter sine wave
-                return Math.Sin(ratio * Math.PI / 2.0);
-            } else if (string.Equals(curve, "equal-power", StringComparison.OrdinalIgnoreCase)) {
-                // Squared sine for equal-power crossfade
-                double sineValue = Math.Sin(ratio * Math.PI / 2.0);
-                return sineValue * sineValue;
-            } else {
-                // Raised cosine (Hann window)
-                return 0.5 * (1.0 - Math.Cos(Math.PI * ratio));
-            }
-        }
-
-        private void RemoveDCOffset(float[] samples) {
-            if (samples == null || samples.Length == 0) return;
-
-            // Use first and last N samples to estimate DC offset at boundaries
-            int edgeSamples = Math.Min(EDGE_SAMPLES_COUNT, samples.Length / 4);
-
-            // Calculate mean of edge samples (first + last)
-            double edgeSum = 0.0;
-            int edgeCount = 0;
-
-            // First edge
-            for (int i = 0; i < edgeSamples && i < samples.Length; i++) {
-                edgeSum += samples[i];
-                edgeCount++;
-            }
-
-            // Last edge (avoid double-counting if arrays overlap)
-            int startOfLastEdge = Math.Max(edgeSamples, samples.Length - edgeSamples);
-            for (int i = startOfLastEdge; i < samples.Length; i++) {
-                edgeSum += samples[i];
-                edgeCount++;
-            }
-
-            float dcOffset = (float)(edgeSum / edgeCount);
-
-            // Remove DC offset
-            for (int i = 0; i < samples.Length; i++) {
-                samples[i] -= dcOffset;
-            }
-        }
     }
 }

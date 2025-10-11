@@ -148,11 +148,11 @@ namespace OpenUtau.Core.Util {
             public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerLangCodeHide = false;
-            public bool DiffSingerApplyPhraseFade = false;
-            public double DiffSingerPhraseFadeMs = 10.0;
-            public string DiffSingerPhraseFadeCurve = "hann"; // "linear", "sine", "equal-power", "hann"
-            public bool DiffSingerRemoveDCOffset = false;
             public bool SkipRenderingMutedTracks = false;
+            public bool RemoveDCOffset = false;
+            public bool ApplyPhraseFade = false;
+            public double PhraseFadeMs = 10.0;
+            public string PhraseFadeCurve = "hann"; // "linear", "exponential", "sine", "equal-power", "hann"
             public string Language = string.Empty;
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();

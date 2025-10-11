@@ -205,6 +205,24 @@
           <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" Margin="0,10,0,0"/>
           <ComboBox ItemsSource="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
           <TextBlock Classes="restart"/>
+          <Grid Margin="0,5,0,0">
+            <TextBlock Text="{DynamicResource prefs.rendering.removedcoffset}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding RemoveDCOffset}" />
+          </Grid>
+          <Grid Margin="0,5,0,0">
+            <TextBlock Text="{DynamicResource prefs.rendering.applyphrasefade}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding ApplyPhraseFade}" />
+          </Grid>
+          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,90,10,*">
+            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.phrasefadems}" />
+            <TextBlock Grid.Column="2" Text="{Binding PhraseFadeMs, StringFormat='{}{0:0.0} ms'}" />
+            <Slider Grid.Column="4" Classes="fader" Value="{Binding PhraseFadeMs}" Minimum="0" Maximum="50"
+                    TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="true"/>
+          </Grid>
+          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,*">
+            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.phrasefadecurve}" />
+            <ComboBox Grid.Column="2" ItemsSource="{Binding PhraseFadeCurveOptions}" SelectedItem="{Binding PhraseFadeCurve}"/>
+          </Grid>
         </StackPanel>
 
         <!-- Appearance -->
@@ -295,24 +313,6 @@
           <Grid Margin="0,5,0,0">
             <TextBlock Text="{DynamicResource prefs.appearance.diffsingerlangcodehide}" HorizontalAlignment="Left" />
             <ToggleSwitch IsChecked="{Binding DiffSingerLangCodeHide}" />
-          </Grid>
-          <Grid Margin="0,5,0,0">
-            <TextBlock Text="{DynamicResource prefs.rendering.diffsingerremovedcoffset}" HorizontalAlignment="Left" />
-            <ToggleSwitch IsChecked="{Binding DiffSingerRemoveDCOffset}" />
-          </Grid>
-          <Grid Margin="0,5,0,0">
-            <TextBlock Text="{DynamicResource prefs.rendering.diffsingerapplyphrasefade}" HorizontalAlignment="Left" />
-            <ToggleSwitch IsChecked="{Binding DiffSingerApplyPhraseFade}" />
-          </Grid>
-          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,90,10,*">
-            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadems}" />
-            <TextBlock Grid.Column="2" Text="{Binding DiffSingerPhraseFadeMs, StringFormat='{}{0:0.0} ms'}" />
-            <Slider Grid.Column="4" Classes="fader" Value="{Binding DiffSingerPhraseFadeMs}" Minimum="0" Maximum="50"
-                    TickPlacement="BottomRight" TickFrequency="0.5" IsSnapToTickEnabled="true"/>
-          </Grid>
-          <Grid Margin="0,5,0,0" ColumnDefinitions="150,10,*">
-            <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.diffsingerphrasefadecurve}" />
-            <ComboBox Grid.Column="2" ItemsSource="{Binding DiffSingerPhraseFadeCurveOptions}" SelectedItem="{Binding DiffSingerPhraseFadeCurve}"/>
           </Grid>
         </StackPanel>
 

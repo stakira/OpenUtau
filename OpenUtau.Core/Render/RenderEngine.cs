@@ -244,7 +244,10 @@ namespace OpenUtau.Core.Render {
                 if (cancellation.IsCancellationRequested) {
                     break;
                 }
-                source.SetSamples(task.Result.samples);
+                var result = task.Result;
+                // Apply post-processing (DC offset removal, fading) before setting samples
+                Renderers.ApplyPostProcessing(result);
+                source.SetSamples(result.samples);
                 if (request.sources.All(s => s.HasSamples)) {
                     request.part.SetMix(request.mix);
                     DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part));

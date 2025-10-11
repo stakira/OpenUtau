@@ -459,10 +459,10 @@ Syntax: prefix,suffix</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
-  <system:String x:Key="prefs.rendering.diffsingerremovedcoffset">从片段中移除直流偏移</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerapplyphrasefade">对片段边界应用淡入淡出</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerphrasefadems">片段淡化持续时间</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerphrasefadecurve">片段淡化曲线</system:String>
+  <system:String x:Key="prefs.rendering.removedcoffset">从片段中移除直流偏移</system:String>
+  <system:String x:Key="prefs.rendering.applyphrasefade">对片段边界应用淡入淡出</system:String>
+  <system:String x:Key="prefs.rendering.phrasefadems">片段淡化持续时间</system:String>
+  <system:String x:Key="prefs.rendering.phrasefadecurve">片段淡化曲线</system:String>
   <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
