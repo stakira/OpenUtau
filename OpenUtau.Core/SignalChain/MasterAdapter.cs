@@ -36,5 +36,11 @@ namespace OpenUtau.Core.SignalChain {
             this.position = position;
             Waited = 0;
         }
+        
+        public bool IsPlayable() {
+            var buf = new float[5];
+            return source.Mix(0, buf, 0, buf.Length) > 0;
+        }
+
     }
 }
