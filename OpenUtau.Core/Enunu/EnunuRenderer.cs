@@ -95,6 +95,7 @@ namespace OpenUtau.Core.Enunu {
                     }
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
+                        progress.Complete(0, progressInfo);
                         if (config.extensions.wav_synthesizer.Contains("synthe") || config.feature_type.Equals("melf0")) {
                             var f0Path = Path.Join(enutmpPath, "f0.npy");
                             var editorf0Path = Path.Join(enutmpPath, "editorf0.npy");

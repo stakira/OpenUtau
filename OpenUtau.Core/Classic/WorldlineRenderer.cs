@@ -65,6 +65,7 @@ namespace OpenUtau.Classic {
                     progress.Complete(phrase.phones.Length);
                 }
                 if (result.samples == null) {
+                    progress.Complete(0, progressInfo);
                     using var phraseSynth = new Worldline.PhraseSynth();
                     double posOffsetMs = phrase.positionMs - phrase.leadingMs;
                     foreach (var item in resamplerItems) {

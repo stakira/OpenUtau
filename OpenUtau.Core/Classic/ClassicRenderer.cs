@@ -117,6 +117,7 @@ namespace OpenUtau.Classic {
                     progress.Complete(phrase.phones.Length);
                 }
                 if (result.samples == null) {
+                    progress.Complete(0, progressInfo);
                     foreach (var item in resamplerItems) {
                         VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                     }

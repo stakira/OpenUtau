@@ -68,6 +68,7 @@ namespace OpenUtau.Core.Voicevox {
                     phrase.AddCacheFile(wavPath);
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
+                        progress.Complete(0, progressInfo);
                         var singer = phrase.singer as VoicevoxSinger;
                         if (singer != null) {
                             if (VoicevoxUtils.dic == null) {

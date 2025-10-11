@@ -74,6 +74,7 @@ namespace OpenUtau.Core.Vogen {
                         progress.Complete(phrase.phones.Length);
                     }
                     if (result.samples == null) {
+                        progress.Complete(0, progressInfo);
                         result.samples = InvokeVogen(phrase);
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
