@@ -50,6 +50,7 @@ namespace OpenUtau.Classic {
             string tempFrqExt = tempExt.Replace('.', '_') + ".frq";
             var ResamplerFiles = new List<Tuple<string, string>>() {
                 Tuple.Create(noExt + frqExt, tempNoExt + tempFrqExt),
+                Tuple.Create(source + ".llsm", sourceTemp + ".llsm"),
                 Tuple.Create(source + ".uspec", sourceTemp + ".uspec"),
                 Tuple.Create(source + ".dio", sourceTemp + ".dio"),
                 Tuple.Create(source + ".star", sourceTemp + ".star"),
