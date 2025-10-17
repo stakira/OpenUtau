@@ -171,6 +171,17 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class DashToPlusTilda : SingleNoteLyricEdit {
+        public override string Name => "pianoroll.menu.lyrics.dashtoplustilda";
+        protected override string Transform(string lyric) {
+            if (lyric == "-") {
+                return lyric.Replace("-", "+~");
+            } else {
+                return lyric;
+            }
+        }
+    }
+
     public class InsertSlur : BatchEdit{
         public virtual string Name => name;
         private string name;

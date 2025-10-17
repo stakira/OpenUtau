@@ -14,49 +14,48 @@ namespace OpenUtau.Classic {
         public int hopSize;
         public bool loaded = false;
 
-        public OtoFrq(UOto oto, Dictionary<string, Frq> dict) {
-            if (!dict.TryGetValue(oto.File, out var frq)) {
-                frq = new Frq();
-                if (frq.Load(oto.File)){
+        public OtoFrq(UOto oto, Dictionary<string, IFrqFiles> dict) {
+            if (!dict.TryGetValue(oto.File, out IFrqFiles? frq)) {
+                Load(oto.File, out frq);
+                if (frq != null) {
                     dict.Add(oto.File, frq);
-                } else {
-                    frq = null;
                 }
             }
-            if(frq != null && frq.wavSampleLength != - 1) {
-                this.hopSize = frq.hopSize;
 
-                if (frq.wavSampleLength == 0) {
-                    try {
-                        using (var waveStream = Core.Format.Wave.OpenFile(oto.File)) {
-                            var sampleProvider = waveStream.ToSampleProvider();
-                            if (sampleProvider.WaveFormat.SampleRate == 44100) {
-                                frq.wavSampleLength = Core.Format.Wave.GetSamples(sampleProvider).Length;
-                            } else {
-                                frq.wavSampleLength = -1;
-                            }
-                        }
-                    } catch {
-                        frq.wavSampleLength = - 1;
-                    }
-                }
+            if(frq != null) {
+                hopSize = frq.hopSize;
+                int offset = ConvertMsToFrqLength(frq, oto.Offset);
+                int consonant = ConvertMsToFrqLength(frq, oto.Offset + oto.Consonant);
+                int cutoff = oto.Cutoff < 0 ?
+                    ConvertMsToFrqLength(frq, oto.Offset - oto.Cutoff)
+                    : frq.f0.Length - ConvertMsToFrqLength(frq, oto.Cutoff);
+                var completionF0 = Completion(frq.f0);
+                var averageTone = MusicMath.FreqToTone(frq.averageF0);
+                toneDiffFix = completionF0.Skip(offset).Take(consonant - offset).Select(f => MusicMath.FreqToTone(f) - averageTone).ToArray();
+                toneDiffStretch = completionF0.Skip(consonant).Take(cutoff - consonant).Select(f => MusicMath.FreqToTone(f) - averageTone).ToArray();
 
-                if (frq.wavSampleLength > 0) {
-                    int offset = (int)Math.Floor(oto.Offset * 44100 / 1000 / frq.hopSize); // frq samples
-                    int consonant = (int)Math.Floor((oto.Offset + oto.Consonant) * 44100 / 1000 / frq.hopSize);
-                    int cutoff = oto.Cutoff < 0 ?
-                        (int)Math.Floor((oto.Offset - oto.Cutoff) * 44100 / 1000 / frq.hopSize)
-                        : frq.wavSampleLength - (int)Math.Floor(oto.Cutoff * 44100 / 1000 / frq.hopSize);
-                    var completionF0 = Completion(frq.f0);
-                    var averageTone = MusicMath.FreqToTone(frq.averageF0);
-                    toneDiffFix = completionF0.Skip(offset).Take(consonant - offset).Select(f => MusicMath.FreqToTone(f) - averageTone).ToArray();
-                    toneDiffStretch = completionF0.Skip(consonant).Take(cutoff - consonant).Select(f => MusicMath.FreqToTone(f) - averageTone).ToArray();
-
-                    loaded = true;
-                }
+                loaded = true;
             }
         }
 
+        private void Load(string otoPath, out IFrqFiles? frqFile) {
+            var frq = new Frq();
+            if (frq.Load(otoPath)) {
+                frqFile = frq;
+                return;
+            }
+            // Please write a code to read other frequency files!
+
+            frqFile = null;
+        }
+
+        private int ConvertMsToFrqLength(IFrqFiles frq, double lengthMs) {
+            return (int)Math.Floor(lengthMs * frq.wavSampleRate / 1000 / frq.hopSize);
+        }
+
+        /// <summary>
+        /// When a pitch is out of tune, it is complemented by the preceding and following pitches.
+        /// </summary>
         private double[] Completion(double[] frqs) {
             var list = new List<double>();
             for (int i = 0; i < frqs.Length; i++) {
@@ -94,18 +93,39 @@ namespace OpenUtau.Classic {
         }
     }
 
-    public class Frq {
-        public const int kHopSize = 256;
-
-        public int hopSize;
-        public double averageF0;
-        public double[] f0 = new double[0];
-        public double[] amp = new double[0];
-        public int wavSampleLength = 0;
+    public interface IFrqFiles {
+        public int hopSize { get; }
+        public double averageF0 { get; }
+        public double[] f0 { get; }
+        public int wavSampleRate { get; set; }
 
         /// <summary>
         /// If the wav path is null (machine learning voicebank), return false.
-        /// <summary>
+        /// </summary>
+        public bool Load(string wavPath);
+
+        /* Might be needed in the future if the frequency files of engines that can handle wav's other than 44100Hz are supported.
+        if (frq.wavSampleRate == 0) {
+            try {
+                using (var waveStream = Core.Format.Wave.OpenFile(oto.File)) {
+                    var sampleProvider = waveStream.ToSampleProvider();
+                    frq.wavSampleRate = sampleProvider.WaveFormat.SampleRate;
+                }
+            } catch {
+                frq.wavSampleRate = 44100;
+            }
+        }*/
+    }
+
+    public class Frq : IFrqFiles {
+        public const int kHopSize = 256;
+
+        public int hopSize { get; private set; }
+        public double averageF0 { get; private set; }
+        public double[] f0 { get; private set; } = new double[0];
+        public double[] amp { get; private set; } = new double[0];
+        public int wavSampleRate { get; set; } = 44100; // Sample rate for .frq files is fixed
+
         public bool Load(string wavPath) {
             if (string.IsNullOrEmpty(wavPath)) {
                 return false;

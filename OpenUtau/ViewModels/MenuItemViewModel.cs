@@ -13,6 +13,7 @@ namespace OpenUtau.App.ViewModels {
         public double Height { get; set; } = 24;
         public bool IsChecked { get; set; } = false;
         public KeyGesture? InputGesture { get; set; }
+        public bool IsEnabled { get; set; } = true;
     }
 
     public class SingerMenuItemViewModel : MenuItemViewModel {

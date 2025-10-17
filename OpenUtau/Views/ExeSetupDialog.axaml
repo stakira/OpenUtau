@@ -2,17 +2,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Width="400" Height="200"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
         x:Class="OpenUtau.App.Views.ExeSetupDialog"
         Icon="/Assets/open-utau.ico"
-        Title="Installing exe">
-  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
+        Title="{DynamicResource exesetup.title}">
+  <Grid Margin="10">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
     <TextBlock Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="Text" TextWrapping="Wrap" MaxWidth="560" Text="{Binding message}"/>
-    <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
+    <TextBox Margin="30,0,30,20" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="{OnPlatform False, macOS=True}" TextWrapping="Wrap" Height="36"
+             Text="% brew tap gcenx/wine&#x0a;% brew install --cask --no-quarantine wine-crossover" />
+    <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
       <StackPanel.Styles>
         <Style Selector="Button">
           <Setter Property="Margin" Value="15,0,15,0"/>
@@ -22,8 +25,8 @@
           <Setter Property="TextAlignment" Value="Center"/>
         </Style>
       </StackPanel.Styles>
-      <Button Click="InstallAsResampler">Install as resampler</Button>
-      <Button Click="InstallAsWavtool">Install as wavtool</Button>
+      <Button Click="InstallAsResampler" Content="{DynamicResource exesetup.resampler}"/>
+      <Button Click="InstallAsWavtool" Content="{DynamicResource exesetup.wavtool}"/>
     </StackPanel>
   </Grid>
 </Window>

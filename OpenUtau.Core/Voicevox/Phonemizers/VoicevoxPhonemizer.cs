@@ -26,11 +26,11 @@ namespace OpenUtau.Core.Voicevox {
                     currentLyric = lyricList[1];
                 }
                 if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
-                    if (VoicevoxUtils.IsPau(currentLyric)) {
+                    if (VoicevoxUtils.IsDicPau(currentLyric)) {
                         currentLyric = string.Empty;
                     } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
                         currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
-                    } else if (!VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
+                    } else if (!VoicevoxUtils.IsDicKana(currentLyric)) {
                         currentLyric = string.Empty;
                     }
                 }
