@@ -6,12 +6,14 @@ using System.Text;
 using K4os.Hash.xxHash;
 using NAudio.Wave;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
     public class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
+        private ExeResampler exeResampler;
         public string GetSourceTempPath(string singerId, UOto oto, string ext = null) {
             if (string.IsNullOrEmpty(ext)) {
                 ext = Path.GetExtension(oto.File);
@@ -46,9 +48,8 @@ namespace OpenUtau.Classic {
             string tempExt = Path.GetExtension(sourceTemp);
             string tempNoExt = sourceTemp.Substring(0, sourceTemp.Length - ext.Length);
             string tempFrqExt = tempExt.Replace('.', '_') + ".frq";
-            return new List<Tuple<string, string>>() {
+            var ResamplerFiles = new List<Tuple<string, string>>() {
                 Tuple.Create(noExt + frqExt, tempNoExt + tempFrqExt),
-                Tuple.Create(source + ".llsm", sourceTemp + ".llsm"),
                 Tuple.Create(source + ".uspec", sourceTemp + ".uspec"),
                 Tuple.Create(source + ".dio", sourceTemp + ".dio"),
                 Tuple.Create(source + ".star", sourceTemp + ".star"),
@@ -62,6 +63,13 @@ namespace OpenUtau.Classic {
                 Tuple.Create(noExt + ".hifi.npz", tempNoExt + ".hifi.npz"),
                 //Tuple.Create(noExt + ".lessaudio", tempNoExt + ".lessaudio"),
             };
+            if (exeResampler.Manifest != null && exeResampler.Manifest.files != null) {
+                var files = exeResampler.Manifest.files;
+                for (int i = 0; i < files.Length; i++) {
+                    ResamplerFiles.Add(Tuple.Create(noExt + $"{files[i]}", tempNoExt + $"{files[i]}"));
+                }
+            }
+            return ResamplerFiles;
         }
 
         private void CopyOrStamp(string source, string dest, bool required) {
