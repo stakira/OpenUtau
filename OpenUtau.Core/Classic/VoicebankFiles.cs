@@ -13,7 +13,6 @@ using Serilog;
 
 namespace OpenUtau.Classic {
     public class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
-        private ExeResampler exeResampler;
         public string GetSourceTempPath(string singerId, UOto oto, string ext = null) {
             if (string.IsNullOrEmpty(ext)) {
                 ext = Path.GetExtension(oto.File);
@@ -26,26 +25,27 @@ namespace OpenUtau.Classic {
             return $"{XXH32.DigestOf(Encoding.UTF8.GetBytes(s)):x8}";
         }
 
-        public void CopySourceTemp(string source, string temp) {
+        public void CopySourceTemp(string source, string temp, IResampler resampler) {
             lock (Renderers.GetCacheLock(temp)) {
                 DecodeOrStamp(source, temp);
-                var metaFiles = GetMetaFiles(source, temp);
+                var metaFiles = GetMetaFiles(source, temp, resampler);
                 metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2, false));
             }
         }
 
-        public void CopyBackMetaFiles(string source, string temp) {
+        public void CopyBackMetaFiles(string source, string temp, IResampler resampler) {
             lock (Renderers.GetCacheLock(temp)) {
-                var metaFiles = GetMetaFiles(source, temp);
+                var metaFiles = GetMetaFiles(source, temp, resampler);
                 metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1, false));
             }
         }
 
-        private List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp) {
+        private List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp, IResampler resampler) {
             string ext = Path.GetExtension(source);
             string noExt = source.Substring(0, source.Length - ext.Length);
             string frqExt = ext.Replace('.', '_') + ".frq";
             string tempExt = Path.GetExtension(sourceTemp);
+            var exeResampler = resampler as ExeResampler;
             string tempNoExt = sourceTemp.Substring(0, sourceTemp.Length - ext.Length);
             string tempFrqExt = tempExt.Replace('.', '_') + ".frq";
             var ResamplerFiles = new List<Tuple<string, string>>() {
