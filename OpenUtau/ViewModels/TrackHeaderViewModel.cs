@@ -247,7 +247,8 @@ namespace OpenUtau.App.ViewModels {
 
         public void RefreshSingers() {
             var items = new List<MenuItemViewModel>();
-            items.AddRange(Preferences.Default.RecentSingers
+            if (SingerManager.Inst.Singers.Count > 0) {
+                items.AddRange(Preferences.Default.RecentSingers
                 .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
                 .Select(singer => new SingerMenuItemViewModel() {
@@ -255,29 +256,34 @@ namespace OpenUtau.App.ViewModels {
                     Command = SelectSingerCommand,
                     CommandParameter = singer,
                 }));
-            items.Add(new SingerMenuItemViewModel() {
-                Header = ThemeManager.GetString("tracks.favorite") + " ...",
-                Items = Preferences.Default.FavoriteSingers
-                    .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
-                    .OfType<USinger>()
-                    .LocalizedOrderBy(singer => singer.LocalizedName)
-                    .Select(singer => new SingerMenuItemViewModel() {
-                        Header = singer.LocalizedName,
-                        Command = SelectSingerCommand,
-                        CommandParameter = singer,
-                    }).ToArray(),
-            });
-
-            var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
-            foreach (var key in keys) {
                 items.Add(new SingerMenuItemViewModel() {
-                    Header = $"{key} ...",
-                    Items = SingerManager.Inst.SingerGroups[key]
+                    Header = ThemeManager.GetString("tracks.favorite") + " ...",
+                    Items = Preferences.Default.FavoriteSingers
+                        .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
+                        .OfType<USinger>()
+                        .LocalizedOrderBy(singer => singer.LocalizedName)
                         .Select(singer => new SingerMenuItemViewModel() {
                             Header = singer.LocalizedName,
                             Command = SelectSingerCommand,
                             CommandParameter = singer,
                         }).ToArray(),
+                });
+                var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
+                foreach (var key in keys) {
+                    items.Add(new SingerMenuItemViewModel() {
+                        Header = $"{key} ...",
+                        Items = SingerManager.Inst.SingerGroups[key]
+                            .Select(singer => new SingerMenuItemViewModel() {
+                                Header = singer.LocalizedName,
+                                Command = SelectSingerCommand,
+                                CommandParameter = singer,
+                            }).ToArray(),
+                    });
+                }
+            } else {
+                items.Add(new MenuItemViewModel() {
+                    Header = ThemeManager.GetString("tracks.nosinger"),
+                    IsEnabled = false
                 });
             }
 
