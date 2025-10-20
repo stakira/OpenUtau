@@ -31,4 +31,4 @@ jobs:
         stale-pr-message: >
           This PR is stale because it has been open for 365 days with no activity.
           It will be closed if no further activity occurs. Thank you.
-          exempt-issue-labels: 'feature-request'
+        exempt-issue-labels: 'feature-request'
