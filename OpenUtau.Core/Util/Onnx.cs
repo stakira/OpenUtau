@@ -18,16 +18,12 @@ namespace OpenUtau.Core {
         private static readonly Dictionary<int, OrtEpDevice> devices = initializeDevices();
 
         private static Dictionary<int, OrtEpDevice> initializeDevices() {
-            var deviceDict = new Dictionary<int, OrtEpDevice>();
             var env = OrtEnv.Instance();
             var ortDevices = env.GetEpDevices();
 
-            var i = 0;
-            foreach (var device in ortDevices) {
-                deviceDict[i] = device;
-                i++;
-            }
-            return deviceDict;
+            return ortDevices
+                .Select((device, index) => new { index, device })
+                .ToDictionary(x => x.index, x => x.device);
         }
 
         public static List<string> getRunnerOptions() {
