@@ -22,6 +22,7 @@ namespace OpenUtau.Core {
             var ortDevices = env.GetEpDevices();
 
             return ortDevices
+                .Where(device => device.EpName.ToLower().Contains("dml"))
                 .Select((device, index) => new { index, device })
                 .ToDictionary(x => x.index, x => x.device);
         }
@@ -49,7 +50,7 @@ namespace OpenUtau.Core {
             var ortDevices = env.GetEpDevices();
 
             var i = 0;
-            foreach (var device in ortDevices) {
+            foreach (var device in ortDevices.Where(device => device.EpName.ToLower().Contains("dml"))) {
                 var description = "";
                 foreach (var item in device.HardwareDevice.Metadata.Entries) {
                     if (item.Key.ToLower() == "description") {
