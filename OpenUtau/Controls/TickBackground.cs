@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
@@ -47,7 +48,7 @@ namespace OpenUtau.App.Controls {
                 o => o.ShowBarNumber,
                 (o, v) => o.ShowBarNumber = v);
 
-        public int Resolution => (project?.resolution ?? 480);
+        public int Resolution => (project.resolution);
         
         // Tick width in pixel.
         public double TickWidth {
@@ -75,7 +76,7 @@ namespace OpenUtau.App.Controls {
             set => SetAndRaise(ShowBarNumberProperty, ref _showBarNumber, value);
         }
 
-        private Core.Ustx.UProject? project = new UProject();
+        private UProject project => DocManager.Inst.Project;
         private double _tickWidth;
         private double _tickOffset;
         private int _tickOrigin;

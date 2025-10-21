@@ -33,10 +33,9 @@ namespace OpenUtau.App.ViewModels {
     public class WaveformRefreshEvent { }
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
-        public ViewConstants? ViewConstants;
-        public Core.Ustx.UProject? project;
+        public ViewConstants ViewConstants = new ViewConstants();
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Part?.Duration ?? (project?.resolution ?? 480) * 4;
+        public int TickCount => Part?.Duration ?? (Project.resolution) * 4;
         public int TrackCount => ViewConstants.MaxTone;
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
@@ -108,7 +107,7 @@ namespace OpenUtau.App.ViewModels {
         public readonly NoteSelectionViewModel Selection = new NoteSelectionViewModel();
 
         internal NotesViewModelHitTest HitTest;
-        private int _lastNoteLength => (project?.resolution ?? 480);
+        private int _lastNoteLength => (Project.resolution);
         private string? portraitSource;
         private readonly object portraitLock = new object();
         private int userSnapDiv = -2;
@@ -272,7 +271,7 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Save();
             });
 
-            TickWidth = ViewConstants?.PianoRollTickWidthDefault ?? 128.0 / 480.0;
+            TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
             TrackOffset = 4 * 12 + 6;
             if (Preferences.Default.ShowTips) {
@@ -333,7 +332,7 @@ namespace OpenUtau.App.ViewModels {
             }
             double center = TickOffset + position.X * ViewportTicks;
             double tickWidth = TickWidth * (1.0 + delta * 2);
-            tickWidth = Math.Clamp(tickWidth, ViewConstants?.PianoRollTickWidthMin ?? 4.0 / 480.0, ViewConstants?.PianoRollTickWidthMax ?? 640.0 / 480.0);
+            tickWidth = Math.Clamp(tickWidth, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax);
             tickWidth = Math.Max(tickWidth, Bounds.Width / TickCount);
             TickWidth = tickWidth;
             double tickOffset = recenter
