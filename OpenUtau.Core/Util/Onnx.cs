@@ -57,7 +57,7 @@ namespace OpenUtau.Core {
                         break;
                     }
                 }
-                if (description.Length == 0) { // fallback
+                if (string.IsNullOrEmpty(description)) { // fallback
                     description = $"{device.EpName} {device.HardwareDevice.Vendor} {device.HardwareDevice.Type}";
                 }
                 devices[i] = device;
