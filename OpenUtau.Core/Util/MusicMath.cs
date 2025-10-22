@@ -248,5 +248,10 @@ namespace OpenUtau.Core {
             float volumeRight = (Math.Min(pan, 0) + 100) / -100;
             return (volumeLeft, volumeRight);
         }
+
+        public static float ResolutionFactor() {
+            UProject currentProject = DocManager.Inst.Project;
+            return currentProject.resolution / 480;
+        }
     }
 }
