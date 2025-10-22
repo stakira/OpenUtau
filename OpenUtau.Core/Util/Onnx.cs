@@ -54,12 +54,12 @@ namespace OpenUtau.Core {
                 var description = "";
                 foreach (var item in device.HardwareDevice.Metadata.Entries) {
                     if (item.Key.ToLower() == "description") {
-                        description = $"[{device.HardwareDevice.Type}] {item.Value}";
+                        description = $"{item.Value} ({device.HardwareDevice.Type})";
                         break;
                     }
                 }
                 if (string.IsNullOrEmpty(description)) { // fallback
-                    description = $"{device.EpName} {device.HardwareDevice.Vendor} {device.HardwareDevice.Type}";
+                    description = $"{device.EpName} {device.HardwareDevice.Vendor} ({device.HardwareDevice.Type})";
                 }
                 devices[i] = device;
                 gpuList.Add(new GpuInfo {
