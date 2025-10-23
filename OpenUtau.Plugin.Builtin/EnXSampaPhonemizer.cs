@@ -280,6 +280,17 @@ namespace OpenUtau.Plugin.Builtin {
                     } catch (Exception ex) {
                         Log.Error($"Failed to load vowels from YAML: {ex.Message}");
                     }
+                    // Load tails
+                    try {
+                        var loadTails = data.symbols
+                            ?.Where(s => s.type == "tail")
+                            .Select(s => s.symbol)
+                            .ToList() ?? new List<string>();
+
+                        tails = tails.Concat(loadTails).Distinct().ToArray();
+                    } catch (Exception ex) {
+                        Log.Error($"Failed to load tails from xsampa.yaml: {ex.Message}");
+                    }
                     // Load the various consonant types 
                     var fricatives = data.symbols
                         ?.Where(s => s.type == "fricative")

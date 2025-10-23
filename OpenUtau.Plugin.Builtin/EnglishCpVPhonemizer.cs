@@ -349,6 +349,17 @@ namespace OpenUtau.Plugin.Builtin {
                         } catch (Exception ex) {
                             Log.Error($"Failed to load vowels and diphthongs from en-cPv.yaml: {ex.Message}");
                         }
+                        // Load tails
+                        try {
+                            var loadTails = data.symbols
+                                ?.Where(s => s.type == "tail")
+                                .Select(s => s.symbol)
+                                .ToList() ?? new List<string>();
+
+                            tails = tails.Concat(loadTails).Distinct().ToArray();
+                        } catch (Exception ex) {
+                            Log.Error($"Failed to load tails from en-cPv.yaml: {ex.Message}");
+                        }
                         // Load the various consonant types for double consonant endings
                         var fricatives = data.symbols
                             ?.Where(s => s.type == "fricative")
