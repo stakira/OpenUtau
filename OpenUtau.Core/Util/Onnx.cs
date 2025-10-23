@@ -77,12 +77,20 @@ namespace OpenUtau.Core {
             return options;
         }
 
-        public static InferenceSession getInferenceSession(byte[] model) {
-            return new InferenceSession(model,getOnnxSessionOptions());
+        public static InferenceSession getInferenceSession(byte[] model, bool force_cpu = false) {
+            if (force_cpu) {
+                return new InferenceSession(model);
+            } else {
+                return new InferenceSession(model, getOnnxSessionOptions());
+            }
         }
 
-        public static InferenceSession getInferenceSession(string modelPath) {
-            return new InferenceSession(modelPath,getOnnxSessionOptions());
+        public static InferenceSession getInferenceSession(string modelPath, bool force_cpu = false) {
+            if (force_cpu) {
+                return new InferenceSession(modelPath);
+            } else {
+                return new InferenceSession(modelPath, getOnnxSessionOptions());
+            }
         }
 
         public static void VerifyInputNames(InferenceSession session, IEnumerable<NamedOnnxValue> inputs) {
