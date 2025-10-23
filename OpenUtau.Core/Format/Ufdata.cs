@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
@@ -100,13 +100,13 @@ namespace OpenUtau.Core.Format
             foreach(var ufNote in ufTrack.notes){
                 var note = project.CreateNote(
                     ufNote.key,
-                    ufNote.tickOn,
-                    ufNote.tickOff - ufNote.tickOn
+                    (int)(ufNote.tickOn * MusicMath.ResolutionFactor()),
+                    (int)((ufNote.tickOff - ufNote.tickOn) * MusicMath.ResolutionFactor())
                 );
                 note.lyric = ufNote.lyric;
                 part.notes.Add(note);
             }
-            part.Duration = ufTrack.notes[^1].tickOff;
+            part.Duration = (int)(ufTrack.notes[^1].tickOff * MusicMath.ResolutionFactor());
             return part;
         }
 
@@ -119,11 +119,11 @@ namespace OpenUtau.Core.Format
             
             //parse tempo
             project.tempos=ufProject.tempos
-                .Select(t => new UTempo(t.tickPosition, t.bpm))
+                .Select(t => new UTempo((int)(t.tickPosition * MusicMath.ResolutionFactor()), t.bpm))
                 .ToList();
             //parse timeSignature
             project.timeSignatures=ufProject.timeSignatures
-                .Select(t => new UTimeSignature(t.measurePosition, t.numerator, t.denominator))
+                .Select(t => new UTimeSignature((int)(t.measurePosition * MusicMath.ResolutionFactor()), t.numerator, t.denominator))
                 .ToList();
             //parse tracks
             var parts = ufProject.tracks

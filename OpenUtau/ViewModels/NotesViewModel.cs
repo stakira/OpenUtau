@@ -33,8 +33,9 @@ namespace OpenUtau.App.ViewModels {
     public class WaveformRefreshEvent { }
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
+        public ViewConstants ViewConstants = new ViewConstants();
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Part?.Duration ?? 480 * 4;
+        public int TickCount => Part?.Duration ?? (Project.resolution) * 4;
         public int TrackCount => ViewConstants.MaxTone;
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
@@ -109,7 +110,7 @@ namespace OpenUtau.App.ViewModels {
         public readonly NoteSelectionViewModel Selection = new NoteSelectionViewModel();
 
         internal NotesViewModelHitTest HitTest;
-        private int _lastNoteLength = 480;
+        private int _lastNoteLength => (Project.resolution);
         private string? portraitSource;
         private readonly object portraitLock = new object();
         private int userSnapDiv = -2;
@@ -131,7 +132,7 @@ namespace OpenUtau.App.ViewModels {
             });
 
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
-                .Select(v => v.Item1.Width / Math.Max(v.Item2, ViewConstants.TickWidthMin))
+                .Select(v => v.Item1.Width / Math.Max(v.Item2, ViewConstants?.TickWidthMin ?? 0.25))
                 .ToProperty(this, x => x.ViewportTicks);
             viewportTracks = this.WhenAnyValue(x => x.Bounds, x => x.TrackHeight)
                 .Select(v => v.Item1.Height / v.Item2)

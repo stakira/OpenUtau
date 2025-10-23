@@ -41,6 +41,7 @@ namespace OpenUtau.Core.Format {
         //Create a blank new project and import data from midi files
         //Including tempo
         static public UProject LoadProject(string file) {
+            UProject CurrentProject = DocManager.Inst.Project;
             UProject project = new UProject();
             Ustx.AddDefaultExpressions(project);
             project.FilePath = file;
@@ -66,7 +67,7 @@ namespace OpenUtau.Core.Format {
             //Parse tracks
             project.tracks = new List<UTrack>();
 
-            var parts = ParseParts(midi, PPQ, project);
+            var parts = ParseParts(midi, PPQ, project, CurrentProject);
             foreach (var part in parts) {
                 var track = new UTrack(project) {
                     TrackNo = project.tracks.Count
@@ -115,7 +116,8 @@ namespace OpenUtau.Core.Format {
             var midi = MidiFile.Read(file, ReadingSettings);
             TicksPerQuarterNoteTimeDivision timeDivision = midi.TimeDivision as TicksPerQuarterNoteTimeDivision;
             var PPQ = timeDivision.TicksPerQuarterNote;
-            return ParseParts(midi, PPQ, project);
+            UProject CurrentProject = DocManager.Inst.Project;
+            return ParseParts(midi, PPQ, project, CurrentProject);
         }
 
         public static List<UTempo> ParseTempos(TempoMap tempoMap, short PPQ) {
@@ -177,7 +179,7 @@ namespace OpenUtau.Core.Format {
             return UTimeSignatureList;
         }
 
-        static List<UVoicePart> ParseParts(MidiFile midi, short PPQ, UProject project) {
+        static List<UVoicePart> ParseParts(MidiFile midi, short PPQ, UProject project, UProject CurrentProject) {
             string defaultLyric = NotePresets.Default.DefaultLyric;
             List<UVoicePart> resultParts = new List<UVoicePart>();
             foreach (TrackChunk trackChunk in midi.GetTrackChunks()) {
@@ -198,8 +200,8 @@ namespace OpenUtau.Core.Format {
                         foreach (Melanchall.DryWetMidi.Interaction.Note midiNote in midiNoteList) {
                             var note = project.CreateNote(
                                 midiNote.NoteNumber,
-                                (int)(midiNote.Time * project.resolution / PPQ),
-                                (int)(midiNote.Length * project.resolution / PPQ)
+                                (int)(midiNote.Time * CurrentProject.resolution / PPQ),
+                                (int)(midiNote.Length * CurrentProject.resolution / PPQ)
                             );
                             //handle lyric import
                             bool hasLyric = lyrics.TryGetValue(midiNote.Time, out string lyric);

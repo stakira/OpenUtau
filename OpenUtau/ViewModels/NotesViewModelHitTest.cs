@@ -57,6 +57,8 @@ namespace OpenUtau.App.ViewModels {
 
     class NotesViewModelHitTest {
         private readonly NotesViewModel viewModel;
+        private ViewConstants ViewConstants = new ViewConstants();
+        private UProject project => DocManager.Inst.Project;
 
         public NotesViewModelHitTest(NotesViewModel viewModel) {
             this.viewModel = viewModel;
@@ -146,8 +148,8 @@ namespace OpenUtau.App.ViewModels {
             if (viewModel.Part == null || !viewModel.ShowPitch) {
                 return default;
             }
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project.resolution);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project.resolution);
             foreach (var note in viewModel.Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
                     continue;
@@ -308,8 +310,8 @@ namespace OpenUtau.App.ViewModels {
             var timeAxis = viewModel.Project.timeAxis;
             PhonemeHitInfo result = default;
             result.point = mousePos;
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project.resolution);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project.resolution);
             foreach (var phoneme in viewModel.Part.phonemes) {
                 double leftBound = timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
                 double rightBound = phoneme.End;
@@ -354,8 +356,8 @@ namespace OpenUtau.App.ViewModels {
             result.point = mousePos;
             double lastTextEndX = double.NegativeInfinity;
             bool raiseText = false;
-            double leftTick = viewModel.TickOffset - 480;
-            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            double leftTick = viewModel.TickOffset - (project.resolution);
+            double rightTick = leftTick + viewModel.ViewportTicks + (project.resolution);
             string langCode = PhonemeUIRender.getLangCode(viewModel.Part);
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
             foreach (var phoneme in viewModel.Part.phonemes) {
@@ -369,7 +371,7 @@ namespace OpenUtau.App.ViewModels {
                     continue;
                 }
                 // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
-                if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
+                if (viewModel.TickWidth <= ViewConstants?.PianoRollTickWidthShowDetails) {
                     continue;
                 }
                 string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;

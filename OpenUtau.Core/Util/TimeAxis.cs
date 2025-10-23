@@ -155,8 +155,8 @@ namespace OpenUtau.Core {
         /// <returns>Duration in ticks</returns>
         public int MsToTickAt(double offsetMs, int refTickPos) {
             return TicksBetweenMsPos(
-                TickPosToMsPos(refTickPos), 
-                TickPosToMsPos(refTickPos) + offsetMs);
+                TickPosToMsPos(refTickPos * MusicMath.ResolutionFactor()), 
+                TickPosToMsPos(refTickPos * MusicMath.ResolutionFactor()) + offsetMs);
         }
 
         public void TickPosToBarBeat(int tick, out int bar, out int beat, out int remainingTicks) {

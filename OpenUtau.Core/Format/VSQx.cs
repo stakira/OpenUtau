@@ -67,7 +67,7 @@ namespace OpenUtau.Core.Format {
                     beatUnit = Convert.ToInt32(node[nsPrefix == "v3:" ? "denomi" : "de"].InnerText),
                 });
             }
-            uproject.timeSignatures.Sort((lhs, rhs) => lhs.barPosition.CompareTo(rhs.barPosition));
+            uproject.timeSignatures.Sort((lhs, rhs) => lhs.barPosition.CompareTo(rhs.barPosition * MusicMath.ResolutionFactor()));
             uproject.timeSignatures[0].barPosition = 0;
 
             uproject.tempos.Clear();
@@ -77,7 +77,7 @@ namespace OpenUtau.Core.Format {
                     bpm = Convert.ToDouble(node[nsPrefix == "v3:" ? "bpm" : "v"].InnerText) / 100,
                 });
             }
-            uproject.tempos.Sort((lhs, rhs) => lhs.position.CompareTo(rhs.position));
+            uproject.tempos.Sort((lhs, rhs) => lhs.position.CompareTo(rhs.position * MusicMath.ResolutionFactor())) ;
             uproject.tempos[0].position = 0;
 
             uproject.resolution = int.Parse(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
@@ -174,8 +174,8 @@ namespace OpenUtau.Core.Format {
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager)) {
                         UNote unote = uproject.CreateNote();
 
-                        unote.position = int.Parse(note.SelectSingleNode(postickPath, nsmanager).InnerText);
-                        unote.duration = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
+                        unote.position = (int)(int.Parse(note.SelectSingleNode(postickPath, nsmanager).InnerText) * MusicMath.ResolutionFactor());
+                        unote.duration = (int)(int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText) * MusicMath.ResolutionFactor());
                         unote.tone = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         if (unote.lyric == "-") {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -43,7 +43,7 @@ namespace OpenUtau.Core.Format
                     // BPM
                     double? bpm;
                     if ((bpm = MeasureBPM(measure)).HasValue) {
-                        uproject.tempos.Add(new UTempo(currPosTick, bpm.Value));
+                        uproject.tempos.Add(new UTempo((int)(currPosTick * MusicMath.ResolutionFactor()), bpm.Value));
                         Log.Information($"Measure {measure.Number} BPM: {bpm.ToString()}");
                     }
 
@@ -52,7 +52,7 @@ namespace OpenUtau.Core.Format
                         foreach (var time in attributes.Time) {
                             if (time.Beats.Count > 0 && time.BeatType.Count > 0) {
                                 uproject.timeSignatures.Add(new UTimeSignature {
-                                    barPosition = currPosTick,
+                                    barPosition = (int)(currPosTick * MusicMath.ResolutionFactor()),
                                     beatPerBar = Int32.Parse(time.Beats[0]),
                                     beatUnit = Int32.Parse(time.BeatType[0])
                                 });
@@ -71,7 +71,7 @@ namespace OpenUtau.Core.Format
                         else {
                             var pitch = note.Pitch.Step.ToString() + note.Pitch.Octave.ToString();
                             int tone = MusicMath.NameToTone(pitch) + (int)note.Pitch.Alter;
-                            UNote unote = uproject.CreateNote(tone, currPosTick, durTick);
+                            UNote unote = uproject.CreateNote(tone, (int)(currPosTick * MusicMath.ResolutionFactor()), (int)(durTick * MusicMath.ResolutionFactor()));
                             if (note.Lyric.Count > 0) {
                                 unote.lyric = note.Lyric[0].Text[0].Value;
                             }
