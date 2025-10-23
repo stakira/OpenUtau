@@ -63,7 +63,7 @@ namespace OpenUtau.App.Controls {
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
-        public UProject uProject => DocManager.Inst.Project;
+        private UProject uProject => DocManager.Inst.Project;
         private string key = string.Empty;
         private bool showRealCurve = true;
 

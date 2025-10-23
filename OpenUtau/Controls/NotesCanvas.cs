@@ -96,8 +96,8 @@ namespace OpenUtau.App.Controls {
         private bool showVibrato = true;
         private PolylineGeometry polylineGeometry = new PolylineGeometry();
         private Points points = new Points();
-        public ViewConstants ViewConstants = new ViewConstants();
-        public UProject project => DocManager.Inst.Project;
+        private ViewConstants ViewConstants = new ViewConstants();
+        private UProject project => DocManager.Inst.Project;
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;

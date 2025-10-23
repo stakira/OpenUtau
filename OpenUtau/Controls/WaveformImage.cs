@@ -43,7 +43,7 @@ namespace OpenUtau.App.Controls {
         private double tickWidth;
         private double tickOffset;
         private bool showWaveform;
-        public ViewConstants ViewConstants = new ViewConstants();
+        private ViewConstants ViewConstants = new ViewConstants();
 
         private WriteableBitmap? bitmap;
         private float[] sampleData = new float[0];

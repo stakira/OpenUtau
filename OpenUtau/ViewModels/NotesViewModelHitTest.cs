@@ -57,8 +57,8 @@ namespace OpenUtau.App.ViewModels {
 
     class NotesViewModelHitTest {
         private readonly NotesViewModel viewModel;
-        public ViewConstants ViewConstants = new ViewConstants();
-        public Core.Ustx.UProject project = new UProject();
+        private ViewConstants ViewConstants = new ViewConstants();
+        private UProject project => DocManager.Inst.Project;
 
         public NotesViewModelHitTest(NotesViewModel viewModel) {
             this.viewModel = viewModel;

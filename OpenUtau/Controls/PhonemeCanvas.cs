@@ -63,8 +63,8 @@ namespace OpenUtau.App.Controls {
         private double tickOffset;
         private UVoicePart? part;
         private bool showPhoneme = true;
-        public ViewConstants ViewConstants = new ViewConstants();
-        public UProject project => DocManager.Inst.Project;
+        private ViewConstants ViewConstants = new ViewConstants();
+        private UProject project => DocManager.Inst.Project;
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
