@@ -967,7 +967,7 @@ namespace OpenUtau.App.Views {
                         editState = new PhonemeChangePreutterState(
                             control, ViewModel, this, note.Extends ?? note, phoneme, index);
                     } else if (hitInfo.hitOverlap) {
-                        if (phoneme.Next == null) {
+                        if (phoneme.Next == null || !phoneme.Next.adjacent) {
                             return;
                         }
                         phoneme = hitInfo.phoneme.Next;
@@ -1014,7 +1014,8 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
-            if (hitInfo.hitPosition || hitInfo.hitPreutter || hitInfo.hitOverlap || hitInfo.hitAttackTime || hitInfo.hitReleaseTime) {
+            var adjacent = hitInfo.phoneme != null && hitInfo.phoneme.Next != null && hitInfo.phoneme.Next.adjacent;
+            if (hitInfo.hitPosition || hitInfo.hitPreutter || (hitInfo.hitOverlap && adjacent) || hitInfo.hitAttackTime || hitInfo.hitReleaseTime) {
                 Cursor = ViewConstants.cursorSizeWE;
                 ViewModel.MouseoverPhoneme(null);
                 return;
