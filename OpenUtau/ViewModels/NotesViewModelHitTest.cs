@@ -359,8 +359,16 @@ namespace OpenUtau.App.ViewModels {
                     result.hitOverlap = true;
                     return result;
                 }
+            }
+            foreach (var phoneme in viewModel.Part.phonemes) {
+                double leftBound = timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
+                double rightBound = phoneme.End;
+                var note = phoneme.Parent;
+                if (leftBound >= rightTick || rightBound <= leftTick || note.Error || note.OverlapError) {
+                    continue;
+                }
                 // Position
-                point = viewModel.TickToneToPoint(phoneme.position, 0);
+                var point = viewModel.TickToneToPoint(phoneme.position, 0);
                 if (Math.Abs(point.X - mousePos.X) < 3) {
                     result.phoneme = phoneme;
                     result.hit = true;
