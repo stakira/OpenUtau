@@ -15,7 +15,8 @@ namespace OpenUtau.App.Views {
     class KeyboardPlayState {
         private readonly TrackBackground element;
         private readonly PianoRollViewModel vm;
-        private SineGen? sineGen;
+        private int activeTone;
+
         public KeyboardPlayState(TrackBackground element, PianoRollViewModel vm) {
             this.element = element;
             this.vm = vm;
@@ -23,19 +24,20 @@ namespace OpenUtau.App.Views {
         public void Begin(IPointer pointer, Point point) {
             pointer.Capture(element);
             var tone = vm.NotesViewModel.PointToTone(point);
-            sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            activeTone = tone;
         }
         public void Update(IPointer pointer, Point point) {
             var tone = vm.NotesViewModel.PointToTone(point);
-            if (sineGen != null) {
-                sineGen.Freq = MusicMath.ToneToFreq(tone);
+            if (activeTone != tone) {
+                PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+                activeTone = tone;
             }
         }
         public void End(IPointer pointer, Point point) {
             pointer.Capture(null);
-            if (sineGen != null) {
-                sineGen.Stop = true;
-            }
+            PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
         }
     }
 
@@ -208,8 +210,9 @@ namespace OpenUtau.App.Views {
 
     class NoteDrawEditState : NoteEditState {
         private UNote? note;
-        private SineGen? sineGen;
         private bool playTone;
+        private int activeTone;
+
         public NoteDrawEditState(
             Control control,
             PianoRollViewModel vm,
@@ -221,7 +224,12 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             note = vm.NotesViewModel.MaybeAddNote(point, false);
             if (note != null && playTone) {
-                sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
+                if (PlaybackManager.Inst.PlayingMaster) {
+                    // Stop playback if playing project
+                    PlaybackManager.Inst.StopPlayback();
+                }
+                activeTone = note.tone;
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
             }
         }
         public override void Update(IPointer pointer, Point point) {
@@ -235,8 +243,11 @@ namespace OpenUtau.App.Views {
                 return;
             }
             int tone = notesVm.PointToTone(point);
-            if (sineGen != null) {
-                sineGen.Freq = MusicMath.ToneToFreq(tone);
+            if (activeTone != tone) {
+                // Tone has changed
+                PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+                activeTone = tone;
             }
             int deltaTone = tone - note.tone;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
@@ -271,9 +282,7 @@ namespace OpenUtau.App.Views {
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
-            if (sineGen != null) {
-                sineGen.Stop = true;
-            }
+            PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
         }
     }
 

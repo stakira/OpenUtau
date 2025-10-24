@@ -67,6 +67,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowWaveform { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool ShowNoteParams { get; set; }
+        [Reactive] public bool ShowExpressions { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapDivText { get; set; }
         [Reactive] public string KeyText { get; set; }
@@ -76,6 +77,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
+        [Reactive] public double ExpHeightMin { get; set; }
+        [Reactive] public double ExpHeightMax { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
@@ -261,6 +264,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(x => x.ShowPhoneme)
             .Subscribe(showPhoneme => {
                 Preferences.Default.ShowPhoneme = showPhoneme;
+                Preferences.Save();
+            });
+            ShowExpressions = Preferences.Default.ShowExpressions;
+            this.WhenAnyValue(x => x.ShowExpressions)
+            .Subscribe(showExpressions => {
+                ExpHeightMin = showExpressions
+                    ? ViewConstants.ExpHeightMin : 0;
+                ExpHeightMax = showExpressions
+                    ? ViewConstants.ExpHeightMax : 0;
+                Preferences.Default.ShowExpressions = showExpressions;
                 Preferences.Save();
             });
             ShowNoteParams = Preferences.Default.ShowNoteParams;
@@ -1025,9 +1038,13 @@ namespace OpenUtau.App.ViewModels {
                             SelectNote(focusNote.note);
                         }
                     }
-                } else if (cmd is ValidateProjectNotification
-                    || cmd is SingersRefreshedNotification
-                    || cmd is PhonemizedNotification) {
+                } else if (cmd is ValidateProjectNotification || cmd is SingersRefreshedNotification) {
+                    if (Part != null) {
+                        LoadPortrait(Part, Project);
+                    }
+                    OnPartModified();
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                } else if (cmd is PhonemizedNotification) {
                     OnPartModified();
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 } else if (notif is PartRenderedNotification && notif.part == Part) {

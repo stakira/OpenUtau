@@ -132,7 +132,7 @@ namespace OpenUtau.Core.Ustx {
                 }
                 if (adjacent && autoPreutter > prevDur) {
                     double delta = autoPreutter - prevDur;
-                    autoPreutter -= delta;
+                    autoPreutter -= delta; // Ensure autoPreutter doesn't exceed 100% of prevDur
                     autoOverlap -= delta;
                 }
                 if (autoOverlap < 0) {

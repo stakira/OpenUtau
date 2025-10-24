@@ -6,6 +6,7 @@ using Avalonia.Media.TextFormatting;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.App.ViewModels {
     public struct NoteHitInfo {
@@ -153,6 +154,9 @@ namespace OpenUtau.App.ViewModels {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
                     continue;
                 }
+                if (Preferences.Default.LockUnselectedNotesPitch && viewModel.Selection.Count > 0 && !viewModel.Selection.Contains(note)) {
+                    continue;
+                }
                 double lastX = 0, lastY = 0;
                 PitchPointShape lastShape = PitchPointShape.l;
                 for (int i = 0; i < note.pitch.data.Count; i++) {
@@ -247,6 +251,9 @@ namespace OpenUtau.App.ViewModels {
             VibratoHitInfo result = default;
             result.point = mousePos;
             foreach (var note in viewModel.Part.notes) {
+                if (Preferences.Default.LockUnselectedNotesVibrato && viewModel.Selection.Count > 0 && !viewModel.Selection.Contains(note)) {
+                    continue;
+                }
                 result.note = note;
                 UVibrato vibrato = note.vibrato;
                 Point toggle = viewModel.TickToneToPoint(vibrato.GetToggle(note));
