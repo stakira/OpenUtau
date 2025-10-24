@@ -111,18 +111,20 @@ namespace OpenUtau.Core.Ustx {
                 double gapMs = PositionMs - Prev.EndMs;
                 double prevDur = Prev.DurationMs;
                 double maxPreutter = autoPreutter;
-                if (gapMs <= 0) {
+                if (gapMs <= 0) { // Adjacent to the previous note
                     adjacent = true;
-                    if (autoOverlap >= 0) {
+                    if (autoOverlap > 0) {
                         if (autoPreutter - autoOverlap > prevDur * 0.5f) {
                             maxPreutter = prevDur * 0.5f / (autoPreutter - autoOverlap) * autoPreutter;
                         }
-                    } else {
-                        if (autoPreutter > prevDur * 0.5f) {
-                            maxPreutter = prevDur * 0.5f;
-                        }
+                    } else { // Plosive consonants
+                        maxPreutter = Math.Min(maxPreutter, prevDur * 0.9);
                     }
-                } else if (gapMs < autoPreutter) {
+                    maxPreutter = Math.Min(maxPreutter, prevDur);
+                    if (Prev.preutter < 5) {
+                        maxPreutter = Math.Min(maxPreutter, prevDur + Prev.preutter - 5);
+                    }
+                } else if (gapMs < autoPreutter) { // There is a small gap between the previous note and this one
                     maxPreutter = gapMs;
                 }
                 if (autoPreutter > maxPreutter) {
@@ -130,13 +132,8 @@ namespace OpenUtau.Core.Ustx {
                     autoPreutter = maxPreutter;
                     autoOverlap *= ratio;
                 }
-                if (adjacent && autoPreutter > prevDur) {
-                    double delta = autoPreutter - prevDur;
-                    autoPreutter -= delta; // Ensure autoPreutter doesn't exceed 100% of prevDur
-                    autoOverlap -= delta;
-                }
                 if (autoOverlap < 0) {
-                    autoOverlap = Math.Max(autoOverlap, prevDur * 0.25 - prevDur + autoPreutter);
+                    autoOverlap = Math.Max(autoOverlap, Math.Min(0, 35 - prevDur + autoPreutter));
                 }
             }
             preutter = Math.Max(0, autoPreutter + (preutterDelta ?? 0));

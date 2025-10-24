@@ -452,7 +452,19 @@ namespace OpenUtau.Core {
             var o = this.note.GetPhonemeOverride(index);
             oldDelta = o.preutterDelta ?? 0;
 
-            double max = Math.Max(0, Math.Min(phoneme.maxOtoPreutter - phoneme.autoPreutter, (phoneme.Prev?.DurationMs ?? 1000) - phoneme.autoPreutter));
+            double max = phoneme.maxOtoPreutter - phoneme.autoPreutter;
+            if (phoneme.Prev != null) {
+                if (phoneme.adjacent) {
+                    if (phoneme.Prev.preutter < 5) {
+                        max = Math.Min(max, phoneme.Prev.DurationMs + phoneme.Prev.preutter - 5 - phoneme.autoPreutter);
+                    } else {
+                        max = Math.Min(max, phoneme.Prev.DurationMs - phoneme.autoPreutter);
+                    }
+                } else {
+                    max = Math.Min(max, phoneme.PositionMs - phoneme.Prev.EndMs - phoneme.autoPreutter);
+                }
+            }
+            max = Math.Max(0, max);
             double min = -phoneme.autoPreutter;
             newDelta = (float)Math.Clamp(delta, min, max);
         }
