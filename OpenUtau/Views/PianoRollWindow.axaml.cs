@@ -518,7 +518,7 @@ namespace OpenUtau.App.Views {
         }
 
         private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
-            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
+            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.OverwriteLinePitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
@@ -528,8 +528,10 @@ namespace OpenUtau.App.Views {
                         editState = new DrawPitchState(control, ViewModel, this);
                     } else if (ViewModel.NotesViewModel.DrawLinePitchTool) {
                         editState = new DrawLinePitchState(control, ViewModel, this);
-                    } else {
+                    } else if (ViewModel.NotesViewModel.OverwritePitchTool) {
                         editState = new OverwritePitchState(control, ViewModel, this);
+                    } else {
+                        editState = new OverwriteLinePitchState(control, ViewModel, this);
                     }
                     return;
                 }
@@ -625,7 +627,7 @@ namespace OpenUtau.App.Views {
 
         private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
-            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool) {
+            if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.OverwriteLinePitchTool) {
                 editState = new ResetPitchState(control, ViewModel, this);
                 return;
             }
@@ -751,7 +753,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.EraserTool) && args.KeyModifiers != cmdKey) {
+            if((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.OverwriteLinePitchTool || ViewModel.NotesViewModel.EraserTool) && args.KeyModifiers != cmdKey) {
                 Cursor = null;
                 return;
             }

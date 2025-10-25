@@ -445,7 +445,7 @@ namespace OpenUtau.App.Views {
             }
 
             int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0)
-                ? (oldDur-1) / snapUnit * snapUnit
+                ? (oldDur - 1) / snapUnit * snapUnit
                 : oldDur - 15;
             int maxDelta = maxNoteTicks - note.duration;
 
@@ -1142,8 +1142,8 @@ namespace OpenUtau.App.Views {
         double? lastPitch;
         Point lastPoint;
         public DrawLinePitchState(
-            Control control, 
-            PianoRollViewModel vm, 
+            Control control,
+            PianoRollViewModel vm,
             IValueTip valueTip) : base(control, vm, valueTip) { }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -1176,6 +1176,109 @@ namespace OpenUtau.App.Views {
                 ));
             lastPitch = pitch;
             lastPoint = point;
+        }
+    }
+
+    class OverwriteLinePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        Point firstPoint;
+        Point lastPoint;
+        public OverwriteLinePitchState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            firstPoint = point;
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            lastPoint = point;
+            var notesVm = vm.NotesViewModel;
+            if (notesVm.Part == null) {
+                base.Update(pointer, point);
+                return;
+            }
+
+            int startTick = notesVm.PointToTick(firstPoint);
+            int endTick = notesVm.PointToTick(lastPoint);
+            double startTone = notesVm.PointToToneDouble(firstPoint);
+            double endTone = notesVm.PointToToneDouble(lastPoint);
+
+            if (startTick == endTick) {
+                base.Update(pointer, point);
+                return;
+            }
+            if (startTick > endTick) {
+                Swap(ref startTick, ref endTick);
+                Swap(ref startTone, ref endTone);
+            }
+
+            int step = 5; // 5-tick sampling aligns with renderer pitch resolution
+            int firstSampleTick = (int)Math.Round(startTick / 5.0) * 5;
+            int lastSampleTick = (int)Math.Round(endTick / 5.0) * 5;
+            if (firstSampleTick < startTick) firstSampleTick += step;
+            if (lastSampleTick > endTick) lastSampleTick -= step;
+
+            // Build sampled points (x,y) where y is PITD = targetTone100 - basePitch
+            var samples = new List<(int x, int y)>();
+            for (int x = firstSampleTick; x <= lastSampleTick; x += step) {
+                double t = (double)(x - startTick) / (endTick - startTick);
+                double tone = startTone + (endTone - startTone) * t;
+                var sp = notesVm.TickToneToPoint(x, tone);
+                double? basePitch = notesVm.HitTest.SampleOverwritePitch(sp);
+                if (basePitch == null) continue;
+                int y = (int)Math.Round(tone * 100 - basePitch.Value);
+                samples.Add((x, y));
+            }
+
+            // If nothing sampled, just exit
+            if (samples.Count == 0) {
+                base.End(pointer, point);
+                return;
+            }
+
+            // Merge into existing curve using MergedSetCurveCommand
+            var part = notesVm.Part;
+            var project = notesVm.Project;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == Core.Format.Ustx.PITD);
+
+            if (curve == null) {
+                base.Update(pointer, point);
+                return;
+            }
+
+            var oldXs = curve.xs.ToArray();
+            var oldYs = curve.ys.ToArray();
+
+            var newXs = new List<int>(oldXs.Length + samples.Count);
+            var newYs = new List<int>(oldYs.Length + samples.Count);
+
+            // Keep points before the edited range
+            for (int i = 0; i < oldXs.Length; i++) {
+                if (oldXs[i] < startTick) {
+                    newXs.Add(oldXs[i]);
+                    newYs.Add(oldYs[i]);
+                }
+            }
+            // Insert sampled points in range
+            foreach (var (x, y) in samples) {
+                newXs.Add(x);
+                newYs.Add(y);
+            }
+            // Keep points after the edited range
+            for (int i = 0; i < oldXs.Length; i++) {
+                if (oldXs[i] > endTick) {
+                    newXs.Add(oldXs[i]);
+                    newYs.Add(oldYs[i]);
+                }
+            }
+            DocManager.Inst.ExecuteCmd(new MergedSetCurveCommand(
+                project, part, Core.Format.Ustx.PITD,
+                oldXs, oldYs,
+                newXs.ToArray(), newYs.ToArray()));
+
+            base.Update(pointer, point);
         }
     }
 

@@ -450,6 +450,21 @@
                 </Path>
               </Grid>
             </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+                            IsChecked="{Binding NotesViewModel.OverwriteLinePitchTool}"
+                            Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4+++"
+                            ToolTip.Tip="{DynamicResource pianoroll.tool.drawlinepitch}">
+                  <Grid Width="18" Height="18">
+                      <Path Classes="filled" Data="m 19.9854,15.8242 -1.9957,-0.0048 0.0066,2.9938 -2.9938,-0.0066 0.0044,1.9961 2.9938,0.0066 0.0066,2.9938 1.9961,0.0044 -0.0066,-2.9938 2.9938,0.0066 -0.0048,-1.9957 -2.9938,-0.0066 z  m -20.1824,0.2031 c -0.2894,0.2888 -0.2896,0.7584 -0.0004,1.0501 l 4.908,4.9474 c 0.2904,0.293 0.7624,0.2956 1.0533,0.0059 L 20.2879,7.5636 c 0.2902,-0.2891 0.2902,-0.7598 -0,-1.0516 l -4.9315,-4.9529 c -0.2908,-0.2923 -0.7625,-0.2943 -1.053,-0.0043 l -2.723,2.7194 c -0.0041,0.0019 -0.0082,0.0038 -0.0123,0.0058 L 8.6111,7.2333 c -0.0006,0.0005 -0.0013,0.001 -0.0019,0.0015 l -2.9897,2.9861 -0.0005,0.0001 -2.9749,2.9713 0.0001,0.0003 -0.0008,0.0002 z  m 1.5771,0.5327 1.7943,-1.7914 1.4877,1.4732 0.0001,0.0001 c 0.706,0.6815 1.7326,-0.355 1.0445,-1.0545 l -0.0002,-0.0002 -0.0018,-0.0019 -1.4794,-1.466 1.925,-1.9221 1.5073,1.4928 c 0.7061,0.6814 1.7325,-0.3552 1.0443,-1.0547 l -1.5012,-1.487 1.9335,-1.9306 1.4707,1.4885 0.0033,0 0.0003,0.0003 c 0.6955,0.63 1.6751,-0.3338 1.0563,-1.0393 l -0.0003,-0.0003 -1.4797,-1.4986 1.9136,-1.9107 1.4888,1.4801 c 0.7049,0.6818 1.7323,-0.3521 1.0462,-1.0528 L 13.1524,4.8127 14.832,3.136 18.7108,7.0316 5.2372,20.4482 Z" >
+                          <Path.RenderTransform>
+                              <TransformGroup>
+                                  <ScaleTransform ScaleX=".7" ScaleY=".7" />
+                                  <TranslateTransform X="-2" Y="-2"/>
+                              </TransformGroup>
+                          </Path.RenderTransform>
+                      </Path>
+                  </Grid>
+              </ToggleButton>
             <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
                           IsChecked="{Binding NotesViewModel.KnifeTool}"
                           Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="5"
