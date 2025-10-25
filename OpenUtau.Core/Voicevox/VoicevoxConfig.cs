@@ -8,7 +8,6 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -31,9 +30,6 @@ namespace OpenUtau.Core.Voicevox {
         public List<(string name, Styles styles)> base_singer_style;
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
-
-        //So that the renderer can distinguish between phonemizers.
-        public string Tag = "DEFAULT";
 
         public static VoicevoxConfig Load(USinger singer) {
             try {

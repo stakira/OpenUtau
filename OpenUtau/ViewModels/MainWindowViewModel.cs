@@ -23,18 +23,43 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartGotoFileCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartMergeCommand { get; set; }
+    }
+
+    public class RecentFileInfo {
+        public string Name { get; }
+        public string PathName { get; }
+        public string Directory { get; }
+        public DateTime LastWriteTime { get; }
+        public string LastWriteTimeStr { get; }
+
+        public RecentFileInfo(string path) {
+            PathName = path;
+            Name = Path.GetFileName(path);
+            Directory = Path.GetDirectoryName(path) ?? string.Empty;
+            LastWriteTime = File.GetLastWriteTime(path);
+            LastWriteTimeStr = LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
+        
+        /// <summary>
+        ///0: welcome page, 1: tracks page
+        /// </summary>
+        [Reactive] public int Page { get; set; } = 0;
+        ObservableCollectionExtended<RecentFileInfo> RecentFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
+        ObservableCollectionExtended<RecentFileInfo> TemplateFiles { get; } = new ObservableCollectionExtended<RecentFileInfo>();
+
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenTemplateCommand { get; private set; }
-        public ObservableCollectionExtended<MenuItemViewModel> OpenRecent => openRecent;
-        public ObservableCollectionExtended<MenuItemViewModel> OpenTemplates => openTemplates;
+        public ObservableCollectionExtended<MenuItemViewModel> OpenRecentMenuItems => openRecentMenuItems;
+        public ObservableCollectionExtended<MenuItemViewModel> OpenTemplatesMenuItems => openTemplatesMenuItems;
         public ObservableCollectionExtended<MenuItemViewModel> TimelineContextMenuItems { get; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
@@ -49,9 +74,9 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<int, Unit>? AddTimeSigChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTimeSigChangeCmd { get; set; }
 
-        private ObservableCollectionExtended<MenuItemViewModel> openRecent
+        private ObservableCollectionExtended<MenuItemViewModel> openRecentMenuItems
             = new ObservableCollectionExtended<MenuItemViewModel>();
-        private ObservableCollectionExtended<MenuItemViewModel> openTemplates
+        private ObservableCollectionExtended<MenuItemViewModel> openTemplatesMenuItems
             = new ObservableCollectionExtended<MenuItemViewModel>();
 
         public MainWindowViewModel() {
@@ -59,24 +84,16 @@ namespace OpenUtau.App.ViewModels {
             TracksViewModel = new TracksViewModel();
             ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
-            OpenRecentCommand = ReactiveCommand.Create<string>(file => {
-                try {
-                    OpenProject(new[] { file });
-                } catch (Exception e) {
-                    var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
-                }
-            });
-            OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
-                try {
-                    OpenProject(new[] { file });
-                    DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = string.Empty;
-                } catch (Exception e) {
-                    var customEx = new MessageCustomizableException("Failed to open template", "<translate:errors.failed.openfile>: project template", e);
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
-                }
-            });
+            RecentFiles.Clear();
+            RecentFiles.AddRange(Preferences.Default.RecentFiles
+                .Select(file => new RecentFileInfo(file))
+                .OrderByDescending(f => f.LastWriteTime));
+            TemplateFiles.Clear();
+            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
+            TemplateFiles.AddRange(Directory.GetFiles(PathManager.Inst.TemplatesPath, "*.ustx")
+                .Select(file => new RecentFileInfo(file)));
+            OpenRecentCommand = ReactiveCommand.Create<string>(OpenRecent);
+            OpenTemplateCommand = ReactiveCommand.Create<string>(OpenTemplate);
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
                 TracksViewModel.DeleteSelectedParts();
             });
@@ -102,6 +119,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), true, "project"));
                     try {
                         Core.Format.Formats.RecoveryProject(new string[] { recPath });
+                        Page = 1;
                         DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                         DocManager.Inst.Recovered = true;
                         this.RaisePropertyChanged(nameof(Title));
@@ -116,6 +134,7 @@ namespace OpenUtau.App.ViewModels {
             if (args.Length == 2 && File.Exists(args[1])) {
                 try {
                     Core.Format.Formats.LoadProject(new string[] { args[1] });
+                    Page = 1;
                     DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 } catch (Exception e) {
                     var customEx = new MessageCustomizableException($"Failed to open file {args[1]}", $"<translate:errors.failed.openfile>: {args[1]}", e);
@@ -131,6 +150,7 @@ namespace OpenUtau.App.ViewModels {
                     OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
                     DocManager.Inst.Project.FilePath = string.Empty;
+                    this.RaisePropertyChanged(nameof(Title));
                     return;
                 } catch (Exception e) {
                     var customEx = new MessageCustomizableException("Failed to load default template", "<translate:errors.failed.load>: default template", e);
@@ -154,6 +174,29 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(MainWindow), false, "project"));
             }
             DocManager.Inst.Recovered = false;
+        }
+
+        public void OpenRecent(string file) {
+            try {
+                OpenProject(new string[] { file });
+                Page = 1;
+            } catch (Exception e) {
+                var customEx = new MessageCustomizableException("Failed to open recent", "<translate:errors.failed.openfile>: recent project", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+            }
+        }
+
+        public void OpenTemplate(string file) {
+            try {
+                OpenProject(new string[] { file });
+                Page = 1;
+                DocManager.Inst.Project.Saved = false;
+                DocManager.Inst.Project.FilePath = string.Empty;
+                this.RaisePropertyChanged(nameof(Title));
+            } catch (Exception e) {
+                var customEx = new MessageCustomizableException("Failed to open template", "<translate:errors.failed.openfile>: project template", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+            }
         }
 
         public void SaveProject(string file = "") {
@@ -220,8 +263,8 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void RefreshOpenRecent() {
-            openRecent.Clear();
-            openRecent.AddRange(Core.Util.Preferences.Default.RecentFiles.Select(file => new MenuItemViewModel() {
+            openRecentMenuItems.Clear();
+            openRecentMenuItems.AddRange(Preferences.Default.RecentFiles.Select(file => new MenuItemViewModel() {
                 Header = file,
                 Command = OpenRecentCommand,
                 CommandParameter = file,
@@ -231,8 +274,8 @@ namespace OpenUtau.App.ViewModels {
         public void RefreshTemplates() {
             Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
             var templates = Directory.GetFiles(PathManager.Inst.TemplatesPath, "*.ustx");
-            openTemplates.Clear();
-            openTemplates.AddRange(templates.Select(file => new MenuItemViewModel() {
+            openTemplatesMenuItems.Clear();
+            openTemplatesMenuItems.AddRange(templates.Select(file => new MenuItemViewModel() {
                 Header = Path.GetRelativePath(PathManager.Inst.TemplatesPath, file),
                 Command = OpenTemplateCommand,
                 CommandParameter = file,
@@ -314,11 +357,11 @@ namespace OpenUtau.App.ViewModels {
                         project, part, partNewStartTick, part.trackNo));
                 }
                 if(part is UVoicePart voicePart){
-                    var partOldEndTick = voicePart.End;
-                    var partNewEndTick = RemapTickPos(voicePart.End, oldTimeAxis, newTimeAxis);
-                    if(partNewEndTick - partNewStartTick != voicePart.Duration){
+                    var partOldDuration = voicePart.Duration;
+                    var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
+                    if(partNewDuration != partOldDuration) {
                         DocManager.Inst.ExecuteCmd(new ResizePartCommand(
-                            project, voicePart, partNewEndTick - partNewStartTick));
+                            project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();
                     foreach(var note in voicePart.notes){

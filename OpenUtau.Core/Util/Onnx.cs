@@ -19,17 +19,17 @@ namespace OpenUtau.Core {
         public static List<string> getRunnerOptions() {
             if (OS.IsWindows()) {
                 return new List<string> {
-                "cpu",
-                "directml"
+                "CPU",
+                "DirectML"
                 };
             } else if (OS.IsMacOS()) {
                 return new List<string> {
-                "cpu",
-                "coreml"
+                "CPU",
+                "CoreML"
                 };
             }
             return new List<string> {
-                "cpu"
+                "CPU"
             };
         }
 
@@ -64,25 +64,33 @@ namespace OpenUtau.Core {
                 runner = runnerOptions[0];
             }
             if (!runnerOptions.Contains(runner)) {
-                runner = "cpu";
+                runner = "CPU";
             }
             switch(runner){
-                case "directml":
+                case "DirectML":
                     options.AppendExecutionProvider_DML(Preferences.Default.OnnxGpu);
                     break;
-                case "coreml":
+                case "CoreML":
                     options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
                     break;
             }
             return options;
         }
 
-        public static InferenceSession getInferenceSession(byte[] model) {
-            return new InferenceSession(model,getOnnxSessionOptions());
+        public static InferenceSession getInferenceSession(byte[] model, bool force_cpu = false) {
+            if (force_cpu) {
+                return new InferenceSession(model);
+            } else {
+                return new InferenceSession(model, getOnnxSessionOptions());
+            }
         }
 
-        public static InferenceSession getInferenceSession(string modelPath) {
-            return new InferenceSession(modelPath,getOnnxSessionOptions());
+        public static InferenceSession getInferenceSession(string modelPath, bool force_cpu = false) {
+            if (force_cpu) {
+                return new InferenceSession(modelPath);
+            } else {
+                return new InferenceSession(modelPath, getOnnxSessionOptions());
+            }
         }
 
         public static void VerifyInputNames(InferenceSession session, IEnumerable<NamedOnnxValue> inputs) {
