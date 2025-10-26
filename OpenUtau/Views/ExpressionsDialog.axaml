@@ -76,7 +76,7 @@
         <TextBlock Text="{DynamicResource exps.defaultvalue}" Classes="label"/>
         <c:FloatEditor Margin="140,0,0,4" Value="{Binding Expression.DefaultValue}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.ShowNumbers}">
+      <Grid IsVisible="{Binding Expression.IsNumerical}">
         <TextBlock Text="{DynamicResource exps.customdefault}" Classes="label"/>
         <c:FloatEditor Margin="140,0,0,4" Value="{Binding Expression.CustomeDefaultValue}"/>
       </Grid>

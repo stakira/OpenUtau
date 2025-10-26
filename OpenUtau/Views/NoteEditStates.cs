@@ -818,7 +818,7 @@ namespace OpenUtau.App.Views {
             if (descriptor != null && notesVm.Part != null) {
                 DocManager.Inst.ExecuteCmd(new SetCurveCommand(
                     notesVm.Project, notesVm.Part, notesVm.PrimaryKey,
-                    x, (int)descriptor.customDefaultValue, lastX, (int)descriptor.customDefaultValue));
+                    x, (int)descriptor.defaultValue, lastX, (int)descriptor.defaultValue));
             }
         }
     }
