@@ -127,7 +127,7 @@ namespace OpenUtau.Core.Editing {
                 }
                 else{
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
-                    int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.customDefaultValue;
+                    int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
                     foreach(var range in selectedTickRanges){
                         docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
                             range.start, defaultValue,
@@ -292,7 +292,7 @@ namespace OpenUtau.Core.Editing {
                 }
                 else{
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
-                    int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.customDefaultValue;
+                    int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
                     foreach(var range in selectedTickRanges){
                         docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
                             range.start, defaultValue,

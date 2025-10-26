@@ -63,7 +63,7 @@ namespace OpenUtau.Core.Ustx {
             if (idx > 0 && idx < xs.Count) {
                 return (int)Math.Round(MusicMath.Linear(xs[idx - 1], xs[idx], ys[idx - 1], ys[idx], x));
             }
-            return (int)descriptor.customDefaultValue;
+            return (int)descriptor.defaultValue;
         }
 
         private void Insert(int x, int y) {

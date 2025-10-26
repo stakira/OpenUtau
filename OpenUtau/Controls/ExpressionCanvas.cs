@@ -115,7 +115,7 @@ namespace OpenUtau.App.Controls {
                 : 0;
             if (descriptor.type == UExpressionType.Curve) {
                 var curve = Part.curves.FirstOrDefault(c => c.descriptor == descriptor);
-                double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.customDefaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+                double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
                 var lPen = ThemeManager.AccentPen1;
                 var lPen2 = ThemeManager.AccentPen1Thickness2;
                 var lPen3 = new Pen(ThemeManager.NeutralAccentBrush, 1, new DashStyle(new double[] { 4, 4 }, 0));
@@ -138,14 +138,14 @@ namespace OpenUtau.App.Controls {
                 index = Math.Max(0, index) - 1;
                 while (index < curve.xs.Count) {
                     float tick1 = index < 0 ? lTick : curve.xs[index];
-                    float value1 = index < 0 ? descriptor.customDefaultValue : curve.ys[index];
+                    float value1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
                     double x1 = viewModel.TickToneToPoint(tick1, 0).X;
-                    double y1 = defaultHeight - Bounds.Height * (value1 - descriptor.customDefaultValue) / (descriptor.max - descriptor.min);
+                    double y1 = defaultHeight - Bounds.Height * (value1 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
                     float tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1];
-                    float value2 = index == curve.xs.Count - 1 ? descriptor.customDefaultValue : curve.ys[index + 1];
+                    float value2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
                     double x2 = viewModel.TickToneToPoint(tick2, 0).X;
-                    double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.customDefaultValue) / (descriptor.max - descriptor.min);
-                    var pen = value1 == descriptor.customDefaultValue && value2 == descriptor.customDefaultValue ? lPen : lPen2;
+                    double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                    var pen = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? lPen : lPen2;
                     context.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
                     //using (var state = context.PushTransform(Matrix.CreateTranslation(x1, y1))) {
                     //    context.DrawGeometry(brush, null, pointGeometry);

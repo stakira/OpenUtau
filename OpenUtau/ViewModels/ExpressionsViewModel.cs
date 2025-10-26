@@ -104,7 +104,7 @@ namespace OpenUtau.App.ViewModels {
                 case UExpressionType.Options:
                     return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
                 case UExpressionType.Curve:
-                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, string.Empty, CustomeDefaultValue) {
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue) {
                         type = UExpressionType.Curve,
                     };
             }
