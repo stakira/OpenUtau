@@ -1025,7 +1025,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, phoneme, (float)preutterDelta));
-            valueTip.UpdateValueTip($"{phoneme.preutter:0.0}ms ({phoneme.preutterDelta ?? 0:+0.0;-0.0;0}ms)");
+            valueTip.UpdateValueTip($"{ThemeManager.GetString("pianoroll.tooltip.preutter")}: {phoneme.preutter:0.0}ms ({phoneme.preutterDelta ?? 0:+0.0;-0.0;0}ms)");
         }
     }
 
@@ -1054,7 +1054,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new PhonemeAttackTimeCommand(notesVm.Part, leadingNote, index, phoneme, (float)attackTimeDelta));
-            valueTip.UpdateValueTip($"{phoneme.attackTimeDelta ?? 0:+0.0;-0.0;0}ms");
+            valueTip.UpdateValueTip($"{ThemeManager.GetString("pianoroll.tooltip.attack")}: {phoneme.attackTimeDelta ?? 0:+0.0;-0.0;0}ms");
         }
     }
 
@@ -1083,7 +1083,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new PhonemeReleaseTimeCommand(notesVm.Part, leadingNote, index, phoneme, (float)releaseTimeDelta));
-            valueTip.UpdateValueTip($"{phoneme.releaseTimeDelta ?? 0:+0.0;-0.0;0}ms");
+            valueTip.UpdateValueTip($"{ThemeManager.GetString("pianoroll.tooltip.release")}: {phoneme.releaseTimeDelta ?? 0:+0.0;-0.0;0}ms");
         }
     }
 
@@ -1112,7 +1112,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, phoneme, (float)overlapDelta));
-            valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({phoneme.overlapDelta ?? 0:+0.0;-0.0;0}ms)");
+            valueTip.UpdateValueTip($"{ThemeManager.GetString("pianoroll.tooltip.overlap")}: {phoneme.overlap:0.0}ms ({phoneme.overlapDelta ?? 0:+0.0;-0.0;0}ms)");
         }
     }
 

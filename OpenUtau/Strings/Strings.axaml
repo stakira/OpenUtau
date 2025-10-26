@@ -301,13 +301,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
-
-  <system:String x:Key="phoneme.attacktime">Attack Time Delta</system:String>
-  <system:String x:Key="phoneme.offset">Offset</system:String>
-  <system:String x:Key="phoneme.overlap">Overlap Delta</system:String>
-  <system:String x:Key="phoneme.preutter">Preutter Delta</system:String>
-  <system:String x:Key="phoneme.releasetime">Release Time Delta</system:String>
-  <system:String x:Key="phoneme.title">Phoneme Parameter</system:String>
   
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
@@ -404,6 +397,10 @@ Warning: this option removes custom presets.</system:String>
     Left click to draw
     Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>
+  <system:String x:Key="pianoroll.tooltip.attack">Attack time delta</system:String>
+  <system:String x:Key="pianoroll.tooltip.overlap">Overlap</system:String>
+  <system:String x:Key="pianoroll.tooltip.preutter">Preutter</system:String>
+  <system:String x:Key="pianoroll.tooltip.release">Release time delta</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
