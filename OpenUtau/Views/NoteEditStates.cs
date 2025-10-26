@@ -1234,7 +1234,7 @@ namespace OpenUtau.App.Views {
 
             // If nothing sampled, just exit
             if (samples.Count == 0) {
-                base.End(pointer, point);
+                base.Update(pointer, point);
                 return;
             }
 
