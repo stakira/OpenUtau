@@ -508,7 +508,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.customDefaultValue == value) {
                     value = null;
                 }
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
@@ -517,7 +517,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.defaultValue == value) {
                     value = null;
                 }
                 DocManager.Inst.StartUndoGroup();
@@ -582,7 +582,7 @@ namespace OpenUtau.App.ViewModels {
 
         public NotePropertyExpViewModel(UExpressionDescriptor descriptor, NotePropertiesViewModel parent) {
             Name = descriptor.name;
-            defaultValue = descriptor.defaultValue;
+            defaultValue = descriptor.customDefaultValue;
             abbr = descriptor.abbr;
             if (descriptor.type == UExpressionType.Numerical) {
                 IsNumerical = true;
