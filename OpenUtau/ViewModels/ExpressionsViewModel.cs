@@ -27,13 +27,13 @@ namespace OpenUtau.App.ViewModels {
 
         public bool IsCustom => isCustom.Value;
         public bool IsNumerical => isNumerical.Value;
-        public bool ShowNumbers => showNumbers.Value;
+        public bool IsCurve => isCurve.Value;
         public bool IsOptions => isOptions.Value;
         public int SelectedType => selectedType.Value;
 
         private ObservableAsPropertyHelper<bool> isCustom;
         private ObservableAsPropertyHelper<bool> isNumerical;
-        private ObservableAsPropertyHelper<bool> showNumbers;
+        private ObservableAsPropertyHelper<bool> isCurve;
         private ObservableAsPropertyHelper<bool> isOptions;
         private ObservableAsPropertyHelper<int> selectedType;
 
@@ -66,8 +66,8 @@ namespace OpenUtau.App.ViewModels {
                 .Select(type => type == UExpressionType.Numerical)
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
             this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => type == UExpressionType.Numerical || type == UExpressionType.Curve)
-                .ToProperty(this, x => x.ShowNumbers, out showNumbers);
+                .Select(type => type == UExpressionType.Curve)
+                .ToProperty(this, x => x.IsCurve, out isCurve);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Options)
                 .ToProperty(this, x => x.IsOptions, out isOptions);
@@ -117,6 +117,7 @@ namespace OpenUtau.App.ViewModels {
     public class ExpressionsViewModel : ViewModelBase {
         [Reactive] public string WindowTitle { get; set; } = "Expressions";
         [Reactive] public bool IsTrackOverride { get; set; }
+        [Reactive] public string CustomDefaultLabel { get; set; } = ThemeManager.GetString("exps.projectdefault");
 
         public ReadOnlyObservableCollection<ExpressionBuilder> Expressions => expressions;
         public ExpressionBuilder? Expression {
@@ -169,16 +170,18 @@ namespace OpenUtau.App.ViewModels {
             if (IsTrackOverride) { // Track
                 if (track != null) {
                     WindowTitle = $"{ThemeManager.GetString("exps.track")}: {track.TrackName}";
+                    CustomDefaultLabel = ThemeManager.GetString("exps.trackdefault");
                     expressionsSourceTrack.ToObservableChangeSet()
                         .Bind(out expressions)
                         .Subscribe();
                 }
             } else { // Project
                 if (IsSwitchVisible) {
-                    WindowTitle = $"{ThemeManager.GetString("exps.project")}";
+                    WindowTitle = ThemeManager.GetString("exps.project");
                 } else {
-                    WindowTitle = $"{ThemeManager.GetString("exps.caption")}";
+                    WindowTitle = ThemeManager.GetString("exps.caption");
                 }
+                CustomDefaultLabel = ThemeManager.GetString("exps.projectdefault");
                 expressionsSourceProject.ToObservableChangeSet()
                     .Bind(out expressions)
                     .Subscribe();
