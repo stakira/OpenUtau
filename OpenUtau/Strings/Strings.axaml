@@ -116,7 +116,6 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="exps.abbr">Abbreviation</system:String>
   <system:String x:Key="exps.apply">Apply</system:String>
   <system:String x:Key="exps.caption">Expressions</system:String>
-  <system:String x:Key="exps.customdefault">Custom Default</system:String>
   <system:String x:Key="exps.defaultvalue">Default</system:String>
   <system:String x:Key="exps.flag">Resampler Flag</system:String>
   <system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>
@@ -126,9 +125,12 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="exps.name">Name</system:String>
   <system:String x:Key="exps.optionvalues">Option Values</system:String>
   <system:String x:Key="exps.project">Project Expressions</system:String>
+  <system:String x:Key="exps.projectdefault">Project Default</system:String>
   <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
-  <system:String x:Key="exps.skipoutput">Skip flag output when the value is default</system:String>
+  <system:String x:Key="exps.skipoutput">Skip flag output when the value is system default</system:String>
+  <system:String x:Key="exps.systemdefault">System Default</system:String>
   <system:String x:Key="exps.track">Track Expressions (override)</system:String>
+  <system:String x:Key="exps.trackdefault">Track Default</system:String>
   <system:String x:Key="exps.type">Type</system:String>
   <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
