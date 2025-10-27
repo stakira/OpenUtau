@@ -370,9 +370,9 @@
           </c:PartsCanvas>
           <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
                   BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
-            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
-                    IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}">
-              <TextBlock Text="{DynamicResource progress.waitingrendering}"/>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,5"
+                    IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}" Background="{DynamicResource BackgroundBrushSemi}">
+              <TextBlock Text="{DynamicResource progress.waitingrendering}" FontSize="15"/>
             </Border>
           </Border>
           <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
