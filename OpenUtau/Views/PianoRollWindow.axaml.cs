@@ -1286,6 +1286,10 @@ namespace OpenUtau.App.Views {
                         expSelector4?.SelectExp();
                         return true;
                     }
+                    if (isBoth) {
+                        notesVm.SelectToolCommand?.Execute("4+++").Subscribe();
+                        return true;
+                    }
                     if (isCtrl) {
                         notesVm.SelectToolCommand?.Execute("4+").Subscribe();
                         return true;
