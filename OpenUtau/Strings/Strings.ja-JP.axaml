@@ -439,8 +439,10 @@
   <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
   <system:String x:Key="prefs.paths.detect">検出</system:String>
   <system:String x:Key="prefs.paths.loaddeepfolders">深い階層のフォルダも読み込む</system:String>
+  <system:String x:Key="prefs.paths.open">開く</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
+  <system:String x:Key="prefs.paths.singer">シンガーフォルダ</system:String>
   <system:String x:Key="prefs.penplus">ペン+ツールをデフォルトで使用する</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
   <system:String x:Key="prefs.playback.autoscroll">自動スクロール</system:String>
@@ -597,6 +599,7 @@
   <system:String x:Key="tracks.mute.allothers">このトラック以外をミュート</system:String>
   <system:String x:Key="tracks.mute.only">このトラックだけミュート</system:String>
   <system:String x:Key="tracks.mute.unmuteall">全トラックのミュートを解除</system:String>
+  <system:String x:Key="tracks.nosinger">シンガーがありません</system:String>
   <system:String x:Key="tracks.openaddsingers">シンガーの場所（追加）フォルダを開く</system:String>
   <system:String x:Key="tracks.opensingers">Singersフォルダを開く</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
