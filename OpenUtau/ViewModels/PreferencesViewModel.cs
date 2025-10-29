@@ -128,11 +128,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int ParallelChannel { get; set; }
         [Reactive] public int ParallelSamplingRate { get; set; }
         public List<int> SamplingRateOptions { get; } = new List<int> { 44100, 48000 };
-
-        private List<AudioOutputDevice>? audioOutputDevices;
-        private AudioOutputDevice? audioOutputDevice;
-        private CultureInfo? language;
-        private CultureInfo? sortingOrder;
         public string WinePath => Preferences.Default.WinePath;
 
         public PreferencesViewModel() {
