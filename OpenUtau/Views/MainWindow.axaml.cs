@@ -52,7 +52,10 @@ namespace OpenUtau.App.Views {
             Log.Information("Creating main window.");
             InitializeComponent();
             Log.Information("Initialized main window component.");
-            DataContext = viewModel = new MainWindowViewModel();
+            DataContext = viewModel = new MainWindowViewModel {
+                // give the viewmodel a way to prompt/save using the view's existing method
+                AskIfSaveAndContinue = AskIfSaveAndContinue
+            };
 
             viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
