@@ -192,6 +192,41 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class ChangeNoteTuningCommand : NoteCommand {
+        readonly int[] NewTuning;
+        readonly int[] OldTuning;
+        public ChangeNoteTuningCommand(UVoicePart part, UNote note, int newTuning) : base(part, note) {
+            NewTuning = new int[] { newTuning };
+            OldTuning = new int[] { note.tuning };
+        }
+        public ChangeNoteTuningCommand(UVoicePart part, UNote[] notes, int[] newTuning) : base(part, notes) {
+            if (notes.Length != newTuning.Length) {
+                throw new ArgumentException($"notes count {notes.Length} and Tunings count {newTuning.Length} does not match.");
+            }
+            NewTuning = newTuning;
+            OldTuning = notes.Select(note => note.tuning).ToArray();
+        }
+        public override string ToString() {
+            return "Change notes Tuning";
+        }
+        public override void Execute() {
+            lock (Part) {
+                for (var i = 0; i < Notes.Length; i++) {
+                    var note = Notes[i];
+                    note.tuning = NewTuning[i];
+                }
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                for (var i = 0; i < Notes.Length; i++) {
+                    var note = Notes[i];
+                    note.tuning = OldTuning[i];
+                }
+            }
+        }
+    }
+
     public abstract class VibratoCommand : NoteCommand {
         public VibratoCommand(UVoicePart part, UNote note) : base(part, note) { }
         public override ValidateOptions ValidateOptions => new ValidateOptions {
