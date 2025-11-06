@@ -306,8 +306,20 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
-            var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
+            if (ViewModel.NotesViewModel.Part.notes.Count < 1) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.nonote"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            var notes = ViewModel.NotesViewModel.Selection.ToArray();
+            if (notes.Length == 0) {
+                notes = ViewModel.NotesViewModel.Part.notes.ToArray();
+            }
+            var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes);
             var dialog = new LyricsReplaceDialog() {
                 DataContext = vm,
             };
@@ -322,9 +334,18 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
+            if (ViewModel.NotesViewModel.Part.notes.Count < 1) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.nonote"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
             var vm = new LyricsViewModel();
-            var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
-            vm.Start(ViewModel.NotesViewModel.Part, notes, lyrics);
+            var (notes, selection) = ViewModel.NotesViewModel.PrepareInsertLyrics();
+            vm.Start(ViewModel.NotesViewModel.Part, notes, selection);
             var dialog = new LyricsDialog() {
                 DataContext = vm,
             };

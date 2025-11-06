@@ -148,10 +148,12 @@
   <system:String x:Key="languages.zh-yue">広東語</system:String>
 
   <system:String x:Key="lyrics.apply">適用</system:String>
+  <system:String x:Key="lyrics.applyselected">選択した音符のみ適用する</system:String>
   <system:String x:Key="lyrics.cancel">キャンセル</system:String>
   <system:String x:Key="lyrics.caption">歌詞を編集</system:String>
   <system:String x:Key="lyrics.livepreview">リアルタイムプレビュー</system:String>
   <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <system:String x:Key="lyrics.nonote">音符がありません！</system:String>
   <system:String x:Key="lyrics.reset">リセット</system:String>
   <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
   <system:String x:Key="lyrics.separators">区切り文字</system:String>
