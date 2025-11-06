@@ -37,15 +37,17 @@ namespace OpenUtau.App.Views {
         private Point valueTipPointerPosition;
         private bool shouldOpenNotesContextMenu;
 
-        private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
-        private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
-        private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
+        private ReactiveCommand<Unit, Unit>? lyricsDialogCommand;
+        private ReactiveCommand<Unit, Unit>? noteDefaultsCommand;
+        private ReactiveCommand<BatchEdit, Unit>? noteBatchEditCommand;
 
-        public PianoRollWindow() {
+        public PianoRollWindow(PianoRollViewModel model) {
             InitializeComponent();
-            DataContext = ViewModel = new PianoRollViewModel();
+            DataContext = ViewModel = model;
             ValueTip.IsVisible = false;
+        }
 
+        public void InitializePianoRollWindowAsync() {
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(async edit => {
                 var NotesVm = ViewModel?.NotesViewModel;
                 if (NotesVm == null || NotesVm.Part == null) {
@@ -1177,7 +1179,7 @@ namespace OpenUtau.App.Views {
                 var selectedNotes = notesVm.Selection.ToList();
 
                 if (part != null && selectedNotes.Count > 0) {
-                    noteBatchEditCommand.Execute(new LoadRenderedPitch()).Subscribe();
+                    noteBatchEditCommand?.Execute(new LoadRenderedPitch()).Subscribe();
                 }
 
                 args.Handled = true;
@@ -1776,9 +1778,9 @@ namespace OpenUtau.App.Views {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(PianoRollWindow)) {
                 if (loadingNotif.startLoading) {
-                    MessageBox.ShowLoading(this);
+                    LoadingWindow.BeginLoading(this);
                 } else {
-                    MessageBox.CloseLoading();
+                    LoadingWindow.EndLoading();
                 }
             }
         }
