@@ -81,6 +81,7 @@ namespace OpenUtau.Core {
                     deviceId = i++,
                     description = description
                 });
+            }
             return gpuList;
         }
 
