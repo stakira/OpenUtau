@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
@@ -19,21 +18,19 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float Min { get; set; }
         [Reactive] public float Max { get; set; }
         [Reactive] public float DefaultValue { get; set; }
-        [Reactive] public float CustomeDefaultValue { get; set; }
         [Reactive] public bool IsFlag { get; set; }
         [Reactive] public string Flag { get; set; }
         [Reactive] public string OptionValues { get; set; }
-        [Reactive] public bool SkipOutputIfDefault { get; set; } = false;
 
         public bool IsCustom => isCustom.Value;
         public bool IsNumerical => isNumerical.Value;
-        public bool IsCurve => isCurve.Value;
+        public bool ShowNumbers => showNumbers.Value;
         public bool IsOptions => isOptions.Value;
         public int SelectedType => selectedType.Value;
 
         private ObservableAsPropertyHelper<bool> isCustom;
         private ObservableAsPropertyHelper<bool> isNumerical;
-        private ObservableAsPropertyHelper<bool> isCurve;
+        private ObservableAsPropertyHelper<bool> showNumbers;
         private ObservableAsPropertyHelper<bool> isOptions;
         private ObservableAsPropertyHelper<int> selectedType;
 
@@ -42,8 +39,6 @@ namespace OpenUtau.App.ViewModels {
                   descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
             ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
-            CustomeDefaultValue = descriptor.customDefaultValue;
-            SkipOutputIfDefault = descriptor.skipOutputIfDefault;
         }
 
         public ExpressionBuilder()
@@ -60,14 +55,14 @@ namespace OpenUtau.App.ViewModels {
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr) || ExpressionsViewModel.isTrackOverride)
+                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
             this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => type == UExpressionType.Curve)
-                .ToProperty(this, x => x.IsCurve, out isCurve);
+                .Select(type => type == UExpressionType.Numerical || type == UExpressionType.Curve)
+                .ToProperty(this, x => x.ShowNumbers, out showNumbers);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Options)
                 .ToProperty(this, x => x.IsOptions, out isOptions);
@@ -100,7 +95,7 @@ namespace OpenUtau.App.ViewModels {
         public UExpressionDescriptor Build() {
             switch (ExpressionType) {
                 case UExpressionType.Numerical:
-                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag, CustomeDefaultValue, SkipOutputIfDefault);
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
                 case UExpressionType.Options:
                     return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
                 case UExpressionType.Curve:
@@ -115,150 +110,58 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class ExpressionsViewModel : ViewModelBase {
-        [Reactive] public string WindowTitle { get; set; } = "Expressions";
-        [Reactive] public bool IsTrackOverride { get; set; }
-        [Reactive] public string CustomDefaultLabel { get; set; } = ThemeManager.GetString("exps.projectdefault");
 
         public ReadOnlyObservableCollection<ExpressionBuilder> Expressions => expressions;
+
         public ExpressionBuilder? Expression {
             get => expression;
-            set {
-                this.RaiseAndSetIfChanged(ref expression, value);
-                this.RaisePropertyChanged(nameof(IsSelected));
-            }
+            set => this.RaiseAndSetIfChanged(ref expression, value);
         }
-        public ObservableCollection<ExpressionBuilder>? SelectExpressions => selectexpressions;
-        public bool IsSwitchVisible { get; } = false;
-        public static bool isTrackOverride = false;
-        public bool IsSelected => expression != null;
 
-        public IReadOnlyList<MenuItemViewModel>? AddMenuItems { get; set; }
-        public ReactiveCommand<ExpressionBuilder, Unit> AddItemCommand { get; }
+        public ObservableCollection<ExpressionBuilder>? SelectExpressions => selectexpressions;
 
         private ReadOnlyObservableCollection<ExpressionBuilder> expressions;
         private ExpressionBuilder? expression;
         private ObservableCollection<ExpressionBuilder>? selectexpressions;
-        private ObservableCollectionExtended<ExpressionBuilder> expressionsSourceProject;
-        private ObservableCollectionExtended<ExpressionBuilder> expressionsSourceTrack;
-        private UTrack? track;
 
-        public ExpressionsViewModel(UTrack? track = null) {
+        private ObservableCollectionExtended<ExpressionBuilder> expressionsSource;
+
+        public ExpressionsViewModel() {
             selectexpressions = new ObservableCollection<ExpressionBuilder>();
-            expressionsSourceProject = new ObservableCollectionExtended<ExpressionBuilder>();
-            expressionsSourceProject.AddRange(DocManager.Inst.Project.expressions.Select(pair => new ExpressionBuilder(pair.Value)));
-            expressionsSourceTrack = new ObservableCollectionExtended<ExpressionBuilder>();
-            if (track != null) {
-                IsSwitchVisible = true;
-                IsTrackOverride = true;
-                this.track = track;
-                expressionsSourceTrack.AddRange(track.TrackExpressions.Select(descriptor => new ExpressionBuilder(descriptor)));
-            }
-            expressionsSourceProject.ToObservableChangeSet()
+            expressionsSource = new ObservableCollectionExtended<ExpressionBuilder>();
+            expressionsSource.ToObservableChangeSet()
                 .Bind(out expressions)
                 .Subscribe();
-            SetExpressionsList();
-            AddItemCommand = ReactiveCommand.Create<ExpressionBuilder>(exp => {
-                var newExpression = new ExpressionBuilder(exp.Build());
-                expressionsSourceTrack.Add(newExpression);
-                Expression = newExpression;
-            });
-        }
-
-        private void SetExpressionsList() {
-            selectexpressions?.Clear();
-            isTrackOverride = IsTrackOverride;
-            if (IsTrackOverride) { // Track
-                if (track != null) {
-                    WindowTitle = $"{ThemeManager.GetString("exps.track")}: {track.TrackName}";
-                    CustomDefaultLabel = ThemeManager.GetString("exps.trackdefault");
-                    expressionsSourceTrack.ToObservableChangeSet()
-                        .Bind(out expressions)
-                        .Subscribe();
-                }
-            } else { // Project
-                if (IsSwitchVisible) {
-                    WindowTitle = ThemeManager.GetString("exps.project");
-                } else {
-                    WindowTitle = ThemeManager.GetString("exps.caption");
-                }
-                CustomDefaultLabel = ThemeManager.GetString("exps.projectdefault");
-                expressionsSourceProject.ToObservableChangeSet()
-                    .Bind(out expressions)
-                    .Subscribe();
-            }
-            this.RaisePropertyChanged(nameof(Expressions));
-            if (Expressions.Count > 0) {
-                Expression = Expressions[0];
+            expressionsSource.AddRange(DocManager.Inst.Project.expressions.Select(pair => new ExpressionBuilder(pair.Value)));
+            if (expressionsSource.Count > 0) {
+                expression = expressionsSource[0];
             }
         }
 
         public void Apply() {
-            if (!expressionsSourceProject.All(builder => builder.Validate() == null)) {
-                var invalid = expressionsSourceProject.First(builder => builder.Validate() != null);
+            if (!Expressions.All(builder => builder.Validate() == null)) {
+                var invalid = Expressions.First(builder => builder.Validate() != null);
                 Expression = invalid;
                 string[] validate = invalid.Validate()!;
                 throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
             }
-            var abbrs = expressionsSourceProject.GroupBy(builder => builder.Abbr).Where(g => g.Count() > 1).Select(g => g.Key);
+            var abbrs = Expressions.GroupBy(builder => builder.Abbr).Where(g => g.Count() > 1).Select(g => g.Key);
             if (abbrs.Count() > 0) {
                 throw new MessageCustomizableException("", $"<translate:errors.expression.abbrunique>: {string.Join(", ", abbrs)}", new ArgumentException($"Abbreviations must be unique: {string.Join(", ", abbrs)}"), false);
             }
-            var flags = expressionsSourceProject.Where(builder => !string.IsNullOrEmpty(builder.Flag)).GroupBy(builder => builder.Flag).Where(g => g.Count() > 1).Select(g => g.Key);
+            var flags = Expressions.Where(builder => !string.IsNullOrEmpty(builder.Flag)).GroupBy(builder => builder.Flag).Where(g => g.Count() > 1).Select(g => g.Key);
             if (flags.Count() > 0) {
                 throw new MessageCustomizableException("", $"<translate:errors.expression.flagunique>: {string.Join(", ", flags)}", new ArgumentException($"Flags must be unique: {string.Join(", ", flags)}"), false);
             }
-
-            if (track != null) {
-                if (!expressionsSourceTrack.All(builder => builder.Validate() == null)) {
-                    var invalid = expressionsSourceTrack.First(builder => builder.Validate() != null);
-                    Expression = invalid;
-                    string[] validate = invalid.Validate()!;
-                    throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
-                }
-                abbrs = expressionsSourceTrack.GroupBy(builder => builder.Abbr).Where(g => g.Count() > 1).Select(g => g.Key);
-                if (abbrs.Count() > 0) {
-                    throw new MessageCustomizableException("", $"<translate:errors.expression.abbrunique>: {string.Join(", ", abbrs)}", new ArgumentException($"Abbreviations must be unique: {string.Join(", ", abbrs)}"), false);
-                }
-                flags = expressionsSourceTrack.Where(builder => !string.IsNullOrEmpty(builder.Flag)).GroupBy(builder => builder.Flag).Where(g => g.Count() > 1).Select(g => g.Key);
-                if (flags.Count() > 0) {
-                    throw new MessageCustomizableException("", $"<translate:errors.expression.flagunique>: {string.Join(", ", flags)}", new ArgumentException($"Flags must be unique: {string.Join(", ", flags)}"), false);
-                }
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(
-                    DocManager.Inst.Project, 
-                    expressionsSourceProject.Select(builder => builder.Build()).ToArray(),
-                    track,
-                    expressionsSourceTrack.Select(builder => builder.Build()).ToArray()));
-                DocManager.Inst.EndUndoGroup();
-                return;
-            }
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(DocManager.Inst.Project, expressionsSourceProject.Select(builder => builder.Build()).ToArray()));
+            DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(DocManager.Inst.Project, Expressions.Select(builder => builder.Build()).ToArray()));
             DocManager.Inst.EndUndoGroup();
         }
 
         public void Add() {
-            if (!IsTrackOverride) {
-                var newExpression = new ExpressionBuilder();
-                expressionsSourceProject.Add(newExpression);
-                Expression = newExpression;
-            } else {
-                var items = new List<MenuItemViewModel>();
-                items.AddRange(expressionsSourceProject
-                    .Where(exp => !expressionsSourceTrack.Any(e => e.Abbr == exp.Abbr))
-                    .Select(exp => new SingerMenuItemViewModel() {
-                        Header = $"{exp.Name}: {exp.Abbr}",
-                        Command = AddItemCommand,
-                        CommandParameter = exp,
-                    }));
-                items.Add(new SingerMenuItemViewModel() {
-                    Header = "new expression",
-                    Command = AddItemCommand,
-                    CommandParameter = new ExpressionBuilder(),
-                });
-                AddMenuItems = items;
-                this.RaisePropertyChanged(nameof(AddMenuItems));
-            }
+            var newExpression = new ExpressionBuilder();
+            expressionsSource.Add(newExpression);
+            Expression = newExpression;
         }
 
         public void Remove() {
@@ -266,19 +169,11 @@ namespace OpenUtau.App.ViewModels {
                 var selectedItems = SelectExpressions.ToList();
                 foreach (var expression in selectedItems) {
                     if (expression.IsCustom) {
-                        if (IsTrackOverride) {
-                            expressionsSourceTrack.Remove(expression);
-                        } else {
-                            expressionsSourceProject.Remove(expression);
-                        }
+                        expressionsSource.Remove(expression);
                     }
                 }
             } else if (Expression != null) {
-                if (IsTrackOverride) {
-                    expressionsSourceTrack.Remove(Expression);
-                } else {
-                    expressionsSourceProject.Remove(Expression);
-                }
+                expressionsSource.Remove(Expression);
             }
         }
 
@@ -293,26 +188,10 @@ namespace OpenUtau.App.ViewModels {
                 }
                 foreach (var suggestion in suggestions) {
                     //Add if not already in the list
-                    if (!expressionsSourceProject.Any(builder => builder.Abbr == suggestion.abbr)) {
-                        expressionsSourceProject.Add(new ExpressionBuilder(suggestion));
+                    if (!expressionsSource.Any(builder => builder.Abbr == suggestion.abbr)) {
+                        expressionsSource.Add(new ExpressionBuilder(suggestion));
                     }
                 }
-            }
-        }
-
-        public void OnClickProject() {
-            if (!IsTrackOverride) { // track -> project
-                SetExpressionsList();
-            } else {
-                IsTrackOverride = false;
-            }
-        }
-
-        public void OnClickTrack() {
-            if (IsTrackOverride) { // project -> track
-                SetExpressionsList();
-            } else {
-                IsTrackOverride = true;
             }
         }
     }

@@ -441,12 +441,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
-            var notesVM = ViewModel.NotesViewModel;
-            if (notesVM.Part == null) {
-                return;
-            }
             var dialog = new ExpressionsDialog() {
-                DataContext = new ExpressionsViewModel(notesVM.Project.tracks[notesVM.Part.trackNo]),
+                DataContext = new ExpressionsViewModel(),
             };
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {

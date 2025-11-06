@@ -94,7 +94,7 @@ namespace OpenUtau.Core.Ustx {
         public double Volume { set; get; }
         public double Pan { set; get; }
 
-        public List<UExpressionDescriptor> TrackExpressions { get; set; } = new List<UExpressionDescriptor>();
+        public List<UExpression> TrackExpressions { get; set; } = new List<UExpression>();
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
         public string[] VoiceColorNames { get; set; } = new string[] { "" };
 
@@ -114,19 +114,60 @@ namespace OpenUtau.Core.Ustx {
             TrackName = trackName;
         }
 
+        /**  
+            <summary>
+                Return false if there is no corresponding descriptor in the project
+            </summary>
+        */
         public bool TryGetExpDescriptor(UProject project, string abbr, out UExpressionDescriptor descriptor) {
+            if (!project.expressions.TryGetValue(abbr, out descriptor)) {
+                return false;
+            }
             if (abbr == Format.Ustx.CLR && VoiceColorExp != null) {
                 descriptor = VoiceColorExp;
-                return true;
             }
-            var trackExp = TrackExpressions.FirstOrDefault(e => e.abbr == abbr);
+            return true;
+        }
+
+
+        /**  
+            <summary>
+                Return false if there is no corresponding descriptor in the project
+            </summary>
+        */
+        public bool TryGetExpression(UProject project, string abbr, out UExpression expression) {
+            if (!TryGetExpDescriptor(project, abbr, out var descriptor)) {
+                expression = new UExpression(descriptor);
+                return false;
+            }
+
+            var trackExp = TrackExpressions.FirstOrDefault(e => e.descriptor.abbr == abbr);
             if (trackExp != null) {
-                descriptor = trackExp;
-                return true;
-            } else if (project.expressions.TryGetValue(abbr, out descriptor)) {
-                return true;
+                expression = trackExp.Clone();
+            } else {
+                expression = new UExpression(descriptor) { value = descriptor.defaultValue };
             }
-            return false;
+            return true;
+        }
+
+        // May be used in the future
+        public void SetTrackExpression(UExpressionDescriptor descriptor, float? value) {
+            if (!TryGetExpDescriptor(DocManager.Inst.Project, descriptor.abbr, out var pDescriptor)) {
+                TrackExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr);
+                return;
+            }
+
+            if (value == null || (descriptor.Equals(pDescriptor) && pDescriptor.defaultValue == value)) {
+                TrackExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr);
+            } else {
+                var trackExp = TrackExpressions.FirstOrDefault(e => e.descriptor.abbr == descriptor.abbr);
+                if (trackExp != null) {
+                    trackExp.descriptor = descriptor;
+                    trackExp.value = (float)value;
+                } else {
+                    TrackExpressions.Add(new UExpression(descriptor) { value = (float)value });
+                }
+            }
         }
 
         public void OnSingerRefreshed() {
