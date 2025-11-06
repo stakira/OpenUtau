@@ -38,6 +38,7 @@ namespace OpenUtau.Core.Util {
             typeof(JyutpingLyricsHelper),
             typeof(ArpabetG2pLyricsHelper),
             typeof(ArpabetPlusG2pLyricsHelper),
+            typeof(FilipinoG2pLyricsHelper),
             typeof(FrenchG2pLyricsHelper),
             typeof(FrenchMillefeuilleG2pLyricsHelper),
             typeof(GermanG2pLyricsHelper),
@@ -93,6 +94,9 @@ namespace OpenUtau.Core.Util {
         public ArpabetPlusG2pLyricsHelper() : base(new ArpabetPlusG2p()) { }
     }
 
+    public class FilipinoG2pLyricsHelper : G2pLyricsHelper {
+        public FilipinoG2pLyricsHelper() : base(new FilipinoG2p()) { }
+    }
     public class FrenchG2pLyricsHelper : G2pLyricsHelper {
         public FrenchG2pLyricsHelper() : base(new FrenchG2p()) { }
     }
