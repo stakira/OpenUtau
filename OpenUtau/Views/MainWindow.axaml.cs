@@ -347,30 +347,18 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuImportAudio(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFileAboutProject(
+            var files = await FilePicker.OpenFilesAboutProject(
                 this, "menu.file.importaudio", FilePicker.AudioFiles);
-            if (file == null) {
+            if (files == null || files.Length == 0) {
                 return;
             }
-            try {
-                viewModel.ImportAudio(file);
-            } catch (Exception e) {
-                Log.Error(e, "Failed to import audio");
-                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
-            }
-        }
-
-        async void OnMenuImportMidi(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFileAboutProject(
-                this, "menu.file.importmidi", FilePicker.MIDI);
-            if (file == null) {
-                return;
-            }
-            try {
-                viewModel.ImportMidi(file);
-            } catch (Exception e) {
-                Log.Error(e, "Failed to import midi");
-                _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
+            foreach (var file in files) {
+                try {
+                    viewModel.ImportAudio(file);
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to import audio");
+                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
+                }
             }
         }
 
