@@ -85,6 +85,7 @@ namespace OpenUtau.Core {
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
+        public string ManifestsPath => Path.Combine(DataPath, "DefaultManifests");
 
         public List<string> SingersPaths {
             get {
