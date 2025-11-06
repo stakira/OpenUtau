@@ -395,6 +395,14 @@ Warning: this option removes custom presets.</system:String>
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen</system:String>
+    <system:String x:Key="pianoroll.tool.overwritelinepitch">
+        Line Draw Pitch Tool (Ctrl + Shift + 4)
+        Left click to draw 
+        (draw straight line overwrites the vibrato or mod+)
+        Right click to reset
+        Hold Ctrl to select
+        Hold Alt to smoothen
+    </system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
