@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Core.Util;
-using Vortice.DXGI;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -19,42 +18,20 @@ namespace OpenUtau.Core {
     }
 
     public class Onnx {
-        static Onnx() {
-            ConfigureOnnxRuntimeLibrary();
-        }
 
         private static bool cudaAvailable = OS.IsLinux() && CudaGpuDetector.IsCudaAvailable() && CudaGpuDetector.IsCuDnnAvailable();
 
-    private static void ConfigureOnnxRuntimeLibrary() {
-        if (OS.IsLinux()) {
-            string runner = Preferences.Default.OnnxRunner ?? "CPU";
-            string basePath = AppContext.BaseDirectory;
-            string soPath;
+        private static readonly Dictionary<int, OrtEpDevice> devices = initializeDevices();
 
-            if (runner == "CUDA" && cudaAvailable) {
-                soPath = Path.Combine(basePath, "runtimes", "linux-x64", "native", "CUDA", "libonnxruntime.so");
-            } else {
-                soPath = Path.Combine(basePath, "runtimes", "linux-x64", "native", "CPU", "libonnxruntime.so");
-            }
+        private static Dictionary<int, OrtEpDevice> initializeDevices() {
+            var env = OrtEnv.Instance();
+            var ortDevices = env.GetEpDevices();
 
-            // Register resolver for the ONNX Runtime managed assembly
-            NativeLibrary.SetDllImportResolver(
-                typeof(InferenceSession).Assembly,
-                (libraryName, assembly, searchPath) => {
-                    if (libraryName == "onnxruntime") {
-                        if (NativeLibrary.TryLoad(soPath, out IntPtr handle)) {
-                            return handle;
-                        }
-                        throw new DllNotFoundException($"Could not load ONNX Runtime library from {soPath}");
-                    }
-                    return IntPtr.Zero;
-                }
-            );
-
-            Log.Debug($"ONNX Runtime library set to: {soPath}");
+            return ortDevices
+                .Where(device => device.EpName.ToLower().Contains("dml"))
+                .Select((device, index) => new { index, device })
+                .ToDictionary(x => x.index, x => x.device);
         }
-    }
-
 
         public static List<string> getRunnerOptions() {
             if (OS.IsWindows()) {
@@ -79,28 +56,31 @@ namespace OpenUtau.Core {
         }
 
         public static List<GpuInfo> getGpuInfo() {
+            if (cudaAvailable) {
+                return CudaGpuDetector.GetCudaDevices();
+            }         
+     
             List<GpuInfo> gpuList = new List<GpuInfo>();
-            if (OS.IsWindows()) {
-                DXGI.CreateDXGIFactory1(out IDXGIFactory1 factory);
-                for(int deviceId = 0; deviceId < 32; deviceId++) {
-                    factory.EnumAdapters1(deviceId, out IDXGIAdapter1 adapterOut);
-                    if(adapterOut is null) {
+            var env = OrtEnv.Instance();
+            var ortDevices = env.GetEpDevices();
+
+            var i = 0;
+            foreach (var device in ortDevices.Where(device => device.EpName.ToLower().Contains("dml"))) {
+                var description = "";
+                foreach (var item in device.HardwareDevice.Metadata.Entries) {
+                    if (item.Key.ToLower() == "description") {
+                        description = $"{item.Value} ({device.HardwareDevice.Type})";
                         break;
                     }
-                    gpuList.Add(new GpuInfo {
-                        deviceId = deviceId,
-                        description = adapterOut.Description.Description
-                    }) ;
                 }
-            } else if (cudaAvailable) {
-                gpuList.AddRange(CudaGpuDetector.GetCudaDevices());
-            }
-
-            if (gpuList.Count == 0) {
+                if (string.IsNullOrEmpty(description)) { // fallback
+                    description = $"{device.EpName} {device.HardwareDevice.Vendor} ({device.HardwareDevice.Type})";
+                }
+                devices[i] = device;
                 gpuList.Add(new GpuInfo {
-                    deviceId = 0,
+                    deviceId = i++,
+                    description = description
                 });
-            }
             return gpuList;
         }
 
@@ -114,9 +94,14 @@ namespace OpenUtau.Core {
             if (!runnerOptions.Contains(runner)) {
                 runner = "CPU";
             }
-            switch(runner){
+            switch (runner) {
                 case "DirectML":
-                    options.AppendExecutionProvider_DML(Preferences.Default.OnnxGpu);
+                    var d = devices[Preferences.Default.OnnxGpu];
+                    options.AppendExecutionProvider(
+                        OrtEnv.Instance(),
+                        new List<OrtEpDevice> { d } ,
+                        new Dictionary<string, string> {}
+                     );
                     break;
                 case "CoreML":
                     options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);

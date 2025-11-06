@@ -17,6 +17,8 @@ namespace OpenUtau.App.ViewModels {
         public string Title { get => ThemeManager.GetString("noteproperty") + " (" + selectedNotes.Count + " notes)"; }
         [Reactive] public string Lyric { get; set; } = string.Empty;
         [Reactive] public string Tone { get; set; } = string.Empty;
+        [Reactive] public int Tuning { get; set; }
+        [Reactive] public FontWeight TuningFontWeight { get; set; } = FontWeight.Normal;
         [Reactive] public float PortamentoLength { get; set; }
         [Reactive] public float PortamentoStart { get; set; }
         [Reactive] public bool VibratoEnable { get; set; }
@@ -120,6 +122,8 @@ namespace OpenUtau.App.ViewModels {
 
                 Lyric = note.lyric;
                 Tone = MusicMath.GetToneName(note.tone);
+                Tuning = note.tuning;
+                SetTuningFontWeight();
                 if (note.pitch.data.Count == 2) {
                     PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
                     PortamentoStart = note.pitch.data[0].X;
@@ -140,6 +144,8 @@ namespace OpenUtau.App.ViewModels {
                 IsNoteSelected = false;
                 Lyric = string.Empty;
                 Tone = string.Empty;
+                Tuning = 0;
+                SetTuningFontWeight();
                 PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                 PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
                 VibratoEnable = false;
@@ -237,6 +243,11 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is MoveNoteCommand) {
                     Tone = MusicMath.GetToneName(note.tone);
                     this.RaisePropertyChanged(nameof(Tone));
+                } else if (cmd is ChangeNoteTuningCommand) {
+                    Tuning = note.tuning;
+                    SetTuningFontWeight();
+                    this.RaisePropertyChanged(nameof(Tuning));
+                    this.RaisePropertyChanged(nameof(TuningFontWeight));
                 } else if (cmd is VibratoCommand) {
                     if (cmd is VibratoLengthCommand || cmd is SetVibratoCommand) {
                         if (note.vibrato.length > 0) {
@@ -298,6 +309,14 @@ namespace OpenUtau.App.ViewModels {
         }
         #endregion
 
+        private void SetTuningFontWeight() {
+            if (selectedNotes.Any(note => note.tuning != 0)) {
+                TuningFontWeight = FontWeight.Bold;
+            } else {
+                TuningFontWeight = FontWeight.Normal;
+            }
+        }
+
         // panel -> note
         public void SetNoteParams(string tag, object? obj) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
@@ -334,6 +353,16 @@ namespace OpenUtau.App.ViewModels {
                         var note = selectedNotes.FirstOrDefault();
                         Tone = note != null ? MusicMath.GetToneName(note.tone) : string.Empty;
                         this.RaisePropertyChanged(nameof(Tone));
+                    }
+                } else if (tag == "Tuning") {
+                    int value;
+                    if (obj != null && (obj is int i || int.TryParse(obj.ToString(), out i)) && i >= -100 && i <= 100) {
+                        value = i;
+                    } else {
+                        value = 0;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new ChangeNoteTuningCommand(Part, note, value));
                     }
                 } else if (tag == "PortamentoLength") {
                     if (obj != null && (obj is float value || float.TryParse(obj.ToString(), out value)) && value >= 2 && value <= 320) {
@@ -479,7 +508,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.customDefaultValue == value) {
                     value = null;
                 }
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
@@ -488,7 +517,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.defaultValue == value) {
                     value = null;
                 }
                 DocManager.Inst.StartUndoGroup();
@@ -553,7 +582,7 @@ namespace OpenUtau.App.ViewModels {
 
         public NotePropertyExpViewModel(UExpressionDescriptor descriptor, NotePropertiesViewModel parent) {
             Name = descriptor.name;
-            defaultValue = descriptor.defaultValue;
+            defaultValue = descriptor.customDefaultValue;
             abbr = descriptor.abbr;
             if (descriptor.type == UExpressionType.Numerical) {
                 IsNumerical = true;

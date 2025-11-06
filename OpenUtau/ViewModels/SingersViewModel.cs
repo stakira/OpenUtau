@@ -64,7 +64,7 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    if (MessageBox.LoadingIsActive()) {
+                    if (LoadingWindow.IsLoading()) {
                         try {
                             AttachSinger();
                         } catch (Exception e) {
