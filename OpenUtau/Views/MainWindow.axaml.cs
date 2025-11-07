@@ -1244,6 +1244,7 @@ namespace OpenUtau.App.Views {
         public void OnWelcomeRecovery(object sender, RoutedEventArgs args) {
             viewModel.OpenProject(new string[] { viewModel.RecoveryPath });
             viewModel.Page = 1;
+        }
   
         void MergePart(UPart part) {
             List<UPart> selectedParts = viewModel.TracksViewModel.SelectedParts;
