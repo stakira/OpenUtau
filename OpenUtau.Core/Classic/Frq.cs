@@ -220,7 +220,6 @@ namespace OpenUtau.Classic {
 
                 // i wish there was a better way to do this
                 var magic = new string(br.ReadChars(4));
-                Log.Information(magic);
                 if (magic != "mrq ")
                     throw new FormatException("mrq header not found");
 
