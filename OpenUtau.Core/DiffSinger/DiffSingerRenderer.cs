@@ -506,7 +506,7 @@ namespace OpenUtau.Core.DiffSinger {
                     (
                         ENE, result.energy ?? Array.Empty<float>(),
                         phrase.curves.FirstOrDefault(curve => curve.Item1 == ENE)?.Item2
-                        ?? Enumerable.Repeat(0f, 2).ToArray(),
+                        ?? Array.Empty<float>(),
                         x => Math.Clamp(x, -96f, 0f) / 96f + 1f
                     ),
                     (
@@ -524,14 +524,25 @@ namespace OpenUtau.Core.DiffSinger {
                 }.Select(t => {
                     var abbr = t.Item1;
                     var realCurve = t.Item2;
-                    var deltaCurve = DiffSingerUtils.ResampleCurve(t.Item3, realCurve.Length);
+                    if (realCurve.Length == 0) {
+                        return new RenderRealCurveResult {
+                            abbr = abbr,
+                            ticks = Array.Empty<float>(),
+                            values = Array.Empty<float>(),
+                        };
+                    }
+                    var deltaCurve = DiffSingerUtils.ResampleCurve(t.Item3, realCurve.Length
+                        - DiffSingerUtils.headFrames - DiffSingerUtils.tailFrames);
+                    float[] paddedDeltaCurve = new float[realCurve.Length];
+                    Array.Fill(paddedDeltaCurve, 0f);
+                    Array.Copy(deltaCurve, 0, paddedDeltaCurve, DiffSingerUtils.headFrames, deltaCurve.Length);
                     var normFunc = t.Item4;
                     return new RenderRealCurveResult {
                         abbr = abbr,
                         ticks = Enumerable.Range(0, realCurve.Length)
                             .Select(i => (float)phrase.timeAxis.MsPosToTickPos(startMs + i * frameMs) - phrase.position)
                             .ToArray(),
-                        values = realCurve.Zip(deltaCurve, varianceDeltaFunctions[abbr])
+                        values = realCurve.Zip(paddedDeltaCurve, varianceDeltaFunctions[abbr])
                             .Select(normFunc)
                             .ToArray()
                     };
