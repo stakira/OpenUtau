@@ -48,7 +48,6 @@ namespace OpenUtau.Audio {
                 }
                 waveOutEvent = new WaveOutEvent() {
                     DeviceNumber = deviceNumber,
-                    DesiredLatency = 100
                 };
                 waveOutEvent.Init(sampleProvider);
             }
