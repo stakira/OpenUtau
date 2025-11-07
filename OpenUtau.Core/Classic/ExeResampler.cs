@@ -60,19 +60,18 @@ namespace OpenUtau.Classic {
             File.WriteAllLines(moreConfigPath, lines);
         }
 
-        public ExeResampler(string filePath, string basePath, bool isUnix = false) {
+        public ExeResampler(string filePath, string basePath) {
             if (File.Exists(filePath)) {
                 FilePath = filePath;
                 _name = Path.GetRelativePath(basePath, filePath);
                 _isLegalPlugin = true;
             }
             //Since we can't call Linux/MacOS native resamplers in wine, we need call them directly
-            CallDirectly = isUnix;
+            string ext = Path.GetExtension(filePath).ToLower();
+            CallDirectly = ext != ".exe" && ext != ".bat";
             //Check if should use wine
-            if (!isUnix) {
-                winePath = Preferences.Default.WinePath;
-                useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath);
-            }
+            winePath = Preferences.Default.WinePath;
+            useWine =  !string.IsNullOrEmpty(winePath) && !CallDirectly;
             //Load Resampler Manifest
             Manifest = LoadManifest();
             //Make moresampler happy
