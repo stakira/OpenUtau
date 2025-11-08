@@ -398,20 +398,14 @@ namespace OpenUtau.Core {
                         int samplingRate = Preferences.Default.ParallelSamplingRate;
                         var exportAdapter = new ExportAdapter(trackMixes[i]);
                         SampleToWaveProvider16 waveProvider;
-                        if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
-                            WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
-                            if (Preferences.Default.ParallelChannel == 0) {
-                                waveProvider = new SampleToWaveProvider16(resampAdapter);
-                            } else {
-                                waveProvider = new SampleToWaveProvider16(resampAdapter.ToMono());
-                            }
-                        } else {
-                            if (Preferences.Default.ParallelChannel == 0) {
-                                waveProvider = new SampleToWaveProvider16(exportAdapter);
-                            } else {
-                                waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono());
-                            }
-                        }
+                        waveProvider =
+                            exportAdapter.WaveFormat.SampleRate != samplingRate
+                                ? (Preferences.Default.ParallelChannel == 0
+                                    ? new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate))
+                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono()))
+                                : (Preferences.Default.ParallelChannel == 0
+                                    ? new SampleToWaveProvider16(exportAdapter)
+                                    : new SampleToWaveProvider16(exportAdapter.ToMono()));
                         WaveFileWriter.CreateWaveFile(file, waveProvider);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
