@@ -221,6 +221,7 @@ namespace OpenUtau.App.ViewModels {
         public void Cut() => NotesViewModel.CutNotes();
         public void Copy() => NotesViewModel.CopyNotes();
         public void Paste() => NotesViewModel.PasteNotes();
+        public void PastePlain() => NotesViewModel.PastePlainNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
 

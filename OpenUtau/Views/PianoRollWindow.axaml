@@ -225,6 +225,7 @@
               <MenuItem Header="{DynamicResource menu.edit.cut}" InputGesture="Ctrl+X" Command="{Binding Cut}"/>
               <MenuItem Header="{DynamicResource menu.edit.copy}" InputGesture="Ctrl+C" Command="{Binding Copy}"/>
               <MenuItem Header="{DynamicResource menu.edit.paste}" InputGesture="Ctrl+V" Command="{Binding Paste}"/>
+              <MenuItem Header="{DynamicResource menu.edit.pasteplainnotes}" InputGesture="Ctrl+Shift+V" Command="{Binding PastePlain}"/>
               <MenuItem Header="{DynamicResource menu.edit.delete}" InputGesture="Delete" Command="{Binding Delete}"/>
               <MenuItem Header="-" Height="1"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" InputGesture="Ctrl+F" Click="OnMenuSearchNote"/>
