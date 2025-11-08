@@ -90,7 +90,7 @@ namespace OpenUtau.Core {
 
         private readonly object _lockObj = new object();
 
-        public ToneGenerator() {}
+        public ToneGenerator() { }
 
         public ToneGenerator(float gain) {
             this.gain = gain;
@@ -184,7 +184,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
-        
+
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
         CancellationTokenSource renderCancellation;
@@ -225,7 +225,7 @@ namespace OpenUtau.Core {
             if (AudioOutput.PlaybackState == PlaybackState.Playing) {
                 AudioOutput.Stop();
             }
-            try{
+            try {
                 var playSound = Wave.OpenFile(file);
                 AudioOutput.Init(playSound.ToSampleProvider());
             } catch (Exception ex) {
@@ -233,7 +233,7 @@ namespace OpenUtau.Core {
                 return;
             }
             AudioOutput.Play();
-        } 
+        }
 
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
             if (PlayingMaster) {
@@ -398,14 +398,15 @@ namespace OpenUtau.Core {
                         int samplingRate = Preferences.Default.ParallelSamplingRate;
                         var exportAdapter = new ExportAdapter(trackMixes[i]);
                         SampleToWaveProvider16 waveProvider;
-                        waveProvider =
-                            exportAdapter.WaveFormat.SampleRate != samplingRate
-                                ? (Preferences.Default.ParallelChannel == 0
+                        if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                            Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate))
-                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono()))
-                                : (Preferences.Default.ParallelChannel == 0
+                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono())
+                        } else {
+                            Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(exportAdapter)
-                                    : new SampleToWaveProvider16(exportAdapter.ToMono()));
+                                    : new SampleToWaveProvider16(exportAdapter.ToMono())
+                        }
                         WaveFileWriter.CreateWaveFile(file, waveProvider);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
