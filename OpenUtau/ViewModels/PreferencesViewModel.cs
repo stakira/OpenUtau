@@ -121,8 +121,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberMid { get; set; }
         [Reactive] public bool RememberUst { get; set; }
         [Reactive] public bool RememberVsqx { get; set; }
-        [Reactive] public int LaunchBehaviour{ get; set; }
-        [Reactive] public int ImportTempo{ get; set; }
+        [Reactive] public int LaunchBehaviour { get; set; }
+        [Reactive] public int ImportTempo { get; set; }
         [Reactive] public int MixdownChannel { get; set; }
         [Reactive] public int MixdownSamplingRate { get; set; }
         [Reactive] public int ParallelChannel { get; set; }
