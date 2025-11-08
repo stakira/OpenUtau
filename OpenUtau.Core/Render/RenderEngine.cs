@@ -132,7 +132,7 @@ namespace OpenUtau.Core.Render {
         }
 
         // for export
-        public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+        public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool applyFaders = true) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -150,17 +150,19 @@ namespace OpenUtau.Core.Render {
                 if (trackRequests.Length == 0)
                 {
                     trackMixes.Add(null);
+                    continue;
                 }
-                else
-                {
-                    RenderRequests(trackRequests, newCancellation);
-                    var mix = new WaveMix(trackRequests.Select(req => req.mix).ToArray());
+                RenderRequests(trackRequests, newCancellation);
+                var mix = new WaveMix(trackRequests.Select(req => req.mix).ToArray());
+                if (applyFaders) {
                     var track = project.tracks[i];
                     var fader = new Fader(mix);
                     fader.Scale = PlaybackManager.DecibelToVolume(track.Muted ? -24 : track.Volume);
                     fader.Pan = (float)track.Pan;
                     fader.SetScaleToTarget();
-                    trackMixes.Add(new WaveMix(new List<Fader>() {fader}));
+                    trackMixes.Add(new WaveMix(new List<Fader>() { fader }));
+                } else {
+                    trackMixes.Add(mix);
                 }
             }
             return trackMixes;

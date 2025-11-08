@@ -356,7 +356,7 @@ namespace OpenUtau.Core {
                 string file = "";
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation, applyFaders: false);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
@@ -386,7 +386,7 @@ namespace OpenUtau.Core {
                 string file = "";
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation, applyFaders: true);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
@@ -399,11 +399,11 @@ namespace OpenUtau.Core {
                         var exportAdapter = new ExportAdapter(trackMixes[i]);
                         SampleToWaveProvider16 waveProvider;
                         if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
-                            Preferences.Default.ParallelChannel == 0
+                            waveProvider = Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate))
                                     : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono());
                         } else {
-                            Preferences.Default.ParallelChannel == 0
+                            waveProvider = Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(exportAdapter)
                                     : new SampleToWaveProvider16(exportAdapter.ToMono());
                         }
