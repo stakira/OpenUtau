@@ -328,17 +328,13 @@ namespace OpenUtau.Core {
                     SampleToWaveProvider16 waveProvider;
                     if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
                         WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
-                        if (Preferences.Default.MixdownChannel == 0) {
-                            waveProvider = new SampleToWaveProvider16(resampAdapter);
-                        } else {
-                            waveProvider = new SampleToWaveProvider16(resampAdapter.ToMono());
-                        }
+                        waveProvider = new SampleToWaveProvider16(
+                            Preferences.Default.MixdownChannel == 0 ? resampAdapter : resampAdapter.ToMono()
+                        );
                     } else {
-                        if (Preferences.Default.MixdownChannel == 0) {
-                            waveProvider = new SampleToWaveProvider16(exportAdapter);
-                        } else {
-                            waveProvider = new SampleToWaveProvider16(exportAdapter.ToMono());
-                        }
+                        waveProvider = new SampleToWaveProvider16(
+                            Preferences.Default.MixdownChannel == 0 ? exportAdapter : exportAdapter.ToMono()
+                        );
                     }
                     WaveFileWriter.CreateWaveFile(exportPath, waveProvider);
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
