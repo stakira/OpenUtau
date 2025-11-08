@@ -401,11 +401,11 @@ namespace OpenUtau.Core {
                         if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
                             Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate))
-                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono())
+                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono());
                         } else {
                             Preferences.Default.ParallelChannel == 0
                                     ? new SampleToWaveProvider16(exportAdapter)
-                                    : new SampleToWaveProvider16(exportAdapter.ToMono())
+                                    : new SampleToWaveProvider16(exportAdapter.ToMono());
                         }
                         WaveFileWriter.CreateWaveFile(file, waveProvider);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
