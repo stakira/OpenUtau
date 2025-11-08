@@ -233,7 +233,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected bool isDictionaryLoading => dictionaries[GetType()] == null;
         protected double TransitionBasicLengthMs => 100;
 
-        private static Dictionary<Type, IG2p> dictionaries = new Dictionary<Type, IG2p>();
+        private Dictionary<Type, IG2p> dictionaries = new Dictionary<Type, IG2p>();
         private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
         private readonly string[] wordSeparators = new[] { " ", "_" };

@@ -72,7 +72,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>
   <system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>
-  <system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>
+  <system:String x:Key="errors.encryptedarchive">Encrypted archive files are not supported. Please open the Singer folder from Tools > Preferences > Paths and extract the archive file manually to this location.</system:String>
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
@@ -149,10 +149,11 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="languages.zh-yue">Cantonese</system:String>
 
   <system:String x:Key="lyrics.apply">Apply</system:String>
+  <system:String x:Key="lyrics.applyselected">Apply only to selected notes</system:String>
   <system:String x:Key="lyrics.cancel">Cancel</system:String>
   <system:String x:Key="lyrics.caption">Edit Lyrics</system:String>
   <system:String x:Key="lyrics.livepreview">Live preview</system:String>
-  <system:String x:Key="lyrics.max">Max</system:String>
+  <system:String x:Key="lyrics.nonote">There is no note!</system:String>
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
@@ -284,6 +285,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="noteproperty.set">Set</system:String>
   <system:String x:Key="noteproperty.setlongnote">Set only on long notes</system:String>
   <system:String x:Key="noteproperty.tone">Tone</system:String>
+  <system:String x:Key="noteproperty.tuning">Tuning</system:String>
   <system:String x:Key="noteproperty.vibratoenable">Enable</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
@@ -337,6 +339,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizetuning">Randomize tuning</system:String>
   <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>
@@ -391,6 +394,14 @@ Warning: this option removes custom presets.</system:String>
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen</system:String>
+    <system:String x:Key="pianoroll.tool.overwritelinepitch">
+        Line Draw Pitch Tool (Ctrl + Shift + 4)
+        Left click to draw 
+        (draw straight line overwrites the vibrato or mod+)
+        Right click to reset
+        Hold Ctrl to select
+        Hold Alt to smoothen
+    </system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
@@ -503,9 +514,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="singererror.aliasmultiplespaces">Alias contains multiple spaces.</system:String>
   <system:String x:Key="singererror.aliasstartwithspace">Alias starts or ends with a space.</system:String>
   <system:String x:Key="singererror.bitdepth">Bit depth of the sound file is not 16bit.</system:String>
-  <system:String x:Key="singererror.consonantoutofduration">Consonant out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.consonantoutofduration">Consonant out of sound file duration.</system:String>
   <system:String x:Key="singererror.consonantshort">Consonant must be >= 0.</system:String>
   <system:String x:Key="singererror.cutoffconsonant">Cutoff must be to the right of consonant.</system:String>
+  <system:String x:Key="singererror.cutoffoutofduration">Cutoff out of sound file duration.</system:String>
   <system:String x:Key="singererror.cutoffoverlap">Cutoff must be to the right of overlap.</system:String>
   <system:String x:Key="singererror.cutoffpreutter">Cutoff must be to the right of preutter.</system:String>
   <system:String x:Key="singererror.duplicatealias">There are duplicate aliases.{0}</system:String>
@@ -515,10 +527,10 @@ The voicebank may not work on another OS with case-sensitivity.</system:String>
   <system:String x:Key="singererror.invalidduration">Invalid duration {0}.</system:String>
   <system:String x:Key="singererror.invalidoto">Invalid oto format.</system:String>
   <system:String x:Key="singererror.mono">Sound file is not mono channel.</system:String>
-  <system:String x:Key="singererror.offsetoutofduration">Offset out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.offsetoutofduration">Offset out of sound file duration.</system:String>
   <system:String x:Key="singererror.offsetshort">Offset must be >= 0.</system:String>
-  <system:String x:Key="singererror.overlapoutofduration">Overlap out of sound file duration {fileDuration}.</system:String>
-  <system:String x:Key="singererror.preutteroutofduration">Preutter out of sound file duration {fileDuration}.</system:String>
+  <system:String x:Key="singererror.overlapoutofduration">Overlap out of sound file duration.</system:String>
+  <system:String x:Key="singererror.preutteroutofduration">Preutter out of sound file duration.</system:String>
   <system:String x:Key="singererror.preuttershort">Preutter must be >= 0.</system:String>
   <system:String x:Key="singererror.samplerate">Sample rate of the sound file is not 44100Hz.</system:String>
   <system:String x:Key="singererror.soundmissing">Sound file missing</system:String>
