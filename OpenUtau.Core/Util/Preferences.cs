@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "failed to load prefs-default.json");
+            }
             Save();
         }
 
