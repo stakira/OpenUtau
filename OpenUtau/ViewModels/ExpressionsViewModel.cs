@@ -42,7 +42,7 @@ namespace OpenUtau.App.ViewModels {
                   descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
             ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
-            CustomeDefaultValue = descriptor.customDefaultValue;
+            CustomeDefaultValue = descriptor.CustomDefaultValue;
             SkipOutputIfDefault = descriptor.skipOutputIfDefault;
         }
 

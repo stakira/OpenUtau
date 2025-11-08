@@ -20,11 +20,22 @@ namespace OpenUtau.Core.Ustx {
         public float min;
         public float max;
         public float defaultValue;
-        public float customDefaultValue;
+        public float? _customDefaultValue = null; // made public for inclusion in YAML
         public bool isFlag;
         public string flag;
         public string[] options;
         public bool skipOutputIfDefault = false;
+        [YamlIgnore]
+        public float CustomDefaultValue {
+            get => _customDefaultValue ?? defaultValue;
+            set {
+                if (value == defaultValue) {
+                    _customDefaultValue = null;
+                } else {
+                    _customDefaultValue = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Constructor for Yaml deserialization
@@ -42,7 +53,7 @@ namespace OpenUtau.Core.Ustx {
             this.defaultValue = Math.Clamp(defaultValue, min, max);
             isFlag = !string.IsNullOrEmpty(flag);
             this.flag = flag;
-            this.customDefaultValue = Math.Clamp(customDefaultValue ?? defaultValue, min, max);
+            this.CustomDefaultValue = Math.Clamp(customDefaultValue ?? defaultValue, min, max);
             this.skipOutputIfDefault = skipOutputIfDefault;
         }
 
@@ -73,7 +84,7 @@ namespace OpenUtau.Core.Ustx {
                 min = min,
                 max = max,
                 defaultValue = defaultValue,
-                customDefaultValue = customDefaultValue,
+                CustomDefaultValue = CustomDefaultValue,
                 isFlag = isFlag,
                 flag = flag,
                 options = (string[])options?.Clone(),
@@ -90,7 +101,7 @@ namespace OpenUtau.Core.Ustx {
                 this.min == other.min &&
                 this.max == other.max &&
                 this.defaultValue == other.defaultValue &&
-                this.customDefaultValue == other.customDefaultValue &&
+                this.CustomDefaultValue == other.CustomDefaultValue &&
                 this.isFlag == other.isFlag &&
                 this.flag == other.flag &&
                 ((this.options == null && other.options == null) || this.options.SequenceEqual(other.options) &&

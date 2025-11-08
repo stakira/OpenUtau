@@ -176,7 +176,7 @@ namespace OpenUtau.Classic {
                         var track = project.tracks[0];
                         foreach (var flag in parser.Parse(parts[1].Trim())) {
                             var descriptor = project.expressions.Values.FirstOrDefault(exp => exp.flag == flag.Key).Clone();
-                            descriptor.customDefaultValue = flag.Value;
+                            descriptor.CustomDefaultValue = flag.Value;
                             track.TrackExpressions.Add(descriptor);
                         }
                         break;
@@ -236,7 +236,7 @@ namespace OpenUtau.Classic {
 
         private static void SetExpression(UProject project, UNote note, string abbr, float value) {
             var track = project.tracks.First();
-            if (track.TryGetExpDescriptor(project, abbr, out var descriptor) && descriptor.customDefaultValue != value) {
+            if (track.TryGetExpDescriptor(project, abbr, out var descriptor) && descriptor.CustomDefaultValue != value) {
                 note.SetExpression(project, track, abbr, new float?[] { value });
             }
         }

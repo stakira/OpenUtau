@@ -179,7 +179,7 @@ namespace OpenUtau.Core.Ustx {
                 if (phonemizerExp != null) {
                     return Tuple.Create(phonemizerExp.value, false);
                 } else {
-                    return Tuple.Create(descriptor.customDefaultValue, false);
+                    return Tuple.Create(descriptor.CustomDefaultValue, false);
                 }
             }
         }

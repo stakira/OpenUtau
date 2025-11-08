@@ -185,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
                         if (phonemizerExp != null) {
                             list.Add(Tuple.Create(phonemizerExp.value, false));
                         } else {
-                            list.Add(Tuple.Create(descriptor.customDefaultValue, false));
+                            list.Add(Tuple.Create(descriptor.CustomDefaultValue, false));
                         }
                     }
                 }

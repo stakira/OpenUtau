@@ -9,7 +9,7 @@
         Icon="/Assets/open-utau.ico"
         Title="{Binding WindowTitle}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="400" Width="600" Height="400">
+        MinWidth="600" MinHeight="440" Width="600" Height="440">
   <Design.DataContext>
     <vm:ExpressionsViewModel/>
   </Design.DataContext>
