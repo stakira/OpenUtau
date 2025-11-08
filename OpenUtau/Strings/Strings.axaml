@@ -76,6 +76,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
+  <system:String x:Key="errors.expression.customDefault">Project/Track default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>
   <system:String x:Key="errors.expression.marge">The following expressions have been merged due to duplicate flags</system:String>

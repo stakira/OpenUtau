@@ -85,13 +85,16 @@ namespace OpenUtau.App.ViewModels {
             }
             if (ExpressionType == UExpressionType.Numerical) {
                 if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
-                    return new string[] { "Abbreviation must be between 1 and 4 characters long.", "<translate:errors.expression.abbrlong>" };
+                    return new string[] { "Abbreviation must be between 1 and 4 characters long.", $"<translate:errors.expression.abbrlong>: {Name}" };
                 }
                 if (Min >= Max) {
-                    return new string[] { "Min must be smaller than max.", "<translate:errors.expression.min>" };
+                    return new string[] { "Min must be smaller than max.", $"<translate:errors.expression.min>: {Name}" };
                 }
                 if (DefaultValue < Min || DefaultValue > Max) {
-                    return new string[] { "Default value must be between min and max.", "<translate:errors.expression.default>" };
+                    return new string[] { "Default value must be between min and max.", $"<translate:errors.expression.default>: {Name}" };
+                }
+                if (CustomeDefaultValue < Min || CustomeDefaultValue > Max) {
+                    return new string[] { "Project/Track default value must be between min and max.", $"<translate:errors.expression.customDefault>: {Name}" };
                 }
             }
             return null;
@@ -193,8 +196,8 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Apply() {
-            if (!expressionsSourceProject.All(builder => builder.Validate() == null)) {
-                var invalid = expressionsSourceProject.First(builder => builder.Validate() != null);
+            var invalid = expressionsSourceProject.FirstOrDefault(builder => builder.Validate() != null);
+            if (invalid != null) {
                 Expression = invalid;
                 string[] validate = invalid.Validate()!;
                 throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
@@ -209,8 +212,8 @@ namespace OpenUtau.App.ViewModels {
             }
 
             if (track != null) {
-                if (!expressionsSourceTrack.All(builder => builder.Validate() == null)) {
-                    var invalid = expressionsSourceTrack.First(builder => builder.Validate() != null);
+                invalid = expressionsSourceTrack.FirstOrDefault(builder => builder.Validate() != null);
+                if (invalid != null) {
                     Expression = invalid;
                     string[] validate = invalid.Validate()!;
                     throw new MessageCustomizableException(validate[0], validate[1], new ArgumentException(validate[0]), false);
