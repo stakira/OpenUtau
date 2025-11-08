@@ -7,7 +7,6 @@ using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
-using SharpCompress;
 
 namespace OpenUtau.Core.Render {
     public class Progress {
