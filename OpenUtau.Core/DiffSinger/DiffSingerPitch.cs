@@ -25,8 +25,6 @@ namespace OpenUtau.Core.DiffSinger
         IG2p g2p;
         float frameMs;
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
-        const float headMs = DiffSingerUtils.headMs;
-        const float tailMs = DiffSingerUtils.tailMs;
         const string PEXP = DiffSingerUtils.PEXP;
 
         public DsPitch(string rootPath)
@@ -107,10 +105,11 @@ namespace OpenUtau.Core.DiffSinger
         }
         
         public RenderPitchResult Process(RenderPhrase phrase){
-            var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
-            var endMs = phrase.notes[^1].endMs + tailMs;
-            int headFrames = (int)Math.Round(headMs / frameMs);
-            int tailFrames = (int)Math.Round(tailMs / frameMs);
+            var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs)
+                - DiffSingerUtils.GetHeadMs(phrase);
+            var endMs = phrase.notes[^1].endMs + DiffSingerUtils.GetTailMs(phrase);
+            int headFrames = DiffSingerUtils.headFrames;
+            int tailFrames = DiffSingerUtils.tailFrames;
             //Check if all phonemes are defined in dsdict.yaml (for their types)
             foreach (var phone in phrase.phones) {
                 if (!g2p.IsValidSymbol(phone.phoneme)) {
@@ -224,8 +223,8 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             var note_midi = phrase.notes
-                .Select(n=>(float)n.tone)
-                .Prepend((float)phrase.notes[0].tone)
+                .Select(n=>(float)n.adjustedTone)
+                .Prepend((float)phrase.notes[0].adjustedTone)
                 .ToArray();
             //get the index of groups of consecutive rest notes
             var restGroups = new List<Tuple<int,int>>();

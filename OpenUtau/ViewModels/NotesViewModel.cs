@@ -57,6 +57,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool DrawPitchTool { get; set; }
         [Reactive] public bool DrawLinePitchTool { get; set; }
         [Reactive] public bool OverwritePitchTool { get; set; }
+        [Reactive] public bool OverwriteLinePitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
@@ -213,6 +214,7 @@ namespace OpenUtau.App.ViewModels {
             DrawPitchTool = false;
             DrawLinePitchTool = false;
             OverwritePitchTool = false;
+            OverwriteLinePitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
@@ -222,6 +224,7 @@ namespace OpenUtau.App.ViewModels {
                 DrawPitchTool = index == "4";
                 OverwritePitchTool = index == "4+";
                 DrawLinePitchTool = index == "4++";
+                OverwriteLinePitchTool = index == "4+++";
                 KnifeTool = index == "5";
             });
 
@@ -969,29 +972,23 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        internal (UNote[], string[]) PrepareInsertLyrics() {
+        internal (UNote[], UNote[]) PrepareInsertLyrics() {
             var first = Selection.FirstOrDefault();
-            var last = Selection.LastOrDefault();
-            if(Part == null){
-                return (new UNote[0], new string[0]);
+            if (Part == null) {
+                return (Array.Empty<UNote>(), Array.Empty<UNote>());
             }
             //If no note is selected, InsertLyrics will apply to all notes in the part.
-            if (first == null || last == null) {
-                return (Part.notes.ToArray(), Part.notes.Select(n => n.lyric).ToArray());
+            if (first == null) {
+                return (Part.notes.ToArray(), Array.Empty<UNote>());
             }
             List<UNote> notes = new List<UNote>();
             var note = first;
-            while (note != last) {
+            while (note.Next != null) {
                 notes.Add(note);
                 note = note.Next;
             }
             notes.Add(note);
-            var lyrics = notes.Select(n => n.lyric).ToArray();
-            while (note.Next != null) {
-                note = note.Next;
-                notes.Add(note);
-            }
-            return (notes.ToArray(), lyrics);
+            return (notes.ToArray(), Selection.ToArray());
         }
 
         bool IsExpSupported(string expKey) {

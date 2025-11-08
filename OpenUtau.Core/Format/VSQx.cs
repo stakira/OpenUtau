@@ -179,7 +179,7 @@ namespace OpenUtau.Core.Format {
                         unote.tone = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         if (unote.lyric == "-") {
-                            unote.lyric = "+";
+                            unote.lyric = "+~";
                         }
 
                         unote.phonemeExpressions.Add(new UExpression(Ustx.VEL) {
