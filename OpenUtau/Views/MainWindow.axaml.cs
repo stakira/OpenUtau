@@ -59,6 +59,7 @@ namespace OpenUtau.App.Views {
                 AskIfSaveAndContinue = AskIfSaveAndContinue
             };
 
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -509,8 +510,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuSingers(object sender, RoutedEventArgs args) {
-            OpenSingersWindow();
+        async void OnMenuSingers(object sender, RoutedEventArgs args) {
+            await OpenSingersWindowAsync();
         }
 
         /// <summary>
@@ -525,11 +526,7 @@ namespace OpenUtau.App.Views {
             return null;
         }
 
-        public void OpenSingersWindow() {
-            LoadingWindow.RunAsyncOnUIThread(OpenSingersWindowAsync);
-        }
-
-        public async void OpenSingersWindowAsync() {
+        public async Task OpenSingersWindowAsync() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;

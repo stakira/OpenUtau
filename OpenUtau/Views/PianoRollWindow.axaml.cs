@@ -275,8 +275,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuSingers(object sender, RoutedEventArgs args) {
-            MainWindow?.OpenSingersWindow();
+        async void OnMenuSingers(object sender, RoutedEventArgs args) {
+            if (MainWindow != null) {
+                await MainWindow.OpenSingersWindowAsync();
+            }
             this.Activate();
             try {
                 USinger? singer = null;
@@ -979,7 +981,7 @@ namespace OpenUtau.App.Views {
             LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
         }
 
-        public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+        public async void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
@@ -997,7 +999,9 @@ namespace OpenUtau.App.Views {
                         if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
                             Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
-                            MainWindow?.OpenSingersWindow();
+                            if (MainWindow != null) {
+                                await MainWindow.OpenSingersWindowAsync();
+                            }
                             this.Activate();
                             DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
                         }
