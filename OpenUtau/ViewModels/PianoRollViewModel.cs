@@ -79,6 +79,11 @@ namespace OpenUtau.App.ViewModels {
             = new Dictionary<Key, MenuItemViewModel>();
 
         [Reactive] public double Progress { get; set; }
+        [Reactive] public bool CanUndo { get; set; } = false;
+        [Reactive] public bool CanRedo { get; set; } = false;
+        [Reactive] public string UndoText { get; set; } = ThemeManager.GetString("menu.edit.undo");
+        [Reactive] public string RedoText { get; set; } = ThemeManager.GetString("menu.edit.redo");
+
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> ClearPhraseCacheCommand { get; set; }
@@ -175,6 +180,22 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             LoadLegacyPlugins();
+            DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void SetUndoState() {
+            CanUndo = DocManager.Inst.GetUndoState(out string? undoName);
+            if (undoName != null) {
+                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {undoName}";
+            } else {
+                UndoText = ThemeManager.GetString("menu.edit.undo");
+            }
+            CanRedo = DocManager.Inst.GetRedoState(out string? redoName);
+            if (redoName != null) {
+                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}: {redoName}";
+            } else {
+                RedoText = ThemeManager.GetString("menu.edit.redo");
+            }
         }
 
         private void LoadLegacyPlugins() {
@@ -236,6 +257,7 @@ namespace OpenUtau.App.ViewModels {
                     Progress = progressBarNotification.Progress;
                 });
             }
+            SetUndoState();
         }
 
         #endregion

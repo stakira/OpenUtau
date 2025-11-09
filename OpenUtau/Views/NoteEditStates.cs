@@ -48,6 +48,8 @@ namespace OpenUtau.App.Views {
         public Point startPoint;
         public IValueTip valueTip;
         protected virtual bool ShowValueTip => true;
+        protected virtual string? commandName => null;
+
         public NoteEditState(Control control, PianoRollViewModel vm, IValueTip valueTip) {
             this.control = control;
             this.vm = vm;
@@ -56,7 +58,7 @@ namespace OpenUtau.App.Views {
         public virtual void Begin(IPointer pointer, Point point) {
             pointer.Capture(control);
             startPoint = point;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup(commandName);
             if (ShowValueTip) {
                 valueTip.ShowValueTip();
             }
@@ -89,6 +91,7 @@ namespace OpenUtau.App.Views {
         protected override bool ShowValueTip => false;
         private int startTick;
         private int startTone;
+
         public NoteSelectionEditState(
             Control control,
             PianoRollViewModel vm,
@@ -137,6 +140,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         private double xOffset;
         protected override bool ShowValueTip => false;
+        protected override string? commandName => "Move notes";
+
         public NoteMoveEditState(
             Control control,
             PianoRollViewModel vm,
@@ -212,6 +217,7 @@ namespace OpenUtau.App.Views {
         private UNote? note;
         private bool playTone;
         private int activeTone;
+        protected override string? commandName => "Add notes";
 
         public NoteDrawEditState(
             Control control,
@@ -291,6 +297,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote? neighborNote;
         public readonly bool resizeNeighbor;
         public readonly bool fromStart;
+        protected override string? commandName => "Move notes";
+
         public NoteResizeEditState(
             Control control,
             PianoRollViewModel vm,
@@ -389,6 +397,8 @@ namespace OpenUtau.App.Views {
         private float oldVibFadeInTicks => oldVibFadeIn * oldVibLengthTicks / 100;
         private float oldVibFadeOutTicks => oldVibFadeOut * oldVibLengthTicks / 100;
         private float vibPeriod => note.vibrato.period;
+        protected override string? commandName => "Split notes";
+
         public NoteSplitEditState(
             Control control,
             PianoRollViewModel vm,
@@ -499,6 +509,8 @@ namespace OpenUtau.App.Views {
         public override MouseButton MouseButton => mouseButton;
         private MouseButton mouseButton;
         protected override bool ShowValueTip => false;
+        protected override string? commandName => "Delete notes";
+
         public NoteEraseEditState(
             Control control,
             PianoRollViewModel vm,

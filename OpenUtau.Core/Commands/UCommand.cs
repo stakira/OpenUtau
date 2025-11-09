@@ -14,9 +14,11 @@ namespace OpenUtau.Core {
     }
 
     public class UCommandGroup {
+        public string? Name;
         public bool DeferValidate;
         public List<UCommand> Commands;
-        public UCommandGroup(bool deferValidate) {
+        public UCommandGroup(string? name, bool deferValidate) {
+            Name = name;
             DeferValidate = deferValidate;
             Commands = new List<UCommand>();
         }
@@ -27,7 +29,7 @@ namespace OpenUtau.Core {
                 Commands.Add(merged);
             }
         }
-        public override string ToString() { return Commands.Count == 0 ? "No op" : Commands.First().ToString(); }
+        public override string ToString() { return Name ?? (Commands.Count == 0 ? "No op" : Commands.First().ToString()); }
     }
 
     public interface ICmdSubscriber {

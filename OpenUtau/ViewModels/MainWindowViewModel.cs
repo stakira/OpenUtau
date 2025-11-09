@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -74,6 +73,10 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? AddTimeSigChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTimeSigChangeCmd { get; set; }
+        [Reactive] public bool CanUndo { get; set; } = false;
+        [Reactive] public bool CanRedo { get; set; } = false;
+        [Reactive] public string UndoText { get; set; } = ThemeManager.GetString("menu.edit.undo");
+        [Reactive] public string RedoText { get; set; } = ThemeManager.GetString("menu.edit.redo");
 
         private ObservableCollectionExtended<MenuItemViewModel> openRecentMenuItems
             = new ObservableCollectionExtended<MenuItemViewModel>();
@@ -123,6 +126,20 @@ namespace OpenUtau.App.ViewModels {
         }
         public void Redo() {
             DocManager.Inst.Redo();
+        }
+        private void SetUndoState() {
+            CanUndo = DocManager.Inst.GetUndoState(out string? undoName);
+            if (undoName != null) {
+                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {undoName}";
+            } else {
+                UndoText = ThemeManager.GetString("menu.edit.undo");
+            }
+            CanRedo = DocManager.Inst.GetRedoState(out string? redoName);
+            if (redoName != null) {
+                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}: {redoName}";
+            } else {
+                RedoText = ThemeManager.GetString("menu.edit.redo");
+            }
         }
 
         public async void InitProject(MainWindow window) {
@@ -419,10 +436,11 @@ namespace OpenUtau.App.ViewModels {
                     ProgressText = progressBarNotification.Info;
                 });
             } else if (cmd is LoadProjectNotification loadProject) {
-                Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
+                Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {
-                Core.Util.Preferences.AddRecentFileIfEnabled(saveProject.Path);
+                Preferences.AddRecentFileIfEnabled(saveProject.Path);
             }
+            SetUndoState();
             this.RaisePropertyChanged(nameof(Title));
         }
 
