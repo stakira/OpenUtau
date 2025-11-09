@@ -275,7 +275,7 @@ namespace OpenUtau.Classic {
                 return false; // entry not found
             } catch (Exception e) {
                 var ex = new MessageCustomizableException("Failed to load mrq file",
-                    "<translate:errors.failed.load>: frq file", e);
+                    "<translate:errors.failed.load>: mrq file", e);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
                 return false;
             }
