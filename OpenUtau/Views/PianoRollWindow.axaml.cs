@@ -1799,7 +1799,7 @@ namespace OpenUtau.App.Views {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(PianoRollWindow)) {
                 if (loadingNotif.startLoading) {
-                    LoadingWindow.BeginLoading(this);
+                    LoadingWindow.BeginLoadingImmediate(this);
                 } else {
                     LoadingWindow.EndLoading();
                 }
