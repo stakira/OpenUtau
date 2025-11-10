@@ -38,13 +38,20 @@ namespace OpenUtau.Core {
                 "CPU",
                 "CoreML"
                 };
-            }
+            } else if (OS.IsAndroid()) {
+                return new List<string> {
+                "CPU",
+                "NNAPI"
+                };
             return new List<string> {
                 "CPU"
             };
         }
 
         public static List<GpuInfo> getGpuInfo() {
+            if (OS.IsAndroid()) {
+                return new List<GpuInfo>();
+            }
             List<GpuInfo> gpuList = new List<GpuInfo>();
             var env = OrtEnv.Instance();
             var ortDevices = env.GetEpDevices();
@@ -96,6 +103,9 @@ namespace OpenUtau.Core {
                     break;
                 case "CoreML":
                     options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
+                    break;
+                case "NNAPI":
+                    options.AppendExecutionProvider_Nnapi();
                     break;
             }
             return options;
