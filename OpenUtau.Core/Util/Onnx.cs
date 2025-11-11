@@ -45,7 +45,8 @@ namespace OpenUtau.Core {
                 };
             return new List<string> {
                 "CPU"
-            };
+                };
+            }
         }
 
         public static List<GpuInfo> getGpuInfo() {
