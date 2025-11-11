@@ -8,7 +8,11 @@ namespace OpenUtau {
         public static bool IsWindows() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static bool IsMacOS() => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         public static bool IsLinux() => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-        public static bool IsAndroid() => OperatingSystem.IsAndroid();
+#if ANDROID
+        public static bool IsAndroid() => true;
+#else
+        public static bool IsAndroid() => false;
+#endif
 
         public static void OpenFolder(string path) {
             if (Directory.Exists(path)) {
