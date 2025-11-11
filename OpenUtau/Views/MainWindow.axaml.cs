@@ -842,32 +842,74 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnDrop(object? sender, DragEventArgs args) {
-            var storageItem = args.Data?.GetFiles()?.FirstOrDefault();
-            if (storageItem == null) {
+            string[] ProjectExts = { ".ustx", ".ust", ".vsqx", ".ufdata", ".musicxml", ".mid", ".midi" };
+            string[] ArchiveExts = { ".zip", ".rar", ".uar" };
+            string[] AudioExts = { ".mp3", ".wav", ".ogg", ".flac" };
+            string[] SupportedExts = ProjectExts
+                .Concat(ArchiveExts)
+                .Concat(AudioExts)
+                .Append(".dll")
+                .Append(".exe")
+                .Append(Core.Vogen.VogenSingerInstaller.FileExt)
+                .Append(DependencyInstaller.FileExt)
+                .ToArray();
+            var files = args.Data?.GetFiles()?.Where(i => i != null).Select(i => i.Path.LocalPath).ToArray() ?? new string[] { };
+            if (files.Length == 0) {
                 return;
             }
-            string file = storageItem.Path.LocalPath;
+            var supportedFiles = files.Where(file => SupportedExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+            if (supportedFiles.Length == 0) {
+                _ = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.unsupportedfile.message") + Path.GetExtension(files[0]),
+                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            string FirstExt = Path.GetExtension(supportedFiles[0]).ToLower();
+            //If multiple project/audio files are dropped, open/import them all.
+            if (ProjectExts.Contains(FirstExt) || AudioExts.Contains(FirstExt)) {
+                var projectFiles = supportedFiles.Where(file => ProjectExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+                viewModel.Page = 1;
+                if (projectFiles.Length > 0) {
+                    try {
+                        var loadedProjects = Formats.ReadProjects(files);
+                        // Imports tempo for new projects, otherwise asks the user.
+                        bool importTempo = DocManager.Inst.Project.parts.Count == 0;
+                        if (!importTempo && loadedProjects[0].tempos.Count > 0) {
+                            var tempoString = string.Join("\n",
+                                loadedProjects[0].tempos
+                                    .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                                );
+                            // Ask the user
+                            var result = await MessageBox.Show(
+                                this,
+                                ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                                ThemeManager.GetString("dialogs.importtracks.caption"),
+                                MessageBox.MessageBoxButtons.YesNo);
+                            importTempo = result == MessageBox.MessageBoxResult.Yes;
+                        }
+                        viewModel.ImportTracks(loadedProjects, importTempo);
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to import project");
+                        _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import files", "<translate:errors.failed.importfiles>", e));
+                    }
+                }
+                var audioFiles = supportedFiles.Where(file => AudioExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+                foreach (var audioFile in audioFiles) {
+                    try {
+                        viewModel.ImportAudio(audioFile);
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to import audio");
+                        _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
+                    }
+                }
+                return;
+            }
+            // Otherwise, only one installer file is handled at a time.
+            string file = supportedFiles[0];
             var ext = Path.GetExtension(file).ToLower();
-            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext == ".ufdata" || ext == ".musicxml") {
-                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
-                    return;
-                }
-                try {
-                    viewModel.OpenProject(new string[] { file });
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to open file {file}");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
-                }
-            } else if (ext == ".mid" || ext == ".midi") {
-                try {
-                    viewModel.ImportMidi(file);
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to import midi");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
-                }
-            } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
+            if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
                 try {
                     var setup = new SingerSetupDialog() {
                         DataContext = new SingerSetupViewModel() {
@@ -910,20 +952,6 @@ namespace OpenUtau.App.Views {
                 if (result == MessageBox.MessageBoxResult.Ok) {
                     DependencyInstaller.Install(file);
                 }
-            } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
-                try {
-                    viewModel.ImportAudio(file);
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to import audio");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
-                }
-            } else {
-                _ = await MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("dialogs.unsupportedfile.message") + ext,
-                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
             }
         }
 
