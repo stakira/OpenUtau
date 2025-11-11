@@ -67,6 +67,7 @@
 
   <system:String x:Key="errors.caption">Ошибка</system:String>
   <system:String x:Key="errors.details">Подробности ошибки</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder">Ошибка при загрузке Вокодера "{0}". Установите вокодер отсюда {1}</system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder1">Ошибка загрузки вокодера </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. Пожалуйста, загрузите вокодер из: </system:String>
   <system:String x:Key="errors.editing.autopitch.unsupported">Данный войсбанк не поддерживает авто генерацию питча. Пожалуйста, используйте Diffsinger или Enunu войсбанк.</system:String>
@@ -88,14 +89,28 @@
   <system:String x:Key="errors.failed.loadprefs">Не удалось загрузить параметры, пожалуйста, проведите инициализацию.</system:String>
   <system:String x:Key="errors.failed.openfile">Не удалось открыть</system:String>
   <system:String x:Key="errors.failed.openlocation">Не удалось открыть расположение</system:String>
-  <system:String x:Key="errors.failed.render">Не удалось выполнить рендеринг</system:String>
+  <system:String x:Key="errors.failed.opennewerproject">Файл проекта устарел! Обновите OpenUtau!</system:String>
+  <system:String x:Key="errors.failed.render">Рендер не удался.</system:String>
   <system:String x:Key="errors.failed.runeditingmacro">Не удалось запустить макрос редактирования</system:String>
   <system:String x:Key="errors.failed.save">Не удалось сохранить</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">Не удалось сохранить файл конфигурации вокалиста</system:String>
   <system:String x:Key="errors.failed.searchsinger">Не удалось найти певцов</system:String>
+  <!--<system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>-->
+  <!--<system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>-->
   <system:String x:Key="errors.install.cpp">Попробуйте установить Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
   <system:String x:Key="errors.lyrics.regex">Символ не разрешён в регулярном выражении</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- ошибка регулярного выражения -</system:String>
+
+  <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
+  <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
+1. Install wine from {0}
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
+1. Install wine using following commands
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.resampler">Install as resampler</system:String>-->
+  <!--<system:String x:Key="exesetup.title">Installing Exe File</system:String>-->
+  <!--<system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>-->
 
   <system:String x:Key="exps.abbr">Сокращение</system:String>
   <system:String x:Key="exps.apply">Применить</system:String>
@@ -117,6 +132,7 @@
   <system:String x:Key="languages.de">Немецкий</system:String>
   <system:String x:Key="languages.en">Английский</system:String>
   <system:String x:Key="languages.es">Испанский</system:String>
+  <!--<system:String x:Key="languages.fil">Filipino</system:String>-->
   <system:String x:Key="languages.fr">Французский</system:String>
   <system:String x:Key="languages.invariant">Не переводится</system:String>
   <system:String x:Key="languages.it">Итальянский</system:String>
@@ -126,6 +142,7 @@
   <system:String x:Key="languages.pt">Португальский</system:String>
   <system:String x:Key="languages.ru">Русский</system:String>
   <system:String x:Key="languages.th">Тайский</system:String>
+  <system:String x:Key="languages.tr">Турецкий</system:String>
   <system:String x:Key="languages.vi">Вьетнамский</system:String>
   <system:String x:Key="languages.zh">Китайский</system:String>
   <system:String x:Key="languages.zh-yue">Кантонский</system:String>
@@ -216,7 +233,19 @@
   <system:String x:Key="menu.tools.singer.install">Установить вокалиста...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Установить вокалиста (расширенный)...</system:String>
   <system:String x:Key="menu.tools.singers">Вокалисты...</system:String>
+  <system:String x:Key="menu.tools.wavtoolresampler.install">Установить Вавтул/Ресамплер (.exe)...</system:String>
   <system:String x:Key="menu.view">Вид</system:String>
+
+  <!--<system:String x:Key="mergevoicebank.back">Back</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.merge">Merge</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.next">Next</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
+Choose the voicebank that you want to merge into current voicebank</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
+Syntax: prefix,suffix</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">Текст</system:String>
   <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
@@ -304,6 +333,7 @@
   <system:String x:Key="pianoroll.menu.notes.octavedown">Переместить на октаву ниже</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Переместить на октаву выше</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Выровнять по сетке</system:String>
+  <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Обновить реальные кривые</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Удалить хвост "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Удалить хвост "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">Сбросить алиасы фонем</system:String>
@@ -320,10 +350,13 @@
   <system:String x:Key="pianoroll.menu.plugin.reload">Перезагрузить</system:String>
   <system:String x:Key="pianoroll.menu.reset">Сбросить</system:String>
   <system:String x:Key="pianoroll.menu.searchnote">Найти ноту</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.alias">Алиас</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.all">Выделить все</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">Закрыть</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">След</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.note">Нота</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.prev">Пред</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.searchalias">Искать Алиас</system:String>
   <system:String x:Key="pianoroll.snapdiv">Деление сетки</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Показать отрендеренный питч (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">Просмотреть параметры ноты (\)</system:String>
@@ -336,8 +369,7 @@
   <system:String x:Key="pianoroll.toggle.tone">Переключить тон ноты (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Отображать вибрато (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Отображать волну (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">
-    Инструмент рисовки питча (Shift + 4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">Инструмент рисовки питча (Shift + 4)
     Левый кнопка для рисования (прямая линия)
     Правая кнопка для сбрасывания
     зажмите Ctrl, чтобы выбрать
@@ -364,10 +396,6 @@
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
-  <system:String x:Key="prefs.advanced.importtempo">Когда импортировуются треки, использовать темп импортированного проекта</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.always">Всегда</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">Спрашивать каждый раз</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">Никогда</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">Запомнить эти типы файлов в "Открыть последние"</system:String>
@@ -375,11 +403,13 @@
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет вывод ресамплера в файлах лога. Эта опция замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">Путь к Vlabeler</system:String>
+  <!--<system:String x:Key="prefs.advanced.winepath">Wine Path (set to enable wine for compatibility)</system:String>-->
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
   <system:String x:Key="prefs.appearance.degree">Стиль отображения градуса шкалы</system:String>
   <system:String x:Key="prefs.appearance.degree.numbered">Нумерация (1 2 3 4 5 6 7)</system:String>
   <system:String x:Key="prefs.appearance.degree.off">Отключено</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">Сольфеджио (do re mi fa sol la ti)</system:String>
+  <system:String x:Key="prefs.appearance.diffsingerlangcodehide">Спрятать Языковой префикс </system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Отображать ноты других треков на пианоролле</system:String>
   <system:String x:Key="prefs.appearance.showicon">Отображать иконку на пианоролле</system:String>
@@ -404,6 +434,7 @@
   <system:String x:Key="prefs.paths">Пути</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Дополнительные пути к вокалисту</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Установить в дополнительный путь к вокалисту</system:String>
+  <!--<system:String x:Key="prefs.paths.detect">Detect</system:String>-->
   <system:String x:Key="prefs.paths.loaddeepfolders">Загрузить все глубинные папки</system:String>
   <system:String x:Key="prefs.paths.reset">Сбросить</system:String>
   <system:String x:Key="prefs.paths.select">Выбрать</system:String>
@@ -470,6 +501,7 @@
   <system:String x:Key="singers.editoto.setvlabelerpath">Сначала нужно скачать vLabeler версии 1.0.0-beta или выше из https://github.com/sdercolin/vlabeler и указать путь к vLabeler в параметрах!</system:String>
   <system:String x:Key="singers.errorreport">Создать отчет об ошибках вокалиста</system:String>
   <system:String x:Key="singers.location">Расположение</system:String>
+  <!--<system:String x:Key="singers.merge">Merge with another voicebank</system:String>-->
   <system:String x:Key="singers.otoview.moveleft">Влево</system:String>
   <system:String x:Key="singers.otoview.moveright">Вправо</system:String>
   <system:String x:Key="singers.otoview.selectnext">Выбрать след.</system:String>
@@ -477,7 +509,8 @@
   <system:String x:Key="singers.otoview.showall">Показать все</system:String>
   <system:String x:Key="singers.otoview.zoomin">Приблизить</system:String>
   <system:String x:Key="singers.otoview.zoomout">Отдалить</system:String>
-  <system:String x:Key="singers.playsample">Проиграть пример</system:String>
+  <!--<system:String x:Key="singers.playsample">Play Sample</system:String>-->
+  <system:String x:Key="singers.playselectedfile">Проиграть выбранный файл</system:String>
   <system:String x:Key="singers.publish">Опубликовать вокалиста</system:String>
   <system:String x:Key="singers.publish.description">Данная функция позволяет создать оптимизированный zip-файл с вашим вокалистом для удобного распространения.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">Игнорировать следующие типы файлов при упаковке (используется синтаксис gitignore):</system:String>
@@ -520,8 +553,15 @@
   <system:String x:Key="singersetup.textfileencoding.prompt">Выберите кодировку, в которой содержимое файла будет выглядеть правильно.</system:String>
 
   <system:String x:Key="tip.aliasbox">Заменить алиасы</system:String>
-  <system:String x:Key="tip.exps">Рисование левой кнопкой мыши: установить выражения
-Рисование правой кнопкой мыши: сброс выражений</system:String>
+  <system:String x:Key="tip.exps">Числовой тип опций
+    ЛКМ при рисовании: Задать выражения
+    Shift + ЛКМ при рисовании: Задать одинаковые выражения
+    ПКМ при рисовании: Сбросить выражения
+Тип кривой
+    ЛКМ при рисовании: Рисовать
+    Shift + Ctrl + ЛКМ при рисовании: Рисовать линию
+    Shift + ЛКМ при рисовании: Рисовать горизонтальную линию
+    ПКМ при рисовании: Сброс линии</system:String>
   <system:String x:Key="tip.exps.notsupported">Выражения не поддерживаются рендером</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: следующая нота</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: предыдущая нота</system:String>
@@ -545,6 +585,7 @@
 
   <system:String x:Key="tracks.duplicate">Дублирование дорожки</system:String>
   <system:String x:Key="tracks.duplicatesettings">Параметры дублирования дорожек</system:String>
+  <!--<system:String x:Key="tracks.favorite">Favorites</system:String>-->
   <system:String x:Key="tracks.installsinger">Установить певца</system:String>
   <system:String x:Key="tracks.more">Больше</system:String>
   <system:String x:Key="tracks.movedown">Вниз</system:String>
@@ -581,4 +622,12 @@
   <system:String x:Key="warning">Предупреждение</system:String>
   <system:String x:Key="warning.asciipath">Ваш путь к OpenUtau ("{0}") содержит символы, не являющимися символами ASCII. EXE-ресамплеры могут не работать.</system:String>
   <system:String x:Key="warning.renderer">Для этого рендерера нет настроек.</system:String>
+
+  <system:String x:Key="welcome.new">Новый</system:String>
+  <system:String x:Key="welcome.new.description">Создать новый проект</system:String>
+  <system:String x:Key="welcome.open">Открыть</system:String>
+  <system:String x:Key="welcome.open.description">Открыть локальный проект</system:String>
+  <system:String x:Key="welcome.recent">Недавние</system:String>
+  <system:String x:Key="welcome.start">Начать</system:String>
+  <!--<system:String x:Key="welcome.template">Template</system:String>-->
 </ResourceDictionary>

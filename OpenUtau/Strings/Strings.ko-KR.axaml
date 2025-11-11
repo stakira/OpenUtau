@@ -67,6 +67,7 @@
 
   <system:String x:Key="errors.caption">오류</system:String>
   <system:String x:Key="errors.details">에러 상세정보</system:String>
+  <!--<system:String x:Key="errors.diffsinger.downloadvocoder">Error loading vocoder "{0}". Please download vocoder from {1}</system:String>-->
   <system:String x:Key="errors.diffsinger.downloadvocoder1">보코더 로드 중 오류가 발생했어요 </system:String>
   <system:String x:Key="errors.diffsinger.downloadvocoder2">. 다음 링크에서 보코더를 다운로드해 주세요. </system:String>
   <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
@@ -88,14 +89,28 @@
   <system:String x:Key="errors.failed.loadprefs">환경설정 불러오기에 실패했어요. 초기화 중이에요.</system:String>
   <system:String x:Key="errors.failed.openfile">열기에 실패했어요</system:String>
   <system:String x:Key="errors.failed.openlocation">위치 열기에 실패했어요</system:String>
-  <system:String x:Key="errors.failed.render">렌더링에 실패했어요</system:String>
+  <!--<system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>-->
+  <!--<system:String x:Key="errors.failed.render">Failed to render.</system:String>-->
   <system:String x:Key="errors.failed.runeditingmacro">매크로 실행에 실패했어요</system:String>
   <system:String x:Key="errors.failed.save">저장에 실패했어요</system:String>
   <system:String x:Key="errors.failed.savesingerconfig">가수 설정 파일 저장에 실패했어요</system:String>
   <!--<system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>-->
+  <!--<system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>-->
+  <!--<system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>-->
   <!--<system:String x:Key="errors.install.cpp">Try installing the latest Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>-->
   <!--<system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>-->
   <!--<system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>-->
+
+  <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
+  <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
+1. Install wine from {0}
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
+1. Install wine using following commands
+2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
+  <!--<system:String x:Key="exesetup.resampler">Install as resampler</system:String>-->
+  <!--<system:String x:Key="exesetup.title">Installing Exe File</system:String>-->
+  <!--<system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>-->
 
   <system:String x:Key="exps.abbr">줄임말</system:String>
   <system:String x:Key="exps.apply">적용</system:String>
@@ -117,6 +132,7 @@
   <system:String x:Key="languages.de">독일어</system:String>
   <system:String x:Key="languages.en">영어</system:String>
   <system:String x:Key="languages.es">스페인어</system:String>
+  <!--<system:String x:Key="languages.fil">Filipino</system:String>-->
   <system:String x:Key="languages.fr">프랑스어</system:String>
   <system:String x:Key="languages.invariant">번역하지 않음</system:String>
   <system:String x:Key="languages.it">이탈리아어</system:String>
@@ -126,6 +142,7 @@
   <system:String x:Key="languages.pt">포르투갈어</system:String>
   <system:String x:Key="languages.ru">러시아어</system:String>
   <system:String x:Key="languages.th">태국어</system:String>
+  <!--<system:String x:Key="languages.tr">Turkish</system:String>-->
   <system:String x:Key="languages.vi">베트남어</system:String>
   <system:String x:Key="languages.zh">중국어</system:String>
   <system:String x:Key="languages.zh-yue">광둥어</system:String>
@@ -216,7 +233,19 @@
   <system:String x:Key="menu.tools.singer.install">[가수] 설치</system:String>
   <system:String x:Key="menu.tools.singer.installadv">[가수] 설치(고급)</system:String>
   <system:String x:Key="menu.tools.singers">[가수] 목록...</system:String>
+  <!--<system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>-->
   <system:String x:Key="menu.view">보기</system:String>
+
+  <!--<system:String x:Key="mergevoicebank.back">Back</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.merge">Merge</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.next">Next</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
+Choose the voicebank that you want to merge into current voicebank</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
+Syntax: prefix,suffix</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>-->
+  <!--<system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>-->
 
   <system:String x:Key="notedefaults.lyric">가사</system:String>
   <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
@@ -304,6 +333,7 @@
   <system:String x:Key="pianoroll.menu.notes.octavedown">한 옥타브 아래로</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">한 옥타브 위로</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.removetaildash">[끝 노트 제거] '-'</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">[끝 노트 제거] 'R'</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.aliases">[재설정] 에일리어스</system:String>
@@ -320,10 +350,13 @@
   <system:String x:Key="pianoroll.menu.plugin.reload">새로고침</system:String>
   <!--<system:String x:Key="pianoroll.menu.reset">Reset</system:String>-->
   <system:String x:Key="pianoroll.menu.searchnote">노트 검색</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>-->
   <system:String x:Key="pianoroll.menu.searchnote.all">모두 선택</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.close">닫기</system:String>
   <system:String x:Key="pianoroll.menu.searchnote.next">다음</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>-->
   <system:String x:Key="pianoroll.menu.searchnote.prev">이전</system:String>
+  <!--<system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>-->
   <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
   <system:String x:Key="pianoroll.toggle.finalpitch">렌더링된 피치 보기 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">노트 설정 열기 (\)</system:String>
@@ -336,8 +369,7 @@
   <system:String x:Key="pianoroll.toggle.tone">노트음 활성 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기(U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">파형 보기 (W)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">
-    Line Draw Pitch Tool (Shift + 4)
+  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (Shift + 4)
     Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
@@ -368,10 +400,6 @@
   <system:String x:Key="prefs.advanced">고급</system:String>
   <!--<system:String x:Key="prefs.advanced.checkupdateonstart">Check for update on start</system:String>-->
   <system:String x:Key="prefs.advanced.beta">베타 버전 사용</system:String>
-  <system:String x:Key="prefs.advanced.importtempo">프로젝트를 불러올 때, 프로젝트에 포함된 템포 사용</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.always">항상</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.ask">불러올 때마다 확인</system:String>
-  <system:String x:Key="prefs.advanced.importtempo.never">사용 안함</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">가사 입력 도우미</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">가사 입력 도우미의 대괄호 자동 추가</system:String>
   <system:String x:Key="prefs.advanced.rememberfiletypes">'최근 파일'에 표시할 파일 유형</system:String>
@@ -379,11 +407,13 @@
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">리샘플러의 결과물을 로그 파일에 저장합니다. UI 및 렌더링의 속도가 느려질 수 있어요.</system:String>
   <system:String x:Key="prefs.advanced.stable">안정화 버전</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler 설치 경로</system:String>
+  <!--<system:String x:Key="prefs.advanced.winepath">Wine Path (set to enable wine for compatibility)</system:String>-->
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.degree">음계 표시</system:String>
   <system:String x:Key="prefs.appearance.degree.numbered">숫자매김 (1 2 3 4 5 6 7)</system:String>
   <system:String x:Key="prefs.appearance.degree.off">미사용</system:String>
   <system:String x:Key="prefs.appearance.degree.solfege">계이름 (do re mi fa sol la ti)</system:String>
+  <!--<system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>-->
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">피아노 롤에 다른 트랙의 노트 표시</system:String>
   <system:String x:Key="prefs.appearance.showicon">피아노 롤에 가수 아이콘 표시</system:String>
@@ -408,6 +438,7 @@
   <system:String x:Key="prefs.paths">경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger">가수 폴더 확장</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">앞으로의 가수 설치 경로를 확장된 폴더로 변경</system:String>
+  <!--<system:String x:Key="prefs.paths.detect">Detect</system:String>-->
   <system:String x:Key="prefs.paths.loaddeepfolders">가수 로드 시, 안쪽 폴더까지 불러오기</system:String>
   <system:String x:Key="prefs.paths.reset">재설정</system:String>
   <system:String x:Key="prefs.paths.select">선택</system:String>
@@ -474,6 +505,7 @@
   <system:String x:Key="singers.editoto.setvlabelerpath">https://github.com/sdercolin/vlabeler 에서 vLabeler(1.0.0-beta1 이상)를 다운로드하고, 환경 설정에서 vLabeler 경로를 지정해 주세요!</system:String>
   <system:String x:Key="singers.errorreport">가수 오류 보고서 생성</system:String>
   <system:String x:Key="singers.location">위치 열기</system:String>
+  <!--<system:String x:Key="singers.merge">Merge with another voicebank</system:String>-->
   <system:String x:Key="singers.otoview.moveleft">왼쪽으로</system:String>
   <system:String x:Key="singers.otoview.moveright">오른쪽으로</system:String>
   <system:String x:Key="singers.otoview.selectnext">다음</system:String>
@@ -481,7 +513,8 @@
   <system:String x:Key="singers.otoview.showall">모두 표시</system:String>
   <system:String x:Key="singers.otoview.zoomin">확대</system:String>
   <system:String x:Key="singers.otoview.zoomout">축소</system:String>
-  <system:String x:Key="singers.playsample">샘플 재생</system:String>
+  <!--<system:String x:Key="singers.playsample">Play Sample</system:String>-->
+  <!--<system:String x:Key="singers.playselectedfile">Play Selected File</system:String>-->
   <system:String x:Key="singers.publish">가수 배포</system:String>
   <system:String x:Key="singers.publish.description">가수 배포를 위한 zip 파일을 만들어요.</system:String>
   <system:String x:Key="singers.publish.ignoretypes">[파일 무시] 이 목록에 포함된 파일 유형들은 배포 파일에 포함되지 않아요. (gitignore 문법으로 작성):</system:String>
@@ -524,8 +557,15 @@
   <system:String x:Key="singersetup.textfileencoding.prompt">텍스트가 정상적으로 보이는 인코딩을 골라 주세요.</system:String>
 
   <system:String x:Key="tip.aliasbox">에일리어스 덮어쓰기</system:String>
-  <system:String x:Key="tip.exps">표현 설정: 왼쪽 마우스로 긋기
-표현 초기화: 오른쪽 마우스로 긋기</system:String>
+  <!--<system:String x:Key="tip.exps">Numerical,Options Type
+    Left Button Draw: Set expressions
+    Shift + Left Button Draw: Set uniform expressions
+    Right Button Draw: Reset expressions
+Curve Type
+    Left Button Draw: Draw
+    Shift + Ctrl + Left Button Draw: Line Draw
+    Shift + Left Button Draw: Horizontal Line Draw
+    Right Button Draw: Reset Line</system:String>-->
   <system:String x:Key="tip.exps.notsupported">렌더러가 이 표현을 지원하지 않아요</system:String>
   <system:String x:Key="tip.lyricbox.next">다음 노트로: Tab</system:String>
   <system:String x:Key="tip.lyricbox.prev">이전 노트로: Shift+Tab</system:String>
@@ -549,6 +589,7 @@
 
   <system:String x:Key="tracks.duplicate">트랙 복제</system:String>
   <system:String x:Key="tracks.duplicatesettings">트랙 설정 복제</system:String>
+  <!--<system:String x:Key="tracks.favorite">Favorites</system:String>-->
   <!--<system:String x:Key="tracks.installsinger">Install singer</system:String>-->
   <system:String x:Key="tracks.more">더보기</system:String>
   <system:String x:Key="tracks.movedown">아래로</system:String>
@@ -585,4 +626,12 @@
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 설치 경로 "{0}"에 비 ASCII 문자가 있어요. Exe 리샘플러가 작동하지 않을 수 있습니다.</system:String>
   <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다.</system:String>
+
+  <!--<system:String x:Key="welcome.new">New</system:String>-->
+  <!--<system:String x:Key="welcome.new.description">Create a new project</system:String>-->
+  <!--<system:String x:Key="welcome.open">Open</system:String>-->
+  <!--<system:String x:Key="welcome.open.description">Open a local project</system:String>-->
+  <!--<system:String x:Key="welcome.recent">Recent</system:String>-->
+  <!--<system:String x:Key="welcome.start">Start</system:String>-->
+  <!--<system:String x:Key="welcome.template">Template</system:String>-->
 </ResourceDictionary>

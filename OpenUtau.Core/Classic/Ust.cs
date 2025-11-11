@@ -82,7 +82,7 @@ namespace OpenUtau.Classic {
 
             var blocks = Ini.ReadBlocks(reader, file, @"\[#\w+\]");
             ParsePart(project, part, blocks);
-            part.Duration = part.notes.Select(note => note.End).Max() + project.resolution;
+            part.Duration = part.notes.LastOrDefault()?.End ?? 0 + project.resolution;
 
             return project;
         }
@@ -333,10 +333,8 @@ namespace OpenUtau.Classic {
             using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding(encoding))) {
                 WriteHeader(project, part, writer);
                 var position = 0;
-                var note_count = 0;
                 if (prev != null) {
-                    writer.WriteLine("[#PREV]");
-                    note_count += 1;
+                    writer.WriteLine($"[#PREV]");
                     WriteNoteBody(project, track, part, prev, writer);
                     position = prev.End;
                 }
@@ -349,8 +347,7 @@ namespace OpenUtau.Classic {
                     }
                     if (note.position > position) {
                         //Insert R note if there is space between two notes
-                        writer.WriteLine($"[#{note_count:D4}]");
-                        note_count += 1;
+                        writer.WriteLine($"[#{sequence.Count:D4}]");
                         var spacer = UNote.Create();
                         spacer.position = position;
                         spacer.duration = note.position - position;
@@ -359,8 +356,7 @@ namespace OpenUtau.Classic {
                         sequence.Add(spacer);
                         WriteNoteBody(project, track, part, spacer, writer);
                     }
-                    writer.WriteLine($"[#{note_count:D4}]");
-                    note_count += 1;
+                    writer.WriteLine($"[#{sequence.Count:D4}]");
                     WriteNoteBody(project, track, part, note, writer, forPlugin: true);
                     position = note.End;
                     sequence.Add(note);
