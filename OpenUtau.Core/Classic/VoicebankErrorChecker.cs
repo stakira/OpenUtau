@@ -116,7 +116,7 @@ namespace OpenUtau.Classic {
             try {
                 using (var wav = Core.Format.Wave.OpenFile(filePath)) {
                     fileDuration = wav.TotalTime.TotalMilliseconds;
-                    var waveFormat = wav.ToSampleProvider().WaveFormat;
+                    var waveFormat = wav.WaveFormat;
                     if (waveFormat.SampleRate != 44100) {
                         Errors.Add(new VoicebankError() {
                             soundFile = filePath,

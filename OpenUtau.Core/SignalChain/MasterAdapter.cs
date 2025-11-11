@@ -8,7 +8,7 @@ namespace OpenUtau.Core.SignalChain {
         private int position;
 
         public WaveFormat WaveFormat => waveFormat;
-        public int Waited { get; set; }
+        public int Waited { get; private set; }
         public bool IsWaiting { get; private set; }
         public MasterAdapter(ISignalSource source) {
             waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);

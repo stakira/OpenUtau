@@ -249,8 +249,6 @@ namespace OpenUtau.Core {
 
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
-                startMs = project.timeAxis.TickPosToMsPos(tick);
-                masterMix.Waited = 0;
                 PlayingMaster = true;
                 AudioOutput.Play();
                 return;

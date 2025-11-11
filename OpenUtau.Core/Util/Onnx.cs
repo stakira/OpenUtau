@@ -49,6 +49,11 @@ namespace OpenUtau.Core {
                 "CPU",
                 "CUDA"
                 };
+            } else if (OS.IsAndroid()) {
+                return new List<string> {
+                "CPU",
+                "NNAPI"
+                };
             }
             return new List<string> {
                 "CPU"        
@@ -60,6 +65,10 @@ namespace OpenUtau.Core {
                 return CudaGpuDetector.GetCudaDevices();
             }         
      
+            if (OS.IsAndroid()) {
+                return new List<GpuInfo>();
+            }
+
             List<GpuInfo> gpuList = new List<GpuInfo>();
             var env = OrtEnv.Instance();
             var ortDevices = env.GetEpDevices();
@@ -109,6 +118,9 @@ namespace OpenUtau.Core {
                     break;
                 case "CUDA":
                     options.AppendExecutionProvider_CUDA(Preferences.Default.OnnxGpu);
+                    break;
+                case "NNAPI":
+                    options.AppendExecutionProvider_Nnapi();
                     break;
             }
             return options;
