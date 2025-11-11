@@ -43,6 +43,7 @@ namespace OpenUtau.Core {
                 "CPU",
                 "NNAPI"
                 };
+            }
             return new List<string> {
                 "CPU"
             };
