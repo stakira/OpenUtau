@@ -12,8 +12,24 @@ namespace OpenUtau.Core.DiffSinger {
         public const string ENE = "ene";
         public const string PEXP = "pexp";
         public const string VoiceColorHeader = "cl";
-        public const float headMs = 100;
-        public const float tailMs = 100;
+        public const int headFrames = 8;
+        public const int tailFrames = 8;
+
+        public static float GetHeadMs(RenderPhrase phrase) {
+            var singer = phrase.singer as DiffSingerSinger;
+            if (singer == null) {
+                throw new InvalidDataException("Singer is not DiffSingerSinger.");
+            }
+            return singer.dsConfig.frameMs() * DiffSingerUtils.headFrames;
+        }
+
+        public static float GetTailMs(RenderPhrase phrase) {
+            var singer = phrase.singer as DiffSingerSinger;
+            if (singer == null) {
+                throw new InvalidDataException("Singer is not DiffSingerSinger.");
+            }
+            return singer.dsConfig.frameMs() * DiffSingerUtils.tailFrames;
+        }
 
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
             const int interval = 5;
