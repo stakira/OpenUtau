@@ -43,10 +43,10 @@ namespace OpenUtau.Core {
                 "CPU",
                 "NNAPI"
                 };
+            } 
             return new List<string> {
                 "CPU"
                 };
-            }
         }
 
         public static List<GpuInfo> getGpuInfo() {
