@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Format;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -145,7 +146,7 @@ namespace OpenUtau.Core.Editing {
 
         public QuantizeNotes(int quantize) {
             this.quantize = quantize;
-            name = $"pianoroll.menu.notes.quantize{quantize}";
+            name = $"pianoroll.menu.notes.quantize";
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
@@ -227,6 +228,51 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class CommonnoteCopy : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public CommonnoteCopy() {
+            name = $"pianoroll.menu.notes.commonnotecopy";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            Commonnote.CopyToClipboard(notes, project);
+        }
+    }
+
+    public class CommonnotePaste : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public CommonnotePaste() {
+            name = $"pianoroll.menu.notes.commonnotepaste";
+        }
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = Commonnote.LoadFromClipboard(project);
+            if (notes == null) {
+                return;
+            }
+            int left = DocManager.Inst.playPosTick;
+            int minPosition = notes.Select(note => note.position).Min();
+            if (left < part.position) {
+                return;
+            }
+            int offset = left - minPosition - part.position;
+            notes.ForEach(note => note.position += offset);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, notes));
+            int minDurTick = part.GetMinDurTick(project);
+            if (part.Duration < minDurTick) {
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, minDurTick - part.Duration, false));
+            }
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
     public class HanziToPinyin : BatchEdit {
         public virtual string Name => name;
 
@@ -292,6 +338,35 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class RandomizeTuning : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+        private int max;
+
+        public RandomizeTuning(int max) {
+            name = "pianoroll.menu.notes.randomizetuning";
+            this.max = max;
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            Random random = new Random();
+            foreach (var note in notes) {
+                if (random.Next(2) == 0) { // +
+                    docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, random.Next(max / 4, max + 1)));
+                } else { // -
+                    var delta = random.Next(max / 4, max + 1);
+                    docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, -delta));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class LoadRenderedPitch : BatchEdit {
         public virtual string Name => name;
 
@@ -314,7 +389,11 @@ namespace OpenUtau.Core.Editing {
             Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
             var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
             if (renderer == null || !renderer.SupportsRenderPitch) {
-                docManager.ExecuteCmd(new ErrorMessageNotification("Not supported"));
+                var e = new MessageCustomizableException(
+                    "Current renderer doesn't support generating pitch curve", 
+                    $"<translate:errors.editing.autopitch.unsupported>",
+                    new Exception());
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 return;
             }
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
@@ -619,12 +698,89 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             //Clear MOD+ expressions for selected notes
-            foreach (var phoneme in part.phonemes) {
-                if (phoneme.Parent != null && notes.Contains(phoneme.Parent)) {
-                    docManager.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, phoneme, "mod+", null));
-                }
-            }
+            docManager.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, project.tracks[part.trackNo], part, notes, "mod+", null));
             docManager.EndUndoGroup();
+        }
+    }
+
+    public class RefreshRealCurves : BatchEdit {
+        public virtual string Name => name;
+
+        public bool IsAsync => true;
+
+        private string name;
+
+        public RefreshRealCurves() {
+            name = "pianoroll.menu.notes.refreshrealcurves";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            RunAsync(
+                project, part, selectedNotes, docManager,
+                (current, total) => { }, CancellationToken.None);
+        }
+
+        public void RunAsync(
+            UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
+            Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
+            var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
+            if (renderer == null || !renderer.SupportsRealCurve) {
+                docManager.ExecuteCmd(new ErrorMessageNotification("Not supported"));
+                return;
+            }
+
+            int finished = 0;
+            setProgressCallback(0, part.renderPhrases.Count);
+            var curveDict = new Dictionary<string, UCurve?>();
+            var newXsDict = new Dictionary<string, List<int>>();
+            var newYsDict = new Dictionary<string, List<int>>();
+            for (int ph_i = 0; ph_i < part.renderPhrases.Count; ++ph_i) {
+                var phrase = part.renderPhrases[ph_i];
+                var results = renderer.LoadRenderedRealCurves(phrase);
+                if (results.Count == 0) {
+                    continue;
+                }
+                if (cancellationToken.IsCancellationRequested) break;
+                foreach (var result in results) {
+                    if (!curveDict.ContainsKey(result.abbr)) {
+                        var curve = part.curves.FirstOrDefault(c => c.abbr == result.abbr);
+                        curveDict[result.abbr] = curve;
+                        newXsDict[result.abbr] = new List<int>();
+                        newYsDict[result.abbr] = new List<int>();
+                    }
+                    var xs = newXsDict[result.abbr];
+                    var ys = newYsDict[result.abbr];
+                    var ticks = result.ticks.Select(t => phrase.position - part.position + (int)t).ToArray();
+                    if (ticks.Length == 0) {
+                        continue;
+                    }
+                    while (xs.Count > 0 && xs[^1] >= ticks[0]) {
+                        xs.RemoveAt(xs.Count - 1);
+                        ys.RemoveAt(ys.Count - 1);
+                    }
+                    xs.Add(ticks[0]);
+                    ys.Add(-1);
+                    xs.AddRange(ticks);
+                    ys.AddRange(result.values.Select(v => (int)(v * 1000.0)));
+                }
+                finished += 1;
+                setProgressCallback(finished, part.renderPhrases.Count);
+            }
+            var commands = curveDict
+                .Select(kv => new MergedSetCurveCommand(
+                    project, part, kv.Key,
+                    kv.Value?.realXs.ToArray() ?? Array.Empty<int>(),
+                    kv.Value?.realYs.ToArray() ?? Array.Empty<int>(),
+                    newXsDict[kv.Key].ToArray(),
+                    newYsDict[kv.Key].ToArray(),
+                    true))
+                .ToList();
+
+            DocManager.Inst.PostOnUIThread(() => {
+                docManager.StartUndoGroup(true);
+                commands.ForEach(docManager.ExecuteCmd);
+                docManager.EndUndoGroup();
+            });
         }
     }
 }

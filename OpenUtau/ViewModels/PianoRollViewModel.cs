@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -43,7 +45,6 @@ namespace OpenUtau.App.ViewModels {
 
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
-        public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
@@ -80,6 +81,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
+        public ReactiveCommand<NoteHitInfo, Unit> ClearPhraseCacheCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -98,6 +100,9 @@ namespace OpenUtau.App.ViewModels {
             });
             NoteCopyCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
                 NotesViewModel.CopyNotes();
+            });
+            ClearPhraseCacheCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
+                NotesViewModel.ClearPhraseCache();
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
@@ -142,24 +147,27 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             });
 
-            legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(plugin => {
+            legacyPluginCommand = ReactiveCommand.CreateFromTask<Classic.Plugin>(async plugin => {
                 if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PianoRollWindow), true, "legacy plugin"));
+                
                 try {
-                    var part = NotesViewModel.Part;
-                    UNote? first;
-                    UNote? last;
-                    if (NotesViewModel.Selection.IsEmpty) {
-                        first = part.notes.First();
-                        last = part.notes.Last();
-                    } else {
-                        first = NotesViewModel.Selection.FirstOrDefault();
-                        last = NotesViewModel.Selection.LastOrDefault();
-                    }
-                    var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
-                    runner.Execute(NotesViewModel.Project, part, first, last, plugin);
+                    await Task.Run(() => {
+                        var part = NotesViewModel.Part;
+                        UNote? first;
+                        UNote? last;
+                        if (NotesViewModel.Selection.IsEmpty) {
+                            first = part.notes.First();
+                            last = part.notes.Last();
+                        } else {
+                            first = NotesViewModel.Selection.FirstOrDefault();
+                            last = NotesViewModel.Selection.LastOrDefault();
+                        }
+                        var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
+                        runner.Execute(NotesViewModel.Project, part, first, last, plugin);
+                    });
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 } finally {
@@ -167,6 +175,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             LoadLegacyPlugins();
+            DocManager.Inst.AddSubscriber(this);
         }
 
         private void LoadLegacyPlugins() {

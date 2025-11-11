@@ -38,6 +38,7 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.RuntimeIdentifier}");
             Log.Information($"Data path = {PathManager.Inst.DataPath}");
             Log.Information($"Cache path = {PathManager.Inst.CachePath}");
+            Log.Information($"System encoding = {Encoding.GetEncoding(0)?.WebName ?? "null"}");
             try {
                 Run(args);
                 Log.Information($"Exiting.");
@@ -54,7 +55,7 @@ namespace OpenUtau.App {
         public static AppBuilder BuildAvaloniaApp() {
             FontManagerOptions fontOptions = new();
             if (OS.IsLinux()) {
-                using Process process = Process.Start(new ProcessStartInfo("/usr/bin/fc-match")
+                using Process process = Process.Start(new ProcessStartInfo("fc-match")
                 {
                     ArgumentList = { "-f", "%{family}" },
                     RedirectStandardOutput = true
@@ -66,6 +67,10 @@ namespace OpenUtau.App {
                     string [] fontFamilies = fontFamily.Split(',');
                     fontOptions.DefaultFamilyName = fontFamilies[0];
                 }
+            } else if (OS.IsMacOS()) {
+                //To avoid text display corruption, specify Hiragino Sans font first.
+                //Due to the specification of AvaloniaUI, this only affects when the language is set to Japanese.
+                fontOptions.DefaultFamilyName = "Hiragino Sans, Segoe UI, San Francisco, Helvetica Neue";
             }
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()

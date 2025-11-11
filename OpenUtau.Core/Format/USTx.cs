@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Format {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 6);
+        public static readonly Version kUstxVersion = new Version(0, 8);
 
         public const string DYN = "dyn";
         public const string PITD = "pitd";
@@ -101,8 +102,11 @@ namespace OpenUtau.Core.Format {
                 File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
                 project.Saved = true;
                 project.AfterSave();
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
+                DocManager.Inst.Recovered = false;
             } catch (Exception ex) {
-                var e = new MessageCustomizableException("Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
+                var e = new MessageCustomizableException($"Failed to save ustx: {filePath}", $"<translate:errors.failed.save>: {filePath}", ex);
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
@@ -113,6 +117,8 @@ namespace OpenUtau.Core.Format {
                 project.BeforeSave();
                 File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
                 project.AfterSave();
+                Preferences.Default.RecoveryPath = filePath;
+                Preferences.Save();
             } catch (Exception ex) {
                 Log.Error(ex, $"Failed to autosave: {filePath}");
             }
@@ -127,7 +133,7 @@ namespace OpenUtau.Core.Format {
             project.AfterLoad();
             project.ValidateFull();
             if (project.ustxVersion > kUstxVersion) {
-                throw new FileFormatException($"Project file is newer than software! Upgrade OpenUtau!");
+                throw new MessageCustomizableException($"Project file is newer than software: {filePath}", $"<translate:errors.failed.opennewerproject>:\n{filePath}", new FileFormatException("Project file is newer than software."));
             }
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
@@ -165,6 +171,15 @@ namespace OpenUtau.Core.Format {
                 project.tempos = new List<UTempo> { new UTempo(0, project.bpm) };
 #pragma warning restore CS0612 // Type or member is obsolete
                 project.ValidateFull();
+            }
+            if (project.ustxVersion < new Version(0, 7)) {
+                var expSelectors = new UProject().expSelectors;
+                if (project.expSelectors.Length < expSelectors.Length) {
+                    for (int i = 0; i < project.expSelectors.Length; i++) {
+                        expSelectors[i] = project.expSelectors[i];
+                    }
+                    project.expSelectors = expSelectors;
+                }
             }
             project.ustxVersion = kUstxVersion;
             return project;

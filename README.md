@@ -28,7 +28,7 @@ It is **strongly recommended** that you read these Github wiki pages before usin
 Tried OpenUtau and not satisfied? Don't just walk away! You can help:
 - Report issues on our [Discord server](https://discord.gg/UfpMnqMmEM) or Github.
 - Suggest features on Discord or Github.
-- Add or update translations for your language on Github.
+- Add or update translations for your language on [Crowdin](https://crowdin.com/project/oxygen-dioxideopenutau).
 
 Know how to code? Got an idea for an improvement? Don't keep it to yourself!
 - Contribute fixes via pull requests.
@@ -75,7 +75,7 @@ See the [Getting-Started Wiki page](https://github.com/stakira/OpenUtau/wiki/Get
   - Unlike UTAU, there is no need to change your system locale to use OpenUtau.
 - Smooth preview/rendering experience.
   - Pre-rendering allows OpenUtau to render vocals before playback, saving time during editing and tuning.
-- Supports ENUNU AI singers. See the ![ENUNU wiki page](https://github.com/stakira/OpenUtau/wiki/Status-of-ENUNU-NNSVS-Support) for more info.
+- Supports ENUNU AI singers. See the [ENUNU wiki page](https://github.com/stakira/OpenUtau/wiki/ENUNU-NNSVS-Support) for more info.
 - Easy-to-use plugin system.
 - Versatile resampling engine interface.
   - Compatible with most UTAU resamplers.

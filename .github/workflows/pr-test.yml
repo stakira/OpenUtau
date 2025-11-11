@@ -12,17 +12,25 @@ jobs:
         os: 
           - runs-on: windows-latest
             arch: win-x64
+          - runs-on: windows-11-arm
+            arch: win-arm64
           - runs-on: macos-13
             arch: osx-x64
+          - runs-on: macos-15
+            arch: osx-arm64
           - runs-on: ubuntu-latest
             arch: linux-x64
+          - runs-on: ubuntu-24.04-arm
+            arch: linux-arm64
 
     steps:
     - uses: actions/checkout@v1
 
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: |
+          6.0.x
+          8.0.x
 
     - name: restore
       run: dotnet restore OpenUtau -r ${{ matrix.os.arch }}

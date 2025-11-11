@@ -19,8 +19,6 @@ namespace OpenUtau.App.Views {
         public enum MessageBoxButtons { Ok, OkCancel, YesNo, YesNoCancel, OkCopy }
         public enum MessageBoxResult { Ok, Cancel, Yes, No }
 
-        private static MessageBox? loadingDialog;
-
         public MessageBox() {
             InitializeComponent();
         }
@@ -48,7 +46,15 @@ namespace OpenUtau.App.Views {
                 if (!string.IsNullOrEmpty(mce.TranslatableMessage)) {
                     var matches = Regex.Matches(mce.TranslatableMessage, "<translate:(.*?)>");
                     matches.ForEach(m => mce.TranslatableMessage = mce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
-                    text = mce.TranslatableMessage;
+                    try {
+                        if (mce.Replaces != null && mce.Replaces.Length > 0) {
+                            text = string.Format(mce.TranslatableMessage, mce.Replaces);
+                        } else {
+                            text = mce.TranslatableMessage;
+                        }
+                    } catch {
+                        text = mce.TranslatableMessage;
+                    }
                     e = mce.SubstanceException;
                 }
 
@@ -72,7 +78,15 @@ namespace OpenUtau.App.Views {
                         if (!string.IsNullOrEmpty(innnerMce.TranslatableMessage)) {
                             var matches = Regex.Matches(innnerMce.TranslatableMessage, "<translate:(.*?)>");
                             matches.ForEach(m => innnerMce.TranslatableMessage = innnerMce.TranslatableMessage.Replace(m.Value, ThemeManager.GetString(m.Groups[1].Value)));
-                            text += innnerMce.TranslatableMessage;
+                            try {
+                                if (innnerMce.Replaces != null && innnerMce.Replaces.Length > 0) {
+                                    text += string.Format(innnerMce.TranslatableMessage, innnerMce.Replaces);
+                                } else {
+                                    text += innnerMce.TranslatableMessage;
+                                }
+                            } catch {
+                                text = text += innnerMce.TranslatableMessage;
+                            }
                         } else {
                             text += ae.InnerExceptions.First().Message;
                         }
@@ -155,24 +169,6 @@ namespace OpenUtau.App.Views {
             return msgbox;
         }
 
-        public static void ShowLoading(Window parent) {
-            loadingDialog = new MessageBox() {
-                Title = "Loading"
-            };
-            loadingDialog.Text.Text = "Please wait...";
-            loadingDialog.ShowDialog(parent);
-        }
-
-        public static void CloseLoading() {
-            if (loadingDialog != null) {
-                loadingDialog.Close();
-            }
-        }
-
-        public static bool LoadingIsActive() {
-            return loadingDialog != null && loadingDialog.IsActive;
-        }
-
         /// <summary>
         /// Displays a processing message box with a specified text and title, and executes a given action asynchronously.
         /// </summary>
@@ -230,7 +226,7 @@ namespace OpenUtau.App.Views {
 
         private void SetTextWithLink(string text, StackPanel textPanel) {
             // @"http(s)?://([\w-]+\.)+[\w-]+(/[A-Z0-9-.,_/?%&=]*)?"
-            var regex = new Regex(@"(\r\n|\n| )http(s)?://[^(\r\n|\n| )]+", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            var regex = new Regex(@"http(s)?://[^(\r\n|\n| )]+", RegexOptions.IgnoreCase | RegexOptions.Singleline);
             var match = regex.Match(text);
             if (match.Success) {
                 textPanel.Children.Add(new TextBlock { Text = text.Substring(0, match.Index) });

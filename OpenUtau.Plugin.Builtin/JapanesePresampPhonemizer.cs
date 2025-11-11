@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Classic;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese presamp Phonemizer", "JA VCV & CVVC", "Maiko", language: "JA")]
@@ -60,40 +61,23 @@ namespace OpenUtau.Plugin.Builtin {
             var result = new List<Phoneme>();
             bool preCFlag = false;
 
-            // If the [PRIORITY] section in the presamp.ini contains a blank newline, don't treat any consonant as priority.
-            // If there is no [PRIORITY] section in the presamp.ini, it will return the default values.
-            if (presamp.Priorities == null) {
-                presamp.Priorities?.Clear();
-            }
-
-            // If the [REPLACE] section in the presamp.ini contains a blank newline, don't treat any consonant as priority.
-            // If there is no [REPLACE] section in the presamp.ini, it will return the default values.
-            if (presamp.Replace == null) {
-                presamp.Replace?.Clear();
-            }
-
             var note = notes[0];
-            var currentLyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
-            if (!string.IsNullOrEmpty(note.phoneticHint)) {
-                currentLyric = note.phoneticHint.Normalize();
-            } else {
-                // replace (exact match)
-                if (presamp.Replace != null) {
-                    foreach (var pair in presamp.Replace) {
-                        if (pair.Key == currentLyric) {
-                            currentLyric = pair.Value;
-                        }
-                    }
-                }
-            }
-            string currentAlias = presamp.ParseAlias(currentLyric)[1]; // exclude useless characters
+            var currentLyric = ParseLyricFromNote(note);
+            var currentAlias = ParseAliasFromLyric(currentLyric); // exclude useless characters
             var vcvpad = presamp.AliasRules.VCVPAD;
             var vcpad = presamp.AliasRules.VCPAD;
             var initial = $"-{vcvpad}{currentLyric}";
             var cfLyric = $"*{vcpad}{currentLyric}";
 
             var vowelUpper = Regex.Match(currentLyric, "[あいうえおんン]").Value ?? currentLyric;
-            var glottalCVtests = new List<string> { $"・{vcpad}{vowelUpper}", $"・{vowelUpper}", $"{vowelUpper}・", $"-{vcvpad}{vowelUpper}・", $"-{vcvpad}{vowelUpper}", initial, currentLyric };
+            var glottalCVtests = new List<string> { $"・{vcpad}{vowelUpper}", $"・{vowelUpper}", $"{vowelUpper}・", $"-{vcvpad}{vowelUpper}・", $"-{vcvpad}{vowelUpper}", initial, currentLyric, vowelUpper };
+
+            /*
+            // Debug
+            var prevtest = prevNeighbour != null ? prevNeighbour.Value.lyric.Normalize() : "";
+            var nexttest = nextNeighbour != null ? nextNeighbour.Value.lyric.Normalize() : "";
+            Log.Debug($"Prev: {prevtest}, Current: {currentLyric}, Next: {nexttest}");
+            */
 
             // Convert 1st phoneme
             if (!string.IsNullOrEmpty(note.phoneticHint)) { // not convert
@@ -115,22 +99,8 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             } else { // middle of phrase
-                var prevLyric = prevNeighbour.Value.lyric.Normalize();
-                if (!string.IsNullOrEmpty(prevNeighbour.Value.phoneticHint)) { // current phoneme is converted even if prev has hint
-                    prevLyric = prevNeighbour.Value.phoneticHint.Normalize();
-                } else {
-                    if (presamp.Replace != null) {
-                        foreach (var pair in presamp.Replace) {
-                            if (pair.Key == prevLyric) {
-                                prevLyric = pair.Value;
-                            }
-                        }
-                    }
-                }
-                string prevAlias = presamp.ParseAlias(prevLyric)[1]; // exclude useless characters
-                if (prevAlias.Contains("・")) {
-                    prevAlias = prevAlias.Replace("・", "");
-                }
+                var prevLyric = ParseLyricFromNote(prevNeighbour.Value);
+                string prevAlias = ParseAliasFromLyric(prevLyric); // exclude useless characters
 
                 string vcGlottalStop = "[aiueonN]" + vcpad + "・$"; // [a ・]
                 if (prevLyric == "・" || Regex.IsMatch(prevLyric, vcGlottalStop)) {
@@ -180,19 +150,8 @@ namespace OpenUtau.Plugin.Builtin {
                         string prevVow = prevPhoneme.Vowel;
 
                         if (currentLyric == "っ" && nextNeighbour != null) { // っ = current is VC
-                            var nextLyric = nextNeighbour.Value.lyric.Normalize();
-                            if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
-                                nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
-                            } else {
-                                if (presamp.Replace != null) {
-                                    foreach (var pair in presamp.Replace) {
-                                        if (pair.Key == nextLyric) {
-                                            nextLyric = pair.Value;
-                                        }
-                                    }
-                                }
-                            }
-                            string nextAlias = presamp.ParseAlias(nextLyric)[1];
+                            var nextLyric = ParseLyricFromNote(nextNeighbour.Value);
+                            var nextAlias = ParseAliasFromLyric(nextLyric);
 
                             var axtu1 = $"{prevVow}{vcvpad}{currentLyric}"; // a っ
                             var axtu2 = $"{prevVow}{vcpad}{currentLyric}"; // a っ
@@ -257,6 +216,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if (color != null) {
                         result[0].expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.CLR, value = (int)color });
                     }
+                    if (presamp.CFlags == "p0") {
+                        result.First(p => p.index == 2).expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.NORM, value = 0 });
+                    }
                 }
             }
 
@@ -267,15 +229,8 @@ namespace OpenUtau.Plugin.Builtin {
                     return new Result { phonemes = result.ToArray() };
                 }
 
-                var nextLyric = nextNeighbour.Value.lyric.Normalize();
-                if (presamp.Replace != null) {
-                    foreach (var pair in presamp.Replace) {
-                        if (pair.Key == nextLyric) {
-                            nextLyric = pair.Value;
-                        }
-                    }
-                }
-                string nextAlias = presamp.ParseAlias(nextLyric)[1]; // exclude useless characters
+                var nextLyric = ParseLyricFromNote(nextNeighbour.Value);
+                var nextAlias = ParseAliasFromLyric(nextLyric); // exclude useless characters
                 string vcPhoneme;
                 int? vcColorIndex;
 
@@ -297,11 +252,18 @@ namespace OpenUtau.Plugin.Builtin {
                             if (vowelUpper == null) {
                                 return new Result { phonemes = result.ToArray() };
                             }
+
                             // next is VCV (VC is not needed)
-                            var tests = new List<string> { $"{vowel}{vcvpad}{vowelUpper}・", $"{vowel}{vcvpad}・{vowelUpper}" };
-                            if (checkOtoUntilHit(tests, (Note)nextNeighbour, out var oto1) && oto1.Alias.Contains(vcvpad)) {
+                            var tests = new List<string>();
+                            tests.Add($"{vowel}{vcvpad}{nextLyric}");
+                            tests.Add($"{vowel}{vcvpad}{vowelUpper}・");
+                            tests.Add($"{vowel}{vcvpad}・{vowelUpper}");
+                            glottalCVtests = new List<string> { $"・{vcpad}{vowelUpper}", $"・{vowelUpper}", $"{vowelUpper}・", $"-{vcvpad}{vowelUpper}・", $"-{vcvpad}{vowelUpper}", initial, nextLyric, vowelUpper };
+                            tests.AddRange(glottalCVtests);
+                            if (checkOtoUntilHit(tests, nextNeighbour.Value, out var oto1) && oto1.Alias.Contains($"{vowel}{vcvpad}")) {
                                 return new Result { phonemes = result.ToArray() };
                             }
+
                             // next is CV (VC is needed)
                             tests = new List<string> { $"{vowel}{vcpad}・" };
                             if (checkOtoUntilHit(tests, note, 1, out oto1, out var color)) {
@@ -433,6 +395,31 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return false;
+        }
+
+        private string ParseLyricFromNote(Note note) {
+            var lyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                lyric = note.phoneticHint.Normalize();
+            } else {
+                // replace (exact match)
+                if (presamp.Replace != null) {
+                    foreach (var pair in presamp.Replace) {
+                        if (pair.Key == lyric) {
+                            lyric = pair.Value;
+                        }
+                    }
+                }
+            }
+            return lyric;
+        }
+
+        private string ParseAliasFromLyric(string lyric) {
+            string alias = presamp.ParseAlias(lyric)[1]; // 0:preVowel, 1:phoneme, 2:suffix
+            if (alias != "・" && alias.Contains("・")) {
+                alias = alias.Replace("・", "");
+            }
+            return alias;
         }
     }
 }

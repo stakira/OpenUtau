@@ -12,6 +12,8 @@ namespace OpenUtau.Core.Render {
     public class RenderNote {
         public readonly string lyric;
         public readonly int tone;
+        public readonly int tuning;
+        public readonly float adjustedTone;
 
         public readonly int position;
         public readonly int duration;
@@ -24,6 +26,8 @@ namespace OpenUtau.Core.Render {
         public RenderNote(UProject project, UPart part, UNote note, int phrasePosition) {
             lyric = note.lyric;
             tone = note.tone;
+            tuning = note.tuning;
+            adjustedTone = note.AdjustedTone;
 
             position = part.position + note.position - phrasePosition;
             duration = note.duration;
@@ -190,6 +194,8 @@ namespace OpenUtau.Core.Render {
         internal readonly IRenderer renderer;
         public readonly string wavtool;
 
+        private List<string> cacheFiles = new List<string>();
+
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var uNotes = new List<UNote> { phonemes.First().Parent };
             var endNote = phonemes.Last().Parent;
@@ -236,7 +242,7 @@ namespace OpenUtau.Core.Render {
             // Create flat pitches
             foreach (var note in uNotes) {
                 while (pitchStart + index * pitchInterval < note.End && index < pitches.Length) {
-                    pitches[index] = note.tone * 100;
+                    pitches[index] = note.AdjustedTone * 100;
                     index++;
                 }
             }
@@ -267,13 +273,13 @@ namespace OpenUtau.Core.Render {
                         double nodePosMs = timeAxis.TickPosToMsPos(part.position + note.position);
                         return new PitchPoint(
                                timeAxis.MsPosToTickPos(nodePosMs + point.X) - part.position,
-                               point.Y * 10 + note.tone * 100,
+                               point.Y * 10 + note.AdjustedTone * 100,
                                point.shape);
                     })
                     .ToList();
                 if (pitchPoints.Count == 0) {
-                    pitchPoints.Add(new PitchPoint(note.position, note.tone * 100));
-                    pitchPoints.Add(new PitchPoint(note.End, note.tone * 100));
+                    pitchPoints.Add(new PitchPoint(note.position, note.AdjustedTone * 100));
+                    pitchPoints.Add(new PitchPoint(note.End, note.AdjustedTone * 100));
                 }
                 if (note == uNotes.First() && pitchPoints[0].X > pitchStart) {
                     pitchPoints.Insert(0, new PitchPoint(pitchStart, pitchPoints[0].Y));
@@ -290,8 +296,8 @@ namespace OpenUtau.Core.Render {
                     while (x < point.X && index < pitches.Length) {
                         float pitch = (float)MusicMath.InterpolateShape(lastPoint.X, point.X, lastPoint.Y, point.Y, x, lastPoint.shape);
                         float basePitch = note.Prev != null && x < note.Prev.End
-                            ? note.Prev.tone * 100
-                            : note.tone * 100;
+                            ? note.Prev.AdjustedTone * 100
+                            : note.AdjustedTone * 100;
                         pitches[index] += pitch - basePitch;
                         index++;
                         x += pitchInterval;
@@ -507,6 +513,35 @@ namespace OpenUtau.Core.Render {
                 phrasePhonemes.Clear();
             }
             return phrases;
+        }
+
+        public void AddCacheFile(string file) {
+            if (string.IsNullOrWhiteSpace(file)) return;
+            var filename = Path.GetFileNameWithoutExtension(file);
+            if (!cacheFiles.Contains(filename)) {
+                cacheFiles.Add(filename);
+            }
+        }
+
+        public void DeleteCacheFiles() {
+            foreach (var filename in cacheFiles) {
+                var files = Directory.EnumerateFiles(PathManager.Inst.CachePath, $"{filename}*");
+                foreach (var file in files) {
+                    try {
+                        File.Delete(file);
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to delete file {file}");
+                    }
+                }
+            }
+            cacheFiles.Clear();
+
+            if (singer is ClassicSinger cSinger && cSinger.Frqs != null) {
+                foreach (var oto in phones.Select(p => p.oto).Distinct()) {
+                    oto.Frq = null;
+                    cSinger.Frqs.Remove(oto.File);
+                }
+            }
         }
     }
 }

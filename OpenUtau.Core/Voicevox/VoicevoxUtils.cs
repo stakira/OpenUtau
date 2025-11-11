@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Render;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -14,6 +13,12 @@ using static OpenUtau.Api.Phonemizer;
  */
 
 namespace OpenUtau.Core.Voicevox {
+
+    public class VoicevoxException : Exception {
+        public VoicevoxException() { }
+        public VoicevoxException(string message) : base(message) { }
+        public VoicevoxException(string message, Exception innerException) : base(message, innerException) { }
+    }
 
     public struct VoicevoxNote {
         public string lyric;
@@ -26,15 +31,31 @@ namespace OpenUtau.Core.Voicevox {
         public string phoneme;
         public int frame_length;
 
+        public Phonemes Clone() {
+            return new Phonemes {
+                phoneme = this.phoneme,
+                frame_length = this.frame_length
+            };
+        }
     }
-    public class VoicevoxNotes {
+    public class VoicevoxSynthParams {
         public List<double> f0 = new List<double>();
         public List<double> volume = new List<double>();
         public List<Phonemes> phonemes = new List<Phonemes>();
-        public int volumeScale;
-        public int outputSamplingRate;
-        public bool outputStereo;
+        public int volumeScale = 1;
+        public int outputSamplingRate = 24000;
+        public bool outputStereo = false;
 
+        public VoicevoxSynthParams Clone() {
+            return new VoicevoxSynthParams() {
+                f0 = new List<double>(this.f0),
+                volume = new List<double>(this.volume),
+                phonemes = this.phonemes.Select(p => p.Clone()).ToList(),
+                volumeScale = this.volumeScale,
+                outputSamplingRate = this.outputSamplingRate,
+                outputStereo = this.outputStereo
+            };
+        }
     }
 
     public class VoicevoxQueryNotes {
@@ -48,6 +69,12 @@ namespace OpenUtau.Core.Voicevox {
     public class VoicevoxQueryMain {
         public List<VoicevoxQueryNotes> notes = new List<VoicevoxQueryNotes>();
     }
+
+    public class VoicevoxQueryParams {
+        public VoicevoxQueryMain score = new VoicevoxQueryMain();
+        public VoicevoxSynthParams frame_audio_query = new VoicevoxSynthParams();
+    }
+
     public class Phoneme_list {
         public string[] vowels = "a i u e o A I U E O N pau cl".Split();
         public string[] consonants = "b by ch d dy f g gw gy h hy j k kw ky m my n ny p py r ry s sh t ts ty v w y z".Split();
@@ -55,13 +82,13 @@ namespace OpenUtau.Core.Voicevox {
         public Dictionary<string, string> paus = new Dictionary<string, string>();
         public Phoneme_list() {
             var kanaGroups = new List<string[]> {
-                "あ ば びゃ ちゃ だ でゃ ふぁ が ぐゎ ぎゃ は ひゃ じゃ か くゎ きゃ ま みゃ な にゃ ぱ ぴゃ ら りゃ さ しゃ た つぁ てゃ ゔぁ わ や ざ".Split(),
-                "い び  ち ぢ でぃ ふぃ ぎ   ひ  じ き   み  に  ぴ  り  すぃ し てぃ つぃ  ゔぃ うぃ  ずぃ".Split(),
-                "う ぶ びゅ ちゅ どぅ でゅ ふ ぐ  ぎゅ  ひゅ じゅ く  きゅ む みゅ ぬ にゅ ぷ ぴゅ る りゅ す しゅ つ つ てゅ ゔ  ゆ ず".Split(),
-                "え べ びぇ ちぇ で でぇ ふぇ げ  ぎぇ へ ひぇ じぇ け  きぇ め みぇ ね にぇ ぺ ぴぇ れ りぇ せ しぇ て つぇ  ゔぇ うぇ いぇ ぜ".Split(),
-                "お ぼ びょ ちょ ど でょ ふぉ ご  ぎょ ほ ひょ じょ こ  きょ も みょ の にょ ぽ ぴょ ろ りょ そ しょ と つぉ てょ ゔぉ を よ ぞ".Split(),
-                "ん ン".Split(),
-                "っ ッ".Split()
+                "あ ぁ ば びゃ ゔゃ ちゃ だ   でゃ ふぁ が ぐゎ ぐぁ ぎゃ は ひゃ じゃ ぢゃ か くゎ くぁ きゃ ま みゃ な にゃ ぱ ぴゃ ら りゃ さ   しゃ た   つぁ てゃ ゔぁ わ   ゎ や  ゃ ざ".Split(),
+                "い ぃ び びぃ      ち   でぃ      ふぃ ぎ ぐぃ      ぎぃ ひ      じ   ぢ   き くぃ      きぃ み みぃ に      ぴ ぴぃ り りぃ すぃ し   てぃ つぃ      ゔぃ うぃ           ずぃ".Split(),
+                "う ぅ ぶ びゅ ゔゅ ちゅ どぅ でゅ ふ   ぐ ぐぅ      ぎゅ    ひゅ じゅ ぢゅ く くぅ      きゅ む みゅ ぬ にゅ ぷ ぴゅ る りゅ す   しゅ とぅ つ   てゅ ゔ   うぅ    ゆ  ゅ ず".Split(),
+                "え ぇ べ びぇ      ちぇ で   でぇ ふぇ げ ぐぇ      ぎぇ へ ひぇ じぇ ぢぇ け くぇ      きぇ め みぇ ね にぇ ぺ ぴぇ れ りぇ せ   しぇ て   つぇ てぇ ゔぇ うぇ    いぇ   ぜ".Split(),
+                "お ぉ ぼ びょ ゔょ ちょ ど   でょ ふぉ ご ぐぉ      ぎょ ほ ひょ じょ ぢょ こ くぉ      きょ も みょ の にょ ぽ ぴょ ろ りょ そ   しょ と   つぉ てょ ゔぉ うぉ を よ  ょ ぞ".Split(),
+                "ん".Split(),
+                "っ".Split()
             };
 
             foreach (var group in kanaGroups) {
@@ -132,77 +159,125 @@ namespace OpenUtau.Core.Voicevox {
 
 
     public static class VoicevoxUtils {
+        // expression addr
         public const string VOLC = "volc";
+        public const string REPM = "repm";
+        public const string SMOC = "smoc";
+        public const string DUCM = "ducm";
+        // phoneme replace mode
+        public const string REPLACE = "replace";
+        public const string OVERWRITE = "overwrite";
+        // duration correction mode
+        public const string AUTO = "auto";
+        public const string ON = "on";
+        public const string OFF = "off";
+        // VOICEVOX constants
         public const int headS = 1;
         public const int tailS = 1;
         public const double fps = 93.75;
         public const string defaultID = "6000";
+        // Phonemes and dictionaries
         public static Dictionary_list dic = new Dictionary_list();
         public static Phoneme_list phoneme_List = new Phoneme_list();
 
-        public static VoicevoxNotes VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
+        public static VoicevoxSynthParams VoicevoxVoiceBase(VoicevoxQueryMain qNotes, string id) {
             var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(qNotes) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
-            VoicevoxNotes vvNotes;
+            VoicevoxSynthParams vvNotes;
             var jObj = JObject.Parse(response.Item1);
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
             } else {
-                vvNotes = jObj.ToObject<VoicevoxNotes>();
+                vvNotes = jObj.ToObject<VoicevoxSynthParams>();
                 return vvNotes;
             }
-            return new VoicevoxNotes();
+            return new VoicevoxSynthParams();
         }
 
         public static void Loaddic(VoicevoxSinger singer) {
             dic.Loaddic(singer.Location);
         }
 
-        public static VoicevoxQueryMain NoteGroupsToVoicevox(VoicevoxNote[] notes, TimeAxis timeAxis) {
-            VoicevoxQueryMain qnotes = new VoicevoxQueryMain();
+        public static VoicevoxQueryMain NoteGroupsToVQuery(VoicevoxNote[] vNotes, TimeAxis timeAxis) {
+            VoicevoxQueryMain vqMain = new VoicevoxQueryMain();
             int index = 0;
-            double durationMs = 0;
             try {
-                qnotes.notes.Add(new VoicevoxQueryNotes() {
+                vqMain.notes.Add(new VoicevoxQueryNotes() {
                     lyric = "",
                     frame_length = (int)Math.Round((headS * fps), MidpointRounding.AwayFromZero),
                     key = null,
                     vqnindex = -1
                 });
-                durationMs = notes[index].positionMs + notes[index].durationMs;
-                while (index < notes.Length) {
-                    string lyric = dic.Notetodic(notes, index);
-                    int length = (int)Math.Round((notes[index].durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
+                int short_length_count = 0;
+                while (index < vNotes.Length) {
+                    string lyric = dic.Notetodic(vNotes, index);
                     //Avoid synthesis without at least two frames.
+                    double durationMs = vNotes[index].durationMs;
+                    int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     if (length < 2) {
                         length = 2;
                     }
+                    if (durationMs > (length / VoicevoxUtils.fps) * 1000f) {
+                        if (short_length_count >= 2) {
+                            length += 1;
+                            short_length_count = 0;
+                        } else {
+                            short_length_count += 1;
+                        }
+                    }
                     int? tone = null;
                     if (!string.IsNullOrEmpty(lyric)) {
-                        tone = notes[index].tone;
+                        tone = vNotes[index].tone;
                     } else {
                         lyric = "";
                     }
-                    qnotes.notes.Add(new VoicevoxQueryNotes {
+                    vqMain.notes.Add(new VoicevoxQueryNotes {
                         lyric = lyric,
                         frame_length = length,
                         key = tone,
                         vqnindex = index
                     });
-                    durationMs += notes[index].durationMs;
                     index++;
                 }
-                qnotes.notes.Add(new VoicevoxQueryNotes {
+                vqMain.notes.Add(new VoicevoxQueryNotes {
                     lyric = "",
-                    frame_length = (int)(tailS * fps),
+                    frame_length = (int)Math.Round((tailS * fps), MidpointRounding.AwayFromZero),
                     key = null,
-                    vqnindex = index
+                    vqnindex = -1
                 });
 
             } catch (Exception e) {
-                Log.Error($"VoicevoxQueryNotes setup error.");
+                Log.Error(e, $"VoicevoxQueryNotes setup error: {e.Message}");
             }
-            return qnotes;
+            return vqMain;
+        }
+
+        public static List<double> QueryToF0(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
+            VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams }; 
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_f0", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var response = VoicevoxClient.Inst.SendRequest(queryurl);
+            List<double> f0s = new List<double>();
+            var jObj = JObject.Parse(response.Item1);
+            if (jObj.ContainsKey("detail")) {
+                Log.Error($"Response was incorrect. : {jObj}");
+            } else {
+                f0s = jObj["json"].ToObject<List<double>>();
+            }
+            return f0s;
+        }
+
+        public static List<double> QueryToVolume(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
+            VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams };
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_volume", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var response = VoicevoxClient.Inst.SendRequest(queryurl);
+            List<double> volumes = new List<double>();
+            var jObj = JObject.Parse(response.Item1);
+            if (jObj.ContainsKey("detail")) {
+                Log.Error($"Response was incorrect. : {jObj}");
+            } else {
+                volumes = jObj["json"].ToObject<List<double>>();
+            }
+            return volumes;
         }
 
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double offset, Func<double, double> convert) {
@@ -225,14 +300,27 @@ namespace OpenUtau.Core.Voicevox {
                 //Fill head and tail
                 Array.Fill(result, convert(curve[0]), 0, headFrames);
                 Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
-            } catch (Exception e) {
-                Log.Error($"SampleCurve:{e}");
+            } catch (IndexOutOfRangeException e) {
+                Log.Error($"SampleCurve (IndexOutOfRangeException): {e}");
+            } catch (ArgumentException e) {
+                Log.Error($"SampleCurve (ArgumentException): {e}");
             }
             return result;
         }
 
-        public static bool IsPau(string s) {
+        public static bool IsDicKana(string s) {
+            return phoneme_List.kanas.ContainsKey(s);
+        }
+
+        public static bool IsDicPau(string s) {
             return phoneme_List.paus.ContainsKey(s);
+        }
+
+        public static bool IsVowel(string s) {
+            return phoneme_List.vowels.Contains(s);
+        }
+        public static bool IsConsonant(string s) {
+            return phoneme_List.consonants.Contains(s);
         }
 
         public static bool TryGetPau(string s, out string str) {
@@ -251,6 +339,10 @@ namespace OpenUtau.Core.Voicevox {
                 }
             }
             return defaultID;
+        }
+
+        public static bool IsSyllableVowelExtensionNote(string lyric) {
+            return lyric.StartsWith("+~") || lyric.StartsWith("+*") || lyric.StartsWith("+") || lyric.StartsWith("-");
         }
     }
 }
