@@ -331,6 +331,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.notes.commonnotecopy">Commonnote Copy</system:String>
+  <system:String x:Key="pianoroll.menu.notes.commonnotepaste">Commonnote Paste</system:String>
   <system:String x:Key="pianoroll.menu.notes.fixoverlap">Fix overlapping notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>

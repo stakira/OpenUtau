@@ -15,9 +15,8 @@
   <Window.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
-  <Border Grid.Row="1">
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}"
-          PointerMoved="BackgroundPointerMoved">
+  <Border>
+    <Grid Margin="{Binding $parent[1].WindowDecorationMargin}" PointerMoved="BackgroundPointerMoved">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
@@ -712,7 +711,7 @@
           <TextBlock Name="ValueTipText" Margin="2"/>
         </Border>
       </Canvas>
-      <ProgressBar Grid.Row="6" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
+      <ProgressBar Grid.Row="6" Grid.ColumnSpan="4" Value="{Binding Progress}"/>
     </Grid>
   </Border>
 </Window>
