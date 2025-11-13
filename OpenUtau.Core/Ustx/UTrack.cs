@@ -129,6 +129,21 @@ namespace OpenUtau.Core.Ustx {
             return false;
         }
 
+        public List<UExpressionDescriptor> GetSupportedExps(UProject project) {
+            var list = new List<UExpressionDescriptor>();
+            if (RendererSettings.Renderer == null) {
+                return list;
+            }
+            var exps = project.expressions.Keys.ToList();
+            exps.Union(TrackExpressions.Select(exp => exp.abbr));
+            foreach (var abbr in exps) {
+                if (TryGetExpDescriptor(project, abbr, out var descriptor) && RendererSettings.Renderer.SupportsExpression(descriptor)) {
+                    list.Add(descriptor);
+                }
+            }
+            return list;
+        }
+
         public void OnSingerRefreshed() {
             if (Singer != null && Singer.Loaded && !SingerManager.Inst.Singers.ContainsKey(Singer.Id)) {
                 Singer = USinger.CreateMissing(Singer.Name);
