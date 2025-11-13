@@ -416,34 +416,34 @@ namespace OpenUtau.Core.Editing {
             docManager.EndUndoGroup();
         }
     }
-  
+
     public class RandomizeTuning : BatchEdit {
-      public virtual string Name => name;
-      private string name;
-      private int max;
+        public virtual string Name => name;
+        private string name;
+        private int max;
 
-      public RandomizeTuning(int max) {
-          name = "pianoroll.menu.notes.randomizetuning";
-          this.max = max;
-      }
+        public RandomizeTuning(int max) {
+            name = "pianoroll.menu.notes.randomizetuning";
+            this.max = max;
+        }
 
-      public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
-          var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-          if (notes.Count == 0) {
-              return;
-          }
-          docManager.StartUndoGroup(true);
-          Random random = new Random();
-          foreach (var note in notes) {
-              if (random.Next(2) == 0) { // +
-                  docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, random.Next(max / 4, max + 1)));
-              } else { // -
-                  var delta = random.Next(max / 4, max + 1);
-                  docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, -delta));
-              }
-          }
-          docManager.EndUndoGroup();
-      }
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            Random random = new Random();
+            foreach (var note in notes) {
+                if (random.Next(2) == 0) { // +
+                    docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, random.Next(max / 4, max + 1)));
+                } else { // -
+                    var delta = random.Next(max / 4, max + 1);
+                    docManager.ExecuteCmd(new ChangeNoteTuningCommand(part, note, -delta));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
     }
 
     public class LoadRenderedPitch : BatchEdit {
