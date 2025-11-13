@@ -185,7 +185,6 @@ namespace OpenUtau.Classic {
         }
 
         private static void ParseNote(UProject project, UNote note, int lastNotePos, int lastNoteEnd, List<IniLine> iniLines, out float? noteTempo) {
-            var track = project.tracks[0];
             var ustNote = new UstNote {
                 lyric = note.lyric,
                 position = note.position,
