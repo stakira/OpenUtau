@@ -163,7 +163,7 @@ namespace OpenUtau.App.ViewModels {
             AddItemCommand = ReactiveCommand.Create<ExpressionBuilder>(exp => {
                 var newExpression = new ExpressionBuilder(exp.Build());
                 expressionsSourceTrack.Add(newExpression);
-                Expression = newExpression;
+                // Expression = newExpression; I don't know why stacking
             });
         }
 
