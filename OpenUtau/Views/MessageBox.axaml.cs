@@ -19,8 +19,6 @@ namespace OpenUtau.App.Views {
         public enum MessageBoxButtons { Ok, OkCancel, YesNo, YesNoCancel, OkCopy }
         public enum MessageBoxResult { Ok, Cancel, Yes, No }
 
-        private static MessageBox? loadingDialog;
-
         public MessageBox() {
             InitializeComponent();
         }
@@ -169,24 +167,6 @@ namespace OpenUtau.App.Views {
             msgbox.Text.Text = text;
             msgbox.ShowDialog(parent);
             return msgbox;
-        }
-
-        public static void ShowLoading(Window parent) {
-            loadingDialog = new MessageBox() {
-                Title = "Loading"
-            };
-            loadingDialog.Text.Text = "Please wait...";
-            loadingDialog.ShowDialog(parent);
-        }
-
-        public static void CloseLoading() {
-            if (loadingDialog != null) {
-                loadingDialog.Close();
-            }
-        }
-
-        public static bool LoadingIsActive() {
-            return loadingDialog != null && loadingDialog.IsActive;
         }
 
         /// <summary>

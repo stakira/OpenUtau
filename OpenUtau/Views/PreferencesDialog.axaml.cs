@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -8,12 +9,33 @@ using OpenUtau.Core;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
+        private PreferencesViewModel? viewModel => this.DataContext as PreferencesViewModel;   
+
         public PreferencesDialog() {
             InitializeComponent();
         }
 
+        void OpenSingersFolder(object sender, RoutedEventArgs e) {
+            try {
+                Directory.CreateDirectory(viewModel!.SingerPath);
+                OS.OpenFolder(viewModel!.SingerPath);
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            }
+        }
+
+        void OpenAddlSingersFolder(object sender, RoutedEventArgs e) {
+            try {
+                if (Directory.Exists(viewModel!.AdditionalSingersPath)) {
+                    OS.OpenFolder(viewModel!.AdditionalSingersPath);
+                }
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            }
+        }
+
         void ResetAddlSingersPath(object sender, RoutedEventArgs e) {
-            ((PreferencesViewModel)DataContext!).SetAddlSingersPath(string.Empty);
+            viewModel!.SetAddlSingersPath(string.Empty);
         }
 
         async void SelectAddlSingersPath(object sender, RoutedEventArgs e) {
@@ -22,21 +44,21 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (Directory.Exists(path)) {
-                ((PreferencesViewModel)DataContext!).SetAddlSingersPath(path);
+                viewModel!.SetAddlSingersPath(path);
             }
         }
 
         async void ReloadSingers(object sender, RoutedEventArgs e) {
-            MessageBox.ShowLoading(this);
+            LoadingWindow.BeginLoading(this);
             await Task.Run(() => {
                 SingerManager.Inst.SearchAllSingers();
             });
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
-            MessageBox.CloseLoading();
+            LoadingWindow.EndLoading();
         }
 
         void ResetVLabelerPath(object sender, RoutedEventArgs e) {
-            ((PreferencesViewModel)DataContext!).SetVLabelerPath(string.Empty);
+            viewModel!.SetVLabelerPath(string.Empty);
         }
 
         async void SelectVLabelerPath(object sender, RoutedEventArgs e) {
@@ -46,12 +68,12 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (OS.AppExists(path)) {
-                ((PreferencesViewModel)DataContext!).SetVLabelerPath(path);
+                viewModel!.SetVLabelerPath(path);
             }
         }
 
         void ResetSetParamPath(object sender, RoutedEventArgs e) {
-            ((PreferencesViewModel)DataContext!).SetSetParamPath(string.Empty);
+            viewModel!.SetSetParamPath(string.Empty);
         }
 
         async void SelectSetParamPath(object sender, RoutedEventArgs e) {
@@ -60,7 +82,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (File.Exists(path)) {
-                ((PreferencesViewModel)DataContext!).SetSetParamPath(path);
+                viewModel!.SetSetParamPath(path);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "failed to load prefs-default.json");
+            }
             Save();
         }
 
@@ -176,6 +191,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
+            public bool ShowExpressions = true;
             public bool ShowNoteParams = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
@@ -196,7 +212,38 @@ namespace OpenUtau.Core.Util {
             public bool LockUnselectedNotesVibrato = true;
             public bool LockUnselectedNotesExpressions = true;
             public bool VoicebankPublishUseIgnore = true;
-            public string VoicebankPublishIgnores = "#Adobe Audition\n*.pkf\n\n#UTAU Engines\n*.ctspec\n*.d4c\n*.dio\n*.frc\n*.frt\n#*.frq\n*.harvest\n*.lessaudio\n*.llsm\n*.mrq\n*.pitchtier\n*.pkf\n*.platinum\n*.pmk\n*.star\n*.uspec\n*.vs4ufrq\n\n#UTAU related tools\n$read\n*.setParam-Scache\n*.lbp\n*.lbp.caches/*\n\n#OpenUtau\nerrors.txt\n*.sc.npz";
+            public string VoicebankPublishIgnores = @"#Adobe Audition
+*.pkf
+
+#UTAU Engines
+*.ctspec
+*.d4c
+*.dio
+*.frc
+*.frt
+#*.frq
+*.harvest
+*.lessaudio
+*.llsm
+*.mrq
+*.pitchtier
+*.pkf
+*.platinum
+*.pmk
+*.sc.npz
+*.star
+*.uspec
+*.vs4ufrq
+
+#UTAU related tools
+\$read
+*.setParam-Scache
+*.lbp
+*.lbp.caches/*
+
+#OpenUtau
+errors.txt
+";
             public string RecoveryPath = string.Empty;
         }
     }
