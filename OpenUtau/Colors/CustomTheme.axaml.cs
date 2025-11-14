@@ -3,10 +3,10 @@ using Avalonia.Media;
 
 namespace OpenUtau.Colors;
 public class CustomTheme {
-    public static bool IsDarkMode;
+    public static bool IsDarkMode = false;
     public static void ApplyTheme() {
         if (Application.Current != null) {
-            IsDarkMode = false;
+            Application.Current.Resources["IsDarkMode"] = IsDarkMode; 
             Application.Current.Resources["BackgroundColor"] = Color.Parse("#259cc6");
             Application.Current.Resources["BackgroundColorPointerOver"] = Color.Parse("#259cc6");
             Application.Current.Resources["BackgroundColorPressed"] = Color.Parse("#259cc6");
