@@ -45,6 +45,11 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             DataContext = ViewModel = model;
             ValueTip.IsVisible = false;
+
+            if (Preferences.Default.PianorollWindowSize.TryGetPosition(out int x, out int y)) {
+                Position = new PixelPoint(x, y);
+            }
+            WindowState = (WindowState)Preferences.Default.PianorollWindowSize.State;
         }
 
         public void InitializePianoRollWindowAsync() {
@@ -186,6 +191,7 @@ namespace OpenUtau.App.Views {
         }
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
+            Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
             Hide();
             e.Cancel = true;
         }
@@ -245,6 +251,12 @@ namespace OpenUtau.App.Views {
             this.WindowState = this.WindowState == WindowState.FullScreen
                 ? WindowState.Normal
                 : WindowState.FullScreen;
+        }
+        void OnMenuResetScreen(object sender, RoutedEventArgs args) {
+            this.WindowState = WindowState.Normal;
+            Position = new PixelPoint(0, 0);
+            Width = 1000;
+            Height = 650;
         }
         void OnMenuDegreeStyle(object sender, RoutedEventArgs args) {
             if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
@@ -1272,6 +1284,9 @@ namespace OpenUtau.App.Views {
                         Hide();
                         return true;
                     }
+                    break;
+                case Key.F10:
+                    OnMenuResetScreen(this, new RoutedEventArgs());
                     break;
                 case Key.F11:
                     OnMenuFullScreen(this, new RoutedEventArgs());

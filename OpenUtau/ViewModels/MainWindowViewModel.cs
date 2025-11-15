@@ -47,7 +47,9 @@ namespace OpenUtau.App.ViewModels {
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{(DocManager.Inst.ChangesSaved ? "" : "*")}{AppVersion} [{DocManager.Inst.Project.FilePath}]";
-        
+        public double Width => Preferences.Default.MainWindowSize.Width;
+        public double Height => Preferences.Default.MainWindowSize.Height;
+
         /// <summary>
         ///0: welcome page, 1: tracks page
         /// </summary>
