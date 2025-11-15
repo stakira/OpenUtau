@@ -213,6 +213,7 @@
           <ComboBox SelectedIndex="{Binding Theme}">
             <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.light}"/>
             <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
+            <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.custom}"/>
           </ComboBox>
           <TextBlock Text="{DynamicResource prefs.appearance.degree}" Margin="0,10,0,0"/>
           <ComboBox SelectedIndex="{Binding DegreeStyle}">
