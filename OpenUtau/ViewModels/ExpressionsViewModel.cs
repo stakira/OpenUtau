@@ -15,7 +15,7 @@ namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder : ReactiveObject {
         [Reactive] public string Name { get; set; }
         [Reactive] public string Abbr { get; set; }
-        [Reactive] public UExpressionType ExpressionType { get; set; }
+        [Reactive] public int ExpressionType { get; set; }
         [Reactive] public float Min { get; set; }
         [Reactive] public float Max { get; set; }
         [Reactive] public float DefaultValue { get; set; }
@@ -26,21 +26,21 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool SkipOutputIfDefault { get; set; } = false;
 
         public bool IsCustom => isCustom.Value;
+        public bool IsRemovable => isRemovable.Value;
         public bool IsNumerical => isNumerical.Value;
         public bool IsCurve => isCurve.Value;
         public bool IsOptions => isOptions.Value;
-        public int SelectedType => selectedType.Value;
 
         private ObservableAsPropertyHelper<bool> isCustom;
+        private ObservableAsPropertyHelper<bool> isRemovable;
         private ObservableAsPropertyHelper<bool> isNumerical;
         private ObservableAsPropertyHelper<bool> isCurve;
         private ObservableAsPropertyHelper<bool> isOptions;
-        private ObservableAsPropertyHelper<int> selectedType;
 
         public ExpressionBuilder(UExpressionDescriptor descriptor)
             : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.isFlag, descriptor.flag,
                   descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
-            ExpressionType = descriptor.type;
+            ExpressionType = (int)descriptor.type;
             DefaultValue = descriptor.defaultValue;
             CustomeDefaultValue = descriptor.CustomDefaultValue;
             SkipOutputIfDefault = descriptor.skipOutputIfDefault;
@@ -60,20 +60,20 @@ namespace OpenUtau.App.ViewModels {
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr) || ExpressionsViewModel.isTrackOverride)
+                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
+            this.WhenAnyValue(x => x.Abbr)
+                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr) || ExpressionsViewModel.isTrackOverride)
+                .ToProperty(this, x => x.IsRemovable, out isRemovable);
             this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => type == UExpressionType.Numerical)
+                .Select(type => type == 0) // Numerical
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
             this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => type == UExpressionType.Curve)
-                .ToProperty(this, x => x.IsCurve, out isCurve);
-            this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => type == UExpressionType.Options)
+                .Select(type => type == 1) // Options
                 .ToProperty(this, x => x.IsOptions, out isOptions);
             this.WhenAnyValue(x => x.ExpressionType)
-                .Select(type => (int)type)
-                .ToProperty(this, x => x.SelectedType, out selectedType);
+                .Select(type => type == 2) // Curve
+                .ToProperty(this, x => x.IsCurve, out isCurve);
         }
 
         public string[]? Validate() {
@@ -83,7 +83,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrWhiteSpace(Abbr)) {
                 return new string[] { "Abbreviation must be set.", "<translate:errors.expression.abbrset>" };
             }
-            if (ExpressionType == UExpressionType.Numerical) {
+            if (ExpressionType == 0) { // Numerical
                 if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
                     return new string[] { "Abbreviation must be between 1 and 4 characters long.", $"<translate:errors.expression.abbrlong>: {Name}" };
                 }
@@ -101,7 +101,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public UExpressionDescriptor Build() {
-            switch (ExpressionType) {
+            switch ((UExpressionType)ExpressionType) {
                 case UExpressionType.Numerical:
                     return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag, CustomeDefaultValue, SkipOutputIfDefault);
                 case UExpressionType.Options:
@@ -163,7 +163,7 @@ namespace OpenUtau.App.ViewModels {
             AddItemCommand = ReactiveCommand.Create<ExpressionBuilder>(exp => {
                 var newExpression = new ExpressionBuilder(exp.Build());
                 expressionsSourceTrack.Add(newExpression);
-                // Expression = newExpression; I don't know why stacking
+                Expression = newExpression;
             });
         }
 
@@ -268,7 +268,7 @@ namespace OpenUtau.App.ViewModels {
             if (SelectExpressions != null) {
                 var selectedItems = SelectExpressions.ToList();
                 foreach (var expression in selectedItems) {
-                    if (expression.IsCustom) {
+                    if (expression.IsRemovable) {
                         if (IsTrackOverride) {
                             expressionsSourceTrack.Remove(expression);
                         } else {

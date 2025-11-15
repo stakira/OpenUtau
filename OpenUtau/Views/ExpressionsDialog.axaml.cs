@@ -19,14 +19,6 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        private void OnExpressionTypeChanged(object sender, SelectionChangedEventArgs e) {
-            var comboBox = (ComboBox)sender;
-            var vm = DataContext as ExpressionsViewModel;
-            if (vm?.Expression != null) {
-                vm.Expression!.ExpressionType = (UExpressionType)comboBox.SelectedIndex;
-            }
-        }
-
         private void AddButtonClicked(object sender, RoutedEventArgs _) {
             var button = (Button)sender;
             var vm = DataContext as ExpressionsViewModel;

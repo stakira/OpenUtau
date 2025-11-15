@@ -58,8 +58,7 @@
         <TextBlock Text="{DynamicResource exps.type}" Classes="label"/>
         <ComboBox Margin="0,0,0,4" HorizontalAlignment="Stretch"
                   IsEnabled="{Binding Expression.IsCustom}"
-                  SelectedIndex="{Binding Expression.SelectedType}"
-                  SelectionChanged="OnExpressionTypeChanged">
+                  SelectedIndex="{Binding Expression.ExpressionType}">
           <ComboBoxItem Content="{DynamicResource exps.type.numerical}"/>
           <ComboBoxItem Content="{DynamicResource exps.type.options}"/>
           <ComboBoxItem Content="{DynamicResource exps.type.curve}"/>
@@ -123,7 +122,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <Button Grid.Column="2" HorizontalAlignment="Stretch" Command="{Binding Remove}" IsEnabled="{Binding Expression.IsCustom}">-</Button>
+      <Button Grid.Column="2" HorizontalAlignment="Stretch" Command="{Binding Remove}" IsEnabled="{Binding Expression.IsRemovable}">-</Button>
     </Grid>
 
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
