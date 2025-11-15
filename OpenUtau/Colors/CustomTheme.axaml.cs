@@ -73,7 +73,7 @@ public class CustomTheme {
             Application.Current.Resources["CenterKeyNameColor"] = Color.Parse($"{Default.CenterKeyNameColor}");
             
             Application.Current.Resources["BlackKeyColorLeft"] = Color.Parse($"{Default.BlackKeyColorLeft}");
-            Application.Current.Resources["BlackKeyColorRight"] = Color.Parse($"{Default.CenterKeyColorRight}");
+            Application.Current.Resources["BlackKeyColorRight"] = Color.Parse($"{Default.BlackKeyColorRight}");
             Application.Current.Resources["BlackKeyNameColor"] = Color.Parse($"{Default.BlackKeyNameColor}");
         }
     }
