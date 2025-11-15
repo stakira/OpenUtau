@@ -20,7 +20,7 @@ namespace OpenUtau.App.Views {
             var task = viewModel.Install();
             task.ContinueWith((task) => {
                 if (task.IsFaulted) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(new MessageCustomizableException("Failed to install singer.", "<translate:singersetup.failed>", task.Exception)));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(new MessageCustomizableException("Failed to install.", "<translate:singersetup.failed>", task.Exception)));
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             Close();
