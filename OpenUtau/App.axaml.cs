@@ -8,6 +8,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 using OpenUtau.App.Views;
+using OpenUtau.Colors;
 using Serilog;
 
 namespace OpenUtau.App {
@@ -107,8 +108,8 @@ namespace OpenUtau.App {
             }
             if (Core.Util.Preferences.Default.Theme == 2) {
                 Current.Resources.MergedDictionaries.Add(custom);
-                Colors.CustomTheme.ApplyTheme();
-                if (Colors.CustomTheme.IsDarkMode == true) {
+                CustomTheme.ApplyTheme();
+                if (CustomTheme.Default.IsDarkMode == true) {
                     Current.RequestedThemeVariant = ThemeVariant.Dark;
                 } else {
                     Current.RequestedThemeVariant = ThemeVariant.Light;
