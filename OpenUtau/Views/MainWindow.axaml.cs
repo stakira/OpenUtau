@@ -837,7 +837,8 @@ namespace OpenUtau.App.Views {
 
         void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
             if (!args.Handled && args.ClickCount == 1) {
-                FocusManager?.ClearFocus();
+                this.Focus();
+                
             }
         }
 
