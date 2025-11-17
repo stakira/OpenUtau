@@ -73,7 +73,7 @@
           </Path.RenderTransform>
         </Path>
         <Button.ContextMenu>
-          <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+          <ContextMenu Name="SingerMenu" Placement="Bottom">
             <ContextMenu.Styles>
               <Style Selector="CheckBox">
                 <Setter Property="IsHitTestVisible" Value="False" />
