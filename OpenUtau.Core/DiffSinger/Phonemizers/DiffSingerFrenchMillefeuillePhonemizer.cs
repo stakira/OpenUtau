@@ -13,7 +13,7 @@ namespace OpenUtau.Core.DiffSinger {
         };
 
         readonly HashSet<string> mandatoryLiaisonWords = new HashSet<string> {
-        "et", "accessit", "affidavit", "audit", "azimut", "brut", "cajeput",
+        "accessit", "affidavit", "audit", "azimut", "brut", "cajeput",
         "cet", "chut", "coït", "comput", "déficit", "diktat", "dot", "exeat",
         "exit", "fiat", "granit", "huit", "incipit", "introït", "inuit",
         "kumquat", "lut", "magnificat", "mat", "mazout", "net", "obit",
