@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Format;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -225,6 +225,51 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             docManager.EndUndoGroup();
+        }
+    }
+
+    public class CommonnoteCopy : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public CommonnoteCopy() {
+            name = $"pianoroll.menu.notes.commonnotecopy";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            Commonnote.CopyToClipboard(notes, project);
+        }
+    }
+
+    public class CommonnotePaste : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public CommonnotePaste() {
+            name = $"pianoroll.menu.notes.commonnotepaste";
+        }
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = Commonnote.LoadFromClipboard(project);
+            if (notes == null) {
+                return;
+            }
+            int left = DocManager.Inst.playPosTick;
+            int minPosition = notes.Select(note => note.position).Min();
+            if (left < part.position) {
+                return;
+            }
+            int offset = left - minPosition - part.position;
+            notes.ForEach(note => note.position += offset);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, notes));
+            int minDurTick = part.GetMinDurTick(project);
+            if (part.Duration < minDurTick) {
+                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, minDurTick - part.Duration, false));
+            }
+            DocManager.Inst.EndUndoGroup();
         }
     }
 
