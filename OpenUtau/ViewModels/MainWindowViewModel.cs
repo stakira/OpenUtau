@@ -128,15 +128,15 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.Redo();
         }
         private void SetUndoState() {
-            CanUndo = DocManager.Inst.GetUndoState(out string? undoName);
-            if (undoName != null) {
-                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {undoName}";
+            CanUndo = DocManager.Inst.GetUndoState(out string? undoNameKey);
+            if (!string.IsNullOrWhiteSpace(undoNameKey)) {
+                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {ThemeManager.GetString(undoNameKey)}";
             } else {
                 UndoText = ThemeManager.GetString("menu.edit.undo");
             }
-            CanRedo = DocManager.Inst.GetRedoState(out string? redoName);
-            if (redoName != null) {
-                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}: {redoName}";
+            CanRedo = DocManager.Inst.GetRedoState(out string? redoNameKey);
+            if (!string.IsNullOrWhiteSpace(redoNameKey)) {
+                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}:  {ThemeManager.GetString(redoNameKey)}";
             } else {
                 RedoText = ThemeManager.GetString("menu.edit.redo");
             }
@@ -274,7 +274,7 @@ namespace OpenUtau.App.ViewModels {
             }
             int trackNo = project.tracks.Count;
             part.trackNo = trackNo;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.import.audio");
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = trackNo }));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
@@ -286,7 +286,7 @@ namespace OpenUtau.App.ViewModels {
             }
             var project = DocManager.Inst.Project;
             var parts = Core.Format.MidiWriter.Load(file, project);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.import.track");
             foreach (var part in parts) {
                 var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;

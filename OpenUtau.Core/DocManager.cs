@@ -245,12 +245,12 @@ namespace OpenUtau.Core {
             }
         }
 
-        public void StartUndoGroup(string? name = null, bool deferValidate = false) {
+        public void StartUndoGroup(string? nameKey = null, bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup(name, deferValidate);
+            undoGroup = new UCommandGroup(nameKey, deferValidate);
             Log.Information("undoGroup started");
         }
 
@@ -325,19 +325,19 @@ namespace OpenUtau.Core {
             ExecuteCmd(new PreRenderNotification());
         }
 
-        public bool GetUndoState(out string? name) {
-            name = null;
+        public bool GetUndoState(out string? key) {
+            key = null;
             if (undoQueue.Count > 0) {
-                name = undoQueue.Last().Name;
+                key = undoQueue.Last().NameKey;
                 return true;
             } else {
                 return false;
             }
         }
-        public bool GetRedoState(out string? name) {
-            name = null;
+        public bool GetRedoState(out string? key) {
+            key = null;
             if (redoQueue.Count > 0) {
-                name = redoQueue.Last().Name;
+                key = redoQueue.Last().NameKey;
                 return true;
             } else {
                 return false;

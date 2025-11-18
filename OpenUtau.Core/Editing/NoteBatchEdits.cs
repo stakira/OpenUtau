@@ -32,7 +32,7 @@ namespace OpenUtau.Core.Editing {
             if (toAdd.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             foreach (var note in toAdd) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new AddNoteCommand(part, note));
@@ -63,7 +63,7 @@ namespace OpenUtau.Core.Editing {
             if (toRemove.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             foreach (var note in toRemove) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
@@ -108,7 +108,7 @@ namespace OpenUtau.Core.Editing {
             if (toAdd.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             foreach (var note in toAdd) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new AddNoteCommand(part, note));
@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             foreach (var note in notes) {
                 docManager.ExecuteCmd(new MoveNoteCommand(part, note, 0, deltaNoteNum));
             }
@@ -151,7 +151,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             foreach (var note in notes) {
                 int pos = note.position;
                 int end = note.End;
@@ -180,7 +180,7 @@ namespace OpenUtau.Core.Editing {
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             notes.Sort((a, b) => a.position.CompareTo(b.position));
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             for (int i = 0; i < notes.Count - 1; i++) {
                 docManager.ExecuteCmd(new ResizeNoteCommand(part, notes[i], notes[i + 1].position - notes[i].position - notes[i].duration));
             }
@@ -207,7 +207,7 @@ namespace OpenUtau.Core.Editing {
             if (notes.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup("command.batch.note");
             var currentNote = notes[0];
             foreach (var note in notes.Skip(1)) {
                 if (note.position == currentNote.position) {
@@ -239,7 +239,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var pinyinResult = BaseChinesePhonemizer.Romanize(selectedNotes.Select(note => note.lyric));
-            docManager.StartUndoGroup("Lyrics batch edit", true);
+            docManager.StartUndoGroup("command.batch.lyric", true);
             foreach (var t in Enumerable.Zip(selectedNotes, pinyinResult,
                 (note, pinyin) => Tuple.Create(note, pinyin))) {
                 docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, t.Item1, t.Item2));
@@ -263,7 +263,7 @@ namespace OpenUtau.Core.Editing {
             if (notes.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             var track = project.tracks[part.trackNo];
             foreach (var note in notes) {
                 foreach (UPhoneme phoneme in part.phonemes) {
@@ -308,7 +308,7 @@ namespace OpenUtau.Core.Editing {
             if (notes.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             Random random = new Random();
             foreach (var note in notes) {
                 if (random.Next(2) == 0) { // +
@@ -403,7 +403,7 @@ namespace OpenUtau.Core.Editing {
             }
 
             DocManager.Inst.PostOnUIThread(() => {
-                docManager.StartUndoGroup("Notes batch edit", true);
+                docManager.StartUndoGroup("command.batch.note", true);
                 commands.ForEach(docManager.ExecuteCmd);
                 docManager.EndUndoGroup();
             });
@@ -612,7 +612,7 @@ namespace OpenUtau.Core.Editing {
                             pitch);
                 }
             }
-            docManager.StartUndoGroup("Notes batch edit", true);
+            docManager.StartUndoGroup("command.batch.note", true);
             //Apply pitch points to notes
             foreach (var note in notes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
@@ -732,7 +732,7 @@ namespace OpenUtau.Core.Editing {
                 .ToList();
 
             DocManager.Inst.PostOnUIThread(() => {
-                docManager.StartUndoGroup("Notes batch edit", true);
+                docManager.StartUndoGroup("command.batch.note", true);
                 commands.ForEach(docManager.ExecuteCmd);
                 docManager.EndUndoGroup();
             });

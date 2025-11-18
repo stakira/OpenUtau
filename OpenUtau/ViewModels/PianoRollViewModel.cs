@@ -111,43 +111,43 @@ namespace OpenUtau.App.ViewModels {
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.io));
                 DocManager.Inst.EndUndoGroup();
             });
             PitLinearCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.l));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseInCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.i));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.o));
                 DocManager.Inst.EndUndoGroup();
             });
             PitSnapCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(NotesViewModel.Part, info.Note));
                 DocManager.Inst.EndUndoGroup();
             });
             PitDelCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.delete");
                 DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(NotesViewModel.Part, info.Note, info.Index));
                 DocManager.Inst.EndUndoGroup();
             });
             PitAddCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.add");
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
             });
@@ -184,15 +184,15 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void SetUndoState() {
-            CanUndo = DocManager.Inst.GetUndoState(out string? undoName);
-            if (undoName != null) {
-                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {undoName}";
+            CanUndo = DocManager.Inst.GetUndoState(out string? undoNameKey);
+            if (!string.IsNullOrWhiteSpace(undoNameKey)) {
+                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {ThemeManager.GetString(undoNameKey)}";
             } else {
                 UndoText = ThemeManager.GetString("menu.edit.undo");
             }
-            CanRedo = DocManager.Inst.GetRedoState(out string? redoName);
-            if (redoName != null) {
-                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}: {redoName}";
+            CanRedo = DocManager.Inst.GetRedoState(out string? redoNameKey);
+            if (!string.IsNullOrWhiteSpace(redoNameKey)) {
+                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}:  {ThemeManager.GetString(redoNameKey)}";
             } else {
                 RedoText = ThemeManager.GetString("menu.edit.redo");
             }
