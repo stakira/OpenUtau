@@ -95,6 +95,7 @@ namespace OpenUtau.Core.Enunu {
                     }
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
+                        progress.Complete(0, progressInfo);
                         if (config.extensions.wav_synthesizer.Contains("synthe") || config.feature_type.Equals("melf0")) {
                             var f0Path = Path.Join(enutmpPath, "f0.npy");
                             var editorf0Path = Path.Join(enutmpPath, "editorf0.npy");
@@ -177,8 +178,8 @@ namespace OpenUtau.Core.Enunu {
                             source.SetSamples(result.samples);
                             WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                         }
+                        progress.Complete(phrase.phones.Length, progressInfo);
                     }
-                    progress.Complete(phrase.phones.Length, progressInfo);
                     if (File.Exists(wavPath)) {
                         using (var waveStream = Wave.OpenFile(wavPath)) {
                             result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
@@ -186,6 +187,7 @@ namespace OpenUtau.Core.Enunu {
                         if (result.samples != null) {
                             Renderers.ApplyDynamics(phrase, result);
                         }
+                        progress.Complete(phrase.phones.Length);
                     } else {
                         result.samples = new float[0];
                     }
