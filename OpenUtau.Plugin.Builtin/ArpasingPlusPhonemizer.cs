@@ -27,7 +27,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
         "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
         };
-        private readonly string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,nx,ng,p,q,r,s,sh,t,th,tr,v,w,y,z,zh".Split(',');
+        private string[] consonants = "".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -385,6 +385,13 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
+                        consonants = fricative.Concat(aspirate)
+                                    .Concat(semivowel)
+                                    .Concat(liquid)
+                                    .Concat(nasal)
+                                    .Concat(stop)
+                                    .Concat(tap)
+                                    .Concat(affricate).Distinct().ToArray();
 
                         // Load replacements
                         try {
@@ -623,7 +630,7 @@ namespace OpenUtau.Plugin.Builtin {
                     /// CCV and CV
                     if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
                         basePhoneme = AliasFormat($"{string.Join("", cc)} {v}", "dynMid", syllable.vowelTone, "");
-                        //lastC = 0;
+                        lastC = 0;
                     } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone) || HasOto(crv1, syllable.vowelTone) || HasOto(ValidateAlias(crv1), syllable.vowelTone)) {
                         basePhoneme = AliasFormat($"{cc.Last()} {v}", "dynMid", syllable.vowelTone, "");
                     } else {
@@ -657,7 +664,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var ccv = $"{string.Join("", cc)} {v}";
                     var ccv1 = $"{string.Join("", cc)}{v}";
                     /// CCV
-                    if (CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[i])) {
+                    if (CurrentWordCc.Length >= 2) {
                         if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone)) {
                             basePhoneme = AliasFormat($"{string.Join("", cc)} {v}", "dynMid", syllable.vowelTone, "");
                             lastC = i;
