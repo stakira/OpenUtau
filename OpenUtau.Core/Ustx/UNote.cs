@@ -20,11 +20,16 @@ namespace OpenUtau.Core.Ustx {
         public string lyric = NotePresets.Default.DefaultLyric;
         public UPitch pitch;
         public UVibrato vibrato;
+        public int tuning;
 
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public int End => position + duration;
+        /// <summary>
+        /// The final tone, taking tuning into consideration
+        /// </summary>
+        [YamlIgnore] public float AdjustedTone => tone + tuning / 100f;
 
         /// <summary>
         /// Position of the note in milliseconds, relative to the beginning of the project.
@@ -100,7 +105,7 @@ namespace OpenUtau.Core.Ustx {
             }
             if (pitch.snapFirst) {
                 if (Prev != null && Prev.End == position) {
-                    pitch.data[0].Y = (Prev.tone - tone) * 10;
+                    pitch.data[0].Y = (Prev.AdjustedTone - AdjustedTone) * 10;
                 } else {
                     pitch.data[0].Y = 0;
                 }
@@ -251,6 +256,7 @@ namespace OpenUtau.Core.Ustx {
                 lyric = lyric,
                 pitch = pitch.Clone(),
                 vibrato = vibrato.Clone(),
+                tuning = tuning,
                 phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
                 phonemeIndexes = (int[])phonemeIndexes.Clone()
@@ -340,7 +346,7 @@ namespace OpenUtau.Core.Ustx {
             } else if (nPos > nOutPos) {
                 y *= (1f - nPos) / nOut;
             }
-            return new Vector2(note.position + note.duration * nPos, note.tone + y / 100f);
+            return new Vector2(note.position + note.duration * nPos, note.AdjustedTone + y / 100f);
         }
         /// <summary>
         /// Evaluate the volume of the position on the vibrato curve.
