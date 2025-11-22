@@ -45,7 +45,7 @@ namespace OpenUtau.Core.DiffSinger {
                 }
             }
         }
-        
+
         public Replacement[]? replacements;
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace OpenUtau.Core.DiffSinger {
                 foreach (var r in replacements) {
                     var fromList = r.FromList;
                     var toList = r.ToList;
-                    
+
                     // If 'from' is an array (more than one element), add to merge dict
                     if (fromList.Count > 1 && toList.Count == 1) {
                         string fromKey = string.Join("|", fromList);
@@ -92,7 +92,7 @@ namespace OpenUtau.Core.DiffSinger {
                 foreach (var r in replacements) {
                     var fromList = r.FromList;
                     var toList = r.ToList;
-                    
+
                     // If 'to' is an array (more than one element), add to split dict
                     if (fromList.Count == 1 && toList.Count > 1) {
                         dict[r.from.ToString()] = string.Join("|", toList);
@@ -111,7 +111,7 @@ namespace OpenUtau.Core.DiffSinger {
                 foreach (var r in replacements) {
                     var fromList = r.FromList;
                     var toList = r.ToList;
-                    
+
                     // If both 'from' and 'to' are arrays with more than one element
                     if (fromList.Count > 1 && toList.Count > 1) {
                         string fromKey = string.Join("|", fromList);
@@ -181,31 +181,31 @@ namespace OpenUtau.Core.DiffSinger {
         protected USinger singer;
         protected DsConfig dsConfig;
         protected string rootPath;
-        
+
         // Machine learning models and their hashes
         protected InferenceSession linguisticModel;
         protected InferenceSession durationModel;
         protected ulong linguisticHash;
         protected ulong durationHash;
-        
+
         // Phoneme processing infrastructure
         protected IG2p g2p;
         protected Dictionary<string, int> phonemeTokens;
         protected Dictionary<string, int> languageIds = new Dictionary<string, int>();
         protected DiffSingerSpeakerEmbedManager speakerEmbedManager;
-        
+
         // Symbol validation and replacement dictionaries
         private Dictionary<string, bool> phonemeSymbols = new Dictionary<string, bool>();
         private Dictionary<string, string> singleReplacements = new Dictionary<string, string>();
         private Dictionary<string, string> mergeReplacements = new Dictionary<string, string>();
         private Dictionary<string, string> splitReplacements = new Dictionary<string, string>();
         private Dictionary<string, string> manyToManyReplacements = new Dictionary<string, string>();
-        
+
         // Configuration and timing
         protected float frameMs;
         private string defaultPause = "SP";
         private bool _singerLoaded;
-        
+
         // Abstract methods for customization
         protected virtual string GetDictionaryName() => "dsdict.yaml";
         public virtual string GetLangCode() => string.Empty;
@@ -250,19 +250,19 @@ namespace OpenUtau.Core.DiffSinger {
 
             // Load configuration
             if (!LoadConfiguration()) return false;
-            
+
             // Load language IDs if needed
             if (dsConfig.use_lang_id) {
                 if (!LoadLanguageIds()) return false;
             }
 
             this.frameMs = dsConfig.frameMs();
-            
+
             // Load remaining components
             g2p = LoadG2p(rootPath, dsConfig.use_lang_id);
             if (!LoadPhonemeTokens()) return false;
             if (!LoadModels()) return false;
-            
+
             return true;
         }
 
@@ -338,7 +338,7 @@ namespace OpenUtau.Core.DiffSinger {
                 Log.Error(e, $"failed to load duration model from {durationModelPath}");
                 return false;
             }
-            
+
             return true;
         }
 
@@ -356,7 +356,7 @@ namespace OpenUtau.Core.DiffSinger {
             // Load dictionary from singer folder
             G2pDictionary.Builder g2pBuilder = G2pDictionary.NewBuilder();
             var replacements = new Dictionary<string, string>();
-            
+
             foreach (var dictionaryName in dictionaryNames) {
                 string dictionaryPath = Path.Combine(rootPath, dictionaryName);
                 if (File.Exists(dictionaryPath)) {
@@ -364,14 +364,14 @@ namespace OpenUtau.Core.DiffSinger {
                         string dictText = File.ReadAllText(dictionaryPath);
                         var dictData = Yaml.DefaultDeserializer.Deserialize<DiffSingerRefG2pDictionaryData>(dictText);
                         g2pBuilder.Load(dictData);
-                        
+
                         // Load replacement dictionaries
                         replacements = dictData.replacementsDict();
                         singleReplacements = replacements;
                         mergeReplacements = dictData.mergeDict();
                         splitReplacements = dictData.splitDict();
                         manyToManyReplacements = dictData.manyToManyDict();
-                        
+
                         // Collect all symbols from the dictionary
                         if (dictData.symbols != null) {
                             foreach (var symbol in dictData.symbols) {
@@ -398,14 +398,14 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             ConfigureBaseG2pSymbols(baseG2p);
-            
+
             if (useLangId) {
                 ConfigureLanguageSpecificReplacements(replacements);
             }
 
             // Configure symbol types based on replacements
             ConfigureSymbolTypes(replacements, baseG2p);
-            
+
             g2ps.Add(new G2pRemapper(baseG2p, phonemeSymbols, replacements));
             return new G2pFallbacks(g2ps.ToArray());
         }
@@ -427,7 +427,7 @@ namespace OpenUtau.Core.DiffSinger {
         /// </summary>
         private void ConfigureLanguageSpecificReplacements(Dictionary<string, string> replacements) {
             var langCode = GetLangCode();
-            
+
             // Add default language prefix to G2P phonemes
             foreach (var ph in GetBaseG2pVowels().Concat(GetBaseG2pConsonants())) {
                 if (!replacements.ContainsKey(ph)) {
@@ -493,7 +493,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (g2p.IsValidSymbol(phoneme) && phonemeTokens.ContainsKey(phoneme)) {
                 return phoneme;
             }
-            
+
             var langCode = GetLangCode();
             if (langCode != string.Empty) {
                 var phonemeWithLanguage = langCode + "/" + phoneme;
@@ -501,12 +501,12 @@ namespace OpenUtau.Core.DiffSinger {
                     return phonemeWithLanguage;
                 }
             }
-            
+
             // Special cases for note extensions and rests (no error logging needed)
             if (phoneme == "+" || phoneme == "-" || phoneme == "+*" || phoneme == "+~" || phoneme == "R") {
                 return string.Empty;
             }
-            
+
             Log.Error($"Phoneme \"{phoneme}\" isn't supported by the model. Skipping...");
             return string.Empty;
         }
@@ -616,7 +616,7 @@ namespace OpenUtau.Core.DiffSinger {
             var mergedPhonemes = ApplyMergeReplacements(phonemes);
             var splitPhonemes = ApplySplitReplacements(mergedPhonemes);
             var finalPhonemes = ApplyManyToManyReplacements(splitPhonemes);
-            
+
             return finalPhonemes;
         }
 
@@ -638,7 +638,7 @@ namespace OpenUtau.Core.DiffSinger {
                 // Try each merge rule to see if it matches starting at current position
                 foreach (var mergeRule in mergeReplacements) {
                     var fromPhonemes = mergeRule.Key.Split('|');
-                    
+
                     if (currentIndex + fromPhonemes.Length > phonemes.Count) {
                         continue;
                     }
@@ -701,7 +701,7 @@ namespace OpenUtau.Core.DiffSinger {
 
                 foreach (var replacementRule in manyToManyReplacements) {
                     var fromPhonemes = replacementRule.Key.Split('|');
-                    
+
                     if (currentIndex + fromPhonemes.Length > phonemes.Count) {
                         continue;
                     }
@@ -745,11 +745,11 @@ namespace OpenUtau.Core.DiffSinger {
         /// Can be overridden to implement cross-phoneme modifications across the entire word
         /// </summary>
         protected virtual List<phPerNote> EditPhonemesForWord(
-            List<phPerNote> wordPhonemes, 
-            Note[] wordNotes, 
-            List<phPerNote>? previousWordPhonemes, 
-            List<phPerNote>? nextWordPhonemes, 
-            Note[]? previousWordNotes, 
+            List<phPerNote> wordPhonemes,
+            Note[] wordNotes,
+            List<phPerNote>? previousWordPhonemes,
+            List<phPerNote>? nextWordPhonemes,
+            Note[]? previousWordNotes,
             Note[]? nextWordNotes) {
             return wordPhonemes;
         }
@@ -764,7 +764,7 @@ namespace OpenUtau.Core.DiffSinger {
         private struct PhonemeInfo {
             public readonly string Symbol;
             public readonly int StartTime;
-            
+
             public PhonemeInfo(string symbol, int startTime) {
                 Symbol = symbol;
                 StartTime = startTime;
@@ -778,7 +778,7 @@ namespace OpenUtau.Core.DiffSinger {
             public readonly int StartTime;
             public readonly int EndTime;
             public readonly double DurationMs;
-            
+
             public PhonemeTiming(int startTime, int endTime) {
                 StartTime = startTime;
                 EndTime = endTime;
@@ -790,17 +790,23 @@ namespace OpenUtau.Core.DiffSinger {
         /// Edit phonemes based on their timing information, allowing for duration-dependent modifications
         /// Can be overridden to implement duration-based phoneme transformations
         /// </summary>
-        protected virtual List<Tuple<string, int>> EditTimedPhonemes(List<Tuple<string, int>> phonemes, Note note, int noteDur) {
+        protected virtual List<Tuple<string, int>> EditTimedPhonemes(
+            List<Tuple<string, int>> phonemes,
+            Note currentNote,
+            int currentNoteDur,
+            Note[] nextNote,
+            int? nextFirstPhonemeDur) {
+
             // Input validation
             if (phonemes == null) {
                 throw new ArgumentNullException(nameof(phonemes));
             }
-            
-            if (noteDur <= 0) {
-                Log.Warning($"Invalid note duration ({noteDur}ms) for note at position {note.position}. Using default behavior.");
+
+            if (currentNoteDur <= 0) {
+                Log.Warning($"Invalid note duration ({currentNoteDur}ms) for note at position {currentNote.position}. Using default behavior.");
                 return phonemes.ToList();
             }
-            
+
             if (phonemes.Count == 0) {
                 return new List<Tuple<string, int>>();
             }
@@ -809,29 +815,33 @@ namespace OpenUtau.Core.DiffSinger {
 
             try {
                 var phonemeData = ExtractPhonemeData(phonemes);
-                var timingData = CalculatePhonemeTiming(phonemeData, noteDur);
+
+                // Calculate timing with consideration for next note
+                List<PhonemeTiming> timingData;
+                if (nextNote != null && nextNote.Length > 0 && nextFirstPhonemeDur.HasValue) {
+                    // Calculate timing considering next note's first phoneme duration
+                    timingData = CalculatePhonemeTimingWithNextNote(phonemeData, currentNoteDur, nextNote[0], nextFirstPhonemeDur.Value);
+                } else {
+                    // Use original timing calculation if no next note
+                    timingData = CalculatePhonemeTiming(phonemeData, currentNoteDur);
+                }
 
                 for (int i = 0; i < phonemeData.Count; i++) {
                     var phonemeInfo = phonemeData[i];
                     var timingInfo = timingData[i];
-                    
+
                     if (timingInfo.DurationMs <= 0) {
                         Log.Debug($"Skipping phoneme '{phonemeInfo.Symbol}' with invalid duration {timingInfo.DurationMs}ms");
                         result.Add(Tuple.Create(phonemeInfo.Symbol, phonemeInfo.StartTime));
                         continue;
                     }
 
-                    string transformedPhoneme = ApplyDurationBasedReplacements(
-                        phonemeInfo.Symbol,
-                        timingInfo.DurationMs,
-                        note
-                    );
-
+                    // Apply duration-based replacements if the method is overridden
+                    var transformedPhoneme = ApplyDurationBasedReplacements(phonemeInfo.Symbol, timingInfo.DurationMs, currentNote);
                     result.Add(Tuple.Create(transformedPhoneme, phonemeInfo.StartTime));
                 }
-            }
-            catch (Exception ex) {
-                Log.Error(ex, "Error occurred during phoneme timing edits. Returning original phonemes.");
+            } catch (Exception ex) {
+                Log.Error(ex, "Error occurred during phoneme timing edits with next note. Returning original phonemes.");
                 return phonemes.ToList();
             }
 
@@ -839,15 +849,44 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         /// <summary>
+        /// Calculates timing information for each phoneme with consideration for next note onset
+        /// </summary>
+        private List<PhonemeTiming> CalculatePhonemeTimingWithNextNote(
+            List<PhonemeInfo> phonemeData,
+            int currentNoteDur,
+            Note nextNote,
+            int nextFirstPhonemeDur) {
+
+            var timingData = new List<PhonemeTiming>(phonemeData.Count);
+
+            for (int i = 0; i < phonemeData.Count; i++) {
+                int startTime = phonemeData[i].StartTime;
+                int endTime;
+
+                if (i + 1 < phonemeData.Count) {
+                    // Use next phoneme's start time for internal phonemes
+                    endTime = phonemeData[i + 1].StartTime;
+                } else {
+                    // For the last phoneme, consider next note's first phoneme timing
+                    endTime = currentNoteDur + nextFirstPhonemeDur;
+                }
+
+                timingData.Add(new PhonemeTiming(startTime, endTime));
+            }
+
+            return timingData;
+        }
+
+        /// <summary>
         /// Extracts phoneme data from tuple list for efficient processing
         /// </summary>
         private static List<PhonemeInfo> ExtractPhonemeData(List<Tuple<string, int>> phonemes) {
             var phonemeData = new List<PhonemeInfo>(phonemes.Count);
-            
+
             foreach (var phoneme in phonemes) {
                 phonemeData.Add(new PhonemeInfo(phoneme.Item1, phoneme.Item2));
             }
-            
+
             return phonemeData;
         }
 
@@ -946,7 +985,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (isVowel.All(b => !b)) {
                 isStart[0] = true;
             }
-            
+
             for (int i = 0; i < dsPhonemes.Length; i++) {
                 if (isVowel[i]) {
                     // In "Consonant-Glide-Vowel" syllable, the glide phoneme is the first phoneme in the note's timespan
@@ -1051,7 +1090,7 @@ namespace OpenUtau.Core.DiffSinger {
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f; // Padding time for consonants at the beginning of a sentence, ms
             float frameMs = dsConfig.frameMs();
-            
+
             var startMs = timeAxis.TickPosToMsPos(phrase[0][0].position) - padding;
             var lastNote = phrase[^1][^1];
             var endTick = lastNote.position + lastNote.duration;
@@ -1060,43 +1099,43 @@ namespace OpenUtau.Core.DiffSinger {
             var phrasePhonemes = new List<phPerNote>{
                 new phPerNote(-1, phrase[0][0].tone, new List<dsRefPhoneme>{ new dsRefPhoneme("SP", GetSpeakerAtIndex(phrase[0][0], 0)) })
             };
-            
+
             var notePhIndex = new List<int> { 1 };
             var wordFound = new bool[phrase.Length];
-            
+
             // Store processed phonemes for each word to provide context to neighboring words
             var processedWordPhonemesList = new List<List<phPerNote>>();
-            
+
             // First pass: Process each word individually
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
                 var symbols = GetSymbols(word[0]).ToArray();
-                
+
                 if (symbols == null || symbols.Length == 0) {
                     symbols = new string[] { defaultPause };
                     wordFound[wordIndex] = false;
                 } else {
                     wordFound[wordIndex] = true;
                 }
-                
+
                 var wordPhonemes = ProcessWord(word, symbols);
                 processedWordPhonemesList.Add(wordPhonemes);
             }
-            
+
             // Second pass: Edit phonemes with access to processed phonemes from neighboring words
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
-                
+
                 // Prepare context notes for EditPhonemesForWord
                 Note[]? previousWordNotes = (wordIndex > 0 && phrase[wordIndex - 1].Length > 0) ? phrase[wordIndex - 1] : null;
                 Note[]? nextWordNotes = (wordIndex < phrase.Length - 1 && phrase[wordIndex + 1].Length > 0) ? phrase[wordIndex + 1] : null;
-                
+
                 // Get processed phonemes from neighboring words
                 List<phPerNote>? previousWordPhonemes = (wordIndex > 0 && wordFound[wordIndex - 1]) ? processedWordPhonemesList[wordIndex - 1] : null;
                 List<phPerNote>? nextWordPhonemes = (wordIndex < phrase.Length - 1 && wordFound[wordIndex + 1]) ? processedWordPhonemesList[wordIndex + 1] : null;
 
                 var wordPhonemes = processedWordPhonemesList[wordIndex];
-                
+
                 // If word not found, skip editing and just append phonemes
                 if (!wordFound[wordIndex]) {
                     wordPhonemes = processedWordPhonemesList[wordIndex];
@@ -1108,7 +1147,7 @@ namespace OpenUtau.Core.DiffSinger {
 
                 // Edit phonemes for the entire word, giving access to all word phonemes and neighboring word phonemes
                 wordPhonemes = EditPhonemesForWord(wordPhonemes, word, previousWordPhonemes, nextWordPhonemes, previousWordNotes, nextWordNotes);
-                
+
                 phrasePhonemes[^1].Phonemes.AddRange(wordPhonemes[0].Phonemes);
                 phrasePhonemes.AddRange(wordPhonemes.Skip(1));
                 notePhIndex.Add(notePhIndex[^1] + wordPhonemes.SelectMany(n => n.Phonemes).Count());
@@ -1125,11 +1164,11 @@ namespace OpenUtau.Core.DiffSinger {
                 .SelectMany(n => n.Phonemes)
                 .Select(p => (Int64)PhonemeTokenize(p.Symbol))
                 .ToArray();
-            
+
             var word_div = phrasePhonemes.Take(phrasePhonemes.Count - 1)
                 .Select(n => (Int64)n.Phonemes.Count)
                 .ToArray();
-            
+
             var word_dur = phrasePhonemes
                 .Zip(phrasePhonemes.Skip(1), (a, b) => (long)framesBetweenTickPos(a.Position, b.Position))
                 .ToArray();
@@ -1237,18 +1276,21 @@ namespace OpenUtau.Core.DiffSinger {
 
             // Convert positions to tick format and fill result list
             int index = 1;
+            var tempResults = new Dictionary<int, List<Tuple<string, int>>>();
+
+            // First pass: Process phonemes without timing edits to collect all results
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
                 var noteResult = new List<Tuple<string, int>>();
-                
+
                 if (!wordFound[wordIndex]) {
                     continue;
                 }
-                
+
                 if (word[0].lyric.StartsWith("+")) {
                     continue;
                 }
-                
+
                 double notePos = timeAxis.TickPosToMsPos(word[0].position);
                 for (int phIndex = notePhIndex[wordIndex]; phIndex < notePhIndex[wordIndex + 1]; ++phIndex) {
                     if (!string.IsNullOrEmpty(phs[phIndex].Symbol)) {
@@ -1256,12 +1298,42 @@ namespace OpenUtau.Core.DiffSinger {
                            notePos, positions[phIndex - 1])));
                     }
                 }
-                
-                // Editing phoneme based on timing results
+
+                // Store temporary result without timing edits
                 if (noteResult.Count > 0) {
-                    var wordDur = word.Sum(n => n.duration);
-                    noteResult = EditTimedPhonemes(noteResult, word[0], wordDur);
+                    tempResults[word[0].position] = noteResult;
                 }
+            }
+
+            // Second pass: Apply timing edits with access to neighboring note information
+            foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
+                Note[] word = phrase[wordIndex];
+
+                if (!wordFound[wordIndex] || word[0].lyric.StartsWith("+")) {
+                    continue;
+                }
+
+                if (!tempResults.ContainsKey(word[0].position)) {
+                    continue;
+                }
+
+                var noteResult = tempResults[word[0].position];
+                var wordDur = word.Sum(n => n.duration);
+
+                // Get next note information if available
+                Note[] nextWord = (wordIndex + 1 < phrase.Length) ? phrase[wordIndex + 1] : null;
+
+                // Get first phoneme duration from next note if available
+                int? nextFirstPhonemeDur = null;
+                if (nextWord != null && nextWord.Length > 0 && tempResults.ContainsKey(nextWord[0].position)) {
+                    var nextNoteResult = tempResults[nextWord[0].position];
+                    if (nextNoteResult.Count > 0) {
+                        nextFirstPhonemeDur = nextNoteResult[0].Item2;
+                    }
+                }
+
+                // Apply timing edits with access to both current and next note
+                noteResult = EditTimedPhonemes(noteResult, word[0], wordDur, nextWord, nextFirstPhonemeDur);
 
                 partResult[word[0].position] = noteResult;
             }
