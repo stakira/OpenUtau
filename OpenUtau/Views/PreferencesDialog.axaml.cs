@@ -15,8 +15,16 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
+        void OpenCustomDataFolder(object sender, RoutedEventArgs e) {
+            try {
+                OS.OpenFolder(viewModel!.DataPath);
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            }
+        }
+
         async void ResetCustomDataPath(object sender, RoutedEventArgs e) {
-            var result = ((PreferencesViewModel)DataContext!).SetCustomDataPath(string.Empty);
+            var result = viewModel!.SetCustomDataPath(string.Empty);
             if (result) {
                 await MessageBox.Show(
                     this,
@@ -32,7 +40,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (Directory.Exists(path)) {
-                var result = ((PreferencesViewModel)DataContext!).SetCustomDataPath(path);
+                var result = viewModel!.SetCustomDataPath(path);
                 if (result) {
                     await MessageBox.Show(
                         this,
