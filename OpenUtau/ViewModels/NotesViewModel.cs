@@ -57,6 +57,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool DrawPitchTool { get; set; }
         [Reactive] public bool DrawLinePitchTool { get; set; }
         [Reactive] public bool OverwritePitchTool { get; set; }
+        [Reactive] public bool OverwriteLinePitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
@@ -67,6 +68,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowWaveform { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool ShowNoteParams { get; set; }
+        [Reactive] public bool ShowExpressions { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapDivText { get; set; }
         [Reactive] public string KeyText { get; set; }
@@ -76,6 +78,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
+        [Reactive] public double ExpHeightMin { get; set; }
+        [Reactive] public double ExpHeightMax { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
@@ -210,6 +214,7 @@ namespace OpenUtau.App.ViewModels {
             DrawPitchTool = false;
             DrawLinePitchTool = false;
             OverwritePitchTool = false;
+            OverwriteLinePitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
@@ -219,6 +224,7 @@ namespace OpenUtau.App.ViewModels {
                 DrawPitchTool = index == "4";
                 OverwritePitchTool = index == "4+";
                 DrawLinePitchTool = index == "4++";
+                OverwriteLinePitchTool = index == "4+++";
                 KnifeTool = index == "5";
             });
 
@@ -261,6 +267,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(x => x.ShowPhoneme)
             .Subscribe(showPhoneme => {
                 Preferences.Default.ShowPhoneme = showPhoneme;
+                Preferences.Save();
+            });
+            ShowExpressions = Preferences.Default.ShowExpressions;
+            this.WhenAnyValue(x => x.ShowExpressions)
+            .Subscribe(showExpressions => {
+                ExpHeightMin = showExpressions
+                    ? ViewConstants.ExpHeightMin : 0;
+                ExpHeightMax = showExpressions
+                    ? ViewConstants.ExpHeightMax : 0;
+                Preferences.Default.ShowExpressions = showExpressions;
                 Preferences.Save();
             });
             ShowNoteParams = Preferences.Default.ShowNoteParams;
@@ -956,29 +972,23 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        internal (UNote[], string[]) PrepareInsertLyrics() {
+        internal (UNote[], UNote[]) PrepareInsertLyrics() {
             var first = Selection.FirstOrDefault();
-            var last = Selection.LastOrDefault();
-            if(Part == null){
-                return (new UNote[0], new string[0]);
+            if (Part == null) {
+                return (Array.Empty<UNote>(), Array.Empty<UNote>());
             }
             //If no note is selected, InsertLyrics will apply to all notes in the part.
-            if (first == null || last == null) {
-                return (Part.notes.ToArray(), Part.notes.Select(n => n.lyric).ToArray());
+            if (first == null) {
+                return (Part.notes.ToArray(), Array.Empty<UNote>());
             }
             List<UNote> notes = new List<UNote>();
             var note = first;
-            while (note != last) {
+            while (note.Next != null) {
                 notes.Add(note);
                 note = note.Next;
             }
             notes.Add(note);
-            var lyrics = notes.Select(n => n.lyric).ToArray();
-            while (note.Next != null) {
-                note = note.Next;
-                notes.Add(note);
-            }
-            return (notes.ToArray(), lyrics);
+            return (notes.ToArray(), Selection.ToArray());
         }
 
         bool IsExpSupported(string expKey) {
@@ -1025,9 +1035,13 @@ namespace OpenUtau.App.ViewModels {
                             SelectNote(focusNote.note);
                         }
                     }
-                } else if (cmd is ValidateProjectNotification
-                    || cmd is SingersRefreshedNotification
-                    || cmd is PhonemizedNotification) {
+                } else if (cmd is ValidateProjectNotification || cmd is SingersRefreshedNotification) {
+                    if (Part != null) {
+                        LoadPortrait(Part, Project);
+                    }
+                    OnPartModified();
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                } else if (cmd is PhonemizedNotification) {
                     OnPartModified();
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 } else if (notif is PartRenderedNotification && notif.part == Part) {
