@@ -184,7 +184,11 @@ namespace OpenUtau.Classic {
                 pitch = note.pitch
             };
             ustNote.Parse(lastNotePos, lastNoteEnd, iniLines, out noteTempo);
-            note.lyric = ustNote.lyric;
+            if (ustNote.lyric.StartsWith("!")) {
+                note.lyric = $"[{ustNote.lyric.Substring(1)}]";
+            } else {
+                note.lyric = ustNote.lyric;
+            }
             note.position = ustNote.position;
             note.duration = ustNote.duration;
             note.tone = ustNote.noteNum;
