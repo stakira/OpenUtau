@@ -80,16 +80,14 @@ namespace OpenUtau.App {
                 new TrackColor("Light Blue2", "#1976D2", "#0D47A1", "#2196F3", "#90CBF9"),
                 new TrackColor("Blue2", "#3949AB", "#283593", "#5C6BC0", "#AEB5E0"),
                 new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#AB47BC", "#D5A3DE"),
-                new TrackColor("gay", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF"),
             };
-        public void LoadSingerTrackColor(USinger singer) {
+        public static void LoadSingerTrackColor(USinger singer) {
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             try {
                 if (File.Exists(yamlFile)) {
                     using var stream = File.OpenRead(yamlFile);
                     var config = VoicebankConfig.Load(stream);
                     var Colors = config.TrackColor;
-                    Classic.TrackColor trackColor = new Classic.TrackColor();
                     for (int i = 0; i < Colors.Length; i++) {
                         var appTrackColor = new TrackColor(Colors[i].Name,
                             Colors[i].AccentColor,

@@ -61,7 +61,7 @@ namespace OpenUtau.Classic {
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
         public bool? UseFilenameAsAlias = null;
-        public TrackColor[] TrackColor { get; set; }
+        public TrackColor[] TrackColor;
         public void Save(Stream stream) {
             using (var writer = new StreamWriter(stream, Encoding.UTF8)) {
                 Yaml.DefaultSerializer.Serialize(writer, this);
