@@ -35,6 +35,14 @@ namespace OpenUtau.Classic {
         public string[] ToneRanges { get; set; }
     }
 
+    public class TrackColor {
+        public string Name { get; set; } = "";
+        public string AccentColor { get; set; }
+        public string AccentColorDark { get; set; } // Pressed
+        public string AccentColorLight { get; set; } // PointerOver
+        public string AccentColorCenterKey { get; set; } // Keyboard
+    }
+
     public class VoicebankConfig {
         public string Name;
         public Dictionary<string, string> LocalizedNames;
@@ -53,7 +61,7 @@ namespace OpenUtau.Classic {
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
         public bool? UseFilenameAsAlias = null;
-
+        public TrackColor[] TrackColor { get; set; }
         public void Save(Stream stream) {
             using (var writer = new StreamWriter(stream, Encoding.UTF8)) {
                 Yaml.DefaultSerializer.Serialize(writer, this);
