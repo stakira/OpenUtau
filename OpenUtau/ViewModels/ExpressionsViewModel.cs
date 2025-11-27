@@ -153,7 +153,7 @@ namespace OpenUtau.App.ViewModels {
             if (flags.Count() > 0) {
                 throw new MessageCustomizableException("", $"<translate:errors.expression.flagunique>: {string.Join(", ", flags)}", new ArgumentException($"Flags must be unique: {string.Join(", ", flags)}"), false);
             }
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.project.exp");
             DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(DocManager.Inst.Project, Expressions.Select(builder => builder.Build()).ToArray()));
             DocManager.Inst.EndUndoGroup();
         }
