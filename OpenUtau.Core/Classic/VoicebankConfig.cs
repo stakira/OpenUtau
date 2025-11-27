@@ -35,13 +35,13 @@ namespace OpenUtau.Classic {
         public string[] ToneRanges { get; set; }
     }
 
-    public class TrackColor {
-        public string Name { get; set; } = "";
-        public string AccentColor { get; set; }
-        public string AccentColorDark { get; set; } // Pressed
-        public string AccentColorLight { get; set; } // PointerOver
-        public string AccentColorCenterKey { get; set; } // Keyboard
-    }
+public class TrackColor {
+    public string ColorName { get; set; } = string.Empty;
+    public string AccentColor { get; set; } = string.Empty;
+    public string AccentColorDark { get; set; } = string.Empty; // Pressed
+    public string AccentColorLight { get; set; } = string.Empty; // PointerOver
+    public string AccentColorCenterKey { get; set; } = string.Empty; // Keyboard
+}
 
     public class VoicebankConfig {
         public string Name;
