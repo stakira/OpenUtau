@@ -653,10 +653,7 @@ namespace OpenUtau.Core.Render {
                 voicingCurve = voicing;
             }
 
-            public float[] Synth() {
-                if (segments.Count == 0) {
-                    return new float[0];
-                }
+            public (int, NDArray, NDArray, NDArray) SynthFeatures() {
                 int spSize = config.fft_size / 2 + 1;
                 int totalFrames = segments.Max(s => s.p4) + 1;
                 NDArray f0Out = np.zeros<double>(totalFrames);
@@ -693,6 +690,15 @@ namespace OpenUtau.Core.Render {
                     }
                 }
 
+                return (totalFrames, f0Out, spEnvOut, apOut);
+            }
+
+            public float[] Synth() {
+                if (segments.Count == 0) {
+                    return new float[0];
+                }
+                var (totalFrames, f0Out, spEnvOut, apOut) = SynthFeatures();
+                int spSize = config.fft_size / 2 + 1;
                 double[] f0Array = f0Out.ToArray<double>();
                 double[] spEnvArray = spEnvOut.ToArray<double>();
                 double[] apArray = apOut.ToArray<double>();
