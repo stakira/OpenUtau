@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -90,7 +90,7 @@ namespace OpenUtau.Core {
 
         private readonly object _lockObj = new object();
 
-        public ToneGenerator() {}
+        public ToneGenerator() { }
 
         public ToneGenerator(float gain) {
             this.gain = gain;
@@ -184,7 +184,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
-        
+
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
         CancellationTokenSource renderCancellation;
@@ -225,7 +225,7 @@ namespace OpenUtau.Core {
             if (AudioOutput.PlaybackState == PlaybackState.Playing) {
                 AudioOutput.Stop();
             }
-            try{
+            try {
                 var playSound = Wave.OpenFile(file);
                 AudioOutput.Init(playSound.ToSampleProvider());
             } catch (Exception ex) {
@@ -233,7 +233,7 @@ namespace OpenUtau.Core {
                 return;
             }
             AudioOutput.Play();
-        } 
+        }
 
         public void PlayOrPause(int tick = -1, int endTick = -1, int trackNo = -1) {
             if (PlayingMaster) {
@@ -321,7 +321,20 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);
-                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
+                    int samplingRate = Preferences.Default.MixdownSamplingRate;
+                    var exportAdapter = new ExportAdapter(projectMix);
+                    SampleToWaveProvider16 waveProvider;
+                    if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                        WdlResamplingSampleProvider resampAdapter = new WdlResamplingSampleProvider(exportAdapter, samplingRate);
+                        waveProvider = new SampleToWaveProvider16(
+                            Preferences.Default.MixdownChannel == 0 ? resampAdapter : resampAdapter.ToMono()
+                        );
+                    } else {
+                        waveProvider = new SampleToWaveProvider16(
+                            Preferences.Default.MixdownChannel == 0 ? exportAdapter : exportAdapter.ToMono()
+                        );
+                    }
+                    WaveFileWriter.CreateWaveFile(exportPath, waveProvider);
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);
@@ -341,7 +354,7 @@ namespace OpenUtau.Core {
                 string file = "";
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation, applyFaders: false);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
@@ -351,6 +364,48 @@ namespace OpenUtau.Core {
 
                         CheckFileWritable(file);
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                    }
+                } catch (IOException ioe) {
+                    var customEx = new MessageCustomizableException($"Failed to export {file}.", $"<translate:errors.failed.export>: {file}", ioe);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to export {file}."));
+                } catch (Exception e) {
+                    var customEx = new MessageCustomizableException("Failed to render.", "<translate:errors.failed.render>", e);
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Failed to render."));
+                }
+            });
+        }
+
+        // Exporting each tracks
+        public async Task RenderRoughMix(UProject project, string exportPath) {
+            await Task.Run(() => {
+                string file = "";
+                try {
+                    RenderEngine engine = new RenderEngine(project);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation, applyFaders: true);
+                    for (int i = 0; i < trackMixes.Count; ++i) {
+                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
+                            continue;
+                        }
+                        file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
+
+                        CheckFileWritable(file);
+                        int samplingRate = Preferences.Default.ParallelSamplingRate;
+                        var exportAdapter = new ExportAdapter(trackMixes[i]);
+                        SampleToWaveProvider16 waveProvider;
+                        if (exportAdapter.WaveFormat.SampleRate != samplingRate) {
+                            waveProvider = Preferences.Default.ParallelChannel == 0
+                                    ? new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate))
+                                    : new SampleToWaveProvider16(new WdlResamplingSampleProvider(exportAdapter, samplingRate).ToMono());
+                        } else {
+                            waveProvider = Preferences.Default.ParallelChannel == 0
+                                    ? new SampleToWaveProvider16(exportAdapter)
+                                    : new SampleToWaveProvider16(exportAdapter.ToMono());
+                        }
+                        WaveFileWriter.CreateWaveFile(file, waveProvider);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 } catch (IOException ioe) {
