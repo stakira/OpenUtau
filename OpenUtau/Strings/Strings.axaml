@@ -179,6 +179,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>
   <system:String x:Key="menu.edit.paste">Paste</system:String>
+  <system:String x:Key="menu.edit.pasteplainnotes">Paste as plain notes</system:String>
   <system:String x:Key="menu.edit.redo">Redo</system:String>
   <system:String x:Key="menu.edit.selectall">Select All</system:String>
   <system:String x:Key="menu.edit.undo">Undo</system:String>

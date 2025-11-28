@@ -1552,6 +1552,10 @@ namespace OpenUtau.App.Views {
                     }
                     break;
                 case Key.V:
+                    if (isBoth) {
+                        notesVm.PastePlainNotes();
+                        return true;
+                    }
                     if (isCtrl) {
                         notesVm.PasteNotes();
                         return true;
