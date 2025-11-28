@@ -80,6 +80,8 @@ public class CustomTheme {
     
     [Serializable]
     public class ThemeYaml {
+        public string Name = "Custom YAML";
+            
         public bool IsDarkMode = false;
         public string BackgroundColor = "#FFFFFF";
         public string BackgroundColorPointerOver = "#F0F0F0";
