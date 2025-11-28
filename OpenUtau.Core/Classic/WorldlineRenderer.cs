@@ -10,6 +10,8 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using Serilog;
+using VocalShaper.World;
 
 namespace OpenUtau.Classic {
     public class WorldlineRenderer : IRenderer {
@@ -65,7 +67,7 @@ namespace OpenUtau.Classic {
                     }
                 }
                 if (result.samples == null) {
-                    using var phraseSynth = new Worldline.PhraseSynth();
+                    var phraseSynth = new Worldline.PhraseSynthV2(44100, 441, 2048);
                     double posOffsetMs = phrase.positionMs - phrase.leadingMs;
                     foreach (var item in resamplerItems) {
                         if (cancellation.IsCancellationRequested) {
@@ -79,13 +81,13 @@ namespace OpenUtau.Classic {
                         try {
                             phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
                         } catch (SynthRequestError e) {
-                            if(e is CutOffExceedDurationError cee) {
+                            if (e is CutOffExceedDurationError cee) {
                                 throw new MessageCustomizableException(
                                     $"Failed to render\n Oto error: cutoff exceeds audio duration \n{item.phone.phoneme}",
                                     $"<translate:errors.failed.synth.cutoffexceedduration>\n{item.phone.phoneme}",
                                     e);
                             }
-                            if(e is CutOffBeforeOffsetError cbe) {
+                            if (e is CutOffBeforeOffsetError cbe) {
                                 throw new MessageCustomizableException(
                                     $"Failed to render\n Oto error: cutoff before offset \n{item.phone.phoneme}",
                                     $"<translate:errors.failed.synth.cutoffbeforeoffset>\n{item.phone.phoneme}",
