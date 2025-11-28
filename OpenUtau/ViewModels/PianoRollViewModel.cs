@@ -48,6 +48,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
+        public double Width => Preferences.Default.PianorollWindowSize.Width;
+        public double Height => Preferences.Default.PianorollWindowSize.Height;
+
         public bool LockPitchPoints { get => Preferences.Default.LockUnselectedNotesPitch; }
         public bool LockVibrato { get => Preferences.Default.LockUnselectedNotesVibrato; }
         public bool LockExpressions { get => Preferences.Default.LockUnselectedNotesExpressions; }

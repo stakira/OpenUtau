@@ -4,10 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
-        Title="{Binding Title}" MinWidth="300" MinHeight="200"
+        Title="{Binding Title}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
         KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
         Focusable="True" DragDrop.AllowDrop="True"
         TransparencyLevelHint="None">
@@ -69,6 +69,7 @@
               <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
+            <MenuItem Header="{DynamicResource menu.tools.resetscreen}" InputGesture="F10" Click="OnMenuResetScreen"/>
             <MenuItem Header="{Binding ClearCacheHeader}" Click="OnMenuClearCache"/>
             <MenuItem Header="{DynamicResource menu.tools.debugwindow}" Click="OnMenuDebugWindow"/>
             <MenuItem Header="{DynamicResource phoneticassistant.caption}" Click="OnMenuPhoneticAssistant"/>

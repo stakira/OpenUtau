@@ -84,6 +84,11 @@ namespace OpenUtau.App.Views {
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
+            if (Preferences.Default.MainWindowSize.TryGetPosition(out int x, out int y)) {
+                Position = new PixelPoint(x, y);
+            }
+            WindowState = (WindowState)Preferences.Default.MainWindowSize.State;
+
             DocManager.Inst.AddSubscriber(this);
 
             Log.Information("Main window checking Update.");
@@ -662,6 +667,13 @@ namespace OpenUtau.App.Views {
                 : WindowState.FullScreen;
         }
 
+        void OnMenuResetScreen(object sender, RoutedEventArgs args) {
+            this.WindowState = WindowState.Normal;
+            Position = new PixelPoint(0, 0);
+            Width = 1000;
+            Height = 650;
+        }
+
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
@@ -767,6 +779,9 @@ namespace OpenUtau.App.Views {
                             int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
+                        break;
+                    case Key.F10:
+                        OnMenuResetScreen(this, new RoutedEventArgs());
                         break;
                     case Key.F11:
                         OnMenuFullScreen(this, new RoutedEventArgs());
@@ -1411,6 +1426,7 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
                 return;

@@ -233,6 +233,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Preferences...</system:String>
+  <system:String x:Key="menu.tools.resetscreen">Reset Screen</system:String>
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
