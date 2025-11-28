@@ -241,6 +241,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="mergevoicebank.back">Back</system:String>
+  <system:String x:Key="mergevoicebank.error">Failed to merge singer.</system:String>
   <system:String x:Key="mergevoicebank.merge">Merge</system:String>
   <system:String x:Key="mergevoicebank.next">Next</system:String>
   <system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
