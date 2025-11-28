@@ -291,12 +291,14 @@ namespace OpenUtau.App.Views {
         public readonly UNote? neighborNote;
         public readonly bool resizeNeighbor;
         public readonly bool fromStart;
+        public readonly bool ripple;
         public NoteResizeEditState(
             Control control,
             PianoRollViewModel vm,
             IValueTip valueTip,
             UNote note,
             bool resizeNeighbor,
+            bool ripple,
             bool fromStart = false) : base(control, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
@@ -317,6 +319,7 @@ namespace OpenUtau.App.Views {
                 neighborNote = note.Next;
             }
             this.fromStart = fromStart;
+            this.ripple = ripple;
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
@@ -364,6 +367,9 @@ namespace OpenUtau.App.Views {
                 }
                 if (fromStart) {
                     DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, note, -deltaDuration, 0));
+                } else if (ripple == true) {
+                    var rippleNotes = part.notes.Where(n => n.position > note.position).ToList();
+                    DocManager.Inst.ExecuteCmd(new MoveNoteCommand(part, rippleNotes, deltaDuration, 0));
                 }
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, note, deltaDuration));
                 valueTip.UpdateValueTip(note.duration.ToString());
