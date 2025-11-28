@@ -150,27 +150,26 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             });
 
-            legacyPluginCommand = ReactiveCommand.CreateFromTask<Classic.Plugin>(async plugin => {
+            legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(async plugin => {
                 if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PianoRollWindow), true, "legacy plugin"));
                 
                 try {
-                    await Task.Run(() => {
-                        var part = NotesViewModel.Part;
-                        UNote? first;
-                        UNote? last;
-                        if (NotesViewModel.Selection.IsEmpty) {
-                            first = part.notes.First();
-                            last = part.notes.Last();
-                        } else {
-                            first = NotesViewModel.Selection.FirstOrDefault();
-                            last = NotesViewModel.Selection.LastOrDefault();
-                        }
-                        var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
-                        runner.Execute(NotesViewModel.Project, part, first, last, plugin);
-                    });
+                    var part = NotesViewModel.Part;
+                    UNote? first;
+                    UNote? last;
+                    if (NotesViewModel.Selection.IsEmpty) {
+                        first = part.notes.First();
+                        last = part.notes.Last();
+                    } else {
+                        first = NotesViewModel.Selection.FirstOrDefault();
+                        last = NotesViewModel.Selection.LastOrDefault();
+                    }
+                    var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
+                    await runner.Execute(NotesViewModel.Project, part, first, last, plugin);
+
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 } finally {
