@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Runtime.ConstrainedExecution;
 using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
@@ -33,19 +34,22 @@ namespace OpenUtau.App.ViewModels {
         private ObservableAsPropertyHelper<bool> showNumbers;
         private ObservableAsPropertyHelper<bool> isOptions;
         private ObservableAsPropertyHelper<int> selectedType;
+        private USinger? singer;
 
         public ExpressionBuilder(UExpressionDescriptor descriptor)
             : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.isFlag, descriptor.flag,
-                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
+                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options),
+                  DocManager.Inst?.Project?.tracks?.FirstOrDefault()?.Singer ?? USinger.CreateMissing("missing")) {
             ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
         }
 
         public ExpressionBuilder()
-            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty) {
+            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty,
+                  DocManager.Inst?.Project?.tracks?.FirstOrDefault()?.Singer ?? USinger.CreateMissing("missing")) {
         }
 
-        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues) {
+        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues, USinger? singer) {
             Name = name;
             Abbr = abbr;
             Min = min;
@@ -54,8 +58,11 @@ namespace OpenUtau.App.ViewModels {
             Flag = flag;
             OptionValues = optionValues;
 
+            this.singer = singer ?? USinger.CreateMissing("");
+            this.singer.EnsureLoaded();
+
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
+                .Select(abbr => !Core.Format.Ustx.GetRequiredExpressions(this.singer).Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)
