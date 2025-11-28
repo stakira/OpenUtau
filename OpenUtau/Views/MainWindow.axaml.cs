@@ -59,6 +59,7 @@ namespace OpenUtau.App.Views {
                 AskIfSaveAndContinue = AskIfSaveAndContinue
             };
 
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -83,6 +84,11 @@ namespace OpenUtau.App.Views {
             PartMergeCommand = ReactiveCommand.Create<UPart>(part => MergePart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
+
+            if (Preferences.Default.MainWindowSize.TryGetPosition(out int x, out int y)) {
+                Position = new PixelPoint(x, y);
+            }
+            WindowState = (WindowState)Preferences.Default.MainWindowSize.State;
 
             DocManager.Inst.AddSubscriber(this);
 
@@ -509,8 +515,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuSingers(object sender, RoutedEventArgs args) {
-            OpenSingersWindow();
+        async void OnMenuSingers(object sender, RoutedEventArgs args) {
+            await OpenSingersWindowAsync();
         }
 
         /// <summary>
@@ -525,11 +531,7 @@ namespace OpenUtau.App.Views {
             return null;
         }
 
-        public void OpenSingersWindow() {
-            LoadingWindow.RunAsyncOnUIThread(OpenSingersWindowAsync);
-        }
-
-        public async void OpenSingersWindowAsync() {
+        public async Task OpenSingersWindowAsync() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;
@@ -662,6 +664,13 @@ namespace OpenUtau.App.Views {
                 : WindowState.FullScreen;
         }
 
+        void OnMenuResetScreen(object sender, RoutedEventArgs args) {
+            this.WindowState = WindowState.Normal;
+            Position = new PixelPoint(0, 0);
+            Width = 1000;
+            Height = 650;
+        }
+
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
@@ -767,6 +776,9 @@ namespace OpenUtau.App.Views {
                             int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
+                        break;
+                    case Key.F10:
+                        OnMenuResetScreen(this, new RoutedEventArgs());
                         break;
                     case Key.F11:
                         OnMenuFullScreen(this, new RoutedEventArgs());
@@ -1255,6 +1267,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnWelcomeRecovery(object sender, RoutedEventArgs args) {
+            viewModel.OpenProject(new string[] { viewModel.RecoveryPath });
+            viewModel.Page = 1;
+        }
+  
         void MergePart(UPart part) {
             List<UPart> selectedParts = viewModel.TracksViewModel.SelectedParts;
             if (!selectedParts.All(p => p.trackNo.Equals(part.trackNo))) {
@@ -1411,6 +1428,7 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
                 return;

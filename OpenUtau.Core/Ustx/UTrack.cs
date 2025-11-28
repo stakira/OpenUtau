@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
+using OpenUtau.Classic;
 using Serilog;
 using YamlDotNet.Serialization;
 
@@ -13,8 +14,8 @@ namespace OpenUtau.Core.Ustx {
         public string wavtool;
 
         [YamlIgnore] public IRenderer Renderer { get; set; }
-        [YamlIgnore] public Classic.IResampler Resampler { get; set; }
-        [YamlIgnore] public Classic.IWavtool Wavtool { get; set; }
+        [YamlIgnore] public IResampler Resampler { get; set; }
+        [YamlIgnore] public IWavtool Wavtool { get; set; }
 
         public void Validate(UTrack track) {
             if (track.Singer == null || !track.Singer.Found) {
@@ -39,7 +40,7 @@ namespace OpenUtau.Core.Ustx {
                     }
                 }
                 if (string.IsNullOrEmpty(resampler) || resampler != Resampler?.ToString()) {
-                    Resampler = Classic.ToolsManager.Inst.GetResampler(resampler);
+                    Resampler = ToolsManager.Inst.GetResampler(resampler);
                     resampler = Resampler.ToString();
                 }
                 if (string.IsNullOrEmpty(wavtool)) {
@@ -48,7 +49,7 @@ namespace OpenUtau.Core.Ustx {
                     }
                 }
                 if (string.IsNullOrEmpty(wavtool) || wavtool != Wavtool?.ToString()) {
-                    Wavtool = Classic.ToolsManager.Inst.GetWavtool(wavtool);
+                    Wavtool = ToolsManager.Inst.GetWavtool(wavtool);
                     wavtool = Wavtool.ToString();
                 }
             } else {

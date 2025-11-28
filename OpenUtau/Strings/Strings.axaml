@@ -51,7 +51,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
-  <system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>
+  <system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Click here to recover.</system:String>
   <system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
   New BPM:</system:String>
@@ -179,6 +179,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>
   <system:String x:Key="menu.edit.paste">Paste</system:String>
+  <system:String x:Key="menu.edit.pasteplainnotes">Paste as plain notes</system:String>
   <system:String x:Key="menu.edit.redo">Redo</system:String>
   <system:String x:Key="menu.edit.selectall">Select All</system:String>
   <system:String x:Key="menu.edit.undo">Undo</system:String>
@@ -232,6 +233,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Preferences...</system:String>
+  <system:String x:Key="menu.tools.resetscreen">Reset Screen</system:String>
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
@@ -239,6 +241,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="mergevoicebank.back">Back</system:String>
+  <system:String x:Key="mergevoicebank.error">Failed to merge singer.</system:String>
   <system:String x:Key="mergevoicebank.merge">Merge</system:String>
   <system:String x:Key="mergevoicebank.next">Next</system:String>
   <system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
