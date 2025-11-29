@@ -192,6 +192,7 @@ jobs:
       - name: Appcast Linux
         run: |
           python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.tar.gz
+          python appcast.py -v=${{ inputs.version }} -o=linux -r=${{ matrix.arch.name }}-appimage -f=OpenUtau-${{ matrix.arch.linuxarch }}.AppImage
         if: ${{ inputs.release && matrix.arch.os == 'linux' }}
 
       # Release

@@ -34,6 +34,7 @@ namespace OpenUtau.App.ViewModels {
         }
         public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         public bool IsDarkMode => ThemeManager.IsDarkMode;
+        public static string? AppImagePath => Environment.GetEnvironmentVariable("APPIMAGE");
         [Reactive] public string UpdaterStatus { get; set; }
         [Reactive] public bool UpdateAvailable { get; set; }
         [Reactive] public FontWeight UpdateButtonFontWeight { get; set; }
@@ -98,7 +99,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
-            string suffix = PathManager.Inst.IsInstalled ? "-installer" : "";
+            string suffix = PathManager.Inst.IsInstalled ? "-installer" 
+                                : File.Exists(AppImagePath) ? "-appimage"
+                                : "";
             return release.assets
                 .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
                 .FirstOrDefault();
@@ -240,6 +243,36 @@ namespace OpenUtau.App.ViewModels {
                 return $"{unzipperPath} \"{downloadFilePath}\" \"{restart}\"";
             }
             return downloadFilePath;
+        }
+
+        protected override async Task RunDownloadedInstaller(string downloadFilePath) {
+            if (OS.IsLinux() && Path.GetExtension(downloadFilePath) == ".AppImage" && File.Exists(UpdaterViewModel.AppImagePath)) {
+                string batchFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".sh");
+                string updateScript = $@"
+                        COUNTER=0;
+                        while ps -p {Environment.ProcessId} > /dev/null;
+                            do sleep 1;
+                            COUNTER=$((++COUNTER));
+                            if [ $COUNTER -eq 90 ] 
+                            then
+                                exit -1;
+                            fi;
+                        done;
+                        
+                        mv -f ""{downloadFilePath}"" ""{UpdaterViewModel.AppImagePath}""
+
+                        chmod +x ""{UpdaterViewModel.AppImagePath}""
+
+                        ""{UpdaterViewModel.AppImagePath}""";
+                
+                await File.WriteAllTextAsync(batchFilePath, updateScript.Replace("\r\n", "\n"));
+
+                Exec($"chmod +x '{batchFilePath}' && '{batchFilePath}'", false);
+
+                await QuitApplication();
+            } else {
+                await base.RunDownloadedInstaller(downloadFilePath);
+            }
         }
     }
 }
