@@ -518,7 +518,7 @@ namespace OpenUtau.App.ViewModels {
                     Portrait = null;
                     portraitSource = null;
                 }
-                PortraitMask = new SolidColorBrush(Colors.White, singer.PortraitOpacity);
+                PortraitMask = new SolidColorBrush(Avalonia.Media.Colors.White, singer.PortraitOpacity);
                 Task.Run(() => {
                     lock (portraitLock) {
                         try {
