@@ -350,6 +350,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizeoffset">Randomize phoneme offset</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizetiming">Randomize note timing</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizetuning">Randomize tuning</system:String>
   <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
