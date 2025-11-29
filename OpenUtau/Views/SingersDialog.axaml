@@ -73,7 +73,7 @@
           </Path.RenderTransform>
         </Path>
         <Button.ContextMenu>
-          <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+          <ContextMenu Name="SingerMenu" Placement="Bottom">
             <ContextMenu.Styles>
               <Style Selector="CheckBox">
                 <Setter Property="IsHitTestVisible" Value="False" />
@@ -148,8 +148,8 @@
           <MenuItem Header="{DynamicResource singers.editoto.editinvlabeler}" Click="GotoVLabelerOto"/>
           <MenuItem Header="{DynamicResource singers.editoto.editinsetparam}" Click="GotoSetParamOto"/>
           <MenuItem Header="{DynamicResource singers.editoto.regenfrq}">
+            <MenuItem Header="HARVEST" Click="RegenFrq" Tag="harvest"/>
             <MenuItem Header="DIO" Click="RegenFrq" Tag="dio"/>
-            <MenuItem Header="DIO(5x)" Click="RegenFrq" Tag="dioss"/>
             <MenuItem Header="pYIN" Click="RegenFrq" Tag="pyin"/>
             <MenuItem Header="CREPE" Click="RegenFrq" Tag="crepe"/>
           </MenuItem>
