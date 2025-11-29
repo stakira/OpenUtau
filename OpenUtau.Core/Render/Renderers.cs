@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Render {
         public const string DIFFSINGER = "DIFFSINGER";
         public const string VOICEVOX = "VOICEVOX";
 
-        static readonly string[] classicRenderers = new[] { WORLDLINE_R, WORLDLINE_R2, CLASSIC };
+        static readonly string[] classicRenderers = new[] { WORLDLINE_R, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
         static readonly string[] diffSingerRenderers = new[] { DIFFSINGER };
