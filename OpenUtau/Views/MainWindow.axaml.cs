@@ -664,13 +664,6 @@ namespace OpenUtau.App.Views {
                 : WindowState.FullScreen;
         }
 
-        void OnMenuResetScreen(object sender, RoutedEventArgs args) {
-            this.WindowState = WindowState.Normal;
-            Position = new PixelPoint(0, 0);
-            Width = 1000;
-            Height = 650;
-        }
-
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
@@ -734,6 +727,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuLayoutReset(object sender, RoutedEventArgs args) {
+            WindowState = WindowState.Normal;
+            Position = new PixelPoint(0, 0);
+            Width = 1024;
+            Height = 576;
+            if (pianoRollWindow != null) {
+                pianoRollWindow.Position = new PixelPoint(100, 100);
+                pianoRollWindow.Width = 1024;
+                pianoRollWindow.Height = 576;
+            }
+        }
+
         void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);
         void OnMenuLayoutVSplit12(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 3);
         void OnMenuLayoutVSplit13(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 4);
@@ -776,9 +781,6 @@ namespace OpenUtau.App.Views {
                             int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
-                        break;
-                    case Key.F10:
-                        OnMenuResetScreen(this, new RoutedEventArgs());
                         break;
                     case Key.F11:
                         OnMenuFullScreen(this, new RoutedEventArgs());
@@ -1459,7 +1461,9 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
-                Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+                if (WindowState != WindowState.Maximized) {
+                    Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+                }
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
                 return;

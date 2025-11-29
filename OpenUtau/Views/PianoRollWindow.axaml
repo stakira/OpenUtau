@@ -271,7 +271,6 @@
                 </MenuItem.Icon>
               </MenuItem>
               <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
-              <MenuItem Header="{DynamicResource menu.tools.resetscreen}" InputGesture="F10" Click="OnMenuResetScreen"/>
               <MenuItem Header="{DynamicResource prefs.appearance.degree}">
                 <MenuItem Header="{DynamicResource prefs.appearance.degree.off}" Click="OnMenuDegreeStyle" Tag="0">
                   <MenuItem.Icon>
