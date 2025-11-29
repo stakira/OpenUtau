@@ -558,7 +558,7 @@
                          TextAlignment="Right" FontSize="10" FontFamily="monospace"
                          Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="SnapDivMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
+                <ContextMenu Name="SnapDivMenu" Classes="WithCommand" Placement="BottomEdgeAlignedLeft"
                              ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown"/>
               </Button.ContextMenu>
             </Button>
@@ -568,7 +568,7 @@
                           TextAlignment="Right" FontSize="10" FontFamily="monospace"
                           Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
               <Button.ContextMenu>
-                <ContextMenu Name="KeyMenu" Classes="WithCommand" PlacementMode="BottomEdgeAlignedLeft"
+                <ContextMenu Name="KeyMenu" Classes="WithCommand" Placement="BottomEdgeAlignedLeft"
                              ItemsSource="{Binding NotesViewModel.Keys}" KeyDown="OnKeyKeyDown"/>
               </Button.ContextMenu>
             </Button>

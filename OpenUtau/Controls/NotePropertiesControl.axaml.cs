@@ -144,7 +144,7 @@ namespace OpenUtau.App.Controls {
         private void OnKeyDown(object? sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
-                    TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
+                    this.Focus();
                     e.Handled = true;
                     break;
                 default:

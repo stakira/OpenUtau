@@ -39,8 +39,7 @@
       <Setter Property="HorizontalAlignment" Value="Right"/>
     </Style>
   </Window.Styles>
-  <Design.DataContext>
-  </Design.DataContext>
+
   
   <Grid Margin="{Binding $parent.WindowDecorationMargin}" ColumnDefinitions="150,*">
     <ListBox Classes="NoScroll" Name="DrawerList"
