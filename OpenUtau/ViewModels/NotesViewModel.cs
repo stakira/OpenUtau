@@ -31,6 +31,7 @@ namespace OpenUtau.App.ViewModels {
         }
     }
     public class WaveformRefreshEvent { }
+    public class TrackColorRefreshEvent { }
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
@@ -551,16 +552,17 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void LoadTrackColor(UPart? part, UProject? project) {
-            if (part == null || project == null) {
-                TrackAccentColor = ThemeManager.GetTrackColor("Blue").AccentColor;
-                ThemeManager.ChangePianorollColor("Blue");
-                return;
+            string colorName = "Blue"; // default fallbackB
+
+            if (part != null && project != null && 
+                part.trackNo >= 0 && part.trackNo < project.tracks.Count) {
+                var track = project.tracks[part.trackNo];
+                colorName = Preferences.Default.UseTrackColor ? track.TrackColor : "Blue";
+                TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+            } else {
+                TrackAccentColor = ThemeManager.GetTrackColor(colorName).AccentColor;
             }
-            TrackAccentColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor).AccentColor;
-            string name = Preferences.Default.UseTrackColor
-                ? project.tracks[part.trackNo].TrackColor
-                : "Blue";
-            ThemeManager.ChangePianorollColor(name);
+            ThemeManager.ChangePianorollColor(colorName);
         }
 
         private void UnloadPart() {
@@ -1070,6 +1072,11 @@ namespace OpenUtau.App.ViewModels {
                     if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
                         MaybeAutoScroll(PlayPosX);
                     }
+                } else if (cmd is ChangeTrackColorCommand) {
+                    LoadTrackColor(Part, Project);
+                    // Notify the track header or other views to refresh their visuals
+                    MessageBus.Current.SendMessage(new TrackColorRefreshEvent());
+                    return;
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
@@ -1149,6 +1156,9 @@ namespace OpenUtau.App.ViewModels {
                 PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
             }
         }
+
+        //private double TargetTickOffset = -1;
+        //private const double ScrollLerpSpeed = 0.15; // Tweak this for faster/slower animation
 
         private void MaybeAutoScroll(double positionX) {
             var autoScrollPreference = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
