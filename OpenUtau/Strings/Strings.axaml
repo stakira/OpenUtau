@@ -76,6 +76,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
+  <system:String x:Key="errors.expression.customDefault">Project/Track default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>
   <system:String x:Key="errors.expression.marge">The following expressions have been merged due to duplicate flags</system:String>
@@ -125,7 +126,13 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="exps.minvalue">Min</system:String>
   <system:String x:Key="exps.name">Name</system:String>
   <system:String x:Key="exps.optionvalues">Option Values</system:String>
+  <system:String x:Key="exps.project">Project Expressions</system:String>
+  <system:String x:Key="exps.projectdefault">Project Default</system:String>
   <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
+  <system:String x:Key="exps.skipoutput">Skip flag output when the value is system default</system:String>
+  <system:String x:Key="exps.systemdefault">System Default</system:String>
+  <system:String x:Key="exps.track">Track Expressions (override)</system:String>
+  <system:String x:Key="exps.trackdefault">Track Default</system:String>
   <system:String x:Key="exps.type">Type</system:String>
   <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
