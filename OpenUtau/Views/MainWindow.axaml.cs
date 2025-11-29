@@ -1384,7 +1384,7 @@ namespace OpenUtau.App.Views {
                 }
             }
         }
-        void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors) {
+        void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors, bool manually = false) {
             var parts = DocManager.Inst.Project.parts
                 .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
                 .Cast<UVoicePart>()
@@ -1399,6 +1399,8 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.EndUndoGroup();
                 };
                 dialog.ShowDialog(this);
+            } else if (manually) {
+                MessageBox.Show(this, ThemeManager.GetString("lyrics.nonote"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
             }
         }
         void SetVoiceColorRemapping(UTrack track, IEnumerable<UVoicePart> parts, VoiceColorMappingViewModel vm) {
@@ -1478,14 +1480,19 @@ namespace OpenUtau.App.Views {
                 }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
+                    // Verify whether remapping is required when the voice color lineup changes
                     ValidateTracksVoiceColor();
                 } else {
                     UTrack track = DocManager.Inst.Project.tracks[voicecolorNotif.TrackNo];
-                    if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
+                    if (!voicecolorNotif.Validate) {
+                        // When the user intentionally invokes remapping
+                        if (track.VoiceColorExp.options.Length == 0) {
+                            MessageBox.Show(this, ThemeManager.GetString("dialogs.voicecolorremapping.error"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
+                        } else {
+                            VoiceColorRemapping(track, track.VoiceColorNames, track.VoiceColorExp.options, true);
+                        }
+                    } else if (track.ValidateVoiceColor(out var oldColors, out var newColors)) { // Verify whether remapping is required when the singer is changed
                         VoiceColorRemapping(track, oldColors, newColors);
-                    } else if (!voicecolorNotif.Validate) {
-                        // Cases where this function was intentionally invoked
-                        MessageBox.Show(this, ThemeManager.GetString("dialogs.voicecolorremapping.error"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
                     }
                 }
             }
