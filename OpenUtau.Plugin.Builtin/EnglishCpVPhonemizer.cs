@@ -423,6 +423,16 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
+                        consonants = fricatives
+                            .Concat(aspirates)
+                            .Concat(semivowels)
+                            .Concat(liquids)
+                            .Concat(nasals)
+                            .Concat(stop)
+                            .Concat(tap)
+                            .Concat(affricate)
+                            .Distinct()
+                            .ToArray();
                         // Load diphthong exceptions
                         try {
                             var allDiphthongs = data.symbols

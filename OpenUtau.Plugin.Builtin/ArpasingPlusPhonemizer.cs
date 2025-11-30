@@ -114,7 +114,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
-        private static readonly string[] FinalConsonants = { "w", "y", "r", "l", "m", "n", "ng" };
         private string[] tails = "-,R".Split(',');
         private bool isTails = false;
 
@@ -385,6 +384,16 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
+                        consonants = fricatives
+                            .Concat(aspirates)
+                            .Concat(semivowels)
+                            .Concat(liquids)
+                            .Concat(nasals)
+                            .Concat(stop)
+                            .Concat(tap)
+                            .Concat(affricate)
+                            .Distinct()
+                            .ToArray();
 
                         // Load replacements
                         try {
