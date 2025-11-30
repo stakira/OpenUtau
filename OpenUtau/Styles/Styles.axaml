@@ -2,11 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Style>
     <Style.Resources>
-      <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
-      <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
+      <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+      <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
       <x:Double x:Key="MenuFlyoutThemeMinHeight">20</x:Double>
-      <Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
-      <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
+      <Thickness x:Key="MenuFlyoutScrollerMargin">3</Thickness>
+      <Thickness x:Key="ComboBoxDropdownContentMargin">3</Thickness>
     </Style.Resources>
   </Style>
   <Style Selector="Window">
@@ -20,6 +20,7 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="24"/>
+    <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
   </Style>
   <Style Selector="MenuItem /template/ Path#PART_ChevronPath">
@@ -197,7 +198,7 @@
   </Style>
 
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
-    <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
+    <Setter Property="Background" Value="{DynamicResource AccentBrush1Note}"/>
   </Style>
 
   <Style Selector="ComboBox">
@@ -214,6 +215,7 @@
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="ComboBox /template/ Path#DropDownGlyph">
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
@@ -224,6 +226,7 @@
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="Margin" Value="0"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
 
   <Style Selector="CheckBox">

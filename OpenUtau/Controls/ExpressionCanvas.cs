@@ -119,7 +119,7 @@ namespace OpenUtau.App.Controls {
                 var lPen = ThemeManager.AccentPen1;
                 var lPen2 = ThemeManager.AccentPen1Thickness2;
                 var lPen3 = new Pen(ThemeManager.NeutralAccentBrush, 1, new DashStyle(new double[] { 4, 4 }, 0));
-                var brush = ThemeManager.AccentBrush1;
+                var brush = ThemeManager.AccentBrush1Note;
                 double x3 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
                 double x4 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
                 context.DrawLine(lPen3, new Point(x3, defaultHeight), new Point(x4, defaultHeight));
@@ -200,7 +200,18 @@ namespace OpenUtau.App.Controls {
                             }
                         }
                         geometry.Figures!.Add(figure);
-                        context.DrawGeometry(ThemeManager.RealCurveFillBrush, ThemeManager.RealCurvePen, geometry);
+                        // recreate the effect from the axml
+                        var realCurveFillBrush = new LinearGradientBrush {
+                            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                            Opacity = 0.3,
+                            GradientStops = new GradientStops {
+                                new GradientStop(((SolidColorBrush)ThemeManager.AccentBrush1NoteDarkSemi).Color, 0.0),
+                                new GradientStop(global::Avalonia.Media.Colors.Transparent, 1.0)
+                            }
+                        };
+                        var realCurvePen = new Pen(ThemeManager.AccentBrush1NoteLightSemi2, 2, new DashStyle(new double[] { 2, 2 }, 0));
+                        context.DrawGeometry(realCurveFillBrush, realCurvePen, geometry);
                         offset = end;
                     }
                 }
@@ -218,15 +229,33 @@ namespace OpenUtau.App.Controls {
                 var note = phoneme.Parent;
                 var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
                 var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
-                var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
+                var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1Note;
+                var recBrush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2Semi3 : ThemeManager.AccentBrush1NoteDarkSemi;
+                var recBrushlight = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2Semi4 : ThemeManager.AccentBrush1NoteLightSemi2;
                 var (value, overriden) = phoneme.GetExpression(project, track, Key);
                 double x1 = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X);
                 double x2 = Math.Round(viewModel.TickToneToPoint(phoneme.End, 0).X);
                 if (descriptor.type == UExpressionType.Numerical) {
                     double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
                     double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
+                    // fill rect
+                    double rectX = x1;
+                    double rectY = Math.Min(zeroHeight, valueHeight);
+                    double rectHeight = Math.Abs(zeroHeight - valueHeight);
+                    double rectWidth = Math.Max(x1, x2) - rectX;
+                    var fillRect = new Rect(rectX, rectY, rectWidth, rectHeight);
+                    var fillBrush = overriden ? recBrushlight : recBrush;
+                    context.DrawRectangle(fillBrush, null, fillRect);
+                    // vertical and horizontal lines
                     context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2), valueHeight));
+
+                    double p1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                    double p2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                    var dashedPen = new Pen(ThemeManager.NeutralAccentBrushSemi, 1, new DashStyle(new double[] { 4, 4 }, 0));
+                    double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+                    context.DrawLine(dashedPen, new Point(p1, defaultHeight), new Point(p2, defaultHeight));
+                    
                     using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
                         context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
                     }
