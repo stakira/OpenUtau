@@ -207,7 +207,7 @@ namespace OpenUtau.App.Controls {
                             Opacity = 0.3,
                             GradientStops = new GradientStops {
                                 new GradientStop(((SolidColorBrush)ThemeManager.AccentBrush1NoteDarkSemi).Color, 0.0),
-                                new GradientStop(Colors.Transparent, 1.0)
+                                new GradientStop(global::Avalonia.Media.Colors.Transparent, 1.0)
                             }
                         };
                         var realCurvePen = new Pen(ThemeManager.AccentBrush1NoteLightSemi2, 2, new DashStyle(new double[] { 2, 2 }, 0));
