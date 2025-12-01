@@ -92,22 +92,19 @@ namespace OpenUtau.App {
             if (Current == null) {
                 return;
             }
-            var light = (IResourceProvider)Current.Resources["themes-light"]!;
-            var dark = (IResourceProvider)Current.Resources["themes-dark"]!;
-            var custom = (IResourceProvider)Current.Resources["themes-custom"]!;
-            Current.Resources.MergedDictionaries.Remove(light);
-            Current.Resources.MergedDictionaries.Remove(dark);
-            Current.Resources.MergedDictionaries.Remove(custom);
+            var light = (IResourceDictionary) Current.Resources["themes-light"]!;
+            var dark = (IResourceDictionary) Current.Resources["themes-dark"]!;
+            var custom = (IResourceDictionary) Current.Resources["themes-custom"]!;
             if (Core.Util.Preferences.Default.Theme == 0) {
-                Current.Resources.MergedDictionaries.Add(light);
+                ApplyTheme(light);
                 Current.RequestedThemeVariant = ThemeVariant.Light;
             } 
             if (Core.Util.Preferences.Default.Theme == 1) {
-                Current.Resources.MergedDictionaries.Add(dark);
+                ApplyTheme(dark);
                 Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             if (Core.Util.Preferences.Default.Theme == 2) {
-                Current.Resources.MergedDictionaries.Add(custom);
+                ApplyTheme(custom);
                 CustomTheme.ApplyTheme();
                 if (CustomTheme.Default.IsDarkMode == true) {
                     Current.RequestedThemeVariant = ThemeVariant.Dark;
@@ -116,6 +113,13 @@ namespace OpenUtau.App {
                 }
             }
             ThemeManager.LoadTheme();
+        }
+
+        private static void ApplyTheme(IResourceDictionary resDict) { 
+            var res = Current?.Resources;
+            foreach (var item in resDict) {
+                res![item.Key] = item.Value;
+            }
         }
     }
 }
