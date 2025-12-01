@@ -803,7 +803,7 @@ namespace OpenUtau.App.Views {
             } else {
                 ResetCurveExp(pointer, point);
             }
-            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+            valueTip.UpdateValueTip(descriptor.CustomDefaultValue.ToString());
         }
         private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;

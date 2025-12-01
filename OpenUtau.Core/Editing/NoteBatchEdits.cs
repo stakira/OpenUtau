@@ -338,6 +338,85 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class RandomizeTiming : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+
+        public RandomizeTiming() {
+            name = "pianoroll.menu.notes.randomizetiming";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            const int maxTick = 20;
+            int delta;
+            Random random = new Random();
+            foreach (var note in notes) {
+                if (random.Next(2) == 0) { // +
+                    var max = Math.Min(maxTick, (int)Math.Round(note.duration / 4f));
+                    delta = random.Next(max / 4, max + 1);
+                } else { // -
+                    var max = maxTick;
+                    if (note.Prev != null && note.Prev.End == note.position) {
+                        max = Math.Min(maxTick, (int)Math.Round(note.Prev.duration / 4f));
+                    }
+                    delta = - random.Next(max / 4, max + 1);
+                }
+                
+                if (note.Prev != null && note.Prev.End == note.position) {
+                    docManager.ExecuteCmd(new ResizeNoteCommand(part, note.Prev, delta));
+                }
+                docManager.ExecuteCmd(new MoveNoteCommand(part, note, delta, 0));
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, note, -delta));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class RandomizePhonemeOffset : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+
+        public RandomizePhonemeOffset() {
+            name = "pianoroll.menu.notes.randomizeoffset";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            const int maxTick = 20 ;
+            Random random = new Random();
+            foreach (var note in notes) {
+                for (int i = 0; i < part.phonemes.Count; i++) {
+                    UPhoneme phoneme = part.phonemes[i];
+                    if (phoneme.Parent == note) {
+                        if (random.Next(2) == 0) { // +
+                            var tempo = project.timeAxis.GetBpmAtTick(phoneme.position);
+                            var max = Math.Min(maxTick, (int)Math.Round(MusicMath.TempoTickToMs(tempo, phoneme.Duration) / 4));
+                            docManager.ExecuteCmd(new PhonemeOffsetCommand(part, note, phoneme.index, random.Next(max / 4, max + 1)));
+                        } else { // -
+                            var max = maxTick;
+                            if (phoneme.Prev != null && phoneme.Prev.End == phoneme.position) {
+                                var tempo = project.timeAxis.GetBpmAtTick(part.phonemes[i - 1].position);
+                                max = Math.Min(maxTick, (int)Math.Round(MusicMath.TempoTickToMs(tempo, part.phonemes[i - 1].Duration) / 4));
+                            }
+                            var delta = random.Next(max / 4, max + 1);
+                            docManager.ExecuteCmd(new PhonemeOffsetCommand(part, note, phoneme.index, -delta));
+                        }
+                    }
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class RandomizeTuning : BatchEdit {
         public virtual string Name => name;
         private string name;

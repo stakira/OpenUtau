@@ -336,6 +336,8 @@
   <system:String x:Key="pianoroll.menu.notes.octavedown">1オクターブ下げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">グリッド幅にクオンタイズ</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizeoffset">音素のタイミングをランダムにする</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizetiming">ノートのタイミングをランダムにする</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizetuning">微分音をランダムにする</system:String>
   <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">表情パネルの実数値表示を更新（DiffSinger）</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">末尾の"-"を削除</system:String>

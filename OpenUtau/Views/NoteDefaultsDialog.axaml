@@ -13,8 +13,6 @@
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
-  <Design.DataContext>
-  </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
       <StackPanel Margin="5">

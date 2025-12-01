@@ -184,7 +184,7 @@ namespace OpenUtau.Core.Analysis.Some {
             string yamlpath = Path.Combine(Location, "some.yaml");
             if (!File.Exists(yamlpath)) {
                 //TODO: onnx download site
-                throw new FileNotFoundException($"Error loading SOME. Please download SOME from\nhttps://github.com/xunmengshe/OpenUtau/releases/0.0.0.0");
+                throw new MessageCustomizableException("SOME not found", "<translate:errors.failed.transcribe>", new FileNotFoundException(), false, new string[]{ "https://github.com/xunmengshe/OpenUtau/releases/0.0.0.0" });
             }
 
             var config = Yaml.DefaultDeserializer.Deserialize<SomeConfig>(
