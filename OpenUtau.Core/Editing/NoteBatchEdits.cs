@@ -263,7 +263,7 @@ namespace OpenUtau.Core.Editing {
             }
             int offset = left - minPosition - part.position;
             notes.ForEach(note => note.position += offset);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.batch.note");
             DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, notes));
             int minDurTick = part.GetMinDurTick(project);
             if (part.Duration < minDurTick) {
@@ -351,7 +351,7 @@ namespace OpenUtau.Core.Editing {
             if (notes.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup(true);
+            docManager.StartUndoGroup("command.batch.note", true);
             const int maxTick = 20;
             int delta;
             Random random = new Random();
@@ -390,7 +390,7 @@ namespace OpenUtau.Core.Editing {
             if (notes.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup(true);
+            docManager.StartUndoGroup("command.batch.note", true);
             const int maxTick = 20 ;
             Random random = new Random();
             foreach (var note in notes) {
