@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -734,6 +732,7 @@ namespace OpenUtau.App.Views {
             Width = 1024;
             Height = 576;
             if (pianoRollWindow != null) {
+                pianoRollWindow.WindowState = WindowState.Normal;
                 pianoRollWindow.Position = new PixelPoint(100, 100);
                 pianoRollWindow.Width = 1024;
                 pianoRollWindow.Height = 576;
@@ -748,24 +747,38 @@ namespace OpenUtau.App.Views {
         void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
 
         private void LayoutSplit(double? x, double? y) {
-            var mainScreen = Screens.Primary != null ? Screens.Primary : Screens.All[0];
+            var mainScreen = Screens.Primary ?? Screens.All[0];
             if (mainScreen == null) {
                 return;
             }
-            var wa = mainScreen.WorkingArea;
-            WindowState = WindowState.Normal;
+            double screenWidth = mainScreen.WorkingArea.Size.Width / mainScreen.Scaling;
+            double screenHeight = mainScreen.WorkingArea.Size.Height / mainScreen.Scaling;
+            double borderThickness = 0;
             double titleBarHeight = 20;
             if (FrameSize != null) {
-                double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
-                titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+                if (OS.IsWindows()) {
+                    borderThickness = (FrameSize.Value.Width - ClientSize.Width) / 2;
+                }
+                titleBarHeight = FrameSize.Value.Height - ClientSize.Height - borderThickness;
             }
-            Position = new PixelPoint(0, 0);
-            Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
-            Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
+            int startX = mainScreen.WorkingArea.Position.X - (int)(borderThickness * mainScreen.Scaling);
+            int startY = mainScreen.WorkingArea.Position.Y;
+
+            WindowState = WindowState.Normal;
+            // Position in physical pixels
+            Position = new PixelPoint(startX, startY);
+            // Size in logical pixels (DIPs)
+            Width = x != null ? screenWidth * x.Value : screenWidth;
+            Height = (y != null ? screenHeight * y.Value : screenHeight) - titleBarHeight;
             if (pianoRollWindow != null) {
-                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
-                pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
-                pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
+                pianoRollWindow.WindowState = WindowState.Normal;
+                double offsetX = x != null ? this.Width : 0;
+                double offsetY = y != null ? (this.Height + titleBarHeight) : 0;
+                int physX = startX + (int)(offsetX * mainScreen.Scaling);
+                int physY = startY + (int)(offsetY * mainScreen.Scaling);
+                pianoRollWindow.Position = new PixelPoint(physX, physY);
+                pianoRollWindow.Width = x != null ? screenWidth - Width : screenWidth;
+                pianoRollWindow.Height = (y != null ? screenHeight - offsetY : screenHeight) - titleBarHeight;
             }
         }
 
@@ -1623,9 +1636,7 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
-                if (WindowState != WindowState.Maximized) {
-                    Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
-                }
+                Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
                 return;
