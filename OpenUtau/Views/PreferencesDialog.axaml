@@ -209,11 +209,7 @@
         <!-- Appearance -->
         <StackPanel>
           <TextBlock Text="{DynamicResource prefs.appearance.theme}" Margin="0,10,0,0"/>
-          <ComboBox SelectedIndex="{Binding Theme}">
-            <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.light}"/>
-            <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
-            <ComboBoxItem Content="{Binding CustomName}"/>
-          </ComboBox>
+          <ComboBox ItemsSource="{Binding ThemeItems}" SelectedItem="{Binding ThemeName}"/>
           <TextBlock Text="{DynamicResource prefs.appearance.degree}" Margin="0,10,0,0"/>
           <ComboBox SelectedIndex="{Binding DegreeStyle}">
             <ComboBoxItem Content="{DynamicResource prefs.appearance.degree.off}"/>

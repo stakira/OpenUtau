@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.ObjectModel;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -92,13 +93,13 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public GpuInfo OnnxGpu { get; set; }
       
         // Appearance
-        [Reactive] public int Theme { get; set; }
-        [Reactive] public string CustomName { get; set; } = Colors.CustomTheme.Default.Name;
+        [Reactive] public string ThemeName { get; set; }
         [Reactive] public int DegreeStyle { get; set; }
         [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
         [Reactive] public bool ShowIcon { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
+        public ObservableCollection<string> ThemeItems { get; } = [];
 
         // UTAU
         public List<string> DefaultRendererOptions { get; set; }
@@ -170,7 +171,9 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
-            Theme = Preferences.Default.Theme;
+            Colors.CustomTheme.ListThemes();
+            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)!];
+            ThemeName = Preferences.Default.ThemeName;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
             UseTrackColor = Preferences.Default.UseTrackColor;
@@ -184,7 +187,7 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
-            ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
+            ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;        
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -249,9 +252,9 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.SortingOrder = so?.Name ?? null;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.Theme)
-                .Subscribe(theme => {
-                    Preferences.Default.Theme = theme;
+            this.WhenAnyValue(vm => vm.ThemeName)
+                .Subscribe(themeName => {
+                    Preferences.Default.ThemeName = themeName;
                     Preferences.Save();
                     App.SetTheme();
                 });

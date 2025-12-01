@@ -1,39 +1,50 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Avalonia;
 using Avalonia.Media;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Colors;
 public class CustomTheme {
+    public static Dictionary<string, string> Themes = [];
     public static ThemeYaml Default;
-    
+
     static CustomTheme() {
-        Load();
-        if (Default == null) {
+        Default = new ThemeYaml();
+        ListThemes();
+    }
+
+    public static void Load(string themeName) {
+        if (!string.IsNullOrEmpty(themeName) && Themes.TryGetValue(themeName, out var themePath) && File.Exists(themePath)) {
+            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(themePath,
+                Encoding.UTF8));
+        } else {
+            Preferences.Default.ThemeName = "Light";
             Default = new ThemeYaml();
         }
     }
 
-    public static void Load() {
-        if (File.Exists(PathManager.Inst.ThemeFilePath)) {
-            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(PathManager.Inst.ThemeFilePath,
-                Encoding.UTF8));
-        } else {
-            Save();
+    public static void ListThemes() {
+        Themes.Clear();
+        Directory.CreateDirectory(PathManager.Inst.ThemesPath);
+        foreach (var item in Directory.EnumerateFiles(PathManager.Inst.ThemesPath, "*.yaml")) {
+            string baseName = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(item, Encoding.UTF8)).Name;
+            string themeName = baseName;
+            int dupIter = 1;
+            while (Themes.ContainsKey(themeName)) {
+                themeName = $"{baseName} ({dupIter})";
+                dupIter++;
+            }
+            Themes.Add(themeName, item);
         }
     }
 
-    public static void Save() {
-        PathManager path = new PathManager();
-        Default = new ThemeYaml();
-            Directory.CreateDirectory(path.DataPath);
-            File.WriteAllText(path.ThemeFilePath, Yaml.DefaultSerializer.Serialize(Default), Encoding.UTF8);
-    }
+    public static void ApplyTheme(string themeName) {
+        Load(themeName);
 
-    public static void ApplyTheme() {
-        Load();
         if (Application.Current != null) {
             Application.Current.Resources["IsDarkMode"] = Default.IsDarkMode; 
             Application.Current.Resources["BackgroundColor"] = Color.Parse($"{Default.BackgroundColor}");
