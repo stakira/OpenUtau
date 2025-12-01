@@ -116,8 +116,8 @@ namespace OpenUtau.App {
         }
 
         private static void ApplyTheme(IResourceDictionary resDict) { 
+            var res = Current?.Resources;
             foreach (var item in resDict) {
-                var res = Current?.Resources;
                 res![item.Key] = item.Value;
             }
         }
