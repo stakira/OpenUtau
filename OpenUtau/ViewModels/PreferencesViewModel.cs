@@ -172,7 +172,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
             Colors.CustomTheme.ListThemes();
-            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)!];
+            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)];
             ThemeName = Preferences.Default.ThemeName;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
