@@ -896,7 +896,7 @@ namespace OpenUtau.App.ViewModels {
                 int offset = left - minPosition - Part.position;
                 var notes = DocManager.Inst.NotesClipboard.Select(note => toPlainNote(note)).ToList();
                 notes.ForEach(note => note.position += offset);
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.note.paste");
                 DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
                 int minDurTick = Part.GetMinDurTick(Project);
                 if (Part.Duration < minDurTick) {
