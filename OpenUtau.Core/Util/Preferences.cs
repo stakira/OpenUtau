@@ -133,12 +133,8 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
-            public const int MidiWidth = 1024;
-            public const int MidiHeight = 768;
-            public int MainWidth = 1024;
-            public int MainHeight = 768;
-            public bool MainMaximized;
-            public bool MidiMaximized;
+            public WindowSize MainWindowSize = new WindowSize();
+            public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
             public string PlaybackDevice = string.Empty;

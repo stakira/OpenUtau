@@ -164,7 +164,7 @@
     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
     </Style>
-    <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
     </Style>
     <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
@@ -188,6 +188,12 @@
       <Setter Property="StrokeThickness" Value="1"/>
       <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
     </Style>
+  </Style>
+
+  <Style Selector="ToggleButton.switch">
+    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="Padding" Value="6,2"/>
+    <Setter Property="BorderThickness" Value="0"/>
   </Style>
 
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">

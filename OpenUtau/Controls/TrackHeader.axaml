@@ -43,7 +43,7 @@
         <Border Background="{Binding TrackAccentColor}" Height="16" Width="22" CornerRadius="1,0,2,0"
                 HorizontalAlignment="Left" VerticalAlignment="Top">
           <TextBlock TextAlignment="Center" FontWeight="Bold"
-                     Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
+                     Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Border>
       </Grid>
       <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="18"
@@ -54,7 +54,7 @@
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
+          <ContextMenu Classes="context" Name="SingersMenu" Placement="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
@@ -75,7 +75,7 @@
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
+          <ContextMenu Classes="context" Name="PhonemizersMenu" Placement="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
@@ -92,7 +92,7 @@
               Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
               ToolTip.Tip="{DynamicResource tracks.selectrenderer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
+          <ContextMenu Classes="context" Name="RenderersMenu" Placement="BottomEdgeAlignedLeft" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>

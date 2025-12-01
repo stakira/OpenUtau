@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <system:Boolean x:Key="IsDarkMode">false</system:Boolean>
+  <system:Boolean x:Key="IsDarkMode">False</system:Boolean>
 
   <Color x:Key="BackgroundColor">#FFFFFF</Color>
   <Color x:Key="BackgroundColorPointerOver">#F0F0F0</Color>
@@ -32,8 +32,6 @@
   <Color x:Key="BarNumberColor">#AFA3B5</Color>
   <Color x:Key="FinalPitchColor">#C0C0C0</Color>
   <Color x:Key="TrackBackgroundAltColor">#F0F0F0</Color>
-
-  <Color x:Key="WarningColor">#FFF4CE</Color>
 
   <!--Keyboard Background-->
   <Color x:Key="WhiteKeyColorLeft">Transparent</Color>

@@ -93,6 +93,7 @@ namespace OpenUtau.App.ViewModels {
       
         // Appearance
         [Reactive] public int Theme { get; set; }
+        [Reactive] public string CustomName { get; set; } = Colors.CustomTheme.Default.Name;
         [Reactive] public int DegreeStyle { get; set; }
         [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
