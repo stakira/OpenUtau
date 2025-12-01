@@ -15,6 +15,7 @@ namespace OpenUtau.Classic {
     public static class Ust {
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static List<string> undefinedFlags = new List<string>();
+        static string tool2 = string.Empty;
 
         public static UProject Load(string[] files) {
             foreach (var file in files) {
@@ -177,6 +178,9 @@ namespace OpenUtau.Classic {
                         }
                         project.tracks[0].Singer = singer;
                         break;
+                    case "Tool2":
+                        tool2 = parts[1].Trim();
+                        break;
                     case "Flags":
                         var parser = new UstFlagParser();
                         var track = project.tracks[0];
@@ -235,10 +239,22 @@ namespace OpenUtau.Classic {
             var parser = new UstFlagParser();
             var list = parser.Parse(flags);
             list.ForEach((flag) => {
+                if (flag.Key == "t") {
+                    switch (tool2) {
+                        case { } when tool2.StartsWith("resampler"):
+                        case { } when tool2.StartsWith("doppeltler"):
+                        case { } when tool2.StartsWith("f2resamp"):
+                        case { } when tool2.StartsWith("moresampler"):
+                            note.tuning = flag.Value;
+                            break;
+                        default: // fresamp11-14, model4, TIPS, tn_fnds, bkh01
+                            note.tuning = flag.Value * 10;
+                            break;
+                    }
+                    return;
+                }
                 var abbr = FindAbbrFromFlagKey(project.expressions, flag);
-                if (string.IsNullOrEmpty(abbr)) {
-                    undefinedFlags.Add(flag.Key);
-                } else {
+                if (abbr != String.Empty) {
                     SetExpression(project, note, abbr, flag.Value);
                 }
             });
