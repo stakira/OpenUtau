@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Colors;
 public class CustomTheme {
@@ -47,45 +48,53 @@ public class CustomTheme {
 
         if (Application.Current != null) {
             Application.Current.Resources["IsDarkMode"] = Default.IsDarkMode; 
-            Application.Current.Resources["BackgroundColor"] = Color.Parse($"{Default.BackgroundColor}");
-            Application.Current.Resources["BackgroundColorPointerOver"] = Color.Parse($"{Default.BackgroundColorPointerOver}");
-            Application.Current.Resources["BackgroundColorPressed"] = Color.Parse($"{Default.BackgroundColorPressed}");
-            Application.Current.Resources["BackgroundColorDisabled"] = Color.Parse($"{Default.BackgroundColorDisabled}");  
-            
-            Application.Current.Resources["ForegroundColor"] = Color.Parse($"{Default.ForegroundColor}");
-            Application.Current.Resources["ForegroundColorPointerOver"] = Color.Parse($"{Default.ForegroundColorPointerOver}");
-            Application.Current.Resources["ForegroundColorPressed"] = Color.Parse($"{Default.ForegroundColorPressed}");
-            Application.Current.Resources["ForegroundColorDisabled"] = Color.Parse($"{Default.ForegroundColorDisabled}");
-            
-            Application.Current.Resources["BorderColor"] = Color.Parse($"{Default.BorderColor}");
-            Application.Current.Resources["BorderColorPointerOver"] = Color.Parse($"{Default.BorderColorPointerOver}");
-            
-            Application.Current.Resources["SystemAccentColor"] = Color.Parse($"{Default.SystemAccentColor}");
-            Application.Current.Resources["SystemAccentColorLight1"] = Color.Parse($"{Default.SystemAccentColorLight1}");
-            Application.Current.Resources["SystemAccentColorDark1"] = Color.Parse($"{Default.SystemAccentColorDark1}");
-            
-            Application.Current.Resources["NeutralAccentColor"] = Color.Parse($"{Default.NeutralAccentColor}");
-            Application.Current.Resources["NeutralAccentColorPointerOver"] = Color.Parse($"{Default.NeutralAccentColorPointerOver}");
-            Application.Current.Resources["AccentColor1"] = Color.Parse($"{Default.AccentColor1}");
-            Application.Current.Resources["AccentColor2"] = Color.Parse($"{Default.AccentColor2}");
-            Application.Current.Resources["AccentColor3"] = Color.Parse($"{Default.AccentColor3}");
-            
-            Application.Current.Resources["TickLineColor"] = Color.Parse($"{Default.TickLineColor}");
-            Application.Current.Resources["BarNumberColor"] = Color.Parse($"{Default.BarNumberColor}");
-            Application.Current.Resources["FinalPitchColor"] = Color.Parse($"{Default.FinalPitchColor}");
-            Application.Current.Resources["TrackBackgroundAltColor"] = Color.Parse($"{Default.TrackBackgroundAltColor}");
-            
-            Application.Current.Resources["WhiteKeyColorLeft"] = Color.Parse($"{Default.WhiteKeyColorLeft}");
-            Application.Current.Resources["WhiteKeyColorRight"] = Color.Parse($"{Default.WhiteKeyColorRight}");
-            Application.Current.Resources["WhiteKeyNameColor"] = Color.Parse($"{Default.WhiteKeyNameColor}");
-            
-            Application.Current.Resources["CenterKeyColorLeft"] = Color.Parse($"{Default.CenterKeyColorLeft}");
-            Application.Current.Resources["CenterKeyColorRight"] = Color.Parse($"{Default.CenterKeyColorRight}");
-            Application.Current.Resources["CenterKeyNameColor"] = Color.Parse($"{Default.CenterKeyNameColor}");
-            
-            Application.Current.Resources["BlackKeyColorLeft"] = Color.Parse($"{Default.BlackKeyColorLeft}");
-            Application.Current.Resources["BlackKeyColorRight"] = Color.Parse($"{Default.BlackKeyColorRight}");
-            Application.Current.Resources["BlackKeyNameColor"] = Color.Parse($"{Default.BlackKeyNameColor}");
+            SetResourceColor("BackgroundColor", Default.BackgroundColor);
+            SetResourceColor("BackgroundColorPointerOver", Default.BackgroundColorPointerOver);
+            SetResourceColor("BackgroundColorPressed", Default.BackgroundColorPressed);
+            SetResourceColor("BackgroundColorDisabled", Default.BackgroundColorDisabled);
+
+            SetResourceColor("ForegroundColor", Default.ForegroundColor);
+            SetResourceColor("ForegroundColorPointerOver", Default.ForegroundColorPointerOver);
+            SetResourceColor("ForegroundColorPressed", Default.ForegroundColorPressed);
+            SetResourceColor("ForegroundColorDisabled", Default.ForegroundColorDisabled);
+
+            SetResourceColor("BorderColor", Default.BorderColor);
+            SetResourceColor("BorderColorPointerOver", Default.BorderColorPointerOver);
+
+            SetResourceColor("SystemAccentColor", Default.SystemAccentColor);
+            SetResourceColor("SystemAccentColorLight1", Default.SystemAccentColorLight1);
+            SetResourceColor("SystemAccentColorDark1", Default.SystemAccentColorDark1);
+
+            SetResourceColor("NeutralAccentColor", Default.NeutralAccentColor);
+            SetResourceColor("NeutralAccentColorPointerOver", Default.NeutralAccentColorPointerOver);
+            SetResourceColor("AccentColor1", Default.AccentColor1);
+            SetResourceColor("AccentColor2", Default.AccentColor2);
+            SetResourceColor("AccentColor3", Default.AccentColor3);
+
+            SetResourceColor("TickLineColor", Default.TickLineColor);
+            SetResourceColor("BarNumberColor", Default.BarNumberColor);
+            SetResourceColor("FinalPitchColor", Default.FinalPitchColor);
+            SetResourceColor("TrackBackgroundAltColor", Default.TrackBackgroundAltColor);
+
+            SetResourceColor("WhiteKeyColorLeft", Default.WhiteKeyColorLeft);
+            SetResourceColor("WhiteKeyColorRight", Default.WhiteKeyColorRight);
+            SetResourceColor("WhiteKeyNameColor", Default.WhiteKeyNameColor);
+
+            SetResourceColor("CenterKeyColorLeft", Default.CenterKeyColorLeft);
+            SetResourceColor("CenterKeyColorRight", Default.CenterKeyColorRight);
+            SetResourceColor("CenterKeyNameColor", Default.CenterKeyNameColor);
+
+            SetResourceColor("BlackKeyColorLeft", Default.BlackKeyColorLeft);
+            SetResourceColor("BlackKeyColorRight", Default.BlackKeyColorRight);
+            SetResourceColor("BlackKeyNameColor", Default.BlackKeyNameColor);
+        }
+    }
+
+    private static void SetResourceColor(string res, string colorStr) {
+        if (Color.TryParse(colorStr, out var color)) {
+            Application.Current!.Resources[res] = color;
+        } else {
+            Log.Error($"Failed to parse color \"{colorStr}\" in {Default.Name} custom theme");
         }
     }
     
