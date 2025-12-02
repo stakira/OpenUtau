@@ -175,9 +175,11 @@ namespace OpenUtau.Classic {
                         var parser = new UstFlagParser();
                         var track = project.tracks[0];
                         foreach (var flag in parser.Parse(parts[1].Trim())) {
-                            var descriptor = project.expressions.Values.FirstOrDefault(exp => exp.flag == flag.Key).Clone();
-                            descriptor.CustomDefaultValue = flag.Value;
-                            track.TrackExpressions.Add(descriptor);
+                            var descriptor = project.expressions.Values.FirstOrDefault(exp => exp.flag == flag.Key)?.Clone();
+                            if (descriptor != null) {
+                                descriptor.CustomDefaultValue = flag.Value;
+                                track.TrackExpressions.Add(descriptor);
+                            }
                         }
                         break;
                 }
