@@ -51,7 +51,9 @@ namespace OpenUtau.Core {
 
         public static List<GpuInfo> getGpuInfo() {
             if (OS.IsAndroid()) {
-                return new List<GpuInfo>();
+                return new List<GpuInfo>{new GpuInfo {
+                    deviceId = 0, // eliminaste exception of taking OnnxGpuOptions[0]
+                }};
             }
             List<GpuInfo> gpuList = new List<GpuInfo>();
             var env = OrtEnv.Instance();
@@ -109,6 +111,7 @@ namespace OpenUtau.Core {
                     options.AppendExecutionProvider_Nnapi();
                     break;
             }
+            options.AppendExecutionProvider_CPU(); // safe fallback
             return options;
         }
 
