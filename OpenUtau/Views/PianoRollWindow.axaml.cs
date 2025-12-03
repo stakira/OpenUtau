@@ -36,6 +36,7 @@ namespace OpenUtau.App.Views {
         private NoteEditState? editState;
         private Point valueTipPointerPosition;
         private bool shouldOpenNotesContextMenu;
+        private List<UNote> selectTargets = new List<UNote>();
 
         private ReactiveCommand<Unit, Unit>? lyricsDialogCommand;
         private ReactiveCommand<Unit, Unit>? noteDefaultsCommand;
@@ -481,12 +482,34 @@ namespace OpenUtau.App.Views {
             var element = (TrackBackground)sender;
             keyboardPlayState = new KeyboardPlayState(element, ViewModel);
             keyboardPlayState.Begin(args.Pointer, args.GetPosition(element));
+
+            var part = ViewModel.NotesViewModel.Part;
+            if (part != null) {
+                var tone = ViewModel.NotesViewModel.PointToTone(args.GetPosition(element));
+                var selection = ViewModel.NotesViewModel.Selection;
+                if (selection.Count > 1) {
+                    selectTargets = selection.ToList();
+                } else {
+                    selectTargets = part.notes.ToList();
+                }
+                var notes = selectTargets.Where(note => note.tone == tone);
+                selection.Select(notes);
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(selection));
+            }
         }
 
         public void KeyboardPointerMoved(object sender, PointerEventArgs args) {
             if (keyboardPlayState != null) {
                 var element = (TrackBackground)sender;
                 keyboardPlayState.Update(args.Pointer, args.GetPosition(element));
+
+                var part = ViewModel.NotesViewModel.Part;
+                if (part != null) {
+                    var tone = ViewModel.NotesViewModel.PointToTone(args.GetPosition(element));
+                    var notes = selectTargets.Where(note => note.tone == tone);
+                    ViewModel.NotesViewModel.Selection.Add(notes);
+                    MessageBus.Current.SendMessage(new NotesSelectionEvent(ViewModel.NotesViewModel.Selection));
+                }
             }
         }
 
