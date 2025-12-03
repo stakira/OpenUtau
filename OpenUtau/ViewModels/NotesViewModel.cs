@@ -62,6 +62,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
+        [Reactive] public bool PlayWithNoteSelection { get; set; } = true; // 默认为 true 以便你直接看到效果
         [Reactive] public bool ShowVibrato { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
         [Reactive] public bool ShowFinalPitch { get; set; }
@@ -335,9 +336,9 @@ namespace OpenUtau.App.ViewModels {
             SnapDivText = $"(1/{div})";
         }
 
-        private void UpdateKey(){
+        private void UpdateKey() {
             Key = userKey;
-            KeyText = "1="+MusicMath.KeysInOctave[userKey].Item1;
+            KeyText = "1=" + MusicMath.KeysInOctave[userKey].Item1;
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -474,7 +475,7 @@ namespace OpenUtau.App.ViewModels {
                 targetHeight = PortraitHeight;
             }
             int targetWidth = (int)Math.Round(targetHeight * Portrait.Size.Width / Portrait.Size.Height);
-            if(targetWidth == 0){
+            if (targetWidth == 0) {
                 targetWidth = 1;
             }
             return Portrait.CreateScaledBitmap(new PixelSize(targetWidth, targetHeight));
@@ -527,7 +528,7 @@ namespace OpenUtau.App.ViewModels {
                                 Portrait = null;
                                 portraitSource = null;
                             } else {
-                                using (var stream = new MemoryStream(data)) { 
+                                using (var stream = new MemoryStream(data)) {
                                     Portrait = ResizePortrait(new Bitmap(stream), singer.PortraitHeight);
                                     portraitSource = singer.Portrait;
                                 }
@@ -622,18 +623,21 @@ namespace OpenUtau.App.ViewModels {
             if (Selection.Move(delta)) {
                 MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
                 ScrollIntoView(Selection.Head!);
-            };
+            }
+            ;
         }
         public void ExtendSelection(int delta) {
             if (Selection.Resize(delta)) {
                 MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
                 ScrollIntoView(Selection.Head!);
-            };
+            }
+            ;
         }
         public void ExtendSelection(UNote note) {
             if (Selection.SelectTo(note)) {
                 MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
-            };
+            }
+            ;
         }
 
         public void MoveCursor(int delta) {
@@ -806,7 +810,7 @@ namespace OpenUtau.App.ViewModels {
             notes.Sort((a, b) => a.position.CompareTo(b.position));
             //Ignore slur lyrics
             var mergedLyrics = String.Join("", notes.Select(x => x.lyric).Where(l => !l.StartsWith("+")));
-            if(mergedLyrics == ""){ //If all notes are slur, the merged note is single slur note
+            if (mergedLyrics == "") { //If all notes are slur, the merged note is single slur note
                 mergedLyrics = notes[0].lyric;
             }
             DocManager.Inst.StartUndoGroup();
@@ -916,7 +920,7 @@ namespace OpenUtau.App.ViewModels {
         public async void PasteSelectedParams(PianoRollWindow window) {
             if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
                 var selectedNotes = Selection.ToList();
-                if(selectedNotes.Count == 0) {
+                if (selectedNotes.Count == 0) {
                     return;
                 }
 
@@ -1070,6 +1074,36 @@ namespace OpenUtau.App.ViewModels {
                     if (!setPlayPosTick.pause || Preferences.Default.LockStartTime == 1) {
                         MaybeAutoScroll(PlayPosX);
                     }
+                    // ================== 添加的代码开始 ==================
+                    // 类似于 SynthV 的随走带选择音符逻辑
+                    // 1. 检查开关是否开启
+                    // 2. 检查 Part 是否为空
+                    // 3. 检查是否正在播放 (非暂停状态)
+                    if (PlayWithNoteSelection && Part != null && !setPlayPosTick.pause && !setPlayPosTick.waitingRendering) {
+                        // 计算相对于当前 Part 的 tick (因为 playPosTick 是全局的)
+                        int relativeTick = setPlayPosTick.playPosTick - Part.position;
+
+                        // 查找当前 tick 覆盖的音符
+                        // 条件：音符开始时间 <= 当前时间 且 音符结束时间 > 当前时间
+                        var hitNote = Part.notes.FirstOrDefault(n => n.position <= relativeTick && n.End > relativeTick);
+
+                        if (hitNote != null) {
+                            // 只有当当前选中的音符不是该音符时，才执行选择操作
+                            // 这样可以避免每一帧都触发重绘，节省性能
+                            if (!Selection.Contains(hitNote) || Selection.Count > 1) {
+                                // SelectNote(note, true) 的第二个参数 true 表示清除其他选择，实现"单选"效果
+                                SelectNote(hitNote);
+                            }
+                        } else {
+                            // 如果当前没有音符（即走到了空白处），根据喜好选择是否取消所有选择
+                            // 如果想要完全模仿 SynthV，走到空白处通常会保持上一个选择或取消选择
+                            // 这里为了视觉清晰，如果当前有选择则取消
+                            if (!Selection.IsEmpty) {
+                                DeselectNotes();
+                            }
+                        }
+                    }
+                    // ================== 添加的代码结束 ==================
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
