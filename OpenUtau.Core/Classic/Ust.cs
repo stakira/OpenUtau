@@ -254,7 +254,9 @@ namespace OpenUtau.Classic {
                     return;
                 }
                 var abbr = FindAbbrFromFlagKey(project.expressions, flag);
-                if (abbr != String.Empty) {
+                if (string.IsNullOrEmpty(abbr)) {
+                    undefinedFlags.Add(flag.Key);
+                } else {
                     SetExpression(project, note, abbr, flag.Value);
                 }
             });
