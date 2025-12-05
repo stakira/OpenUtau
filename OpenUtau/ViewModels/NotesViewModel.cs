@@ -62,7 +62,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
-        [Reactive] public bool PlayWithNoteSelection { get; set; } = true; // 默认为 true 以便你直接看到效果
+        //[Reactive] public bool PlayWithNoteSelection { get; set; } = true; // 默认为 true 以便你直接看到效果
         [Reactive] public bool ShowVibrato { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
         [Reactive] public bool ShowFinalPitch { get; set; }
@@ -1075,11 +1075,11 @@ namespace OpenUtau.App.ViewModels {
                         MaybeAutoScroll(PlayPosX);
                     }
                     // ================== 添加的代码开始 ==================
-                    // 类似于 SynthV 的随走带选择音符逻辑
+                    // 类似于 UTAU 的随走带选择音符逻辑
                     // 1. 检查开关是否开启
                     // 2. 检查 Part 是否为空
                     // 3. 检查是否正在播放 (非暂停状态)
-                    if (PlayWithNoteSelection && Part != null && !setPlayPosTick.pause && !setPlayPosTick.waitingRendering) {
+                    if (Preferences.Default.NoteSelectionOnPlay && Part != null && !setPlayPosTick.pause && !setPlayPosTick.waitingRendering) {
                         // 计算相对于当前 Part 的 tick (因为 playPosTick 是全局的)
                         int relativeTick = setPlayPosTick.playPosTick - Part.position;
 

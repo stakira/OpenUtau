@@ -112,6 +112,12 @@
             <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.stationarycursor}"/>
             <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.pagescroll}"/>
           </ComboBox>
+
+          <Grid Margin="0,10,0,0">
+            <TextBlock Text="播放时跟随选择音符" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <ToggleSwitch IsChecked="{Binding NoteSelectionOnPlay}" HorizontalAlignment="Right"/>
+          </Grid>
+
           <Grid ColumnDefinitions="Auto,8,20,8,*" Margin="0,10,0,0">
             <TextBlock Grid.Column="0" Text="{DynamicResource prefs.playback.cursorposition}"/>
             <TextBlock Grid.Column="2">

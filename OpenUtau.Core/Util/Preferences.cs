@@ -177,6 +177,7 @@ namespace OpenUtau.Core.Util {
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;
+            public bool NoteSelectionOnPlay = false;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowIcon = true;
