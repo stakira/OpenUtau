@@ -1,97 +1,90 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using OpenUtau.Core;
 
 namespace OpenUtau.Colors;
 public class CustomTheme {
-    public static ThemeYaml Default;
-    
+    private static ThemeYaml Default;
+    private static ResourceDictionary? themeDict;
+    private static readonly string themeDictId = Guid.NewGuid().ToString();
+    public static string Name => Default.Name;
+    public static bool IsDarkMode => Default.IsDarkMode;
+
     static CustomTheme() {
         Load();
-        if (Default == null) {
-            Default = new ThemeYaml();
-        }
+        Default ??= new ThemeYaml();
     }
 
+    /// <summary>
+    /// Loads the custom theme from <c>theme.yaml</c>.
+    /// If the file does not exist, creates a new file with default settings and saves it.
+    /// </summary>
     public static void Load() {
         if (File.Exists(PathManager.Inst.ThemeFilePath)) {
-            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(PathManager.Inst.ThemeFilePath,
-                Encoding.UTF8));
+            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(
+                File.ReadAllText(PathManager.Inst.ThemeFilePath, Encoding.UTF8));
         } else {
-            Save();
+            Default = new ThemeYaml();
+            Save(Default);
         }
+        UpdateDictOnThread();
     }
 
-    public static void Save() {
+    private static void Save(ThemeYaml yaml) {
         PathManager path = new PathManager();
-        Default = new ThemeYaml();
-            Directory.CreateDirectory(path.DataPath);
-            File.WriteAllText(path.ThemeFilePath, Yaml.DefaultSerializer.Serialize(Default), Encoding.UTF8);
+        Directory.CreateDirectory(path.DataPath);
+        File.WriteAllText(path.ThemeFilePath, Yaml.DefaultSerializer.Serialize(yaml), Encoding.UTF8);
+        UpdateDictOnThread();
     }
 
-    public static void ApplyTheme() {
-        Load();
-        if (Application.Current != null) {
-            Application.Current.Resources["IsDarkMode"] = Default.IsDarkMode; 
-            Application.Current.Resources["BackgroundColor"] = Color.Parse($"{Default.BackgroundColor}");
-            Application.Current.Resources["BackgroundColorPointerOver"] = Color.Parse($"{Default.BackgroundColorPointerOver}");
-            Application.Current.Resources["BackgroundColorPressed"] = Color.Parse($"{Default.BackgroundColorPressed}");
-            Application.Current.Resources["BackgroundColorDisabled"] = Color.Parse($"{Default.BackgroundColorDisabled}");  
-            
-            Application.Current.Resources["ForegroundColor"] = Color.Parse($"{Default.ForegroundColor}");
-            Application.Current.Resources["ForegroundColorPointerOver"] = Color.Parse($"{Default.ForegroundColorPointerOver}");
-            Application.Current.Resources["ForegroundColorPressed"] = Color.Parse($"{Default.ForegroundColorPressed}");
-            Application.Current.Resources["ForegroundColorDisabled"] = Color.Parse($"{Default.ForegroundColorDisabled}");
-            
-            Application.Current.Resources["BorderColor"] = Color.Parse($"{Default.BorderColor}");
-            Application.Current.Resources["BorderColorPointerOver"] = Color.Parse($"{Default.BorderColorPointerOver}");
-            
-            Application.Current.Resources["SystemAccentColor"] = Color.Parse($"{Default.SystemAccentColor}");
-            Application.Current.Resources["SystemAccentColorLight1"] = Color.Parse($"{Default.SystemAccentColorLight1}");
-            Application.Current.Resources["SystemAccentColorDark1"] = Color.Parse($"{Default.SystemAccentColorDark1}");
-            
-            Application.Current.Resources["NeutralAccentColor"] = Color.Parse($"{Default.NeutralAccentColor}");
-            Application.Current.Resources["NeutralAccentColorPointerOver"] = Color.Parse($"{Default.NeutralAccentColorPointerOver}");
-            Application.Current.Resources["AccentColor1"] = Color.Parse($"{Default.AccentColor1}");
-            Application.Current.Resources["AccentColor2"] = Color.Parse($"{Default.AccentColor2}");
-            Application.Current.Resources["AccentColor3"] = Color.Parse($"{Default.AccentColor3}");
-            
-            Application.Current.Resources["TickLineColor"] = Color.Parse($"{Default.TickLineColor}");
-            Application.Current.Resources["BarNumberColor"] = Color.Parse($"{Default.BarNumberColor}");
-            Application.Current.Resources["FinalPitchColor"] = Color.Parse($"{Default.FinalPitchColor}");
-            Application.Current.Resources["TrackBackgroundAltColor"] = Color.Parse($"{Default.TrackBackgroundAltColor}");
-            
-            Application.Current.Resources["WhiteKeyColorLeft"] = Color.Parse($"{Default.WhiteKeyColorLeft}");
-            Application.Current.Resources["WhiteKeyColorRight"] = Color.Parse($"{Default.WhiteKeyColorRight}");
-            Application.Current.Resources["WhiteKeyNameColor"] = Color.Parse($"{Default.WhiteKeyNameColor}");
-            
-            Application.Current.Resources["CenterKeyColorLeft"] = Color.Parse($"{Default.CenterKeyColorLeft}");
-            Application.Current.Resources["CenterKeyColorRight"] = Color.Parse($"{Default.CenterKeyColorRight}");
-            Application.Current.Resources["CenterKeyNameColor"] = Color.Parse($"{Default.CenterKeyNameColor}");
-            
-            Application.Current.Resources["BlackKeyColorLeft"] = Color.Parse($"{Default.BlackKeyColorLeft}");
-            Application.Current.Resources["BlackKeyColorRight"] = Color.Parse($"{Default.BlackKeyColorRight}");
-            Application.Current.Resources["BlackKeyNameColor"] = Color.Parse($"{Default.BlackKeyNameColor}");
+    /// <summary>
+    /// Returns custom theme settings as <c>IResourceDictionary</c>.
+    /// </summary>
+    /// <returns><c>IResourceDictionary</c> with the custom theme settings.</returns>
+    public static IResourceDictionary ThemeDict() {
+        if (themeDict == null) {
+            themeDict = new ResourceDictionary {["__CustomThemeId"] = themeDictId};
+            UpdateDictOnThread();
+        }
+        return themeDict;
+    }
+
+    private static void UpdateDictOnThread() {
+        if (Application.Current != null && !Dispatcher.UIThread.CheckAccess()) {
+            Dispatcher.UIThread.Post(UpdateDict);
+        } else {
+            UpdateDict();
         }
     }
 
-    public static void UnloadTheme() {
-        if (Application.Current == null) return;
-        string[] keys = [
-            "IsDarkMode", "BackgroundColor", "BackgroundColorPointerOver", "BackgroundColorPressed", "BackgroundColorDisabled",
-            "ForegroundColor", "ForegroundColorPointerOver", "ForegroundColorPressed", "ForegroundColorDisabled",
-            "BorderColor", "BorderColorPointerOver", "SystemAccentColor", "SystemAccentColorLight1", "SystemAccentColorDark1",
-            "NeutralAccentColor", "NeutralAccentColorPointerOver", "AccentColor1", "AccentColor2", "AccentColor3",
-            "TickLineColor", "BarNumberColor", "FinalPitchColor", "TrackBackgroundAltColor",
-            "WhiteKeyColorLeft", "WhiteKeyColorRight", "WhiteKeyNameColor",
-            "CenterKeyColorLeft", "CenterKeyColorRight", "CenterKeyNameColor",
-            "BlackKeyColorLeft", "BlackKeyColorRight", "BlackKeyNameColor"];
-        foreach (string k in keys) {
-            Application.Current.Resources.Remove(k);
+    private static void UpdateDict() {
+        if (themeDict == null) return;
+        themeDict.Clear();
+        var yaml = Default ?? new ThemeYaml();
+        var t = typeof(ThemeYaml);
+        var fields = t.GetFields(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var f in fields) {
+            string key = f.Name;
+            object? rawValue = f.GetValue(yaml);
+            if (rawValue is bool b) {
+                themeDict[key] = b;
+            } else if (rawValue is string s) {
+                try {
+                    themeDict[key] = Color.Parse(s);
+                } catch {
+                    themeDict[key] = s;
+                }
+            } else {
+                themeDict[key] = rawValue ?? string.Empty;
+            }
         }
+        themeDict["__CustomThemeId"] = themeDictId;
     }
 
     [Serializable]
