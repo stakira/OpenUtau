@@ -77,7 +77,23 @@ public class CustomTheme {
             Application.Current.Resources["BlackKeyNameColor"] = Color.Parse($"{Default.BlackKeyNameColor}");
         }
     }
-    
+
+    public static void UnloadTheme() {
+        if (Application.Current == null) return;
+        string[] keys = [
+            "IsDarkMode", "BackgroundColor", "BackgroundColorPointerOver", "BackgroundColorPressed", "BackgroundColorDisabled",
+            "ForegroundColor", "ForegroundColorPointerOver", "ForegroundColorPressed", "ForegroundColorDisabled",
+            "BorderColor", "BorderColorPointerOver", "SystemAccentColor", "SystemAccentColorLight1", "SystemAccentColorDark1",
+            "NeutralAccentColor", "NeutralAccentColorPointerOver", "AccentColor1", "AccentColor2", "AccentColor3",
+            "TickLineColor", "BarNumberColor", "FinalPitchColor", "TrackBackgroundAltColor",
+            "WhiteKeyColorLeft", "WhiteKeyColorRight", "WhiteKeyNameColor",
+            "CenterKeyColorLeft", "CenterKeyColorRight", "CenterKeyNameColor",
+            "BlackKeyColorLeft", "BlackKeyColorRight", "BlackKeyNameColor"];
+        foreach (string k in keys) {
+            Application.Current.Resources.Remove(k);
+        }
+    }
+
     [Serializable]
     public class ThemeYaml {
         public string Name = "Custom YAML";
