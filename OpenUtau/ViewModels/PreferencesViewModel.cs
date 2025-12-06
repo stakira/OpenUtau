@@ -404,6 +404,10 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public bool SetCustomDataPath(string path) {
+            if (Preferences.Default.CustomDataPath == path || PathManager.Inst.DataPath == path) {
+                return false;
+            }
+
             try {
                 PathManager.Inst.SetCustomDataPath(path);
             } catch (Exception e) {
