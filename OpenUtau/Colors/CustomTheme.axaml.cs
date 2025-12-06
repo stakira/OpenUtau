@@ -4,13 +4,18 @@ using System.Text;
 using Avalonia;
 using Avalonia.Media;
 using OpenUtau.Core;
+using Serilog;
 
 namespace OpenUtau.Colors;
-public class CustomTheme {
+public static class CustomTheme {
     public static ThemeYaml Default;
     
     static CustomTheme() {
-        Load();
+        try {
+            Load();
+        } catch (Exception e) {
+            Log.Error("Failed to load custom theme.yaml", e);
+        }
         if (Default == null) {
             Default = new ThemeYaml();
         }
@@ -18,60 +23,61 @@ public class CustomTheme {
 
     public static void Load() {
         if (File.Exists(PathManager.Inst.ThemeFilePath)) {
-            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(PathManager.Inst.ThemeFilePath,
-                Encoding.UTF8));
+            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(PathManager.Inst.ThemeFilePath, Encoding.UTF8));
         } else {
-            Save();
+            MakeDefaultTheme();
         }
     }
 
-    public static void Save() {
-        PathManager path = new PathManager();
-        Default = new ThemeYaml();
-            Directory.CreateDirectory(path.DataPath);
-            File.WriteAllText(path.ThemeFilePath, Yaml.DefaultSerializer.Serialize(Default), Encoding.UTF8);
+    public static void MakeDefaultTheme() {
+        try {
+            Default = new ThemeYaml();
+            File.WriteAllText(PathManager.Inst.ThemeFilePath, Yaml.DefaultSerializer.Serialize(Default), Encoding.UTF8);
+        } catch (Exception e) {
+            Log.Error("Failed to make defult theme.yaml", e);
+        }
     }
 
     public static void ApplyTheme() {
         Load();
         if (Application.Current != null) {
-            Application.Current.Resources["IsDarkMode"] = Default.IsDarkMode; 
+            Application.Current.Resources["IsDarkMode"] = Default.IsDarkMode;
             Application.Current.Resources["BackgroundColor"] = Color.Parse($"{Default.BackgroundColor}");
             Application.Current.Resources["BackgroundColorPointerOver"] = Color.Parse($"{Default.BackgroundColorPointerOver}");
             Application.Current.Resources["BackgroundColorPressed"] = Color.Parse($"{Default.BackgroundColorPressed}");
-            Application.Current.Resources["BackgroundColorDisabled"] = Color.Parse($"{Default.BackgroundColorDisabled}");  
-            
+            Application.Current.Resources["BackgroundColorDisabled"] = Color.Parse($"{Default.BackgroundColorDisabled}");
+
             Application.Current.Resources["ForegroundColor"] = Color.Parse($"{Default.ForegroundColor}");
             Application.Current.Resources["ForegroundColorPointerOver"] = Color.Parse($"{Default.ForegroundColorPointerOver}");
             Application.Current.Resources["ForegroundColorPressed"] = Color.Parse($"{Default.ForegroundColorPressed}");
             Application.Current.Resources["ForegroundColorDisabled"] = Color.Parse($"{Default.ForegroundColorDisabled}");
-            
+
             Application.Current.Resources["BorderColor"] = Color.Parse($"{Default.BorderColor}");
             Application.Current.Resources["BorderColorPointerOver"] = Color.Parse($"{Default.BorderColorPointerOver}");
-            
+
             Application.Current.Resources["SystemAccentColor"] = Color.Parse($"{Default.SystemAccentColor}");
             Application.Current.Resources["SystemAccentColorLight1"] = Color.Parse($"{Default.SystemAccentColorLight1}");
             Application.Current.Resources["SystemAccentColorDark1"] = Color.Parse($"{Default.SystemAccentColorDark1}");
-            
+
             Application.Current.Resources["NeutralAccentColor"] = Color.Parse($"{Default.NeutralAccentColor}");
             Application.Current.Resources["NeutralAccentColorPointerOver"] = Color.Parse($"{Default.NeutralAccentColorPointerOver}");
             Application.Current.Resources["AccentColor1"] = Color.Parse($"{Default.AccentColor1}");
             Application.Current.Resources["AccentColor2"] = Color.Parse($"{Default.AccentColor2}");
             Application.Current.Resources["AccentColor3"] = Color.Parse($"{Default.AccentColor3}");
-            
+
             Application.Current.Resources["TickLineColor"] = Color.Parse($"{Default.TickLineColor}");
             Application.Current.Resources["BarNumberColor"] = Color.Parse($"{Default.BarNumberColor}");
             Application.Current.Resources["FinalPitchColor"] = Color.Parse($"{Default.FinalPitchColor}");
             Application.Current.Resources["TrackBackgroundAltColor"] = Color.Parse($"{Default.TrackBackgroundAltColor}");
-            
+
             Application.Current.Resources["WhiteKeyColorLeft"] = Color.Parse($"{Default.WhiteKeyColorLeft}");
             Application.Current.Resources["WhiteKeyColorRight"] = Color.Parse($"{Default.WhiteKeyColorRight}");
             Application.Current.Resources["WhiteKeyNameColor"] = Color.Parse($"{Default.WhiteKeyNameColor}");
-            
+
             Application.Current.Resources["CenterKeyColorLeft"] = Color.Parse($"{Default.CenterKeyColorLeft}");
             Application.Current.Resources["CenterKeyColorRight"] = Color.Parse($"{Default.CenterKeyColorRight}");
             Application.Current.Resources["CenterKeyNameColor"] = Color.Parse($"{Default.CenterKeyNameColor}");
-            
+
             Application.Current.Resources["BlackKeyColorLeft"] = Color.Parse($"{Default.BlackKeyColorLeft}");
             Application.Current.Resources["BlackKeyColorRight"] = Color.Parse($"{Default.BlackKeyColorRight}");
             Application.Current.Resources["BlackKeyNameColor"] = Color.Parse($"{Default.BlackKeyNameColor}");

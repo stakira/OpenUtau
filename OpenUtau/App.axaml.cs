@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -84,7 +85,11 @@ namespace OpenUtau.App {
 
         static void InitializeTheme() {
             Log.Information("Initializing theme.");
-            SetTheme();
+            try {
+                SetTheme();
+            } catch (Exception e) {
+                Log.Error("Failed to set theme.", e);
+            }
             Log.Information("Initialized theme.");
         }
 

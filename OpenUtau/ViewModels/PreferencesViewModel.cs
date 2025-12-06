@@ -253,7 +253,11 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(theme => {
                     Preferences.Default.Theme = theme;
                     Preferences.Save();
-                    App.SetTheme();
+                    try {
+                        App.SetTheme();
+                    } catch (Exception e) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                    }
                 });
             this.WhenAnyValue(vm => vm.DegreeStyle)
                 .Subscribe(degreeStyle => {
