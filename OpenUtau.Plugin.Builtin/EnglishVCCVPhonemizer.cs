@@ -868,14 +868,14 @@ namespace OpenUtau.Plugin.Builtin {
                         for (int i = startingC; i < lastCforLoop; i++) {
                             parsingCC = $"{cc[i]}{cc[i + 1]}-";
                             if (vcVowels.ContainsKey(prevV) && phonemes.Count == 1) {
-                                phonemes.Add($"{vcVowels[prevV]}{cc[i]}-");
-                                Log.Error($"{prevV} 865");
+                                var vcVowelscc = $"{vcVowels[prevV]}{cc[i]}-";
+                                vcVowelscc = vcVowelscc.Replace("ngk", "nk");
+                                phonemes.Add($"{vcVowelscc}");
                             }
                             if (dontParse && i == cc.Length - 3) {
                                 parsingCC = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
                                 if (vcVowels.ContainsKey(prevV)) {
-                                    parsingCC = $"{vcVowels[prevV]} {cc[i]}{cc[i + 1]}";
-                                    Log.Error($"{prevV} 871");
+                                    parsingCC = $"{vcVowels[prevV]} {cc[i]}{cc[i + 1]}"; 
                                 }
                             }
 
@@ -883,7 +883,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 parsingCC = $"{cc[i]} {cc[i + 1]}";
                                 if (vcVowels.ContainsKey(prevV) && !phonemes.Contains($"{cc[i - 1]}{cc[i]}")) {
                                     parsingCC = $"{cc[i - 1]}{cc[i]}";
-                                    Log.Error($"{prevV} 879");
                                 }
                             }
 
@@ -892,13 +891,11 @@ namespace OpenUtau.Plugin.Builtin {
                                 parsingCC = $"{cc[i]}{cc[i + 1]}";
                                 if (vcVowels.ContainsKey(prevV) && phonemes.Count < i + 1) {
                                     parsingCC = $"{vcVowels[prevV]}{cc[i]}";
-                                    Log.Error($"{prevV} 888");
                                 }
                                 if (!HasOto(parsingCC, syllable.vowelTone)) {
                                     parsingCC = $"{cc[i]}{cc[i + 1]}-";
                                     if (vcVowels.ContainsKey(prevV)) {
                                         parsingCC = $"{vcVowels[prevV]}{cc[i]}-";
-                                        Log.Error($"{prevV} 894");
                                     }
                                     if (!HasOto(parsingCC, syllable.vowelTone)) {
                                         parsingCC = $"{cc[i]} {cc[i + 1]}-";
@@ -918,9 +915,7 @@ namespace OpenUtau.Plugin.Builtin {
                             //}
 
                             //ng to nk exception
-                            if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i + 1 != lastCPrevWord) {
-                                parsingCC = $"nkth";
-                            }
+                            parsingCC = parsingCC.Replace("ngk", "nk");
 
                             if (parsingCC != "" && HasOto(parsingCC, syllable.vowelTone)) {
                                 phonemes.Add(parsingCC);
@@ -1046,7 +1041,9 @@ namespace OpenUtau.Plugin.Builtin {
                     for (var i = startingC; i < cc.Length - 1; i++) {
                         currentCc = $"{cc[i]}{cc[i + 1]}-";
                         if (vcVowels.ContainsKey(v) && phonemes.Count == 1) {
-                            phonemes.Add($"{vcVowels[v]}{cc[i]}-"); 
+                            var vcVowelscc = $"{vcVowels[v]}{cc[i]}-";
+                            vcVowelscc = vcVowelscc.Replace("ngk", "nk");
+                            phonemes.Add($"{vcVowelscc}");
                         }
                         if (!HasOto(currentCc, ending.tone)) {
                             currentCc = $"{cc[i]}{cc[i + 1]}";
@@ -1076,9 +1073,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                         //ng to nk exception
-                        if (currentCc.Contains("ngk")) {
-                            currentCc = currentCc.Replace("ngk", "nk");
-                        }
+                        currentCc = currentCc.Replace("ngk", "nk");
 
                         if (HasOto(currentCc, ending.tone)) {
                             phonemes.Add(currentCc);
