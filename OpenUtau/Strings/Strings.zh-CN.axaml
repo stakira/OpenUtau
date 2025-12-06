@@ -447,7 +447,7 @@ Syntax: prefix,suffix</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
   <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">自动滚动边界</system:String>
-  <system:String x:Key="prefs.playback.noteselection">播放时跟随选择音符</system:String>
+  <system:String x:Key="prefs.playback.noteselection">播放时自动选择音符</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暂停时</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">什么都不做</system:String>
