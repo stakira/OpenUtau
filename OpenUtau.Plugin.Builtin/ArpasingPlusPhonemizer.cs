@@ -27,7 +27,7 @@ namespace OpenUtau.Plugin.Builtin {
         "aam", "am", "axm", "aem", "ahm", "aom", "om", "awm", "aum", "aym", "aim", "ehm", "em", "eym", "eim", "ihm", "iym", "im", "owm", "oum", "oym", "oim", "uhm", "uwm", "um", "oh",
         "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
         };
-        private string[] consonants = "".Split(',');
+        private string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,tr,v,w,y,z".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -384,7 +384,7 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
-                        consonants = fricatives
+                        /*consonants = fricatives
                             .Concat(aspirates)
                             .Concat(semivowels)
                             .Concat(liquids)
@@ -393,7 +393,7 @@ namespace OpenUtau.Plugin.Builtin {
                             .Concat(tap)
                             .Concat(affricate)
                             .Distinct()
-                            .ToArray();
+                            .ToArray();*/
 
                         // Load replacements
                         try {
@@ -2000,11 +2000,8 @@ namespace OpenUtau.Plugin.Builtin {
                     if (alias.Contains(str)) {
                         if (ccSpecific) {
                             switch (c1) {
-                                case "f" when c1 == "f" || c1 == "z":
+                                case "z" when c1 == "z":
                                     alias = alias.Replace(str, "s" + " " + c2);
-                                    break;
-                                case "k" when c1 == "k" || c1 == "p" || c1 == "d":
-                                    alias = alias.Replace(str, "t" + " " + c2);
                                     break;
                                 case "dh" when c1 == "dh" || c1 == "g" || c1 == "b":
                                     alias = alias.Replace(str, "d" + " " + c2);

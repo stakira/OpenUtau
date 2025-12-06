@@ -29,7 +29,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
         private static string[] diphthongs = { "ay", "ey", "oy", "aw", "ow" };
         private static string[] c_cR = { "n" };
-        private static string[] consonants = "".Split(',');
+        private static string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,tr,v,w,y,z".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -423,7 +423,7 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
-                        consonants = fricatives
+                        /*consonants = fricatives
                             .Concat(aspirates)
                             .Concat(semivowels)
                             .Concat(liquids)
@@ -432,7 +432,7 @@ namespace OpenUtau.Plugin.Builtin {
                             .Concat(tap)
                             .Concat(affricate)
                             .Distinct()
-                            .ToArray();
+                            .ToArray();*/
                         // Load diphthong exceptions
                         try {
                             var allDiphthongs = data.symbols
