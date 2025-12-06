@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin {
     // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and Anjo for their help.
     // cadlaxa here ^_^
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
-        private const string LatestVersion = "1.1";
+        private const string LatestVersion = "1.2";
         private string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W,8n,Ang,9l".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
         private Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
