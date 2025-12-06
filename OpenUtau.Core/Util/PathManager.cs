@@ -85,6 +85,7 @@ namespace OpenUtau.Core {
         public string LogsPath => Path.Combine(_dataPath, "Logs");
         public string LogFilePath => Path.Combine(_dataPath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(_dataPath, "prefs.json");
+        public string ThemeFilePath => Path.Combine(_dataPath, "theme.yaml");
         public string NotePresetsFilePath => Path.Combine(_dataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(_dataPath, "Backups");
 
