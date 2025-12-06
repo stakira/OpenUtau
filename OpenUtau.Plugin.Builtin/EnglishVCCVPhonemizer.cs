@@ -506,7 +506,7 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add(vc);
                         basePhoneme = $"{vvExceptions[prevV]}{v}";
                     }
-                    if (vcVowels.ContainsKey(prevV)) {
+                    if (vcVowels.ContainsKey(prevV) && !HasOto(basePhoneme, syllable.vowelTone)) {
                         var vc = $"{prevV}";
                         phonemes.Add(vc);
                         basePhoneme = $"_{v}";
@@ -584,9 +584,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
                     var vc = $"{prevV} {cc.Last()}";
-                    if (vc == $"i ng") {
-                        vc = $"1 ng";
-                    }
+
                     if (HasOto(vc, syllable.vowelTone)) {
                         vc = $"{prevV} {cc.Last()}";
                     } else {
@@ -600,7 +598,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     if (lastCPrevWord == 1 && CurrentWordCc.Length == 0)
-                        if (($"{PreviousWordCc.Last()}" == "r") || ($"{PreviousWordCc.Last()}" == "l") || ($"{PreviousWordCc.Last()}" == "ng")) {
+                        if (($"{PreviousWordCc.Last()}" == "r") || ($"{PreviousWordCc.Last()}" == "l")) {
                             if (HasOto($"{prevV}{PreviousWordCc.Last()}-", syllable.vowelTone) && HasOto($"{PreviousWordCc.Last()} {v}", syllable.vowelTone)) {
                                 basePhoneme = $"{PreviousWordCc.Last()} {v}";
                                 vc = $"{prevV}{PreviousWordCc.Last()}-";
@@ -837,6 +835,9 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 if (phonemes.Count == 0) {
                                     parsingVCC = $"{prevV}{cc[0]}";
+                                    if (!ucvCs.Contains($"{cc.Last()}")) {
+                                        parsingVCC = $"{prevV}{cc[0]}-";
+                                    }
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                         parsingVCC = CheckVCExceptions($"{prevV}{cc[0]}") + "-";
                                         if (!HasOto(parsingVCC, syllable.vowelTone)) {
