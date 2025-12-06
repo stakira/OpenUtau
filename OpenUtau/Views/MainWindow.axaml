@@ -4,10 +4,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
-        Title="{Binding Title}" MinWidth="300" MinHeight="200"
+        Title="{Binding Title}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
         KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
         Focusable="True" DragDrop.AllowDrop="True"
         TransparencyLevelHint="None">
@@ -61,6 +61,7 @@
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.tools}">
             <MenuItem Header="{DynamicResource menu.tools.layout}">
+              <MenuItem Header="{DynamicResource menu.tools.layout.reset}" Click="OnMenuLayoutReset"/>
               <MenuItem Header="{DynamicResource menu.tools.layout.vsplit11}" Click="OnMenuLayoutVSplit11"/>
               <MenuItem Header="{DynamicResource menu.tools.layout.vsplit12}" Click="OnMenuLayoutVSplit12"/>
               <MenuItem Header="{DynamicResource menu.tools.layout.vsplit13}" Click="OnMenuLayoutVSplit13"/>
@@ -87,9 +88,15 @@
         </Menu>
       <Carousel SelectedIndex="{Binding Page}" >
         <!--Welcome page-->
-        <Grid Margin="60,50,60,40" RowDefinitions="Auto,Auto,*" ColumnDefinitions="*,*">
-          <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Spacing="8">
-            <!--Create new project or open existing project-->
+        <Grid Margin="60,50,60,40" RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="*,*">
+          <!--Startup warnings-->
+          <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
+            <Button Click="OnWelcomeRecovery" Height="40" Content="{Binding RecoveryString}"
+                    IsVisible="{Binding HasRecovery}" Background="{DynamicResource WarningBrush}">
+            </Button>
+          </StackPanel>
+          <!--Create new project or open existing project-->
+          <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="8">
             <TextBlock Text="{DynamicResource welcome.start}" FontSize="20"/>
             <WrapPanel Margin="-4" Orientation="Horizontal">
               <Button Margin="4" Click="OnMenuNew" Height="60" Padding="12">
@@ -161,8 +168,8 @@
           </StackPanel>
 
           <!-- Recent files -->
-          <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,24,0,8" Text="{DynamicResource welcome.recent}" FontSize="20"/>
-          <ListBox ItemsSource="{Binding RecentFiles}" Grid.Row="2" Grid.Column="0" Margin="0,0,15,0">
+          <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,24,0,8" Text="{DynamicResource welcome.recent}" FontSize="20"/>
+          <ListBox ItemsSource="{Binding RecentFiles}" Grid.Row="3" Grid.Column="0" Margin="0,0,15,0">
             <ListBox.Styles>
               <Style Selector="ListBoxItem">
                 <Setter Property="Height" Value="NaN" />
@@ -182,8 +189,8 @@
           </ListBox>
 
           <!-- Template files -->
-          <TextBlock Grid.Row="1" Grid.Column="1" Margin="15,24,0,8" Text="{DynamicResource welcome.template}" FontSize="20"/>
-          <ListBox ItemsSource="{Binding TemplateFiles}" Grid.Row="2" Grid.Column="1" Margin="15,0,0,0">
+          <TextBlock Grid.Row="2" Grid.Column="1" Margin="15,24,0,8" Text="{DynamicResource welcome.template}" FontSize="20"/>
+          <ListBox ItemsSource="{Binding TemplateFiles}" Grid.Row="3" Grid.Column="1" Margin="15,0,0,0">
             <ListBox.Styles>
               <Style Selector="ListBoxItem">
                 <Setter Property="Height" Value="NaN" />
