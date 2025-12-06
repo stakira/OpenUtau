@@ -20,26 +20,34 @@ public class CustomTheme {
 
     public static void Load(string themeName) {
         if (!string.IsNullOrEmpty(themeName) && Themes.TryGetValue(themeName, out var themePath) && File.Exists(themePath)) {
-            Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(themePath,
-                Encoding.UTF8));
-        } else {
-            Preferences.Default.ThemeName = "Light";
-            Default = new ThemeYaml();
+            try {
+                Default = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(themePath, Encoding.UTF8));
+                return;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to parse yaml in {themePath}");
+            }
         }
+
+        Preferences.Default.ThemeName = "Light";
+        Default = new ThemeYaml();
     }
 
     public static void ListThemes() {
         Themes.Clear();
         Directory.CreateDirectory(PathManager.Inst.ThemesPath);
         foreach (var item in Directory.EnumerateFiles(PathManager.Inst.ThemesPath, "*.yaml")) {
-            string baseName = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(item, Encoding.UTF8)).Name;
-            string themeName = baseName;
-            int dupIter = 1;
-            while (Themes.ContainsKey(themeName)) {
-                themeName = $"{baseName} ({dupIter})";
-                dupIter++;
+            try {
+                string baseName = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(item, Encoding.UTF8)).Name;
+                string themeName = baseName;
+                int dupIter = 1;
+                while (Themes.ContainsKey(themeName)) {
+                    themeName = $"{baseName} ({dupIter})";
+                    dupIter++;
+                }
+                Themes.Add(themeName, item);
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to parse yaml in {item}");
             }
-            Themes.Add(themeName, item);
         }
     }
 
