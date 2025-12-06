@@ -12,6 +12,7 @@ namespace OpenUtau.Core.Util {
 
     public static class Preferences {
         public static SerializablePreferences Default;
+        public static List<string> LoadingErrors = new List<string>();
 
         static Preferences() {
             Load();
@@ -24,6 +25,7 @@ namespace OpenUtau.Core.Util {
                     Encoding.UTF8);
             } catch (Exception e) {
                 Log.Error(e, "Failed to save prefs.");
+                LoadingErrors.Add($"Failed to save prefs. {e.Message}");
             }
         }
 
@@ -41,7 +43,8 @@ namespace OpenUtau.Core.Util {
                     }
                 }
             } catch(Exception e){
-                Log.Error(e, "failed to load prefs-default.json");
+                Log.Error(e, "Failed to load prefs-default.json");
+                LoadingErrors.Add($"Failed to load prefs-default.json. {e.Message}");
             }
             Save();
         }
@@ -64,17 +67,17 @@ namespace OpenUtau.Core.Util {
                     break;
                 case ".mid":
                 case ".midi":
-                    if(Preferences.Default.RememberMid){
+                    if(Default.RememberMid){
                         AddRecentFile(filePath);
                     }
                     break;
                 case ".ust":
-                    if(Preferences.Default.RememberUst){
+                    if(Default.RememberUst){
                         AddRecentFile(filePath);
                     }
                     break;
                 case ".vsqx":
-                    if(Preferences.Default.RememberVsqx){
+                    if(Default.RememberVsqx){
                         AddRecentFile(filePath);
                     }
                     break;
@@ -101,6 +104,7 @@ namespace OpenUtau.Core.Util {
 
         private static void Load() {
             try {
+                LoadingErrors.Clear();
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {
                     Default = JsonConvert.DeserializeObject<SerializablePreferences>(
                         File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
@@ -111,13 +115,13 @@ namespace OpenUtau.Core.Util {
 
                     if (!string.IsNullOrWhiteSpace(Default.CustomDataPath)){
                         if (!Directory.Exists(Default.CustomDataPath)) {
-                            Log.Error("Data directory does not exist.");
+                            LoadingErrors.Add("Data directory does not exist.");
                             Default.CustomDataPath = string.Empty;
                         }
                         try {
                             File.WriteAllText(Path.Combine(Default.CustomDataPath, "temp.txt"), "custom data directory");
                         } catch {
-                            Log.Error($"Cannot access data directory: {Default.CustomDataPath}");
+                            LoadingErrors.Add($"Cannot access data directory: {Default.CustomDataPath}");
                             Default.CustomDataPath = string.Empty;
                         } finally {
                             File.Delete(Path.Combine(Default.CustomDataPath, "temp.txt"));
@@ -131,7 +135,7 @@ namespace OpenUtau.Core.Util {
                     Reset();
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to load prefs.");
+                LoadingErrors.Add($"Failed to load prefs. {e.Message}");
                 Default = new SerializablePreferences();
             }
         }
