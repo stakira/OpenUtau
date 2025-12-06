@@ -1376,7 +1376,7 @@ namespace OpenUtau.App.Views {
             int tick = DocManager.Inst.playPosTick;
             if (part.position >= tick || part.End <= tick) return;
             if (part is not UVoicePart vp) return;
-            var notesInTheWay = vp.notes.Where(n => (n.position < tick) && (n.End > tick));
+            var notesInTheWay = vp.notes.Where(n => (n.position < tick - vp.position) && (n.End > tick - vp.position));
             if (notesInTheWay.Any()) {
                 var res = await MessageBox.Show(
                     this,
@@ -1385,8 +1385,8 @@ namespace OpenUtau.App.Views {
                     MessageBox.MessageBoxButtons.YesNo);
                 if (res == MessageBox.MessageBoxResult.No) { return; }
                 do {
-                    tick = notesInTheWay.Max(n => n.End);
-                    notesInTheWay = vp.notes.Where(n => (n.position < tick) && (n.End > tick));
+                    tick = vp.position + notesInTheWay.Max(n => n.End);
+                    notesInTheWay = vp.notes.Where(n => (n.position < tick - vp.position) && (n.End > tick - vp.position));
                 } while (notesInTheWay.Any());
             }
 
@@ -1430,7 +1430,8 @@ namespace OpenUtau.App.Views {
             };
 
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, vp, firstPart));
+            DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, vp));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, firstPart));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, secondPart));
             DocManager.Inst.EndUndoGroup();
         }
