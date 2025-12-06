@@ -115,11 +115,13 @@ namespace OpenUtau.Plugin.Builtin {
 
             string color = attr.voiceColor ?? "";
             if (otos.Count > 0) {
-                oto = otos.FirstOrDefault(oto => oto.IsColorMatch(color));
-                if (oto == null) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return true;
+                } else {
                     oto = otos.First();
+                    return true;
                 }
-                return true;
             }
             return false;
         }
@@ -141,9 +143,11 @@ namespace OpenUtau.Plugin.Builtin {
 
             string color = attr.voiceColor ?? "";
             if (otos.Count > 0) {
-                oto = otos.FirstOrDefault(oto => oto.IsColorMatch(color));
-                if (oto != null) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
                     return true;
+                } else {
+                    return false;
                 }
             }
             return false;

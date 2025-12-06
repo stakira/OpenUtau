@@ -169,8 +169,9 @@ namespace OpenUtau.App.ViewModels {
             if (part != null && part is UVoicePart) {
                 this.Part = part as UVoicePart;
                 var track = DocManager.Inst.Project.tracks[part.trackNo];
-                foreach (var descriptor in track.GetSupportedExps(DocManager.Inst.Project)) {
-                    if (descriptor.type != UExpressionType.Curve) {
+
+                foreach (KeyValuePair<string, UExpressionDescriptor> pair in DocManager.Inst.Project.expressions) {
+                    if (track.TryGetExpDescriptor(DocManager.Inst.Project, pair.Key, out var descriptor) && descriptor.type != UExpressionType.Curve) {
                         var viewModel = new NotePropertyExpViewModel(descriptor, this);
                         if (descriptor.abbr == Ustx.CLR) {
                             if (track.VoiceColorExp != null && track.VoiceColorExp.options.Length > 0) {
@@ -507,7 +508,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.CustomDefaultValue == value) {
+                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
                     value = null;
                 }
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
@@ -516,7 +517,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.defaultValue == value) {
+                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
                     value = null;
                 }
                 DocManager.Inst.StartUndoGroup();
@@ -581,7 +582,7 @@ namespace OpenUtau.App.ViewModels {
 
         public NotePropertyExpViewModel(UExpressionDescriptor descriptor, NotePropertiesViewModel parent) {
             Name = descriptor.name;
-            defaultValue = descriptor.CustomDefaultValue;
+            defaultValue = descriptor.defaultValue;
             abbr = descriptor.abbr;
             if (descriptor.type == UExpressionType.Numerical) {
                 IsNumerical = true;

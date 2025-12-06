@@ -97,15 +97,14 @@ namespace OpenUtau.Classic {
             subbanks.AddRange(voicebank.Subbanks
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
                 .Select(subbank => new USubbank(subbank)));
-            var groups = subbanks.GroupBy(subbank => $"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$")
-                .Select(group => new KeyValuePair<Regex, USubbank[]>(new Regex(group.Key), group.ToArray()));
+            var patterns = subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
+                .ToList();
 
-            var dummy = new USubbank[] { new USubbank(new Subbank()) };
+            var dummy = new USubbank(new Subbank());
             otoSets.Clear();
             otos.Clear();
             otoMap.Clear();
             errors.Clear();
-            
             foreach (var otoSet in voicebank.OtoSets) {
                 var uSet = new UOtoSet(otoSet, voicebank.BasePath);
                 otoSets.Add(uSet);
@@ -117,11 +116,11 @@ namespace OpenUtau.Classic {
                         continue;
                     }
                     UOto? uOto = null;
-                    foreach (var group in groups) {
-                        var m = group.Key.Match(oto.Alias);
+                    for (var i = 0; i < patterns.Count; i++) {
+                        var m = patterns[i].Match(oto.Alias);
                         if (m.Success) {
                             oto.Phonetic = m.Groups[1].Value;
-                            uOto = new UOto(oto, uSet, group.Value);
+                            uOto = new UOto(oto, uSet, subbanks[i]);
                             break;
                         }
                     }

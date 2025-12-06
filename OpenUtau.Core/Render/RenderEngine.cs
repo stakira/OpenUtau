@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtau.Classic;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
@@ -255,7 +254,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public static void ReleaseSourceTemp() {
-            VoicebankFiles.Inst.ReleaseSourceTemp();
+            Classic.VoicebankFiles.Inst.ReleaseSourceTemp();
         }
     }
 }

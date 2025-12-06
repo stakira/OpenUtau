@@ -45,11 +45,6 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             DataContext = ViewModel = model;
             ValueTip.IsVisible = false;
-
-            if (Preferences.Default.PianorollWindowSize.TryGetPosition(out int x, out int y)) {
-                Position = new PixelPoint(x, y);
-            }
-            WindowState = (WindowState)Preferences.Default.PianorollWindowSize.State;
         }
 
         public void InitializePianoRollWindowAsync() {
@@ -109,8 +104,6 @@ namespace OpenUtau.App.Views {
                 new CommonnotePaste(),
                 new FixOverlap(),
                 new BakePitch(),
-                new RandomizeTiming(),
-                new RandomizePhonemeOffset()
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
@@ -195,9 +188,6 @@ namespace OpenUtau.App.Views {
         }
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
-            if (WindowState != WindowState.Maximized) {
-                Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
-            }
             Hide();
             e.Cancel = true;
         }
@@ -287,10 +277,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuSingers(object sender, RoutedEventArgs args) {
-            if (MainWindow != null) {
-                await MainWindow.OpenSingersWindowAsync();
-            }
+        void OnMenuSingers(object sender, RoutedEventArgs args) {
+            MainWindow?.OpenSingersWindow();
             this.Activate();
             try {
                 USinger? singer = null;
@@ -455,12 +443,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
-            var notesVM = ViewModel.NotesViewModel;
-            if (notesVM.Part == null) {
-                return;
-            }
             var dialog = new ExpressionsDialog() {
-                DataContext = new ExpressionsViewModel(notesVM.Project.tracks[notesVM.Part.trackNo]),
+                DataContext = new ExpressionsViewModel(),
             };
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
@@ -998,7 +982,7 @@ namespace OpenUtau.App.Views {
             LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
         }
 
-        public async void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+        public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
@@ -1016,9 +1000,7 @@ namespace OpenUtau.App.Views {
                         if (Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Preferences.Default.VLabelerPath)) {
                             Integrations.VLabelerClient.Inst.GotoOto(singer, hitAliasInfo.phoneme.oto);
                         } else {
-                            if (MainWindow != null) {
-                                await MainWindow.OpenSingersWindowAsync();
-                            }
+                            MainWindow?.OpenSingersWindow();
                             this.Activate();
                             DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
                         }
@@ -1571,10 +1553,6 @@ namespace OpenUtau.App.Views {
                     }
                     break;
                 case Key.V:
-                    if (isBoth) {
-                        notesVm.PastePlainNotes();
-                        return true;
-                    }
                     if (isCtrl) {
                         notesVm.PasteNotes();
                         return true;
@@ -1820,7 +1798,7 @@ namespace OpenUtau.App.Views {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(PianoRollWindow)) {
                 if (loadingNotif.startLoading) {
-                    LoadingWindow.BeginLoadingImmediate(this);
+                    LoadingWindow.BeginLoading(this);
                 } else {
                     LoadingWindow.EndLoading();
                 }

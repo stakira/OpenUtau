@@ -261,8 +261,14 @@ namespace OpenUtau.App {
         }
 
         public static string GetString(string key) {
-            TryGetString(key, out string value);
-            return value;
+            if (Application.Current == null) {
+                return key;
+            }
+            IResourceDictionary resDict = Application.Current.Resources;
+            if (resDict.TryGetResource(key, ThemeVariant.Default, out var outVar) && outVar is string s) {
+                return s;
+            }
+            return key;
         }
 
         public static bool TryGetString(string key, out string value) {

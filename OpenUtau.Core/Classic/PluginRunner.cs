@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -45,7 +44,7 @@ namespace OpenUtau.Classic {
             OnError = onError;
         }
 
-        public async Task Execute(UProject project, UVoicePart part, UNote? first, UNote? last, IPlugin plugin) {
+        public void Execute(UProject project, UVoicePart part, UNote? first, UNote? last, IPlugin plugin) {
             if (first == null || last == null) {
                 return;
             }
@@ -60,11 +59,7 @@ namespace OpenUtau.Classic {
                     return;
                 }
                 Log.Information("Legacy plugin temp file has changed.");
-                
-                var (toRemove, toAdd) = await Task.Run(() => 
-                    Ust.ParsePlugin(project, part, first, last, sequence, tempFile, encoding: plugin.Encoding)
-                );
-                
+                var (toRemove, toAdd) = Ust.ParsePlugin(project, part, first, last, sequence, tempFile, encoding: plugin.Encoding);
                 OnReplaceNote(new ReplaceNoteEventArgs(part, toRemove, toAdd));
             } catch (Exception e) {
                 OnError(new PluginErrorEventArgs("Failed to execute plugin", e));

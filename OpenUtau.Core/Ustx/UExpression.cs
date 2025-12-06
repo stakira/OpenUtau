@@ -10,9 +10,6 @@ namespace OpenUtau.Core.Ustx {
         Curve = 2,
     }
 
-    /// <summary>
-    /// Specifications of expressions managed by projects and tracks
-    /// </summary>
     public class UExpressionDescriptor : IEquatable<UExpressionDescriptor> {
         public string name;
         public string abbr;
@@ -20,46 +17,25 @@ namespace OpenUtau.Core.Ustx {
         public float min;
         public float max;
         public float defaultValue;
-        public float? _customDefaultValue = null; // made public for inclusion in YAML
         public bool isFlag;
         public string flag;
         public string[] options;
-        public bool skipOutputIfDefault = false;
-        [YamlIgnore]
-        public float CustomDefaultValue {
-            get => _customDefaultValue ?? defaultValue;
-            set {
-                if (value == defaultValue) {
-                    _customDefaultValue = null;
-                } else {
-                    _customDefaultValue = value;
-                }
-            }
-        }
 
         /// <summary>
         /// Constructor for Yaml deserialization
         /// </summary>
         public UExpressionDescriptor() { }
 
-        /// <summary>
-        /// For Numerical/Curve
-        /// </summary>
-        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "", float? customDefaultValue = null, bool skipOutputIfDefault = false) {
+        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "") {
             this.name = name;
             this.abbr = abbr.ToLower();
             this.min = min;
             this.max = max;
-            this.defaultValue = Math.Clamp(defaultValue, min, max);
+            this.defaultValue = Math.Min(max, Math.Max(min, defaultValue));
             isFlag = !string.IsNullOrEmpty(flag);
             this.flag = flag;
-            this.CustomDefaultValue = Math.Clamp(customDefaultValue ?? defaultValue, min, max);
-            this.skipOutputIfDefault = skipOutputIfDefault;
         }
 
-        /// <summary>
-        /// For Options
-        /// </summary>
         public UExpressionDescriptor(string name, string abbr, bool isFlag, string[] options) {
             this.name = name;
             this.abbr = abbr.ToLower();
@@ -84,11 +60,9 @@ namespace OpenUtau.Core.Ustx {
                 min = min,
                 max = max,
                 defaultValue = defaultValue,
-                CustomDefaultValue = CustomDefaultValue,
                 isFlag = isFlag,
                 flag = flag,
                 options = (string[])options?.Clone(),
-                skipOutputIfDefault = skipOutputIfDefault,
             };
         }
 
@@ -101,17 +75,12 @@ namespace OpenUtau.Core.Ustx {
                 this.min == other.min &&
                 this.max == other.max &&
                 this.defaultValue == other.defaultValue &&
-                this.CustomDefaultValue == other.CustomDefaultValue &&
                 this.isFlag == other.isFlag &&
                 this.flag == other.flag &&
-                ((this.options == null && other.options == null) || this.options.SequenceEqual(other.options) &&
-                this.skipOutputIfDefault == other.skipOutputIfDefault);
+                ((this.options == null && other.options == null) || this.options.SequenceEqual(other.options));
         }
     }
 
-    /// <summary>
-    /// Value for each phoneme
-    /// </summary>
     public class UExpression {
         [YamlIgnore] public UExpressionDescriptor descriptor;
 

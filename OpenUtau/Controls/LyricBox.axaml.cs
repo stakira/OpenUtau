@@ -181,7 +181,7 @@ namespace OpenUtau.App.Controls {
             viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
-            this.Focus();
+            TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
         }
     }
 }

@@ -48,9 +48,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
-        public double Width => Preferences.Default.PianorollWindowSize.Width;
-        public double Height => Preferences.Default.PianorollWindowSize.Height;
-
         public bool LockPitchPoints { get => Preferences.Default.LockUnselectedNotesPitch; }
         public bool LockVibrato { get => Preferences.Default.LockUnselectedNotesVibrato; }
         public bool LockExpressions { get => Preferences.Default.LockUnselectedNotesExpressions; }
@@ -150,26 +147,27 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             });
 
-            legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(async plugin => {
+            legacyPluginCommand = ReactiveCommand.CreateFromTask<Classic.Plugin>(async plugin => {
                 if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
                 DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(PianoRollWindow), true, "legacy plugin"));
                 
                 try {
-                    var part = NotesViewModel.Part;
-                    UNote? first;
-                    UNote? last;
-                    if (NotesViewModel.Selection.IsEmpty) {
-                        first = part.notes.First();
-                        last = part.notes.Last();
-                    } else {
-                        first = NotesViewModel.Selection.FirstOrDefault();
-                        last = NotesViewModel.Selection.LastOrDefault();
-                    }
-                    var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
-                    await runner.Execute(NotesViewModel.Project, part, first, last, plugin);
-
+                    await Task.Run(() => {
+                        var part = NotesViewModel.Part;
+                        UNote? first;
+                        UNote? last;
+                        if (NotesViewModel.Selection.IsEmpty) {
+                            first = part.notes.First();
+                            last = part.notes.Last();
+                        } else {
+                            first = NotesViewModel.Selection.FirstOrDefault();
+                            last = NotesViewModel.Selection.LastOrDefault();
+                        }
+                        var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
+                        runner.Execute(NotesViewModel.Project, part, first, last, plugin);
+                    });
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 } finally {
@@ -224,7 +222,6 @@ namespace OpenUtau.App.ViewModels {
         public void Cut() => NotesViewModel.CutNotes();
         public void Copy() => NotesViewModel.CopyNotes();
         public void Paste() => NotesViewModel.PasteNotes();
-        public void PastePlain() => NotesViewModel.PastePlainNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
 
