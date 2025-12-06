@@ -834,9 +834,9 @@ namespace OpenUtau.Plugin.Builtin {
                                 } else { startingC = 0; }
 
                                 if (phonemes.Count == 0) {
-                                    parsingVCC = $"{prevV}{cc[0]}";
-                                    if (!ucvCs.Contains($"{cc.Last()}")) {
-                                        parsingVCC = $"{prevV}{cc[0]}-";
+                                    parsingVCC = $"{prevV}{cc[0]}-";
+                                    if (cc.Length - lastCPrevWord - 1 > 0 && !dontParse) {
+                                        parsingVCC = $"{prevV}{cc[0]}";
                                     }
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                         parsingVCC = CheckVCExceptions($"{prevV}{cc[0]}") + "-";
