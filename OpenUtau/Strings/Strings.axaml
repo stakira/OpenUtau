@@ -51,7 +51,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
-  <system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>
+  <system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Click here to recover.</system:String>
   <system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>
   <system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
   New BPM:</system:String>
@@ -76,6 +76,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>
   <system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>
   <system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>
+  <system:String x:Key="errors.expression.customDefault">Project/Track default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>
   <system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>
   <system:String x:Key="errors.expression.marge">The following expressions have been merged due to duplicate flags</system:String>
@@ -98,6 +99,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>
   <system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>
   <system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>
+  <system:String x:Key="errors.failed.transcribe">Error loading SOME. Please download SOME from {0}</system:String>
   <system:String x:Key="errors.install.cpp">Try installing the latest Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
   <system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>
   <system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>
@@ -124,7 +126,13 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="exps.minvalue">Min</system:String>
   <system:String x:Key="exps.name">Name</system:String>
   <system:String x:Key="exps.optionvalues">Option Values</system:String>
+  <system:String x:Key="exps.project">Project Expressions</system:String>
+  <system:String x:Key="exps.projectdefault">Project Default</system:String>
   <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
+  <system:String x:Key="exps.skipoutput">Skip flag output when the value is system default</system:String>
+  <system:String x:Key="exps.systemdefault">System Default</system:String>
+  <system:String x:Key="exps.track">Track Expressions (override)</system:String>
+  <system:String x:Key="exps.trackdefault">Track Default</system:String>
   <system:String x:Key="exps.type">Type</system:String>
   <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
@@ -179,6 +187,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>
   <system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>
   <system:String x:Key="menu.edit.paste">Paste</system:String>
+  <system:String x:Key="menu.edit.pasteplainnotes">Paste as plain notes</system:String>
   <system:String x:Key="menu.edit.redo">Redo</system:String>
   <system:String x:Key="menu.edit.selectall">Select All</system:String>
   <system:String x:Key="menu.edit.undo">Undo</system:String>
@@ -228,6 +237,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
   <system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.reset">Reset Layout</system:String>
   <system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>
   <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
@@ -239,6 +249,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.view">View</system:String>
 
   <system:String x:Key="mergevoicebank.back">Back</system:String>
+  <system:String x:Key="mergevoicebank.error">Failed to merge singer.</system:String>
   <system:String x:Key="mergevoicebank.merge">Merge</system:String>
   <system:String x:Key="mergevoicebank.next">Next</system:String>
   <system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
@@ -339,6 +350,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizeoffset">Randomize phoneme offset</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randomizetiming">Randomize note timing</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizetuning">Randomize tuning</system:String>
   <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>

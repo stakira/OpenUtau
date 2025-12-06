@@ -59,6 +59,7 @@ namespace OpenUtau.App.Views {
                 AskIfSaveAndContinue = AskIfSaveAndContinue
             };
 
+            viewModel.NewProject();
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -83,6 +84,11 @@ namespace OpenUtau.App.Views {
             PartMergeCommand = ReactiveCommand.Create<UPart>(part => MergePart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
+
+            if (Preferences.Default.MainWindowSize.TryGetPosition(out int x, out int y)) {
+                Position = new PixelPoint(x, y);
+            }
+            WindowState = (WindowState)Preferences.Default.MainWindowSize.State;
 
             DocManager.Inst.AddSubscriber(this);
 
@@ -509,8 +515,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuSingers(object sender, RoutedEventArgs args) {
-            OpenSingersWindow();
+        async void OnMenuSingers(object sender, RoutedEventArgs args) {
+            await OpenSingersWindowAsync();
         }
 
         /// <summary>
@@ -525,11 +531,7 @@ namespace OpenUtau.App.Views {
             return null;
         }
 
-        public void OpenSingersWindow() {
-            LoadingWindow.RunAsyncOnUIThread(OpenSingersWindowAsync);
-        }
-
-        public async void OpenSingersWindowAsync() {
+        public async Task OpenSingersWindowAsync() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;
@@ -725,6 +727,18 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuLayoutReset(object sender, RoutedEventArgs args) {
+            WindowState = WindowState.Normal;
+            Position = new PixelPoint(0, 0);
+            Width = 1024;
+            Height = 576;
+            if (pianoRollWindow != null) {
+                pianoRollWindow.Position = new PixelPoint(100, 100);
+                pianoRollWindow.Width = 1024;
+                pianoRollWindow.Height = 576;
+            }
+        }
+
         void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);
         void OnMenuLayoutVSplit12(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 3);
         void OnMenuLayoutVSplit13(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 4);
@@ -837,37 +851,80 @@ namespace OpenUtau.App.Views {
 
         void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
             if (!args.Handled && args.ClickCount == 1) {
-                FocusManager?.ClearFocus();
+                this.Focus();
+                
             }
         }
 
         async void OnDrop(object? sender, DragEventArgs args) {
-            var storageItem = args.Data?.GetFiles()?.FirstOrDefault();
-            if (storageItem == null) {
+            string[] ProjectExts = { ".ustx", ".ust", ".vsqx", ".ufdata", ".musicxml", ".mid", ".midi" };
+            string[] ArchiveExts = { ".zip", ".rar", ".uar" };
+            string[] AudioExts = { ".mp3", ".wav", ".ogg", ".flac" };
+            string[] SupportedExts = ProjectExts
+                .Concat(ArchiveExts)
+                .Concat(AudioExts)
+                .Append(".dll")
+                .Append(".exe")
+                .Append(Core.Vogen.VogenSingerInstaller.FileExt)
+                .Append(DependencyInstaller.FileExt)
+                .ToArray();
+            var files = args.Data?.GetFiles()?.Where(i => i != null).Select(i => i.Path.LocalPath).ToArray() ?? new string[] { };
+            if (files.Length == 0) {
                 return;
             }
-            string file = storageItem.Path.LocalPath;
+            var supportedFiles = files.Where(file => SupportedExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+            if (supportedFiles.Length == 0) {
+                _ = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.unsupportedfile.message") + Path.GetExtension(files[0]),
+                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            string FirstExt = Path.GetExtension(supportedFiles[0]).ToLower();
+            //If multiple project/audio files are dropped, open/import them all.
+            if (ProjectExts.Contains(FirstExt) || AudioExts.Contains(FirstExt)) {
+                var projectFiles = supportedFiles.Where(file => ProjectExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+                viewModel.Page = 1;
+                if (projectFiles.Length > 0) {
+                    try {
+                        var loadedProjects = Formats.ReadProjects(files);
+                        // Imports tempo for new projects, otherwise asks the user.
+                        bool importTempo = DocManager.Inst.Project.parts.Count == 0;
+                        if (!importTempo && loadedProjects[0].tempos.Count > 0) {
+                            var tempoString = string.Join("\n",
+                                loadedProjects[0].tempos
+                                    .Select(tempo => $"position: {tempo.position}, tempo: {tempo.bpm}")
+                                );
+                            // Ask the user
+                            var result = await MessageBox.Show(
+                                this,
+                                ThemeManager.GetString("dialogs.importtracks.importtempo") + "\n" + tempoString,
+                                ThemeManager.GetString("dialogs.importtracks.caption"),
+                                MessageBox.MessageBoxButtons.YesNo);
+                            importTempo = result == MessageBox.MessageBoxResult.Yes;
+                        }
+                        viewModel.ImportTracks(loadedProjects, importTempo);
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to import project");
+                        _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import files", "<translate:errors.failed.importfiles>", e));
+                    }
+                }
+                var audioFiles = supportedFiles.Where(file => AudioExts.Contains(Path.GetExtension(file).ToLower())).ToArray();
+                foreach (var audioFile in audioFiles) {
+                    try {
+                        viewModel.ImportAudio(audioFile);
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to import audio");
+                        _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
+                    }
+                }
+                return;
+            }
+            // Otherwise, only one installer file is handled at a time.
+            string file = supportedFiles[0];
             var ext = Path.GetExtension(file).ToLower();
-            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext == ".ufdata" || ext == ".musicxml") {
-                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
-                    return;
-                }
-                try {
-                    viewModel.OpenProject(new string[] { file });
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to open file {file}");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException($"Failed to open file {file}", $"<translate:errors.failed.openfile>: {file}", e));
-                }
-            } else if (ext == ".mid" || ext == ".midi") {
-                try {
-                    viewModel.ImportMidi(file);
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to import midi");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import midi", "<translate:errors.failed.importmidi>", e));
-                }
-            } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
+            if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
                 try {
                     var setup = new SingerSetupDialog() {
                         DataContext = new SingerSetupViewModel() {
@@ -910,20 +967,6 @@ namespace OpenUtau.App.Views {
                 if (result == MessageBox.MessageBoxResult.Ok) {
                     DependencyInstaller.Install(file);
                 }
-            } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
-                try {
-                    viewModel.ImportAudio(file);
-                    viewModel.Page = 1;
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to import audio");
-                    _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
-                }
-            } else {
-                _ = await MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("dialogs.unsupportedfile.message") + ext,
-                    ThemeManager.GetString("dialogs.unsupportedfile.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
             }
         }
 
@@ -1255,6 +1298,11 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void OnWelcomeRecovery(object sender, RoutedEventArgs args) {
+            viewModel.OpenProject(new string[] { viewModel.RecoveryPath });
+            viewModel.Page = 1;
+        }
+  
         void MergePart(UPart part) {
             List<UPart> selectedParts = viewModel.TracksViewModel.SelectedParts;
             if (!selectedParts.All(p => p.trackNo.Equals(part.trackNo))) {
@@ -1367,7 +1415,7 @@ namespace OpenUtau.App.Views {
                 }
             }
         }
-        void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors) {
+        void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors, bool manually = false) {
             var parts = DocManager.Inst.Project.parts
                 .Where(part => part.trackNo == track.TrackNo && part is UVoicePart)
                 .Cast<UVoicePart>()
@@ -1382,6 +1430,8 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.EndUndoGroup();
                 };
                 dialog.ShowDialog(this);
+            } else if (manually) {
+                MessageBox.Show(this, ThemeManager.GetString("lyrics.nonote"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
             }
         }
         void SetVoiceColorRemapping(UTrack track, IEnumerable<UVoicePart> parts, VoiceColorMappingViewModel vm) {
@@ -1410,6 +1460,9 @@ namespace OpenUtau.App.Views {
                     Log.Information("Clearing cache...");
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
+                }
+                if (WindowState != WindowState.Maximized) {
+                    Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
                 }
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
@@ -1460,14 +1513,19 @@ namespace OpenUtau.App.Views {
                 }
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
+                    // Verify whether remapping is required when the voice color lineup changes
                     ValidateTracksVoiceColor();
                 } else {
                     UTrack track = DocManager.Inst.Project.tracks[voicecolorNotif.TrackNo];
-                    if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
+                    if (!voicecolorNotif.Validate) {
+                        // When the user intentionally invokes remapping
+                        if (track.VoiceColorExp.options.Length == 0) {
+                            MessageBox.Show(this, ThemeManager.GetString("dialogs.voicecolorremapping.error"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
+                        } else {
+                            VoiceColorRemapping(track, track.VoiceColorNames, track.VoiceColorExp.options, true);
+                        }
+                    } else if (track.ValidateVoiceColor(out var oldColors, out var newColors)) { // Verify whether remapping is required when the singer is changed
                         VoiceColorRemapping(track, oldColors, newColors);
-                    } else if (!voicecolorNotif.Validate) {
-                        // Cases where this function was intentionally invoked
-                        MessageBox.Show(this, ThemeManager.GetString("dialogs.voicecolorremapping.error"), ThemeManager.GetString("errors.caption"), MessageBox.MessageBoxButtons.Ok);
                     }
                 }
             }

@@ -144,7 +144,7 @@ namespace OpenUtau.App.Controls {
         private void OnKeyDown(object? sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
-                    TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
+                    this.Focus();
                     e.Handled = true;
                     break;
                 default:
@@ -165,10 +165,10 @@ namespace OpenUtau.App.Controls {
                     }
                 }
             } else if (cmd is TrackCommand) {
-                if (cmd is RemoveTrackCommand removeTrack) {
-                    if (ViewModel.Part != null && removeTrack.removedParts.Contains(ViewModel.Part)) {
-                        LoadPart(null);
-                    }
+                if (cmd is RemoveTrackCommand removeTrack && ViewModel.Part != null && removeTrack.removedParts.Contains(ViewModel.Part)) {
+                    LoadPart(null);
+                } else if (cmd is TrackChangeRenderSettingCommand changeRenderer && ViewModel.Part != null && changeRenderer.track.TrackNo == ViewModel.Part.trackNo) {
+                    LoadPart(ViewModel.Part);
                 }
             } else if (cmd is ConfigureExpressionsCommand && ViewModel.Part != null) {
                 LoadPart(ViewModel.Part);
