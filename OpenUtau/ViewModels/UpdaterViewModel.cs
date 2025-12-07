@@ -34,7 +34,6 @@ namespace OpenUtau.App.ViewModels {
         }
         public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         public bool IsDarkMode => ThemeManager.IsDarkMode;
-        public static string? AppImagePath => Environment.GetEnvironmentVariable("APPIMAGE");
         [Reactive] public string UpdaterStatus { get; set; }
         [Reactive] public bool UpdateAvailable { get; set; }
         [Reactive] public FontWeight UpdateButtonFontWeight { get; set; }
@@ -100,7 +99,7 @@ namespace OpenUtau.App.ViewModels {
 
         static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
             string suffix = PathManager.Inst.IsInstalled ? "-installer" 
-                                : File.Exists(AppImagePath) ? "-appimage"
+                                : PathManager.Inst.IsAppImage ? "-appimage"
                                 : "";
             return release.assets
                 .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
@@ -246,7 +245,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         protected override async Task RunDownloadedInstaller(string downloadFilePath) {
-            if (OS.IsLinux() && Path.GetExtension(downloadFilePath) == ".AppImage" && File.Exists(UpdaterViewModel.AppImagePath)) {
+            if (OS.IsLinux() && Path.GetExtension(downloadFilePath) == ".AppImage" && PathManager.Inst.IsAppImage) {
                 string batchFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".sh");
                 string updateScript = $@"
                         COUNTER=0;
@@ -259,11 +258,11 @@ namespace OpenUtau.App.ViewModels {
                             fi;
                         done;
                         
-                        mv -f ""{downloadFilePath}"" ""{UpdaterViewModel.AppImagePath}""
+                        mv -f ""{downloadFilePath}"" ""{PathManager.Inst.AppImagePath}""
 
-                        chmod +x ""{UpdaterViewModel.AppImagePath}""
+                        chmod +x ""{PathManager.Inst.AppImagePath}""
 
-                        ""{UpdaterViewModel.AppImagePath}""";
+                        ""{PathManager.Inst.AppImagePath}""";
                 
                 await File.WriteAllTextAsync(batchFilePath, updateScript.Replace("\r\n", "\n"));
 
