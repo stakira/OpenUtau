@@ -81,6 +81,7 @@ replacements:
   - {from: [i, ng], to: [1, ng]}
   - {from: [9, r], to: [0, r]}
   - {from: [e, r], to: [A, r]}
+  - {from: [i, r], to: [E, r]}
   - {from: ['@', m], to: ['&', m]}
   - {from: ['@', n], to: ['&', n]}
   - {from: ['@', ng], to: [Ang]}
