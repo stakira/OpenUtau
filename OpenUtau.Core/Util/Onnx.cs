@@ -111,7 +111,6 @@ namespace OpenUtau.Core {
                     options.AppendExecutionProvider_Nnapi();
                     break;
             }
-            options.AppendExecutionProvider_CPU(); // safe fallback
             return options;
         }
 
