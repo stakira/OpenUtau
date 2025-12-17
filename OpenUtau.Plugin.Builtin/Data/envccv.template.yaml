@@ -79,6 +79,7 @@ replacements:
   - {from: [h, E], to: [hh, E]}
   - {from: [h, y], to: [hh, y]}
   - {from: [i, ng], to: [1, ng]}
+  - {from: [a, ng], to: [9, ng]}
   - {from: [9, r], to: [0, r]}
   - {from: [e, r], to: [A, r]}
   - {from: [i, r], to: [E, r]}
