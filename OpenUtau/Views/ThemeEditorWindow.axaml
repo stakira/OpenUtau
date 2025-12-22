@@ -26,7 +26,11 @@
           <TextBlock VerticalAlignment="Center" Text="BackgroundColorPressed"/>
           <ColorPicker Color="{Binding BackgroundColorPressed}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Panel>
+          <TextBlock VerticalAlignment="Center" Text="BackgroundColorDisabled"/>
+          <ColorPicker Color="{Binding BackgroundColorDisabled}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
+        </Panel>
+        
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="ForegroundColor"/>
           <ColorPicker Color="{Binding ForegroundColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
