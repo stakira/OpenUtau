@@ -99,7 +99,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowPortrait { get; set; }
         [Reactive] public bool ShowIcon { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
-        public ObservableCollection<string> ThemeItems { get; } = [];
+        [Reactive] public bool ThemeEditable { get; set; }
+        public ObservableCollection<string> ThemeItems { get; set; } = [];
+        public bool IsThemeEditorOpen => Views.ThemeEditorWindow.IsOpen;
 
         // UTAU
         public List<string> DefaultRendererOptions { get; set; }
@@ -171,8 +173,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
-            Colors.CustomTheme.ListThemes();
-            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)];
+            RefreshThemes();
             ThemeName = Preferences.Default.ThemeName;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -187,7 +188,7 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
-            ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;        
+            ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -254,9 +255,12 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(vm => vm.ThemeName)
                 .Subscribe(themeName => {
-                    Preferences.Default.ThemeName = themeName;
-                    Preferences.Save();
-                    App.SetTheme();
+                    ThemeEditable = themeName != "Light" && themeName != "Dark";
+                    if (!IsThemeEditorOpen) {
+                        Preferences.Default.ThemeName = themeName;
+                        Preferences.Save();
+                        App.SetTheme();
+                    }
                 });
             this.WhenAnyValue(vm => vm.DegreeStyle)
                 .Subscribe(degreeStyle => {
@@ -385,6 +389,12 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.SkipRenderingMutedTracks = skipRenderingMutedTracks;
                     Preferences.Save();
                 });
+        }
+
+        public void RefreshThemes() {
+            Colors.CustomTheme.ListThemes();
+            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)];
+            this.RaisePropertyChanged(nameof(ThemeItems));
         }
 
         public void TestAudioOutputDevice() {

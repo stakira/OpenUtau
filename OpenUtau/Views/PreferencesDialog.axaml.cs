@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Colors;
 using OpenUtau.Core;
+using ReactiveUI;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
@@ -116,6 +119,48 @@ namespace OpenUtau.App.Views {
             }
 
             ((PreferencesViewModel)DataContext!).SetWinePath(winePath);
+        }
+
+        void OpenCustomThemeEditor(object sender, RoutedEventArgs e) {
+            var themeEditor = new ThemeEditorWindow(CustomTheme.Themes[viewModel!.ThemeName]);
+            viewModel!.RaisePropertyChanged(nameof(viewModel.IsThemeEditorOpen));
+            themeEditor.Show();
+        }
+
+        void OnCustomThemeCreate(object sender, RoutedEventArgs e) {
+            var dialog = new TypeInDialog {
+                Title = "Create Custom Theme"
+            };
+            dialog.SetPrompt("Enter Theme Name");
+            dialog.onFinish = s => {
+                if (string.IsNullOrEmpty(s)) {
+                    MessageBox.ShowModal(this, "Theme name cannot be empty.", "Create Custom Theme");
+                    return;
+                }
+                string filename = string.Join("", s.Where(c => Char.IsLetterOrDigit(c) || c == ' '))
+                                    .Replace(" ", "-").ToLower() + ".yaml";
+
+                var themeYaml = new CustomTheme.ThemeYaml {
+                    Name = s
+                };
+                File.WriteAllText(Path.Join(PathManager.Inst.ThemesPath, filename), Yaml.DefaultSerializer.Serialize(themeYaml));
+                viewModel!.RefreshThemes();
+            };
+            dialog.ShowDialog(this);
+        }
+
+        async void OnCustomThemeDelete(object sender, RoutedEventArgs e) {
+            var result = await MessageBox.Show(
+                this,
+                "Are you sure you want to delete this theme?",
+                "Delete Custom Theme",
+                MessageBox.MessageBoxButtons.YesNo);
+            if (result == MessageBox.MessageBoxResult.Yes) {
+                string previousTheme = viewModel!.ThemeItems.TakeWhile(x => x != viewModel!.ThemeName).LastOrDefault()!;
+                File.Delete(CustomTheme.Themes[viewModel!.ThemeName]);
+                viewModel!.RefreshThemes();
+                viewModel!.ThemeName = previousTheme;
+            }
         }
     }
 }
