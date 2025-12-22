@@ -14,6 +14,7 @@
           <TextBlock VerticalAlignment="Center" Text="IsDarkMode"/>
           <ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding IsDarkMode}"/>
         </Panel>
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="BackgroundColor"/>
           <ColorPicker Color="{Binding BackgroundColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -30,7 +31,7 @@
           <TextBlock VerticalAlignment="Center" Text="BackgroundColorDisabled"/>
           <ColorPicker Color="{Binding BackgroundColorDisabled}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-        
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="ForegroundColor"/>
           <ColorPicker Color="{Binding ForegroundColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -47,7 +48,7 @@
           <TextBlock VerticalAlignment="Center" Text="ForegroundColorDisabled"/>
           <ColorPicker Color="{Binding ForegroundColorDisabled}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="BorderColor"/>
           <ColorPicker Color="{Binding BorderColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -56,7 +57,7 @@
           <TextBlock VerticalAlignment="Center" Text="BorderColorPointerOver"/>
           <ColorPicker Color="{Binding BorderColorPointerOver}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="SystemAccentColor"/>
           <ColorPicker Color="{Binding SystemAccentColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -69,7 +70,7 @@
           <TextBlock VerticalAlignment="Center" Text="SystemAccentColorDark1"/>
           <ColorPicker Color="{Binding SystemAccentColorDark1}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="NeutralAccentColor"/>
           <ColorPicker Color="{Binding NeutralAccentColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -90,7 +91,7 @@
           <TextBlock VerticalAlignment="Center" Text="AccentColor3"/>
           <ColorPicker Color="{Binding AccentColor3}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="TickLineColor"/>
           <ColorPicker Color="{Binding TickLineColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -107,7 +108,7 @@
           <TextBlock VerticalAlignment="Center" Text="TrackBackgroundAltColor"/>
           <ColorPicker Color="{Binding TrackBackgroundAltColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="WhiteKeyColorLeft"/>
           <ColorPicker Color="{Binding WhiteKeyColorLeft}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -120,7 +121,7 @@
           <TextBlock VerticalAlignment="Center" Text="WhiteKeyNameColor"/>
           <ColorPicker Color="{Binding WhiteKeyNameColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="CenterKeyColorLeft"/>
           <ColorPicker Color="{Binding CenterKeyColorLeft}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
@@ -133,7 +134,7 @@
           <TextBlock VerticalAlignment="Center" Text="CenterKeyNameColor"/>
           <ColorPicker Color="{Binding CenterKeyNameColor}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
-
+        <Separator Margin="0"/>
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="BlackKeyColorLeft"/>
           <ColorPicker Color="{Binding BlackKeyColorLeft}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
