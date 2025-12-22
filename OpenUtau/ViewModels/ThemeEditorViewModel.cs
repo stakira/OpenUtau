@@ -4,12 +4,11 @@ using System.Text;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Styling;
-using OpenUtau.App.Views;
 using OpenUtau.Core;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using static OpenUtau.Colors.CustomTheme;
+using OpenUtau.Colors;
 
 namespace OpenUtau.App.ViewModels {
     public class ThemeEditorViewModel : ViewModelBase {
@@ -60,9 +59,10 @@ namespace OpenUtau.App.ViewModels {
 
         public ThemeEditorViewModel(string customThemePath) {
             this.customThemePath = customThemePath;
-            ThemeYaml themeYaml = new();
+
+            var themeYaml = new CustomTheme.ThemeYaml();
             try {
-                themeYaml = Yaml.DefaultDeserializer.Deserialize<ThemeYaml>(File.ReadAllText(customThemePath, Encoding.UTF8));
+                themeYaml = Yaml.DefaultDeserializer.Deserialize<CustomTheme.ThemeYaml>(File.ReadAllText(customThemePath, Encoding.UTF8));
             } catch (Exception e) {
                 Log.Error(e, $"Failed to parse yaml in {customThemePath}");
             }
@@ -221,7 +221,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Save() {
-            var themeYaml = new ThemeYaml {
+            var themeYaml = new CustomTheme.ThemeYaml {
                 Name = Name,
                 IsDarkMode = IsDarkMode,
                 BackgroundColor = BackgroundColor.ToString(),
@@ -268,12 +268,5 @@ namespace OpenUtau.App.ViewModels {
             File.WriteAllText(customThemePath, Yaml.DefaultSerializer.Serialize(themeYaml), Encoding.UTF8);
         }
 
-        private static Color getColorResource(string res) {
-            if (Application.Current == null) {
-                return Color.Parse("#FFFFFF");
-            }
-
-            return (Color) Application.Current.Resources[res]!;
-        }
     }
 }
