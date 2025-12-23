@@ -8,7 +8,6 @@ using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Colors;
 using OpenUtau.Core;
-using ReactiveUI;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
@@ -123,7 +122,6 @@ namespace OpenUtau.App.Views {
 
         void OpenCustomThemeEditor(object sender, RoutedEventArgs e) {
             ThemeEditorWindow.Show(CustomTheme.Themes[viewModel!.ThemeName]);
-            viewModel!.RaisePropertyChanged(nameof(viewModel.IsThemeEditorOpen));
         }
 
         void OnCustomThemeCreate(object sender, RoutedEventArgs e) {

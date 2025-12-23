@@ -29,7 +29,7 @@ namespace OpenUtau.App.Views {
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
             _instance = null;
-            EnableThemeSelect();
+            ThemeSelectEnabled();
             App.SetTheme();
         }
 
@@ -37,12 +37,13 @@ namespace OpenUtau.App.Views {
             if (_instance == null) {
                 _instance = new ThemeEditorWindow(customThemePath);
                 _instance.Show();
+                ThemeSelectEnabled();
             } else {
                 _instance.Activate();
             }
         }
 
-        private static void EnableThemeSelect() {
+        private static void ThemeSelectEnabled() {
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime) {
                 var prefDialog = desktopLifetime.Windows.OfType<PreferencesDialog>().FirstOrDefault();
                 if (prefDialog != null) {
