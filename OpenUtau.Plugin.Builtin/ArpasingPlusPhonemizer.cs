@@ -2021,7 +2021,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return Regex.IsMatch(alias, $@"\b{Regex.Escape(phoneme)}\b");
+            return alias == phoneme;
         }
 
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {

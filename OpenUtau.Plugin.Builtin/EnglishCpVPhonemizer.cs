@@ -1094,7 +1094,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return Regex.IsMatch(alias, $@"\b{Regex.Escape(phoneme)}\b");
+            return alias == phoneme;
         }
         
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
@@ -1131,17 +1131,7 @@ namespace OpenUtau.Plugin.Builtin {
                         .Concat(affricate)
                         .Distinct(); // Ensure no duplicates
 
-            foreach (var c in allConsonants) {
-                if (PhonemeHasEndingSuffix(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            foreach (var v in vowels) {
-                if (alias.EndsWith("-")) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
+            
 
             // consonant timings
 
@@ -1151,6 +1141,18 @@ namespace OpenUtau.Plugin.Builtin {
                 var overrideValue = kvp.Value;
                 if (PhonemeIsPresent(alias, overridePhoneme)) {
                     return base.GetTransitionBasicLengthMs() * overrideValue;
+                }
+            }
+
+            foreach (var c in allConsonants) {
+                if (PhonemeHasEndingSuffix(alias, c)) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
+                }
+            }
+
+            foreach (var v in vowels) {
+                if (alias.EndsWith("-")) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
 
