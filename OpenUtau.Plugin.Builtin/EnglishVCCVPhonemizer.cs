@@ -32,6 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
+        private Dictionary<string, string> yamlDictionaryReplacements = new Dictionary<string, string>();
         // for fallbacks
         private readonly Dictionary<string, string> replacements = "ax=x".Split(';')
                 .Select(entry => entry.Split('='))
@@ -115,7 +116,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"skt","sk"},
             };
         //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
-        private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hy" };
+        private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
         private readonly string[] ucvCs = { "r", "l", "w", "y", "f"};
         private readonly string[] starlightccs = { "rl", "ll", "nn", "mm" };
@@ -238,6 +239,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
+                yamlDictionaryReplacements.Clear(); // Reset YAML overrides
+                mergingReplacements = new List<Replacement>();
+                splittingReplacements = new List<Replacement>();
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
                     file = Path.Combine(singer.Location, "envccv.yaml");
@@ -354,7 +358,7 @@ namespace OpenUtau.Plugin.Builtin {
                                             } else if (replacement.from is string fromString) {
                                                 // 'from' is a single string (e.g., tr, aw, ae, m, ng)
                                                 if (replacement.to is string toString) {
-                                                    dictionaryReplacements[fromString] = toString;
+                                                    yamlDictionaryReplacements[fromString] = toString;
                                                 } else if (replacement.to is IEnumerable<object> toList) {
                                                     splittingReplacements.Add(new Replacement { from = fromString, to = toList.Select(item => item.ToString()).ToArray() });
                                                 } else {
@@ -368,6 +372,13 @@ namespace OpenUtau.Plugin.Builtin {
                                         }
                                     } catch (Exception ex) {
                                         Log.Error($"Failed to process replacement entry: {replacement}. Error: {ex.Message}");
+                                    }
+                                }
+                                foreach (var r in mergingReplacements.Concat(splittingReplacements)) {
+                                    foreach (var output in r.ToList) {
+                                        if (dictionaryReplacements.ContainsKey(output) && !yamlDictionaryReplacements.ContainsKey(output)) {
+                                            yamlDictionaryReplacements[output] = output;
+                                        }
                                     }
                                 }
                             } else {
@@ -452,13 +463,15 @@ namespace OpenUtau.Plugin.Builtin {
 
         // prioritize yaml replacements over dictionary replacements
         private string ReplacePhoneme(string phoneme, int tone) {
-            // If the original phoneme has an OTO, use it directly.
+            // If the original phoneme has an OTO, use it directly. 
             if (HasOto(phoneme, tone) || HasOto(ValidateAlias(phoneme), tone)) {
                 return phoneme;
             }
-            // Otherwise, try to apply the dictionary replacement.
-            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
-                return replaced;
+            if (yamlDictionaryReplacements.TryGetValue(phoneme, out var yamlReplaced)) {
+                return yamlReplaced;
+            }
+            if (dictionaryReplacements.TryGetValue(phoneme, out var baseReplaced)) {
+                return baseReplaced;
             }
             return phoneme;
         }
@@ -642,15 +655,12 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         if (dontParse) {
                             basePhoneme = $"{ccNoParse}{v}";
-                            if (ccNoParse == "hy") {
-                                basePhoneme = $"hhy{v}";
-                            }
                             if (!HasOto(basePhoneme, syllable.vowelTone)) {
                                 basePhoneme = $"_{v}";
                             }
 
                             var vc = $"{prevV} {ccNoParse}";
-                            if ($"{ccNoParse}" == "hy") {
+                            if ($"{ccNoParse}" == "hhy") {
                                 vc = $"{prevV} hh";
                             }
 
@@ -806,18 +816,9 @@ namespace OpenUtau.Plugin.Builtin {
                             if (dontParse) {
 
                                 basePhoneme = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
-                                if (ccNoParse == "hy") {
-                                    basePhoneme = $"hhy{v}";
-                                }
                                 vccExceptions = $"1ng {cc[1]}{cc[2]}";
-                                if (ccNoParse == "hy") {
-                                    vccExceptions = $"1ng hhy";
-                                }
                                 if (ing && HasOto(vccExceptions, syllable.vowelTone)) {
                                     vccExceptions = $"1ng {cc[1]}{cc[2]}";
-                                    if (ccNoParse == "hy") {
-                                        vccExceptions = $"1ng hhy";
-                                    }
                                     phonemes.Add(vccExceptions);
                                     startingC = 2;
                                 } else {
@@ -833,9 +834,6 @@ namespace OpenUtau.Plugin.Builtin {
                                         startingC = 2;
                                     } else {
                                         basePhoneme = $"-{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
-                                        if (ccNoParse == "hy") {
-                                            basePhoneme = $"-hhy{v}";
-                                        }
                                         startingC = 0;
                                     }
                                 }
