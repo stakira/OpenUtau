@@ -128,20 +128,22 @@ namespace OpenUtau.App.Views {
 
         void OnCustomThemeCreate(object sender, RoutedEventArgs e) {
             var dialog = new TypeInDialog {
-                Title = "Create Custom Theme"
+                Title = ThemeManager.GetString("prefs.appearance.customtheme.create.title")
             };
-            dialog.SetPrompt("Enter Theme Name");
+            dialog.SetPrompt(ThemeManager.GetString("prefs.appearance.customtheme.create.prompt"));
             dialog.onFinish = s => {
                 if (string.IsNullOrEmpty(s)) {
-                    MessageBox.ShowModal(this, "Theme name cannot be empty.", "Create Custom Theme");
+                    MessageBox.ShowModal(this, 
+                        ThemeManager.GetString("prefs.appearance.customtheme.create.empty"),
+                        ThemeManager.GetString("prefs.appearance.customtheme.create.title"));
                     return;
                 }
-                string filename = string.Join("", s.Where(c => Char.IsLetterOrDigit(c) || c == ' '))
-                                    .Replace(" ", "-").ToLower() + ".yaml";
 
-                var themeYaml = new CustomTheme.ThemeYaml {
-                    Name = s
-                };
+                string filename = string.Join("", s.Where(c => Char.IsLetterOrDigit(c) || c == ' '))
+                                        .Replace(" ", "-").ToLower() + ".yaml";
+
+                var themeYaml = new CustomTheme.ThemeYaml { Name = s };
+
                 File.WriteAllText(Path.Join(PathManager.Inst.ThemesPath, filename), Yaml.DefaultSerializer.Serialize(themeYaml));
                 viewModel!.RefreshThemes();
             };
@@ -151,8 +153,8 @@ namespace OpenUtau.App.Views {
         async void OnCustomThemeDelete(object sender, RoutedEventArgs e) {
             var result = await MessageBox.Show(
                 this,
-                "Are you sure you want to delete this theme?",
-                "Delete Custom Theme",
+                ThemeManager.GetString("prefs.appearance.customtheme.delete.message"),
+                ThemeManager.GetString("prefs.appearance.customtheme.delete.title"),
                 MessageBox.MessageBoxButtons.YesNo);
             if (result == MessageBox.MessageBoxResult.Yes) {
                 string previousTheme = viewModel!.ThemeItems.TakeWhile(x => x != viewModel!.ThemeName).LastOrDefault()!;
