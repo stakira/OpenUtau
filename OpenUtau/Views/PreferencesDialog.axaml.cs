@@ -122,9 +122,8 @@ namespace OpenUtau.App.Views {
         }
 
         void OpenCustomThemeEditor(object sender, RoutedEventArgs e) {
-            var themeEditor = new ThemeEditorWindow(CustomTheme.Themes[viewModel!.ThemeName]);
+            ThemeEditorWindow.Show(CustomTheme.Themes[viewModel!.ThemeName]);
             viewModel!.RaisePropertyChanged(nameof(viewModel.IsThemeEditorOpen));
-            themeEditor.Show();
         }
 
         void OnCustomThemeCreate(object sender, RoutedEventArgs e) {

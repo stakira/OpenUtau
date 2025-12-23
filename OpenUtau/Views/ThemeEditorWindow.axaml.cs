@@ -8,13 +8,14 @@ using ReactiveUI;
 
 namespace OpenUtau.App.Views {
     public partial class ThemeEditorWindow : Window {
-        
-        public static bool IsOpen { get; private set; }
 
-        public ThemeEditorWindow(string customThemePath) {
+        private static ThemeEditorWindow? _instance;
+
+        public static bool IsOpen => _instance != null;
+
+        private ThemeEditorWindow(string customThemePath) {
             InitializeComponent();
             DataContext = new ThemeEditorViewModel(customThemePath);
-            IsOpen = true;
         }
 
         void OnCancel(object? sender, RoutedEventArgs e) {
@@ -26,20 +27,27 @@ namespace OpenUtau.App.Views {
             Close();
         }
 
-        public void WindowClosing(object? sender, WindowClosingEventArgs e) {
-            IsOpen = false;
+        void WindowClosing(object? sender, WindowClosingEventArgs e) {
+            _instance = null;
             EnableThemeSelect();
             App.SetTheme();
         }
 
+        public static void Show(string customThemePath) {
+            if (_instance == null) {
+                _instance = new ThemeEditorWindow(customThemePath);
+                _instance.Show();
+            } else {
+                _instance.Activate();
+            }
+        }
+
         private static void EnableThemeSelect() {
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime) {
-                var openWindows = desktopLifetime.Windows.ToList();
-                foreach (var window in openWindows) {
-                    if (window is PreferencesDialog prefDialog) {
-                        var dataCtx = (PreferencesViewModel) prefDialog.DataContext!;
-                        dataCtx.RaisePropertyChanged(nameof(dataCtx.IsThemeEditorOpen));
-                    }
+                var prefDialog = desktopLifetime.Windows.OfType<PreferencesDialog>().FirstOrDefault();
+                if (prefDialog != null) {
+                    var dataCtx = (PreferencesViewModel) prefDialog.DataContext!;
+                    dataCtx.RaisePropertyChanged(nameof(dataCtx.IsThemeEditorOpen));
                 }
             }
         }
