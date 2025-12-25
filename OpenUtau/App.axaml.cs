@@ -94,7 +94,7 @@ namespace OpenUtau.App {
             }
             var light = (IResourceProvider)Current.Resources["themes-light"]!;
             var dark = (IResourceProvider)Current.Resources["themes-dark"]!;
-            var custom = (IResourceProvider)Current.Resources["themes-custom"]!;
+            var custom = (IResourceProvider)CustomTheme.ThemeDict();
             Current.Resources.MergedDictionaries.Remove(light);
             Current.Resources.MergedDictionaries.Remove(dark);
             Current.Resources.MergedDictionaries.Remove(custom);
@@ -107,9 +107,9 @@ namespace OpenUtau.App {
                 Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             if (Core.Util.Preferences.Default.Theme == 2) {
+                CustomTheme.Load();
                 Current.Resources.MergedDictionaries.Add(custom);
-                CustomTheme.ApplyTheme();
-                if (CustomTheme.Default.IsDarkMode == true) {
+                if (CustomTheme.IsDarkMode) {
                     Current.RequestedThemeVariant = ThemeVariant.Dark;
                 } else {
                     Current.RequestedThemeVariant = ThemeVariant.Light;
