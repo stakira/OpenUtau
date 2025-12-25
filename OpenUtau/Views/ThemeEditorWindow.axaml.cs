@@ -29,7 +29,7 @@ namespace OpenUtau.App.Views {
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
             _instance = null;
-            ThemeSelectEnabled();
+            MessageBus.Current.SendMessage(new ThemeEditorStateChangedEvent());
             App.SetTheme();
         }
 
@@ -37,19 +37,9 @@ namespace OpenUtau.App.Views {
             if (_instance == null) {
                 _instance = new ThemeEditorWindow(customThemePath);
                 _instance.Show();
-                ThemeSelectEnabled();
+                MessageBus.Current.SendMessage(new ThemeEditorStateChangedEvent());
             } else {
                 _instance.Activate();
-            }
-        }
-
-        private static void ThemeSelectEnabled() {
-            if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopLifetime) {
-                var prefDialog = desktopLifetime.Windows.OfType<PreferencesDialog>().FirstOrDefault();
-                if (prefDialog != null) {
-                    var dataCtx = (PreferencesViewModel) prefDialog.DataContext!;
-                    dataCtx.RaisePropertyChanged(nameof(dataCtx.IsThemeEditorOpen));
-                }
             }
         }
 

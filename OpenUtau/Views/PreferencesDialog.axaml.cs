@@ -142,7 +142,8 @@ namespace OpenUtau.App.Views {
 
                 var themeYaml = new CustomTheme.ThemeYaml { Name = s };
 
-                File.WriteAllText(Path.Join(PathManager.Inst.ThemesPath, filename), Yaml.DefaultSerializer.Serialize(themeYaml));
+                File.WriteAllText(Path.Join(PathManager.Inst.ThemesPath, filename),
+                    Yaml.DefaultSerializer.Serialize(themeYaml));
                 viewModel!.RefreshThemes();
             };
             dialog.ShowDialog(this);

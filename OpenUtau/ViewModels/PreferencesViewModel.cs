@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
-using System.Collections.ObjectModel;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -100,7 +99,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowIcon { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
         [Reactive] public bool ThemeEditable { get; set; }
-        public ObservableCollection<string> ThemeItems { get; set; } = [];
+        public List<string> ThemeItems => ThemeManager.GetAvailableThemes();
         public bool IsThemeEditorOpen => Views.ThemeEditorWindow.IsOpen;
 
         // UTAU
@@ -173,7 +172,6 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
-            RefreshThemes();
             ThemeName = Preferences.Default.ThemeName;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
@@ -190,6 +188,9 @@ namespace OpenUtau.App.ViewModels {
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
+            MessageBus.Current.Listen<ThemeEditorStateChangedEvent>()
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(IsThemeEditorOpen)));
+            
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
                 .SubscribeOn(RxApp.MainThreadScheduler)
@@ -391,12 +392,6 @@ namespace OpenUtau.App.ViewModels {
                 });
         }
 
-        public void RefreshThemes() {
-            Colors.CustomTheme.ListThemes();
-            ThemeItems = ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)];
-            this.RaisePropertyChanged(nameof(ThemeItems));
-        }
-
         public void TestAudioOutputDevice() {
             try {
                 PlaybackManager.Inst.PlayTestSound();
@@ -439,6 +434,10 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Save();
             ToolsManager.Inst.Initialize();
             this.RaisePropertyChanged(nameof(WinePath));
+        }
+
+        public void RefreshThemes() {
+            this.RaisePropertyChanged(nameof(ThemeItems));
         }
     }
 }
