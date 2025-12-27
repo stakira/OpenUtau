@@ -29,7 +29,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
         private static string[] diphthongs = { "ay", "ey", "oy", "aw", "ow" };
         private static string[] c_cR = { "n" };
-        private static string[] consonants = "".Split(',');
+        private static string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,tr,v,w,y,z".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -423,6 +423,16 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
+                        /*consonants = fricatives
+                            .Concat(aspirates)
+                            .Concat(semivowels)
+                            .Concat(liquids)
+                            .Concat(nasals)
+                            .Concat(stop)
+                            .Concat(tap)
+                            .Concat(affricate)
+                            .Distinct()
+                            .ToArray();*/
                         // Load diphthong exceptions
                         try {
                             var allDiphthongs = data.symbols
@@ -1084,7 +1094,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return Regex.IsMatch(alias, $@"\b{Regex.Escape(phoneme)}\b");
+            return alias == phoneme;
         }
         
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
@@ -1121,17 +1131,7 @@ namespace OpenUtau.Plugin.Builtin {
                         .Concat(affricate)
                         .Distinct(); // Ensure no duplicates
 
-            foreach (var c in allConsonants) {
-                if (PhonemeHasEndingSuffix(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            foreach (var v in vowels) {
-                if (alias.EndsWith("-")) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
+            
 
             // consonant timings
 
@@ -1141,6 +1141,18 @@ namespace OpenUtau.Plugin.Builtin {
                 var overrideValue = kvp.Value;
                 if (PhonemeIsPresent(alias, overridePhoneme)) {
                     return base.GetTransitionBasicLengthMs() * overrideValue;
+                }
+            }
+
+            foreach (var c in allConsonants) {
+                if (PhonemeHasEndingSuffix(alias, c)) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
+                }
+            }
+
+            foreach (var v in vowels) {
+                if (alias.EndsWith("-")) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
 
