@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Ustx {
         public string cacheDir = "UCache";
         [YamlMember(SerializeAs = typeof(string))]
         public Version ustxVersion;
-        public int resolution = 480;
+        [YamlIgnore] public int resolution => 480;
 
         [Obsolete("Since ustx v0.6")] public double bpm = 120;
         [Obsolete("Since ustx v0.6")] public int beatPerBar = 4;
