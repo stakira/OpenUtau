@@ -233,7 +233,7 @@ namespace OpenUtau.App.ViewModels {
 
         private bool TryChangePhonemizer(string phonemizerName) {
             try {
-                var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizerName);
+                var factory = PhonemizerFactory.Get(phonemizerName);
                 var phonemizer = factory?.Create();
                 if (phonemizer != null) {
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
@@ -296,7 +296,7 @@ namespace OpenUtau.App.ViewModels {
                 Command = ReactiveCommand.Create(async () => {
                     var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
                         ?.MainWindow as MainWindow;
-                    if(mainWindow == null){
+                    if (mainWindow == null) {
                         return;
                     }
                     var file = await FilePicker.OpenFileAboutSinger(
@@ -365,27 +365,26 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(SingerMenuItems));
         }
 
-        public string GetPhonemizerGroupHeader(string key){
-            if(key is null){
+        public string GetPhonemizerGroupHeader(string key) {
+            if (key is null) {
                 return "General";
             }
-            if(ThemeManager.TryGetString($"languages.{key.ToLowerInvariant()}", out var value)){
+            if (ThemeManager.TryGetString($"languages.{key.ToLowerInvariant()}", out var value)) {
                 return $"{key}: {value}";
             }
             return key;
         }
 
-        PhonemizerFactory? FindPhonemizerByName(string name){
-            return DocManager.Inst.PhonemizerFactories.FirstOrDefault(
-                factory => factory.type.FullName == name);
+        PhonemizerFactory? FindPhonemizerByName(string name) {
+            return PhonemizerFactory.Get(name);
         }
 
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
             //Singer default
-            if (track != null && track.Singer != null && track.Singer.Found){
+            if (track != null && track.Singer != null && track.Singer.Found) {
                 var factory = FindPhonemizerByName(track.Singer.DefaultPhonemizer);
-                if(factory != null){
+                if (factory != null) {
                     items.Add(new MenuItemViewModel() {
                         Header = ThemeManager.GetString("tracks.singerdefault") + factory.ToString(),
                         Command = SelectPhonemizerCommand,
@@ -406,7 +405,7 @@ namespace OpenUtau.App.ViewModels {
             //more phonemizers grouped by singing language
             items.Add(new MenuItemViewModel() {
                 Header = $"{ThemeManager.GetString("tracks.more")} ...",
-                Items = DocManager.Inst.PhonemizerFactories.GroupBy(factory => factory.language)
+                Items = PhonemizerFactory.GetAll().GroupBy(factory => factory.language)
                 .OrderBy(group => group.Key)
                 .Select(group => new MenuItemViewModel() {
                     Header = GetPhonemizerGroupHeader(group.Key),
@@ -509,7 +508,7 @@ namespace OpenUtau.App.ViewModels {
         public async void SelectTrackColor() {
             var dialog = new TrackColorDialog();
             dialog.DataContext = new TrackColorViewModel(track);
-            
+
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
                 await dialog.ShowDialog(desktop.MainWindow);
                 TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
