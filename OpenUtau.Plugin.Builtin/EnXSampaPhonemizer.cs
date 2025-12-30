@@ -1200,7 +1200,14 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return alias == phoneme;
+            if (string.IsNullOrEmpty(alias) || string.IsNullOrEmpty(phoneme))
+                return false;
+
+            // Exact token match
+            if (alias == phoneme)
+                return true;
+
+            return alias.EndsWith(phoneme);
         }
 
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
