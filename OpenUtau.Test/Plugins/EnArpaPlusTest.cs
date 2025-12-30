@@ -67,7 +67,7 @@ namespace OpenUtau.Plugins {
             RunPhonemizeTest("en_arpa-plus", new NoteParams[] { new NoteParams { lyric = lyric, hint = hint, tone = "C3", phonemes = SamePhonemeParams(4, 0, 0, "") } }, aliases);
         }
         [Theory]
-        [InlineData("more", "m ao r", new string[] { "- m_C3", "m ao_C3", "ao r_C3", "r -_C3" })]
+        [InlineData("more", "m aor", new string[] { "- m_C3", "m ao_C3", "ao r_C3", "r -_C3" })]
         [InlineData("'a", "q ax hh", new string[] { "- q_C3", "q ax_C3", "ax hh_C3", "hh -_C3" })]
 
         public void SyllableCCVTest(string lyric, string hint, string[] aliases) {
