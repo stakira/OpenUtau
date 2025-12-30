@@ -125,9 +125,6 @@ namespace OpenUtau.Plugin.Builtin {
                 return new string[] { note.lyric };
             }
             phoneticHint = !string.IsNullOrEmpty(note.phoneticHint);
-            if (phoneticHint) {
-                return original;
-            }
             if (original == null) {
                 return null;
             }
