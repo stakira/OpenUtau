@@ -651,7 +651,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     // [- C]
                     // todo: deincremental search for starting consonant clusters [str] → [st] → [s]
-                    /*bool lastStartingC = false;
+                    bool lastStartingC = false;
                     for (int len = cc[0].Length; len > 0; len--) {
                         string c = cc[0].Substring(0, len);   // shr → sh → s
 
@@ -664,7 +664,7 @@ namespace OpenUtau.Plugin.Builtin {
                             lastStartingC = true;
                             break;
                         }
-                    }*/
+                    }
 
                     if (phonemes.Count == 0) {
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""), ValidateAlias(AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, "")));
@@ -763,7 +763,7 @@ namespace OpenUtau.Plugin.Builtin {
                             HasOto(vc, syllable.tone) ||
                             HasOto(ValidateAlias(vc), syllable.tone);
 
-                        if (!hasVC && HasOto(vcTry, syllable.tone) || HasOto(ValidateAlias(vcTry), syllable.tone)) {
+                        if (!hasVC && (HasOto(vcTry, syllable.tone) || HasOto(ValidateAlias(vcTry), syllable.tone))) {
                             phonemes.Add(vcTry);
                             lastVC = true;
                             break;
