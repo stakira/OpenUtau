@@ -651,21 +651,6 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     // [- C]
                     // todo: deincremental search for starting consonant clusters [str] → [st] → [s]
-                    bool lastStartingC = false;
-                    for (int len = cc[0].Length; len > 0; len--) {
-                        string c = cc[0].Substring(0, len);   // shr → sh → s
-
-                        string cStart = AliasFormat(c, "cc_start", syllable.vowelTone, "");
-                        string cStartAlt = ValidateAlias(AliasFormat(c, "cc_start", syllable.vowelTone, ""));
-
-                        if (HasOto(cStart, syllable.tone) || HasOto(cStartAlt, syllable.tone)) {
-                            TryAddPhoneme(phonemes, syllable.tone, cStart, cStartAlt);
-                            //phonemes.Add(cStart);
-                            lastStartingC = true;
-                            break;
-                        }
-                    }
-
                     if (phonemes.Count == 0) {
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, ""), ValidateAlias(AliasFormat($"{cc[0]}", "cc_start", syllable.vowelTone, "")));
                     }
