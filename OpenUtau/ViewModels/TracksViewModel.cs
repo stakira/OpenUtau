@@ -232,7 +232,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void AddTrack() {
             var project = DocManager.Inst.Project;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.add");
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = project.tracks.Count() }));
             DocManager.Inst.EndUndoGroup();
         }
@@ -251,7 +251,7 @@ namespace OpenUtau.App.ViewModels {
                 trackNo = trackNo,
                 Duration = durTick,
             };
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.part.add");
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
             return part;
@@ -309,7 +309,7 @@ namespace OpenUtau.App.ViewModels {
             if (SelectedParts.Count <= 0) {
                 return;
             }
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.part.delete");
             var selectedParts = SelectedParts.ToArray();
             foreach (var part in selectedParts) {
                 DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
@@ -327,7 +327,7 @@ namespace OpenUtau.App.ViewModels {
         public void CutParts() {
             if (SelectedParts.Count > 0) {
                 DocManager.Inst.PartsClipboard = SelectedParts.Select(part => part.Clone()).ToList();
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.part.delete");
                 var toRemove = new List<UPart>(SelectedParts);
                 SelectedParts.Clear();
                 foreach (var part in toRemove) {
@@ -353,7 +353,7 @@ namespace OpenUtau.App.ViewModels {
                 }
                 part.trackNo = newTrackNo;
             }
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.part.paste");
             while (Project.tracks.Count <= newTrackNo) {
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack(Project) {
                     TrackNo = Project.tracks.Count,
