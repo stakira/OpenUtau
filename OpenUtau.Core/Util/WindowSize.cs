@@ -13,8 +13,10 @@
         }
 
         public void Set(double width, double height, int posX, int posY, int state) {
-            Width = width;
-            Height = height;
+            if (state == 0) { // When WindowState is Normal
+                Width = width;
+                Height = height;
+            }
             PositionX = posX;
             PositionY = posY;
             State = state == 1 ? 0 : state; // Ignore minimized state
