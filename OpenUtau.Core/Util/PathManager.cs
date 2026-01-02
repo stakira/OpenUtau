@@ -40,6 +40,10 @@ namespace OpenUtau.Core {
                 }
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
+                AppImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
+                if (!string.IsNullOrEmpty(AppImagePath)) {
+                    IsAppImage = Environment.GetEnvironmentVariable("IS_OPENUTAU_APPIMAGE").Equals("true");
+                }
             } else {
                 string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                 IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
@@ -67,6 +71,8 @@ namespace OpenUtau.Core {
         public string CachePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
         public bool IsInstalled { get; private set; }
+        public bool IsAppImage { get; private set; }
+        public string AppImagePath { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
