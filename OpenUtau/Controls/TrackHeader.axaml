@@ -90,7 +90,7 @@
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Border>
       </Panel>
-      <Grid ColumnDefinitions="*,auto,auto" RowDefinitions="auto,auto" Grid.Column="1">
+      <Grid ColumnDefinitions="*,auto" RowDefinitions="auto,auto" Grid.Column="1">
         <StackPanel Grid.Column="0" Grid.Row="0">
           <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="17"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
