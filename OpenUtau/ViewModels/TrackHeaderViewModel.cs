@@ -41,6 +41,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool Muted { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
+        [Reactive] public bool IsSingerVisible  { get; set; }
+        [Reactive] public bool IsPhonemizerVisible  { get; set; }
+        [Reactive] public bool IsRendererVisible  { get; set; }
 
         public ViewModelActivator Activator { get; }
 
@@ -437,13 +440,12 @@ namespace OpenUtau.App.ViewModels {
         public void RefreshAvatar() {
             var singer = track?.Singer;
             if (singer == null || singer.AvatarData == null) {
-                Avatar = null;
+                Avatar = new RenderTargetBitmap(new PixelSize(1, 1));
                 return;
             }
             try {
-                using (var stream = new MemoryStream(singer.AvatarData)) {
-                    Avatar = new Bitmap(stream);
-                }
+                using var stream = new MemoryStream(singer.AvatarData);
+                Avatar = new Bitmap(stream).CreateScaledBitmap(new PixelSize(100, 100));
             } catch (Exception e) {
                 Avatar = null;
                 Log.Error(e, "Failed to decode avatar.");

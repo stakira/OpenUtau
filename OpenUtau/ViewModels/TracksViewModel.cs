@@ -167,7 +167,7 @@ namespace OpenUtau.App.ViewModels {
         public void OnYZoomed(Point position, double delta) {
             double trackHeight = TrackHeight + Math.Sign(delta) * ViewConstants.TrackHeightDelta;
             trackHeight = Math.Clamp(trackHeight, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax);
-            trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
+            trackHeight = Math.Max(trackHeight, TrackCount);
             TrackHeight = trackHeight;
             TrackOffset = Math.Clamp(TrackOffset, 0, VScrollBarMax);
             Notify();
