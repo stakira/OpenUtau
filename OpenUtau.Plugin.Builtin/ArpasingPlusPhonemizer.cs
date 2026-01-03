@@ -73,7 +73,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isTimitPhonemes = false;
         private bool vc_FallBack = false;
-        private bool cPV_FallBack = false;
         private bool phoneticHint = false;
 
         private readonly Dictionary<string, string> vcFallBacks =
@@ -113,7 +112,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"er","r"},
             };
 
-        private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
+        private readonly string[] ccvException = { "ng", "dh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
         private string[] tails = "-,R".Split(',');
         private bool isTails = false;
@@ -532,6 +531,8 @@ namespace OpenUtau.Plugin.Builtin {
             string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
             int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
 
+            bool isAtomicCluster = cc.Length == 2 && ccvException.Contains(cc[0]);
+
             // Check for missing vowel phonemes
             foreach (var entry in missingVphonemes) {
                 if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
@@ -627,7 +628,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var ccv = $"{string.Join("", cc)} {v}";
                 var ccv1 = $"{string.Join("", cc)}{v}";
                 /// - CCV
-                if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone) || HasOto(rccv1, syllable.vowelTone) || HasOto(ValidateAlias(rccv1), syllable.vowelTone) && !ccvException.Contains(cc[0])) {
+                if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone) || HasOto(rccv1, syllable.vowelTone) || HasOto(ValidateAlias(rccv1), syllable.vowelTone) && !isAtomicCluster) {
                     basePhoneme = AliasFormat($"{string.Join("", cc)} {v}", "dynStart", syllable.vowelTone, "");
                     lastC = 0;
                 } else {
@@ -669,7 +670,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var ccv = $"{string.Join("", cc)} {v}";
                     var ccv1 = $"{string.Join("", cc)}{v}";
                     /// CCV
-                    if (CurrentWordCc.Length >= 2) {
+                    if (CurrentWordCc.Length >= 2 && !isAtomicCluster) {
                         if (!phoneticHint && (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone))) {
                             basePhoneme = AliasFormat($"{string.Join("", cc)} {v}", "dynMid", syllable.vowelTone, "");
                             lastC = i;
@@ -733,7 +734,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var vc = $"{prevV} {cc[0]}";
                     // Boolean Triggers
                     bool CCV = false;
-                    if (!phoneticHint && CurrentWordCc.Length >= 2 && !ccvException.Contains(cc[0])) {
+                    if (!phoneticHint && CurrentWordCc.Length >= 2 && !isAtomicCluster) {
                         if (HasOto(AliasFormat($"{string.Join("", cc)} {v}", "dynMid", syllable.vowelTone, ""), syllable.vowelTone)) {
                             CCV = true;
                         }
@@ -765,9 +766,6 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if ((HasOto(vcc, syllable.tone) || HasOto(ValidateAlias(vcc), syllable.tone)) && CCV) {
                         phonemes.Add(vcc);
                         firstC = 1;
-                        break;
-                    } else if (cPV_FallBack && (!HasOto(crv, syllable.vowelTone) && !HasOto(ValidateAlias(crv), syllable.vowelTone))) {
-                        TryAddPhoneme(phonemes, syllable.tone, vc, ValidateAlias(vc));
                         break;
                     } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone)) {
                         phonemes.Add(vc);
@@ -834,7 +832,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 // CCV
                 if (CurrentWordCc.Length >= 2) {
-                    if (!phoneticHint && (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone))) {
+                    if (!phoneticHint && (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !isAtomicCluster)) {
                         basePhoneme = (AliasFormat($"{string.Join("", cc.Skip(i + 1))} {v}", "dynMid", syllable.vowelTone, ""));
                         lastC = i;
                     } else if (HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone) || HasOto(lcv, syllable.vowelTone) || HasOto(ValidateAlias(lcv), syllable.vowelTone) && HasOto(cc1, syllable.vowelTone) && !HasOto(ccv, syllable.vowelTone)) {
@@ -852,12 +850,6 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = $"{cc[i]} {cc[i + 1]}";
                     }
-                }
-                // C+V
-                if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)))) {
-                    cPV_FallBack = true;
-                    basePhoneme = v;
-                    cc1 = ValidateAlias(cc1);
                 }
 
                 if (i + 1 < lastC) {
@@ -902,7 +894,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     // CCV
                     if (CurrentWordCc.Length >= 2) {
-                        if (!phoneticHint && (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone))) {
+                        if (!phoneticHint && (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone) || HasOto(ccv1, syllable.vowelTone) || HasOto(ValidateAlias(ccv1), syllable.vowelTone) && !isAtomicCluster)) {
                             basePhoneme = (AliasFormat($"{string.Join("", cc.Skip(i + 1))} {v}", "dynMid", syllable.vowelTone, ""));
                             lastC = i;
                         } else if (HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone) || HasOto(lcv, syllable.vowelTone) || HasOto(ValidateAlias(lcv), syllable.vowelTone) && HasOto(cc1, syllable.vowelTone) && !HasOto(ccv, syllable.vowelTone)) {
@@ -920,12 +912,6 @@ namespace OpenUtau.Plugin.Builtin {
                             cc1 = $"{cc[i]} {cc[i + 1]}";
                             lastC = i;
                         }
-                    }
-                    // C+V
-                    if ((HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) && (!HasOto(lcv, syllable.vowelTone) && !HasOto(ValidateAlias(lcv), syllable.vowelTone) && (!HasOto(cv, syllable.vowelTone) && !HasOto(ValidateAlias(cv), syllable.vowelTone)))) {
-                        cPV_FallBack = true;
-                        basePhoneme = v;
-                        cc1 = ValidateAlias(cc1);
                     }
                     if (HasOto(cc1, syllable.tone) && HasOto(cc1, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
