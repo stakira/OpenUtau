@@ -46,7 +46,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isReplacements = false;
 
-
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -308,11 +307,17 @@ namespace OpenUtau.Plugin.Builtin {
             var prevV = string.IsNullOrEmpty(replacedPrevV) ? "" : replacedPrevV;
             string v = ReplacePhoneme(syllable.v, syllable.vowelTone);
             string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
-
             string basePhoneme;
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+
+            foreach (var entry in replacements) {
+                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
+                    isReplacements = true;
+                    break;
+                }
+            }
 
             if (syllable.IsStartingV) {
                 var rcv = $"- {v}";
@@ -644,6 +649,12 @@ namespace OpenUtau.Plugin.Builtin {
             //foreach (var consonant in new[] { "y" }) {
             //    alias = alias.Replace("y", "i");
             // }
+            if (isReplacements) {
+                foreach (var syllable in replacements.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
             foreach (var consonant in new[] { "I" }) {
                 alias = alias.Replace("I", "y");
             }
