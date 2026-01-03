@@ -658,7 +658,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (isReplacements) {
-                foreach (var syllable in replacements) {
+                foreach (var syllable in replacements.OrderByDescending(f => f.Key.Length)) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }

@@ -66,12 +66,12 @@ namespace OpenUtau.Plugin.Builtin {
         private bool isMissingCPhonemes = false;
 
         // TIMIT symbols
-        private readonly Dictionary<string, string> timitphonemes = "axh=ax,bcl=b,dcl=d,eng=ng,gcl=g,hv=hh,kcl=k,pcl=p,tcl=t,sil=-".Split(',')
+        private readonly Dictionary<string, string> yamlFallbacks = "".Split(',')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
-        private bool isTimitPhonemes = false;
+        private bool isYamlFallbacks = false;
         private bool vc_FallBack = false;
         private bool phoneticHint = false;
 
@@ -448,7 +448,7 @@ namespace OpenUtau.Plugin.Builtin {
                             if (data?.fallbacks?.Any() == true) {
                                 foreach (var df in data.fallbacks) {
                                     if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
-                                        missingVphonemes[df.from] = df.to;
+                                        yamlFallbacks[df.from] = df.to;
                                     }
                                 }
                             }
@@ -549,10 +549,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // Check for missing TIMIT phonemes
-            foreach (var entry in timitphonemes) {
+            // Check for missing YAML fallback phonemes
+            foreach (var entry in yamlFallbacks) {
                 if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Value, syllable.tone)) {
-                    isTimitPhonemes = true;
+                    isYamlFallbacks = true;
                     break;
                 }
             }
@@ -646,8 +646,8 @@ namespace OpenUtau.Plugin.Builtin {
                         for (var i = cc.Length; i > 1; i--) {
                             if (TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{string.Join("", cc.Take(i))}", "cc_start", syllable.vowelTone, ""), ValidateAlias(AliasFormat($"{string.Join("", cc.Take(i))}", "cc_start", syllable.vowelTone, "")))) {
                                 firstC = i - 1;
+                                break;
                             }
-                            break;
                         }
                     }
                     // [- C]
@@ -1431,9 +1431,20 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // VALIDATE ALIAS DEPENDING ON METHOD
-            if (isMissingVPhonemes || isMissingCPhonemes || isTimitPhonemes) {
-                foreach (var phoneme in missingVphonemes.Concat(missingCphonemes).Concat(timitphonemes)) {
-                    alias = alias.Replace(phoneme.Key, phoneme.Value);
+            if (isYamlFallbacks) {
+                foreach (var fb in yamlFallbacks.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
+                }
+            }
+
+            if (isMissingVPhonemes) {
+                foreach (var fb in missingVphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
+                }
+            }
+            if (isMissingCPhonemes) {
+                foreach (var fb in missingCphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
                 }
             }
 

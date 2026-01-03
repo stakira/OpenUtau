@@ -1085,12 +1085,23 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string ValidateAlias(string alias) {
 
             // VALIDATE ALIAS DEPENDING ON METHOD
-            if (isMissingVPhonemes || isMissingCPhonemes || isTimitPhonemes) {
-                foreach (var phoneme in missingVphonemes.Concat(missingCphonemes).Concat(timitphonemes)) {
-                    alias = alias.Replace(phoneme.Key, phoneme.Value);
+            if (isTimitPhonemes) {
+                foreach (var fb in timitphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias =  alias.Replace(fb.Key, fb.Value);
+                }
+            }
+            if (isMissingVPhonemes) {
+                foreach (var fb in missingVphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
+                }
+            }
+            if (isMissingCPhonemes) {
+                foreach (var fb in missingCphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
                 }
             }
             return alias;
+
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
