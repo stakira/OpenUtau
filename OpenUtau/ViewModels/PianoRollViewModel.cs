@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -244,9 +242,30 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
-        public void Cut() => NotesViewModel.CutNotes();
-        public void Copy() => NotesViewModel.CopyNotes();
-        public void Paste() => NotesViewModel.PasteNotes();
+        public void Cut() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Cut(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CutNotes();
+            }
+        }
+        public void Copy() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Copy(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CopyNotes();
+            }
+        }
+        public void Paste() {
+            if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                NotesViewModel.PasteNotes();
+            } else if (DocManager.Inst.CurvesClipboard != null && NotesViewModel.Part != null) {
+                var track = NotesViewModel.Project.tracks[NotesViewModel.Part.trackNo];
+                if (track.TryGetExpDescriptor(NotesViewModel.Project, NotesViewModel.PrimaryKey, out var descriptor)) {
+                    CurveViewModel.Paste(NotesViewModel.Part, descriptor);
+                }
+            }
+        }
         public void PastePlain() => NotesViewModel.PastePlainNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
