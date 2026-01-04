@@ -97,10 +97,8 @@ namespace OpenUtau.App.Controls {
         }
 
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
-            if (DocManager.Inst.PhonemizerFactories.Length > 0) {
-                ViewModel?.RefreshPhonemizers();
-                PhonemizersMenu.Open();
-            }
+            ViewModel?.RefreshPhonemizers();
+            PhonemizersMenu.Open();
             args.Handled = true;
         }
 

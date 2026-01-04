@@ -136,7 +136,7 @@ namespace OpenUtau.Classic {
                             NamedOnnxValue.CreateFromTensor("sp_env", spEnvTensor),
                             NamedOnnxValue.CreateFromTensor("ap", apTensor)
                         };
-                        var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, false);
+                        var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, true);
                         using var results = session.Run(inputs);
                         var melOutput = results.First(r => r.Name == "mel").AsTensor<float>();
                         const string vocoderDep = "pc_nsf_hifigan_44.1k_hop512_128bin_2025.02";

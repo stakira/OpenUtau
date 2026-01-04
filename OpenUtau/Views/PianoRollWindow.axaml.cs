@@ -109,6 +109,8 @@ namespace OpenUtau.App.Views {
                 new CommonnotePaste(),
                 new FixOverlap(),
                 new BakePitch(),
+                new RandomizeTiming(),
+                new RandomizePhonemeOffset()
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
@@ -193,7 +195,9 @@ namespace OpenUtau.App.Views {
         }
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
-            Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+            if (WindowState != WindowState.Maximized) {
+                Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+            }
             Hide();
             e.Cancel = true;
         }
@@ -253,12 +257,6 @@ namespace OpenUtau.App.Views {
             this.WindowState = this.WindowState == WindowState.FullScreen
                 ? WindowState.Normal
                 : WindowState.FullScreen;
-        }
-        void OnMenuResetScreen(object sender, RoutedEventArgs args) {
-            this.WindowState = WindowState.Normal;
-            Position = new PixelPoint(0, 0);
-            Width = 1000;
-            Height = 650;
         }
         void OnMenuDegreeStyle(object sender, RoutedEventArgs args) {
             if (sender is MenuItem menu && int.TryParse(menu.Tag?.ToString(), out int tag)) {
@@ -457,8 +455,12 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
             var dialog = new ExpressionsDialog() {
-                DataContext = new ExpressionsViewModel(),
+                DataContext = new ExpressionsViewModel(notesVM.Project.tracks[notesVM.Part.trackNo]),
             };
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
@@ -1290,9 +1292,6 @@ namespace OpenUtau.App.Views {
                         Hide();
                         return true;
                     }
-                    break;
-                case Key.F10:
-                    OnMenuResetScreen(this, new RoutedEventArgs());
                     break;
                 case Key.F11:
                     OnMenuFullScreen(this, new RoutedEventArgs());
