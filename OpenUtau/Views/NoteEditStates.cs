@@ -648,15 +648,13 @@ namespace OpenUtau.App.Views {
         public ExpSetValueState(
             Control control,
             PianoRollViewModel vm,
-            IValueTip valueTip) : base(control, vm, valueTip) {
+            IValueTip valueTip,
+            UExpressionDescriptor descriptor) : base(control, vm, valueTip) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
-            if (project == null || part == null ||
-                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
-                descriptor = null;
-            }
+            this.descriptor = descriptor;
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -774,21 +772,22 @@ namespace OpenUtau.App.Views {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
-        public override MouseButton MouseButton => MouseButton.Right;
+        public override MouseButton MouseButton => mouseButton;
+        private MouseButton mouseButton;
         protected override string? commandNameKey => "command.exp.reset";
 
         public ExpResetValueState(
             Control control,
             PianoRollViewModel vm,
-            IValueTip valueTip) : base(control, vm, valueTip) {
+            IValueTip valueTip,
+            UExpressionDescriptor descriptor,
+            MouseButton mouseButton = MouseButton.Right) : base(control, vm, valueTip) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             var part = notesVm.Part;
             track = project.tracks[part!.trackNo];
-            if (project == null || part == null ||
-                !track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out descriptor)) {
-                descriptor = null;
-            }
+            this.descriptor = descriptor;
+            this.mouseButton = mouseButton;
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -837,6 +836,56 @@ namespace OpenUtau.App.Views {
                     notesVm.Project, notesVm.Part, notesVm.PrimaryKey,
                     x, (int)descriptor.defaultValue, lastX, (int)descriptor.defaultValue));
             }
+        }
+    }
+
+    class CurveSelectionState : NoteEditState {
+        private int startTick;
+        private int? endTick;
+        private UExpressionDescriptor? descriptor;
+        protected override bool ShowValueTip => false;
+
+        public CurveSelectionState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UExpressionDescriptor descriptor) : base(control, vm, valueTip) {
+            this.descriptor = descriptor;
+        }
+        public override void Begin(IPointer pointer, Point point) {
+            pointer.Capture(control);
+            startPoint = point;
+            var notesVm = vm.NotesViewModel;
+            int snapUnit = notesVm.Project.resolution * 4 / notesVm.SnapDiv;
+            int tick = notesVm.PointToTick(point);
+            if (notesVm.IsSnapOn) {
+                tick = (int)Math.Floor((double)tick / snapUnit) * snapUnit;
+            }
+            startTick = tick;
+        }
+        public override void End(IPointer pointer, Point point) {
+            pointer.Capture(null);
+        }
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
+            var notesVm = vm.NotesViewModel;
+            if (descriptor == null || notesVm.Part == null) {
+                return;
+            }
+            int snapUnit = notesVm.Project.resolution * 4 / notesVm.SnapDiv;
+            int tick = notesVm.PointToTick(point);
+            if (notesVm.IsSnapOn) {
+                tick = (int)Math.Floor((double)tick / snapUnit) * snapUnit;
+            }
+            if (endTick == tick) return;
+            endTick = tick;
+            if (startTick == tick) {
+                vm.CurveViewModel.ClearSelect();
+                return;
+            }
+            int minTick = Math.Min(tick, startTick);
+            int maxTick = Math.Max(tick, startTick);
+            var curve = notesVm.Part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+            vm.CurveViewModel.Select(descriptor, minTick, maxTick, curve);
         }
     }
 

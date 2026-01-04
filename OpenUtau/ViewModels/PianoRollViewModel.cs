@@ -12,6 +12,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -47,6 +48,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
+        [Reactive] public CurveViewModel CurveViewModel { get; set; }
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -102,6 +104,7 @@ namespace OpenUtau.App.ViewModels {
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
+            CurveViewModel = new CurveViewModel();
 
             NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
                 NotesViewModel.DeleteSelectedNotes();

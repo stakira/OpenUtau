@@ -37,8 +37,9 @@ namespace OpenUtau.Core {
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
-        public List<UPart> PartsClipboard { get; set; }
-        public List<UNote> NotesClipboard { get; set; }
+        public List<UPart>? PartsClipboard { get; set; }
+        public List<UNote>? NotesClipboard { get; set; }
+        public CurveSelection? CurvesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
 
         public void Initialize(Thread mainThread, TaskScheduler mainScheduler) {

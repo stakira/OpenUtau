@@ -15,6 +15,7 @@ using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -316,6 +317,15 @@ namespace OpenUtau.App.ViewModels {
                             LoadTrackColor(Part, Project);
                             break;
                     }
+                });
+            MessageBus.Current.Listen<CurveSelectionEvent>()
+                .Subscribe(e => {
+                    Selection.SelectNone();
+                    MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                });
+            MessageBus.Current.Listen<CurveCopyEvent>()
+                .Subscribe(e => {
+                    DocManager.Inst.NotesClipboard?.Clear();
                 });
         }
 

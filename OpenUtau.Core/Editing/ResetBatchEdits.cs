@@ -129,14 +129,8 @@ namespace OpenUtau.Core.Editing {
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
                     int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
                     foreach(var range in selectedTickRanges){
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
+                        docManager.ExecuteCmd(new PasteCurveCommand(project, part, Format.Ustx.PITD,
                             range.start, defaultValue,
-                            range.start, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.end, defaultValue, 
-                            range.end, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.start, defaultValue, 
                             range.end, defaultValue));
                     }
                 }
@@ -294,14 +288,8 @@ namespace OpenUtau.Core.Editing {
                     var selectedTickRanges = SelectionUtils.SelectedTickRanges(part, notes);
                     int defaultValue = (int)part.curves.First(c => c.abbr == abbr).descriptor.defaultValue;
                     foreach(var range in selectedTickRanges){
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
+                        docManager.ExecuteCmd(new PasteCurveCommand(project, part, abbr,
                             range.start, defaultValue,
-                            range.start, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.end, defaultValue, 
-                            range.end, defaultValue));
-                        docManager.ExecuteCmd(new SetCurveCommand(project, part, abbr, 
-                            range.start, defaultValue, 
                             range.end, defaultValue));
                     }
                 }

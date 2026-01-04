@@ -16,6 +16,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using Serilog;
 
@@ -926,7 +927,8 @@ namespace OpenUtau.App.Views {
 
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
-            if (ViewModel.NotesViewModel.Part == null) {
+            var notesVm = ViewModel.NotesViewModel;
+            if (notesVm.Part == null) {
                 return;
             }
             var control = (Control)sender;
@@ -934,10 +936,39 @@ namespace OpenUtau.App.Views {
             if (editState != null) {
                 return;
             }
+            var track = notesVm.Project.tracks[notesVm.Part.trackNo];
+            if (!track.TryGetExpDescriptor(notesVm.Project, notesVm.PrimaryKey, out var descriptor)) {
+                return;
+            }
             if (point.Properties.IsLeftButtonPressed) {
-                editState = new ExpSetValueState(control, ViewModel, this);
+                if (descriptor.type == UExpressionType.Curve) {
+                    switch (ViewModel.CurveViewModel.CurveTool) {
+                        case CurveTools.CurveSelectTool:
+                            editState = new CurveSelectionState(control, ViewModel, this, descriptor);
+                            break;
+                        case CurveTools.CurvePenTool:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            editState = new ExpSetValueState(control, ViewModel, this, descriptor);
+                            break;
+                        case CurveTools.CurveEraserTool:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            editState = new ExpResetValueState(control, ViewModel, this, descriptor, MouseButton.Left);
+                            break;
+                        default:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            break;
+                    }
+                } else {
+                    editState = new ExpSetValueState(control, ViewModel, this, descriptor);
+                }
+                Cursor = null;
             } else if (point.Properties.IsRightButtonPressed) {
-                editState = new ExpResetValueState(control, ViewModel, this);
+                if (descriptor.type == UExpressionType.Curve && ViewModel.CurveViewModel.CurveTool == CurveTools.CurveSelectTool) {
+                    ViewModel.CurveViewModel.ClearSelect();
+                } else {
+                    ViewModel.CurveViewModel.ClearSelect();
+                    editState = new ExpResetValueState(control, ViewModel, this, descriptor);
+                }
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
@@ -1230,10 +1261,11 @@ namespace OpenUtau.App.Views {
         bool OnKeyExtendedHandler(KeyEventArgs args) {
             var notesVm = ViewModel.NotesViewModel;
             var playVm = ViewModel.PlaybackViewModel;
-            if (notesVm?.Part == null || playVm == null) {
+            var curveVm = ViewModel.CurveViewModel;
+            if (notesVm?.Part == null || playVm == null || curveVm == null) {
                 return false;
             }
-            var project = Core.DocManager.Inst.Project;
+            var project = DocManager.Inst.Project;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
             int deltaTicks = notesVm.IsSnapOn ? snapUnit : 15;
 
@@ -1559,13 +1591,21 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.C:
                     if (isCtrl) {
-                        notesVm.CopyNotes();
+                        if (curveVm.IsSelected(notesVm.PrimaryKey)) {
+                            curveVm.Copy(notesVm.Part);
+                        } else {
+                            notesVm.CopyNotes();
+                        }
                         return true;
                     }
                     break;
                 case Key.X:
                     if (isCtrl) {
-                        notesVm.CutNotes();
+                        if (curveVm.IsSelected(notesVm.PrimaryKey)) {
+                            curveVm.Cut(notesVm.Part);
+                        } else {
+                            notesVm.CutNotes();
+                        }
                         return true;
                     }
                     break;
@@ -1575,7 +1615,14 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
-                        notesVm.PasteNotes();
+                        if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                            notesVm.PasteNotes();
+                        } else if (DocManager.Inst.CurvesClipboard != null) {
+                            var track = project.tracks[notesVm.Part.trackNo];
+                            if (track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out var descriptor)) {
+                                curveVm.Paste(notesVm.Part, descriptor);
+                            }
+                        }
                         return true;
                     }
                     if (isAlt) {
