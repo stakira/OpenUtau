@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
+        xmlns:sys="using:System"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
@@ -94,6 +95,13 @@
             <Button Click="OnWelcomeRecovery" Height="40" Content="{Binding RecoveryString}"
                     IsVisible="{Binding HasRecovery}" Background="{DynamicResource WarningBrush}">
             </Button>
+            <Border IsVisible="{Binding Warn32BitBuild}" Padding="5" Background="{DynamicResource WarningBrush}" MaxWidth="400" HorizontalAlignment="Left">
+              <StackPanel>
+                <TextBlock TextWrapping="Wrap" Text="{DynamicResource 32bit.warning.message}"/>
+                <Button IsVisible="{x:Static sys:Environment.Is64BitOperatingSystem}" Content="{DynamicResource 32bit.warning.x64migrate}" Command="{Binding OpenGithubReleases}"/>
+                <Button Content="{DynamicResource 32bit.warning.dontshowagain}" Command="{Binding Hide32BitWarning}"/>
+              </StackPanel>
+            </Border>
           </StackPanel>
           <!--Create new project or open existing project-->
           <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Spacing="8">

@@ -66,6 +66,14 @@ namespace OpenUtau.Classic {
                         return null;
                     }
                 })
+                .Where(vb => {
+                    if (vb.SingerType == USingerType.DiffSinger
+                        || vb.SingerType == USingerType.Enunu
+                        || vb.SingerType == USingerType.Vogen) {
+                        return Environment.Is64BitProcess;
+                    }
+                    return true;
+                })
                 .OfType<Voicebank>());
             return result;
         }
