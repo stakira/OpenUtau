@@ -67,12 +67,12 @@ jobs:
         run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
 
       - name: Build (Windows and Linux)
-        run: dotnet publish OpenUtau -c Release -r --self-contained true -o bin/${{ matrix.arch.name }}/
-        if: ${{ matrix.arch.os != 'osx' && matrix.arch.rid != "win-x86"}}
+        run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
+        if: ${{ matrix.arch.os != 'osx' && matrix.arch.rid != 'win-x86'}}
 
       - name: Build (Windows x86)
-        run: dotnet msbuild OpenUtau -p:SelfContained=True -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:Configuration=Release -r -p:OutputPath=./bin/${{ matrix.arch.name }}/
-        if: ${{ matrix.arch.os == "win-x86"}}
+        run: dotnet msbuild OpenUtau -p:SelfContained=True -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:Configuration=Release -r -p:OutputPath=../bin/${{ matrix.arch.name }}/
+        if: ${{ matrix.arch.rid == 'win-x86'}}
 
       - name: Build (MacOS)
         run: dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:SelfContained=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
