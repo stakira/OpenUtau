@@ -88,6 +88,9 @@ namespace OpenUtau.Core {
                     }
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
+                        if (!Environment.Is64BitProcess && IsPhonemizerG2p(type)) {
+                            continue;
+                        }
                         if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                             PhonemizerFactory.Get(type);
                         }
@@ -98,6 +101,9 @@ namespace OpenUtau.Core {
                 }
             }
             foreach (var type in GetType().Assembly.GetExportedTypes()) {
+                if (!Environment.Is64BitProcess && IsPhonemizerG2p(type)) {
+                    continue;
+                }
                 if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                     PhonemizerFactory.Get(type);
                 }
@@ -105,6 +111,11 @@ namespace OpenUtau.Core {
             PhonemizerFactory.BuildList();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
+        }
+
+        private static bool IsPhonemizerG2p(Type type) {
+            return type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                       .Any(b => b.ReturnType == typeof(IG2p));
         }
 
         #region Command Queue

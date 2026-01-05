@@ -86,10 +86,10 @@ namespace OpenUtau.App.ViewModels {
         }
         [Reactive] public bool SkipRenderingMutedTracks { get; set; }
         [Reactive] public bool ClearCacheOnQuit { get; set; }
-        public List<string> OnnxRunnerOptions { get; set; }
-        [Reactive] public string OnnxRunner { get; set; }
-        public List<GpuInfo> OnnxGpuOptions { get; set; }
-        [Reactive] public GpuInfo OnnxGpu { get; set; }
+        public List<string>? OnnxRunnerOptions { get; set; }
+        [Reactive] public string? OnnxRunner { get; set; }
+        public List<GpuInfo>? OnnxGpuOptions { get; set; }
+        [Reactive] public GpuInfo? OnnxGpu { get; set; }
       
         // Appearance
         [Reactive] public int Theme { get; set; }
@@ -123,6 +123,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberUst { get; set; }
         [Reactive] public bool RememberVsqx { get; set; }
         public string WinePath => Preferences.Default.WinePath;
+
+        public bool Is64Bit => Environment.Is64BitProcess;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -158,11 +160,13 @@ namespace OpenUtau.App.ViewModels {
             DefaultRenderer = String.IsNullOrEmpty(Preferences.Default.DefaultRenderer) ?
                DefaultRendererOptions[0] : Preferences.Default.DefaultRenderer;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
-            OnnxRunnerOptions = Onnx.getRunnerOptions();
-            OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner) ?
-               OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
-            OnnxGpuOptions = Onnx.getGpuInfo();
-            OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
+            if (Is64Bit) {
+                OnnxRunnerOptions = Onnx.getRunnerOptions();
+                OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner) ?
+                OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
+                OnnxGpuOptions = Onnx.getGpuInfo();
+                OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
+            }
             DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
             DiffSingerSteps = Preferences.Default.DiffSingerSteps;
             DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
@@ -319,12 +323,12 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(vm => vm.OnnxRunner)
                 .Subscribe(index => {
-                    Preferences.Default.OnnxRunner = index;
+                    Preferences.Default.OnnxRunner = index ?? string.Empty;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.OnnxGpu)
                 .Subscribe(index => {
-                    Preferences.Default.OnnxGpu = index.deviceId;
+                    Preferences.Default.OnnxGpu = index?.deviceId ?? 0;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.RememberMid)

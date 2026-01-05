@@ -74,6 +74,7 @@ namespace OpenUtau.App.ViewModels {
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         [Reactive] public double Progress { get; set; }
         [Reactive] public string ProgressText { get; set; }
+        public bool Warn32BitBuild => Preferences.Default.Warn32BitBuild;
         public ReactiveCommand<UPart, Unit> PartDeleteCommand { get; set; }
         public ReactiveCommand<int, Unit>? AddTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
@@ -121,6 +122,20 @@ namespace OpenUtau.App.ViewModels {
                 TracksViewModel.DeleteSelectedParts();
             });
             DocManager.Inst.AddSubscriber(this);
+        }
+
+        public void Hide32BitWarning() {
+            Preferences.Default.Warn32BitBuild = false;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(Warn32BitBuild));
+        }
+
+        public void OpenGithubReleases() {
+            try {
+                OS.OpenWeb("https://github.com/stakira/OpenUtau/releases/latest");
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
         }
 
         public void Undo() {
