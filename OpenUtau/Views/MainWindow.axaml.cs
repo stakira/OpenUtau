@@ -34,7 +34,8 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
-        private PianoRollWindow? pianoRollWindow;
+        private PianoRollDetachedWindow? pianoRollWindow;
+        private PianoRoll? pianoRoll;
         private bool openPianoRollWindow;
 
         private PartEditState? partEditState;
@@ -1147,28 +1148,65 @@ namespace OpenUtau.App.Views {
             }
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
-                if (pianoRollWindow == null) {
+                if (pianoRoll == null) {
                     LoadingWindow.BeginLoading(this);
 
                     var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel());
-                    pianoRollWindow = new PianoRollWindow(model) {
-                        MainWindow = this,
+
+                    // Let's attach when needed to avoid startup slowdowns
+                    pianoRoll = new PianoRoll() {
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+                        MainWindow = this
                     };
+                    pianoRoll.SetViewModel(model);
+
+                    if (Preferences.Default.DetachPianoRoll) {
+                        viewModel!.ShowPianoRoll = false;
+                        pianoRollWindow = new(pianoRoll);
+                        pianoRollWindow.Show();
+                    } else {
+                        viewModel!.ShowPianoRoll = true;
+                        PianoRollContainer.Children.Add(pianoRoll);
+                    }
 
                     await Task.Run(() => 
-                        pianoRollWindow.InitializePianoRollWindowAsync()
+                        pianoRoll.InitializePianoRollWindowAsync()
                     );
                     LoadingWindow.EndLoading();
 
-                    pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
-                    pianoRollWindow.Show();
+                    pianoRoll.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
                 }
                 // Workaround for new window losing focus.
-                openPianoRollWindow = true;
+                if (pianoRollWindow != null) {
+                    openPianoRollWindow = true;
+                }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
-                pianoRollWindow.AttachExpressions();
+                pianoRoll.AttachExpressions();
             }
+        }
+
+        public void SetPianoRollAttachment() {
+            if (pianoRoll == null) {
+                return;
+            }
+            if (Preferences.Default.DetachPianoRoll) {
+                pianoRollWindow?.ForceClose();
+                pianoRollWindow = null;
+                PianoRollContainer.Children.Add(pianoRoll);
+                viewModel!.ShowPianoRoll = true;
+                Preferences.Default.DetachPianoRoll = false;
+            } else {
+                PianoRollContainer.Children.Clear();
+                viewModel!.ShowPianoRoll = false;
+                if (pianoRollWindow == null) {
+                    pianoRollWindow = new(pianoRoll);
+                    pianoRollWindow.Show();
+                }
+                Preferences.Default.DetachPianoRoll = true;
+            }
+            Preferences.Save();
         }
 
         public void MainPagePointerWheelChanged(object sender, PointerWheelEventArgs args) {
