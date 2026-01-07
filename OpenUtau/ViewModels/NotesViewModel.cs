@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
@@ -913,7 +914,7 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        public async void PasteSelectedParams(PianoRollWindow window) {
+        public async void PasteSelectedParams(Window window) {
             if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
                 var selectedNotes = Selection.ToList();
                 if(selectedNotes.Count == 0) {

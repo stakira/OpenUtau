@@ -1,4 +1,4 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,21 +6,18 @@
         xmlns:api="using:OpenUtau.Api"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
-        x:Class="OpenUtau.App.Views.PianoRollWindow"
-        Icon="/Assets/open-utau.ico"
-        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
-        Focusable="True" TransparencyLevelHint="None"
-        Closing="WindowClosing" Deactivated="WindowDeactivated">
-  <Window.Styles>
+        x:Class="OpenUtau.App.Controls.PianoRoll"
+        Focusable="True">
+  <UserControl.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
-  </Window.Styles>
+  </UserControl.Styles>
   <Border>
     <Grid Margin="{Binding $parent[1].WindowDecorationMargin}" PointerMoved="BackgroundPointerMoved">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
-        <RowDefinition Height="*" MinHeight="200"/>
+        <RowDefinition Height="*"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="150" 
                        MinHeight="{Binding NotesViewModel.ExpHeightMin}"
@@ -268,6 +265,11 @@
               <MenuItem Header="{DynamicResource prefs.appearance.trackcolor}" Click="OnMenuUseTrackColor">
                 <MenuItem.Icon>
                   <CheckBox IsChecked="{Binding UseTrackColor}" />
+                </MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource pianoroll.menu.view.detachpianoroll}" Click="OnMenuDetach">
+                <MenuItem.Icon>
+                  <CheckBox IsChecked="{Binding PianoRollDetached}" />
                 </MenuItem.Icon>
               </MenuItem>
               <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
@@ -710,7 +712,7 @@
           <TextBlock Name="ValueTipText" Margin="2"/>
         </Border>
       </Canvas>
-      <ProgressBar Grid.Row="6" Grid.ColumnSpan="4" Value="{Binding Progress}"/>
+      <ProgressBar Grid.Row="6" Grid.ColumnSpan="4" Value="{Binding Progress}" IsVisible="{Binding PianoRollDetached}"/>
     </Grid>
   </Border>
-</Window>
+</UserControl>

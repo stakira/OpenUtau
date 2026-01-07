@@ -241,6 +241,7 @@ namespace OpenUtau.Core.Util {
 errors.txt
 ";
             public string RecoveryPath = string.Empty;
+            public bool DetachPianoRoll = false;
         }
     }
 }
