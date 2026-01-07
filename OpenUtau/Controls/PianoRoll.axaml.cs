@@ -41,7 +41,7 @@ namespace OpenUtau.App.Controls {
         private ReactiveCommand<Unit, Unit>? noteDefaultsCommand;
         private ReactiveCommand<BatchEdit, Unit>? noteBatchEditCommand;
 
-        private Window? RootWindow => (Window)TopLevel.GetTopLevel(this)!;
+        private Window RootWindow => (Window) TopLevel.GetTopLevel(this)!;
 
         public PianoRoll(PianoRollViewModel model) {
             InitializeComponent();
@@ -61,7 +61,7 @@ namespace OpenUtau.App.Controls {
                             (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
                             ?.MainWindow! as MainWindow;
                         var name = ThemeManager.GetString(edit.Name);
-                        await MessageBox.ShowProcessing(RootWindow!, $"{name} - ? / ?",
+                        await MessageBox.ShowProcessing(RootWindow, $"{name} - ? / ?",
                             ThemeManager.GetString("pianoroll.menu.batch.running"),
                             (messageBox, cancellationToken) => {
                                 edit.RunAsync(NotesVm.Project, NotesVm.Part,
@@ -239,7 +239,7 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
         }
         void OnMenuFullScreen(object sender, RoutedEventArgs args) {
-            RootWindow!.WindowState = RootWindow!.WindowState == WindowState.FullScreen
+            RootWindow.WindowState = RootWindow.WindowState == WindowState.FullScreen
                 ? WindowState.Normal
                 : WindowState.FullScreen;
         }
@@ -276,7 +276,7 @@ namespace OpenUtau.App.Controls {
             if (MainWindow != null) {
                 await MainWindow.OpenSingersWindowAsync();
             }
-            RootWindow?.Activate();
+            RootWindow.Activate();
             try {
                 USinger? singer = null;
                 UOto? oto = null;
@@ -312,7 +312,7 @@ namespace OpenUtau.App.Controls {
             }
             if (ViewModel.NotesViewModel.Part.notes.Count < 1) {
                 _ = MessageBox.Show(
-                    RootWindow!,
+                    RootWindow,
                     ThemeManager.GetString("lyrics.nonote"),
                     ThemeManager.GetString("lyrics.caption"),
                     MessageBox.MessageBoxButtons.Ok);
@@ -327,7 +327,7 @@ namespace OpenUtau.App.Controls {
             var dialog = new LyricsReplaceDialog() {
                 DataContext = vm,
             };
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
         }
 
         void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
@@ -340,7 +340,7 @@ namespace OpenUtau.App.Controls {
             }
             if (ViewModel.NotesViewModel.Part.notes.Count < 1) {
                 _ = MessageBox.Show(
-                    RootWindow!,
+                    RootWindow,
                     ThemeManager.GetString("lyrics.nonote"),
                     ThemeManager.GetString("lyrics.caption"),
                     MessageBox.MessageBoxButtons.Ok);
@@ -353,7 +353,7 @@ namespace OpenUtau.App.Controls {
             var dialog = new LyricsDialog() {
                 DataContext = vm,
             };
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
         }
 
         void OnMenuNoteDefaults(object sender, RoutedEventArgs args) {
@@ -362,7 +362,7 @@ namespace OpenUtau.App.Controls {
 
         void EditNoteDefaults() {
             var dialog = new NoteDefaultsDialog();
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }
@@ -375,7 +375,7 @@ namespace OpenUtau.App.Controls {
             }
             if (notesVM.Selection.IsEmpty) {
                 _ = MessageBox.Show(
-                    RootWindow!,
+                    RootWindow,
                     ThemeManager.GetString("lyrics.selectnotes"),
                     ThemeManager.GetString("lyrics.caption"),
                     MessageBox.MessageBoxButtons.Ok);
@@ -396,7 +396,7 @@ namespace OpenUtau.App.Controls {
                 }
             };
             dialog.SetText("br");
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
         }
 
         void QuantizeNotes() {
@@ -423,7 +423,7 @@ namespace OpenUtau.App.Controls {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             };
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
         }
 
         void LengthenCrossfade() {
@@ -441,7 +441,7 @@ namespace OpenUtau.App.Controls {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
                 }
             };
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
         }
 
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
@@ -452,7 +452,7 @@ namespace OpenUtau.App.Controls {
             var dialog = new ExpressionsDialog() {
                 DataContext = new ExpressionsViewModel(notesVM.Project.tracks[notesVM.Part.trackNo]),
             };
-            dialog.ShowDialog(RootWindow!);
+            dialog.ShowDialog(RootWindow);
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }
@@ -750,7 +750,7 @@ namespace OpenUtau.App.Controls {
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.pasteparameters"),
-                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(RootWindow!)),
+                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(RootWindow)),
                             InputGesture = new KeyGesture(Key.V, KeyModifiers.Alt),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
@@ -1008,7 +1008,7 @@ namespace OpenUtau.App.Controls {
                             if (MainWindow != null) {
                                 await MainWindow.OpenSingersWindowAsync();
                             }
-                            RootWindow?.Activate();
+                            RootWindow.Activate();
                             DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
                         }
                         return;
@@ -1184,13 +1184,13 @@ namespace OpenUtau.App.Controls {
                 return;
             }
 
-            if (RootWindow?.FocusManager != null) {
-                if (RootWindow?.FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
+            if (RootWindow.FocusManager != null) {
+                if (RootWindow.FocusManager.GetFocusedElement() is TextBox focusedTextBox) {
                     if (focusedTextBox.IsEnabled && focusedTextBox.IsEffectivelyVisible && focusedTextBox.IsFocused) {
                         args.Handled = false;
                         return;
                     }
-                } else if (RootWindow?.FocusManager.GetFocusedElement() is ComboBox or ComboBoxItem) {
+                } else if (RootWindow.FocusManager.GetFocusedElement() is ComboBox or ComboBoxItem) {
                     args.Handled = false;
                     return;
                 }
@@ -1280,13 +1280,13 @@ namespace OpenUtau.App.Controls {
                 case Key.F4:
                     if (isAlt) {
                         if (RootWindow is PianoRollDetachedWindow) {
-                            RootWindow?.Hide();
+                            RootWindow.Hide();
                         }
                         return true;
                     }
                     break;
                 case Key.F11:
-                    OnMenuFullScreen(RootWindow!, new RoutedEventArgs());
+                    OnMenuFullScreen(RootWindow, new RoutedEventArgs());
                     break;
                 case Key.Enter:
                     if (isNone) {
@@ -1571,7 +1571,7 @@ namespace OpenUtau.App.Controls {
                         return true;
                     }
                     if (isAlt) {
-                        notesVm.PasteSelectedParams(RootWindow!);
+                        notesVm.PasteSelectedParams(RootWindow);
                         return true;
                     }
                     break;
@@ -1811,7 +1811,7 @@ namespace OpenUtau.App.Controls {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is LoadingNotification loadingNotif && loadingNotif.window == typeof(PianoRoll)) {
                 if (loadingNotif.startLoading) {
-                    LoadingWindow.BeginLoadingImmediate(RootWindow!);
+                    LoadingWindow.BeginLoadingImmediate(RootWindow);
                 } else {
                     LoadingWindow.EndLoading();
                 }
