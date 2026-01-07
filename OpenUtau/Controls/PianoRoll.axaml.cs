@@ -43,14 +43,10 @@ namespace OpenUtau.App.Controls {
 
         private Window? RootWindow => (Window)TopLevel.GetTopLevel(this)!;
 
-        public PianoRoll() {
+        public PianoRoll(PianoRollViewModel model) {
             InitializeComponent();
-            ViewModel = (PianoRollViewModel) DataContext!;
-            ValueTip.IsVisible = false;
-        }
-
-        public void SetViewModel(PianoRollViewModel model) {
             DataContext = ViewModel = model;
+            ValueTip.IsVisible = false;
         }
 
         public void InitializePianoRollWindowAsync() {

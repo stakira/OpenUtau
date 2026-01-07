@@ -1153,10 +1153,9 @@ namespace OpenUtau.App.Views {
                     var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel());
 
                     // Let's attach when needed to avoid startup slowdowns
-                    pianoRoll = new PianoRoll() {
+                    pianoRoll = new PianoRoll(model) {
                         MainWindow = this
                     };
-                    pianoRoll.SetViewModel(model);
 
                     if (Preferences.Default.DetachPianoRoll) {
                         viewModel!.ShowPianoRoll = false;
