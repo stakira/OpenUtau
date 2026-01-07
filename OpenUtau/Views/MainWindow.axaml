@@ -8,7 +8,7 @@
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
         Title="{Binding Title}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
-        KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
+        Focusable="True" KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
         DragDrop.AllowDrop="True" TransparencyLevelHint="None">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
@@ -209,194 +209,194 @@
         </Grid>
       
         <!--Main page-->
-        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid ColumnDefinitions="300,*,24" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
           <Grid.RowDefinitions>
-              <RowDefinition MinHeight="48" Height="*"/>
-              <RowDefinition Height="auto"/>
-              <RowDefinition Height="*"
-                            MaxHeight="{Binding PianoRollMaxHeight}"/>
-              <RowDefinition Height="20"/>
-              <RowDefinition Height="4"/>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"
+                           MaxHeight="{Binding PianoRollMaxHeight}"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="4"/>
           </Grid.RowDefinitions>
-          <Grid RowDefinitions="24,24,1*" ColumnDefinitions="300,*,24" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Focusable="True" KeyDown="OnKeyDown">
-            <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
-              <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
-                <Grid>
-                  <TextBlock Width="28" HorizontalAlignment="Left"
-                            Background="Transparent" PointerPressed="OnEditTimeSignature">
-                    <TextBlock.Text>
-                      <MultiBinding StringFormat="{}{0}/{1}">
-                        <Binding Path="PlaybackViewModel.BeatPerBar"/>
-                        <Binding Path="PlaybackViewModel.BeatUnit"/>
-                      </MultiBinding>
-                    </TextBlock.Text>
-                  </TextBlock>
-                  <TextBlock Width="42" HorizontalAlignment="Right"
-                              Background="Transparent" PointerPressed="OnEditBpm">
-                    <TextBlock.Text>
-                      <MultiBinding StringFormat="{}{0:#0.00}">
-                        <Binding Path="PlaybackViewModel.Bpm"/>
-                      </MultiBinding>
-                    </TextBlock.Text>
-                  </TextBlock>
-                </Grid>
-              </Border>
-              <Border Classes="playback" Width="88" HorizontalAlignment="Center">
-                <StackPanel Orientation="Horizontal">
-                  <Button Command="{Binding PlaybackViewModel.SeekStart}">
-                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
-                  </Button>
-                  <Button Click="OnPlayOrPause">
-                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Data="M 0 0 L 7 6.5 L 0 13 Z"/>
-                  </Button>
-                  <Button Command="{Binding PlaybackViewModel.Pause}">
-                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
-                  </Button>
-                  <Button Command="{Binding PlaybackViewModel.SeekEnd}">
-                    <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                          Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
-                  </Button>
-                </StackPanel>
-              </Border>
-              <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
-                <Grid>
-                  <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
-                </Grid>
-              </Border>
-            </Panel>
-            <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                      Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
-                      DataContext="{Binding TracksViewModel}"
-                      Maximum="{Binding HScrollBarMax, Mode=OneWay}"
-                      Value="{Binding TickOffset}"
-                      ViewportSize="{Binding ViewportTicks}"
-                      LargeChange="{Binding ViewportTicks}"
-                      SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
-            <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                      Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
-                      DataContext="{Binding TracksViewModel}"
-                      Maximum="{Binding VScrollBarMax, Mode=OneWay}"
-                      Value="{Binding TrackOffset}"
-                      ViewportSize="{Binding ViewportTracks}"
-                      LargeChange="{Binding ViewportTracks}"
-                      SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
-            <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
-                    Background="Transparent" ClipToBounds="True"
-                    PointerWheelChanged="TimelinePointerWheelChanged"
-                    PointerPressed="TimelinePointerPressed"
-                    PointerMoved="TimelinePointerMoved"
-                    PointerReleased="TimelinePointerReleased">
-              <Path Name="PlayPos"
-                    Canvas.Left="{Binding TracksViewModel.PlayPosX}"
-                    Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
-                    Fill="{DynamicResource NeutralAccentBrushSemi}"
-                    Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
-              <Canvas.ContextMenu>
-                <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
-                  <ContextMenu.Styles>
-                    <Style Selector="MenuItem">
-                      <Setter Property="Header" Value="{Binding Header}"/>
-                      <Setter Property="Command" Value="{Binding Command}"/>
-                      <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                      <Setter Property="ItemsSource" Value="{Binding Items}"/>
-                    </Style>
-                  </ContextMenu.Styles>
-                </ContextMenu>
-              </Canvas.ContextMenu>
-            </Canvas>
-            <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
-                                DataContext="{Binding TracksViewModel}"
-                                TrackHeight="{Binding TrackHeight}"
-                                TrackOffset="{Binding TrackOffset}"
-                                Items="{Binding Tracks}"
-                                PointerWheelChanged="MainPagePointerWheelChanged"/>
-            <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
-                              Foreground="{DynamicResource TrackBackgroundAltBrush}"
+          <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
+            <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
+              <Grid>
+                <TextBlock Width="28" HorizontalAlignment="Left"
+                          Background="Transparent" PointerPressed="OnEditTimeSignature">
+                  <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0}/{1}">
+                      <Binding Path="PlaybackViewModel.BeatPerBar"/>
+                      <Binding Path="PlaybackViewModel.BeatUnit"/>
+                    </MultiBinding>
+                  </TextBlock.Text>
+                </TextBlock>
+                <TextBlock Width="42" HorizontalAlignment="Right"
+                            Background="Transparent" PointerPressed="OnEditBpm">
+                  <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0:#0.00}">
+                      <Binding Path="PlaybackViewModel.Bpm"/>
+                    </MultiBinding>
+                  </TextBlock.Text>
+                </TextBlock>
+              </Grid>
+            </Border>
+            <Border Classes="playback" Width="88" HorizontalAlignment="Center">
+              <StackPanel Orientation="Horizontal">
+                <Button Command="{Binding PlaybackViewModel.SeekStart}">
+                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
+                </Button>
+                <Button Click="OnPlayOrPause">
+                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Data="M 0 0 L 7 6.5 L 0 13 Z"/>
+                </Button>
+                <Button Command="{Binding PlaybackViewModel.Pause}">
+                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
+                </Button>
+                <Button Command="{Binding PlaybackViewModel.SeekEnd}">
+                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
+                </Button>
+              </StackPanel>
+            </Border>
+            <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
+              <Grid>
+                <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+              </Grid>
+            </Border>
+          </Panel>
+          <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+                    DataContext="{Binding TracksViewModel}"
+                    Maximum="{Binding HScrollBarMax, Mode=OneWay}"
+                    Value="{Binding TickOffset}"
+                    ViewportSize="{Binding ViewportTicks}"
+                    LargeChange="{Binding ViewportTicks}"
+                    SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
+          <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
+                    DataContext="{Binding TracksViewModel}"
+                    Maximum="{Binding VScrollBarMax, Mode=OneWay}"
+                    Value="{Binding TrackOffset}"
+                    ViewportSize="{Binding ViewportTracks}"
+                    LargeChange="{Binding ViewportTracks}"
+                    SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
+          <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
+                  Background="Transparent" ClipToBounds="True"
+                  PointerWheelChanged="TimelinePointerWheelChanged"
+                  PointerPressed="TimelinePointerPressed"
+                  PointerMoved="TimelinePointerMoved"
+                  PointerReleased="TimelinePointerReleased">
+            <Path Name="PlayPos"
+                  Canvas.Left="{Binding TracksViewModel.PlayPosX}"
+                  Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
+                  Fill="{DynamicResource NeutralAccentBrushSemi}"
+                  Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+            <Canvas.ContextMenu>
+              <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
+                <ContextMenu.Styles>
+                  <Style Selector="MenuItem">
+                    <Setter Property="Header" Value="{Binding Header}"/>
+                    <Setter Property="Command" Value="{Binding Command}"/>
+                    <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                    <Setter Property="ItemsSource" Value="{Binding Items}"/>
+                  </Style>
+                </ContextMenu.Styles>
+              </ContextMenu>
+            </Canvas.ContextMenu>
+          </Canvas>
+          <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
                               DataContext="{Binding TracksViewModel}"
-                              Bounds="{Binding Bounds, Mode=OneWayToSource}"
                               TrackHeight="{Binding TrackHeight}"
-                              TrackOffset="{Binding TrackOffset}"/>
-            <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
-                              Foreground="{DynamicResource TickLineBrush}"
-                              Background="{DynamicResource TickLineBrushLow}"
-                              Resolution="{Binding PlaybackViewModel.Resolution}"
-                              TickWidth="{Binding TracksViewModel.TickWidth}"
-                              TickOffset="{Binding TracksViewModel.TickOffset}"
-                              SnapDiv="{Binding TracksViewModel.SnapDiv}"
-                              SnapTicks="{Binding TracksViewModel.SnapTicks}"
-                              ShowBarNumber="True"/>
-            <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
-                          DataContext="{Binding TracksViewModel}"
-                          TickWidth="{Binding TickWidth}"
-                          TrackHeight="{Binding TrackHeight}"
-                          TickOffset="{Binding TickOffset}"
-                          TrackOffset="{Binding TrackOffset}"
-                          Items="{Binding Parts}"
-                          PointerPressed="PartsCanvasPointerPressed"
-                          PointerMoved="PartsCanvasPointerMoved"
-                          PointerReleased="PartsCanvasPointerReleased"
-                          DoubleTapped="PartsCanvasDoubleTapped"
-                          PointerWheelChanged="MainPagePointerWheelChanged">
-              <Rectangle Name="PlayPosHighlight"
-                        Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
-                        Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
-                        Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
-                        Canvas.Top="0"
-                        Fill="{DynamicResource NeutralAccentBrushSemi2}"
-                        IsHitTestVisible="False"/>
-              <Rectangle Name="SelectionBox" StrokeThickness="2"
-                        Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
-                        Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
-                        IsHitTestVisible="False" IsVisible="False"/>
-              <c:PartsCanvas.ContextMenu>
-                <ContextMenu Name="PartsContextMenu"
-                            Opening="PartsContextMenuOpening"
-                            Closing="PartsContextMenuClosing">
-                  <MenuItem Header="{DynamicResource context.part.delete}"
-                            Command="{Binding PartDeleteCommand}"
-                            CommandParameter="{Binding Part}"/>
-                  <MenuItem Header="{DynamicResource context.part.gotofile}"
-                            IsVisible="{Binding IsWavePart}"
-                            Command="{Binding PartGotoFileCommand}"
-                            CommandParameter="{Binding Part}"/>
-                  <MenuItem Header="{DynamicResource context.part.replaceaudio}"
-                            IsVisible="{Binding IsWavePart}"
-                            Command="{Binding PartReplaceAudioCommand}"
-                            CommandParameter="{Binding Part}"/>
-                  <MenuItem Header="{DynamicResource context.part.rename}"
-                            IsVisible="{Binding IsVoicePart}"
-                            Command="{Binding PartRenameCommand}"
-                            CommandParameter="{Binding Part}"/>
-                  <MenuItem Header="{DynamicResource context.part.transcribe}"
-                            IsVisible="{Binding IsWavePart}"
-                            Command="{Binding PartTranscribeCommand}"
-                            CommandParameter="{Binding Part}"/>
-                  <MenuItem Header="{DynamicResource context.part.merge}"
-                            IsVisible="{Binding IsVoicePart}"
-                            Command="{Binding PartMergeCommand}"
-                            CommandParameter="{Binding Part}"/>
-                </ContextMenu>
-              </c:PartsCanvas.ContextMenu>
-            </c:PartsCanvas>
-            <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-                    BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
-              <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,5"
-                      IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}" Background="{DynamicResource BackgroundBrushSemi}">
-                <TextBlock Text="{DynamicResource progress.waitingrendering}" FontSize="15"/>
-              </Border>
+                              TrackOffset="{Binding TrackOffset}"
+                              Items="{Binding Tracks}"
+                              PointerWheelChanged="MainPagePointerWheelChanged"/>
+          <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
+                            Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                            DataContext="{Binding TracksViewModel}"
+                            Bounds="{Binding Bounds, Mode=OneWayToSource}"
+                            TrackHeight="{Binding TrackHeight}"
+                            TrackOffset="{Binding TrackOffset}"/>
+          <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
+                            Foreground="{DynamicResource TickLineBrush}"
+                            Background="{DynamicResource TickLineBrushLow}"
+                            Resolution="{Binding PlaybackViewModel.Resolution}"
+                            TickWidth="{Binding TracksViewModel.TickWidth}"
+                            TickOffset="{Binding TracksViewModel.TickOffset}"
+                            SnapDiv="{Binding TracksViewModel.SnapDiv}"
+                            SnapTicks="{Binding TracksViewModel.SnapTicks}"
+                            ShowBarNumber="True"/>
+          <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
+                        DataContext="{Binding TracksViewModel}"
+                        TickWidth="{Binding TickWidth}"
+                        TrackHeight="{Binding TrackHeight}"
+                        TickOffset="{Binding TickOffset}"
+                        TrackOffset="{Binding TrackOffset}"
+                        Items="{Binding Parts}"
+                        PointerPressed="PartsCanvasPointerPressed"
+                        PointerMoved="PartsCanvasPointerMoved"
+                        PointerReleased="PartsCanvasPointerReleased"
+                        DoubleTapped="PartsCanvasDoubleTapped"
+                        PointerWheelChanged="MainPagePointerWheelChanged">
+            <Rectangle Name="PlayPosHighlight"
+                      Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
+                      Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                      Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
+                      Canvas.Top="0"
+                      Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                      IsHitTestVisible="False"/>
+            <Rectangle Name="SelectionBox" StrokeThickness="2"
+                      Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                      Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                      IsHitTestVisible="False" IsVisible="False"/>
+            <c:PartsCanvas.ContextMenu>
+              <ContextMenu Name="PartsContextMenu"
+                          Opening="PartsContextMenuOpening"
+                          Closing="PartsContextMenuClosing">
+                <MenuItem Header="{DynamicResource context.part.delete}"
+                          Command="{Binding PartDeleteCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.gotofile}"
+                          IsVisible="{Binding IsWavePart}"
+                          Command="{Binding PartGotoFileCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.replaceaudio}"
+                          IsVisible="{Binding IsWavePart}"
+                          Command="{Binding PartReplaceAudioCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.rename}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartRenameCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.transcribe}"
+                          IsVisible="{Binding IsWavePart}"
+                          Command="{Binding PartTranscribeCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.merge}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartMergeCommand}"
+                          CommandParameter="{Binding Part}"/>
+              </ContextMenu>
+            </c:PartsCanvas.ContextMenu>
+          </c:PartsCanvas>
+          <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+                  BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" Padding="10,5"
+                    IsVisible="{Binding TracksViewModel.PlayPosWaitingRendering}" Background="{DynamicResource BackgroundBrushSemi}">
+              <TextBlock Text="{DynamicResource progress.waitingrendering}" FontSize="15"/>
             </Border>
-            <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
-              <c:ViewScaler Name="VScaler" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
-            </Border>
-          </Grid>
-          <GridSplitter Grid.Row="1" Height="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+          </Border>
+          <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
+            <c:ViewScaler Name="VScaler" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
+          </Border>
+          <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth" IsVisible="{Binding ShowPianoRoll}"/>
-          <Panel Name="PianoRollContainer" Grid.Row="2"/>
-          <TextBlock Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
-          <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
+          <Panel Name="PianoRollContainer" Grid.Row="4" Grid.ColumnSpan="3"/>
+          <TextBlock Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
+          <ProgressBar Grid.Row="6" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
         </Grid>
       </Carousel>
     </Grid>
