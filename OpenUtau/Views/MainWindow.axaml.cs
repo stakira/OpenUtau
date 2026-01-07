@@ -1154,8 +1154,6 @@ namespace OpenUtau.App.Views {
 
                     // Let's attach when needed to avoid startup slowdowns
                     pianoRoll = new PianoRoll() {
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
                         MainWindow = this
                     };
                     pianoRoll.SetViewModel(model);
@@ -1166,7 +1164,7 @@ namespace OpenUtau.App.Views {
                         pianoRollWindow.Show();
                     } else {
                         viewModel!.ShowPianoRoll = true;
-                        PianoRollContainer.Children.Add(pianoRoll);
+                        PianoRollContainer.Content = pianoRoll;
                     }
 
                     await Task.Run(() => 
@@ -1193,11 +1191,11 @@ namespace OpenUtau.App.Views {
             if (Preferences.Default.DetachPianoRoll) {
                 pianoRollWindow?.ForceClose();
                 pianoRollWindow = null;
-                PianoRollContainer.Children.Add(pianoRoll);
+                PianoRollContainer.Content = pianoRoll;
                 viewModel!.ShowPianoRoll = true;
                 Preferences.Default.DetachPianoRoll = false;
             } else {
-                PianoRollContainer.Children.Clear();
+                PianoRollContainer.Content = null;
                 viewModel!.ShowPianoRoll = false;
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new(pianoRoll);

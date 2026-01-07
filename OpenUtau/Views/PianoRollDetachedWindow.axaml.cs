@@ -14,7 +14,7 @@ namespace OpenUtau.App.Views {
             this.pianoRoll = pianoRoll;
             DataContext = pianoRoll.DataContext;
 
-            PianoRollContainer.Children.Add(pianoRoll);
+            PianoRollContainer.Content = pianoRoll;
 
             if (Preferences.Default.PianorollWindowSize.TryGetPosition(out int x, out int y)) {
                 Position = new PixelPoint(x, y);
@@ -35,7 +35,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void ForceClose() {
-            PianoRollContainer.Children.Clear();
+            PianoRollContainer.Content = null;
             forceClose = true;
             Close();
         }

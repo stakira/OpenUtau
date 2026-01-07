@@ -11,5 +11,5 @@
         Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" 
         Focusable="True" TransparencyLevelHint="None"
         Closing="WindowClosing" Deactivated="WindowDeactivated">
-    <Panel Name="PianoRollContainer"/>
+    <ContentControl Name="PianoRollContainer"/>
 </Window>
