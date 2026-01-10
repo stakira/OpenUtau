@@ -211,6 +211,12 @@ namespace OpenUtau.Core.Render {
                 uNotes.Add(next);
                 next = next.Next;
             }
+            if (uNotes.First().Prev != null && uNotes.First().Prev.End == uNotes.First().position) {
+                uNotes.Insert(0, uNotes.First().Prev);
+            }
+            if (uNotes.Last().Next != null && uNotes.Last().End == uNotes.Last().Next.position) {
+                uNotes.Add(uNotes.Last().Next);
+            }
 
             singer = track.Singer;
             renderer = track.RendererSettings.Renderer;
