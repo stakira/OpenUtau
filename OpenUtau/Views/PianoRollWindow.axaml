@@ -633,6 +633,7 @@
                         SnapDiv="{Binding NotesViewModel.SnapDiv, Mode=OneWay}"/>
       <c:ExpressionCanvas Grid.Row="5" Grid.Column="1" Opacity="{Binding NotesViewModel.ExpShadowOpacity}"
                           IsVisible="{Binding NotesViewModel.ShowExpressions}"
+                          Margin="0,24,0,0"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
@@ -640,6 +641,7 @@
                           ShowRealCurve="False"/>
       <c:ExpressionCanvas Grid.Row="5" Grid.Column="1"
                           IsVisible="{Binding NotesViewModel.ShowExpressions}"
+                          Margin="0,24,0,0"
                           Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
@@ -648,8 +650,7 @@
                           ShowRealCurve="True"
                           PointerPressed="ExpCanvasPointerPressed"
                           PointerMoved="ExpCanvasPointerMoved"
-                          PointerReleased="ExpCanvasPointerReleased">
-      </c:ExpressionCanvas>
+                          PointerReleased="ExpCanvasPointerReleased"/>
       <ListBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Classes="toolbox"
                SelectedIndex="{Binding CurveViewModel.CurveToolIndex}">
         <ListBox.ItemsPanel>
