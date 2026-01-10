@@ -7,7 +7,9 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 
@@ -672,11 +674,30 @@ namespace OpenUtau.App.Views {
                 displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / control.Bounds.Height);
                 displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
             }
-            string valueTipText;
+            string valueTipText = string.Empty;
             if (typeOptions) {
                 int index = (int)displayValue;
                 if (index >= 0 && index < descriptor.options.Length) {
-                    valueTipText = descriptor.options[index];
+                    var value = string.IsNullOrWhiteSpace(descriptor.options[index]) ? "(Default)" : descriptor.options[index];
+                    if (descriptor.abbr == Ustx.CLR && track.Singer is ClassicSinger singer) {
+                        var subbanks = singer.Subbanks
+                            .Where(bank => bank.Color == descriptor.options[index])
+                            .OrderBy(bank => bank.toneSet.FirstOrDefault());
+                        if (subbanks.Count() > 1) {
+                            var low = string.IsNullOrWhiteSpace(subbanks.First().Prefix) ? subbanks.First().Suffix : subbanks.First().Prefix;
+                            var high = string.IsNullOrWhiteSpace(subbanks.Last().Prefix) ? subbanks.Last().Suffix : subbanks.Last().Prefix;
+                            valueTipText = $"{value}: \"{low}\" - \"{high}\"";
+                        } else if (subbanks.Count() == 1) {
+                            var suffix = string.IsNullOrWhiteSpace(subbanks.First().Prefix) ? subbanks.First().Suffix : subbanks.First().Prefix;
+                            if (string.IsNullOrWhiteSpace(suffix)) {
+                                valueTipText = value;
+                            } else {
+                                valueTipText = $"{value}: \"{suffix}\"";
+                            }
+                        }
+                    } else {
+                        valueTipText = value;
+                    }
                 } else {
                     valueTipText = "Error: out of range";
                 }
