@@ -652,7 +652,7 @@
                           PointerMoved="ExpCanvasPointerMoved"
                           PointerReleased="ExpCanvasPointerReleased"/>
       <ListBox Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" Classes="toolbox"
-               SelectedIndex="{Binding CurveViewModel.CurveToolIndex}">
+               SelectedIndex="{Binding CurveViewModel.CurveToolIndex}" IsVisible="{Binding NotesViewModel.ShowCurveToolbox, Mode=OneWay}">
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal"/>
