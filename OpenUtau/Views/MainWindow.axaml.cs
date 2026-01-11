@@ -140,7 +140,7 @@ namespace OpenUtau.App.Views {
             dialog.SetText(project.tempos[0].bpm.ToString());
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.project.tempo");
                     DocManager.Inst.ExecuteCmd(new AddTempoChangeCommand(
                         project, tick, bpm));
                     DocManager.Inst.EndUndoGroup();
@@ -151,7 +151,7 @@ namespace OpenUtau.App.Views {
 
         private void DelTempoChange(int tick) {
             var project = DocManager.Inst.Project;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.project.tempo");
             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
             DocManager.Inst.EndUndoGroup();
         }
@@ -167,7 +167,7 @@ namespace OpenUtau.App.Views {
             dialog.onFinish = s => {
                 try {
                     if (double.TryParse(s, out double bpm)) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.project.tempo");
                         var oldTimeAxis = project.timeAxis.Clone();
                         DocManager.Inst.ExecuteCmd(new BpmCommand(
                             project, bpm));
@@ -191,7 +191,7 @@ namespace OpenUtau.App.Views {
             var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
             var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
             dialog.OnOk = (beatPerBar, beatUnit) => {
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.project.timesignature");
                 DocManager.Inst.ExecuteCmd(new AddTimeSigCommand(
                     project, bar, dialog.BeatPerBar, dialog.BeatUnit));
                 DocManager.Inst.EndUndoGroup();
@@ -201,7 +201,7 @@ namespace OpenUtau.App.Views {
 
         private void DelTimeSigChange(int bar) {
             var project = DocManager.Inst.Project;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.project.timesignature");
             DocManager.Inst.ExecuteCmd(new DelTimeSigCommand(project, bar));
             DocManager.Inst.EndUndoGroup();
         }
@@ -1217,7 +1217,7 @@ namespace OpenUtau.App.Views {
             dialog.onFinish = name => {
                 if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
                     if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.part.edit");
                         DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
                         DocManager.Inst.EndUndoGroup();
                     }
@@ -1249,7 +1249,7 @@ namespace OpenUtau.App.Views {
                 position = part.position
             };
             newPart.Load(DocManager.Inst.Project);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.import.audio");
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, part, newPart));
             DocManager.Inst.EndUndoGroup();
         }
@@ -1285,7 +1285,7 @@ namespace OpenUtau.App.Views {
                             var track = new UTrack(project);
                             track.TrackNo = project.tracks.Count;
                             voicePart.trackNo = track.TrackNo;
-                            DocManager.Inst.StartUndoGroup();
+                            DocManager.Inst.StartUndoGroup("command.part.transcribe");
                             DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
                             DocManager.Inst.EndUndoGroup();
@@ -1360,7 +1360,7 @@ namespace OpenUtau.App.Views {
                 SkipPhonemizer = false
             };
             mergedPart.Validate(options, DocManager.Inst.Project, DocManager.Inst.Project.tracks[part.trackNo]);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.part.edit");
             for (int i = selectedParts.Count - 1; i >= 0; i--) {
                 // The index will shift by removing a part on each loop
                 // Workaround by removing backwards from the largest index and going down
@@ -1391,7 +1391,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void ValidateTracksVoiceColor() {
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.remapvc");
             foreach (var track in DocManager.Inst.Project.tracks) {
                 if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
                     await VoiceColorRemappingAsync(track, oldColors, newColors);
@@ -1425,7 +1425,7 @@ namespace OpenUtau.App.Views {
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 dialog.onFinish = () => {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.track.remapvc");
                     SetVoiceColorRemapping(track, parts, vm);
                     DocManager.Inst.EndUndoGroup();
                 };

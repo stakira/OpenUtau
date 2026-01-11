@@ -59,7 +59,7 @@ namespace OpenUtau.App.ViewModels {
             this.track = track;
             SelectSingerCommand = ReactiveCommand.Create<USinger>(singer => {
                 if (track.Singer != singer) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.track.singer");
                     Log.Information($"Loading Singer: {singer.Name}");
                     DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
                     if (!string.IsNullOrEmpty(singer?.Id) &&
@@ -96,7 +96,7 @@ namespace OpenUtau.App.ViewModels {
             });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.track.setting");
                     var phonemizer = factory.Create();
                     Log.Information($"Loading Phonemizer: {phonemizer.ToString()}");
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
@@ -120,7 +120,7 @@ namespace OpenUtau.App.ViewModels {
                 var settings = new URenderSettings {
                     renderer = name,
                 };
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.track.setting");
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                 DocManager.Inst.EndUndoGroup();
                 this.RaisePropertyChanged(nameof(Renderer));
@@ -465,7 +465,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Remove() {
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.delete");
             DocManager.Inst.ExecuteCmd(new RemoveTrackCommand(DocManager.Inst.Project, track));
             DocManager.Inst.EndUndoGroup();
         }
@@ -474,7 +474,7 @@ namespace OpenUtau.App.ViewModels {
             if (track == DocManager.Inst.Project.tracks.First()) {
                 return;
             }
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.order");
             DocManager.Inst.ExecuteCmd(new MoveTrackCommand(DocManager.Inst.Project, track, true));
             DocManager.Inst.EndUndoGroup();
         }
@@ -483,7 +483,7 @@ namespace OpenUtau.App.ViewModels {
             if (track == DocManager.Inst.Project.tracks.Last()) {
                 return;
             }
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.order");
             DocManager.Inst.ExecuteCmd(new MoveTrackCommand(DocManager.Inst.Project, track, false));
             DocManager.Inst.EndUndoGroup();
         }
@@ -494,7 +494,7 @@ namespace OpenUtau.App.ViewModels {
             dialog.SetText(track.TrackName);
             dialog.onFinish = name => {
                 if (!string.IsNullOrWhiteSpace(name) && name != track.TrackName) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.track.setting");
                     this.TrackName = name;
                     DocManager.Inst.ExecuteCmd(new RenameTrackCommand(DocManager.Inst.Project, track, name));
                     DocManager.Inst.EndUndoGroup();
@@ -519,7 +519,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Duplicate() {
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.duplicate");
             //TODO
             var newTrack = new UTrack(track.TrackName + "_copy") {
                 TrackNo = track.TrackNo + 1,
@@ -545,7 +545,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void DuplicateSettings() {
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.duplicate");
             //TODO
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack(track.TrackName + "_copy") {
                 TrackNo = track.TrackNo + 1,
