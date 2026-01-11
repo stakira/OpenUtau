@@ -16,6 +16,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using Serilog;
 
@@ -587,10 +588,10 @@ namespace OpenUtau.App.Views {
                         editState = new DrawLinePitchState(control, ViewModel, this);
                     } else if (ViewModel.NotesViewModel.OverwritePitchTool) {
                         editState = new OverwritePitchState(control, ViewModel, this);
-                    } else {
-                        editState = new OverwriteLinePitchState(control, ViewModel, this);
+                    } else if (ViewModel.NotesViewModel.OverwriteLinePitchTool){
+                        editState = new OverwriteAdaptivePitchState(control, ViewModel, this);
                     }
-                    return;
+                        return;
                 }
             }
             if (ViewModel.NotesViewModel.EraserTool && args.KeyModifiers != cmdKey) {
@@ -812,6 +813,9 @@ namespace OpenUtau.App.Views {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+                editState.ctrlHeld = args.KeyModifiers == cmdKey;
+                editState.altHeld = args.KeyModifiers == KeyModifiers.Alt;
                 editState.Update(point.Pointer, point.Position);
                 return;
             }
@@ -859,6 +863,14 @@ namespace OpenUtau.App.Views {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            if (args.KeyModifiers == cmdKey) {
+                editState.ctrlHeld = true;
+                editState.shiftHeld = false;
+            }
+            if (args.KeyModifiers == KeyModifiers.Shift) {
+                editState.ctrlHeld = false;
+                editState.shiftHeld = true;
+            }
             editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
@@ -926,7 +938,8 @@ namespace OpenUtau.App.Views {
 
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
-            if (ViewModel.NotesViewModel.Part == null) {
+            var notesVm = ViewModel.NotesViewModel;
+            if (notesVm.Part == null) {
                 return;
             }
             var control = (Control)sender;
@@ -934,15 +947,46 @@ namespace OpenUtau.App.Views {
             if (editState != null) {
                 return;
             }
+            var track = notesVm.Project.tracks[notesVm.Part.trackNo];
+            if (!track.TryGetExpDescriptor(notesVm.Project, notesVm.PrimaryKey, out var descriptor)) {
+                return;
+            }
             if (point.Properties.IsLeftButtonPressed) {
-                editState = new ExpSetValueState(control, ViewModel, this);
+                if (descriptor.type == UExpressionType.Curve) {
+                    switch (ViewModel.CurveViewModel.CurveTool) {
+                        case CurveTools.CurveSelectTool:
+                            editState = new CurveSelectionState(control, ViewModel, this, descriptor);
+                            break;
+                        case CurveTools.CurvePenTool:
+                        case CurveTools.CurveLineTool:
+                        case CurveTools.CurveHorizontalLineTool:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            editState = new ExpSetValueState(control, ViewModel, this, descriptor);
+                            break;
+                        case CurveTools.CurveEraserTool:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            editState = new ExpResetValueState(control, ViewModel, this, descriptor, MouseButton.Left);
+                            break;
+                        default:
+                            ViewModel.CurveViewModel.ClearSelect();
+                            break;
+                    }
+                } else {
+                    editState = new ExpSetValueState(control, ViewModel, this, descriptor);
+                }
+                Cursor = null;
             } else if (point.Properties.IsRightButtonPressed) {
-                editState = new ExpResetValueState(control, ViewModel, this);
+                if (descriptor.type == UExpressionType.Curve && ViewModel.CurveViewModel.CurveTool == CurveTools.CurveSelectTool) {
+                    ViewModel.CurveViewModel.ClearSelect();
+                } else {
+                    ViewModel.CurveViewModel.ClearSelect();
+                    editState = new ExpResetValueState(control, ViewModel, this, descriptor);
+                }
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
                 editState.Begin(point.Pointer, point.Position);
-                editState.Update(point.Pointer, point.Position, args);
+                editState.Update(point.Pointer, point.Position);
             }
         }
 
@@ -954,7 +998,18 @@ namespace OpenUtau.App.Views {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
-                editState.Update(point.Pointer, point.Position, args);
+                if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                    editState.shiftHeld = true;
+                    editState.ctrlHeld = true;
+                } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                    editState.shiftHeld = true;
+                } else if (ViewModel.CurveViewModel.CurveTool == CurveTools.CurveLineTool) {
+                    editState.shiftHeld = true;
+                    editState.ctrlHeld = true;
+                } else if (ViewModel.CurveViewModel.CurveTool == CurveTools.CurveHorizontalLineTool) {
+                    editState.shiftHeld = true;
+                }
+                editState.Update(point.Pointer, point.Position);
             } else {
                 Cursor = null;
             }
@@ -969,7 +1024,18 @@ namespace OpenUtau.App.Views {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            editState.Update(point.Pointer, point.Position, args);
+            if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                editState.shiftHeld = true;
+                editState.ctrlHeld = true;
+            } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                editState.shiftHeld = true;
+            } else if (ViewModel.CurveViewModel.CurveTool == CurveTools.CurveLineTool) {
+                editState.shiftHeld = true;
+                editState.ctrlHeld = true;
+            } else if (ViewModel.CurveViewModel.CurveTool == CurveTools.CurveHorizontalLineTool) {
+                editState.shiftHeld = true;
+            }
+            editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
@@ -1230,15 +1296,18 @@ namespace OpenUtau.App.Views {
         bool OnKeyExtendedHandler(KeyEventArgs args) {
             var notesVm = ViewModel.NotesViewModel;
             var playVm = ViewModel.PlaybackViewModel;
-            if (notesVm?.Part == null || playVm == null) {
+            var curveVm = ViewModel.CurveViewModel;
+            if (notesVm?.Part == null || playVm == null || curveVm == null) {
                 return false;
             }
-            var project = Core.DocManager.Inst.Project;
+            var project = DocManager.Inst.Project;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
             int deltaTicks = notesVm.IsSnapOn ? snapUnit : 15;
 
             bool isNone = args.KeyModifiers == KeyModifiers.None;
             bool isAlt = args.KeyModifiers == KeyModifiers.Alt;
+            bool isAltCtrl = args.KeyModifiers == (cmdKey | KeyModifiers.Alt);
+            bool isAltShift = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
             bool isCtrl = args.KeyModifiers == cmdKey;
             bool isShift = args.KeyModifiers == KeyModifiers.Shift;
             bool isBoth = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
@@ -1347,6 +1416,10 @@ namespace OpenUtau.App.Views {
                 case Key.D4:
                     if (isNone) {
                         notesVm.SelectToolCommand?.Execute("4").Subscribe();
+                        return true;
+                    }
+                    if (isAltCtrl) {
+                        notesVm.SelectToolCommand?.Execute("4++++").Subscribe();
                         return true;
                     }
                     if (isAlt) {
@@ -1559,13 +1632,21 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.C:
                     if (isCtrl) {
-                        notesVm.CopyNotes();
+                        if (curveVm.IsSelected(notesVm.PrimaryKey)) {
+                            curveVm.Copy(notesVm.Part);
+                        } else {
+                            notesVm.CopyNotes();
+                        }
                         return true;
                     }
                     break;
                 case Key.X:
                     if (isCtrl) {
-                        notesVm.CutNotes();
+                        if (curveVm.IsSelected(notesVm.PrimaryKey)) {
+                            curveVm.Cut(notesVm.Part);
+                        } else {
+                            notesVm.CutNotes();
+                        }
                         return true;
                     }
                     break;
@@ -1575,7 +1656,14 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
-                        notesVm.PasteNotes();
+                        if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                            notesVm.PasteNotes();
+                        } else if (DocManager.Inst.CurvesClipboard != null) {
+                            var track = project.tracks[notesVm.Part.trackNo];
+                            if (track.TryGetExpDescriptor(project, notesVm.PrimaryKey, out var descriptor)) {
+                                curveVm.Paste(notesVm.Part, descriptor);
+                            }
+                        }
                         return true;
                     }
                     if (isAlt) {
