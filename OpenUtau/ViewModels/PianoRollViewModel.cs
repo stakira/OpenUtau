@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Input;
 using Avalonia.Threading;
 using DynamicData.Binding;
@@ -12,6 +10,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -47,6 +46,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
+        [Reactive] public CurveViewModel CurveViewModel { get; set; }
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -82,6 +82,11 @@ namespace OpenUtau.App.ViewModels {
             = new Dictionary<Key, MenuItemViewModel>();
 
         [Reactive] public double Progress { get; set; }
+        [Reactive] public bool CanUndo { get; set; } = false;
+        [Reactive] public bool CanRedo { get; set; } = false;
+        [Reactive] public string UndoText { get; set; } = ThemeManager.GetString("menu.edit.undo");
+        [Reactive] public string RedoText { get; set; } = ThemeManager.GetString("menu.edit.redo");
+
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> ClearPhraseCacheCommand { get; set; }
@@ -97,6 +102,7 @@ namespace OpenUtau.App.ViewModels {
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
+            CurveViewModel = new CurveViewModel();
 
             NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
                 NotesViewModel.DeleteSelectedNotes();
@@ -109,43 +115,43 @@ namespace OpenUtau.App.ViewModels {
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.io));
                 DocManager.Inst.EndUndoGroup();
             });
             PitLinearCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.l));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseInCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.i));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.o));
                 DocManager.Inst.EndUndoGroup();
             });
             PitSnapCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                 DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(NotesViewModel.Part, info.Note));
                 DocManager.Inst.EndUndoGroup();
             });
             PitDelCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.delete");
                 DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(NotesViewModel.Part, info.Note, info.Index));
                 DocManager.Inst.EndUndoGroup();
             });
             PitAddCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.pitch.add");
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
             });
@@ -178,6 +184,21 @@ namespace OpenUtau.App.ViewModels {
             });
             LoadLegacyPlugins();
             DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void SetUndoState() {
+            CanUndo = DocManager.Inst.GetUndoState(out string? undoNameKey);
+            if (!string.IsNullOrWhiteSpace(undoNameKey)) {
+                UndoText = $"{ThemeManager.GetString("menu.edit.undo")}: {ThemeManager.GetString(undoNameKey)}";
+            } else {
+                UndoText = ThemeManager.GetString("menu.edit.undo");
+            }
+            CanRedo = DocManager.Inst.GetRedoState(out string? redoNameKey);
+            if (!string.IsNullOrWhiteSpace(redoNameKey)) {
+                RedoText = $"{ThemeManager.GetString("menu.edit.redo")}:  {ThemeManager.GetString(redoNameKey)}";
+            } else {
+                RedoText = ThemeManager.GetString("menu.edit.redo");
+            }
         }
 
         private void LoadLegacyPlugins() {
@@ -221,9 +242,30 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
-        public void Cut() => NotesViewModel.CutNotes();
-        public void Copy() => NotesViewModel.CopyNotes();
-        public void Paste() => NotesViewModel.PasteNotes();
+        public void Cut() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Cut(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CutNotes();
+            }
+        }
+        public void Copy() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Copy(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CopyNotes();
+            }
+        }
+        public void Paste() {
+            if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                NotesViewModel.PasteNotes();
+            } else if (DocManager.Inst.CurvesClipboard != null && NotesViewModel.Part != null) {
+                var track = NotesViewModel.Project.tracks[NotesViewModel.Part.trackNo];
+                if (track.TryGetExpDescriptor(NotesViewModel.Project, NotesViewModel.PrimaryKey, out var descriptor)) {
+                    CurveViewModel.Paste(NotesViewModel.Part, descriptor);
+                }
+            }
+        }
         public void PastePlain() => NotesViewModel.PastePlainNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
@@ -240,6 +282,7 @@ namespace OpenUtau.App.ViewModels {
                     Progress = progressBarNotification.Progress;
                 });
             }
+            SetUndoState();
         }
 
         #endregion
