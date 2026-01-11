@@ -1295,7 +1295,7 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.F11:
                     OnMenuFullScreen(this, new RoutedEventArgs());
-                    break;
+                    return true;
                 case Key.Enter:
                     if (isNone) {
                         if (notesVm.Selection.Count == 1) {
@@ -1455,6 +1455,7 @@ namespace OpenUtau.App.Views {
                     }
                     if (isAlt) {
                         SnapDivMenu.Open();
+                        return true;
                     }
                     break;
                 case Key.OemPipe:
@@ -1734,6 +1735,7 @@ namespace OpenUtau.App.Views {
                     // mute
                     if (isShift) {
                         MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo, false));
+                        return true;
                     }
                     break;
                 case Key.F:
@@ -1792,13 +1794,15 @@ namespace OpenUtau.App.Views {
                 #region move to the next track part
                 case Key.PageUp: {
                         if (isNone) {
-                            return MoveToNextPart(false);
+                            MoveToNextPart(false);
+                            return true;
                         }
                     }
                     break;
                     case Key.PageDown: {
                         if (isNone) {
-                            return MoveToNextPart(true);
+                            MoveToNextPart(true);
+                            return true;
                         }
                     }
                     break;

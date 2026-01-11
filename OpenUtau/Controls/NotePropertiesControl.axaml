@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600" Width="400"
-             x:Class="OpenUtau.App.Controls.NotePropertiesControl" KeyDown="OnKeyDown" Margin="0">
+             x:Class="OpenUtau.App.Controls.NotePropertiesControl"
+             KeyDown="OnKeyDown" Focusable="True">
   <UserControl.Styles>
     <Style Selector="Button,CheckBox">
       <Setter Property="Focusable" Value="False"/>
