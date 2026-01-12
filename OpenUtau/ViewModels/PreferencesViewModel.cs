@@ -133,6 +133,23 @@ namespace OpenUtau.App.ViewModels {
                 if (device != null) {
                     AudioOutputDevice = device;
                 }
+                // Subscribe to device list changes to refresh UI when devices are plugged/unplugged.
+                try {
+                    audioOutput.DevicesChanged += (s, e) => {
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                            try {
+                                AudioOutputDevices = PlaybackManager.Inst.AudioOutput.GetOutputDevices();
+                                int curDeviceNumber = PlaybackManager.Inst.AudioOutput.DeviceNumber;
+                                var cur = AudioOutputDevices.FirstOrDefault(d => d.deviceNumber == curDeviceNumber);
+                                if (cur != null) {
+                                    AudioOutputDevice = cur;
+                                }
+                            } catch (Exception ex) {
+                                Log.Warning(ex, "Failed to update audio device list on DevicesChanged");
+                            }
+                        });
+                    };
+                } catch { }
             }
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
