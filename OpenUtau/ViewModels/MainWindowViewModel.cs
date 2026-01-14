@@ -428,7 +428,7 @@ namespace OpenUtau.App.ViewModels {
                 Dispatcher.UIThread.InvokeAsync(() => {
                     Progress = progressBarNotification.Progress;
                     ProgressText = progressBarNotification.Info;
-                });
+                }, DispatcherPriority.Background);
             } else if (cmd is LoadProjectNotification loadProject) {
                 Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {

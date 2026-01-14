@@ -238,7 +238,7 @@ namespace OpenUtau.App.ViewModels {
             if (cmd is ProgressBarNotification progressBarNotification) {
                 Dispatcher.UIThread.InvokeAsync(() => {
                     Progress = progressBarNotification.Progress;
-                });
+                }, DispatcherPriority.Background);
             }
         }
 
