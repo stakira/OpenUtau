@@ -889,6 +889,7 @@ namespace OpenUtau.App.Views {
                     bool openAsProject = true;
 
                     if (viewModel.Page == 1) {
+                        bool cancelled = true;
                         var openAs = new MessageBox() {
                             Title = ThemeManager.GetString("dialogs.projectimport.caption"),
                             Text = {
@@ -901,6 +902,7 @@ namespace OpenUtau.App.Views {
                         };
                         btnAsProject.Click += async (s, e) => {
                             await AskIfSaveAndContinue();
+                            cancelled = false;
                             openAsProject = true;
                             openAs.Close();
                         };
@@ -910,19 +912,23 @@ namespace OpenUtau.App.Views {
                             Content = ThemeManager.GetString("dialogs.projectimport.astracks")
                         };
                         btnAsTracks.Click += (s, e) => {
+                            cancelled = false;
                             openAsProject = false;
                             openAs.Close();
                         };
                         openAs.Buttons.Children.Add(btnAsTracks);
 
                         var tcs = new TaskCompletionSource();
-                        openAs.Closed += delegate { tcs.SetResult(); };
+                        openAs.Closed += delegate {
+                            if (cancelled) {
+                                return;
+                            }
+                            tcs.SetResult();
+                        };
                         openAs.Show();
 
                         await tcs.Task;
                     }
-
-                    viewModel.Page = 1;
 
                     if (openAsProject) {
                         try {
@@ -967,6 +973,7 @@ namespace OpenUtau.App.Views {
                         _ = await MessageBox.ShowError(this, new MessageCustomizableException("Failed to import audio", "<translate:errors.failed.importaudio>", e));
                     }
                 }
+                viewModel.Page = 1;
                 return;
             }
             // Otherwise, only one installer file is handled at a time.
