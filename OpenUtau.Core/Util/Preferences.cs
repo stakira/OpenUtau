@@ -143,7 +143,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public string ThemeName = "Light";
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
