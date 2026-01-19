@@ -67,7 +67,6 @@ namespace OpenUtau.Core {
         public void SearchAllPlugins() {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
-            var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
             try {
                 files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
@@ -90,7 +89,7 @@ namespace OpenUtau.Core {
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
                         if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
-                            phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                            PhonemizerFactory.Get(type);
                         }
                     }
                 } catch (Exception e) {
@@ -100,10 +99,10 @@ namespace OpenUtau.Core {
             }
             foreach (var type in GetType().Assembly.GetExportedTypes()) {
                 if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
-                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                    PhonemizerFactory.Get(type);
                 }
             }
-            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
+            PhonemizerFactory.BuildList();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }

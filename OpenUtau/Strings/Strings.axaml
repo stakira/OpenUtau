@@ -319,6 +319,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
 
   <system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>
+  <system:String x:Key="pianoroll.menu.view.detachpianoroll">Detach Piano Roll</system:String>
   <system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
@@ -448,6 +449,12 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.edit.title">Edit Custom Theme</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.delete.title">Delete Custom Theme</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.delete.message">Are you sure you want to delete this theme?</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.create.title">Create Custom Theme</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.create.prompt">Enter Theme Name</system:String>
+  <system:String x:Key="prefs.appearance.customtheme.create.empty">Theme name cannot be empty.</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
   <system:String x:Key="prefs.cache">Cache</system:String>
   <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
@@ -695,4 +702,8 @@ General
   <system:String x:Key="welcome.recent">Recent</system:String>
   <system:String x:Key="welcome.start">Start</system:String>
   <system:String x:Key="welcome.template">Template</system:String>
+
+  <system:String x:Key="themeeditor.title">Theme Editor</system:String>
+  <system:String x:Key="themeeditor.save">Save</system:String>
+  <system:String x:Key="themeeditor.cancel">Cancel</system:String>
 </ResourceDictionary>

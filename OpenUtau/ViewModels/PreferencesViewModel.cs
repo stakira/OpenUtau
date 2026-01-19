@@ -93,13 +93,15 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowOnnxGpu { get; set; }
 
         // Appearance
-        [Reactive] public int Theme { get; set; }
-        [Reactive] public string CustomName { get; set; } = Colors.CustomTheme.Default.Name;
+        [Reactive] public string ThemeName { get; set; }
         [Reactive] public int DegreeStyle { get; set; }
         [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
         [Reactive] public bool ShowIcon { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
+        [Reactive] public bool ThemeEditable { get; set; }
+        public List<string> ThemeItems => ThemeManager.GetAvailableThemes();
+        public bool IsThemeEditorOpen => Views.ThemeEditorWindow.IsOpen;
 
         // UTAU
         public List<string> DefaultRendererOptions { get; set; }
@@ -172,7 +174,7 @@ namespace OpenUtau.App.ViewModels {
             DiffSingerTensorCache = Preferences.Default.DiffSingerTensorCache;
             DiffSingerLangCodeHide = Preferences.Default.DiffSingerLangCodeHide;
             SkipRenderingMutedTracks = Preferences.Default.SkipRenderingMutedTracks;
-            Theme = Preferences.Default.Theme;
+            ThemeName = Preferences.Default.ThemeName;
             PenPlusDefault = Preferences.Default.PenPlusDefault;
             DegreeStyle = Preferences.Default.DegreeStyle;
             UseTrackColor = Preferences.Default.UseTrackColor;
@@ -188,6 +190,9 @@ namespace OpenUtau.App.ViewModels {
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
+            MessageBus.Current.Listen<ThemeEditorStateChangedEvent>()
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(IsThemeEditorOpen)));
+            
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
                 .SubscribeOn(RxApp.MainThreadScheduler)
@@ -251,11 +256,14 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.SortingOrder = so?.Name ?? null;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.Theme)
-                .Subscribe(theme => {
-                    Preferences.Default.Theme = theme;
-                    Preferences.Save();
-                    App.SetTheme();
+            this.WhenAnyValue(vm => vm.ThemeName)
+                .Subscribe(themeName => {
+                    ThemeEditable = themeName != "Light" && themeName != "Dark";
+                    if (!IsThemeEditorOpen) {
+                        Preferences.Default.ThemeName = themeName;
+                        Preferences.Save();
+                        App.SetTheme();
+                    }
                 });
             this.WhenAnyValue(vm => vm.DegreeStyle)
                 .Subscribe(degreeStyle => {
@@ -429,6 +437,10 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Save();
             ToolsManager.Inst.Initialize();
             this.RaisePropertyChanged(nameof(WinePath));
+        }
+
+        public void RefreshThemes() {
+            this.RaisePropertyChanged(nameof(ThemeItems));
         }
 
         public void ToggleOnnxGpuDisplay(bool show) {
