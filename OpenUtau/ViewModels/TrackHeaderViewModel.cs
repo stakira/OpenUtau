@@ -522,7 +522,6 @@ namespace OpenUtau.App.ViewModels {
 
         public void Duplicate() {
             DocManager.Inst.StartUndoGroup();
-            //TODO
             var newTrack = new UTrack(track.TrackName + "_copy") {
                 TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
@@ -533,7 +532,8 @@ namespace OpenUtau.App.ViewModels {
                 Solo = false,
                 Volume = track.Volume,
                 Pan = track.Pan,
-                TrackColor = track.TrackColor
+                TrackColor = track.TrackColor,
+                TrackExpressions = track.TrackExpressions.Select(exp => exp.Clone()).ToList()
             };
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
             var parts = DocManager.Inst.Project.parts
@@ -548,7 +548,6 @@ namespace OpenUtau.App.ViewModels {
 
         public void DuplicateSettings() {
             DocManager.Inst.StartUndoGroup();
-            //TODO
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack(track.TrackName + "_copy") {
                 TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
@@ -559,7 +558,8 @@ namespace OpenUtau.App.ViewModels {
                 Solo = false,
                 Volume = track.Volume,
                 Pan = track.Pan,
-                TrackColor = track.TrackColor
+                TrackColor = track.TrackColor,
+                TrackExpressions = track.TrackExpressions.Select(exp => exp.Clone()).ToList()
             }));
             DocManager.Inst.EndUndoGroup();
         }
