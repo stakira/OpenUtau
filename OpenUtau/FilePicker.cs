@@ -1,10 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+#if MACOS
+using MonoMac.Foundation;
+using MonoMac.AppKit;
+#endif
 
 namespace OpenUtau.App {
     internal class FilePicker {
@@ -45,6 +51,11 @@ namespace OpenUtau.App {
             Patterns = new[] { "*.exe" },
         };
         public static FilePickerFileType APP { get; } = new("APP") {
+            AppleUniformTypeIdentifiers = new[] { 
+                "com.apple.application-bundle", 
+                "com.apple.package",
+                "public.executable" 
+            },
             Patterns = new[] { "*.app" },
         };
         public static FilePickerFileType PrefixMap { get; } = new("Prefix Map") {
@@ -93,6 +104,45 @@ namespace OpenUtau.App {
             var location = startLocation == null
                 ? null
                 : await window.StorageProvider.TryGetFolderFromPathAsync(startLocation);
+        #if MACOS
+            // Due to an avalonia bug, we need to call the native API for looking for APP
+            // Please get rid of this code ASAP, it barely works
+            if (types.Contains(APP)) {
+                var tcs = new TaskCompletionSource<string?>();
+                
+                var title = ThemeManager.GetString(titleKey);
+
+                NSApplication.Init();
+
+                NSApplication.SharedApplication.InvokeOnMainThread(() => {
+                    try {
+                        var panel = new NSOpenPanel();
+                        panel.Title = title;
+                        panel.CanChooseFiles = true;
+                        panel.CanChooseDirectories = false;
+                        panel.AllowsMultipleSelection = false;
+                        panel.TreatsFilePackagesAsDirectories = false;
+                        
+                        if (!string.IsNullOrEmpty(startLocation)) {
+                            panel.DirectoryUrl = NSUrl.FromFilename(startLocation);
+                        }
+                        
+                        var result = panel.RunModal();
+                        if (result == 1) {
+                            tcs.SetResult(panel.Urls.FirstOrDefault()?.Path);
+                        } else {
+                            tcs.SetResult(null);
+                        }
+                    } catch (Exception ex) {
+                        Console.WriteLine($"Exception: {ex}");
+                        tcs.SetException(ex);
+                    }
+                });
+
+                return await tcs.Task;
+            }
+        #endif
+
             var files = await window.StorageProvider.OpenFilePickerAsync(
                 new FilePickerOpenOptions() {
                     Title = ThemeManager.GetString(titleKey),
