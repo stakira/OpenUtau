@@ -316,19 +316,20 @@ namespace OpenUtau.App.ViewModels {
                             DependencyInstaller.Install(file);
                             return;
                         }
-
+                        var vm = new SingerSetupViewModel() {
+                            ArchiveFilePath = file,
+                        };
+                        vm.CheckFileType();
                         var setup = new SingerSetupDialog() {
-                            DataContext = new SingerSetupViewModel() {
-                                ArchiveFilePath = file,
-                            },
+                            DataContext = vm,
                         };
                         _ = setup.ShowDialog(mainWindow);
                         if (setup.Position.Y < 0) {
                             setup.Position = setup.Position.WithY(0);
                         }
                     } catch (Exception e) {
-                        Log.Error(e, $"Failed to install singer {file}");
-                        _ = await MessageBox.ShowError(mainWindow, new MessageCustomizableException($"Failed to install singer {file}", $"<translate:errors.failed.installsinger>: {file}", e));
+                        Log.Error(e, $"Failed to install {file}");
+                        _ = await MessageBox.ShowError(mainWindow, new MessageCustomizableException($"Failed to install {file}", $"<translate:errors.failed.install>: {file}", e));
                     }
                 })
             });

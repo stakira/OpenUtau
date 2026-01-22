@@ -86,6 +86,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>
   <system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>
   <system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>
+  <system:String x:Key="errors.failed.install">Failed to install</system:String>
   <system:String x:Key="errors.failed.installsinger">Failed to install singer</system:String>
   <system:String x:Key="errors.failed.load">Failed to load</system:String>
   <system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>
@@ -609,14 +610,20 @@ The voicebank may not work on another OS.</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
   <system:String x:Key="singers.usefilename">Use filename as alias</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
-
+  
+  <system:String x:Key="singersetup.agreement">If you agree to the file's terms of use, press Next.</system:String>
+  <system:String x:Key="singersetup.alreadyexists">Folder "{0}" already exists. Existing data and installation data will be merged.</system:String>
   <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>
   <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>
   <system:String x:Key="singersetup.back">Back</system:String>
-  <system:String x:Key="singersetup.failed">Failed to install singer.</system:String>
+  <system:String x:Key="singersetup.description">Install "{0}" as {1}.</system:String>
+  <system:String x:Key="singersetup.failed">Failed to install.</system:String>
   <system:String x:Key="singersetup.install">Install</system:String>
   <system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>
   <system:String x:Key="singersetup.next">Next</system:String>
+  <system:String x:Key="singersetup.plugin">plugin</system:String>
+  <system:String x:Key="singersetup.plugintitle">Plugin Setup</system:String>
+  <system:String x:Key="singersetup.singer">singer</system:String>
   <system:String x:Key="singersetup.singertype">Singer Type</system:String>
   <system:String x:Key="singersetup.succeeded">Installation succeeded.</system:String>
   <system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>

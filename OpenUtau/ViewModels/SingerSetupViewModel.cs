@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,10 @@ using SharpCompress.Readers;
 
 namespace OpenUtau.App.ViewModels {
     public class SingerSetupViewModel : ViewModelBase {
+        public bool IsSinger => fileType == 0;
+        [Reactive] public string Title { get; set; } = ThemeManager.GetString("singersetup.title");
         [Reactive] public int Step { get; set; }
+        [Reactive] public string Description { get; set; } = string.Empty;
         public ObservableCollection<string> TextItems => textItems;
         [Reactive] public string ArchiveFilePath { get; set; } = string.Empty;
         public Encoding[] Encodings { get; set; } = new Encoding[] {
@@ -33,6 +37,10 @@ namespace OpenUtau.App.ViewModels {
         public string[] SingerTypes { get; set; } = new[] { "utau", "enunu", "diffsinger" };
         [Reactive] public string SingerType { get; set; }
 
+        private int fileType = 0; // 0: voiceset, 1: editplugin
+        private string destinationDir = string.Empty;
+        private string sourceDir = string.Empty;
+        private string basePath => fileType == 1 ? PathManager.Inst.PluginsPath : PathManager.Inst.SingersInstallPath;
         private ObservableCollectionExtended<string> textItems;
 
         public SingerSetupViewModel() {
@@ -68,16 +76,63 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(_ => RefreshTextItems());
         }
 
+        public void CheckFileType() {
+            // Specifications for install.txt: http://utau2008.blog47.fc2.com/blog-entry-379.html
+            string description = string.Empty;
+            try {
+                using (ZipArchive archive = ZipFile.OpenRead(ArchiveFilePath)) {
+                    var installTxt = archive.Entries.FirstOrDefault(entry => entry.FullName.Equals("install.txt"));
+                    if (installTxt != null) {
+                        using (StreamReader reader = new StreamReader(installTxt.Open(), TextEncoding)) {
+                            string? line;
+                            while ((line = reader.ReadLine()) != null) {
+                                if (line == "type=editplugin") {
+                                    fileType = 1;
+                                    Title = ThemeManager.GetString("singersetup.plugintitle");
+                                } else if (line.StartsWith("folder=")) {
+                                    destinationDir = line.Replace("folder=", "").Trim();
+                                } else if (line.StartsWith("contentsdir=")) {
+                                    sourceDir = line.Replace("contentsdir=", "").Trim();
+                                } else if (line.StartsWith("description=")) {
+                                    description = line.Replace("\\n", "\n").Replace("description=", "\n\n----------------\n\n");
+                                }
+                            }
+                        }
+                    }
+                }
+                if (string.IsNullOrEmpty(destinationDir)) {
+                    destinationDir = Path.GetFileNameWithoutExtension(ArchiveFilePath).Trim();
+                }
+                string type = ThemeManager.GetString(fileType == 1 ? "singersetup.plugin" : "singersetup.singer");
+                Description = string.Format(ThemeManager.GetString("singersetup.description"), [destinationDir, type]) + description;
+            } catch (Exception ex) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            }
+        }
+
         public void Back() {
             Step--;
         }
 
         public void Next() {
+            if (Step == 0) {
+                var directory = Path.Combine(basePath, destinationDir);
+                if (Directory.Exists(directory)) {
+                    var ex = new MessageCustomizableException(
+                        $"The folder already exists: {directory}",
+                        $"<translate:singersetup.alreadyexists>",
+                        new IOException($"The folder already exists:\n{directory}"),
+                        false,
+                        [directory]
+                    );
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+                }
+            }
             Step++;
         }
 
         private void RefreshArchiveItems() {
-            if (Step != 0) {
+            if (Step != 1) {
                 return;
             }
             if (string.IsNullOrEmpty(ArchiveFilePath)) {
@@ -114,39 +169,40 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void RefreshTextItems() {
-            if (Step != 1) {
-                return;
-            }
-            if (string.IsNullOrEmpty(ArchiveFilePath)) {
-                textItems.Clear();
-                return;
-            }
-            var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
-            };
-            using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
-                try {
+            if (Step == 0 && !string.IsNullOrEmpty(ArchiveFilePath)) {
+                CheckFileType();
+            } else if (Step == 2) {
+                if (string.IsNullOrEmpty(ArchiveFilePath)) {
                     textItems.Clear();
-                    foreach (var entry in archive.Entries.Where(entry => entry.Key!.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
-                        using (var stream = entry.OpenEntryStream()) {
-                            using var reader = new StreamReader(stream, TextEncoding);
-                            textItems.Add($"------ {entry.Key} ------");
-                            int count = 0;
-                            while (count < 256 && !reader.EndOfStream) {
-                                string? line = reader.ReadLine();
-                                if (!string.IsNullOrWhiteSpace(line)) {
-                                    textItems.Add(line);
-                                    count++;
+                    return;
+                }
+                var readerOptions = new ReaderOptions {
+                    ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
+                };
+                using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
+                    try {
+                        textItems.Clear();
+                        foreach (var entry in archive.Entries.Where(entry => entry.Key!.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))) {
+                            using (var stream = entry.OpenEntryStream()) {
+                                using var reader = new StreamReader(stream, TextEncoding);
+                                textItems.Add($"------ {entry.Key} ------");
+                                int count = 0;
+                                while (count < 256 && !reader.EndOfStream) {
+                                    string? line = reader.ReadLine();
+                                    if (!string.IsNullOrWhiteSpace(line)) {
+                                        textItems.Add(line);
+                                        count++;
+                                    }
+                                }
+                                if (!reader.EndOfStream) {
+                                    textItems.Add($"...");
                                 }
                             }
-                            if (!reader.EndOfStream) {
-                                textItems.Add($"...");
-                            }
                         }
+                    } catch (Exception ex) {
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+                        Step--;
                     }
-                } catch (Exception ex) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-                    Step--;
                 }
             }
         }
@@ -157,11 +213,14 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var basePath = PathManager.Inst.SingersInstallPath;
-                    var installer = new VoicebankInstaller(basePath, (progress, info) => {
+                    var installer = new ZipInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
-                    }, archiveEncoding, textEncoding);
-                    installer.Install(archiveFilePath, SingerType);
+                    }, archiveEncoding, textEncoding, destinationDir, sourceDir);
+                    if (fileType == 1) {
+                        installer.InstallPlugin(archiveFilePath);
+                    } else {
+                        installer.InstallSinger(archiveFilePath, SingerType);
+                    }
 
                     new Task(() => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("singersetup.succeeded")));
