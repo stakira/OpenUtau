@@ -48,6 +48,8 @@ namespace OpenUtau.App.Views {
         public Point startPoint;
         public IValueTip valueTip;
         protected virtual bool ShowValueTip => true;
+        protected virtual string? commandNameKey => null;
+
         public NoteEditState(Control control, PianoRollViewModel vm, IValueTip valueTip) {
             this.control = control;
             this.vm = vm;
@@ -56,7 +58,7 @@ namespace OpenUtau.App.Views {
         public virtual void Begin(IPointer pointer, Point point) {
             pointer.Capture(control);
             startPoint = point;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup(commandNameKey);
             if (ShowValueTip) {
                 valueTip.ShowValueTip();
             }
@@ -89,6 +91,7 @@ namespace OpenUtau.App.Views {
         protected override bool ShowValueTip => false;
         private int startTick;
         private int startTone;
+
         public NoteSelectionEditState(
             Control control,
             PianoRollViewModel vm,
@@ -137,6 +140,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         private double xOffset;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.note.move";
+
         public NoteMoveEditState(
             Control control,
             PianoRollViewModel vm,
@@ -212,6 +217,7 @@ namespace OpenUtau.App.Views {
         private UNote? note;
         private bool playTone;
         private int activeTone;
+        protected override string? commandNameKey => "command.note.add";
 
         public NoteDrawEditState(
             Control control,
@@ -291,6 +297,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote? neighborNote;
         public readonly bool resizeNeighbor;
         public readonly bool fromStart;
+        protected override string? commandNameKey => "command.note.edit";
+
         public NoteResizeEditState(
             Control control,
             PianoRollViewModel vm,
@@ -389,6 +397,8 @@ namespace OpenUtau.App.Views {
         private float oldVibFadeInTicks => oldVibFadeIn * oldVibLengthTicks / 100;
         private float oldVibFadeOutTicks => oldVibFadeOut * oldVibLengthTicks / 100;
         private float vibPeriod => note.vibrato.period;
+        protected override string? commandNameKey => "command.note.split";
+
         public NoteSplitEditState(
             Control control,
             PianoRollViewModel vm,
@@ -499,6 +509,8 @@ namespace OpenUtau.App.Views {
         public override MouseButton MouseButton => mouseButton;
         private MouseButton mouseButton;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.note.delete";
+
         public NoteEraseEditState(
             Control control,
             PianoRollViewModel vm,
@@ -546,6 +558,8 @@ namespace OpenUtau.App.Views {
         private float y;
         private int index;
         private PitchPoint pitchPoint;
+        protected override string? commandNameKey => "command.pitch.editpoint";
+
         public PitchPointEditState(
             Control control,
             PianoRollViewModel vm,
@@ -627,9 +641,10 @@ namespace OpenUtau.App.Views {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
-
         private double startValue = 0;
         private bool shiftWasHeld = false;
+        protected override string? commandNameKey => "command.exp.edit";
+
         public ExpSetValueState(
             Control control,
             PianoRollViewModel vm,
@@ -760,6 +775,8 @@ namespace OpenUtau.App.Views {
         private UExpressionDescriptor? descriptor;
         private UTrack track;
         public override MouseButton MouseButton => MouseButton.Right;
+        protected override string? commandNameKey => "command.exp.reset";
+
         public ExpResetValueState(
             Control control,
             PianoRollViewModel vm,
@@ -825,6 +842,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeStartState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeStartState(
             Control control,
             PianoRollViewModel vm,
@@ -845,6 +864,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeInState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeInState(
             Control control,
             PianoRollViewModel vm,
@@ -870,6 +891,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeOutState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeOutState(
             Control control,
             PianoRollViewModel vm,
@@ -894,6 +917,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeDepthState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeDepthState(
             Control control,
             PianoRollViewModel vm,
@@ -914,6 +939,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangePeriodState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangePeriodState(
             Control control,
             PianoRollViewModel vm,
@@ -944,6 +971,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         public readonly Point hitPoint;
         public readonly float initialShift;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeShiftState(
             Control control,
             PianoRollViewModel vm,
@@ -974,6 +1003,8 @@ namespace OpenUtau.App.Views {
         public readonly UPhoneme phoneme;
         public readonly int index;
         public int startOffset;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeMoveState(
             Control control,
             PianoRollViewModel vm,
@@ -1008,6 +1039,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeChangePreutterState(
             Control control,
             PianoRollViewModel vm,
@@ -1037,6 +1070,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeChangeOverlapState(
             Control control,
             PianoRollViewModel vm,
@@ -1065,6 +1100,8 @@ namespace OpenUtau.App.Views {
     class PhonemeResetState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.phoneme.reset";
+
         public PhonemeResetState(
             Control control,
             PianoRollViewModel vm,
@@ -1102,8 +1139,10 @@ namespace OpenUtau.App.Views {
 
     class DrawPitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? lastPitch;
         Point lastPoint;
+
         public DrawPitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1137,10 +1176,12 @@ namespace OpenUtau.App.Views {
 
     class DrawLinePitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? firstPitch;
         Point firstPoint;
         double? lastPitch;
         Point lastPoint;
+
         public DrawLinePitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1181,8 +1222,10 @@ namespace OpenUtau.App.Views {
 
     class OverwriteLinePitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         Point firstPoint;
         Point lastPoint;
+
         public OverwriteLinePitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1284,8 +1327,10 @@ namespace OpenUtau.App.Views {
 
     class OverwritePitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? lastPitch;
         Point lastPoint;
+
         public OverwritePitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1319,9 +1364,11 @@ namespace OpenUtau.App.Views {
 
     class SmoothenPitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.edit";
         int brushRadius = 10;
         int kernelRadius = 3;
         double kernelWeight = 1.0 / (2 * 3 + 1);
+
         public SmoothenPitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1365,7 +1412,9 @@ namespace OpenUtau.App.Views {
     class ResetPitchState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.reset";
         Point lastPoint;
+
         public ResetPitchState(
             Control control,
             PianoRollViewModel vm,
