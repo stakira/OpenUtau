@@ -213,9 +213,10 @@
           <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
             <RowDefinition Height="24"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"
+            <RowDefinition Height="3*"
+                           MinHeight="{Binding PianoRollMinHeight}"
                            MaxHeight="{Binding PianoRollMaxHeight}"/>
             <RowDefinition Height="20"/>
             <RowDefinition Height="4"/>

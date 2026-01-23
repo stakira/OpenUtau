@@ -770,7 +770,13 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
+            if (PianoRollContainer.IsKeyboardFocusWithin) {
+                args.Handled = false;
+                return;
+            }
+
             var tracksVm = viewModel.TracksViewModel;
+
             if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;
                 switch (args.Key) {
