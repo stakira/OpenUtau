@@ -520,7 +520,11 @@ namespace OpenUtau.Plugin.Builtin {
                 //if starting CV -> [-CV], fallback to [CV]
                 basePhoneme = $"-{cc[0]}{v}";
                 if (!HasOto(basePhoneme, syllable.tone)) {
-                    basePhoneme = $"{cc[0]}{v}";
+                    if ($"{cc[0]}" == "h" && $"{v}" == "E")
+                        basePhoneme = $"-hhE";
+                    else {
+                        basePhoneme = $"{cc[0]}{v}";
+                    }
                 }
 
                 // --------------------------- STARTING CCV ------------------------------- //
@@ -594,6 +598,8 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
                         if ($"{cc.Last()}" == "ng")
                             basePhoneme = $"_{v}";
+                        if ($"{cc[0]}" == "h" && $"{v}" == "E")
+                            basePhoneme = $"hhE";
                     }
 
 
