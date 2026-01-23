@@ -656,10 +656,10 @@
                  IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
                  IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
                  Text="{DynamicResource tip.exps.notsupported}"/>
-      <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="6" Margin="0,-5,0,0"
+      <Border Grid.Column="3" Grid.Row="0" Grid.RowSpan="6"
               IsEnabled="{Binding NotesViewModel.ShowNoteParams}"
               IsVisible="{Binding NotesViewModel.ShowNoteParams}"
-              Background="{DynamicResource SystemRegionBrush}" Padding="0,5,0,0">
+              Background="{DynamicResource SystemRegionBrush}" Padding="0">
         <c:NotePropertiesControl/>
       </Border>
 
