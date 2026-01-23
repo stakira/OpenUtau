@@ -75,6 +75,11 @@ namespace OpenUtau.App.Controls {
         private void SetPosition() {
             Canvas.SetLeft(this, 0);
             Canvas.SetTop(this, Offset.Y + (track?.TrackNo ?? 0) * trackHeight);
+            if (ViewModel != null) {
+                ViewModel.IsSingerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 3;
+                ViewModel.IsPhonemizerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 4;
+                ViewModel.IsRendererVisible = trackHeight >= ViewConstants.TrackHeightDelta * 5;
+            }
         }
 
         void TrackNameButtonClicked(object sender, RoutedEventArgs args) {
@@ -85,7 +90,7 @@ namespace OpenUtau.App.Controls {
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             try {
                 ViewModel?.RefreshSingers();
-                SingersMenu.Open();
+                SingersMenu.Open((Control)sender);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
@@ -98,7 +103,7 @@ namespace OpenUtau.App.Controls {
 
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             ViewModel?.RefreshPhonemizers();
-            PhonemizersMenu.Open();
+            PhonemizersMenu.Open((Control)sender);
             args.Handled = true;
         }
 
@@ -109,7 +114,7 @@ namespace OpenUtau.App.Controls {
         void RendererButtonClicked(object sender, RoutedEventArgs args) {
             ViewModel?.RefreshRenderers();
             if (ViewModel?.RenderersMenuItems?.Count > 0) {
-                RenderersMenu.Open();
+                RenderersMenu.Open((Control)sender);
             }
             args.Handled = true;
         }

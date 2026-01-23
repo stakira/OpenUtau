@@ -67,7 +67,7 @@ namespace OpenUtau.App.Controls {
         void OnTextBoxLostFocus(object? sender, RoutedEventArgs args) {
             Log.Debug("Note property textbox lost focus");
             if (sender is TextBox textBox && textBoxValue != textBox.Text && textBox.Tag is string tag && !string.IsNullOrEmpty(tag)) {
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.property.edit");
                 NotePropertiesViewModel.PanelControlPressed = true;
                 ViewModel.SetNoteParams(tag, textBox.Text);
                 NotePropertiesViewModel.PanelControlPressed = false;
@@ -80,11 +80,11 @@ namespace OpenUtau.App.Controls {
             if (sender is Control control) {
                 var point = args.GetCurrentPoint(control);
                 if (point.Properties.IsLeftButtonPressed) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.property.edit");
                     NotePropertiesViewModel.PanelControlPressed = true;
                 } else if (point.Properties.IsRightButtonPressed) {
                     if (control.Tag is string tag && !string.IsNullOrEmpty(tag)) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.property.reset");
                         NotePropertiesViewModel.PanelControlPressed = true;
                         ViewModel.SetNoteParams(tag, null);
                         NotePropertiesViewModel.PanelControlPressed = false;

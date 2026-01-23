@@ -20,7 +20,7 @@ namespace OpenUtau.Classic {
 
         private static Action<ReplaceNoteEventArgs> ReplaceNoteMethod(DocManager docManager) {
             return new Action<ReplaceNoteEventArgs>((args) => {
-                docManager.StartUndoGroup();
+                docManager.StartUndoGroup("command.batch.plugin");
                 docManager.ExecuteCmd(new RemoveNoteCommand(args.Part, args.ToRemove));
                 docManager.ExecuteCmd(new AddNoteCommand(args.Part, args.ToAdd));
                 docManager.EndUndoGroup();
