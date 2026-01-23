@@ -34,7 +34,8 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
-        private PianoRollWindow? pianoRollWindow;
+        private PianoRollDetachedWindow? pianoRollWindow;
+        private PianoRoll? pianoRoll;
         private bool openPianoRollWindow;
 
         private PartEditState? partEditState;
@@ -140,7 +141,7 @@ namespace OpenUtau.App.Views {
             dialog.SetText(project.tempos[0].bpm.ToString());
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.project.tempo");
                     DocManager.Inst.ExecuteCmd(new AddTempoChangeCommand(
                         project, tick, bpm));
                     DocManager.Inst.EndUndoGroup();
@@ -151,7 +152,7 @@ namespace OpenUtau.App.Views {
 
         private void DelTempoChange(int tick) {
             var project = DocManager.Inst.Project;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.project.tempo");
             DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
             DocManager.Inst.EndUndoGroup();
         }
@@ -167,7 +168,7 @@ namespace OpenUtau.App.Views {
             dialog.onFinish = s => {
                 try {
                     if (double.TryParse(s, out double bpm)) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.project.tempo");
                         var oldTimeAxis = project.timeAxis.Clone();
                         DocManager.Inst.ExecuteCmd(new BpmCommand(
                             project, bpm));
@@ -191,7 +192,7 @@ namespace OpenUtau.App.Views {
             var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
             var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
             dialog.OnOk = (beatPerBar, beatUnit) => {
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.project.timesignature");
                 DocManager.Inst.ExecuteCmd(new AddTimeSigCommand(
                     project, bar, dialog.BeatPerBar, dialog.BeatUnit));
                 DocManager.Inst.EndUndoGroup();
@@ -201,7 +202,7 @@ namespace OpenUtau.App.Views {
 
         private void DelTimeSigChange(int bar) {
             var project = DocManager.Inst.Project;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.project.timesignature");
             DocManager.Inst.ExecuteCmd(new DelTimeSigCommand(project, bar));
             DocManager.Inst.EndUndoGroup();
         }
@@ -850,9 +851,8 @@ namespace OpenUtau.App.Views {
         }
 
         void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
-            if (!args.Handled && args.ClickCount == 1) {
+            if (!PianoRollContainer.IsPointerOver && !args.Handled && args.ClickCount == 1) {
                 this.Focus();
-                
             }
         }
 
@@ -1147,28 +1147,62 @@ namespace OpenUtau.App.Views {
             }
             var control = canvas.InputHitTest(args.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
-                if (pianoRollWindow == null) {
+                if (pianoRoll == null) {
                     LoadingWindow.BeginLoading(this);
 
                     var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel());
-                    pianoRollWindow = new PianoRollWindow(model) {
-                        MainWindow = this,
+
+                    // Let's attach when needed to avoid startup slowdowns
+                    pianoRoll = new PianoRoll(model) {
+                        MainWindow = this
                     };
 
+                    if (Preferences.Default.DetachPianoRoll) {
+                        viewModel!.ShowPianoRoll = false;
+                        pianoRollWindow = new(pianoRoll);
+                        pianoRollWindow.Show();
+                    } else {
+                        viewModel!.ShowPianoRoll = true;
+                        PianoRollContainer.Content = pianoRoll;
+                    }
+
                     await Task.Run(() => 
-                        pianoRollWindow.InitializePianoRollWindowAsync()
+                        pianoRoll.InitializePianoRollWindowAsync()
                     );
                     LoadingWindow.EndLoading();
 
-                    pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
-                    pianoRollWindow.Show();
+                    pianoRoll.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
                 }
                 // Workaround for new window losing focus.
-                openPianoRollWindow = true;
+                if (pianoRollWindow != null) {
+                    openPianoRollWindow = true;
+                }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
-                pianoRollWindow.AttachExpressions();
+                pianoRoll.AttachExpressions();
             }
+        }
+
+        public void SetPianoRollAttachment() {
+            if (pianoRoll == null) {
+                return;
+            }
+            if (Preferences.Default.DetachPianoRoll) {
+                pianoRollWindow?.ForceClose();
+                pianoRollWindow = null;
+                PianoRollContainer.Content = pianoRoll;
+                viewModel!.ShowPianoRoll = true;
+                Preferences.Default.DetachPianoRoll = false;
+            } else {
+                PianoRollContainer.Content = null;
+                viewModel!.ShowPianoRoll = false;
+                if (pianoRollWindow == null) {
+                    pianoRollWindow = new(pianoRoll);
+                    pianoRollWindow.Show();
+                }
+                Preferences.Default.DetachPianoRoll = true;
+            }
+            Preferences.Save();
         }
 
         public void MainPagePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -1217,7 +1251,7 @@ namespace OpenUtau.App.Views {
             dialog.onFinish = name => {
                 if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
                     if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.part.edit");
                         DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
                         DocManager.Inst.EndUndoGroup();
                     }
@@ -1249,7 +1283,7 @@ namespace OpenUtau.App.Views {
                 position = part.position
             };
             newPart.Load(DocManager.Inst.Project);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.import.audio");
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, part, newPart));
             DocManager.Inst.EndUndoGroup();
         }
@@ -1285,7 +1319,7 @@ namespace OpenUtau.App.Views {
                             var track = new UTrack(project);
                             track.TrackNo = project.tracks.Count;
                             voicePart.trackNo = track.TrackNo;
-                            DocManager.Inst.StartUndoGroup();
+                            DocManager.Inst.StartUndoGroup("command.part.transcribe");
                             DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
                             DocManager.Inst.EndUndoGroup();
@@ -1360,7 +1394,7 @@ namespace OpenUtau.App.Views {
                 SkipPhonemizer = false
             };
             mergedPart.Validate(options, DocManager.Inst.Project, DocManager.Inst.Project.tracks[part.trackNo]);
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.part.edit");
             for (int i = selectedParts.Count - 1; i >= 0; i--) {
                 // The index will shift by removing a part on each loop
                 // Workaround by removing backwards from the largest index and going down
@@ -1391,7 +1425,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void ValidateTracksVoiceColor() {
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup("command.track.remapvc");
             foreach (var track in DocManager.Inst.Project.tracks) {
                 if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
                     await VoiceColorRemappingAsync(track, oldColors, newColors);
@@ -1425,7 +1459,7 @@ namespace OpenUtau.App.Views {
                 VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
                 dialog.DataContext = vm;
                 dialog.onFinish = () => {
-                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.StartUndoGroup("command.track.remapvc");
                     SetVoiceColorRemapping(track, parts, vm);
                     DocManager.Inst.EndUndoGroup();
                 };

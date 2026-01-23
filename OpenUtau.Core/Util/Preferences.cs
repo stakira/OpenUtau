@@ -243,6 +243,7 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool Warn32BitBuild = true;
+            public bool DetachPianoRoll = false;
         }
     }
 }
