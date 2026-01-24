@@ -50,6 +50,7 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
         private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
         private readonly ReactiveCommand<UPart, Unit> PartMergeCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartSplitCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -83,6 +84,7 @@ namespace OpenUtau.App.Views {
             PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(part => ReplaceAudio(part));
             PartTranscribeCommand = ReactiveCommand.Create<UPart>(part => Transcribe(part));
             PartMergeCommand = ReactiveCommand.Create<UPart>(part => MergePart(part));
+            PartSplitCommand = ReactiveCommand.Create<UPart>(async part =>  await SplitPart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -1081,6 +1083,7 @@ namespace OpenUtau.App.Views {
                             PartRenameCommand = PartRenameCommand,
                             PartTranscribeCommand = PartTranscribeCommand,
                             PartMergeCommand = PartMergeCommand,
+                            PartSplitCommand = PartSplitCommand
                         };
                         shouldOpenPartsContextMenu = true;
                     }
@@ -1403,7 +1406,69 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, mergedPart));
             DocManager.Inst.EndUndoGroup();
         }
+        async Task SplitPart(UPart part) {
+            int tick = DocManager.Inst.playPosTick;
+            if (part.position >= tick || part.End <= tick) return;
+            if (part is not UVoicePart vp) return;
+            var notesInTheWay = vp.notes.Where(n => (n.position < tick - vp.position) && (n.End > tick - vp.position));
+            if (notesInTheWay.Any()) {
+                var res = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.splitpart.intheway"),
+                    ThemeManager.GetString("dialogs.splitpart.caption"),
+                    MessageBox.MessageBoxButtons.YesNo);
+                if (res == MessageBox.MessageBoxResult.No) { return; }
+                do {
+                    tick = vp.position + notesInTheWay.Max(n => n.End);
+                    notesInTheWay = vp.notes.Where(n => (n.position < tick - vp.position) && (n.End > tick - vp.position));
+                } while (notesInTheWay.Any());
+            }
 
+            static SortedSet<UNote> GetNotes(IEnumerable<UNote> notes, int relTick, bool after) => after
+                ? [.. notes.Where(n => n.position >= relTick).Select(n => { var m = n.Clone(); m.position -= relTick; return m; })]
+                : [.. notes.Where(n => n.position < relTick).Select(n => n.Clone())];
+            static List<UCurve> GetCurves(IEnumerable<UCurve> curves, int relTick, bool after) =>
+                curves.Select(c => {
+                    var cloned = c.Clone();
+                    var zipped = cloned.xs.Zip(cloned.ys, (x, y) => (x, y));
+                    var filtered = after
+                        ? zipped.Where(z => z.x >= relTick).Select(z => (x: z.x - relTick, z.y))
+                        : zipped.Where(z => z.x < relTick);
+                    cloned.xs = [.. filtered.Select(z => z.x)];
+                    cloned.ys = [.. filtered.Select(z => z.y)];
+                    return cloned;
+                }).ToList();
+
+            var notesAfter = GetNotes(vp.notes, tick - vp.position, after: true);
+            var notesBefore = GetNotes(vp.notes, tick - vp.position, after: false);
+            var curvesAfter = GetCurves(vp.curves, tick - vp.position, after: true);
+            var curvesBefore = GetCurves(vp.curves, tick - vp.position, after: false);
+
+            var firstPart = new UVoicePart {
+                name = vp.name + "-1",
+                comment = vp.comment,
+                trackNo = vp.trackNo,
+                position = vp.position,
+                notes = notesBefore,
+                curves = curvesBefore,
+                Duration = tick - vp.position
+            };
+            var secondPart = new UVoicePart {
+                name = vp.name + "-2",
+                comment = vp.comment,
+                trackNo = vp.trackNo,
+                position = tick,
+                notes = notesAfter,
+                curves = curvesAfter,
+                Duration = vp.End - tick
+            };
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, vp));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, firstPart));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, secondPart));
+            DocManager.Inst.EndUndoGroup();
+        }
         public async void OnWelcomeRecent(object sender, PointerPressedEventArgs args) {
             if (sender is StackPanel panel &&
                 panel.DataContext is RecentFileInfo fileInfo) {

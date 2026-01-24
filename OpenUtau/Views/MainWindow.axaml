@@ -379,6 +379,10 @@
                           IsVisible="{Binding IsVoicePart}"
                           Command="{Binding PartMergeCommand}"
                           CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.split}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartSplitCommand}"
+                          CommandParameter="{Binding Part}"/>
               </ContextMenu>
             </c:PartsCanvas.ContextMenu>
           </c:PartsCanvas>
