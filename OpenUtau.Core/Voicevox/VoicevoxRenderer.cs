@@ -142,7 +142,7 @@ namespace OpenUtau.Core.Voicevox {
                                 if (e is VoicevoxException) {
                                     throw new MessageCustomizableException("Failed to create the audio.", "Failed to create the audio.", e);
                                 } else {
-                                    Log.Error($"Failed to create the audio.{e}");
+                                    Log.Error(e.Message);
                                 }
                             }
                             if (cancellation.IsCancellationRequested) {
