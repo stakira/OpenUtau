@@ -94,7 +94,7 @@ namespace OpenUtau.Core {
             return gpuList;
         }
 
-        private static SessionOptions getOnnxSessionOptions(){
+        private static SessionOptions getOnnxSessionOptions(bool coremlEnableOnSubgraphs = false) {
             SessionOptions options = new SessionOptions();
             List<string> runnerOptions = getRunnerOptions();
             string runner = Preferences.Default.OnnxRunner;
@@ -114,7 +114,13 @@ namespace OpenUtau.Core {
                      );
                     break;
                 case "CoreML":
-                    options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
+                    // Note: MLProgram format has stricter validation and may fail with complex DiffSinger models
+                    // that have topological sorting issues (e.g., variance_predictor with diffusion embeddings)
+                    // so we always use NeuralNetwork format (default) as MLProgram fails with complex models.
+                    options.AppendExecutionProvider("CoreML", new Dictionary<string, string> {
+                        { "MLComputeUnits", "ALL" },
+                        { "EnableOnSubgraphs", coremlEnableOnSubgraphs ? "1" : "0" }  // Disable subgraph processing to avoid complex control flow issues
+                    });
                     break;
                 case "CUDA":
                     options.AppendExecutionProvider_CUDA(Preferences.Default.OnnxGpu);
@@ -130,6 +136,14 @@ namespace OpenUtau.Core {
             if (force_cpu) {
                 return new InferenceSession(model);
             } else {
+                // Try with CoreML subgraphs enabled first, fallback to default if it fails
+                if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
+                    try {
+                        return new InferenceSession(model, getOnnxSessionOptions(coremlEnableOnSubgraphs: true));
+                    } catch (Exception e) {
+                        Log.Warning(e, "Failed to create session with CoreML subgraphs enabled, falling back to default settings");
+                    }
+                }
                 return new InferenceSession(model, getOnnxSessionOptions());
             }
         }
@@ -138,6 +152,14 @@ namespace OpenUtau.Core {
             if (force_cpu) {
                 return new InferenceSession(modelPath);
             } else {
+                // Try with CoreML subgraphs enabled first, fallback to default if it fails
+                if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
+                    try {
+                        return new InferenceSession(modelPath, getOnnxSessionOptions(coremlEnableOnSubgraphs: true));
+                    } catch (Exception e) {
+                        Log.Warning(e, "Failed to create session with CoreML subgraphs enabled, falling back to default settings");
+                    }
+                }
                 return new InferenceSession(modelPath, getOnnxSessionOptions());
             }
         }
