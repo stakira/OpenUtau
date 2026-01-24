@@ -65,7 +65,7 @@ namespace OpenUtau.App.ViewModels {
                         PortamentoLength = portamentoPreset.PortamentoLength;
                         PortamentoStart = portamentoPreset.PortamentoStart;
 
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                         PanelControlPressed = true;
                         SetNoteParams("PortamentoStart", portamentoPreset.PortamentoStart);
                         PanelControlPressed = false;
@@ -76,7 +76,7 @@ namespace OpenUtau.App.ViewModels {
                 .WhereNotNull()
                 .Subscribe(vibratoPreset => {
                     if (vibratoPreset != null) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.vibrato.edit");
                         PanelControlPressed = true;
                         SetNoteParams("VibratoLength", Math.Max(0, Math.Min(100, vibratoPreset.VibratoLength)));
                         SetNoteParams("VibratoPeriod", Math.Max(5, Math.Min(500, vibratoPreset.VibratoPeriod)));
@@ -480,7 +480,7 @@ namespace OpenUtau.App.ViewModels {
         }
         public void SetVibratoEnable() {
             if (Part != null && selectedNotes.Count > 0) {
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.vibrato.edit");
                 bool enable = VibratoEnable;
                 UNote first = selectedNotes.First();
 
@@ -519,7 +519,7 @@ namespace OpenUtau.App.ViewModels {
                 if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.defaultValue == value) {
                     value = null;
                 }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.exp.edit");
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
                 DocManager.Inst.EndUndoGroup();
             }
