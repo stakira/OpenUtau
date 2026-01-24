@@ -184,17 +184,17 @@ namespace OpenUtau.Core.Voicevox {
         // Phonemes and dictionaries
         public static Dictionary_list dic = new Dictionary_list();
         public static Phoneme_list phoneme_List = new Phoneme_list();
-
-        private static bool TryParseJson(string json, out JToken token) {
-            try {
-                token = JToken.Parse(json);
-                return true;
-            } catch (JsonReaderException ex) {
-                //Log.Error($"Invalid JSON: {ex.Message}");
-                token = null;
-                return false;
-            }
-        }
+        // JSON parse helper for testing
+        //private static bool TryParseJson(string json, out JToken token) {
+        //    try {
+        //        token = JToken.Parse(json);
+        //        return true;
+        //    } catch (JsonReaderException ex) {
+        //        Log.Error($"Invalid JSON: {ex.Message}");
+        //        token = null;
+        //        return false;
+        //    }
+        //}
 
         public static bool InitializedSpeaker(string id, bool skipReinit = false) {
             var queryurl = new VoicevoxURL() { method = "GET", path = "/is_initialized_speaker", query = new Dictionary<string, string> { { "speaker", id } } };
@@ -203,21 +203,18 @@ namespace OpenUtau.Core.Voicevox {
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
                 return false;
-            } else if (jObj.ContainsKey("json")) {
-                if (jObj.TryGetValue("json", out var jsonToken)) {
-                    if (!jsonToken.Value<bool>()) {
-                        queryurl = new VoicevoxURL() { method = "POST", path = "/initialize_speaker", query = new Dictionary<string, string> { { "speaker", id }, { "skip_reinit", skipReinit.ToString() } } };
-                        response = VoicevoxClient.Inst.SendRequest(queryurl);
-                        if (TryParseJson(response.Item1, out var token)) {
-                            if (jObj.ContainsKey("detail")) {
-                                Log.Error($"Response was incorrect. : {jObj}");
-                            }
-                            return false;
-                        }
-                        return true;
-                    } else {
-                        return true;
+            } else if (jObj.TryGetValue("json", out var jsonToken)) {
+                if (!jsonToken.Value<bool>()) {
+                    queryurl = new VoicevoxURL() { method = "POST", path = "/initialize_speaker", query = new Dictionary<string, string> { { "speaker", id }, { "skip_reinit", skipReinit.ToString() } } };
+                    response = VoicevoxClient.Inst.SendRequest(queryurl);
+                    jObj = JObject.Parse(response.Item1);
+                    if (jObj.ContainsKey("detail")) {
+                        Log.Error($"Response was incorrect. : {jObj}");
+                        return false;
                     }
+                    return true;
+                } else {
+                    return true;
                 }
             }
             return false;
@@ -257,18 +254,15 @@ namespace OpenUtau.Core.Voicevox {
                 while (index < vNotes.Length) {
                     string lyric = dic.Notetodic(vNotes, index);
                     double durationMs = vNotes[index].durationMs;
-                    // TODO: slur support
-                    if (IsSyllableVowelExtensionNote(vNotes[index].lyric)) {
-                        // ピッチ生成でスラーを考慮する場合、母音伸ばしノートは前のノートのカナを引き継ぐ
-                        if (pitch_slur) {
-                            if (vNotes.Length >= index - 1 && 0 <= index - 1) {
-                                if (VoicevoxUtils.phoneme_List.kanas.TryGetValue(vNotes[index - 1].lyric, out string str)) {
-                                    lyric = str;
-                                    slur_index++;
-                                }
-                            } else {
-                                slur_index = 0;
+                    // When slurs are considered in pitch generation, vowel-stretched notes inherit the Kana of the previous note
+                    if (IsSyllableVowelExtensionNote(vNotes[index].lyric) && pitch_slur) {
+                        if (index > 0) {
+                            if (VoicevoxUtils.phoneme_List.kanas.TryGetValue(vNotes[index - 1].lyric, out string str)) {
+                                lyric = str;
+                                slur_index++;
                             }
+                        } else {
+                            slur_index = 0;
                         }
                     }
                     int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
@@ -286,12 +280,10 @@ namespace OpenUtau.Core.Voicevox {
                             short_length_count += 1;
                         }
                     }
-                    if (IsSyllableVowelExtensionNote(vNotes[index].lyric)) {
-                        if (!pitch_slur) {
-                            //通常合成ではスラー分の長さを前のノートに足す
-                            vqMain.notes[index].frame_length += length;
-                            break;
-                        }
+                    //Usually synthesis adds the length of the slur to the previous note.
+                    if (IsSyllableVowelExtensionNote(vNotes[index].lyric) && !pitch_slur) {
+                        vqMain.notes[index].frame_length += length;
+                        continue;
                     }
 
                     //Set tone to null if lyric is empty
@@ -299,7 +291,7 @@ namespace OpenUtau.Core.Voicevox {
                     if (!string.IsNullOrEmpty(lyric)) {
                         tone = vNotes[index].tone;
                     } else {
-                        // 明示的に空文字を設定する。
+                        // Explicitly set to empty string.
                         lyric = "";
                     }
                     vqMain.notes.Add(new VoicevoxQueryNotes {
@@ -439,10 +431,9 @@ namespace OpenUtau.Core.Voicevox {
                 return defaultID;
             }
             foreach (var s in singer.voicevoxConfig.base_singer_style) {
-                if (s.name.Equals(singer.voicevoxConfig.base_singer_name)) {
-                    if (s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
-                        return s.styles.id.ToString();
-                    }
+                if (s.name.Equals(singer.voicevoxConfig.base_singer_name)
+                    && s.styles.name.Equals(singer.voicevoxConfig.base_singer_style_name)) {
+                    return s.styles.id.ToString();
                 }
             }
             return defaultID;
