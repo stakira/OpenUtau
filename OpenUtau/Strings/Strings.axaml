@@ -365,7 +365,9 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
 
   <system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>
-  <system:String x:Key="pianoroll.menu.view.detachpianoroll">Detach Piano Roll</system:String>
+  <system:String x:Key="pianoroll.menu.view.pianoroll">Piano Roll</system:String>
+  <system:String x:Key="pianoroll.menu.view.pianoroll.detach">Detach</system:String>
+  <system:String x:Key="pianoroll.menu.view.pianoroll.hide">Hide</system:String>
   <system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>
   <system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>

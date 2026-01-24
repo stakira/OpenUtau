@@ -1182,6 +1182,8 @@ namespace OpenUtau.App.Views {
                 // Workaround for new window losing focus.
                 if (pianoRollWindow != null) {
                     openPianoRollWindow = true;
+                } else {
+                    viewModel.ShowPianoRoll = true;
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
