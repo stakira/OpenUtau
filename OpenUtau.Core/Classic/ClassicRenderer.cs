@@ -140,16 +140,22 @@ namespace OpenUtau.Classic {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
+            var expressions = new List<UExpressionDescriptor>();
+            var manifest = renderSettings.Resampler.Manifest;
+            if (manifest != null) {
+                expressions.AddRange(manifest.expressions.Values);
+            }
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             try {
                 if (File.Exists(yamlFile)) {
                     using var stream = File.OpenRead(yamlFile);
                     var config = VoicebankConfig.Load(stream);
-                    return config.expressions;
+                    expressions.AddRange(config.expressions);
                 }
             } catch (Exception e) { 
-            Log.Error($"{e}");}
-            return new UExpressionDescriptor[] { };
+                Log.Error($"Failed to load expressions from character.yaml: {e}");
+            }
+            return expressions.ToArray();
         }
 
         public override string ToString() => Renderers.CLASSIC;
