@@ -751,6 +751,10 @@ General
   <system:String x:Key="welcome.start">Start</system:String>
   <system:String x:Key="welcome.template">Template</system:String>
 
+  <system:String x:Key="32bit.warning.message">G2P Phonemizers, DiffSinger, ENUNU and Vogen are no longer supported on x86 builds.</system:String>
+  <system:String x:Key="32bit.warning.x64migrate">Migrate to x64 build</system:String>
+  <system:String x:Key="32bit.warning.dontshowagain">Don't show again</system:String>
+  
   <system:String x:Key="themeeditor.title">Theme Editor</system:String>
   <system:String x:Key="themeeditor.save">Save</system:String>
   <system:String x:Key="themeeditor.cancel">Cancel</system:String>

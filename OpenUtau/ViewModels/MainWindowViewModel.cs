@@ -71,6 +71,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string ClearCacheHeader { get; set; }
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
+        public bool Warn32BitBuild => Preferences.Default.Warn32BitBuild;
         [Reactive] public double Progress { get; set; }
         [Reactive] public string ProgressText { get; set; }
         [Reactive] public bool ShowPianoRoll { get; set; }
@@ -130,6 +131,20 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(vm => vm.ShowPianoRoll)
                 .Subscribe(x => PianoRollMaxHeight = x ? Double.PositiveInfinity : 0);
+        }
+
+        public void Hide32BitWarning() {
+            Preferences.Default.Warn32BitBuild = false;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(Warn32BitBuild));
+        }
+
+        public void OpenGithubReleases() {
+            try {
+                OS.OpenWeb("https://github.com/stakira/OpenUtau/releases/latest");
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
         }
 
         public void Undo() {
