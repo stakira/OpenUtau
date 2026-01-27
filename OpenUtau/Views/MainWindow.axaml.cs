@@ -770,7 +770,13 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
+            if (PianoRollContainer.IsKeyboardFocusWithin) {
+                args.Handled = false;
+                return;
+            }
+
             var tracksVm = viewModel.TracksViewModel;
+
             if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;
                 switch (args.Key) {
@@ -1176,6 +1182,8 @@ namespace OpenUtau.App.Views {
                 // Workaround for new window losing focus.
                 if (pianoRollWindow != null) {
                     openPianoRollWindow = true;
+                } else {
+                    viewModel.ShowPianoRoll = true;
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
