@@ -333,6 +333,7 @@
               <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}" Classes="MenuItemWithSubMenu"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}" Classes="MenuItemWithSubMenu"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}" Classes="MenuItemWithSubMenu"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.external}" ItemsSource="{Binding ExternalBatchEdits}" Classes="MenuItemWithSubMenu"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu" Classes="MenuItemWithSubMenu"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
