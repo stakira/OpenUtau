@@ -22,15 +22,14 @@ namespace OpenUtau.Core.Voicevox {
             for (int i = 0; i < notes.Length; i++) {
                 var currentLyric = notes[i][0].lyric.Normalize();
                 var lyricList = currentLyric.Split(" ");
-                if (lyricList.Length > 1) {
-                    currentLyric = lyricList[1];
-                }
-                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
-                    if (VoicevoxUtils.IsDicPau(currentLyric)) {
+                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(lyricList[^1])) {
+                    if (VoicevoxUtils.IsPau(lyricList[^1])) {
                         currentLyric = string.Empty;
-                    } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
-                        currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
-                    } else if (!VoicevoxUtils.IsDicKana(currentLyric)) {
+                    } else if (VoicevoxUtils.dic.IsDic(lyricList[^1])) {
+                        currentLyric = VoicevoxUtils.dic.Lyrictodic(lyricList[^1]);
+                    } else if (!VoicevoxUtils.IsKana(lyricList[^1])) {
+                        currentLyric = string.Empty;
+                    } else {
                         currentLyric = string.Empty;
                     }
                 }
