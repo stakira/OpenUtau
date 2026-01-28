@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System.Threading;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -20,12 +21,24 @@ namespace OpenUtau.Audio {
         private bool eof;
 
         private List<AudioOutputDevice> devices = new List<AudioOutputDevice>();
+        private readonly object devicesLock = new object();
+        private Timer devicePollTimer = null;
+        public event EventHandler DevicesChanged;
         private IntPtr callbackPtr = IntPtr.Zero;
         private IntPtr nativeContext = IntPtr.Zero;
         private Guid selectedDevice = Guid.Empty;
 
         public MiniAudioOutput() {
             UpdateDeviceList();
+            // Start device polling timer to detect plug/unplug on platforms
+            // where native library does not emit events.
+            devicePollTimer = new Timer(_ => {
+                try {
+                    PollDeviceChange();
+                } catch (Exception e) {
+                    Log.Warning(e, "Device poll error");
+                }
+            }, null, 2000, 2000);
             unsafe {
                 var f = (ou_audio_data_callback_t)DataCallback;
                 GCHandle.Alloc(f);
@@ -49,9 +62,8 @@ namespace OpenUtau.Audio {
                 }
             }
         }
-
-        private void UpdateDeviceList() {
-            devices.Clear();
+        private List<AudioOutputDevice> GetDeviceListFromNative() {
+            var list = new List<AudioOutputDevice>();
             unsafe {
                 const int kMaxCount = 128;
                 ou_audio_device_info_t* device_infos = stackalloc ou_audio_device_info_t[kMaxCount];
@@ -73,7 +85,7 @@ namespace OpenUtau.Audio {
                     string name = (OS.IsWindows() && api != "WASAPI")
                         ? Marshal.PtrToStringAnsi(device_infos[i].name)
                         : Marshal.PtrToStringUTF8(device_infos[i].name);
-                    devices.Add(new AudioOutputDevice {
+                    list.Add(new AudioOutputDevice {
                         name = name,
                         api = api,
                         deviceNumber = i,
@@ -81,6 +93,37 @@ namespace OpenUtau.Audio {
                     });
                 }
                 ou_free_audio_device_infos(device_infos, count);
+            }
+            return list;
+        }
+
+        private void UpdateDeviceList() {
+            var newList = GetDeviceListFromNative();
+            lock (devicesLock) {
+                devices = newList;
+            }
+        }
+
+        private void PollDeviceChange() {
+            var newList = GetDeviceListFromNative();
+            bool changed = false;
+            lock (devicesLock) {
+                if (newList.Count != devices.Count) {
+                    changed = true;
+                } else {
+                    for (int i = 0; i < newList.Count; i++) {
+                        if (newList[i].guid != devices[i].guid || newList[i].name != devices[i].name) {
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
+                if (changed) {
+                    devices = newList;
+                }
+            }
+            if (changed) {
+                DevicesChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -234,6 +277,12 @@ namespace OpenUtau.Audio {
                 }
 
                 // free unmanaged resources (unmanaged objects) and override finalizer
+                if (devicePollTimer != null) {
+                    try {
+                        devicePollTimer.Dispose();
+                    } catch { }
+                    devicePollTimer = null;
+                }
                 if (nativeContext != IntPtr.Zero) {
                     ou_free_audio_device(nativeContext);
                     nativeContext = IntPtr.Zero;

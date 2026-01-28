@@ -16,6 +16,9 @@ namespace OpenUtau.Audio {
         PlaybackState PlaybackState { get; }
         int DeviceNumber { get; }
 
+        // Raised when available output devices list changes (plug/unplug).
+        event EventHandler DevicesChanged;
+
         void SelectDevice(Guid guid, int deviceNumber);
         void Init(ISampleProvider sampleProvider);
         void Pause();

@@ -9,6 +9,7 @@ namespace OpenUtau.App {
     public class NAudioOutput : DummyAudioOutput { }
 #else
     public class NAudioOutput : IAudioOutput {
+        public event EventHandler DevicesChanged;
         const int Channels = 2;
 
         private readonly object lockObj = new object();
