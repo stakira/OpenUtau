@@ -27,8 +27,8 @@ namespace OpenUtau.Core.Voicevox {
                         currentLyric = string.Empty;
                     } else if (VoicevoxUtils.dic.IsDic(lyricList[^1])) {
                         currentLyric = VoicevoxUtils.dic.Lyrictodic(lyricList[^1]);
-                    } else if (!VoicevoxUtils.IsKana(lyricList[^1])) {
-                        currentLyric = string.Empty;
+                    } else if (VoicevoxUtils.IsKana(lyricList[^1])) {
+                        currentLyric = lyricList[^1];
                     } else {
                         currentLyric = string.Empty;
                     }
