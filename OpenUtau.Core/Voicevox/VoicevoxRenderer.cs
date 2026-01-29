@@ -171,7 +171,7 @@ namespace OpenUtau.Core.Voicevox {
             //Prepare for future additions of Teacher Singer.
             string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
             VoicevoxUtils.InitializedSpeaker(baseSingerID, true);
-            List<VoicevoxNote> vNotes = BuildVNotes(phrase, baseSingerID);
+            List<VoicevoxNote> vNotes = BuildVNotes(phrase);
 
             //Match the phonemes in the synthesis parameters to the scores in the score to update F0 and volume  
             //Create parameters for the update source. 
@@ -217,7 +217,7 @@ namespace OpenUtau.Core.Voicevox {
             return vsParams;
         }
 
-        private List<VoicevoxNote> BuildVNotes(RenderPhrase phrase, string baseSingerID) {
+        private List<VoicevoxNote> BuildVNotes(RenderPhrase phrase) {
             List<VoicevoxNote> vNotes = new List<VoicevoxNote>();
             try {
                 for (int i = 0; i < phrase.notes.Length; i++) {
@@ -230,7 +230,7 @@ namespace OpenUtau.Core.Voicevox {
                             currentLyric = string.Empty;
                         } else if (VoicevoxUtils.dic.IsDic(lyricList[^1])) {
                             currentLyric = VoicevoxUtils.dic.Lyrictodic(lyricList[^1]);
-                        } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(lyricList[^1])) {
+                        } else if (VoicevoxUtils.IsKana(lyricList[^1])) {
                             currentLyric = lyricList[^1];
                         } else {
                             currentLyric = string.Empty;
@@ -405,8 +405,8 @@ namespace OpenUtau.Core.Voicevox {
             try {
                 var singer = phrase.singer as VoicevoxSinger;
                 if (singer != null) {
-
-                    string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
+                    // TODO: Support Teacher Singer in the future
+                    // string baseSingerID = VoicevoxUtils.getBaseSingerID(singer);
                     VoicevoxSynthParams vsParams = PhraseToVoicevoxSynthParams(phrase, phrase.singer as VoicevoxSinger, true);
                     double frameMs = (1000d / VoicevoxUtils.fps);
                     int vvTotalFrames = 0;
