@@ -29,7 +29,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
         private static string[] diphthongs = { "ay", "ey", "oy", "aw", "ow" };
         private static string[] c_cR = { "n" };
-        private static string[] consonants = "".Split(',');
+        private static string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,tr,v,w,y,z".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -423,6 +423,16 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
+                        /*consonants = fricatives
+                            .Concat(aspirates)
+                            .Concat(semivowels)
+                            .Concat(liquids)
+                            .Concat(nasals)
+                            .Concat(stop)
+                            .Concat(tap)
+                            .Concat(affricate)
+                            .Distinct()
+                            .ToArray();*/
                         // Load diphthong exceptions
                         try {
                             var allDiphthongs = data.symbols
@@ -1075,16 +1085,34 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string ValidateAlias(string alias) {
 
             // VALIDATE ALIAS DEPENDING ON METHOD
-            if (isMissingVPhonemes || isMissingCPhonemes || isTimitPhonemes) {
-                foreach (var phoneme in missingVphonemes.Concat(missingCphonemes).Concat(timitphonemes)) {
-                    alias = alias.Replace(phoneme.Key, phoneme.Value);
+            if (isTimitPhonemes) {
+                foreach (var fb in timitphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias =  alias.Replace(fb.Key, fb.Value);
+                }
+            }
+            if (isMissingVPhonemes) {
+                foreach (var fb in missingVphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
+                }
+            }
+            if (isMissingCPhonemes) {
+                foreach (var fb in missingCphonemes.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(fb.Key, fb.Value);
                 }
             }
             return alias;
+
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return Regex.IsMatch(alias, $@"\b{Regex.Escape(phoneme)}\b");
+            if (string.IsNullOrEmpty(alias) || string.IsNullOrEmpty(phoneme))
+                return false;
+
+            // Exact token match
+            if (alias == phoneme)
+                return true;
+
+            return alias.EndsWith(phoneme);
         }
         
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
@@ -1121,17 +1149,7 @@ namespace OpenUtau.Plugin.Builtin {
                         .Concat(affricate)
                         .Distinct(); // Ensure no duplicates
 
-            foreach (var c in allConsonants) {
-                if (PhonemeHasEndingSuffix(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            foreach (var v in vowels) {
-                if (alias.EndsWith("-")) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
+            
 
             // consonant timings
 
@@ -1141,6 +1159,18 @@ namespace OpenUtau.Plugin.Builtin {
                 var overrideValue = kvp.Value;
                 if (PhonemeIsPresent(alias, overridePhoneme)) {
                     return base.GetTransitionBasicLengthMs() * overrideValue;
+                }
+            }
+
+            foreach (var c in allConsonants) {
+                if (PhonemeHasEndingSuffix(alias, c)) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
+                }
+            }
+
+            foreach (var v in vowels) {
+                if (alias.EndsWith("-")) {
+                    return base.GetTransitionBasicLengthMs() * 0.5;
                 }
             }
 
