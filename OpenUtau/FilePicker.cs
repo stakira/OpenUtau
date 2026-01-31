@@ -14,7 +14,9 @@ using MonoMac.AppKit;
 
 namespace OpenUtau.App {
     internal class FilePicker {
+        #if MACOS
         private static int NSAppInitState;
+        #endif
         public static FilePickerFileType ProjectFiles { get; } = new("Project Files") {
             Patterns = new[] { "*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi", "*.ufdata", "*.musicxml" },
         };
