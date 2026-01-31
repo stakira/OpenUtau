@@ -14,6 +14,7 @@ using MonoMac.AppKit;
 
 namespace OpenUtau.App {
     internal class FilePicker {
+        private static int NSAppInitState;
         public static FilePickerFileType ProjectFiles { get; } = new("Project Files") {
             Patterns = new[] { "*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi", "*.ufdata", "*.musicxml" },
         };
@@ -106,13 +107,13 @@ namespace OpenUtau.App {
                 : await window.StorageProvider.TryGetFolderFromPathAsync(startLocation);
         #if MACOS
             // Due to an avalonia bug, we need to call the native API for looking for APP
-            // Please get rid of this code ASAP, it barely works
             if (types.Contains(APP)) {
                 var tcs = new TaskCompletionSource<string?>();
-                
                 var title = ThemeManager.GetString(titleKey);
-
-                NSApplication.Init();
+                if (NSAppInitState.Equals(0)) {
+                    NSAppInitState = 1;
+                    NSApplication.Init();
+                }
 
                 NSApplication.SharedApplication.InvokeOnMainThread(() => {
                     try {
