@@ -312,8 +312,8 @@ namespace OpenUtau.App.ViewModels {
                             Core.Vogen.VogenSingerInstaller.Install(file);
                             return;
                         }
-                        if (file.EndsWith(DependencyInstaller.FileExt)) {
-                            DependencyInstaller.Install(file);
+                        if (file.EndsWith(PackageManager.OudepExt)) {
+                            await PackageManager.Inst.InstallFromFileAsync(file);
                             return;
                         }
 

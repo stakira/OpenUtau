@@ -279,7 +279,6 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
-  <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
   <system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
@@ -289,6 +288,7 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>
   <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
+  <system:String x:Key="menu.tools.packages">Packages...</system:String>
   <system:String x:Key="menu.tools.prefs">Preferences...</system:String>
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
@@ -362,6 +362,39 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
+
+  <system:String x:Key="packages.caption">Packages</system:String>
+  <system:String x:Key="packages.refresh">Refresh</system:String>
+  <system:String x:Key="packages.installed">Installed</system:String>
+  <system:String x:Key="packages.col.name">Name</system:String>
+  <system:String x:Key="packages.col.id">Id</system:String>
+  <system:String x:Key="packages.col.developer">Developer</system:String>
+  <system:String x:Key="packages.col.version">Version</system:String>
+  <system:String x:Key="packages.col.action">Action</system:String>
+  <system:String x:Key="packages.col.installed">Installed</system:String>
+  <system:String x:Key="packages.unknownversion">unknown version</system:String>
+  <system:String x:Key="packages.install">Install</system:String>
+  <system:String x:Key="packages.update">Update</system:String>
+  <system:String x:Key="packages.uninstall">Uninstall</system:String>
+  <system:String x:Key="packages.openinstalllocation">Open Install Location</system:String>
+  <system:String x:Key="packages.installfromfile">Install From File (.oudep)...</system:String>
+  <system:String x:Key="packages.confirm.install.caption">Install package</system:String>
+  <system:String x:Key="packages.confirm.install.message">Do you want to install {0}?</system:String>
+  <system:String x:Key="packages.confirm.update.caption">Update package</system:String>
+  <system:String x:Key="packages.confirm.update.message">Do you want to update {0} to version {1}?</system:String>
+  <system:String x:Key="packages.confirm.uninstall.caption">Uninstall package</system:String>
+  <system:String x:Key="packages.confirm.uninstall.message">Do you want to uninstall {0}?</system:String>
+  <system:String x:Key="packages.status.fetching">Fetching registry...</system:String>
+  <system:String x:Key="packages.status.uninstalling">Uninstalling {0}...</system:String>
+  <system:String x:Key="packages.status.uninstallfinished">Uninstall finished</system:String>
+  <system:String x:Key="packages.status.uninstallfailed">Uninstall failed</system:String>
+  <system:String x:Key="packages.status.listinginstalled">Listing installed...</system:String>
+  <system:String x:Key="packages.status.ready">Ready</system:String>
+  <system:String x:Key="packages.status.error">Error</system:String>
+  <system:String x:Key="packages.status.installing">Installing {0}...</system:String>
+  <system:String x:Key="packages.status.installfinished">Install finished</system:String>
+  <system:String x:Key="packages.status.installfailed">Install failed</system:String>
+  <system:String x:Key="packages.errors.missing">Package {0} not found. Install it using the Package Manager.</system:String>
 
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>

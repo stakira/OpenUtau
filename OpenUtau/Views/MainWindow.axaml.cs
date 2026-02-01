@@ -586,8 +586,8 @@ namespace OpenUtau.App.Views {
                     Core.Vogen.VogenSingerInstaller.Install(file);
                     return;
                 }
-                if (file.EndsWith(DependencyInstaller.FileExt)) {
-                    DependencyInstaller.Install(file);
+                if (file.EndsWith(PackageManager.OudepExt)) {
+                    await PackageManager.Inst.InstallFromFileAsync(file);
                     return;
                 }
 
@@ -606,15 +606,13 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuInstallDependency(object sender, RoutedEventArgs args) {
-            var file = await FilePicker.OpenFile(
-                this, "menu.tools.dependency.install", FilePicker.OUDEP);
-            if (file == null) {
-                return;
-            }
-            if (file.EndsWith(DependencyInstaller.FileExt)) {
-                DependencyInstaller.Install(file);
-                return;
+        void OnMenuPackageManager(object sender, RoutedEventArgs args) {
+            try {
+                var dialog = new PackageManagerDialog() { DataContext = new PackageManagerViewModel() };
+                dialog.Show();
+                if (dialog.Position.Y < 0) dialog.Position = dialog.Position.WithY(0);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -872,7 +870,7 @@ namespace OpenUtau.App.Views {
                 .Append(".dll")
                 .Append(".exe")
                 .Append(Core.Vogen.VogenSingerInstaller.FileExt)
-                .Append(DependencyInstaller.FileExt)
+                .Append(PackageManager.OudepExt)
                 .ToArray();
             var files = args.Data?.GetFiles()?.Where(i => i != null).Select(i => i.Path.LocalPath).ToArray() ?? new string[] { };
             if (files.Length == 0) {
@@ -964,14 +962,14 @@ namespace OpenUtau.App.Views {
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
-            } else if (ext == DependencyInstaller.FileExt) {
+            } else if (ext == PackageManager.OudepExt) {
                 var result = await MessageBox.Show(
                     this,
                     ThemeManager.GetString("dialogs.installdependency.message") + file,
                     ThemeManager.GetString("dialogs.installdependency.caption"),
                     MessageBox.MessageBoxButtons.OkCancel);
                 if (result == MessageBox.MessageBoxResult.Ok) {
-                    DependencyInstaller.Install(file);
+                    await PackageManager.Inst.InstallFromFileAsync(file);
                 }
             }
         }
