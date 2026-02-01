@@ -111,6 +111,10 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
   <system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.error">This singer has no voice color</system:String>
   <system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>
+  <system:String x:Key="dialogs.projectimport.caption">Project Import</system:String>
+  <system:String x:Key="dialogs.projectimport.message">Files to import:</system:String>
+  <system:String x:Key="dialogs.projectimport.asproject">Import as Project</system:String>
+  <system:String x:Key="dialogs.projectimport.astracks">Import as Tracks</system:String>
 
   <system:String x:Key="errors.caption">Error</system:String>
   <system:String x:Key="errors.details">Error Details</system:String>
