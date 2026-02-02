@@ -166,7 +166,7 @@ namespace OpenUtau.App.ViewModels {
                OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
             OnnxGpuOptions = Onnx.getGpuInfo();
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
-            ShowOnnxGpu = OnnxRunner == "DirectML";
+            ShowOnnxGpu = (OnnxRunner == "DirectML" || OnnxRunner == "CUDA");
             DiffSingerDepth = Preferences.Default.DiffSingerDepth * 100;
             DiffSingerSteps = Preferences.Default.DiffSingerSteps;
             DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
@@ -331,7 +331,7 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(index => {
                     Preferences.Default.OnnxRunner = index;
                     Preferences.Save();
-                    ToggleOnnxGpuDisplay(index == "DirectML");
+                    ToggleOnnxGpuDisplay(index == "DirectML" || index == "CUDA");
                 });
             this.WhenAnyValue(vm => vm.OnnxGpu)
                 .Subscribe(index => {
