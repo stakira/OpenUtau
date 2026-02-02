@@ -66,7 +66,9 @@ namespace OpenUtau.Core {
             }         
      
             if (OS.IsAndroid()) {
-                return new List<GpuInfo>();
+                return new List<GpuInfo>{new GpuInfo {
+                    deviceId = 0, // eliminate exception of taking OnnxGpuOptions[0]
+                }};
             }
 
             List<GpuInfo> gpuList = new List<GpuInfo>();

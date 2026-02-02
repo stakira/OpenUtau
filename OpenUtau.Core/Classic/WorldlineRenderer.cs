@@ -139,22 +139,21 @@ namespace OpenUtau.Classic {
                         var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, true);
                         using var results = session.Run(inputs);
                         var melOutput = results.First(r => r.Name == "mel").AsTensor<float>();
-                        const string vocoderDep = "pc_nsf_hifigan_44.1k_hop512_128bin_2025.02";
+                        const string vocoderPkg = "pc-nsf-hifigan";
+                        string vocoderPath = PackageManager.Inst.GetInstalledPath(vocoderPkg) ?? "";
                         if (vocoderBytes == null) {
-                            var configPath = Path.Combine(PathManager.Inst.DependencyPath,
-                                vocoderDep, "vocoder.yaml");
+                            var configPath = Path.Combine(vocoderPath, "vocoder.yaml");
                             if (!File.Exists(configPath)) {
                                 throw new MessageCustomizableException(
-                                    $"Error loading vocoder \"{vocoderDep}\"",
-                                    $"<translate:errors.diffsinger.downloadvocoder>",
-                                    new Exception($"Error loading vocoder \"{vocoderDep}\""),
+                                    $"Error loading package \"{vocoderPkg}\"",
+                                    $"<translate:packages.errors.missing>",
+                                    new Exception($"Error loading package \"{vocoderPkg}\""),
                                 true,
-                                    new string[] { vocoderDep, "https://github.com/xunmengshe/OpenUtau/wiki/Vocoders" });
+                                    new string[] { vocoderPkg });
                             }
                             var config = Yaml.DefaultDeserializer.Deserialize<Core.DiffSinger.DsVocoderConfig>(
                                 File.ReadAllText(configPath, System.Text.Encoding.UTF8));
-                            vocoderBytes = File.ReadAllBytes(Path.Combine(
-                                PathManager.Inst.DependencyPath, vocoderDep, config.model));
+                            vocoderBytes = File.ReadAllBytes(Path.Combine(vocoderPath, config.model));
                         }
                         var vocoderSession = Onnx.getInferenceSession(vocoderBytes!, false);
                         var vocoderInputs = new List<NamedOnnxValue> {
