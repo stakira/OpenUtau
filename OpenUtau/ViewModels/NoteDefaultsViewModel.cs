@@ -21,6 +21,10 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float CurrentVibratoShift { get; set; }
         [Reactive] public float CurrentVibratoDrift { get; set; }
         [Reactive] public float CurrentVibratoVolLink { get; set; }
+        [Reactive] public float CurrentVibratoVariance { get; set; }
+        [Reactive] public float CurrentVibratoPitchVariance { get; set; }
+        [Reactive] public float CurrentVibratoVarianceFreq { get; set; }
+        [Reactive] public int CurrentVibratoVarianceSeed { get; set; }
         [Reactive] public float AutoVibratoNoteLength { get; set; }
         [Reactive] public bool AutoVibratoToggle { get; set; }
         public List<NotePresets.PortamentoPreset>? PortamentoPresets { get; }
@@ -52,6 +56,9 @@ namespace OpenUtau.App.ViewModels {
             CurrentVibratoShift = NotePresets.Default.DefaultVibrato.VibratoShift;
             CurrentVibratoDrift = NotePresets.Default.DefaultVibrato.VibratoDrift;
             CurrentVibratoVolLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
+            CurrentVibratoVariance = NotePresets.Default.DefaultVibrato.VibratoVariance;
+            CurrentVibratoVarianceFreq = NotePresets.Default.DefaultVibrato.VibratoVarianceFreq;
+            CurrentVibratoVarianceSeed = NotePresets.Default.DefaultVibrato.VibratoVarianceSeed;
             AutoVibratoNoteLength = NotePresets.Default.AutoVibratoNoteDuration;
             AutoVibratoToggle = NotePresets.Default.AutoVibratoToggle;
             PortamentoPresets = NotePresets.Default.PortamentoPresets;
@@ -127,6 +134,26 @@ namespace OpenUtau.App.ViewModels {
                         NotePresets.Default.DefaultVibrato.VibratoVolLink = Math.Max(-100, Math.Min(100, vibratoVolLink));
                         NotePresets.Save();
                     });
+            this.WhenAnyValue(vm => vm.CurrentVibratoVariance)
+                    .Subscribe(vibratoVariance => {
+                        NotePresets.Default.DefaultVibrato.VibratoVariance = Math.Max(0, Math.Min(4, vibratoVariance));
+                        NotePresets.Save();
+                    });
+            this.WhenAnyValue(vm => vm.CurrentVibratoPitchVariance)
+                    .Subscribe(vibratoPitchVariance => {
+                        NotePresets.Default.DefaultVibrato.VibratoPitchVariance = Math.Max(0, Math.Min(4, vibratoPitchVariance));
+                        NotePresets.Save();
+                    });
+            this.WhenAnyValue(vm => vm.CurrentVibratoVarianceFreq)
+                    .Subscribe(vibratoVarianceFreq => {
+                        NotePresets.Default.DefaultVibrato.VibratoVarianceFreq = Math.Max(0.1F, Math.Min(8, vibratoVarianceFreq));
+                        NotePresets.Save();
+                    });
+            this.WhenAnyValue(vm => vm.CurrentVibratoVarianceSeed)
+                    .Subscribe(vibratoVarianceSeed => {
+                        NotePresets.Default.DefaultVibrato.VibratoVarianceSeed = vibratoVarianceSeed;
+                        NotePresets.Save();
+                    });
             this.WhenAnyValue(vm => vm.AutoVibratoToggle)
                     .Subscribe(autoVibratoToggle => {
                         NotePresets.Default.AutoVibratoToggle = autoVibratoToggle;
@@ -160,6 +187,10 @@ namespace OpenUtau.App.ViewModels {
                         CurrentVibratoShift = Math.Max(0, Math.Min(100, vibratoPreset.VibratoShift));
                         CurrentVibratoDrift = Math.Max(-100, Math.Min(100, vibratoPreset.VibratoDrift));
                         CurrentVibratoVolLink = Math.Max(-100, Math.Min(100, vibratoPreset.VibratoVolLink));
+                        CurrentVibratoVariance = Math.Max(0, Math.Min(4, vibratoPreset.VibratoVariance));
+                        CurrentVibratoPitchVariance = Math.Max(0, Math.Min(4, vibratoPreset.VibratoPitchVariance));
+                        CurrentVibratoVarianceFreq = Math.Max(0.1F, Math.Min(8, vibratoPreset.VibratoVarianceFreq));
+                        CurrentVibratoVarianceSeed = vibratoPreset.VibratoVarianceSeed;
                         NotePresets.Default.DefaultVibrato.VibratoLength = CurrentVibratoLength;
                         NotePresets.Default.DefaultVibrato.VibratoPeriod = CurrentVibratoPeriod;
                         NotePresets.Default.DefaultVibrato.VibratoDepth = CurrentVibratoDepth;
@@ -168,6 +199,10 @@ namespace OpenUtau.App.ViewModels {
                         NotePresets.Default.DefaultVibrato.VibratoShift = CurrentVibratoShift;
                         NotePresets.Default.DefaultVibrato.VibratoDrift = CurrentVibratoDrift;
                         NotePresets.Default.DefaultVibrato.VibratoVolLink = CurrentVibratoVolLink;
+                        NotePresets.Default.DefaultVibrato.VibratoVariance = CurrentVibratoVariance;
+                        NotePresets.Default.DefaultVibrato.VibratoPitchVariance = CurrentVibratoPitchVariance;
+                        NotePresets.Default.DefaultVibrato.VibratoVarianceFreq = CurrentVibratoVarianceFreq;
+                        NotePresets.Default.DefaultVibrato.VibratoVarianceSeed = CurrentVibratoVarianceSeed;
                         NotePresets.Save();
                     }
                 });
@@ -195,7 +230,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrEmpty(name)) {
                 return;
             }
-            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, CurrentVibratoLength, CurrentVibratoPeriod, CurrentVibratoDepth, CurrentVibratoIn, CurrentVibratoOut, CurrentVibratoShift, CurrentVibratoDrift, CurrentVibratoVolLink));
+            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, CurrentVibratoLength, CurrentVibratoPeriod, CurrentVibratoDepth, CurrentVibratoIn, CurrentVibratoOut, CurrentVibratoShift, CurrentVibratoDrift, CurrentVibratoVolLink, CurrentVibratoVariance, CurrentVibratoPitchVariance, CurrentVibratoVarianceFreq, CurrentVibratoVarianceSeed));
             NotePresets.Save();
             DocManager.Inst.ExecuteCmd(new NotePresetChangedNotification());
         }
@@ -222,6 +257,10 @@ namespace OpenUtau.App.ViewModels {
             CurrentVibratoShift = NotePresets.Default.DefaultVibrato.VibratoShift;
             CurrentVibratoDrift = NotePresets.Default.DefaultVibrato.VibratoDrift;
             CurrentVibratoVolLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
+            CurrentVibratoVariance = NotePresets.Default.DefaultVibrato.VibratoVariance;
+            CurrentVibratoPitchVariance = NotePresets.Default.DefaultVibrato.VibratoPitchVariance;
+            CurrentVibratoVarianceFreq = NotePresets.Default.DefaultVibrato.VibratoVarianceFreq;
+            CurrentVibratoVarianceSeed = NotePresets.Default.DefaultVibrato.VibratoVarianceSeed;
             AutoVibratoNoteLength = NotePresets.Default.AutoVibratoNoteDuration;
             AutoVibratoToggle = NotePresets.Default.AutoVibratoToggle;
         }

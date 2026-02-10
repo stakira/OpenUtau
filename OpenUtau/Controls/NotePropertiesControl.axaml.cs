@@ -137,6 +137,12 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        void OnNewVarianceSeed(object sender, RoutedEventArgs e) {
+            int newSeed = Random.Shared.Next();
+            ViewModel.SetVibratoVarianceSeed(newSeed);
+            ViewModel.VarianceSeed = newSeed;
+        }
+
         void OnRemoveVibratoPreset(object sender, RoutedEventArgs e) {
             ViewModel.RemoveAppliedVibratoPreset();
         }

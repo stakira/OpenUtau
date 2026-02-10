@@ -30,6 +30,10 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float VibratoShift { get; set; }
         [Reactive] public float VibratoDrift { get; set; }
         [Reactive] public float VibratoVolLink { get; set; }
+        [Reactive] public float VarianceDepth { get; set; }
+        [Reactive] public float PitchVarianceDepth { get; set; }
+        [Reactive] public float VarianceFrequency { get; set; }
+        [Reactive] public int VarianceSeed { get; set; }
         [Reactive] public float AutoVibratoNoteLength { get; set; }
         [Reactive] public bool AutoVibratoToggle { get; set; }
         [Reactive] public bool IsNoteSelected { get; set; } = false;
@@ -86,6 +90,10 @@ namespace OpenUtau.App.ViewModels {
                         SetNoteParams("VibratoShift", Math.Max(0, Math.Min(100, vibratoPreset.VibratoShift)));
                         SetNoteParams("VibratoDrift", Math.Max(-100, Math.Min(100, vibratoPreset.VibratoDrift)));
                         SetNoteParams("VibratoVolLink", Math.Max(0, Math.Min(100, vibratoPreset.VibratoVolLink)));
+                        SetNoteParams("VarianceDepth", Math.Max(0, Math.Min(2, vibratoPreset.VibratoVariance)));
+                        SetNoteParams("PitchVarianceDepth", Math.Max(0, Math.Min(2, vibratoPreset.VibratoPitchVariance)));
+                        SetNoteParams("VarianceFrequency", Math.Max(0.1, Math.Min(8, vibratoPreset.VibratoVarianceFreq)));
+                        SetNoteParams("VarianceSeed", vibratoPreset.VibratoVarianceSeed);
                         PanelControlPressed = false;
                         DocManager.Inst.EndUndoGroup();
                     }
@@ -140,6 +148,10 @@ namespace OpenUtau.App.ViewModels {
                 VibratoShift = note.vibrato.shift;
                 VibratoDrift = note.vibrato.drift;
                 VibratoVolLink = note.vibrato.volLink;
+                VarianceDepth = note.vibrato.variance;
+                PitchVarianceDepth = note.vibrato.pitchVariance;
+                VarianceFrequency = note.vibrato.varianceFreq;
+                VarianceSeed = note.vibrato.varianceSeed;
             } else {
                 IsNoteSelected = false;
                 Lyric = string.Empty;
@@ -157,6 +169,10 @@ namespace OpenUtau.App.ViewModels {
                 VibratoShift = NotePresets.Default.DefaultVibrato.VibratoShift;
                 VibratoDrift = NotePresets.Default.DefaultVibrato.VibratoDrift;
                 VibratoVolLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
+                VarianceDepth = NotePresets.Default.DefaultVibrato.VibratoVariance;
+                PitchVarianceDepth = NotePresets.Default.DefaultVibrato.VibratoPitchVariance;
+                VarianceFrequency = NotePresets.Default.DefaultVibrato.VibratoVarianceFreq;
+                VarianceSeed = NotePresets.Default.DefaultVibrato.VibratoVarianceSeed;
             }
             AutoVibratoNoteLength = NotePresets.Default.AutoVibratoNoteDuration;
             AutoVibratoToggle = NotePresets.Default.AutoVibratoToggle;
@@ -285,6 +301,22 @@ namespace OpenUtau.App.ViewModels {
                     if (cmd is VibratoVolumeLinkCommand || cmd is SetVibratoCommand) {
                         VibratoVolLink = note.vibrato.volLink;
                         this.RaisePropertyChanged(nameof(VibratoVolLink));
+                    }
+                    if (cmd is VibratoVarianceDepthCommand || cmd is SetVibratoCommand) {
+                        VarianceDepth = note.vibrato.variance;
+                        this.RaisePropertyChanged(nameof(VarianceDepth));
+                    }
+                    if (cmd is VibratoPitchVarianceCommand || cmd is SetVibratoCommand) {
+                        PitchVarianceDepth = note.vibrato.pitchVariance;
+                        this.RaisePropertyChanged(nameof(PitchVarianceDepth));
+                    }
+                    if (cmd is VibratoVarianceFrequencyCommand || cmd is SetVibratoCommand) {
+                        VarianceFrequency = note.vibrato.varianceFreq;
+                        this.RaisePropertyChanged(nameof(VarianceFrequency));
+                    }
+                    if (cmd is VibratoVarianceSeedCommand || cmd is SetVibratoCommand) {
+                        VarianceSeed = note.vibrato.varianceSeed;
+                        this.RaisePropertyChanged(nameof(VarianceSeed));
                     }
                 }
             } else if (cmd is ExpCommand) {
@@ -475,6 +507,46 @@ namespace OpenUtau.App.ViewModels {
                     foreach (UNote note in selectedNotes) {
                         DocManager.Inst.ExecuteCmd(new VibratoVolumeLinkCommand(Part, note, value));
                     }
+                } else if (tag == "VarianceDepth") {
+                    float value;
+                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 4) {
+                        value = f;
+                    } else {
+                        value = NotePresets.Default.DefaultVibrato.VibratoVariance;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new VibratoVarianceDepthCommand(Part, note, value));
+                    }
+                } else if (tag == "PitchVarianceDepth") {
+                    float value;
+                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 4) {
+                        value = f;
+                    } else {
+                        value = NotePresets.Default.DefaultVibrato.VibratoPitchVariance;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new VibratoPitchVarianceCommand(Part, note, value));
+                    }
+                } else if (tag == "VarianceFrequency") {
+                    float value;
+                    if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0.1 && f <= 8) {
+                        value = f;
+                    } else {
+                        value = NotePresets.Default.DefaultVibrato.VibratoVarianceFreq;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new VibratoVarianceFrequencyCommand(Part, note, value));
+                    }
+                } else if (tag == "VarianceSeed") {
+                    int value;
+                    if (obj != null && (obj is int i || int.TryParse(obj.ToString(), out i))) {
+                        value = i;
+                    } else {
+                        value = NotePresets.Default.DefaultVibrato.VibratoVarianceSeed;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new VibratoVarianceSeedCommand(Part, note, value));
+                    }
                 }
             }
         }
@@ -501,6 +573,14 @@ namespace OpenUtau.App.ViewModels {
                         }
                     }
                 }
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+        public void SetVibratoVarianceSeed(int newSeed) {
+            if(Part != null && selectedNotes.Count > 0) {
+                DocManager.Inst.StartUndoGroup("command.vibrato.edit");
+                UNote first = selectedNotes.First();
+                DocManager.Inst.ExecuteCmd(new VibratoVarianceSeedCommand(Part, first, newSeed));
                 DocManager.Inst.EndUndoGroup();
             }
         }
@@ -546,7 +626,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrEmpty(name)) {
                 return;
             }
-            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift, VibratoVolLink));
+            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift, VibratoVolLink, VarianceDepth, PitchVarianceDepth, VarianceFrequency, VarianceSeed));
             NotePresets.Save();
             VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
         }
