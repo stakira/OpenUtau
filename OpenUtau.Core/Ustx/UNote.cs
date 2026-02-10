@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using OpenUtau.Api;
 using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
+using SimplexNoise;
 
 namespace OpenUtau.Core.Ustx {
     public class UNote : IComparable {
@@ -281,6 +282,14 @@ namespace OpenUtau.Core.Ustx {
         float _drift = NotePresets.Default.DefaultVibrato.VibratoDrift;
         // Percentage of volume reduction in linkage with vibrato. When this is 100%, volume will be 1.2 times to 0.2 times regardless of depth.
         float _volLink = NotePresets.Default.DefaultVibrato.VibratoVolLink;
+        // Amount of variance in the shape of the vibrato curve.
+        float _variance = NotePresets.Default.DefaultVibrato.VibratoVariance;
+        // Amount of variance in the intensity of the vibrato curve.
+        float _pitchVariance = NotePresets.Default.DefaultVibrato.VibratoVariance;
+        // Frequency of variance in the shape of the vibrato curve.
+        float _varianceFreq = NotePresets.Default.DefaultVibrato.VibratoVarianceFreq;
+        // Random seed used for vibrato variance
+        int _varianceSeed = NotePresets.Default.DefaultVibrato.VibratoVarianceSeed;
 
         public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
         public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
@@ -305,6 +314,11 @@ namespace OpenUtau.Core.Ustx {
         public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
         public float volLink { get => _volLink; set => _volLink = Math.Max(-100, Math.Min(100, value)); }
 
+        public float variance { get => _variance; set => _variance = Math.Max(0, Math.Min(2, value)); }
+        public float pitchVariance { get => _pitchVariance; set => _pitchVariance = Math.Max(0, Math.Min(2, value)); }
+        public float varianceFreq { get => _varianceFreq; set => _varianceFreq = Math.Max(0.1F, Math.Min(8, value)); }
+        public int varianceSeed { get => _varianceSeed; set => _varianceSeed = value; }
+
         [YamlIgnore] public float NormalizedStart => 1f - length / 100f;
 
         public UVibrato Clone() {
@@ -316,7 +330,11 @@ namespace OpenUtau.Core.Ustx {
                 @out = @out,
                 shift = shift,
                 drift = drift,
-                volLink = volLink
+                volLink = volLink,
+                variance = variance,
+                pitchVariance = pitchVariance,
+                varianceFreq = varianceFreq,
+                varianceSeed = varianceSeed
             };
             return result;
         }
@@ -338,7 +356,19 @@ namespace OpenUtau.Core.Ustx {
             float nOut = length / 100f * @out / 100f;
             float nOutPos = 1f - nOut;
             float t = (nPos - nStart) / nPeriod + shift / 100f;
-            float y = (float)Math.Sin(2 * Math.PI * t) * depth + (depth / 100 * drift);
+            float y;
+            if(variance > 0 || pitchVariance > 0) {
+                Noise.Seed = varianceSeed; // setting seed might need optimization
+                // * 0.33F so it has a reasonable base value, it's too much at unity
+                float variancePhaseShift = Noise.Generate(t * varianceFreq) * 0.33F;
+                Noise.Seed = varianceSeed + 1;
+                float pitchNoise = Noise.Generate(t * varianceFreq) * 100 * pitchVariance;
+                t += variancePhaseShift * variance;
+                float normalizedDepth = 200 * ((depth - 5) / (200 - 5));
+                y = (float)Math.Sin(2 * Math.PI * t) * depth + (depth / 100 * drift) + (normalizedDepth / 100 * pitchNoise);
+            } else {
+                y = (float)Math.Sin(2 * Math.PI * t) * depth + (depth / 100 * drift);
+            }
             if (nPos < nStart) {
                 y = 0;
             } else if (nPos < nInPos) {
@@ -367,7 +397,17 @@ namespace OpenUtau.Core.Ustx {
                 volLink *= -1;
             }
             float t = (nPos - nStart) / nPeriod + shift / 100f;
-            float reduction = (-(float)Math.Sin(2 * Math.PI * t) / 2 + 0.3f) * volLink / 100;
+            float reduction;
+            if(variance > 0) {
+                Noise.Seed = varianceSeed; // setting seed might need optimization
+                // * 0.33F so it has a reasonable base value, it's too much at unity
+                // TODO actually use pitch variance to influence volume link too??
+                float variancePhaseShift = Noise.Generate(t * varianceFreq) * 0.33F;
+                t += variancePhaseShift * variance;
+                reduction = (-(float)Math.Sin(2 * Math.PI * t) / 2 + 0.3f) * volLink / 100;
+            } else {
+                reduction = (-(float)Math.Sin(2 * Math.PI * t) / 2 + 0.3f) * volLink / 100;
+            }
             if (nPos < nStart) {
                 reduction = 0;
             } else if (nPos < nInPos) {
