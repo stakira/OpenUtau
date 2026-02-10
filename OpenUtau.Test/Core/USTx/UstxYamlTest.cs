@@ -22,6 +22,10 @@ namespace OpenUtau.Core.Ustx {
                 index = 0,
                 value = 123,
             });
+            note.vibrato.variance = 0.9F;
+            note.vibrato.pitchVariance = 0.4F;
+            note.vibrato.varianceFreq = 1;
+            note.vibrato.varianceSeed = 12;
         }
 
         [Fact]
@@ -38,7 +42,7 @@ pitch:
   - {x: -5, y: 0, shape: io}
   - {x: 5, y: 0, shape: io}
   snap_first: true
-vibrato: {length: 0, period: 175, depth: 25, in: 10, out: 10, shift: 0, drift: 0, vol_link: 0}
+vibrato: {length: 0, period: 175, depth: 25, in: 10, out: 10, shift: 0, drift: 0, vol_link: 0, variance: 0.9, pitch_variance: 0.4, variance_freq: 1, variance_seed: 12}
 tuning: 0
 phoneme_expressions:
 - {index: 0, abbr: vel, value: 123}
@@ -62,6 +66,10 @@ phoneme_overrides: []
             Assert.NotNull(vel);
             Assert.Null(vel.descriptor);
             Assert.Equal(123, vel.value);
+            Assert.Equal(0.9F, actual.vibrato.variance);
+            Assert.Equal(0.4F, actual.vibrato.pitchVariance);
+            Assert.Equal(1.0F, actual.vibrato.varianceFreq);
+            Assert.Equal(12, actual.vibrato.varianceSeed);
         }
 
         [Fact]
