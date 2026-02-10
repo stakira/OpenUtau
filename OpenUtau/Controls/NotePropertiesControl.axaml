@@ -147,33 +147,33 @@
                       Tag="VibratoVolLink"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
-              <Label Content="{DynamicResource notedefaults.vibrato.variancedepth}"/>
-              <TextBox Grid.Column="2" Text="{Binding VarianceDepth, Mode=OneWay}" Tag="VarianceDepth"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VarianceDepth}" Minimum="0" Maximum="2"
+              <Label Content="{DynamicResource notedefaults.vibrato.variationdepth}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationDepth, Mode=OneWay}" Tag="VariationDepth"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VariationDepth}" Minimum="0" Maximum="2"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                      Tag="VarianceDepth"
-                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.variancedepth.tooltip}"/>
+                      Tag="VariationDepth"
+                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.variationdepth.tooltip}"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
-              <Label Content="{DynamicResource notedefaults.vibrato.pitchvariancedepth}"/>
-              <TextBox Grid.Column="2" Text="{Binding PitchVarianceDepth, Mode=OneWay}" Tag="PitchVarianceDepth"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding PitchVarianceDepth}" Minimum="0" Maximum="2"
+              <Label Content="{DynamicResource notedefaults.vibrato.pitchvariationdepth}"/>
+              <TextBox Grid.Column="2" Text="{Binding PitchVariationDepth, Mode=OneWay}" Tag="PitchVariationDepth"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding PitchVariationDepth}" Minimum="0" Maximum="2"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                      Tag="PitchVarianceDepth"
-                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.pitchvariancedepth.tooltip}"/>
+                      Tag="PitchVariationDepth"
+                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.pitchvariationdepth.tooltip}"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
-              <Label Content="{DynamicResource notedefaults.vibrato.variancefreq}"/>
-              <TextBox Grid.Column="2" Text="{Binding VarianceFrequency, Mode=OneWay}" Tag="VarianceFrequency"/>
-              <Slider Grid.Column="4" Classes="fader" Value="{Binding VarianceFrequency}" Minimum="0.1" Maximum="8"
+              <Label Content="{DynamicResource notedefaults.vibrato.variationfreq}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationFrequency, Mode=OneWay}" Tag="VariationFrequency"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VariationFrequency}" Minimum="0.1" Maximum="8"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                      Tag="VarianceFrequency"/>
+                      Tag="VariationFrequency"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
-              <Label Content="{DynamicResource notedefaults.vibrato.varianceseed}"/>
-              <TextBox Grid.Column="2" Text="{Binding VarianceSeed, Mode=OneWay}" Tag="VarianceSeed"/>
-              <Button Grid.Column="4" Content="{DynamicResource notedefaults.vibrato.newvarianceseed}"
-                      HorizontalAlignment="Stretch" Click="OnNewVarianceSeed"/>
+              <Label Content="{DynamicResource notedefaults.vibrato.variationseed}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationSeed, Mode=OneWay}" Tag="VariationSeed"/>
+              <Button Grid.Column="4" Content="{DynamicResource notedefaults.vibrato.newvariationseed}"
+                      HorizontalAlignment="Stretch" Click="OnNewVariationSeed"/>
             </Grid>
             <Grid ColumnDefinitions="123,20,*">
               <Label Content="{DynamicResource noteproperty.setlongnote}"/>

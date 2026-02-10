@@ -91,12 +91,12 @@ namespace OpenUtau.Core.Util {
             public float VibratoShift = 0;
             public float VibratoDrift = 0;
             public float VibratoVolLink = 0;
-            public float VibratoVariance = 0;
-            public float VibratoPitchVariance = 0;
-            public float VibratoVarianceFreq = 1;
-            public int VibratoVarianceSeed = 0;
+            public float VibratoVariation = 0;
+            public float VibratoPitchVariation = 0;
+            public float VibratoVariationFreq = 1;
+            public int VibratoVariationSeed = 0;
 
-            public VibratoPreset(string name, float length, float period, float depth, float fadein, float fadeout, float shift, float drift, float volLink, float variance, float pitchVariance, float varianceFrequency, int varianceSeed) {
+            public VibratoPreset(string name, float length, float period, float depth, float fadein, float fadeout, float shift, float drift, float volLink, float variation, float pitchVariation, float variationFrequency, int variationSeed) {
                 Name = name;
                 VibratoLength = length;
                 VibratoPeriod = period;
@@ -106,10 +106,10 @@ namespace OpenUtau.Core.Util {
                 VibratoShift = shift;
                 VibratoDrift = drift;
                 VibratoVolLink = volLink;
-                VibratoVariance = variance;
-                VibratoPitchVariance = pitchVariance;
-                VibratoVarianceFreq = varianceFrequency;
-                VibratoVarianceSeed = varianceSeed;
+                VibratoVariation = variation;
+                VibratoPitchVariation = pitchVariation;
+                VibratoVariationFreq = variationFrequency;
+                VibratoVariationSeed = variationSeed;
             }
 
             public VibratoPreset() {}

@@ -119,27 +119,27 @@
                     TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
-                    <Label Content="{DynamicResource notedefaults.vibrato.variancedepth}"/>
-                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoVariance, Mode=OneWay}" Tag="CurrentVibratoVariance"/>
-                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoVariance}" Minimum="0" Maximum="2"
+                    <Label Content="{DynamicResource notedefaults.vibrato.variationdepth}"/>
+                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoVariation, Mode=OneWay}" Tag="CurrentVibratoVariation"/>
+                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoVariation}" Minimum="0" Maximum="2"
                             TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                            Tag="CurrentVibratoVariance"
-                            ToolTip.Tip="{DynamicResource notedefaults.vibrato.variancedepth.tooltip}"/>
+                            Tag="CurrentVibratoVariation"
+                            ToolTip.Tip="{DynamicResource notedefaults.vibrato.variationdepth.tooltip}"/>
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
-                    <Label Content="{DynamicResource notedefaults.vibrato.pitchvariancedepth}"/>
-                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoPitchVariance, Mode=OneWay}" Tag="CurrentVibratoPitchVariance"/>
-                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoPitchVariance}" Minimum="0" Maximum="2"
+                    <Label Content="{DynamicResource notedefaults.vibrato.pitchvariationdepth}"/>
+                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoPitchVariation, Mode=OneWay}" Tag="CurrentVibratoPitchVariation"/>
+                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoPitchVariation}" Minimum="0" Maximum="2"
                             TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                            Tag="CurrentVibratoPitchVariance"
-                            ToolTip.Tip="{DynamicResource notedefaults.vibrato.pitchvariancedepth.tooltip}"/>
+                            Tag="CurrentVibratoPitchVariation"
+                            ToolTip.Tip="{DynamicResource notedefaults.vibrato.pitchvariationdepth.tooltip}"/>
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
-                    <Label Content="{DynamicResource notedefaults.vibrato.variancefreq}"/>
-                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoVarianceFreq, Mode=OneWay}" Tag="CurrentVibratoVarianceFreq"/>
-                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoVarianceFreq}" Minimum="0.1" Maximum="8"
+                    <Label Content="{DynamicResource notedefaults.vibrato.variationfreq}"/>
+                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoVariationFreq, Mode=OneWay}" Tag="CurrentVibratoVariationFreq"/>
+                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoVariationFreq}" Minimum="0.1" Maximum="8"
                             TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
-                            Tag="CurrentVibratoVarianceFreq"/>
+                            Tag="CurrentVibratoVariationFreq"/>
                   </Grid>
                   <Grid ColumnDefinitions="173,20,*">
                     <Label Content="{DynamicResource notedefaults.vibrato.autotoggle}"/>

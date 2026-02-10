@@ -334,13 +334,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Period</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>
   <system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>
-  <system:String x:Key="notedefaults.vibrato.variancedepth">Variance</system:String>
-  <system:String x:Key="notedefaults.vibrato.pitchvariancedepth">Depth Variance</system:String>
-  <system:String x:Key="notedefaults.vibrato.varianceseed">Variance Seed</system:String>
-  <system:String x:Key="notedefaults.vibrato.variancefreq">Variance Frequency</system:String>
-  <system:String x:Key="notedefaults.vibrato.newvarianceseed">New Seed</system:String>
-  <system:String x:Key="notedefaults.vibrato.variancedepth.tooltip">Amount of random variation in the shape of the vibrato curve. At 0, this setting has no effect on the vibrato.</system:String>
-  <system:String x:Key="notedefaults.vibrato.pitchvariancedepth.tooltip">Amount of random variation in the intensity of vibrato. This setting is independent of Variance, but inherits the Variance Seed and Variance Frequency settings. At 0, this setting has no effect on the vibrato.</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationdepth">Variation</system:String>
+  <system:String x:Key="notedefaults.vibrato.pitchvariationdepth">Depth Variation</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationseed">Variation Seed</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationfreq">Variation Frequency</system:String>
+  <system:String x:Key="notedefaults.vibrato.newvariationseed">New Seed</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationdepth.tooltip">Amount of random variation in the shape of the vibrato curve. At 0, this setting has no effect on the vibrato.</system:String>
+  <system:String x:Key="notedefaults.vibrato.pitchvariationdepth.tooltip">Amount of random variation in the intensity of vibrato. This setting is independent of Variation, but inherits the Variation Seed and Variation Frequency settings. At 0, this setting has no effect on the vibrato.</system:String>
 
   <system:String x:Key="noteproperty">Note Properties</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
