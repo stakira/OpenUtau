@@ -164,6 +164,12 @@ namespace OpenUtau.App.Controls {
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.notes.randompitd"),
+                Command = ReactiveCommand.Create(() => {
+                    RandomizePitchDeviation();
+                })
+            });
+            ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
                 Command = ReactiveCommand.Create(() => {
                     LengthenCrossfade();
@@ -432,6 +438,38 @@ namespace OpenUtau.App.Controls {
                 }
             };
             dialog.ShowDialog(RootWindow);
+        }
+
+        void RandomizePitchDeviation() {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
+            if (notesVM.Selection.IsEmpty) {
+                _ = MessageBox.Show(
+                    RootWindow,
+                    ThemeManager.GetString("lyrics.selectnotes"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+
+            var scaleDialog = new SliderDialog("Random Scale", 1, 0, 2, 0.01);
+            scaleDialog.onFinish = scale => {
+                // want multi-control dialogs
+                var freqDialog = new SliderDialog("Random Frequency", 1, 0.1, 6, 0.1);
+                freqDialog.onFinish = freq => {
+                    try {
+                        var edit = new RandomPitchDeviation((float)scale, (float)freq);
+                        edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
+                    } catch (Exception e) {
+                        var customEx = new MessageCustomizableException("Failed to run editing macro", "<translate:errors.failed.runeditingmacro>", e);
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                    }
+                };
+                freqDialog.ShowDialog(RootWindow);
+            };
+            scaleDialog.ShowDialog(RootWindow);
         }
 
         void LengthenCrossfade() {
