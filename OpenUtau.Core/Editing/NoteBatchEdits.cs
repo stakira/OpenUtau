@@ -471,9 +471,6 @@ namespace OpenUtau.Core.Editing {
             float baseScale = 0.25F;
             float coarseFrequency = 0.001F;
 
-            var positions = selectedNotes.Select(n => n.position + part.position).ToHashSet();
-            var phrases = part.renderPhrases.Where(phrase => phrase.notes.Any(n => positions.Contains(phrase.position + n.position))).ToArray();
-
             var pitdCurve = part.curves.Find(c => c.abbr.Equals(Format.Ustx.PITD));
             if (pitdCurve == null) {
                 // hmmm...
@@ -483,10 +480,10 @@ namespace OpenUtau.Core.Editing {
                 }
             }
 
-            foreach (var phrase in phrases) {
-                var start = phrase.position;
-                var end = phrase.end;
-                int numSamples = phrase.duration;
+            foreach(var note in selectedNotes) {
+                var start = note.position;
+                var end = note.position + note.duration;
+                int numSamples = note.duration;
 
                 float[] noiseSum = new float[numSamples];
                 Array.Fill(noiseSum, 0);
