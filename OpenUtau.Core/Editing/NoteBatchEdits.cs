@@ -513,11 +513,11 @@ namespace OpenUtau.Core.Editing {
                 }
 
                 for (int i = 0; i < noiseSum.Length; i++) {
-                    float curveValue = pitdCurve.Sample(start + i);
+                    int curveValue = pitdCurve.Sample(start + i);
                     float noiseValue = (noiseSum[i] - (highestValue / 2)) * baseScale;
                     curveValue += (int)Math.Round(noiseValue * noiseScale);
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD,
-                        start + i, (int)curveValue,
+                        start + i, curveValue,
                         start + i, 0
                     ));
                 }
