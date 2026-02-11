@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OpenUtau.Core.Format {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 9);
+        public static readonly Version kUstxVersion = new Version(0, 9, 1);
 
         public const string DYN = "dyn";
         public const string PITD = "pitd";

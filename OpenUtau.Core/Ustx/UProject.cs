@@ -121,6 +121,7 @@ namespace OpenUtau.Core.Ustx {
             int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
             note.pitch.AddPoint(new PitchPoint(start, 0));
             note.pitch.AddPoint(new PitchPoint(start + length, 0));
+            note.vibrato.variationSeed = Random.Shared.Next();
             return note;
         }
 

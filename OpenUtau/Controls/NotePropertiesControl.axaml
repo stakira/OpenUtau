@@ -146,6 +146,35 @@
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
                       Tag="VibratoVolLink"/>
             </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.vibrato.variationdepth}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationDepth, Mode=OneWay}" Tag="VariationDepth"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VariationDepth}" Minimum="0" Maximum="2"
+                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
+                      Tag="VariationDepth"
+                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.variationdepth.tooltip}"/>
+            </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.vibrato.pitchvariationdepth}"/>
+              <TextBox Grid.Column="2" Text="{Binding PitchVariationDepth, Mode=OneWay}" Tag="PitchVariationDepth"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding PitchVariationDepth}" Minimum="0" Maximum="2"
+                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
+                      Tag="PitchVariationDepth"
+                      ToolTip.Tip="{DynamicResource notedefaults.vibrato.pitchvariationdepth.tooltip}"/>
+            </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.vibrato.variationfreq}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationFrequency, Mode=OneWay}" Tag="VariationFrequency"/>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding VariationFrequency}" Minimum="0.1" Maximum="8"
+                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"
+                      Tag="VariationFrequency"/>
+            </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.vibrato.variationseed}"/>
+              <TextBox Grid.Column="2" Text="{Binding VariationSeed, Mode=OneWay}" Tag="VariationSeed"/>
+              <Button Grid.Column="4" Content="{DynamicResource notedefaults.vibrato.newvariationseed}"
+                      HorizontalAlignment="Stretch" Click="OnNewVariationSeed"/>
+            </Grid>
             <Grid ColumnDefinitions="123,20,*">
               <Label Content="{DynamicResource noteproperty.setlongnote}"/>
               <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>

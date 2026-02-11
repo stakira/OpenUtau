@@ -334,6 +334,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Period</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>
   <system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationdepth">Variation</system:String>
+  <system:String x:Key="notedefaults.vibrato.pitchvariationdepth">Depth Variation</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationseed">Variation Seed</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationfreq">Variation Frequency</system:String>
+  <system:String x:Key="notedefaults.vibrato.newvariationseed">New Seed</system:String>
+  <system:String x:Key="notedefaults.vibrato.variationdepth.tooltip">Amount of random variation in the shape of the vibrato curve. At 0, this setting has no effect on the vibrato.</system:String>
+  <system:String x:Key="notedefaults.vibrato.pitchvariationdepth.tooltip">Amount of random variation in the intensity of vibrato. This setting is independent of Variation, but inherits the Variation Seed and Variation Frequency settings. At 0, this setting has no effect on the vibrato.</system:String>
 
   <system:String x:Key="noteproperty">Note Properties</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
@@ -437,6 +444,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizeoffset">Randomize phoneme offset</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizetiming">Randomize note timing</system:String>
   <system:String x:Key="pianoroll.menu.notes.randomizetuning">Randomize tuning</system:String>
+  <system:String x:Key="pianoroll.menu.notes.randompitd">Randomize pitch deviation</system:String>
   <system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>

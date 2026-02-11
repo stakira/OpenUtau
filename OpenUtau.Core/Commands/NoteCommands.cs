@@ -454,6 +454,113 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class VibratoVariationDepthCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newVariation;
+        readonly float oldVariation;
+
+        public VibratoVariationDepthCommand(UVoicePart part, UNote note, float variation) : base(part, note) {
+            this.note = note;
+            newVariation = variation;
+            oldVariation = note.vibrato.variation;
+        }
+
+        public override string ToString() {
+            return "Change vibrato variation depth";
+        }
+
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.variation = newVariation;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.variation = oldVariation;
+            }
+        }
+    }
+
+    public class VibratoPitchVariationCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newPitchVariation;
+        readonly float oldPitchVariation;
+
+        public VibratoPitchVariationCommand(UVoicePart part, UNote note, float pitchVariation) : base(part, note) {
+            this.note = note;
+            newPitchVariation = pitchVariation;
+            oldPitchVariation = note.vibrato.pitchVariation;
+        }
+
+        public override string ToString() {
+            return "Change vibrato pitch variation depth";
+        }
+
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.pitchVariation = newPitchVariation;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.pitchVariation = oldPitchVariation;
+            }
+        }
+    }
+
+    public class VibratoVariationFrequencyCommand : VibratoCommand {
+        readonly UNote note;
+        readonly float newVariationFreq;
+        readonly float oldVariationFreq;
+
+        public VibratoVariationFrequencyCommand(UVoicePart part, UNote note, float frequency) : base(part, note) {
+            this.note = note;
+            newVariationFreq = frequency;
+            oldVariationFreq = note.vibrato.variationFreq;
+        }
+
+        public override string ToString() {
+            return "Change vibrato variation frequency";
+        }
+
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.variationFreq = newVariationFreq;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.variationFreq = oldVariationFreq;
+            }
+        }
+    }
+
+    public class VibratoVariationSeedCommand : VibratoCommand {
+        readonly UNote note;
+        readonly int newVariationSeed;
+        readonly int oldVariationSeed;
+
+        public VibratoVariationSeedCommand(UVoicePart part, UNote note, int seed) : base(part, note) {
+            this.note = note;
+            newVariationSeed = seed;
+            oldVariationSeed = note.vibrato.variationSeed;
+        }
+
+        public override string ToString() {
+            return "Change vibrato variation seed";
+        }
+
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.variationSeed = newVariationSeed;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.variationSeed = oldVariationSeed;
+            }
+        }
+    }
 
     public class PhonemeOffsetCommand : NoteCommand {
         readonly UNote note;
