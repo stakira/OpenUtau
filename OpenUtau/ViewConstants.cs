@@ -18,6 +18,8 @@ namespace OpenUtau.App {
         public const double PianoRollTickWidthShowDetails = 64.0 / 480.0;
         public const double PianoRollMinTicklineWidth = 12.0;
 
+        public const double PianoRollMinHeight = 24;
+
         public const double NoteHeightMax = 128;
         public const double NoteHeightMin = 8;
         public const double NoteHeightDefault = 22;

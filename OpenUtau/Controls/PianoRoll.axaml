@@ -214,8 +214,8 @@
             </Menu.Styles>
 
             <MenuItem Header="{DynamicResource menu.edit}">
-              <MenuItem Header="{DynamicResource menu.edit.undo}" InputGesture="Ctrl+Z" Command="{Binding Undo}"/>
-              <MenuItem Header="{DynamicResource menu.edit.redo}" InputGesture="Ctrl+Y" Command="{Binding Redo}"/>
+              <MenuItem Header="{Binding UndoText}" InputGesture="Ctrl+Z" Command="{Binding Undo}" IsEnabled="{Binding CanUndo}"/>
+              <MenuItem Header="{Binding RedoText}" InputGesture="Ctrl+Y" Command="{Binding Redo}" IsEnabled="{Binding CanRedo}"/>
               <MenuItem Header="-" Height="1"/>
               <MenuItem Header="{DynamicResource menu.edit.cut}" InputGesture="Ctrl+X" Command="{Binding Cut}"/>
               <MenuItem Header="{DynamicResource menu.edit.copy}" InputGesture="Ctrl+C" Command="{Binding Copy}"/>
@@ -265,11 +265,6 @@
               <MenuItem Header="{DynamicResource prefs.appearance.trackcolor}" Click="OnMenuUseTrackColor">
                 <MenuItem.Icon>
                   <CheckBox IsChecked="{Binding UseTrackColor}" />
-                </MenuItem.Icon>
-              </MenuItem>
-              <MenuItem Header="{DynamicResource pianoroll.menu.view.detachpianoroll}" Click="OnMenuDetach">
-                <MenuItem.Icon>
-                  <CheckBox IsChecked="{Binding PianoRollDetached}" />
                 </MenuItem.Icon>
               </MenuItem>
               <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
@@ -323,6 +318,14 @@
                     <CheckBox IsChecked="{Binding PlaybackAutoScroll2}" />
                   </MenuItem.Icon>
                 </MenuItem>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource pianoroll.menu.view.pianoroll}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.view.pianoroll.detach}" Click="OnMenuDetachPianoRoll">
+                  <MenuItem.Icon>
+                    <CheckBox IsChecked="{Binding PianoRollDetached}" />
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource pianoroll.menu.view.pianoroll.hide}" Click="OnMenuHidePianoRoll"/>
               </MenuItem>
             </MenuItem>
 
