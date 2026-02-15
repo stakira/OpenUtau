@@ -241,7 +241,6 @@ namespace OpenUtau.Core.Voicevox {
 
         public static VoicevoxQueryMain NoteGroupsToVQuery(VoicevoxNote[] vNotes, TimeAxis timeAxis, bool pitch_slur = false) {
             VoicevoxQueryMain vqMain = new VoicevoxQueryMain();
-            int index = 0;
             try {
                 vqMain.notes.Add(new VoicevoxQueryNotes() {
                     lyric = "",
@@ -251,7 +250,7 @@ namespace OpenUtau.Core.Voicevox {
                 });
                 int short_length_count = 0;
                 int slur_index = 0;
-                while (index < vNotes.Length) {
+                for (int index = 0; index < vNotes.Length;) {
                     string lyric = dic.Notetodic(vNotes, index);
                     double durationMs = vNotes[index].durationMs;
                     // When slurs are considered in pitch generation, vowel-stretched notes inherit the Kana of the previous note
@@ -264,6 +263,8 @@ namespace OpenUtau.Core.Voicevox {
                         } else {
                             slur_index = 0;
                         }
+                    } else {
+                        slur_index = 0;
                     }
                     int length = (int)Math.Round((durationMs / 1000f) * VoicevoxUtils.fps, MidpointRounding.AwayFromZero);
                     //Avoid synthesis without at least two frames.
