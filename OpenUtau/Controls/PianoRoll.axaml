@@ -178,6 +178,13 @@
                    Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0" ZIndex="-10"
                    Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
+        <Rectangle Name="PlayPosHighlightSolid"
+                   Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-9" Opacity="0.5"
+                   IsVisible="{Binding NotesViewModel.UseSolidPlaybackLine, Mode=OneWay}"
+                   Fill="{DynamicResource NeutralAccentBrushSemi}"/>
         <Rectangle Name="SelectionBox" StrokeThickness="2"
                    Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
                    Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
