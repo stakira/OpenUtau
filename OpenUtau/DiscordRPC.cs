@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using Serilog;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using System.Security.Cryptography;
+using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau {
     enum DiscordRpcOp {
@@ -30,6 +31,8 @@ namespace OpenUtau {
         private static BinaryReader RpcReader;
 
         public static void InitRPC() {
+            if (!Preferences.Default.DiscordRichPresence) return;
+
             NamedPipeClientStream pipe = null;
 
             for (int i = 0; i < 10; i++) {
@@ -86,6 +89,8 @@ namespace OpenUtau {
         }
 
         public static void RPC(UProject proj) {
+            if (!Preferences.Default.DiscordRichPresence) return;
+
             NamedPipeClientStream pipe = RpcPipe;
 
             var reader = RpcReader;
@@ -129,6 +134,8 @@ namespace OpenUtau {
         }
 
         public static void IdleRPC() {
+            if (!Preferences.Default.DiscordRichPresence) return;
+
             NamedPipeClientStream pipe = RpcPipe;
 
             var reader = RpcReader;

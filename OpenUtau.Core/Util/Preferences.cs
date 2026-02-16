@@ -242,6 +242,7 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = false;
+            public bool DiscordRichPresence = false;
         }
     }
 }
