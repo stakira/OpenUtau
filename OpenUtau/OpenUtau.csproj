@@ -15,7 +15,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <DebugType>embedded</DebugType>
     <StartupObject />
-  </PropertyGroup>s
+  </PropertyGroup>
   <PropertyGroup>
     <CFBundleName>OpenUtau</CFBundleName>
     <CFBundleDisplayName>OpenUtau</CFBundleDisplayName>
