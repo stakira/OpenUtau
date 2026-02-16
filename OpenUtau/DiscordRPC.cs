@@ -122,7 +122,7 @@ namespace OpenUtau {
                         buttons = new[] {
                             new {
                                 label = "Get OpenUtau",
-                                url = "https://openutau.com"
+                                url = "https://www.openutau.com/"
                             }
                         }
                     }
@@ -156,7 +156,7 @@ namespace OpenUtau {
                         buttons = new[] {
                             new {
                                 label = "Get OpenUtau",
-                                url = "https://openutau.com"
+                                url = "https://www.openutau.com/"
                             }
                         }
                     }
