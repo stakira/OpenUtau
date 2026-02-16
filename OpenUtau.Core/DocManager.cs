@@ -67,7 +67,6 @@ namespace OpenUtau.Core {
         public void SearchAllPlugins() {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
-            var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
             try {
                 files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
@@ -90,7 +89,7 @@ namespace OpenUtau.Core {
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
                         if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
-                            phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                            PhonemizerFactory.Get(type);
                         }
                     }
                 } catch (Exception e) {
@@ -100,10 +99,10 @@ namespace OpenUtau.Core {
             }
             foreach (var type in GetType().Assembly.GetExportedTypes()) {
                 if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
-                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                    PhonemizerFactory.Get(type);
                 }
             }
-            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
+            PhonemizerFactory.BuildList();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
@@ -245,12 +244,12 @@ namespace OpenUtau.Core {
             }
         }
 
-        public void StartUndoGroup(bool deferValidate = false) {
+        public void StartUndoGroup(string? nameKey = null, bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup(deferValidate);
+            undoGroup = new UCommandGroup(nameKey, deferValidate);
             Log.Information("undoGroup started");
         }
 
@@ -323,6 +322,25 @@ namespace OpenUtau.Core {
             }
             undoQueue.AddToBack(group);
             ExecuteCmd(new PreRenderNotification());
+        }
+
+        public bool GetUndoState(out string? key) {
+            key = null;
+            if (undoQueue.Count > 0) {
+                key = undoQueue.Last().NameKey;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        public bool GetRedoState(out string? key) {
+            key = null;
+            if (redoQueue.Count > 0) {
+                key = redoQueue.Last().NameKey;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         # endregion

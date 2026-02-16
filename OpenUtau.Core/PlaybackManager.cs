@@ -196,6 +196,7 @@ namespace OpenUtau.Core {
 
         public void PlayTestSound() {
             masterMix = null;
+            PlayingMaster = false;
             AudioOutput.Stop();
             AudioOutput.Init(new SignalGenerator(44100, 1).Take(TimeSpan.FromSeconds(1)));
             AudioOutput.Play();

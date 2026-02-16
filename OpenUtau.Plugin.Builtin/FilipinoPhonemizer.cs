@@ -18,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] vowels = {
         "a", "e", "i", "o", "u", "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw"
         };
-        private readonly string[] consonants = "b,ch,d,dh,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,v,w,y,z,zh".Split(',');
+        private string[] consonants = "".Split(',');
         private static string[] affricate = "".Split(',');
         private static string[] fricative = "".Split(',');
         private static string[] aspirate = "".Split(',');
@@ -27,7 +27,7 @@ namespace OpenUtau.Plugin.Builtin {
         private static string[] nasal = "".Split(',');
         private static string[] stop = "".Split(',');
         private static string[] tap = "".Split(',');
-        private static Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
+        private Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "";

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using Classic;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using Serilog;
+//using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese presamp Phonemizer", "JA VCV & CVVC", "Maiko", language: "JA")]
@@ -356,13 +356,11 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (otos.Count > 0) {
-                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
-                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
-                    return true;
-                } else {
+                oto = otos.FirstOrDefault(oto => oto.IsColorMatch(color));
+                if (oto == null) {
                     oto = otos.First();
-                    return true;
                 }
+                return true;
             }
             return false;
         }
@@ -383,8 +381,8 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (otos.Count > 0) {
-                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
-                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                oto = otos.FirstOrDefault(oto => oto.IsColorMatch(color));
+                if (oto != null) {
                     if (track.VoiceColorExp.options.Contains(color)) {
                         colorIndex = Array.IndexOf(track.VoiceColorExp.options, color);
                     }

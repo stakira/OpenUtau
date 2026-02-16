@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using NAudio.Wave;
+using OpenUtau.Audio;
 using OpenUtau.Core.Util;
 
-namespace OpenUtau.Audio {
+namespace OpenUtau.App {
 #if !WINDOWS
     public class NAudioOutput : DummyAudioOutput { }
 #else
@@ -11,7 +12,7 @@ namespace OpenUtau.Audio {
         const int Channels = 2;
 
         private readonly object lockObj = new object();
-        private WaveOutEvent waveOutEvent;
+        private WaveOutEvent? waveOutEvent;
         private int deviceNumber;
 
         public NAudioOutput() {

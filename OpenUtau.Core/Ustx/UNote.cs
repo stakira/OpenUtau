@@ -171,7 +171,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out UExpression trackExp);
+            track.TryGetExpDescriptor(project, abbr, out var descriptor);
             var list = new List<Tuple<float, bool>>();
 
             if (phonemeIndexes != null && phonemeIndexes.Length > 0) {
@@ -185,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
                         if (phonemizerExp != null) {
                             list.Add(Tuple.Create(phonemizerExp.value, false));
                         } else {
-                            list.Add(Tuple.Create(trackExp.value, false));
+                            list.Add(Tuple.Create(descriptor.CustomDefaultValue, false));
                         }
                     }
                 }
@@ -218,7 +218,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void SetExpression(UProject project, UTrack track, string abbr, float?[] values) {
-            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
+            if (!track.TryGetExpDescriptor(project, abbr, out var descriptor)) {
                 return;
             }
             if (values.Length == 0) {
@@ -240,7 +240,7 @@ namespace OpenUtau.Core.Ustx {
                         continue;
                     }
 
-                    phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                    phonemeExpressions.Add(new UExpression(descriptor) {
                         index = i,
                         value = (float)value,
                     });
