@@ -22,9 +22,11 @@
         <StackPanel.Styles>
           <Style Selector="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="LineHeight" Value="22"/>
           </Style>
           <Style Selector="Button">
             <Setter Property="Foreground" Value="Blue" />
+            <Setter Property="Margin" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="BorderThickness" Value="0" />

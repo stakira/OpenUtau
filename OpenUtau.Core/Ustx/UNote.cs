@@ -20,11 +20,16 @@ namespace OpenUtau.Core.Ustx {
         public string lyric = NotePresets.Default.DefaultLyric;
         public UPitch pitch;
         public UVibrato vibrato;
+        public int tuning;
 
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public int End => position + duration;
+        /// <summary>
+        /// The final tone, taking tuning into consideration
+        /// </summary>
+        [YamlIgnore] public float AdjustedTone => tone + tuning / 100f;
 
         /// <summary>
         /// Position of the note in milliseconds, relative to the beginning of the project.
@@ -100,7 +105,7 @@ namespace OpenUtau.Core.Ustx {
             }
             if (pitch.snapFirst) {
                 if (Prev != null && Prev.End == position) {
-                    pitch.data[0].Y = (Prev.tone - tone) * 10;
+                    pitch.data[0].Y = (Prev.AdjustedTone - AdjustedTone) * 10;
                 } else {
                     pitch.data[0].Y = 0;
                 }
@@ -166,7 +171,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out UExpression trackExp);
+            track.TryGetExpDescriptor(project, abbr, out var descriptor);
             var list = new List<Tuple<float, bool>>();
 
             if (phonemeIndexes != null && phonemeIndexes.Length > 0) {
@@ -180,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
                         if (phonemizerExp != null) {
                             list.Add(Tuple.Create(phonemizerExp.value, false));
                         } else {
-                            list.Add(Tuple.Create(trackExp.value, false));
+                            list.Add(Tuple.Create(descriptor.CustomDefaultValue, false));
                         }
                     }
                 }
@@ -213,7 +218,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void SetExpression(UProject project, UTrack track, string abbr, float?[] values) {
-            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
+            if (!track.TryGetExpDescriptor(project, abbr, out var descriptor)) {
                 return;
             }
             if (values.Length == 0) {
@@ -235,7 +240,7 @@ namespace OpenUtau.Core.Ustx {
                         continue;
                     }
 
-                    phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                    phonemeExpressions.Add(new UExpression(descriptor) {
                         index = i,
                         value = (float)value,
                     });
@@ -251,6 +256,7 @@ namespace OpenUtau.Core.Ustx {
                 lyric = lyric,
                 pitch = pitch.Clone(),
                 vibrato = vibrato.Clone(),
+                tuning = tuning,
                 phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
                 phonemeIndexes = (int[])phonemeIndexes.Clone()
@@ -340,7 +346,7 @@ namespace OpenUtau.Core.Ustx {
             } else if (nPos > nOutPos) {
                 y *= (1f - nPos) / nOut;
             }
-            return new Vector2(note.position + note.duration * nPos, note.tone + y / 100f);
+            return new Vector2(note.position + note.duration * nPos, note.AdjustedTone + y / 100f);
         }
         /// <summary>
         /// Evaluate the volume of the position on the vibrato curve.

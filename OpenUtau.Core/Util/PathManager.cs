@@ -16,7 +16,7 @@ namespace OpenUtau.Core {
         public PathManager() {
             RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
-                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 DataPath = Path.Combine(userHome, "Library", "OpenUtau");
                 CachePath = Path.Combine(userHome, "Library", "Caches", "OpenUtau");
                 HomePathIsAscii = true;
@@ -28,7 +28,7 @@ namespace OpenUtau.Core {
                     }
                 } catch { }
             } else if (OS.IsLinux()) {
-                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
                 if (string.IsNullOrEmpty(dataHome)) {
                     dataHome = Path.Combine(userHome, ".local", "share");
@@ -83,6 +83,7 @@ namespace OpenUtau.Core {
         public string LogsPath => Path.Combine(DataPath, "Logs");
         public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
+        public string ThemesPath => Path.Combine(DataPath, "Themes");
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
 

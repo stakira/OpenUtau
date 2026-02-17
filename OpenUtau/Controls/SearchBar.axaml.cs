@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -10,6 +10,7 @@ namespace OpenUtau.App.Controls {
     public partial class SearchBar : UserControl {
         SearchNoteViewModel? viewModel;
         private DispatcherTimer? focusTimer;
+        private bool noteMode = true;
 
         public SearchBar() {
             InitializeComponent();
@@ -19,12 +20,13 @@ namespace OpenUtau.App.Controls {
         public void Show(NotesViewModel notesViewModel) {
             viewModel = new SearchNoteViewModel(notesViewModel);
             DataContext = viewModel;
+            viewModel.NoteMode = noteMode;
             //If there is a note selected, use its lyric as the search word
             if (notesViewModel.Part != null && notesViewModel.Part.notes.Count > 0) {
                 if (notesViewModel.Selection.Count > 0) {
                     if (notesViewModel.Selection.FirstOrDefault() is UNote note) {
                         if (!string.IsNullOrEmpty(note.lyric)) {
-                            (viewModel).SearchWord = note.lyric;
+                            viewModel.SearchWord = note.lyric;
                         }
                     }
                 }
@@ -38,7 +40,7 @@ namespace OpenUtau.App.Controls {
             focusTimer.Start();
         }
 
-        private void FocusTimer_Tick(object? sender, System.EventArgs e) {
+        private void FocusTimer_Tick(object? sender, EventArgs e) {
             box.Focus();
             if (focusTimer != null) {
                 focusTimer.Tick -= FocusTimer_Tick;
@@ -49,6 +51,9 @@ namespace OpenUtau.App.Controls {
 
         public void OnClose(object sender, RoutedEventArgs args) {
             IsVisible = false;
+            if (viewModel != null) {
+                noteMode = viewModel.NoteMode;
+            }
         }
 
         private void Box_GotFocus(object? sender, GotFocusEventArgs e) {

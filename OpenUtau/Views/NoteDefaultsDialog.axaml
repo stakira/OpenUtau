@@ -7,22 +7,24 @@
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
         x:Class="OpenUtau.App.Views.NoteDefaultsDialog"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource notedefaults.caption}"
+        Title="{DynamicResource pianoroll.menu.notedefaults}"
         WindowStartupLocation="CenterScreen"
-        MinWidth="600" MinHeight="500" Width="600" Height="500">
+        MinWidth="600" MinHeight="530" Width="600" Height="530">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
-  <Design.DataContext>
-  </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
       <StackPanel Margin="5">
           <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.lyric}">
               <StackPanel>
                   <Grid ColumnDefinitions="173,20,*">
-                      <Label Content="{DynamicResource notedefaults.lyric.defaultlyric}"/>
+                      <Label Content="{DynamicResource notedefaults.lyric.enter}"/>
                       <TextBox Grid.Column="2" Text="{Binding DefaultLyric}" />
+                  </Grid>
+                  <Grid ColumnDefinitions="173,20,*">
+                      <Label Content="{DynamicResource notedefaults.lyric.knife}"/>
+                      <TextBox Grid.Column="2" Text="{Binding SplittedLyric}" />
                   </Grid>
               </StackPanel>
           </HeaderedContentControl>

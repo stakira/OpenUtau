@@ -17,6 +17,8 @@ namespace OpenUtau.App.ViewModels {
         public string Title { get => ThemeManager.GetString("noteproperty") + " (" + selectedNotes.Count + " notes)"; }
         [Reactive] public string Lyric { get; set; } = string.Empty;
         [Reactive] public string Tone { get; set; } = string.Empty;
+        [Reactive] public int Tuning { get; set; }
+        [Reactive] public FontWeight TuningFontWeight { get; set; } = FontWeight.Normal;
         [Reactive] public float PortamentoLength { get; set; }
         [Reactive] public float PortamentoStart { get; set; }
         [Reactive] public bool VibratoEnable { get; set; }
@@ -63,7 +65,7 @@ namespace OpenUtau.App.ViewModels {
                         PortamentoLength = portamentoPreset.PortamentoLength;
                         PortamentoStart = portamentoPreset.PortamentoStart;
 
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
                         PanelControlPressed = true;
                         SetNoteParams("PortamentoStart", portamentoPreset.PortamentoStart);
                         PanelControlPressed = false;
@@ -74,7 +76,7 @@ namespace OpenUtau.App.ViewModels {
                 .WhereNotNull()
                 .Subscribe(vibratoPreset => {
                     if (vibratoPreset != null) {
-                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.StartUndoGroup("command.vibrato.edit");
                         PanelControlPressed = true;
                         SetNoteParams("VibratoLength", Math.Max(0, Math.Min(100, vibratoPreset.VibratoLength)));
                         SetNoteParams("VibratoPeriod", Math.Max(5, Math.Min(500, vibratoPreset.VibratoPeriod)));
@@ -120,6 +122,8 @@ namespace OpenUtau.App.ViewModels {
 
                 Lyric = note.lyric;
                 Tone = MusicMath.GetToneName(note.tone);
+                Tuning = note.tuning;
+                SetTuningFontWeight();
                 if (note.pitch.data.Count == 2) {
                     PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
                     PortamentoStart = note.pitch.data[0].X;
@@ -140,6 +144,8 @@ namespace OpenUtau.App.ViewModels {
                 IsNoteSelected = false;
                 Lyric = string.Empty;
                 Tone = string.Empty;
+                Tuning = 0;
+                SetTuningFontWeight();
                 PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                 PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
                 VibratoEnable = false;
@@ -163,9 +169,8 @@ namespace OpenUtau.App.ViewModels {
             if (part != null && part is UVoicePart) {
                 this.Part = part as UVoicePart;
                 var track = DocManager.Inst.Project.tracks[part.trackNo];
-
-                foreach (KeyValuePair<string, UExpressionDescriptor> pair in DocManager.Inst.Project.expressions) {
-                    if (track.TryGetExpDescriptor(DocManager.Inst.Project, pair.Key, out var descriptor) && descriptor.type != UExpressionType.Curve) {
+                foreach (var descriptor in track.GetSupportedExps(DocManager.Inst.Project)) {
+                    if (descriptor.type != UExpressionType.Curve) {
                         var viewModel = new NotePropertyExpViewModel(descriptor, this);
                         if (descriptor.abbr == Ustx.CLR) {
                             if (track.VoiceColorExp != null && track.VoiceColorExp.options.Length > 0) {
@@ -237,36 +242,50 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is MoveNoteCommand) {
                     Tone = MusicMath.GetToneName(note.tone);
                     this.RaisePropertyChanged(nameof(Tone));
-                } else if (cmd is VibratoLengthCommand) {
-                    if (note.vibrato.length > 0) {
-                        VibratoEnable = true;
-                    } else {
-                        VibratoEnable = false;
+                } else if (cmd is ChangeNoteTuningCommand) {
+                    Tuning = note.tuning;
+                    SetTuningFontWeight();
+                    this.RaisePropertyChanged(nameof(Tuning));
+                    this.RaisePropertyChanged(nameof(TuningFontWeight));
+                } else if (cmd is VibratoCommand) {
+                    if (cmd is VibratoLengthCommand || cmd is SetVibratoCommand) {
+                        if (note.vibrato.length > 0) {
+                            VibratoEnable = true;
+                        } else {
+                            VibratoEnable = false;
+                        }
+                        VibratoLength = note.vibrato.length;
+                        this.RaisePropertyChanged(nameof(VibratoEnable));
+                        this.RaisePropertyChanged(nameof(VibratoLength));
                     }
-                    VibratoLength = note.vibrato.length;
-                    this.RaisePropertyChanged(nameof(VibratoEnable));
-                    this.RaisePropertyChanged(nameof(VibratoLength));
-                } else if (cmd is VibratoFadeInCommand) {
-                    VibratoIn = note.vibrato.@in;
-                    this.RaisePropertyChanged(nameof(VibratoIn));
-                } else if (cmd is VibratoFadeOutCommand) {
-                    VibratoOut = note.vibrato.@out;
-                    this.RaisePropertyChanged(nameof(VibratoOut));
-                } else if (cmd is VibratoDepthCommand) {
-                    VibratoDepth = note.vibrato.depth;
-                    this.RaisePropertyChanged(nameof(VibratoDepth));
-                } else if (cmd is VibratoPeriodCommand) {
-                    VibratoPeriod = note.vibrato.period;
-                    this.RaisePropertyChanged(nameof(VibratoPeriod));
-                } else if (cmd is VibratoShiftCommand) {
-                    VibratoShift = note.vibrato.shift;
-                    this.RaisePropertyChanged(nameof(VibratoShift));
-                } else if (cmd is VibratoDriftCommand) {
-                    VibratoDrift = note.vibrato.drift;
-                    this.RaisePropertyChanged(nameof(VibratoDrift));
-                } else if (cmd is VibratoVolumeLinkCommand) {
-                    VibratoVolLink = note.vibrato.volLink;
-                    this.RaisePropertyChanged(nameof(VibratoVolLink));
+                    if (cmd is VibratoFadeInCommand || cmd is SetVibratoCommand) {
+                        VibratoIn = note.vibrato.@in;
+                        this.RaisePropertyChanged(nameof(VibratoIn));
+                    }
+                    if (cmd is VibratoFadeOutCommand || cmd is SetVibratoCommand) {
+                        VibratoOut = note.vibrato.@out;
+                        this.RaisePropertyChanged(nameof(VibratoOut));
+                    }
+                    if (cmd is VibratoDepthCommand || cmd is SetVibratoCommand) {
+                        VibratoDepth = note.vibrato.depth;
+                        this.RaisePropertyChanged(nameof(VibratoDepth));
+                    }
+                    if (cmd is VibratoPeriodCommand || cmd is SetVibratoCommand) {
+                        VibratoPeriod = note.vibrato.period;
+                        this.RaisePropertyChanged(nameof(VibratoPeriod));
+                    }
+                    if (cmd is VibratoShiftCommand || cmd is SetVibratoCommand) {
+                        VibratoShift = note.vibrato.shift;
+                        this.RaisePropertyChanged(nameof(VibratoShift));
+                    }
+                    if (cmd is VibratoDriftCommand || cmd is SetVibratoCommand) {
+                        VibratoDrift = note.vibrato.drift;
+                        this.RaisePropertyChanged(nameof(VibratoDrift));
+                    }
+                    if (cmd is VibratoVolumeLinkCommand || cmd is SetVibratoCommand) {
+                        VibratoVolLink = note.vibrato.volLink;
+                        this.RaisePropertyChanged(nameof(VibratoVolLink));
+                    }
                 }
             } else if (cmd is ExpCommand) {
                 if (cmd is PitchExpCommand) {
@@ -288,6 +307,14 @@ namespace OpenUtau.App.ViewModels {
             }
         }
         #endregion
+
+        private void SetTuningFontWeight() {
+            if (selectedNotes.Any(note => note.tuning != 0)) {
+                TuningFontWeight = FontWeight.Bold;
+            } else {
+                TuningFontWeight = FontWeight.Normal;
+            }
+        }
 
         // panel -> note
         public void SetNoteParams(string tag, object? obj) {
@@ -325,6 +352,16 @@ namespace OpenUtau.App.ViewModels {
                         var note = selectedNotes.FirstOrDefault();
                         Tone = note != null ? MusicMath.GetToneName(note.tone) : string.Empty;
                         this.RaisePropertyChanged(nameof(Tone));
+                    }
+                } else if (tag == "Tuning") {
+                    int value;
+                    if (obj != null && (obj is int i || int.TryParse(obj.ToString(), out i)) && i >= -100 && i <= 100) {
+                        value = i;
+                    } else {
+                        value = 0;
+                    }
+                    foreach (UNote note in selectedNotes) {
+                        DocManager.Inst.ExecuteCmd(new ChangeNoteTuningCommand(Part, note, value));
                     }
                 } else if (tag == "PortamentoLength") {
                     if (obj != null && (obj is float value || float.TryParse(obj.ToString(), out value)) && value >= 2 && value <= 320) {
@@ -443,7 +480,7 @@ namespace OpenUtau.App.ViewModels {
         }
         public void SetVibratoEnable() {
             if (Part != null && selectedNotes.Count > 0) {
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.vibrato.edit");
                 bool enable = VibratoEnable;
                 UNote first = selectedNotes.First();
 
@@ -470,7 +507,7 @@ namespace OpenUtau.App.ViewModels {
         public void SetNumericalExpressionsChanges(string abbr, float? value) {
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.CustomDefaultValue == value) {
                     value = null;
                 }
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
@@ -479,10 +516,10 @@ namespace OpenUtau.App.ViewModels {
         public void SetOptionalExpressionsChanges(string abbr, int? value) {
             if (!NoteLoading && Part != null && selectedNotes.Count > 0) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                if (track.TryGetExpression(DocManager.Inst.Project, abbr, out UExpression expression) && expression.value == value) {
+                if (track.TryGetExpDescriptor(DocManager.Inst.Project, abbr, out UExpressionDescriptor descriptor) && descriptor.defaultValue == value) {
                     value = null;
                 }
-                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.StartUndoGroup("command.exp.edit");
                 DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, abbr, value));
                 DocManager.Inst.EndUndoGroup();
             }
@@ -544,7 +581,7 @@ namespace OpenUtau.App.ViewModels {
 
         public NotePropertyExpViewModel(UExpressionDescriptor descriptor, NotePropertiesViewModel parent) {
             Name = descriptor.name;
-            defaultValue = descriptor.defaultValue;
+            defaultValue = descriptor.CustomDefaultValue;
             abbr = descriptor.abbr;
             if (descriptor.type == UExpressionType.Numerical) {
                 IsNumerical = true;

@@ -1,4 +1,5 @@
 ﻿using OpenUtau.Core.Ustx;
+using SharpCompress;
 
 namespace OpenUtau.Core {
     public abstract class PartCommand : UCommand {
@@ -50,14 +51,45 @@ namespace OpenUtau.Core {
     }
 
     public class ResizePartCommand : PartCommand {
-        readonly int newDur, oldDur;
-        public ResizePartCommand(UProject project, UPart part, int duration) : base(project, part) {
-            newDur = duration;
-            oldDur = part.Duration;
+        readonly int deltaDur;
+        readonly bool fromStart;
+        public ResizePartCommand(UProject project, UPart part, int deltaDur, bool fromStart) : base(project, part) {
+            this.deltaDur = deltaDur;
+            this.fromStart = fromStart;
         }
         public override string ToString() => "Change parts duration";
-        public override void Execute() => part.Duration = newDur;
-        public override void Unexecute() => part.Duration = oldDur;
+        public override void Execute() {
+            if (fromStart) {
+                part.position -= deltaDur;
+                part.Duration += deltaDur;
+                if (part is UVoicePart voicePart) {
+                    voicePart.notes.ForEach(note => note.position += deltaDur);
+                    foreach (var curve in voicePart.curves) {
+                        for (var i = 0; i < curve.xs.Count; i++) {
+                            curve.xs[i] += deltaDur;
+                        }
+                    }
+                }
+            } else {
+                part.Duration += deltaDur;
+            }
+        }
+        public override void Unexecute() {
+            if (fromStart) {
+                part.position += deltaDur;
+                part.Duration -= deltaDur;
+                if (part is UVoicePart voicePart) {
+                    voicePart.notes.ForEach(note => note.position -= deltaDur);
+                    foreach (var curve in voicePart.curves) {
+                        for (var i = 0; i < curve.xs.Count; i++) {
+                            curve.xs[i] -= deltaDur;
+                        }
+                    }
+                }
+            } else {
+                part.Duration -= deltaDur;
+            }
+        }
     }
 
     public class RenamePartCommand : PartCommand {

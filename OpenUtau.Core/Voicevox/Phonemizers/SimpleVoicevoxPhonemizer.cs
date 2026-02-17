@@ -12,31 +12,24 @@ namespace Voicevox {
         public override void SetSinger(USinger singer) {
             this.singer = singer as VoicevoxSinger;
             if (this.singer != null) {
-                this.singer.voicevoxConfig.Tag = this.Tag;
                 VoicevoxUtils.Loaddic(this.singer);
             }
-        }
-
-        protected bool IsSyllableVowelExtensionNote(Note note) {
-            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*") || note.lyric.StartsWith("+") || note.lyric.StartsWith("-");
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             List<Phoneme> phonemes = new List<Phoneme>();
             for (int i = 0; i < notes.Length; i++) {
-                var currentLyric = notes[i].lyric.Normalize(); //measures for Unicode
-
-                Note[][] simplenotes = new Note[1][];
-                var lyricList = notes[i].lyric.Split(" ");
+                var currentLyric = notes[i].lyric.Normalize();
+                var lyricList = currentLyric.Split(" ");
                 if (lyricList.Length > 1) {
-                    notes[i].lyric = lyricList[1];
+                    currentLyric = lyricList[1];
                 }
-                if (!IsSyllableVowelExtensionNote(notes[i])) {
+                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(notes[i].lyric)) {
                     string val = "error";
-                    if (VoicevoxUtils.phoneme_List.paus.TryGetValue(notes[i].lyric, out string pau)) {
+                    if (VoicevoxUtils.TryGetPau(notes[i].lyric, out string pau)) {
                         val = pau;
                     } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric)) {
-                        val = notes[i].lyric;
+                        val = currentLyric;
                     } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
                         val = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric);
                     }

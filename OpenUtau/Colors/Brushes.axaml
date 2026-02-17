@@ -84,6 +84,12 @@
                    Color="{DynamicResource BarNumberColor}" />
   <SolidColorBrush x:Key="FinalPitchBrush"
                    Color="{DynamicResource FinalPitchColor}" />
+  <SolidColorBrush x:Key="RealCurveStrokeBrush"
+                   Color="{DynamicResource AccentColor1}" Opacity="0.25" />
+  <LinearGradientBrush x:Key="RealCurveFillBrush" StartPoint="0%,0%" EndPoint="0%,100%" Opacity="0.25">
+      <GradientStop Color="{DynamicResource AccentColor1}" Offset="0.0"/>
+      <GradientStop Color="Transparent" Offset="1.0"/>
+  </LinearGradientBrush>
   <SolidColorBrush x:Key="TrackBackgroundAltBrush"
                    Color="{DynamicResource TrackBackgroundAltColor}"/>
   <SolidColorBrush x:Key="NeutralAccentBrush"
@@ -116,6 +122,8 @@
                    Color="#1E88E5" />
   <SolidColorBrush x:Key="SelectedTrackCenterKeyBrush"
                    Color="#C8E5FC" />
+  <SolidColorBrush x:Key="WarningBrush"
+                   Color="{DynamicResource WarningColor}" />
 
   <LinearGradientBrush x:Key="WhiteKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
     <LinearGradientBrush.GradientStops>

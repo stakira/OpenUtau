@@ -32,7 +32,12 @@ namespace OpenUtau.Core.DiffSinger {
                 model = File.ReadAllBytes(Path.Combine(Location, config.model));
             }
             catch (Exception ex) {
-                throw new MessageCustomizableException($"Error loading vocoder {name}", $"<translate:errors.diffsinger.downloadvocoder1>{name}<translate:errors.diffsinger.downloadvocoder2>https://github.com/xunmengshe/OpenUtau/wiki/Vocoders", new Exception($"Error loading vocoder {name}"));
+                throw new MessageCustomizableException(
+                    $"Error loading vocoder \"{name}\"",
+                    $"<translate:errors.diffsinger.downloadvocoder>",
+                    new Exception($"Error loading vocoder \"{name}\""),
+                    true,
+                    new string[] { name, "https://github.com/xunmengshe/OpenUtau/wiki/Vocoders" });
             }
             hash = XXH64.DigestOf(model);
             session = Onnx.getInferenceSession(model);

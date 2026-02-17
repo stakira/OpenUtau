@@ -38,6 +38,9 @@ namespace OpenUtau.App {
         public static IPen BarNumberPen = new Pen(Brushes.White);
         public static IBrush FinalPitchBrush = Brushes.Gray;
         public static IPen FinalPitchPen = new Pen(Brushes.Gray);
+        public static IBrush RealCurveFillBrush = Brushes.Gray;
+        public static IBrush RealCurveStrokeBrush = Brushes.Gray;
+        public static IPen RealCurvePen = new Pen(Brushes.Gray, 1D, DashStyle.Dash);
         public static IBrush WhiteKeyBrush = Brushes.White;
         public static IBrush WhiteKeyNameBrush = Brushes.Black;
         public static IBrush CenterKeyBrush = Brushes.White;
@@ -71,6 +74,11 @@ namespace OpenUtau.App {
                 new TrackColor("Blue2", "#3949AB", "#283593", "#5C6BC0", "#AEB5E0"),
                 new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#AB47BC", "#D5A3DE"),
             };
+
+        public static List<string> GetAvailableThemes() {
+            Colors.CustomTheme.ListThemes();
+            return ["Light", "Dark", ..Colors.CustomTheme.Themes.Select(v => v.Key)];
+        }
 
         public static void LoadTheme() {
             if (Application.Current == null) {
@@ -135,6 +143,13 @@ namespace OpenUtau.App {
             if (resDict.TryGetResource("FinalPitchBrush", themeVariant, out outVar)) {
                 FinalPitchBrush = (IBrush)outVar!;
                 FinalPitchPen = new Pen(FinalPitchBrush, 1);
+            }
+            if (resDict.TryGetResource("RealCurveFillBrush", themeVariant, out outVar)) {
+                RealCurveFillBrush = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("RealCurveStrokeBrush", themeVariant, out outVar)) {
+                RealCurveStrokeBrush = (IBrush)outVar!;
+                RealCurvePen = new Pen(RealCurveStrokeBrush, 2, DashStyle.Dash);
             }
             SetKeyboardBrush();
             TextLayoutCache.Clear();
@@ -251,14 +266,8 @@ namespace OpenUtau.App {
         }
 
         public static string GetString(string key) {
-            if (Application.Current == null) {
-                return key;
-            }
-            IResourceDictionary resDict = Application.Current.Resources;
-            if (resDict.TryGetResource(key, ThemeVariant.Default, out var outVar) && outVar is string s) {
-                return s;
-            }
-            return key;
+            TryGetString(key, out string value);
+            return value;
         }
 
         public static bool TryGetString(string key, out string value) {

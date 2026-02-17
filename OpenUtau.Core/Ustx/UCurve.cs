@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SharpCompress;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -11,6 +12,8 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public UExpressionDescriptor descriptor;
         public List<int> xs = new List<int>();
         public List<int> ys = new List<int>();
+        [YamlIgnore] public List<int> realXs = new List<int>();
+        [YamlIgnore] public List<int> realYs = new List<int>();
         public string abbr;
 
         [YamlIgnore] public bool IsEmpty => xs.Count == 0 || ys.All(y => y == 0);
@@ -156,6 +159,26 @@ namespace OpenUtau.Core.Ustx {
             double area = 0.5 * Math.Abs(x1 * (y2 - y) + x2 * (y - y1) + x * (y1 - y2));
             double bottom = Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
             return area / bottom * 2;
+        }
+        public static List<UCurve> MergeCurves(params List<UCurve>[] merging) {
+            var merged = new Dictionary<UExpressionDescriptor, UCurve>();
+            merging.ForEach(curves => {
+                foreach (var curve in curves) {
+                    if (curve.descriptor == null) continue;
+                    if (!merged.TryGetValue(curve.descriptor, out var existing)) {
+                        merged[curve.descriptor] = curve.Clone();
+                    } else {
+                        // Merge xs and ys, keeping them sorted by xs
+                        var xs = existing.xs.Concat(curve.xs).ToList();
+                        var ys = existing.ys.Concat(curve.ys).ToList();
+                        var zipped = xs.Zip(ys, (x, y) => (x, y)).ToList();
+                        zipped.Sort((a, b) => a.x.CompareTo(b.x));
+                        existing.xs = zipped.Select(z => z.x).ToList();
+                        existing.ys = zipped.Select(z => z.y).ToList();
+                    }
+                }
+            });
+            return merged.Values.ToList();
         }
     }
 }

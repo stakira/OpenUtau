@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
@@ -18,11 +19,12 @@ namespace OpenUtau.App.Views {
                 LogoTypeLight.IsVisible = true;
                 LogoTypeDark.IsVisible = false;
             }
+            this.Cursor = new Cursor(StandardCursorType.AppStarting);
             this.Opened += SplashWindow_Opened;
         }
 
         private void SplashWindow_Opened(object? sender, EventArgs e) {
-            if (Screens.Primary == null) {
+            if (Screens.Primary == null && Screens.ScreenCount == 0) {
                 return;
             }
 
@@ -51,6 +53,7 @@ namespace OpenUtau.App.Views {
                     mainWindow.Show();
                     desktop.MainWindow = mainWindow;
                     mainWindow.InitProject();
+                    LoadingWindow.InitializeLoadingWindow();
                     Close();
                 }
             }, CancellationToken.None, TaskContinuationOptions.None, mainScheduler);
@@ -66,7 +69,7 @@ namespace OpenUtau.App.Views {
                 }
             } else {
                 try {
-                    PlaybackManager.Inst.AudioOutput = new Audio.NAudioOutput();
+                    PlaybackManager.Inst.AudioOutput = new NAudioOutput();
                 } catch (Exception e2) {
                     Log.Error(e2, "Failed to init NAudio");
                 }

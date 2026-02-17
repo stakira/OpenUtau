@@ -75,6 +75,11 @@ namespace OpenUtau.App.Controls {
         private void SetPosition() {
             Canvas.SetLeft(this, 0);
             Canvas.SetTop(this, Offset.Y + (track?.TrackNo ?? 0) * trackHeight);
+            if (ViewModel != null) {
+                ViewModel.IsSingerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 3;
+                ViewModel.IsPhonemizerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 4;
+                ViewModel.IsRendererVisible = trackHeight >= ViewConstants.TrackHeightDelta * 5;
+            }
         }
 
         void TrackNameButtonClicked(object sender, RoutedEventArgs args) {
@@ -83,11 +88,11 @@ namespace OpenUtau.App.Controls {
         }
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
-            if (SingerManager.Inst.Singers.Count > 0) {
+            try {
                 ViewModel?.RefreshSingers();
-                SingersMenu.Open();
-            } else {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("There is no singer."));
+                SingersMenu.Open((Control)sender);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
             args.Handled = true;
         }
@@ -97,10 +102,8 @@ namespace OpenUtau.App.Controls {
         }
 
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
-            if (DocManager.Inst.PhonemizerFactories.Length > 0) {
-                ViewModel?.RefreshPhonemizers();
-                PhonemizersMenu.Open();
-            }
+            ViewModel?.RefreshPhonemizers();
+            PhonemizersMenu.Open((Control)sender);
             args.Handled = true;
         }
 
@@ -111,7 +114,7 @@ namespace OpenUtau.App.Controls {
         void RendererButtonClicked(object sender, RoutedEventArgs args) {
             ViewModel?.RefreshRenderers();
             if (ViewModel?.RenderersMenuItems?.Count > 0) {
-                RenderersMenu.Open();
+                RenderersMenu.Open((Control)sender);
             }
             args.Handled = true;
         }

@@ -7,7 +7,7 @@ namespace OpenUtau.Core.DiffSinger
     public class DiffSingerPortuguesePhonemizer : DiffSingerG2pPhonemizer
     {
         protected override string GetDictionaryName()=>"dsdict-pt.yaml";
-        protected override string GetLangCode()=>"pt";
+        public override string GetLangCode()=>"pt";
         protected override IG2p LoadBaseG2p() => new PortugueseG2p();
         protected override string[] GetBaseG2pVowels() => new string[] {
             "E", "O", "a", "a~", "e", "e~", "i", "i~", "o", "o~", "u", "u~"

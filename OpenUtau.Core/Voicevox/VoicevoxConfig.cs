@@ -8,7 +8,6 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 /*
  * This source code is partially based on the VOICEVOX engine.
@@ -32,27 +31,30 @@ namespace OpenUtau.Core.Voicevox {
         public string base_singer_name = string.Empty;
         public string base_singer_style_name = string.Empty;
 
-        //So that the renderer can distinguish between phonemizers.
-        public string Tag = "DEFAULT";
-
         public static VoicevoxConfig Load(USinger singer) {
             try {
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/engine_manifest" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Response was incorrect. : {jObj}");
+                    var errorMessage = $"Response was incorrect. : {jObj}";
+                    Log.Error(errorMessage);
+                    throw new VoicevoxException(errorMessage);
                 }
                 var manifest = jObj.ToObject<Engine_manifest>();
                 manifest.SaveLicenses(singer.Location);
-            } catch(Exception e) {
-                Log.Error($"Could not load Licenses.:{e}");
+            } catch (Exception e) {
+                var errorMessage = $"Could not load Licenses.:{e}";
+                Log.Error(errorMessage);
+                throw new VoicevoxException(errorMessage, e);
             }
             try {
 
                 var response = VoicevoxClient.Inst.SendRequest(new VoicevoxURL() { method = "GET", path = "/singers" });
                 var jObj = JObject.Parse(response.Item1);
                 if (jObj.ContainsKey("detail")) {
-                    Log.Error($"Response was incorrect. : {jObj}");
+                    var errorMessage = $"Response was incorrect. : {jObj}";
+                    Log.Error(errorMessage);
+                    throw new VoicevoxException(errorMessage);
                 }
                 var configs = jObj["json"].ToObject<List<RawVoicevoxConfig>>();
                 var parentDirectory = Directory.GetParent(singer.Location).ToString();
@@ -81,8 +83,10 @@ namespace OpenUtau.Core.Voicevox {
                     vvList.Add(voicevoxConfig);
                 }
                 return vvList.Where(vv => vv.name.Equals(singer.Name)).ToList()[0];
-            } catch {
-                Log.Error("Could not load VOICEVOX singer.");
+            } catch (Exception e) {
+                var errorMessage = "Could not load VOICEVOX singer.";
+                Log.Error(errorMessage);
+                throw new VoicevoxException(errorMessage, e);
             }
 
             return new VoicevoxConfig();

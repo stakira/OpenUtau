@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "failed to load prefs-default.json");
+            }
             Save();
         }
 
@@ -118,12 +133,8 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
-            public const int MidiWidth = 1024;
-            public const int MidiHeight = 768;
-            public int MainWidth = 1024;
-            public int MainHeight = 768;
-            public bool MainMaximized;
-            public bool MidiMaximized;
+            public WindowSize MainWindowSize = new WindowSize();
+            public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
             public string PlaybackDevice = string.Empty;
@@ -131,7 +142,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public string ThemeName = "Light";
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
@@ -144,7 +155,10 @@ namespace OpenUtau.Core.Util {
             public int OnnxGpu = 0;
             public double DiffSingerDepth = 1.0;
             public int DiffSingerSteps = 20;
+            public int DiffSingerStepsVariance = 20;
+            public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
+            public bool DiffSingerLangCodeHide = false;
             public bool SkipRenderingMutedTracks = false;
             public string Language = string.Empty;
             public string? SortingOrder = null;
@@ -173,7 +187,8 @@ namespace OpenUtau.Core.Util {
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
-            public bool ShowNoteParams = false;
+            public bool ShowExpressions = true;
+            public bool ShowNoteParams = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
             public string LyricHelper = string.Empty;
@@ -185,7 +200,7 @@ namespace OpenUtau.Core.Util {
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
-            public int ImportTempo = 0;
+            public string WinePath = string.Empty;
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
@@ -193,8 +208,40 @@ namespace OpenUtau.Core.Util {
             public bool LockUnselectedNotesVibrato = true;
             public bool LockUnselectedNotesExpressions = true;
             public bool VoicebankPublishUseIgnore = true;
-            public string VoicebankPublishIgnores = "#Adobe Audition\n*.pkf\n\n#UTAU Engines\n*.ctspec\n*.d4c\n*.dio\n*.frc\n*.frt\n#*.frq\n*.harvest\n*.lessaudio\n*.llsm\n*.mrq\n*.pitchtier\n*.pkf\n*.platinum\n*.pmk\n*.star\n*.uspec\n*.vs4ufrq\n\n#UTAU related tools\n$read\n*.setParam-Scache\n*.lbp\n*.lbp.caches/*\n\n#OpenUtau\nerrors.txt\n*.sc.npz";
+            public string VoicebankPublishIgnores = @"#Adobe Audition
+*.pkf
+
+#UTAU Engines
+*.ctspec
+*.d4c
+*.dio
+*.frc
+*.frt
+#*.frq
+*.harvest
+*.lessaudio
+*.llsm
+*.mrq
+*.pitchtier
+*.pkf
+*.platinum
+*.pmk
+*.sc.npz
+*.star
+*.uspec
+*.vs4ufrq
+
+#UTAU related tools
+\$read
+*.setParam-Scache
+*.lbp
+*.lbp.caches/*
+
+#OpenUtau
+errors.txt
+";
             public string RecoveryPath = string.Empty;
+            public bool DetachPianoRoll = false;
         }
     }
 }

@@ -162,11 +162,17 @@ namespace OpenUtau.App.ViewModels {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.Install(archiveFilePath, SingerType);
-                } finally {
+
                     new Task(() => {
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("singersetup.succeeded")));
                         DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
                     }).Start(DocManager.Inst.MainScheduler);
+                } catch {
+                    new Task(() => {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("singersetup.failed")));
+                        DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                    }).Start(DocManager.Inst.MainScheduler);
+                    throw;
                 }
             });
         }

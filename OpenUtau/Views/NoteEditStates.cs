@@ -15,7 +15,8 @@ namespace OpenUtau.App.Views {
     class KeyboardPlayState {
         private readonly TrackBackground element;
         private readonly PianoRollViewModel vm;
-        private SineGen? sineGen;
+        private int activeTone;
+
         public KeyboardPlayState(TrackBackground element, PianoRollViewModel vm) {
             this.element = element;
             this.vm = vm;
@@ -23,19 +24,20 @@ namespace OpenUtau.App.Views {
         public void Begin(IPointer pointer, Point point) {
             pointer.Capture(element);
             var tone = vm.NotesViewModel.PointToTone(point);
-            sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+            activeTone = tone;
         }
         public void Update(IPointer pointer, Point point) {
             var tone = vm.NotesViewModel.PointToTone(point);
-            if (sineGen != null) {
-                sineGen.Freq = MusicMath.ToneToFreq(tone);
+            if (activeTone != tone) {
+                PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+                activeTone = tone;
             }
         }
         public void End(IPointer pointer, Point point) {
             pointer.Capture(null);
-            if (sineGen != null) {
-                sineGen.Stop = true;
-            }
+            PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
         }
     }
 
@@ -46,6 +48,8 @@ namespace OpenUtau.App.Views {
         public Point startPoint;
         public IValueTip valueTip;
         protected virtual bool ShowValueTip => true;
+        protected virtual string? commandNameKey => null;
+
         public NoteEditState(Control control, PianoRollViewModel vm, IValueTip valueTip) {
             this.control = control;
             this.vm = vm;
@@ -54,7 +58,7 @@ namespace OpenUtau.App.Views {
         public virtual void Begin(IPointer pointer, Point point) {
             pointer.Capture(control);
             startPoint = point;
-            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.StartUndoGroup(commandNameKey);
             if (ShowValueTip) {
                 valueTip.ShowValueTip();
             }
@@ -87,6 +91,7 @@ namespace OpenUtau.App.Views {
         protected override bool ShowValueTip => false;
         private int startTick;
         private int startTone;
+
         public NoteSelectionEditState(
             Control control,
             PianoRollViewModel vm,
@@ -135,6 +140,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         private double xOffset;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.note.move";
+
         public NoteMoveEditState(
             Control control,
             PianoRollViewModel vm,
@@ -208,8 +215,10 @@ namespace OpenUtau.App.Views {
 
     class NoteDrawEditState : NoteEditState {
         private UNote? note;
-        private SineGen? sineGen;
         private bool playTone;
+        private int activeTone;
+        protected override string? commandNameKey => "command.note.add";
+
         public NoteDrawEditState(
             Control control,
             PianoRollViewModel vm,
@@ -221,7 +230,12 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             note = vm.NotesViewModel.MaybeAddNote(point, false);
             if (note != null && playTone) {
-                sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
+                if (PlaybackManager.Inst.PlayingMaster) {
+                    // Stop playback if playing project
+                    PlaybackManager.Inst.StopPlayback();
+                }
+                activeTone = note.tone;
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
             }
         }
         public override void Update(IPointer pointer, Point point) {
@@ -235,8 +249,11 @@ namespace OpenUtau.App.Views {
                 return;
             }
             int tone = notesVm.PointToTone(point);
-            if (sineGen != null) {
-                sineGen.Freq = MusicMath.ToneToFreq(tone);
+            if (activeTone != tone) {
+                // Tone has changed
+                PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
+                PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(tone));
+                activeTone = tone;
             }
             int deltaTone = tone - note.tone;
             int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
@@ -271,9 +288,7 @@ namespace OpenUtau.App.Views {
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
-            if (sineGen != null) {
-                sineGen.Stop = true;
-            }
+            PlaybackManager.Inst.EndTone(MusicMath.ToneToFreq(activeTone));
         }
     }
 
@@ -282,6 +297,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote? neighborNote;
         public readonly bool resizeNeighbor;
         public readonly bool fromStart;
+        protected override string? commandNameKey => "command.note.edit";
+
         public NoteResizeEditState(
             Control control,
             PianoRollViewModel vm,
@@ -380,6 +397,8 @@ namespace OpenUtau.App.Views {
         private float oldVibFadeInTicks => oldVibFadeIn * oldVibLengthTicks / 100;
         private float oldVibFadeOutTicks => oldVibFadeOut * oldVibLengthTicks / 100;
         private float vibPeriod => note.vibrato.period;
+        protected override string? commandNameKey => "command.note.split";
+
         public NoteSplitEditState(
             Control control,
             PianoRollViewModel vm,
@@ -413,7 +432,7 @@ namespace OpenUtau.App.Views {
             if (newNote == null) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, "+"));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, NotePresets.Default.SplittedLyric));
         }
 
         public override void Update(IPointer pointer, Point point) {
@@ -436,7 +455,7 @@ namespace OpenUtau.App.Views {
             }
 
             int maxNoteTicks = (notesVm.IsSnapOn && snapUnit > 0)
-                ? (oldDur-1) / snapUnit * snapUnit
+                ? (oldDur - 1) / snapUnit * snapUnit
                 : oldDur - 15;
             int maxDelta = maxNoteTicks - note.duration;
 
@@ -490,6 +509,8 @@ namespace OpenUtau.App.Views {
         public override MouseButton MouseButton => mouseButton;
         private MouseButton mouseButton;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.note.delete";
+
         public NoteEraseEditState(
             Control control,
             PianoRollViewModel vm,
@@ -537,6 +558,8 @@ namespace OpenUtau.App.Views {
         private float y;
         private int index;
         private PitchPoint pitchPoint;
+        protected override string? commandNameKey => "command.pitch.editpoint";
+
         public PitchPointEditState(
             Control control,
             PianoRollViewModel vm,
@@ -599,9 +622,9 @@ namespace OpenUtau.App.Views {
                 deltaY = -pitchPoint.Y;
             } else if (isFirst && note.pitch.snapFirst) {
                 var snapTo = note.Prev == null ? note : note.Prev.End == note.position ? note.Prev : note;
-                deltaY = (snapTo.tone - note.tone) * 10 - pitchPoint.Y;
+                deltaY = (snapTo.AdjustedTone - note.AdjustedTone) * 10 - pitchPoint.Y;
             } else {
-                deltaY = (notesVm.PointToToneDouble(point) - note.tone) * 10 - pitchPoint.Y;
+                deltaY = (notesVm.PointToToneDouble(point) - note.AdjustedTone) * 10 - pitchPoint.Y;
             }
             if (deltaX == 0 && deltaY == 0) {
                 return;
@@ -618,9 +641,10 @@ namespace OpenUtau.App.Views {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
-
         private double startValue = 0;
         private bool shiftWasHeld = false;
+        protected override string? commandNameKey => "command.exp.edit";
+
         public ExpSetValueState(
             Control control,
             PianoRollViewModel vm,
@@ -727,6 +751,9 @@ namespace OpenUtau.App.Views {
             int x = notesVm.PointToTick(point);
             int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / control.Bounds.Height));
             int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / control.Bounds.Height));
+            if (shiftHeld != shiftWasHeld) {
+                firstPoint = point;
+            }
             if (ctrlShiftHeld) {
                 lastX = notesVm.PointToTick(firstPoint);
                 x = notesVm.PointToTick(lastPoint);
@@ -748,6 +775,8 @@ namespace OpenUtau.App.Views {
         private UExpressionDescriptor? descriptor;
         private UTrack track;
         public override MouseButton MouseButton => MouseButton.Right;
+        protected override string? commandNameKey => "command.exp.reset";
+
         public ExpResetValueState(
             Control control,
             PianoRollViewModel vm,
@@ -774,7 +803,7 @@ namespace OpenUtau.App.Views {
             } else {
                 ResetCurveExp(pointer, point);
             }
-            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+            valueTip.UpdateValueTip(descriptor.CustomDefaultValue.ToString());
         }
         private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
@@ -813,6 +842,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeStartState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeStartState(
             Control control,
             PianoRollViewModel vm,
@@ -833,6 +864,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeInState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeInState(
             Control control,
             PianoRollViewModel vm,
@@ -858,6 +891,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeOutState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeOutState(
             Control control,
             PianoRollViewModel vm,
@@ -882,6 +917,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangeDepthState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeDepthState(
             Control control,
             PianoRollViewModel vm,
@@ -902,6 +939,8 @@ namespace OpenUtau.App.Views {
 
     class VibratoChangePeriodState : NoteEditState {
         public readonly UNote note;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangePeriodState(
             Control control,
             PianoRollViewModel vm,
@@ -932,6 +971,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         public readonly Point hitPoint;
         public readonly float initialShift;
+        protected override string? commandNameKey => "command.vibrato.edit";
+
         public VibratoChangeShiftState(
             Control control,
             PianoRollViewModel vm,
@@ -962,6 +1003,8 @@ namespace OpenUtau.App.Views {
         public readonly UPhoneme phoneme;
         public readonly int index;
         public int startOffset;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeMoveState(
             Control control,
             PianoRollViewModel vm,
@@ -996,6 +1039,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeChangePreutterState(
             Control control,
             PianoRollViewModel vm,
@@ -1025,6 +1070,8 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
+        protected override string? commandNameKey => "command.phoneme.edit";
+
         public PhonemeChangeOverlapState(
             Control control,
             PianoRollViewModel vm,
@@ -1053,6 +1100,8 @@ namespace OpenUtau.App.Views {
     class PhonemeResetState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.phoneme.reset";
+
         public PhonemeResetState(
             Control control,
             PianoRollViewModel vm,
@@ -1090,8 +1139,10 @@ namespace OpenUtau.App.Views {
 
     class DrawPitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? lastPitch;
         Point lastPoint;
+
         public DrawPitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1125,13 +1176,15 @@ namespace OpenUtau.App.Views {
 
     class DrawLinePitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? firstPitch;
         Point firstPoint;
         double? lastPitch;
         Point lastPoint;
+
         public DrawLinePitchState(
-            Control control, 
-            PianoRollViewModel vm, 
+            Control control,
+            PianoRollViewModel vm,
             IValueTip valueTip) : base(control, vm, valueTip) { }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -1167,10 +1220,117 @@ namespace OpenUtau.App.Views {
         }
     }
 
+    class OverwriteLinePitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
+        Point firstPoint;
+        Point lastPoint;
+
+        public OverwriteLinePitchState(
+            Control control,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(control, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            firstPoint = point;
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            lastPoint = point;
+            var notesVm = vm.NotesViewModel;
+            if (notesVm.Part == null) {
+                base.Update(pointer, point);
+                return;
+            }
+
+            int startTick = notesVm.PointToTick(firstPoint);
+            int endTick = notesVm.PointToTick(lastPoint);
+            double startTone = notesVm.PointToToneDouble(firstPoint);
+            double endTone = notesVm.PointToToneDouble(lastPoint);
+
+            if (startTick == endTick) {
+                base.Update(pointer, point);
+                return;
+            }
+            if (startTick > endTick) {
+                Swap(ref startTick, ref endTick);
+                Swap(ref startTone, ref endTone);
+            }
+
+            int step = 5; // 5-tick sampling aligns with renderer pitch resolution
+            int firstSampleTick = (int)Math.Round(startTick / 5.0) * 5;
+            int lastSampleTick = (int)Math.Round(endTick / 5.0) * 5;
+            if (firstSampleTick < startTick) firstSampleTick += step;
+            if (lastSampleTick > endTick) lastSampleTick -= step;
+
+            // Build sampled points (x,y) where y is PITD = targetTone100 - basePitch
+            var samples = new List<(int x, int y)>();
+            for (int x = firstSampleTick; x <= lastSampleTick; x += step) {
+                double t = (double)(x - startTick) / (endTick - startTick);
+                double tone = startTone + (endTone - startTone) * t;
+                var sp = notesVm.TickToneToPoint(x, tone);
+                double? basePitch = notesVm.HitTest.SampleOverwritePitch(sp);
+                if (basePitch == null) continue;
+                int y = (int)Math.Round(tone * 100 - basePitch.Value);
+                samples.Add((x, y));
+            }
+
+            // If nothing sampled, just exit
+            if (samples.Count == 0) {
+                base.Update(pointer, point);
+                return;
+            }
+
+            // Merge into existing curve using MergedSetCurveCommand
+            var part = notesVm.Part;
+            var project = notesVm.Project;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == Core.Format.Ustx.PITD);
+
+            if (curve == null) {
+                base.Update(pointer, point);
+                return;
+            }
+
+            var oldXs = curve.xs.ToArray();
+            var oldYs = curve.ys.ToArray();
+
+            var newXs = new List<int>(oldXs.Length + samples.Count);
+            var newYs = new List<int>(oldYs.Length + samples.Count);
+
+            // Keep points before the edited range
+            for (int i = 0; i < oldXs.Length; i++) {
+                if (oldXs[i] < startTick) {
+                    newXs.Add(oldXs[i]);
+                    newYs.Add(oldYs[i]);
+                }
+            }
+            // Insert sampled points in range
+            foreach (var (x, y) in samples) {
+                newXs.Add(x);
+                newYs.Add(y);
+            }
+            // Keep points after the edited range
+            for (int i = 0; i < oldXs.Length; i++) {
+                if (oldXs[i] > endTick) {
+                    newXs.Add(oldXs[i]);
+                    newYs.Add(oldYs[i]);
+                }
+            }
+            DocManager.Inst.ExecuteCmd(new MergedSetCurveCommand(
+                project, part, Core.Format.Ustx.PITD,
+                oldXs, oldYs,
+                newXs.ToArray(), newYs.ToArray()));
+
+            base.Update(pointer, point);
+        }
+    }
+
     class OverwritePitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.draw";
         double? lastPitch;
         Point lastPoint;
+
         public OverwritePitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1204,9 +1364,11 @@ namespace OpenUtau.App.Views {
 
     class SmoothenPitchState : NoteEditState {
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.edit";
         int brushRadius = 10;
         int kernelRadius = 3;
         double kernelWeight = 1.0 / (2 * 3 + 1);
+
         public SmoothenPitchState(
             Control control,
             PianoRollViewModel vm,
@@ -1250,7 +1412,9 @@ namespace OpenUtau.App.Views {
     class ResetPitchState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
         protected override bool ShowValueTip => false;
+        protected override string? commandNameKey => "command.pitch.reset";
         Point lastPoint;
+
         public ResetPitchState(
             Control control,
             PianoRollViewModel vm,
