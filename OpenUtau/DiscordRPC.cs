@@ -113,7 +113,7 @@ namespace OpenUtau {
                 args = new {
                     pid = Environment.ProcessId,
                     activity = new {
-                        state = $"Making a OpenUtau VSynth song with {string.Join(" and ", singers)}!",
+                        state = $"Using OpenUtau with {string.Join(" and ", singers)}",
                         timestamps = new { start = StartTime },
                         assets = new {
                             large_image = "large_icon",
