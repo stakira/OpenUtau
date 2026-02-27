@@ -50,6 +50,7 @@
     <Setter Property="Command" Value="{Binding Command}"/>
     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
     <Setter Property="Height" Value="{Binding Height}"/>
+    <Setter Property="Icon" Value="{Binding Icon}"/>
   </Style>
 
   <Style Selector="ContextMenu MenuItem">

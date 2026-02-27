@@ -63,6 +63,8 @@
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
   <system:String x:Key="context.pitch.linear">Linear</system:String>
+  <system:String x:Key="context.pitch.shape">Curve shape</system:String>
+  <system:String x:Key="context.pitch.smooth">Smooth</system:String>
   <system:String x:Key="context.pitch.pointadd">Add point</system:String>
   <system:String x:Key="context.pitch.pointdel">Delete point</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>

@@ -576,7 +576,7 @@ namespace OpenUtau.App.Views {
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
             if (!onPoint && vm.NotesViewModel.Part != null) {
-                pitchPoint = new PitchPoint(x, y);
+                pitchPoint = new PitchPoint(x, y, NotePresets.Default.DefaultPitchShape);
                 index++;
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(
                     vm.NotesViewModel.Part, note, pitchPoint, index));

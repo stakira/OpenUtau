@@ -18,6 +18,22 @@
     <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentDarkBrush}"/>
   </Style>
 
+  <Style Selector="CheckBox.menu">
+    <Setter Property="IsHitTestVisible" Value="False" />
+    <Style Selector="^:unchecked /template/ Border#NormalRectangle">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="^:checked /template/ Path#CheckGlyph">
+        <Setter Property="Fill" Value="{DynamicResource SelectedTrackAccentBrush}" />
+        <Setter Property="Width" Value="12" />
+    </Style>
+    <Style Selector="^:checked /template/ Border#NormalRectangle">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </Style>
+
   <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrushSemi}"/>
   </Style>

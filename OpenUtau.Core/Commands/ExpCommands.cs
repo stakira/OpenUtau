@@ -235,8 +235,9 @@ namespace OpenUtau.Core {
             newPitch = new UPitch();
             int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
             int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
-            newPitch.AddPoint(new PitchPoint(start, 0));
-            newPitch.AddPoint(new PitchPoint(start + length, 0));
+            var shape = NotePresets.Default.DefaultPitchShape;
+            newPitch.AddPoint(new PitchPoint(start, 0, shape));
+            newPitch.AddPoint(new PitchPoint(start + length, 0, shape));
         }
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;
