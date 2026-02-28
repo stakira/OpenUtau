@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
-using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Threading;
@@ -22,10 +22,9 @@ namespace OpenUtau.App.ViewModels {
         public MenuItemViewModel(bool isChecked) {
             IsChecked = isChecked;
             Dispatcher.UIThread.Post(() => {
-                Icon = new CheckBox() {
-                    Classes = { "menu" },
-                    DataContext = this,
-                    [!CheckBox.IsCheckedProperty] = new Binding("IsChecked")
+                Icon = new Path {
+                    IsVisible = isChecked,
+                    Classes = { "checkmenu" },
                 };
             });
         }
