@@ -176,7 +176,7 @@ namespace OpenUtau.App.ViewModels {
                         // Hit test curve
                         double castY;
                         CubicSplineSegment? curve = null;
-                        if (note.pitch.data[i - 1].shape == PitchPointShape.sp) {
+                        if (note.pitch.data.Count > 2 && note.pitch.data[i - 1].shape == PitchPointShape.sp) {
                             double x2 = x, y2 = y;
                             if (i == 1) {
                                 if (note.pitch.data[0].X > 0) {

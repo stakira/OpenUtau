@@ -298,7 +298,7 @@ namespace OpenUtau.Core.Render {
                     PitchPoint point2 = i >= pitchPoints.Count - 2 ? pitchPoints[i + 1] : pitchPoints[i + 2];
                     int x = pitchStart + index * pitchInterval;
 
-                    if (point0.shape == PitchPointShape.sp && !point1.autoCompleted) {
+                    if (note.pitch.data.Count > 2 && point0.shape == PitchPointShape.sp && !point1.autoCompleted) {
                         var curve = new CubicSplineSegment(
                             point_1.X, point_1.Y,
                             point0.X, point0.Y,

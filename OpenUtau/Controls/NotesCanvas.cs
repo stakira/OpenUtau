@@ -281,7 +281,7 @@ namespace OpenUtau.App.Controls {
                 Point p1 = viewModel.TickToneToPoint(p1Tick, p1Tone - 0.5);
                 CubicSplineSegment? curve = null;
 
-                if (pts[i - 1].shape == PitchPointShape.sp) {
+                if (pts.Count > 2 && pts[i - 1].shape == PitchPointShape.sp) {
                     var p2 = p1;
                     if (i == 1) {
                         if (note.pitch.data[0].X > 0) {
