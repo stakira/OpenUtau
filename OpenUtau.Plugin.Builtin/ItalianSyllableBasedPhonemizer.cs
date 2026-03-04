@@ -108,10 +108,18 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
-                if (cc[0] == "r" && cc[1] == "r") {
-                    phonemes.Add($"{prevV} {cc[0]}{cc[1]}");
-                } else {
-                    phonemes.Add($"{prevV} {cc[0]}");
+
+                for (var i = lastC + 1; i >= 0; i--) {
+                    var vcc = $"{prevV} {string.Join("", cc.Take(2))}";
+                    var vc = $"{prevV} {cc[0]}";
+                    if ((HasOto(vcc, syllable.tone) || HasOto(ValidateAlias(vcc), syllable.tone))) {
+                        phonemes.Add(vcc);
+                        firstC = 1;
+                        break;
+                    } else {
+                        phonemes.Add(vc);
+                        break;
+                    }
                 }
             }
             for (var i = firstC; i < lastC; i++) {
