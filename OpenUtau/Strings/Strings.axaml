@@ -496,8 +496,8 @@ Warning: this option removes custom presets.</system:String>
     Left click to draw 
     (draw straight line overwrites the vibrato or mod+)
     Hold Ctrl to draw sine curve
-    Hold Alt Shift to tuning Scurve
-    Hold Alt to draw Scurve
+    Hold Alt + Shift to tune S-curve
+    Hold Alt to draw S-curve
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen
