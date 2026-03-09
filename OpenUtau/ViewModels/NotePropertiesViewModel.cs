@@ -398,11 +398,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
                 } else if (tag == "PitchCurveShape") {
                     if (obj != null && (obj is int value || int.TryParse(obj.ToString(), out value)) && Enum.IsDefined(typeof(PitchPointShape), value)) {
-                        foreach (UNote note in selectedNotes) {
-                            foreach (PitchPoint point in note.pitch.data) {
-                                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(Part, point, (PitchPointShape)value));
-                            }
-                        }
+                        DocManager.Inst.ExecuteCmd(new SetPitchPointShapeCommand(Part, selectedNotes, (PitchPointShape)value));
                     }
                 } else if (tag == "VibratoLength") {
                     float value;
