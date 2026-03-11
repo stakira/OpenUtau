@@ -51,7 +51,7 @@ public class Some : MidiExtractor<SomeOptions> {
         inputs.Add(NamedOnnxValue.CreateFromTensor("waveform",
             new DenseTensor<float>(samples, new int[] { samples.Length }, false)
                 .Reshape(new int[] { 1, samples.Length })));
-        var outputs = session.Run(inputs);
+        using var outputs = session.Run(inputs);
         float[] note_midi = outputs
             .Where(o => o.Name == "note_midi")
             .First()
