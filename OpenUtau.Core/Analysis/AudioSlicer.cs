@@ -13,6 +13,8 @@ public static class AudioSlicer {
     static int min_interval = 20;
     static int max_sil_kept = 10;
 
+    public static int SampleRate => sample_rate;
+
     public struct Chunk {
         public double offsetMs; //position of this slice in the audio file in milliseconds
         public float[] samples;

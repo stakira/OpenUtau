@@ -56,13 +56,30 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
         return result.ToArray();
     }
 
-    public UVoicePart Transcribe(UProject project, UWavePart wavePart,
+    public const double LongChunkThresholdSeconds = 30.0;
+
+    public UVoicePart? Transcribe(UProject project, UWavePart wavePart,
         TO? options, BatchingStrategy? batchingStrategy,
-        Action<int, int> progress) {
+        Func<bool>? confirm, Action<int, int> progress) {
         options ??= new TO();
         var monoSamples = ToMono(wavePart.Samples, wavePart.channels);
-        var resampledSamples = Resample(monoSamples, wavePart.sampleRate, ExpectedSampleRate);
+        var resampledSamples = Resample(monoSamples, wavePart.sampleRate, AudioSlicer.SampleRate);
         var chunks = AudioSlicer.Slice(resampledSamples);
+        if (AudioSlicer.SampleRate != ExpectedSampleRate) {
+            chunks = chunks.Select(chunk => chunk with {
+                samples = Resample(chunk.samples, AudioSlicer.SampleRate, ExpectedSampleRate)
+            }).ToList();
+        }
+
+        // Warn the user if any chunk is longer than the threshold (likely accompaniment audio)
+        if (confirm != null) {
+            var hasLongChunk = chunks.Any(chunk =>
+                (double)chunk.samples.Length / ExpectedSampleRate > LongChunkThresholdSeconds);
+            if (hasLongChunk && !confirm()) {
+                return null;
+            }
+        }
+
         var part = new UVoicePart();
         part.position = wavePart.position;
         part.Duration = wavePart.Duration;
@@ -99,7 +116,7 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
                 // exceeds max_batch_duration is still allowed through on its own.
                 float newMax = Math.Max(maxChunkDurationInBatch, chunkDuration);
                 bool wouldExceedDuration = strategy.max_batch_duration > 0
-                    && (currentBatch.Count + 1) * newMax > strategy.max_batch_duration;
+                                           && (currentBatch.Count + 1) * newMax > strategy.max_batch_duration;
 
                 if (currentBatch.Count > 0 && (batchFull || wouldExceedDuration)) {
                     batches.Add(currentBatch);
@@ -110,6 +127,7 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
                 currentBatch.Add(idx);
                 maxChunkDurationInBatch = Math.Max(maxChunkDurationInBatch, chunkDuration);
             }
+
             if (currentBatch.Count > 0) {
                 batches.Add(currentBatch);
             }
@@ -121,6 +139,7 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
                 for (int j = 0; j < batch.Count; j++) {
                     notesByChunkIndex[batch[j]] = batchNotes[j];
                 }
+
                 double batchDurationS = batch.Sum(i => (double)chunks[i].samples.Length / ExpectedSampleRate);
                 processedDurationAccum += batchDurationS;
                 progress.Invoke((int)processedDurationAccum, totalDurationS);

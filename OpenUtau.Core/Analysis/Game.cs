@@ -187,6 +187,7 @@ public class Game : MidiExtractor<GameOptions> {
         segmenterSession?.Dispose();
         estimatorSession?.Dispose();
         bd2durSession?.Dispose();
+        sessionsLoaded = false;
     }
 
     // -------------------------------------------------------------------------

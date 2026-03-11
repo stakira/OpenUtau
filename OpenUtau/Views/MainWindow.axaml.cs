@@ -1319,11 +1319,23 @@ namespace OpenUtau.App.Views {
                     var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
                     Task<UVoicePart?> transcribeTask;
+                    Func<bool> confirmLongChunk = () => {
+                        return Dispatcher.UIThread.InvokeAsync(async () => {
+                            var result = await MessageBox.Show(
+                                this,
+                                ThemeManager.GetString("dialogs.transcribe.longchunk.message"),
+                                ThemeManager.GetString("dialogs.transcribe.caption"),
+                                MessageBox.MessageBoxButtons.YesNo);
+                            return result == MessageBox.MessageBoxResult.Yes;
+                        }).GetAwaiter().GetResult();
+                    };
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
                         transcribeTask = Task.Run(() => {
                             using (var some = new Some()) {
-                                return (UVoicePart?)some.Transcribe(DocManager.Inst.Project, wavePart,
-                                    null, null, (processedS, totalS) => {
+                                return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                    null, null,
+                                    confirmLongChunk,
+                                    (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
                             }
@@ -1333,8 +1345,10 @@ namespace OpenUtau.App.Views {
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
                         transcribeTask = Task.Run(() => {
                             using (var game = new Game()) {
-                                return (UVoicePart?)game.Transcribe(DocManager.Inst.Project, wavePart,
-                                    gameOptions, batchingStrategy, (processedS, totalS) => {
+                                return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                    gameOptions, batchingStrategy,
+                                    confirmLongChunk,
+                                    (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
                             }

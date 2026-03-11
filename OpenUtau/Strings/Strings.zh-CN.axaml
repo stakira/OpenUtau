@@ -78,6 +78,7 @@
   <system:String x:Key="dialogs.transcribe.game.estthreshold">音符边界阈值</system:String>
   <system:String x:Key="dialogs.transcribe.game.batchsize">最大批处理数量</system:String>
   <system:String x:Key="dialogs.transcribe.game.batchduration">最大批处理长度（秒）</system:String>
+  <system:String x:Key="dialogs.transcribe.longchunk.message">音频中含有超长区段，转写时可能消耗大量内存。这通常是由于音频中带有伴奏。是否确定继续？</system:String>
 
   <system:String x:Key="errors.caption">错误</system:String>
   <system:String x:Key="errors.details">错误详情</system:String>
