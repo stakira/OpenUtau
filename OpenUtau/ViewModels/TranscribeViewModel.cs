@@ -75,7 +75,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LanguageDisplayIndex { get; set; } = 0;
 
         /// <summary>The selected language code (null = Auto/universal).</summary>
-        public string? LanguageCode => languageCodes.Count > 0 ? languageCodes[LanguageDisplayIndex] : null;
+        public string? LanguageCode => LanguageDisplayIndex >= 1 && LanguageDisplayIndex < languageCodes.Count
+            ? languageCodes[LanguageDisplayIndex]
+            : null;
 
         public TranscribeViewModel() {
             // Check SOME availability
