@@ -29,7 +29,7 @@ public abstract class MidiExtractor<TOptions> : IDisposable where TOptions : new
 
         float[] monoSamples = new float[samples.Length / channels];
         for (int i = 0; i < monoSamples.Length; i++) {
-            monoSamples[i] = samples[(i * channels)..((i + 1) * channels - 1)].Average();
+            monoSamples[i] = samples[(i * channels)..((i + 1) * channels)].Average();
         }
 
         return monoSamples;
