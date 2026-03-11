@@ -7,7 +7,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Analysis;
 
-public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
+public abstract class MidiExtractor<TOptions> : IDisposable where TOptions : new() {
     public struct BatchingStrategy {
         public int max_batch_size;
         public float max_batch_duration;
@@ -16,9 +16,9 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
     protected abstract int ExpectedSampleRate { get; }
     protected virtual bool SupportsBatch => false;
 
-    protected abstract List<TranscribedNote> TranscribeWaveform(float[] samples, TO options);
+    protected abstract List<TranscribedNote> TranscribeWaveform(float[] samples, TOptions options);
 
-    protected virtual List<List<TranscribedNote>> TranscribeWaveformBatch(List<float[]> batch, TO options) {
+    protected virtual List<List<TranscribedNote>> TranscribeWaveformBatch(List<float[]> batch, TOptions options) {
         return batch.Select(s => TranscribeWaveform(s, options)).ToList();
     }
 
@@ -59,9 +59,9 @@ public abstract class MidiExtractor<TO> : IDisposable where TO : new() {
     public const double LongChunkThresholdSeconds = 30.0;
 
     public UVoicePart? Transcribe(UProject project, UWavePart wavePart,
-        TO? options, BatchingStrategy? batchingStrategy,
+        TOptions? options, BatchingStrategy? batchingStrategy,
         Func<bool>? confirm, Action<int, int> progress) {
-        options ??= new TO();
+        options ??= new TOptions();
         var monoSamples = ToMono(wavePart.Samples, wavePart.channels);
         var resampledSamples = Resample(monoSamples, wavePart.sampleRate, AudioSlicer.SampleRate);
         var chunks = AudioSlicer.Slice(resampledSamples);
