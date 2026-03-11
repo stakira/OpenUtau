@@ -73,9 +73,9 @@
   <system:String x:Key="dialogs.transcribe.game.language">语言</system:String>
   <system:String x:Key="dialogs.transcribe.game.language.universal">[通用]</system:String>
   <system:String x:Key="dialogs.transcribe.game.steps">采样步数</system:String>
-  <system:String x:Key="dialogs.transcribe.game.segthreshold">音符边界阈值</system:String>
-  <system:String x:Key="dialogs.transcribe.game.segradius">音符边界半径</system:String>
-  <system:String x:Key="dialogs.transcribe.game.estthreshold">音符边界阈值</system:String>
+  <system:String x:Key="dialogs.transcribe.game.segthreshold">音符分割阈值</system:String>
+  <system:String x:Key="dialogs.transcribe.game.segradius">音符分割半径</system:String>
+  <system:String x:Key="dialogs.transcribe.game.estthreshold">音符发声阈值</system:String>
   <system:String x:Key="dialogs.transcribe.game.batchsize">最大批处理数量</system:String>
   <system:String x:Key="dialogs.transcribe.game.batchduration">最大批处理长度（秒）</system:String>
   <system:String x:Key="dialogs.transcribe.longchunk.message">音频中含有超长区段，转写时可能消耗大量内存。这通常是由于音频中带有伴奏。是否确定继续？</system:String>
