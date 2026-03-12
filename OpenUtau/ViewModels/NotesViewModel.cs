@@ -51,6 +51,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double PlayPosHighlightX { get; set; }
         [Reactive] public double PlayPosHighlightWidth { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; }
+        [Reactive] public bool UseSolidPlaybackLine { get; set; }
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PenTool { get; set; }
         [Reactive] public bool PenPlusTool { get; set; }
@@ -286,6 +287,14 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Default.ShowNoteParams = showNoteParams;
                 Preferences.Save();
             });
+            UseSolidPlaybackLine = Preferences.Default.UseSolidPlaybackLine;
+            MessageBus.Current.Listen<PlaybackLineModeChangedEvent>()
+                .Subscribe(e => {
+                    UseSolidPlaybackLine = e.UseSolidLine;
+                    if (Part != null) {
+                        SetPlayPos(DocManager.Inst.playPosTick, false);
+                    }
+                });
 
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
@@ -985,6 +994,13 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public class PlaybackLineModeChangedEvent {
+            public readonly bool UseSolidLine;
+            public PlaybackLineModeChangedEvent(bool useSolidLine) {
+                UseSolidLine = useSolidLine;
+            }
+        }
+
         private void SetPlayPos(int tick, bool waitingRendering) {
             PlayPosWaitingRendering = waitingRendering;
             if (waitingRendering) {
@@ -992,9 +1008,14 @@ namespace OpenUtau.App.ViewModels {
             }
             tick -= Part?.position ?? 0;
             PlayPosX = TickToneToPoint(tick, 0).X;
-            TickToLineTick(tick, out int left, out int right);
-            PlayPosHighlightX = TickToneToPoint(left, 0).X;
-            PlayPosHighlightWidth = (right - left) * TickWidth;
+            if (UseSolidPlaybackLine) {
+                PlayPosHighlightX = PlayPosX - 1;
+                PlayPosHighlightWidth = 2;
+            } else {
+                TickToLineTick(tick, out int left, out int right);
+                PlayPosHighlightX = TickToneToPoint(left, 0).X;
+                PlayPosHighlightWidth = (right - left) * TickWidth;
+            }
         }
 
         private void FocusNote(UNote note) {

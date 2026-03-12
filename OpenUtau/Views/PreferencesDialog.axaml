@@ -124,6 +124,10 @@
             <Slider Grid.Column="4" Classes="fader" Value="{Binding PlayPosMarkerMargin}" Minimum="0" Maximum="1"
                     TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"/>
           </Grid>
+          <Grid Margin="0,10,0,0">
+            <TextBlock Text="{DynamicResource prefs.playback.solidline}" HorizontalAlignment="Left"/>
+            <ToggleSwitch IsChecked="{Binding UseSolidPlaybackLine}"/>
+          </Grid>
         </StackPanel>
 
         <!-- Paths -->
