@@ -265,7 +265,7 @@ namespace OpenUtau.App.ViewModels {
                 if (PianoRollDetached) {
                     Dispatcher.UIThread.InvokeAsync(() => {
                         Progress = progressBarNotification.Progress;
-                    });
+                    }, DispatcherPriority.Background);
                 }
             }
             SetUndoState();
