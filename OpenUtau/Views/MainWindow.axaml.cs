@@ -1051,20 +1051,28 @@ namespace OpenUtau.App.Views {
                         Cursor = ViewConstants.cursorSizeAll;
                     }
                 } else if (hitControl is PartControl partControl) {
-                    bool isVoice = partControl.part is UVoicePart;
-                    bool isWave = partControl.part is UWavePart;
-                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    bool fadein = false;
+                    bool fadeout = false;
+                    if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
+                        var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                        fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
+                        fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                        fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
+                    }
                     bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                    if (isVoice && trim) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    if (fadein) {
+                        partEditState = new PartFadeInState(control, viewModel, (UWavePart)partControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
-                    } else if (isVoice && skip) {
+                    } else if (fadeout) {
+                        partEditState = new PartFadeOutState(control, viewModel, (UWavePart)partControl.part);
+                        Cursor = ViewConstants.cursorSizeWE;
+                    } else if (skip) {
                         partEditState = new PartResizeEditState(control, viewModel, partControl.part, true);
                         Cursor = ViewConstants.cursorSizeWE;
-                    } else if (isWave && skip) {
-                        // TODO
-                    } else if (isWave && trim) {
-                        // TODO
+                    } else if (trim) {
+                        partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        Cursor = ViewConstants.cursorSizeWE;
                     } else {
                         partEditState = new PartMoveEditState(control, viewModel, partControl.part);
                         Cursor = ViewConstants.cursorSizeAll;
@@ -1110,14 +1118,20 @@ namespace OpenUtau.App.Views {
             }
             var hitControl = control.InputHitTest(point.Position);
             if (hitControl is PartControl partControl) {
-                bool isVoice = partControl.part is UVoicePart;
-                bool isWave = partControl.part is UWavePart;
-                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                bool fadein = false;
+                bool fadeout = false;
+                if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
+                    var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                    fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
+                    fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                    fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
+                }
                 bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                if (isVoice && (skip || trim)) {
+                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                if (fadein || fadeout) {
+                    Cursor = ViewConstants.cursorHand;
+                } else if (skip || trim) {
                     Cursor = ViewConstants.cursorSizeWE;
-                } else if (isWave && (skip || trim)) {
-                    Cursor = null; // TODO
                 } else {
                     Cursor = null;
                 }
