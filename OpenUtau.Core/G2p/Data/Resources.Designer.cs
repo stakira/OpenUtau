@@ -39,7 +39,7 @@ namespace OpenUtau.Core.G2p.Data {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OpenUtau.Core.G2p.Data.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("G2p.Data.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -186,6 +186,16 @@ namespace OpenUtau.Core.G2p.Data {
         internal static byte[] g2p_ru {
             get {
                 object obj = ResourceManager.GetObject("g2p-ru", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] g2p_th {
+            get {
+                object obj = ResourceManager.GetObject("g2p_th", resourceCulture);
                 return ((byte[])(obj));
             }
         }
