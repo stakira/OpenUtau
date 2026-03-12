@@ -7,6 +7,7 @@
   <system:String x:Key="command.batch.plugin">Apply plugin edit</system:String>
   <system:String x:Key="command.batch.reset">Batch reset</system:String>
   <system:String x:Key="command.exp.edit">Edit expression</system:String>
+  <system:String x:Key="command.exp.paste">Paste expression curve</system:String>
   <system:String x:Key="command.exp.reset">Reset expression</system:String>
   <system:String x:Key="command.import.audio">Import audio</system:String>
   <system:String x:Key="command.import.track">Import track(s)</system:String>
