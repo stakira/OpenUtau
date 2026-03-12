@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using NWaves.Operations;
-using NWaves.Signals;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -199,20 +196,13 @@ public class RmvpeResult {
 public class RmvpeTranscriber : IDisposable {
     const int SampleRate = 16000;
     const int HopLength = 160;
-    const int WindowLength = 1024;
-    const int MelBins = 128;
-    const int FftBins = WindowLength / 2 + 1;
-    const int PitchBins = 360;
-    const double MelFMin = 30;
-    const double MelFMax = 8000;
-    const double Threshold = 0.03;
-    const double CentBase = 1997.3794084376191;
+    const float Threshold = 0.03f;
 
     readonly InferenceSession session;
-    readonly string inputName;
-    readonly string outputName;
-    readonly double[] hannWindow;
-    readonly float[][] melBasis;
+    readonly string waveformInputName;
+    readonly string thresholdInputName;
+    readonly string f0OutputName;
+    readonly string uvOutputName;
     readonly string modelPath;
     bool disposed;
 
@@ -228,10 +218,16 @@ public class RmvpeTranscriber : IDisposable {
         }
         Log.Information("RMVPE loading model from {ModelPath}", modelPath);
         session = Onnx.getInferenceSession(modelPath, force_cpu: true);
-        inputName = session.InputNames.First();
-        outputName = session.OutputNames.First();
-        hannWindow = BuildHannWindow(WindowLength);
-        melBasis = BuildMelBasis();
+        waveformInputName = ResolveWaveformInputName(session);
+        thresholdInputName = ResolveThresholdInputName(session);
+        f0OutputName = ResolveF0OutputName(session);
+        uvOutputName = ResolveUvOutputName(session);
+        Log.Information(
+            "RMVPE session ready. inputWaveform={WaveformInput} inputThreshold={ThresholdInput} outputF0={F0Output} outputUv={UvOutput}",
+            waveformInputName,
+            thresholdInputName,
+            f0OutputName,
+            uvOutputName);
     }
 
     static string ResolveModelPath() {
@@ -249,178 +245,86 @@ public class RmvpeTranscriber : IDisposable {
     }
 
     public RmvpeResult Infer(UWavePart wavePart) {
-        var mono = wavePart.channels == 1
-            ? wavePart.Samples
-            : Enumerable.Range(0, wavePart.Samples.Length / wavePart.channels)
-                .Select(i => wavePart.Samples.Skip(i * wavePart.channels).Take(wavePart.channels).Average())
-                .ToArray();
-        var signal = new DiscreteSignal(wavePart.sampleRate, mono);
-        if (signal.SamplingRate != SampleRate) {
-            var resampler = new Resampler();
-            signal = resampler.Resample(signal, SampleRate);
+        var mono = ToMono(wavePart);
+        var resampled = ResampleTo16k(mono, wavePart.sampleRate);
+        var waveform = new DenseTensor<float>(new[] { 1, resampled.Length });
+        for (int i = 0; i < resampled.Length; ++i) {
+            waveform[0, i] = Math.Clamp(resampled[i], -1f, 1f);
         }
-        var mel = BuildLogMel(signal.Samples);
-        var originalFrames = mel.GetLength(2);
-        var paddedFrames = ((originalFrames - 1) / 32 + 1) * 32;
-        var input = new DenseTensor<float>(new[] { 1, MelBins, paddedFrames });
-        for (int m = 0; m < MelBins; ++m) {
-            for (int t = 0; t < originalFrames; ++t) {
-                input[0, m, t] = mel[0, m, t];
+        var threshold = new DenseTensor<float>(new[] { Threshold }, Array.Empty<int>());
+        using var outputs = session.Run(new[] {
+            NamedOnnxValue.CreateFromTensor(waveformInputName, waveform),
+            NamedOnnxValue.CreateFromTensor(thresholdInputName, threshold),
+        });
+        var f0Tensor = outputs.First(output => output.Name == f0OutputName).AsTensor<float>();
+        var uvTensor = outputs.First(output => output.Name == uvOutputName).AsTensor<bool>();
+        var f0 = f0Tensor.ToArray();
+        var uv = uvTensor.ToArray();
+        if (f0.Length != uv.Length) {
+            throw new InvalidDataException($"Unexpected RMVPE output sizes: f0={f0.Length}, uv={uv.Length}");
+        }
+        for (int i = 0; i < f0.Length; ++i) {
+            if (uv[i]) {
+                f0[i] = 0f;
             }
         }
-        using var outputs = session.Run(new[] { NamedOnnxValue.CreateFromTensor(inputName, input) });
-        var hiddenTensor = outputs.First(output => output.Name == outputName).AsTensor<float>();
-        var dims = hiddenTensor.Dimensions.ToArray();
-        if (dims.Length != 3 || dims[2] != PitchBins) {
-            throw new InvalidDataException($"Unexpected RMVPE output shape: [{string.Join(", ", dims)}]");
-        }
-        var hidden = hiddenTensor.ToArray();
-        var f0 = DecodeLocalAverage(hidden, dims[1]).Take(originalFrames).ToArray();
         return new RmvpeResult {
-            TimeStepSeconds = 0.01,
+            TimeStepSeconds = (double)HopLength / SampleRate,
             F0 = f0,
         };
     }
 
-    static float[] DecodeLocalAverage(float[] hidden, int frames) {
-        var result = new float[frames];
-        for (int t = 0; t < frames; ++t) {
-            var baseIndex = t * PitchBins;
-            var bestIndex = 0;
-            var bestValue = float.MinValue;
-            for (int i = 0; i < PitchBins; ++i) {
-                var value = hidden[baseIndex + i];
-                if (value > bestValue) {
-                    bestValue = value;
-                    bestIndex = i;
-                }
-            }
-            if (bestValue < Threshold) {
-                result[t] = 0;
-                continue;
-            }
-            var start = Math.Max(0, bestIndex - 4);
-            var end = Math.Min(PitchBins, bestIndex + 5);
-            double productSum = 0;
-            double weightSum = 0;
-            for (int i = start; i < end; ++i) {
-                var weight = hidden[baseIndex + i];
-                productSum += weight * (i * 20.0 + CentBase);
-                weightSum += weight;
-            }
-            if (weightSum <= 0) {
-                result[t] = 0;
-                continue;
-            }
-            var cents = productSum / weightSum;
-            result[t] = (float)(10.0 * Math.Pow(2.0, cents / 1200.0));
+    static string ResolveWaveformInputName(InferenceSession session) {
+        return session.InputNames.FirstOrDefault(name =>
+                string.Equals(name, "waveform", StringComparison.OrdinalIgnoreCase))
+            ?? session.InputNames.First();
+    }
+
+    static string ResolveThresholdInputName(InferenceSession session) {
+        return session.InputNames.FirstOrDefault(name =>
+                string.Equals(name, "threshold", StringComparison.OrdinalIgnoreCase))
+            ?? session.InputNames.ElementAtOrDefault(1)
+            ?? throw new InvalidDataException("RMVPE model must expose a threshold input.");
+    }
+
+    static string ResolveF0OutputName(InferenceSession session) {
+        return session.OutputNames.FirstOrDefault(name =>
+                string.Equals(name, "f0", StringComparison.OrdinalIgnoreCase))
+            ?? session.OutputNames.First();
+    }
+
+    static string ResolveUvOutputName(InferenceSession session) {
+        return session.OutputNames.FirstOrDefault(name =>
+                string.Equals(name, "uv", StringComparison.OrdinalIgnoreCase))
+            ?? session.OutputNames.ElementAtOrDefault(1)
+            ?? throw new InvalidDataException("RMVPE model must expose a uv output.");
+    }
+
+    static float[] ToMono(UWavePart wavePart) {
+        if (wavePart.channels == 1) {
+            return wavePart.Samples;
+        }
+        return Enumerable.Range(0, wavePart.Samples.Length / wavePart.channels)
+            .Select(i => wavePart.Samples.Skip(i * wavePart.channels).Take(wavePart.channels).Average())
+            .ToArray();
+    }
+
+    static float[] ResampleTo16k(float[] samples, int sourceSampleRate) {
+        if (sourceSampleRate == SampleRate) {
+            return samples;
+        }
+        var targetLength = Math.Max(1, (int)Math.Round(samples.Length * (double)SampleRate / sourceSampleRate));
+        var result = new float[targetLength];
+        var scale = (double)sourceSampleRate / SampleRate;
+        for (int i = 0; i < targetLength; ++i) {
+            var sourcePos = i * scale;
+            var left = Math.Clamp((int)Math.Floor(sourcePos), 0, samples.Length - 1);
+            var right = Math.Min(left + 1, samples.Length - 1);
+            var frac = sourcePos - left;
+            result[i] = (float)(samples[left] * (1.0 - frac) + samples[right] * frac);
         }
         return result;
     }
-
-    float[,,] BuildLogMel(float[] samples) {
-        var padded = new float[samples.Length + WindowLength];
-        Array.Copy(samples, 0, padded, WindowLength / 2, samples.Length);
-        var frames = Math.Max(1, samples.Length / HopLength + 1);
-        var mel = new float[1, MelBins, frames];
-        var frame = new Complex[WindowLength];
-        var spectrum = new double[FftBins];
-
-        for (int t = 0; t < frames; ++t) {
-            var start = t * HopLength;
-            for (int i = 0; i < WindowLength; ++i) {
-                var sample = padded[start + i] * hannWindow[i];
-                frame[i] = new Complex(sample, 0);
-            }
-            Fft(frame);
-            for (int i = 0; i < FftBins; ++i) {
-                spectrum[i] = frame[i].Magnitude;
-            }
-            for (int m = 0; m < MelBins; ++m) {
-                double sum = 0;
-                for (int k = 0; k < FftBins; ++k) {
-                    sum += melBasis[m][k] * spectrum[k];
-                }
-                mel[0, m, t] = (float)Math.Log(Math.Max(1e-5, sum));
-            }
-        }
-        return mel;
-    }
-
-    static void Fft(Complex[] buffer) {
-        var n = buffer.Length;
-        for (int i = 1, j = 0; i < n; ++i) {
-            var bit = n >> 1;
-            for (; (j & bit) != 0; bit >>= 1) {
-                j &= ~bit;
-            }
-            j |= bit;
-            if (i < j) {
-                (buffer[i], buffer[j]) = (buffer[j], buffer[i]);
-            }
-        }
-        for (int len = 2; len <= n; len <<= 1) {
-            var angle = -2 * Math.PI / len;
-            var wLen = new Complex(Math.Cos(angle), Math.Sin(angle));
-            for (int i = 0; i < n; i += len) {
-                var w = Complex.One;
-                for (int j = 0; j < len / 2; ++j) {
-                    var u = buffer[i + j];
-                    var v = buffer[i + j + len / 2] * w;
-                    buffer[i + j] = u + v;
-                    buffer[i + j + len / 2] = u - v;
-                    w *= wLen;
-                }
-            }
-        }
-    }
-
-    static double[] BuildHannWindow(int size) {
-        var window = new double[size];
-        for (int i = 0; i < size; ++i) {
-            window[i] = 0.5 - 0.5 * Math.Cos(2 * Math.PI * i / size);
-        }
-        return window;
-    }
-
-    static float[][] BuildMelBasis() {
-        var basis = new float[MelBins][];
-        var fftFreqs = Enumerable.Range(0, FftBins)
-            .Select(i => (double)i * SampleRate / WindowLength)
-            .ToArray();
-        var melPoints = Linspace(HzToMel(MelFMin), HzToMel(MelFMax), MelBins + 2)
-            .Select(MelToHz)
-            .ToArray();
-        for (int m = 0; m < MelBins; ++m) {
-            basis[m] = new float[FftBins];
-            var lower = melPoints[m];
-            var center = melPoints[m + 1];
-            var upper = melPoints[m + 2];
-            var enorm = 2.0 / Math.Max(1e-12, upper - lower);
-            for (int k = 0; k < FftBins; ++k) {
-                var freq = fftFreqs[k];
-                var lowerSlope = (freq - lower) / Math.Max(1e-12, center - lower);
-                var upperSlope = (upper - freq) / Math.Max(1e-12, upper - center);
-                basis[m][k] = (float)(Math.Max(0, Math.Min(lowerSlope, upperSlope)) * enorm);
-            }
-        }
-        return basis;
-    }
-
-    static double[] Linspace(double start, double end, int count) {
-        if (count <= 1) {
-            return new[] { start };
-        }
-        var result = new double[count];
-        var step = (end - start) / (count - 1);
-        for (int i = 0; i < count; ++i) {
-            result[i] = start + step * i;
-        }
-        return result;
-    }
-
-    static double HzToMel(double hz) => 2595.0 * Math.Log10(1.0 + hz / 700.0);
-    static double MelToHz(double mel) => 700.0 * (Math.Pow(10.0, mel / 2595.0) - 1.0);
 
     void Dispose(bool disposing) {
         if (!disposed) {
