@@ -44,6 +44,8 @@ namespace OpenUtau.App.ViewModels {
             (SelectedAlgorithm == TranscribeAlgorithm.SOME && SomeAvailable) ||
             (SelectedAlgorithm == TranscribeAlgorithm.GAME && GameAvailable);
 
+        [Reactive] public bool PredictPitd { get; set; } = false;
+
         // --- GAME options ---
         public List<int> SamplingStepsOptions { get; } = new List<int> { 1, 2, 4, 8, 16 };
 

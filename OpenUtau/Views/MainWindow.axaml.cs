@@ -1318,7 +1318,7 @@ namespace OpenUtau.App.Views {
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
                     var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-                    Task<UVoicePart?> transcribeTask;
+                    Task<(UVoicePart? voicePart, RmvpeResult? rmvpeResult)> transcribeTask;
                     Func<bool> confirmLongChunk = () => {
                         return Dispatcher.UIThread.InvokeAsync(async () => {
                             var result = await MessageBox.Show(
@@ -1332,12 +1332,19 @@ namespace OpenUtau.App.Views {
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
                         transcribeTask = Task.Run(() => {
                             using (var some = new Some()) {
-                                return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                var voicePart = some.Transcribe(DocManager.Inst.Project, wavePart,
                                     null, null,
                                     confirmLongChunk,
                                     (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
+                                RmvpeResult? rmvpeResult = null;
+                                if (voicePart != null && transcribeVm.PredictPitd) {
+                                    msgbox.SetText($"{text} {part.name}\nPredicting f0...");
+                                    using var rmvpe = new RmvpeTranscriber();
+                                    rmvpeResult = rmvpe.Infer(wavePart);
+                                }
+                                return (voicePart, rmvpeResult);
                             }
                         });
                     } else {
@@ -1345,12 +1352,19 @@ namespace OpenUtau.App.Views {
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
                         transcribeTask = Task.Run(() => {
                             using (var game = new Game()) {
-                                return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                var voicePart = game.Transcribe(DocManager.Inst.Project, wavePart,
                                     gameOptions, batchingStrategy,
                                     confirmLongChunk,
                                     (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
+                                RmvpeResult? rmvpeResult = null;
+                                if (voicePart != null && transcribeVm.PredictPitd) {
+                                    msgbox.SetText($"{text} {part.name}\nPredicting f0...");
+                                    using var rmvpe = new RmvpeTranscriber();
+                                    rmvpeResult = rmvpe.Infer(wavePart);
+                                }
+                                return (voicePart, rmvpeResult);
                             }
                         });
                     }
@@ -1362,9 +1376,12 @@ namespace OpenUtau.App.Views {
                             MessageBox.ShowError(this, task.Exception);
                             return;
                         }
-                        var voicePart = task.Result;
+                        var (voicePart, rmvpeResult) = task.Result;
                         //Add voicePart into project
                         if (voicePart != null) {
+                            if (transcribeVm.PredictPitd && rmvpeResult != null) {
+                                rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
+                            }
                             var project = DocManager.Inst.Project;
                             var track = new UTrack(project);
                             track.TrackNo = project.tracks.Count;
