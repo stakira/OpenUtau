@@ -119,8 +119,9 @@ namespace OpenUtau.Core.Ustx {
             UNote note = UNote.Create();
             int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
             int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
-            note.pitch.AddPoint(new PitchPoint(start, 0));
-            note.pitch.AddPoint(new PitchPoint(start + length, 0));
+            var shape = NotePresets.Default.DefaultPitchShape;
+            note.pitch.AddPoint(new PitchPoint(start, 0, shape));
+            note.pitch.AddPoint(new PitchPoint(start + length, 0, shape));
             return note;
         }
 

@@ -175,6 +175,38 @@ namespace OpenUtau.Core {
         public override void Unexecute() { Point.shape = OldShape; }
     }
 
+    public class SetPitchPointShapeCommand : PitchExpCommand {
+        public UNote[] Notes;
+        public PitchPointShape NewShape;
+        public PitchPointShape[][] OldShapes;
+        public SetPitchPointShapeCommand(UVoicePart part, IEnumerable<UNote> notes, PitchPointShape shape) : base(part) {
+            this.Notes = notes.ToArray();
+            this.NewShape = shape;
+            this.OldShapes = notes
+                .Select(note => note.pitch.data
+                    .Select(point => point.shape)
+                    .ToArray())
+                .ToArray();
+        }
+        public override string ToString() { return "Change pitch point shape"; }
+        public override void Execute() {
+            foreach (var note in Notes) {
+                foreach (var point in note.pitch.data) {
+                    point.shape = NewShape;
+                }
+            }
+        }
+        public override void Unexecute() {
+            for (var i = 0; i < Notes.Length; i++) {
+                var note = Notes[i];
+                var shapes = OldShapes[i];
+                for (var p = 0; p < shapes.Length; p++) {
+                    note.pitch.data[p].shape = shapes[p];
+                }
+            }
+        }
+    }
+
     public class SnapPitchPointCommand : PitchExpCommand {
         readonly float X, Y;
         public SnapPitchPointCommand(UVoicePart part, UNote note) : base(part) {
@@ -235,8 +267,9 @@ namespace OpenUtau.Core {
             newPitch = new UPitch();
             int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
             int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
-            newPitch.AddPoint(new PitchPoint(start, 0));
-            newPitch.AddPoint(new PitchPoint(start + length, 0));
+            var shape = NotePresets.Default.DefaultPitchShape;
+            newPitch.AddPoint(new PitchPoint(start, 0, shape));
+            newPitch.AddPoint(new PitchPoint(start + length, 0, shape));
         }
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;

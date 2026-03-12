@@ -93,6 +93,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseOutCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit> PitSplineCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitSnapCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitDelCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
@@ -135,6 +136,12 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.o));
                 DocManager.Inst.EndUndoGroup();
             });
+            PitSplineCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
+                DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
+                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.sp));
+                DocManager.Inst.EndUndoGroup();
+            });
             PitSnapCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
@@ -150,7 +157,7 @@ namespace OpenUtau.App.ViewModels {
             PitAddCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup("command.pitch.add");
-                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
+                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y, NotePresets.Default.DefaultPitchShape), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
             });
 

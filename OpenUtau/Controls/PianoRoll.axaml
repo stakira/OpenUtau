@@ -157,8 +157,7 @@
                      PointerWheelChanged="NotesCanvasPointerWheelChanged">
         <c:NotesCanvas.ContextMenu>
           <ContextMenu ItemsSource="{Binding NotesContextMenuItems}"
-                       Opening="NotesContextMenuOpening"
-                       Closing="NotesContextMenuClosing">
+                       Opening="NotesContextMenuOpening">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
@@ -166,6 +165,7 @@
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
                 <Setter Property="ItemsSource" Value="{Binding Items}"/>
                 <Setter Property="InputGesture" Value="{Binding InputGesture}"/>
+                <Setter Property="Icon" Value="{Binding Icon}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
