@@ -585,8 +585,8 @@ namespace OpenUtau.App.Controls {
                         editState = new DrawLinePitchState(control, ViewModel, this);
                     } else if (ViewModel.NotesViewModel.OverwritePitchTool) {
                         editState = new OverwritePitchState(control, ViewModel, this);
-                    } else {
-                        editState = new OverwriteLinePitchState(control, ViewModel, this);
+                    } else if (ViewModel.NotesViewModel.OverwriteLinePitchTool) {
+                        editState = new OverwriteAdaptivePitchState(control, ViewModel, this);
                     }
                     return;
                 }
@@ -810,6 +810,10 @@ namespace OpenUtau.App.Controls {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
+                editState.altShiftHeld = args.KeyModifiers == (KeyModifiers.Alt | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+                editState.ctrlHeld = args.KeyModifiers == cmdKey;
+                editState.altHeld = args.KeyModifiers == KeyModifiers.Alt;
                 editState.Update(point.Pointer, point.Position);
                 return;
             }
@@ -857,6 +861,9 @@ namespace OpenUtau.App.Controls {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+            editState.ctrlHeld = args.KeyModifiers == cmdKey;
+            editState.altHeld = args.KeyModifiers == KeyModifiers.Alt;
             editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
@@ -939,8 +946,10 @@ namespace OpenUtau.App.Controls {
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
+                editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
                 editState.Begin(point.Pointer, point.Position);
-                editState.Update(point.Pointer, point.Position, args);
+                editState.Update(point.Pointer, point.Position);
             }
         }
 
@@ -952,7 +961,9 @@ namespace OpenUtau.App.Controls {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
-                editState.Update(point.Pointer, point.Position, args);
+                editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+                editState.Update(point.Pointer, point.Position);
             } else {
                 Cursor = null;
             }
@@ -967,7 +978,9 @@ namespace OpenUtau.App.Controls {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            editState.Update(point.Pointer, point.Position, args);
+            editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+            editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+            editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
