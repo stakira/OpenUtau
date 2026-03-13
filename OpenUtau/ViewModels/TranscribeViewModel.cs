@@ -15,6 +15,7 @@ namespace OpenUtau.App.ViewModels {
         // --- Availability ---
         public bool SomeAvailable { get; }
         public bool GameAvailable { get; }
+        public bool RmvpeAvailable { get; }
 
         // --- Algorithm selection ---
         [Reactive] public TranscribeAlgorithm SelectedAlgorithm { get; set; }
@@ -32,6 +33,7 @@ namespace OpenUtau.App.ViewModels {
         // Tooltip messages — null when available so no tooltip pops up
         public string? SomeNotFoundTip => SomeAvailable ? null : ThemeManager.GetString("dialogs.transcribe.some.notfound");
         public string? GameNotFoundTip => GameAvailable ? null : ThemeManager.GetString("dialogs.transcribe.game.notfound");
+        public string? RmvpeNotFoundTip => RmvpeAvailable ? null : ThemeManager.GetString("dialogs.transcribe.rmvpe.notfound");
 
         // True when neither algorithm is installed
         public bool NoneAvailable => !SomeAvailable && !GameAvailable;
@@ -87,6 +89,9 @@ namespace OpenUtau.App.ViewModels {
 
             // Check GAME availability
             GameAvailable = Game.IsInstalled();
+
+            // Check RMVPE availability
+            RmvpeAvailable = RmvpeTranscriber.IsInstalled();
 
             // Default to GAME if available, otherwise fall back to SOME
             if (GameAvailable) {

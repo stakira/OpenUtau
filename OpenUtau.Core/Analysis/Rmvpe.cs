@@ -231,6 +231,14 @@ public class RmvpeTranscriber : IDisposable {
             uvOutputName);
     }
 
+    public static bool IsInstalled() {
+        return File.Exists(ResolveModelPath());
+    }
+
+    public static string GetModelPath() {
+        return ResolveModelPath();
+    }
+
     static string ResolveModelPath() {
         var candidates = new List<string> {
             Path.Combine(PathManager.Inst.DependencyPath, "rmvpe", "rmvpe.onnx"),

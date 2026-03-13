@@ -16,11 +16,6 @@
     <Style Selector="CheckBox">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
     </Style>
-    <Style Selector="CheckBox /template/ Grid">
-      <Setter Property="Width" Value="NaN"/>
-      <Setter Property="Height" Value="NaN"/>
-      <Setter Property="MinHeight" Value="20"/>
-    </Style>
     <Style Selector="ComboBox">
       <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
     </Style>
@@ -51,10 +46,28 @@
         </Panel>
       </StackPanel>
 
-      <CheckBox IsChecked="{Binding PredictPitd}">
-        <TextBlock Text="{DynamicResource dialogs.transcribe.rmvpe}"
-                   Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
-      </CheckBox>
+      <Panel ToolTip.Tip="{Binding RmvpeNotFoundTip}"
+             PointerPressed="OnRmvpeRowPressed">
+        <Grid ColumnDefinitions="Auto,Auto">
+          <CheckBox Name="RmvpeCheck"
+                    Grid.Column="0"
+                    IsChecked="{Binding PredictPitd}"
+                    IsHitTestVisible="False"
+                    VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="1"
+                     Margin="6,0,0,0"
+                     Text="{DynamicResource dialogs.transcribe.rmvpe}"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding RmvpeAvailable}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+          <TextBlock Grid.Column="1"
+                     Margin="6,0,0,0"
+                     Text="{DynamicResource dialogs.transcribe.rmvpe}"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding !RmvpeAvailable}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Grid>
+      </Panel>
 
 
       <!-- GAME options panel, shown when GAME is selected and available -->
