@@ -46,9 +46,10 @@
         </Panel>
       </StackPanel>
 
-      <Panel ToolTip.Tip="{Binding RmvpeNotFoundTip}"
-             PointerPressed="OnRmvpeRowPressed">
-        <Grid ColumnDefinitions="Auto,Auto">
+      <Panel ToolTip.Tip="{Binding RmvpeNotFoundTip}">
+        <Grid ColumnDefinitions="Auto,Auto"
+              Background="Transparent"
+              PointerPressed="OnRmvpeRowPressed">
           <CheckBox Name="RmvpeCheck"
                     Grid.Column="0"
                     IsChecked="{Binding PredictPitd}"

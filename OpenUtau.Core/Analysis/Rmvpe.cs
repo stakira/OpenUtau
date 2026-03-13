@@ -64,7 +64,7 @@ public class RmvpeResult {
         return result;
     }
 
-    static List<PitchPoint> FillShortGapsAndEdges(List<PitchPoint> points, int noteStartX, int noteEndX) {
+    static List<PitchPoint> FillShortGaps(List<PitchPoint> points) {
         if (points.Count == 0) {
             return points;
         }
@@ -88,11 +88,11 @@ public class RmvpeResult {
         return expanded;
     }
 
-    static void AppendSmoothedPoints(UCurve curve, List<PitchPoint> points, int noteStartX, int noteEndX) {
+    static void AppendSmoothedPoints(UCurve curve, List<PitchPoint> points) {
         if (points.Count == 0) {
             return;
         }
-        var processedPoints = FillShortGapsAndEdges(points, noteStartX, noteEndX);
+        var processedPoints = FillShortGaps(points);
         var ys = processedPoints.Select(point => point.y).ToList();
         var smoothedYs = AdaptiveSmooth(MedianFilter(ys));
         for (var i = 0; i < processedPoints.Count; ++i) {
@@ -142,8 +142,6 @@ public class RmvpeResult {
         var partStartMs = project.timeAxis.TickPosToMsPos(part.position);
         var pendingPoints = new List<PitchPoint>();
         var pendingNoteIndex = -1;
-        int pendingNoteStartX = 0;
-        int pendingNoteEndX = 0;
         int noteIndex = 0;
         for (int i = 0; i < MidiPitch.Length; ++i) {
             var midiPitch = MidiPitch[i];
@@ -157,7 +155,7 @@ public class RmvpeResult {
             }
             var note = notes[noteIndex];
             if (pendingPoints.Count > 0 && pendingNoteIndex != noteIndex) {
-                AppendSmoothedPoints(curve, pendingPoints, pendingNoteStartX, pendingNoteEndX);
+                AppendSmoothedPoints(curve, pendingPoints);
                 pendingPoints.Clear();
                 pendingNoteIndex = -1;
             }
@@ -175,8 +173,6 @@ public class RmvpeResult {
             var x = tick - part.position;
             var y = (int)Math.Round(Math.Clamp((midiPitch - note.midi) * 100.0, descriptor.min, descriptor.max));
             var snappedX = (int)Math.Round((double)x / UCurve.interval) * UCurve.interval;
-            pendingNoteStartX = (int)Math.Round((double)(project.timeAxis.MsPosToTickPos(note.onsetMs) - part.position) / UCurve.interval) * UCurve.interval;
-            pendingNoteEndX = (int)Math.Round((double)(project.timeAxis.MsPosToTickPos(note.onsetMs + note.durationMs) - part.position) / UCurve.interval) * UCurve.interval;
             pendingNoteIndex = noteIndex;
             if (pendingPoints.Count > 0 && pendingPoints[^1].x == snappedX) {
                 pendingPoints[^1] = new PitchPoint { x = snappedX, y = y };
@@ -184,7 +180,7 @@ public class RmvpeResult {
                 pendingPoints.Add(new PitchPoint { x = snappedX, y = y });
             }
         }
-        AppendSmoothedPoints(curve, pendingPoints, pendingNoteStartX, pendingNoteEndX);
+        AppendSmoothedPoints(curve, pendingPoints);
         curve.Simplify();
         if (curve.xs.Count > 0) {
             part.curves.RemoveAll(c => c.abbr == Format.Ustx.PITD);
