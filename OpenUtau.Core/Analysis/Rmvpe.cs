@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -304,26 +306,37 @@ public class RmvpeTranscriber : IDisposable {
         if (wavePart.channels == 1) {
             return wavePart.Samples;
         }
-        return Enumerable.Range(0, wavePart.Samples.Length / wavePart.channels)
-            .Select(i => wavePart.Samples.Skip(i * wavePart.channels).Take(wavePart.channels).Average())
-            .ToArray();
+        var mono = new float[wavePart.Samples.Length / wavePart.channels];
+        for (int i = 0; i < mono.Length; ++i) {
+            float sum = 0;
+            var offset = i * wavePart.channels;
+            for (int ch = 0; ch < wavePart.channels; ++ch) {
+                sum += wavePart.Samples[offset + ch];
+            }
+            mono[i] = sum / wavePart.channels;
+        }
+        return mono;
     }
 
     static float[] ResampleTo16k(float[] samples, int sourceSampleRate) {
         if (sourceSampleRate == SampleRate) {
             return samples;
         }
-        var targetLength = Math.Max(1, (int)Math.Round(samples.Length * (double)SampleRate / sourceSampleRate));
-        var result = new float[targetLength];
-        var scale = (double)sourceSampleRate / SampleRate;
-        for (int i = 0; i < targetLength; ++i) {
-            var sourcePos = i * scale;
-            var left = Math.Clamp((int)Math.Floor(sourcePos), 0, samples.Length - 1);
-            var right = Math.Min(left + 1, samples.Length - 1);
-            var frac = sourcePos - left;
-            result[i] = (float)(samples[left] * (1.0 - frac) + samples[right] * frac);
+        var format = WaveFormat.CreateIeeeFloatWaveFormat(sourceSampleRate, 1);
+        ISampleProvider provider = new RawSourceWaveStream(
+            new MemoryStream(System.Runtime.InteropServices.MemoryMarshal
+                .AsBytes(samples.AsSpan()).ToArray()),
+            format).ToSampleProvider();
+        provider = new WdlResamplingSampleProvider(provider, SampleRate);
+        var result = new List<float>();
+        var buffer = new float[SampleRate];
+        int n;
+        while ((n = provider.Read(buffer, 0, buffer.Length)) > 0) {
+            for (int i = 0; i < n; ++i) {
+                result.Add(buffer[i]);
+            }
         }
-        return result;
+        return result.ToArray();
     }
 
     void Dispose(bool disposing) {

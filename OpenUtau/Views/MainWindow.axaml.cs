@@ -1316,9 +1316,6 @@ namespace OpenUtau.App.Views {
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
-                    var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
-                    Task<(UVoicePart? voicePart, RmvpeResult? rmvpeResult)> transcribeTask;
                     Func<bool> confirmLongChunk = () => {
                         return Dispatcher.UIThread.InvokeAsync(async () => {
                             var result = await MessageBox.Show(
@@ -1329,69 +1326,54 @@ namespace OpenUtau.App.Views {
                             return result == MessageBox.MessageBoxResult.Yes;
                         }).GetAwaiter().GetResult();
                     };
+                    UVoicePart? voicePart;
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
-                        transcribeTask = Task.Run(() => {
+                        voicePart = await Task.Run(() => {
                             using (var some = new Some()) {
-                                var voicePart = some.Transcribe(DocManager.Inst.Project, wavePart,
+                                return some.Transcribe(DocManager.Inst.Project, wavePart,
                                     null, null,
                                     confirmLongChunk,
                                     (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
-                                RmvpeResult? rmvpeResult = null;
-                                if (voicePart != null && transcribeVm.PredictPitd) {
-                                    msgbox.SetText($"{text} {part.name}\nPredicting f0...");
-                                    using var rmvpe = new RmvpeTranscriber();
-                                    rmvpeResult = rmvpe.Infer(wavePart);
-                                }
-                                return (voicePart, rmvpeResult);
                             }
                         });
                     } else {
                         var gameOptions = transcribeVm.BuildGameOptions();
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
-                        transcribeTask = Task.Run(() => {
+                        voicePart = await Task.Run(() => {
                             using (var game = new Game()) {
-                                var voicePart = game.Transcribe(DocManager.Inst.Project, wavePart,
+                                return game.Transcribe(DocManager.Inst.Project, wavePart,
                                     gameOptions, batchingStrategy,
                                     confirmLongChunk,
                                     (processedS, totalS) => {
                                         msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
                                     });
-                                RmvpeResult? rmvpeResult = null;
-                                if (voicePart != null && transcribeVm.PredictPitd) {
-                                    msgbox.SetText($"{text} {part.name}\nPredicting f0...");
-                                    using var rmvpe = new RmvpeTranscriber();
-                                    rmvpeResult = rmvpe.Infer(wavePart);
-                                }
-                                return (voicePart, rmvpeResult);
                             }
                         });
                     }
-
-                    _ = transcribeTask.ContinueWith(task => {
-                        msgbox?.Close();
-                        if (task.IsFaulted) {
-                            Log.Error(task.Exception, $"Failed to transcribe part {part.name}");
-                            MessageBox.ShowError(this, task.Exception);
-                            return;
+                    RmvpeResult? rmvpeResult = null;
+                    if (voicePart != null && transcribeVm.PredictPitd) {
+                        msgbox.SetText($"{text} {part.name}\nPredicting f0...");
+                        rmvpeResult = await Task.Run(() => {
+                            using var rmvpe = new RmvpeTranscriber();
+                            return rmvpe.Infer(wavePart);
+                        });
+                    }
+                    msgbox?.Close();
+                    if (voicePart != null) {
+                        if (rmvpeResult != null) {
+                            rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
                         }
-                        var (voicePart, rmvpeResult) = task.Result;
-                        //Add voicePart into project
-                        if (voicePart != null) {
-                            if (transcribeVm.PredictPitd && rmvpeResult != null) {
-                                rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
-                            }
-                            var project = DocManager.Inst.Project;
-                            var track = new UTrack(project);
-                            track.TrackNo = project.tracks.Count;
-                            voicePart.trackNo = track.TrackNo;
-                            DocManager.Inst.StartUndoGroup("command.part.transcribe");
-                            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-                            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
-                            DocManager.Inst.EndUndoGroup();
-                        }
-                    }, scheduler);
+                        var project = DocManager.Inst.Project;
+                        var track = new UTrack(project);
+                        track.TrackNo = project.tracks.Count;
+                        voicePart.trackNo = track.TrackNo;
+                        DocManager.Inst.StartUndoGroup("command.part.transcribe");
+                        DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                        DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                        DocManager.Inst.EndUndoGroup();
+                    }
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     _ = MessageBox.ShowError(this, e);
