@@ -243,12 +243,7 @@ public class RmvpeTranscriber : IDisposable {
         var candidates = new List<string> {
             Path.Combine(PathManager.Inst.DependencyPath, "rmvpe", "rmvpe.onnx"),
             Path.Combine(PathManager.Inst.DependencyPath, "RMVPE", "rmvpe.onnx"),
-            Path.Combine(PathManager.Inst.DependencyPath, "DiffSinger", "rmvpe.onnx"),
         };
-        var current = new DirectoryInfo(PathManager.Inst.RootPath);
-        for (var i = 0; i < 6 && current != null; ++i, current = current.Parent) {
-            candidates.Add(Path.Combine(current.FullName, "RMVPE", "rmvpe.onnx"));
-        }
         return candidates.FirstOrDefault(File.Exists)
             ?? Path.Combine(PathManager.Inst.DependencyPath, "rmvpe", "rmvpe.onnx");
     }
