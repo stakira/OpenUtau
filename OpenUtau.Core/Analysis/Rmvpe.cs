@@ -14,7 +14,7 @@ namespace OpenUtau.Core.Analysis;
 
 public class RmvpeResult {
     public double TimeStepSeconds { get; init; } = 0.01;
-    public float[] F0 { get; init; } = Array.Empty<float>();
+    public float[] MidiPitch { get; init; } = Array.Empty<float>();
 
     const int MedianWindowRadius = 2;
     const double AdaptiveSpikeThresholdCents = 75.0;
@@ -129,10 +129,10 @@ public class RmvpeResult {
     }
 
     void ApplyToPart(UProject project, UVoicePart part, IReadOnlyList<NoteSegment> notes) {
-        if (F0.Length == 0 || notes.Count == 0 || !project.expressions.TryGetValue(Format.Ustx.PITD, out var descriptor)) {
+        if (MidiPitch.Length == 0 || notes.Count == 0 || !project.expressions.TryGetValue(Format.Ustx.PITD, out var descriptor)) {
             Log.Information(
-                "RMVPE apply skipped. f0={F0Count} notes={NoteCount} hasPITD={HasPitd}",
-                F0.Length,
+                "RMVPE apply skipped. pitch={PitchCount} notes={NoteCount} hasPITD={HasPitd}",
+                MidiPitch.Length,
                 notes.Count,
                 project.expressions.ContainsKey(Format.Ustx.PITD));
             return;
@@ -145,8 +145,8 @@ public class RmvpeResult {
         int pendingNoteStartX = 0;
         int pendingNoteEndX = 0;
         int noteIndex = 0;
-        for (int i = 0; i < F0.Length; ++i) {
-            var hz = F0[i];
+        for (int i = 0; i < MidiPitch.Length; ++i) {
+            var midiPitch = MidiPitch[i];
             var localTimeMs = i * frameMs;
             var absoluteTimeMs = partStartMs + localTimeMs;
             while (noteIndex + 1 < notes.Count && notes[noteIndex].onsetMs + notes[noteIndex].durationMs <= absoluteTimeMs) {
@@ -162,7 +162,7 @@ public class RmvpeResult {
                 pendingNoteIndex = -1;
             }
             var isInNote = note.onsetMs <= absoluteTimeMs && absoluteTimeMs < note.onsetMs + note.durationMs;
-            if (!isInNote || note.rest || hz <= 0) {
+            if (!isInNote || note.rest || float.IsNaN(midiPitch)) {
                 continue;
             }
             var noteOffsetMs = absoluteTimeMs - note.onsetMs;
@@ -173,8 +173,7 @@ public class RmvpeResult {
             }
             var tick = project.timeAxis.MsPosToTickPos(absoluteTimeMs);
             var x = tick - part.position;
-            var midi = 69.0 + 12.0 * Math.Log2(hz / 440.0);
-            var y = (int)Math.Round(Math.Clamp((midi - note.midi) * 100.0, descriptor.min, descriptor.max));
+            var y = (int)Math.Round(Math.Clamp((midiPitch - note.midi) * 100.0, descriptor.min, descriptor.max));
             var snappedX = (int)Math.Round((double)x / UCurve.interval) * UCurve.interval;
             pendingNoteStartX = (int)Math.Round((double)(project.timeAxis.MsPosToTickPos(note.onsetMs) - part.position) / UCurve.interval) * UCurve.interval;
             pendingNoteEndX = (int)Math.Round((double)(project.timeAxis.MsPosToTickPos(note.onsetMs + note.durationMs) - part.position) / UCurve.interval) * UCurve.interval;
@@ -265,15 +264,66 @@ public class RmvpeTranscriber : IDisposable {
         if (f0.Length != uv.Length) {
             throw new InvalidDataException($"Unexpected RMVPE output sizes: f0={f0.Length}, uv={uv.Length}");
         }
-        for (int i = 0; i < f0.Length; ++i) {
-            if (uv[i]) {
-                f0[i] = 0f;
-            }
-        }
+        var midiPitch = ConvertToInterpolatedMidiPitch(f0, uv);
         return new RmvpeResult {
             TimeStepSeconds = (double)HopLength / SampleRate,
-            F0 = f0,
+            MidiPitch = midiPitch,
         };
+    }
+
+    static float[] ConvertToInterpolatedMidiPitch(float[] f0, bool[] uv) {
+        var midi = new float[f0.Length];
+        for (int i = 0; i < midi.Length; ++i) {
+            var voiced = !uv[i] && f0[i] > 0;
+            midi[i] = voiced
+                ? (float)(69.0 + 12.0 * Math.Log2(f0[i] / 440.0))
+                : float.NaN;
+        }
+        InterpolateMidiPitch(midi);
+        return midi;
+    }
+
+    static void InterpolateMidiPitch(float[] midi) {
+        int firstVoiced = -1;
+        for (int i = 0; i < midi.Length; ++i) {
+            if (!float.IsNaN(midi[i])) {
+                firstVoiced = i;
+                break;
+            }
+        }
+        if (firstVoiced < 0) {
+            return;
+        }
+        for (int i = 0; i < firstVoiced; ++i) {
+            midi[i] = midi[firstVoiced];
+        }
+        int previousVoiced = firstVoiced;
+        int index = firstVoiced + 1;
+        while (index < midi.Length) {
+            if (!float.IsNaN(midi[index])) {
+                previousVoiced = index;
+                ++index;
+                continue;
+            }
+            int gapStart = index;
+            while (index < midi.Length && float.IsNaN(midi[index])) {
+                ++index;
+            }
+            if (index < midi.Length) {
+                var left = midi[previousVoiced];
+                var right = midi[index];
+                var gapLength = index - previousVoiced;
+                for (int i = 1; i < gapLength; ++i) {
+                    var ratio = (float)i / gapLength;
+                    midi[previousVoiced + i] = left + (right - left) * ratio;
+                }
+                previousVoiced = index;
+            } else {
+                for (int i = gapStart; i < midi.Length; ++i) {
+                    midi[i] = midi[previousVoiced];
+                }
+            }
+        }
     }
 
     static string ResolveWaveformInputName(InferenceSession session) {
