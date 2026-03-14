@@ -475,7 +475,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
   <system:String x:Key="pianoroll.toggle.expressions">View Expressions (L)</system:String>
-  <system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (Shift + 4)
+  <system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (5)
     Left click to draw (draw straight line)
     Right click to reset
     Hold Ctrl to select
@@ -487,20 +487,18 @@ Warning: this option removes custom presets.</system:String>
     Hold Alt to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
-  <system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (Ctrl + 4)
+  <system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (4)
     Left click to draw (overwrites vibrato or mod+)
     Right click to reset
     Hold Ctrl to select
     Hold Alt to smoothen</system:String>
-    <system:String x:Key="pianoroll.tool.overwritelinepitch">
-        Line Draw Pitch Tool (Ctrl + Shift + 4)
-        Left click to draw 
-        (draw straight line overwrites the vibrato or mod+)
-        Right click to reset
-        Hold Ctrl to select
-        Hold Alt to smoothen
-    </system:String>
-  <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+    <system:String x:Key="pianoroll.tool.overwritelinepitch">Overwrite LinePitch Tool (5)
+    Left click to draw 
+    (draw straight line overwrites the vibrato or mod+)
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (2)
     Left click to draw
     Right click to delete
     Hold Ctrl to select</system:String>
@@ -562,7 +560,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.paths.singer">Singer Path</system:String>
-  <system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>
