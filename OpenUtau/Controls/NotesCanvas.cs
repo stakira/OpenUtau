@@ -265,6 +265,7 @@ namespace OpenUtau.App.Controls {
             double p0Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[0].X) - viewModel.Part.position;
             double p0Tone = note.AdjustedTone + pts[0].Y / 10.0;
             Point p0 = viewModel.TickToneToPoint(p0Tick, p0Tone - 0.5);
+            Point p_1 = p0;
             points.Clear();
             points.Add(p0);
 
@@ -278,7 +279,28 @@ namespace OpenUtau.App.Controls {
                 double p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X) - viewModel.Part.position;
                 double p1Tone = note.AdjustedTone + pts[i].Y / 10.0;
                 Point p1 = viewModel.TickToneToPoint(p1Tick, p1Tone - 0.5);
+                CubicSplineSegment? curve = null;
 
+                if (pts.Count > 2 && pts[i - 1].shape == PitchPointShape.sp) {
+                    var p2 = p1;
+                    if (i == 1) {
+                        if (note.pitch.data[0].X > 0) {
+                            p_1 = viewModel.TickToneToPoint(note.position, p0Tone - 0.5);
+                        }
+                    }
+                    if (i < pts.Count - 1) {
+                        double p2Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i + 1].X) - viewModel.Part.position;
+                        double p2Tone = note.AdjustedTone + pts[i + 1].Y / 10.0;
+                        p2 = viewModel.TickToneToPoint(p2Tick, p2Tone - 0.5);
+                    } else if (pts[i].X < note.DurationMs) {
+                        p2 = viewModel.TickToneToPoint(note.End, note.AdjustedTone - 0.5);
+                    }
+                    curve = new CubicSplineSegment(
+                                p_1.X, p_1.Y,
+                                p0.X, p0.Y,
+                                p1.X, p1.Y,
+                                p2.X, p2.Y);
+                }
                 // Draw arc
                 double x0 = p0.X;
                 double y0 = p0.Y;
@@ -290,12 +312,13 @@ namespace OpenUtau.App.Controls {
                     points.Add(new Point(x0, y0));
                     while (x0 < p1.X) {
                         x1 = Math.Min(x1 + 4, p1.X);
-                        y1 = MusicMath.InterpolateShape(p0.X, p1.X, p0.Y, p1.Y, x1, pts[i - 1].shape);
+                        y1 = curve?.GetY(x1) ?? MusicMath.InterpolateShape(p0.X, p1.X, p0.Y, p1.Y, x1, pts[i - 1].shape);
                         points.Add(new Point(x1, y1));
                         x0 = x1;
                         y0 = y1;
                     }
                 }
+                p_1 = p0;
                 p0 = p1;
                 using (var state = context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
                     context.DrawGeometry(null, pen, pointGeometry);

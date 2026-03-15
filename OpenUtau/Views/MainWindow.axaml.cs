@@ -18,7 +18,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.Analysis.Some;
+using OpenUtau.Core.Analysis;
 using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -551,7 +551,7 @@ namespace OpenUtau.App.Views {
                             singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks.First());
                         }
                         var vm = new SingersViewModel();
-                        
+
                         if (singer != null) {
                             vm.Singer = singer;
                         }
@@ -620,7 +620,7 @@ namespace OpenUtau.App.Views {
             var filter = OS.IsWindows()
                 ? new[] { FilePicker.EXE }
                 : new[] { FilePicker.EXE, FilePicker.UnixExecutable };
-            
+
             var file = await FilePicker.OpenFile(
                 this, "menu.tools.dependency.install", filter);
             if (file == null) {
@@ -1170,7 +1170,7 @@ namespace OpenUtau.App.Views {
                         PianoRollContainer.Content = pianoRoll;
                     }
 
-                    await Task.Run(() => 
+                    await Task.Run(() =>
                         pianoRoll.InitializePianoRollWindowAsync()
                     );
                     LoadingWindow.EndLoading();
@@ -1294,24 +1294,68 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        void Transcribe(UPart part) {
+        async void Transcribe(UPart part) {
             //Convert audio to notes
             if (part is UWavePart wavePart) {
+                // Show algorithm selection dialog first
+                var transcribeVm = new TranscribeViewModel();
+                if (transcribeVm.NoneAvailable) {
+                    await MessageBox.Show(this,
+                        String.Format(ThemeManager.GetString("dialogs.transcribe.allnotfound"),
+                            Game.DownloadUrl),
+                        ThemeManager.GetString("dialogs.transcribe.caption"),
+                        MessageBox.MessageBoxButtons.Ok);
+                    return;
+                }
+                var transcribeDialog = new TranscribeDialog { DataContext = transcribeVm };
+                await transcribeDialog.ShowDialog(this);
+                if (!transcribeDialog.Confirmed) {
+                    return;
+                }
+
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
-                    //Duration of the wave file in seconds
-                    int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
                     var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                    var transcribeTask = Task.Run(() => {
-                        using (var some = new Some()) {
-                            return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS => {
-                                //msgbox?.SetText($"{text} {part.name}\n{wavPosS}/{wavDurS}");
-                                msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, wavPosS, wavDurS));
-                            });
-                        }
-                    });
-                    transcribeTask.ContinueWith(task => {
+
+                    Task<UVoicePart?> transcribeTask;
+                    Func<bool> confirmLongChunk = () => {
+                        return Dispatcher.UIThread.InvokeAsync(async () => {
+                            var result = await MessageBox.Show(
+                                this,
+                                ThemeManager.GetString("dialogs.transcribe.longchunk.message"),
+                                ThemeManager.GetString("dialogs.transcribe.caption"),
+                                MessageBox.MessageBoxButtons.YesNo);
+                            return result == MessageBox.MessageBoxResult.Yes;
+                        }).GetAwaiter().GetResult();
+                    };
+                    if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
+                        transcribeTask = Task.Run(() => {
+                            using (var some = new Some()) {
+                                return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                    null, null,
+                                    confirmLongChunk,
+                                    (processedS, totalS) => {
+                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                    });
+                            }
+                        });
+                    } else {
+                        var gameOptions = transcribeVm.BuildGameOptions();
+                        var batchingStrategy = transcribeVm.BuildBatchingStrategy();
+                        transcribeTask = Task.Run(() => {
+                            using (var game = new Game()) {
+                                return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                    gameOptions, batchingStrategy,
+                                    confirmLongChunk,
+                                    (processedS, totalS) => {
+                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                    });
+                            }
+                        });
+                    }
+
+                    _ = transcribeTask.ContinueWith(task => {
                         msgbox?.Close();
                         if (task.IsFaulted) {
                             Log.Error(task.Exception, $"Failed to transcribe part {part.name}");
@@ -1333,7 +1377,7 @@ namespace OpenUtau.App.Views {
                     }, scheduler);
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to transcribe part {part.name}");
-                    MessageBox.ShowError(this, e);
+                    _ = MessageBox.ShowError(this, e);
                 }
             }
         }
@@ -1342,7 +1386,7 @@ namespace OpenUtau.App.Views {
             viewModel.OpenProject(new string[] { viewModel.RecoveryPath });
             viewModel.Page = 1;
         }
-  
+
         void MergePart(UPart part) {
             List<UPart> selectedParts = viewModel.TracksViewModel.SelectedParts;
             if (!selectedParts.All(p => p.trackNo.Equals(part.trackNo))) {

@@ -21,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public FontWeight TuningFontWeight { get; set; } = FontWeight.Normal;
         [Reactive] public float PortamentoLength { get; set; }
         [Reactive] public float PortamentoStart { get; set; }
+        [Reactive] public int PitchCurveShape { get; set; } = -1;
         [Reactive] public bool VibratoEnable { get; set; }
         [Reactive] public float VibratoLength { get; set; }
         [Reactive] public float VibratoPeriod { get; set; }
@@ -90,6 +91,17 @@ namespace OpenUtau.App.ViewModels {
                         DocManager.Inst.EndUndoGroup();
                     }
                 });
+            this.WhenAnyValue(vm => vm.PitchCurveShape)
+                .WhereNotNull()
+                .Subscribe(shape => {
+                    if (shape >= 0) {
+                        DocManager.Inst.StartUndoGroup("command.pitch.editpoint");
+                        PanelControlPressed = true;
+                        SetNoteParams("PitchCurveShape", shape);
+                        PanelControlPressed = false;
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                });
 
             MessageBus.Current.Listen<NotesSelectionEvent>()
                 .Subscribe(e => {
@@ -115,6 +127,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Title));
             ApplyPortamentoPreset = null;
             ApplyVibratoPreset = null;
+            PitchCurveShape = -1;
 
             if (selectedNotes.Count > 0) {
                 IsNoteSelected = true;
@@ -370,8 +383,8 @@ namespace OpenUtau.App.ViewModels {
                         PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                     }
                     var pitch = new UPitch() { snapFirst = true };
-                    pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
-                    pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
+                    pitch.AddPoint(new PitchPoint(PortamentoStart, 0, NotePresets.Default.DefaultPitchShape));
+                    pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0, NotePresets.Default.DefaultPitchShape));
                     DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
                 } else if (tag == "PortamentoStart") {
                     if (obj != null && (obj is float value || float.TryParse(obj.ToString(), out value)) && value >= -200 && value <= 200) {
@@ -380,9 +393,13 @@ namespace OpenUtau.App.ViewModels {
                         PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
                     }
                     var pitch = new UPitch() { snapFirst = true };
-                    pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
-                    pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
+                    pitch.AddPoint(new PitchPoint(PortamentoStart, 0, NotePresets.Default.DefaultPitchShape));
+                    pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0, NotePresets.Default.DefaultPitchShape));
                     DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, selectedNotes, pitch));
+                } else if (tag == "PitchCurveShape") {
+                    if (obj != null && (obj is int value || int.TryParse(obj.ToString(), out value)) && Enum.IsDefined(typeof(PitchPointShape), value)) {
+                        DocManager.Inst.ExecuteCmd(new SetPitchPointShapeCommand(Part, selectedNotes, (PitchPointShape)value));
+                    }
                 } else if (tag == "VibratoLength") {
                     float value;
                     if (obj != null && (obj is float f || float.TryParse(obj.ToString(), out f)) && f >= 0 && f <= 100) {

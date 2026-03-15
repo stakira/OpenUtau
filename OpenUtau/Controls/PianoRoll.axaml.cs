@@ -586,8 +586,8 @@ namespace OpenUtau.App.Controls {
                         editState = new DrawLinePitchState(control, ViewModel, this);
                     } else if (ViewModel.NotesViewModel.OverwritePitchTool) {
                         editState = new OverwritePitchState(control, ViewModel, this);
-                    } else {
-                        editState = new OverwriteLinePitchState(control, ViewModel, this);
+                    } else if (ViewModel.NotesViewModel.OverwriteLinePitchTool) {
+                        editState = new OverwriteAdaptivePitchState(control, ViewModel, this);
                     }
                     return;
                 }
@@ -682,6 +682,9 @@ namespace OpenUtau.App.Controls {
         }
 
         private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
+            if (ViewModel.NotesContextMenuItems.Count > 0) {
+                ViewModel.NotesContextMenuItems.Clear();
+            }
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
             if (ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.DrawLinePitchTool || ViewModel.NotesViewModel.OverwritePitchTool || ViewModel.NotesViewModel.OverwriteLinePitchTool) {
                 editState = new ResetPitchState(control, ViewModel, this);
@@ -690,28 +693,39 @@ namespace OpenUtau.App.Controls {
             if (ViewModel.NotesViewModel.ShowPitch) {
                 var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
                 if (pitHitInfo.Note != null) {
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                    var shapes = new List<MenuItemViewModel>();
+                    var currentShape = pitHitInfo.Note.pitch.data[pitHitInfo.Index].shape;
+                    shapes.Add(new MenuItemViewModel(currentShape == PitchPointShape.io) {
                         Header = ThemeManager.GetString("context.pitch.easeinout"),
                         Command = ViewModel.PitEaseInOutCommand,
                         CommandParameter = pitHitInfo,
                     });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                    shapes.Add(new MenuItemViewModel(currentShape == PitchPointShape.l) {
                         Header = ThemeManager.GetString("context.pitch.linear"),
                         Command = ViewModel.PitLinearCommand,
                         CommandParameter = pitHitInfo,
                     });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                    shapes.Add(new MenuItemViewModel(currentShape == PitchPointShape.i) {
                         Header = ThemeManager.GetString("context.pitch.easein"),
                         Command = ViewModel.PitEaseInCommand,
                         CommandParameter = pitHitInfo,
                     });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                    shapes.Add(new MenuItemViewModel(currentShape == PitchPointShape.o) {
                         Header = ThemeManager.GetString("context.pitch.easeout"),
                         Command = ViewModel.PitEaseOutCommand,
                         CommandParameter = pitHitInfo,
                     });
+                    shapes.Add(new MenuItemViewModel(currentShape == PitchPointShape.sp) {
+                        Header = ThemeManager.GetString("context.pitch.smooth"),
+                        Command = ViewModel.PitSplineCommand,
+                        CommandParameter = pitHitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.pitch.shape"),
+                        Items = shapes,
+                    });
                     if (pitHitInfo.OnPoint && pitHitInfo.Index == 0) {
-                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel(pitHitInfo.Note.pitch.snapFirst) {
                             Header = ThemeManager.GetString("context.pitch.pointsnapprev"),
                             Command = ViewModel.PitSnapCommand,
                             CommandParameter = pitHitInfo,
@@ -811,6 +825,10 @@ namespace OpenUtau.App.Controls {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
+                editState.altShiftHeld = args.KeyModifiers == (KeyModifiers.Alt | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+                editState.ctrlHeld = args.KeyModifiers == cmdKey;
+                editState.altHeld = args.KeyModifiers == KeyModifiers.Alt;
                 editState.Update(point.Pointer, point.Position);
                 return;
             }
@@ -858,6 +876,9 @@ namespace OpenUtau.App.Controls {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
+            editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+            editState.ctrlHeld = args.KeyModifiers == cmdKey;
+            editState.altHeld = args.KeyModifiers == KeyModifiers.Alt;
             editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
@@ -919,10 +940,6 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        public void NotesContextMenuClosing(object sender, CancelEventArgs args) {
-            ViewModel.NotesContextMenuItems?.Clear();
-        }
-
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             LyricBox?.EndEdit();
             var notesVm = ViewModel.NotesViewModel;
@@ -970,8 +987,10 @@ namespace OpenUtau.App.Controls {
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
+                editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
                 editState.Begin(point.Pointer, point.Position);
-                editState.Update(point.Pointer, point.Position, args);
+                editState.Update(point.Pointer, point.Position);
             }
         }
 
@@ -983,7 +1002,9 @@ namespace OpenUtau.App.Controls {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
-                editState.Update(point.Pointer, point.Position, args);
+                editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+                editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+                editState.Update(point.Pointer, point.Position);
             } else {
                 Cursor = null;
             }
@@ -998,7 +1019,9 @@ namespace OpenUtau.App.Controls {
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            editState.Update(point.Pointer, point.Position, args);
+            editState.ctrlShiftHeld = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
+            editState.shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
+            editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
