@@ -866,7 +866,7 @@ namespace OpenUtau.App.Views {
         public override void End(IPointer pointer, Point point) {
             pointer.Capture(null);
         }
-        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
+        public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             if (descriptor == null || notesVm.Part == null) {
                 return;

@@ -643,7 +643,7 @@ namespace OpenUtau.App.Controls {
                         editState = new DrawLinePitchState(control, ViewModel, this);
                     } else if (ViewModel.EditTool.CurrentTool == EditTools.OverwritePitchTool) {
                         editState = new OverwritePitchState(control, ViewModel, this);
-                    } else if (ViewModel.NotesViewModel.OverwriteLinePitchTool) {
+                    } else if (ViewModel.EditTool.CurrentTool == EditTools.OverwriteLinePitchTool) {
                         editState = new OverwriteAdaptivePitchState(control, ViewModel, this);
                     }
                     return;

@@ -392,7 +392,7 @@
                             <Border BorderThickness="0">
                                 <ListBox SelectedIndex="{Binding DrawLinePitchToolIndex}" Background="Transparent" PointerReleased="DrawLinePitchToolListBox_PointerReleased">
                                     <ListBoxItem Classes="toolbar drawLinePitchTool" ToolTip.Tip="{DynamicResource pianoroll.tool.drawlinepitch}"/>
-                                    <ListBoxItem Classes="toolbar overwritePitchTool" ToolTip.Tip="{DynamicResource pianoroll.tool.overwritelinepitch}"/>
+                                    <ListBoxItem Classes="toolbar overwriteLinePitchTool" ToolTip.Tip="{DynamicResource pianoroll.tool.overwritelinepitch}"/>
                                 </ListBox>
                             </Border>
                         </Flyout>
