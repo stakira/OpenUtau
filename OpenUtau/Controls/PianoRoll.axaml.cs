@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -144,6 +146,21 @@ namespace OpenUtau.App.Controls {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
+            try {
+                ViewModel.ExternalBatchEdits.AddRange(
+                    DocManager.Inst.ExternalBatchEditTypes
+                        .Select(type => Activator.CreateInstance(type) as BatchEdit)
+                        .Where(edit => edit != null)
+                        .Select(edit => new MenuItemViewModel() {
+                            Header = ThemeManager.GetString(edit!.Name),
+                            Command = noteBatchEditCommand,
+                            CommandParameter = edit,
+                        })
+                );
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load external batch edits.");
+            }
+            
             DocManager.Inst.AddSubscriber(this);
 
             ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
@@ -791,6 +808,10 @@ namespace OpenUtau.App.Controls {
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.part.legacypluginexp"),
                             Items = ViewModel.LegacyPlugins.ToArray(),
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.external"),
+                            Items = ViewModel.ExternalBatchEdits.ToArray(),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
