@@ -145,35 +145,21 @@ namespace OpenUtau.App.Controls {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
-            try
-            {
-                var pluginsPath = PathManager.Inst.PluginsPath;
-                var assemblies = Directory.GetFiles(pluginsPath, "*.dll")
-                    .Select(file => Assembly.LoadFrom(file))
-                    .ToList();
-
+            try {
                 ViewModel.ExternalBatchEdits.AddRange(
-                    assemblies
-                        .SelectMany(assembly => assembly.GetTypes())
-                        .Where(type => typeof(BatchEdit).IsAssignableFrom(type)
-                                       && !type.IsInterface
-                                       && !type.IsAbstract
-                                       && type.GetConstructor(Type.EmptyTypes) != null)
+                    DocManager.Inst.ExternalBatchEditTypes
                         .Select(type => Activator.CreateInstance(type) as BatchEdit)
                         .Where(edit => edit != null)
-                        .Select(edit => new MenuItemViewModel()
-                        {
+                        .Select(edit => new MenuItemViewModel() {
                             Header = ThemeManager.GetString(edit!.Name),
                             Command = noteBatchEditCommand,
                             CommandParameter = edit,
                         })
                 );
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load external batch edits.");
             }
-            catch (Exception e)
-            {
-                Log.Error($"Failed to load external batch edits, {e}");
-            }
-
+            
             DocManager.Inst.AddSubscriber(this);
 
             ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
