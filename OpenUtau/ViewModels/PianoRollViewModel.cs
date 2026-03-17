@@ -10,6 +10,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.ViewModels;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -45,6 +46,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
+        [Reactive] public CurveViewModel CurveViewModel { get; set; }
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -102,6 +104,7 @@ namespace OpenUtau.App.ViewModels {
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
+            CurveViewModel = new CurveViewModel();
 
             NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
                 NotesViewModel.DeleteSelectedNotes();
@@ -247,9 +250,30 @@ namespace OpenUtau.App.ViewModels {
 
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
-        public void Cut() => NotesViewModel.CutNotes();
-        public void Copy() => NotesViewModel.CopyNotes();
-        public void Paste() => NotesViewModel.PasteNotes();
+        public void Cut() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Cut(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CutNotes();
+            }
+        }
+        public void Copy() {
+            if (CurveViewModel.IsSelected(NotesViewModel.PrimaryKey)) {
+                CurveViewModel.Copy(NotesViewModel.Part!);
+            } else {
+                NotesViewModel.CopyNotes();
+            }
+        }
+        public void Paste() {
+            if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                NotesViewModel.PasteNotes();
+            } else if (DocManager.Inst.CurvesClipboard != null && NotesViewModel.Part != null) {
+                var track = NotesViewModel.Project.tracks[NotesViewModel.Part.trackNo];
+                if (track.TryGetExpDescriptor(NotesViewModel.Project, NotesViewModel.PrimaryKey, out var descriptor)) {
+                    CurveViewModel.Paste(NotesViewModel.Part, descriptor);
+                }
+            }
+        }
         public void PastePlain() => NotesViewModel.PastePlainNotes();
         public void Delete() => NotesViewModel.DeleteSelectedNotes();
         public void SelectAll() => NotesViewModel.SelectAllNotes();
