@@ -420,7 +420,7 @@ namespace OpenUtau.App.ViewModels {
                     var partOldDuration = voicePart.Duration;
                     var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
                     if(partNewDuration != partOldDuration) {
-                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(
+                        DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(
                             project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();

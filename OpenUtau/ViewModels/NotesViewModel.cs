@@ -860,7 +860,7 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
                 int minDurTick = Part.GetMinDurTick(Project);
                 if (Part.Duration < minDurTick) {
-                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick - Part.Duration, false));
+                    DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(Project, Part, minDurTick - Part.Duration, false));
                 }
                 DocManager.Inst.EndUndoGroup();
                 Selection.Select(notes);
@@ -901,7 +901,7 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
                 int minDurTick = Part.GetMinDurTick(Project);
                 if (Part.Duration < minDurTick) {
-                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick - Part.Duration, false));
+                    DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(Project, Part, minDurTick - Part.Duration, false));
                 }
                 DocManager.Inst.EndUndoGroup();
                 Selection.Select(notes);
@@ -1109,7 +1109,7 @@ namespace OpenUtau.App.ViewModels {
                     if (isUndo && addPart.part == Part) {
                         UnloadPart();
                     }
-                } else if (cmd is ResizePartCommand) {
+                } else if (cmd is ResizeVoicePartCommand) {
                     OnPartModified();
                 } else if (cmd is MovePartCommand) {
                     OnPartModified();
