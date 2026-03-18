@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
+using OpenUtau.Core.Editing;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -41,6 +42,7 @@ namespace OpenUtau.Core {
         public List<UNote>? NotesClipboard { get; set; }
         public CurveSelection? CurvesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
+        public List<Type> ExternalBatchEditTypes { get; private set; } = new List<Type>();
 
         public void Initialize(Thread mainThread, TaskScheduler mainScheduler) {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
@@ -91,6 +93,13 @@ namespace OpenUtau.Core {
                     foreach (var type in assembly.GetExportedTypes()) {
                         if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                             PhonemizerFactory.Get(type);
+                        }
+                        if (Path.GetFileName(file) != kBuiltin
+                            && typeof(BatchEdit).IsAssignableFrom(type)
+                            && !type.IsInterface
+                            && !type.IsAbstract
+                            && type.GetConstructor(Type.EmptyTypes) != null) {
+                            ExternalBatchEditTypes.Add(type);
                         }
                     }
                 } catch (Exception e) {

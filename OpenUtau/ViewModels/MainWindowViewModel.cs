@@ -24,6 +24,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartMergeCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartSplitCommand { get; set; }
     }
 
     public class RecentFileInfo {
@@ -420,7 +421,7 @@ namespace OpenUtau.App.ViewModels {
                     var partOldDuration = voicePart.Duration;
                     var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
                     if(partNewDuration != partOldDuration) {
-                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(
+                        DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(
                             project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();
@@ -455,7 +456,7 @@ namespace OpenUtau.App.ViewModels {
                 Dispatcher.UIThread.InvokeAsync(() => {
                     Progress = progressBarNotification.Progress;
                     ProgressText = progressBarNotification.Info;
-                });
+                }, DispatcherPriority.Background);
             } else if (cmd is LoadProjectNotification loadProject) {
                 Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {

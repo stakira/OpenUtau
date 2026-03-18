@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
@@ -151,6 +152,21 @@ namespace OpenUtau.App.Controls {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }));
+            try {
+                ViewModel.ExternalBatchEdits.AddRange(
+                    DocManager.Inst.ExternalBatchEditTypes
+                        .Select(type => Activator.CreateInstance(type) as BatchEdit)
+                        .Where(edit => edit != null)
+                        .Select(edit => new MenuItemViewModel() {
+                            Header = ThemeManager.GetString(edit!.Name),
+                            Command = noteBatchEditCommand,
+                            CommandParameter = edit,
+                        })
+                );
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load external batch edits.");
+            }
+            
             DocManager.Inst.AddSubscriber(this);
 
             ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
@@ -849,6 +865,10 @@ namespace OpenUtau.App.Controls {
                             Items = ViewModel.LegacyPlugins.ToArray(),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.external"),
+                            Items = ViewModel.ExternalBatchEdits.ToArray(),
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
                             Command = lyricsDialogCommand,
                         });
@@ -1402,8 +1422,8 @@ namespace OpenUtau.App.Controls {
                     }
                     break;
                 case Key.F11:
-                    OnMenuFullScreen(RootWindow, new RoutedEventArgs());
-                    break;
+                    OnMenuFullScreen(this, new RoutedEventArgs());
+                    return true;
                 case Key.Enter:
                     if (isNone) {
                         if (notesVm.Selection.Count == 1) {
@@ -1551,6 +1571,7 @@ namespace OpenUtau.App.Controls {
                     }
                     if (isAlt) {
                         SnapDivMenu.Open();
+                        return true;
                     }
                     break;
                 case Key.OemPipe:
@@ -1845,6 +1866,7 @@ namespace OpenUtau.App.Controls {
                     // mute
                     if (isShift) {
                         MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo, false));
+                        return true;
                     }
                     break;
                 case Key.F:
@@ -1903,13 +1925,15 @@ namespace OpenUtau.App.Controls {
                 #region move to the next track part
                 case Key.PageUp: {
                         if (isNone) {
-                            return MoveToNextPart(false);
+                            MoveToNextPart(false);
+                            return true;
                         }
                     }
                     break;
                 case Key.PageDown: {
                         if (isNone) {
-                            return MoveToNextPart(true);
+                            MoveToNextPart(true);
+                            return true;
                         }
                     }
                     break;

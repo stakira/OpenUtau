@@ -83,6 +83,8 @@ namespace OpenUtau.App.ViewModels {
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> ResetBatchEdits { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> ExternalBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
         public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
@@ -304,7 +306,7 @@ namespace OpenUtau.App.ViewModels {
                 if (PianoRollDetached) {
                     Dispatcher.UIThread.InvokeAsync(() => {
                         Progress = progressBarNotification.Progress;
-                    });
+                    }, DispatcherPriority.Background);
                 }
             }
             SetUndoState();

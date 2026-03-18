@@ -10,9 +10,20 @@
         SizeToContent="Height" Width="380" CanResize="False">
   <Window.Styles>
     <Style Selector="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
+    <Style Selector="CheckBox">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    </Style>
+    <Style Selector="ComboBox">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    </Style>
+    <Style Selector="ComboBoxItem">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    </Style>
     <Style Selector="Label">
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
       <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
   </Window.Styles>
@@ -34,6 +45,30 @@
                        IsEnabled="{Binding SomeAvailable}"/>
         </Panel>
       </StackPanel>
+
+      <Panel ToolTip.Tip="{Binding RmvpeNotFoundTip}">
+        <Grid ColumnDefinitions="Auto,Auto"
+              Background="Transparent"
+              PointerPressed="OnRmvpeRowPressed">
+          <CheckBox Name="RmvpeCheck"
+                    Grid.Column="0"
+                    IsChecked="{Binding PredictPitd}"
+                    IsHitTestVisible="False"
+                    VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="1"
+                     Margin="6,0,0,0"
+                     Text="{DynamicResource dialogs.transcribe.rmvpe}"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding RmvpeAvailable}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+          <TextBlock Grid.Column="1"
+                     Margin="6,0,0,0"
+                     Text="{DynamicResource dialogs.transcribe.rmvpe}"
+                     VerticalAlignment="Center"
+                     IsVisible="{Binding !RmvpeAvailable}"
+                     Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Grid>
+      </Panel>
 
 
       <!-- GAME options panel, shown when GAME is selected and available -->
