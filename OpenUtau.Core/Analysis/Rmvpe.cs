@@ -214,7 +214,7 @@ public class RmvpeTranscriber : IDisposable {
                 new[] { modelPath });
         }
         Log.Information("RMVPE loading model from {ModelPath}", modelPath);
-        session = Onnx.getInferenceSession(modelPath, force_cpu: true);
+        session = Onnx.getInferenceSession(modelPath, OnnxRunnerChoice.CPU);
         waveformInputName = ResolveWaveformInputName(session);
         thresholdInputName = ResolveThresholdInputName(session);
         f0OutputName = ResolveF0OutputName(session);

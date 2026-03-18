@@ -97,10 +97,10 @@ public class Game : MidiExtractor<GameOptions> {
     /// </summary>
     private void EnsureSessionsLoaded() {
         if (sessionsLoaded) return;
-        encoderSession = CreateSession("encoder.onnx", Preferences.Default.OnnxRunner == "CoreML");
-        segmenterSession = CreateSession("segmenter.onnx", false);
-        estimatorSession = CreateSession("estimator.onnx", false);
-        bd2durSession = CreateSession("bd2dur.onnx", false);
+        encoderSession = CreateSession("encoder.onnx", OnnxRunnerChoice.CPUForCoreML);
+        segmenterSession = CreateSession("segmenter.onnx", OnnxRunnerChoice.Default);
+        estimatorSession = CreateSession("estimator.onnx", OnnxRunnerChoice.Default);
+        bd2durSession = CreateSession("bd2dur.onnx", OnnxRunnerChoice.Default);
         sessionsLoaded = true;
     }
 
@@ -198,11 +198,11 @@ public class Game : MidiExtractor<GameOptions> {
     /// <summary>
     /// Create an ONNX session for the given model file.
     /// </summary>
-    private InferenceSession CreateSession(string modelFile, bool force_cpu) {
+    private InferenceSession CreateSession(string modelFile, OnnxRunnerChoice runnerChoice) {
         string modelPath = Path.Combine(Location, modelFile);
         Log.Information("GAME: Loading model {ModelPath} (exists={Exists})",
             modelPath, File.Exists(modelPath));
-        return Onnx.getInferenceSession(modelPath, force_cpu);
+        return Onnx.getInferenceSession(modelPath, runnerChoice);
     }
 
     /// <summary>
