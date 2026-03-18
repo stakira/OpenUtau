@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Analysis;
@@ -96,10 +97,10 @@ public class Game : MidiExtractor<GameOptions> {
     /// </summary>
     private void EnsureSessionsLoaded() {
         if (sessionsLoaded) return;
-        encoderSession = CreateSession("encoder.onnx");
-        segmenterSession = CreateSession("segmenter.onnx");
-        estimatorSession = CreateSession("estimator.onnx");
-        bd2durSession = CreateSession("bd2dur.onnx");
+        encoderSession = CreateSession("encoder.onnx", Preferences.Default.OnnxRunner == "CoreML");
+        segmenterSession = CreateSession("segmenter.onnx", false);
+        estimatorSession = CreateSession("estimator.onnx", false);
+        bd2durSession = CreateSession("bd2dur.onnx", false);
         sessionsLoaded = true;
     }
 
@@ -197,11 +198,11 @@ public class Game : MidiExtractor<GameOptions> {
     /// <summary>
     /// Create an ONNX session for the given model file.
     /// </summary>
-    private InferenceSession CreateSession(string modelFile) {
+    private InferenceSession CreateSession(string modelFile, bool force_cpu) {
         string modelPath = Path.Combine(Location, modelFile);
         Log.Information("GAME: Loading model {ModelPath} (exists={Exists})",
             modelPath, File.Exists(modelPath));
-        return Onnx.getInferenceSession(modelPath);
+        return Onnx.getInferenceSession(modelPath, force_cpu);
     }
 
     /// <summary>
