@@ -46,7 +46,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isReplacements = false;
 
-
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
@@ -246,7 +245,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse njokis_vccv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
+                        Log.Error($"Failed to parse njokis_vccv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();
@@ -308,11 +307,17 @@ namespace OpenUtau.Plugin.Builtin {
             var prevV = string.IsNullOrEmpty(replacedPrevV) ? "" : replacedPrevV;
             string v = ReplacePhoneme(syllable.v, syllable.vowelTone);
             string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
-
             string basePhoneme;
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+
+            foreach (var entry in replacements) {
+                if (!HasOto(entry.Key, syllable.tone) && !HasOto(entry.Key, syllable.tone)) {
+                    isReplacements = true;
+                    break;
+                }
+            }
 
             if (syllable.IsStartingV) {
                 var rcv = $"- {v}";
@@ -370,7 +375,7 @@ namespace OpenUtau.Plugin.Builtin {
                         basePhoneme = $"{cc.Last()}{v}";
                     }
                     // try RCC
-                    for (var i = cc.Length; i >= 1; i--) {
+                    for (var i = cc.Length; i > 1; i--) {
                         if (HasOto(_cv, syllable.vowelTone)) {
                             TryAddPhoneme(phonemes, syllable.tone, $"-{string.Join("", cc.Take(i))}", ValidateAlias($"-{string.Join("", cc.Take(i))}"), $"-{cc[0]}", ValidateAlias($"-{cc[0]}"));
                             if (!HasOto($"-{string.Join("", cc.Take(i))}", syllable.tone) && !HasOto(ValidateAlias($"-{string.Join("", cc.Take(i))}"), syllable.tone) && !HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
@@ -386,9 +391,8 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else {
                 var cv = cc.Last() + v;
-                var cv1 = $"- {cc.Last()}{v}";
-                basePhoneme = cv1;
-                if (!HasOto(cv1, syllable.vowelTone)) {
+                basePhoneme = cv;
+                if (!HasOto(cv, syllable.vowelTone)) {
                     cv = ValidateAlias(cv);
                     basePhoneme = cv;
                 }
@@ -644,75 +648,41 @@ namespace OpenUtau.Plugin.Builtin {
             //foreach (var consonant in new[] { "y" }) {
             //    alias = alias.Replace("y", "i");
             // }
-            foreach (var consonant in new[] { "I" }) {
-                alias = alias.Replace("I", "y");
+            if (isReplacements) {
+                foreach (var syllable in replacements.OrderByDescending(f => f.Key.Length)) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
             }
-            foreach (var consonant in new[] { "U" }) {
-                alias = alias.Replace("U", "w");
+
+            var rules = new Dictionary<string, string> {
+                { "I", "y" }, { "U", "w" }, 
+                { "BB", "B" }, { "DD", "D" },
+                { "ff", "f" }, 
+                { "GG", "G" },
+                { "ll", "l" }, { "mm", "m" }, { "nn", "n" },
+                { "rrr", "rr" },
+                { "ss", "s" },
+                { "E", "e" },
+                { " k", " t" }, { " p", " t" }, { " ch", " t" },
+                { "b", "B" }, { "d", "D" }, { "g", "G" },
+                { "z", "s" },
+                { "jj", "sh" },
+                { "x", "h" }
+            };
+
+            foreach (var rule in rules.OrderByDescending(rule => rule.Key.Length)) {
+                alias = alias.Replace(rule.Key, rule.Value);
             }
-            foreach (var vowel in new[] { "BB" }) {
-                alias = alias.Replace("BB", "B");
-            }
-            foreach (var vowel in new[] { "DD" }) {
-                alias = alias.Replace("DD", "D");
-            }
-            foreach (var vowel in new[] { "ff" }) {
-                alias = alias.Replace("ff", "f");
-            }
-            foreach (var vowel in new[] { "GG" }) {
-                alias = alias.Replace("GG", "G");
-            }
-            foreach (var vowel in new[] { "l-" }) {
-                alias = alias.Replace("ll", "l");
-            }
-            foreach (var vowel in new[] { "mm" }) {
-                alias = alias.Replace("mm", "m");
-            }
-            foreach (var vowel in new[] { "nn" }) {
-                alias = alias.Replace("nn", "n");
-            }
-            foreach (var vowel in new[] { "rrr" }) {
-                alias = alias.Replace("rrr", "rr");
-            }
-            foreach (var vowel in new[] { "ss" }) {
-                alias = alias.Replace("ss", "s");
-            }
-            foreach (var consonant in new[] { "E" }) {
-                alias = alias.Replace("E", "e");
-            }
-            foreach (var CC in new[] { " k", " p", " ch" }) {
-                alias = alias.Replace(CC, " t");
-            }
-            foreach (var consonant in new[] { "b" }) {
-                alias = alias.Replace("b", "B");
-            }
-            foreach (var consonant in new[] { "d" }) {
-                alias = alias.Replace("d", "D");
-            }
-            foreach (var consonant in new[] { "g" }) {
-                alias = alias.Replace("g", "G");
-            }
-            foreach (var consonant in new[] { "z" }) {
-                alias = alias.Replace("z", "s");
-            }
-            foreach (var consonant in new[] { "jj" }) {
-                alias = alias.Replace("jj", "sh");
-            }
+            alias = alias.Replace("h", "x").Replace("xx", "x");
+
             foreach (var consonant in new[] { "jj" }) {
                 alias = alias.Replace("jj", "L");
-            }
-            foreach (var consonant in new[] { "x" }) {
-                alias = alias.Replace("x", "h");
-            }
-            foreach (var vowel in new[] { "xx" }) {
-                alias = alias.Replace("h", "x");
-                alias = alias.Replace("xx", "x");
             }
             return base.ValidateAlias(alias);
         }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
-            foreach (var c in shortConsonants ) {
+            foreach (var c in shortConsonants) {
                 if (alias.Contains(c) && !alias.Contains("rr") && !alias.StartsWith(c) && !alias.Contains("ar") && !alias.Contains("er") && !alias.Contains("ir") && !alias.Contains("or") && !alias.Contains("ur")) {
                     return base.GetTransitionBasicLengthMs() * 0.50;
                 }
