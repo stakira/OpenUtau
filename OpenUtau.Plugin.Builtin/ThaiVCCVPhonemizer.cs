@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -36,6 +36,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
 
         private readonly Dictionary<char, string> CMapping = new Dictionary<char, string> {
+            {'-', ""}, {'อ', ""},
             {'ก', "k"}, {'ข', "kh"}, {'ค', "kh"}, {'ฆ', "kh"}, {'ฅ', "kh"}, {'ฃ', "kh"},
             {'จ', "j"}, {'ฉ', "ch"}, {'ช', "ch"}, {'ฌ', "ch"},
             {'ฎ', "d"}, {'ด', "d"},
@@ -84,7 +85,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var phonemes = new List<Phoneme>();
-
             List<string> tests = new List<string>();
 
             string prevTemp = "";
@@ -92,7 +92,6 @@ namespace OpenUtau.Plugin.Builtin {
                 prevTemp = prevNeighbour.Value.lyric;
             }
             var prevTh = ParseInput(prevTemp);
-
             var noteTh = ParseInput(currentLyric);
 
             if (noteTh.Consonant != null && noteTh.Dipthong == null && noteTh.Vowel != null) {
@@ -158,13 +157,15 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (checkOtoUntilHit(tests.ToArray(), note, out var oto)) {
-
                 var noteDuration = notes.Sum(n => n.duration);
-
+                
                 for (int i = 0; i < tests.ToArray().Length; i++) {
-
                     int position = 0;
-                    int vcPosition = noteDuration - 120;
+                    
+                    // ปรับหางเสียง (ตัวสะกด/เสียงเชื่อม) ให้กินพื้นที่โน้ตแค่สั้นๆ สูงสุด 90 ticks
+                    // สระจะได้พื้นที่เต็มที่ และตัวสะกดกระชับไม่ลากยาว
+                    int tailLength = Math.Min((int)(noteDuration * 0.25), 90); 
+                    int vcPosition = noteDuration - tailLength;
 
                     if (nextNeighbour != null && tests[i].Contains(" ")) {
                         var nextLyric = nextNeighbour.Value.lyric.Normalize();
@@ -180,29 +181,28 @@ namespace OpenUtau.Plugin.Builtin {
                             nextCheck = nextTh.Consonant + nextTh.Dipthong + nextTh.Vowel;
                         }
                         var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                        
+                        // ถ้าระบบเจอโน้ตถัดไป ให้ใช้ค่า Preutterance มาปรับตัวสะกดให้ชนพอดีเป๊ะ
                         if (singer.TryGetMappedOto(nextCheck, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var nextOto)) {
-                            if (oto.Overlap > 0) {
-                                vcPosition = noteDuration - MsToTick(nextOto.Overlap) - MsToTick(nextOto.Preutter);
-                            }
+                            vcPosition = noteDuration - MsToTick(nextOto.Preutter) - MsToTick(nextOto.Overlap);
                         }
                     }
 
-
+                    // ล็อก Position ให้ใช้ vcPosition ท้ายโน้ตเลย
                     if (noteTh.Dipthong == null || tests.Count <= 2) {
                         if (i == 1) {
-                            position = Math.Max((int)(noteDuration * 0.75), vcPosition);
+                            position = vcPosition;
                         }
                     } else {
                         if (i == 1) {
-                            position = Math.Min((int)(noteDuration * 0.1), 60);
+                            position = Math.Min((int)(noteDuration * 0.1), 60); // เสียงควบกล้ำต้นโน้ต ยังคงไว้ให้สั้นๆ
                         } else if (i == 2) {
-                            position = Math.Max((int)(noteDuration * 0.75), vcPosition);
+                            position = vcPosition;
                         }
                     }
 
                     phonemes.Add(new Phoneme { phoneme = tests[i], position = position });
                 }
-
             }
 
             return new Result {
@@ -259,16 +259,17 @@ namespace OpenUtau.Plugin.Builtin {
             return (consonant, diphthong, vowel, endingConsonant);
         }
 
-
         public string WordToPhonemes(string input) {
             input = input.Replace(" ", "");
             input = RemoveInvalidLetters(input);
-            if (!Regex.IsMatch(input, "[ก-ฮ]")) {
+            
+            if (!Regex.IsMatch(input, "[ก-ฮ-]")) {
                 return input;
             }
+            
             foreach (var mapping in VowelMapping) {
                 string pattern = "^" + mapping.Key
-                    .Replace("c", "([ก-ฮ][ลรว]?|อ[ย]?|ห[ก-ฮ]?)")
+                    .Replace("c", "(ก[รลว]|ข[รลว]|ค[รลว]|ต[รลว]|ป[รล]|พ[รลว]|ฟ[รล]|บ[รล]|ด[ร]|ผล|ทร|ศร|สร|ห[ก-ฮ]|อย|[ก-ฮ-])")
                     .Replace("x", "([ก-ฮ]?)") + "$";
 
                 var match = Regex.Match(input, pattern);
@@ -280,6 +281,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     string cConverted = ConvertC(c);
                     string xConverted = ConvertX(x);
+                    
                     if (mapping.Value == "a" && input.Contains("ั") && x == "ว") {
                         return cConverted + "ua";
                     }
