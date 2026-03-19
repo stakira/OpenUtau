@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Melanchall.DryWetMidi.Interaction;
 using OpenUtau.Api;
 using OpenUtau.Classic;
@@ -9,26 +10,59 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Thai2 CVVC&VCCV Phonemizer", "TH2 CVVC&VCCV", " Phonemizer by Ferina, PRINTmov and DELTA SYNTH ", language: "TH")]
-    public class Thai2 CVVC&VCCV Phonemizer : TH2 Phonemizer {
-        static readonly string[] vowels = new string[] {
+    [Phonemizer("Thai VCCV Phonemizer", "TH VCCV", "PRINTmov", language: "TH")]
+    public class ThaiVCCVPhonemizer : Phonemizer {
+
+        readonly string[] vowels = new string[] {
             "a", "i", "u", "e", "o", "@", "Q", "3", "6", "1", "ia", "ua", "I", "8"
         };
 
-        static readonly string[] diphthongs = new string[] {
-            "r", "l","w", "y"
+        readonly string[] diphthongs = new string[] {
+            "r", "l", "w"
         };
 
-        static readonly string[] consonants = new string[] {
-            "b", "ch", "d", "f", "g", "h", "j", "k", "kh", "l", "m", "n", "p", "ph", "r", "s", "t", "th", "w", "y", "-"
+        readonly string[] consonants = new string[] {
+            "b", "ch", "d", "f", "g", "h", "j", "k", "kh", "l", "m", "n", "p", "ph", "r", "s", "t", "th", "w", "y"
         };
 
-        static readonly string[] endingConsonants = new string[] {
-            "b", "ch", "d", "f", "g", "h", "j", "k", "kh", "l", "m", "n", "p", "ph", "r", "s", "t", "th", "w", "y", "-"
-			};
+        readonly string[] endingConsonants = new string[] {
+            "b", "ch", "d", "f", "g", "h", "j", "k", "kh", "l", "m", "n", "p", "ph", "r", "s", "t", "th", "w", "y"
+        };
+
+        private readonly Dictionary<string, string> VowelMapping = new Dictionary<string, string> {
+            {"เcือะ", "6"}, {"เcือx", "6"}, {"แcะ", "@"}, {"แcx", "@"}, {"เcอะ", "3"}, {"เcอ", "3"}, {"ไc", "I"}, {"ใc", "I"}, {"เcาะ", "Q"}, {"cอx", "Q"},
+            {"cืx", "1"}, {"cึx", "1"}, {"cือ", "1"}, {"cะ", "a"}, {"cัx", "a"}, {"cาx", "a"}, {"เcา", "8"}, {"เcะ", "e"}, {"เcx", "e"}, {"cิx", "i"}, {"cีx", "i"},
+            {"เcียะ", "ia"}, {"เcียx", "ia"}, {"โcะ", "o"}, {"โcx", "o"}, {"cุx", "u"}, {"cูx", "u"}, {"cัวะ", "ua"}, {"cัว", "ua"}, {"cำ", "am"}, {"เcิx", "3"}, {"เcิ", "3"}
+        };
+
+        private readonly Dictionary<char, string> CMapping = new Dictionary<char, string> {
+            {'-', ""}, {'อ', ""}, // เพิ่ม - และ อ ให้แมปเป็นค่าว่าง เพื่อลากเข้าสระได้เลย
+            {'ก', "k"}, {'ข', "kh"}, {'ค', "kh"}, {'ฆ', "kh"}, {'ฅ', "kh"}, {'ฃ', "kh"},
+            {'จ', "j"}, {'ฉ', "ch"}, {'ช', "ch"}, {'ฌ', "ch"},
+            {'ฎ', "d"}, {'ด', "d"},
+            {'ต', "t"}, {'ฏ', "t"},
+            {'ถ', "th"}, {'ฐ', "th"}, {'ฑ', "th"}, {'ธ', "th"}, {'ท', "th"},
+            {'บ', "b"}, {'ป', "p"}, {'พ', "ph"}, {'ผ', "ph"}, {'ภ', "ph"}, {'ฟ', "f"}, {'ฝ', "f"},
+            {'ห', "h"}, {'ฮ', "h"},
+            {'ม', "m"}, {'น', "n"}, {'ณ', "n"}, {'ร', "r"}, {'ล', "l"}, {'ฤ', "r"},
+            {'ส', "s"}, {'ศ', "s"}, {'ษ', "s"}, {'ซ', "s"},
+            {'ง', "g"}, {'ย', "y"}, {'ญ', "y"}, {'ว', "w"}, {'ฬ', "r"}
+        };
+
+        private readonly Dictionary<char, string> XMapping = new Dictionary<char, string> {
+            {'บ', "b"}, {'ป', "b"}, {'พ', "b"}, {'ฟ', "b"}, {'ภ', "b"},
+            {'ด', "d"}, {'จ', "d"}, {'ช', "d"}, {'ซ', "d"}, {'ฎ', "d"}, {'ฏ', "d"}, {'ฐ', "d"},
+            {'ฑ', "d"}, {'ฒ', "d"}, {'ต', "d"}, {'ถ', "d"}, {'ท', "d"}, {'ธ', "d"}, {'ศ', "d"}, {'ษ', "d"}, {'ส', "d"},
+            {'ก', "k"}, {'ข', "k"}, {'ค', "k"}, {'ฆ', "k"},
+            {'ว', "w"},
+            {'ย', "y"},
+            {'น', "n"}, {'ญ', "n"}, {'ณ', "n"}, {'ร', "n"}, {'ล', "n"}, {'ฬ', "n"},
+            {'ง', "g"},
+            {'ม', "m"}
+        };
 
         private USinger singer;
-        public override void SetSinger(Your's Singer Name) => this.singer = singer;
+        public override void SetSinger(USinger singer) => this.singer = singer;
 
         private bool checkOtoUntilHit(string[] input, Note note, out UOto oto) {
             oto = default;
@@ -51,7 +85,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var phonemes = new List<Phoneme>();
-
             List<string> tests = new List<string>();
 
             string prevTemp = "";
@@ -59,18 +92,17 @@ namespace OpenUtau.Plugin.Builtin {
                 prevTemp = prevNeighbour.Value.lyric;
             }
             var prevTh = ParseInput(prevTemp);
-
             var noteTh = ParseInput(currentLyric);
 
             if (noteTh.Consonant != null && noteTh.Dipthong == null && noteTh.Vowel != null) {
-                if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Dipthong + noteTh.Vowel }, note, out var tempOto)) {
+                if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Vowel }, note, out var tempOto)) {
                     tests.Add(tempOto.Alias);
                 }
-            } else if (noteTh.Consonant != null && noteTh.Dipthong != null && noteTh.Vowel != null && noteTh.endingConsonants != null ) {
-                if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Dipthong + noteTh.Vowel + noteTh.endingConsonants}, note, out var tempOto)) {
+            } else if (noteTh.Consonant != null && noteTh.Dipthong != null && noteTh.Vowel != null) {
+                if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Dipthong + noteTh.Vowel }, note, out var tempOto)) {
                     tests.Add(tempOto.Alias);
                 } else {
-                    if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Dipthong }, note, out var tempOto)) {
+                    if (checkOtoUntilHit(new string[] { noteTh.Consonant + noteTh.Dipthong }, note, out tempOto)) {
                         tests.Add(tempOto.Alias);
                     }
                     if (checkOtoUntilHit(new string[] { noteTh.Dipthong + noteTh.Vowel }, note, out tempOto)) {
@@ -95,7 +127,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else if (nextNeighbour != null && noteTh.Vowel != null) {
                 var nextTh = ParseInput(nextNeighbour.Value.lyric);
-                if (checkOtoUntilHit(new string[] noteTh.Consonant { " " + nextTh.Vowel }, note, out var tempOto)) {
+                if (checkOtoUntilHit(new string[] { noteTh.Vowel + " " + nextTh.Consonant }, note, out var tempOto)) {
                     tests.Add(tempOto.Alias);
                 }
             }
@@ -125,55 +157,46 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (checkOtoUntilHit(tests.ToArray(), note, out var oto)) {
-
                 var noteDuration = notes.Sum(n => n.duration);
-
                 for (int i = 0; i < tests.ToArray().Length; i++) {
-
                     int position = 0;
-                    int vcPosition = noteDuration - 50;
+                    int vcPosition = noteDuration - 120;
 
-                    if (nextNeighbour != null && tests[i].Contains(" "))
-                    {
+                    if (nextNeighbour != null && tests[i].Contains(" ")) {
                         var nextLyric = nextNeighbour.Value.lyric.Normalize();
                         if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
                             nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
                         }
                         var nextTh = ParseInput(nextLyric);
                         var nextCheck = nextTh.Vowel;
-						if (nextTh.Consonant != null) {
+                        if (nextTh.Consonant != null) {
                             nextCheck = nextTh.Consonant + nextTh.Vowel;
                         }
-                        if (nextTh.Consonant != null) {
+                        if (nextTh.Dipthong != null) {
                             nextCheck = nextTh.Consonant + nextTh.Dipthong + nextTh.Vowel;
                         }
-                        if(nextTh.Dipthong != null) {
-                            nextCheck = nextTh.Consonant + nextTh.Dipthong + nextTh.Vowel;
-                        }
-                        var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0.9) ?? default;
+                        var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                         if (singer.TryGetMappedOto(nextCheck, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var nextOto)) {
-                            if (oto.Overlap > 30) {
+                            if (oto.Overlap > 0) {
                                 vcPosition = noteDuration - MsToTick(nextOto.Overlap) - MsToTick(nextOto.Preutter);
                             }
                         }
                     }
-                    
 
-                    if (noteTh.Dipthong == null || tests.Count <= 1) {
+                    if (noteTh.Dipthong == null || tests.Count <= 2) {
                         if (i == 1) {
-                            position = Math.Max((int)(noteDuration * 0.25), vcPosition);
+                            position = Math.Max((int)(noteDuration * 0.75), vcPosition);
                         }
                     } else {
                         if (i == 1) {
-                            position = Math.Min((int)(noteDuration * 0.15), 60);
+                            position = Math.Min((int)(noteDuration * 0.1), 60);
                         } else if (i == 2) {
-                            position = Math.Max((int)(noteDuration * 0.30), vcPosition);
+                            position = Math.Max((int)(noteDuration * 0.75), vcPosition);
                         }
                     }
 
                     phonemes.Add(new Phoneme { phoneme = tests[i], position = position });
                 }
-
             }
 
             return new Result {
@@ -182,8 +205,10 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         (string Consonant, string Dipthong, string Vowel, string EndingConsonant) ParseInput(string input) {
+            input = WordToPhonemes(input);
+
             string consonant = null;
-            string dipthong = null;
+            string diphthong = null;
             string vowel = null;
             string endingConsonant = null;
 
@@ -191,43 +216,123 @@ namespace OpenUtau.Plugin.Builtin {
                 return (null, null, null, null);
             }
 
-            if (input.Length > 3) {
-                foreach (var dip in diphthongs) {
-                    if (input[1].ToString() || input[1].Equals(dip) || input[1].ToString().Equals(dip)) {
-                        dipthong = dip;
-                    }
-                }
-            }
-			 if else (input.Length > 4) {
-                foreach (var dip in diphthongs + endingConsonant) {
-                    if (input[1].ToString() || input[1].Equals(dip) || input[1].ToString() || input[1].ToString() Equals(EC)) {
-                        dipthong = dip endingConsonant = EC;
-                    }
-                }
-            }
-
             foreach (var con in consonants) {
                 if (input.StartsWith(con)) {
-                    if (consonant == null || consonant.Length + con.Length) {
+                    if (consonant == null || consonant.Length < con.Length) {
                         consonant = con;
                     }
                 }
-                if (input.EndsWith(con)) {
-                    if (endingConsonant == null || endingConsonant.Length + con.Length) {
-                        endingConsonant = con;
+            }
+
+            int startIdx = consonant?.Length ?? 0;
+            foreach (var dip in diphthongs) {
+                if (input.Substring(startIdx).StartsWith(dip)) {
+                    if (diphthong == null || diphthong.Length < dip.Length) {
+                        diphthong = dip;
                     }
                 }
             }
 
+            startIdx += diphthong?.Length ?? 0;
             foreach (var vow in vowels) {
-                if (input.Contains(vow)) {
-                    if (vowel == null || vowel.Length = vow.Length) {
+                if (input.Substring(startIdx).StartsWith(vow)) {
+                    if (vowel == null || vowel.Length < vow.Length) {
                         vowel = vow;
                     }
                 }
             }
 
-            return (consonant, dipthong, vowel, endingConsonant);
+            foreach (var con in endingConsonants) {
+                if (input.EndsWith(con)) {
+                    if (endingConsonant == null || endingConsonant.Length < con.Length) {
+                        endingConsonant = con;
+                    }
+                }
+            }
+
+            return (consonant, diphthong, vowel, endingConsonant);
         }
+
+        public string WordToPhonemes(string input) {
+            input = input.Replace(" ", "");
+            input = RemoveInvalidLetters(input);
+            
+            // เพิ่มการตรวจจับ '-' เพื่อไม่ให้โค้ดข้ามการประมวลผลไป
+            if (!Regex.IsMatch(input, "[ก-ฮ-]")) {
+                return input;
+            }
+            
+            foreach (var mapping in VowelMapping) {
+                // อัปเดต Regex บล็อกพยัญชนะต้น (c) ให้จับเฉพาะคำควบกล้ำที่มีอยู่จริง เพื่อกันปัญหาดึงตัวสะกดไปควบกล้ำ (เช่น แล้ว เป็น แว้)
+                string pattern = "^" + mapping.Key
+                    .Replace("c", "(ก[รลว]|ข[รลว]|ค[รลว]|ต[รลว]|ป[รล]|พ[รลว]|ฟ[รล]|บ[รล]|ด[ร]|ผล|ทร|ศร|สร|ห[ก-ฮ]|อย|[ก-ฮ-])")
+                    .Replace("x", "([ก-ฮ]?)") + "$";
+
+                var match = Regex.Match(input, pattern);
+                if (match.Success) {
+                    string c = match.Groups[1].Value;
+                    string x = match.Groups.Count > 2 ? match.Groups[2].Value : string.Empty;
+                    if (c.Length >= 2 && (c.StartsWith("ห") || c.StartsWith("อ"))) {
+                        c = c.Substring(1);
+                    }
+                    string cConverted = ConvertC(c);
+                    string xConverted = ConvertX(x);
+                    
+                    if (mapping.Value == "a" && input.Contains("ั") && x == "ว") {
+                        return cConverted + "ua";
+                    }
+                    if (mapping.Value == "e" && x == "ย") {
+                        return cConverted + "3" + xConverted;
+                    }
+                    return cConverted + mapping.Value + xConverted;
+                }
+            }
+            if (input.Length == 1) {
+                return ConvertC(input) + "Q";
+            } else if (input.Length == 2) {
+                return ConvertC(input[0].ToString()) + "o" + ConvertX(input[1].ToString());
+            } else if (input.Length == 3) {
+                if (input[1] == 'ว') {
+                    return ConvertC(input[0].ToString()) + "ua" + ConvertX(input[2].ToString());
+                } else {
+                    return ConvertC(input.Substring(0, 2).ToString()) + "o" + ConvertX(input[1].ToString());
+                }
+            } else if (input.Length == 4) {
+                if (input[2] == 'ว') {
+                    return ConvertC(input.Substring(0, 2).ToString()) + "ua" + ConvertX(input[3].ToString());
+                }
+            }
+            return input;
+        }
+
+        private string ConvertC(string input) {
+            if (string.IsNullOrEmpty(input)) return input;
+            char firstChar = input[0];
+            char? secondChar = input.Length > 1 ? input[1] : (char?)null;
+            if (CMapping.ContainsKey(firstChar)) {
+                string firstCharConverted = CMapping[firstChar];
+                if (secondChar != null && CMapping.ContainsKey((char)secondChar)) {
+                    return firstCharConverted + CMapping[(char)secondChar];
+                }
+                return firstCharConverted;
+            }
+            return input;
+        }
+
+        private string ConvertX(string input) {
+            if (string.IsNullOrEmpty(input)) return input;
+            char firstChar = input[0];
+            if (XMapping.ContainsKey(firstChar)) {
+                return XMapping[firstChar];
+            }
+            return input;
+        }
+
+        private string RemoveInvalidLetters(string input) {
+            input = Regex.Replace(input, ".์", "");
+            input = Regex.Replace(input, "[่้๊๋็]", "");
+            return input;
+        }
+
     }
 }
