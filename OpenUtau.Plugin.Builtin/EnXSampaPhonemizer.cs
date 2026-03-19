@@ -38,7 +38,7 @@ namespace OpenUtau.Plugin.Builtin {
         private static string[] nasal = "".Split(',');
         private static string[] stop = "".Split(',');
         private static string[] tap = "".Split(',');
-        private static Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
+        private Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
 
         private Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
             "b=b;ch=tS;d=d;dh=D;" + "dx=4;eh=E;el=@l;em=@m;en=@n;eng=@N;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
@@ -1162,13 +1162,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (isReplacements) {
-                foreach (var syllable in replacements) {
+                foreach (var syllable in replacements.OrderByDescending(f => f.Key.Length)) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
 
             if (isfallbacks) {
-                foreach (var syllable in fallbacks) {
+                foreach (var syllable in fallbacks.OrderByDescending(f => f.Key.Length)) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
@@ -1200,7 +1200,14 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool PhonemeIsPresent(string alias, string phoneme) {
-            return Regex.IsMatch(alias, $@"\b{Regex.Escape(phoneme)}\b");
+            if (string.IsNullOrEmpty(alias) || string.IsNullOrEmpty(phoneme))
+                return false;
+
+            // Exact token match
+            if (alias == phoneme)
+                return true;
+
+            return alias.EndsWith(phoneme);
         }
 
         private bool PhonemeHasEndingSuffix(string alias, string phoneme) {

@@ -14,9 +14,9 @@ jobs:
             arch: win-x64
           - runs-on: windows-11-arm
             arch: win-arm64
-          - runs-on: macos-13
+          - runs-on: macos-15-intel
             arch: osx-x64
-          - runs-on: macos-15
+          - runs-on: macos-latest
             arch: osx-arm64
           - runs-on: ubuntu-latest
             arch: linux-x64

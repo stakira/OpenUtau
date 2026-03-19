@@ -196,6 +196,7 @@ namespace OpenUtau.Core {
 
         public void PlayTestSound() {
             masterMix = null;
+            PlayingMaster = false;
             AudioOutput.Stop();
             AudioOutput.Init(new SignalGenerator(44100, 1).Take(TimeSpan.FromSeconds(1)));
             AudioOutput.Play();
@@ -249,8 +250,6 @@ namespace OpenUtau.Core {
 
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
-                startMs = project.timeAxis.TickPosToMsPos(tick);
-                masterMix.Waited = 0;
                 PlayingMaster = true;
                 AudioOutput.Play();
                 return;

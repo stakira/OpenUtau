@@ -171,7 +171,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
-            track.TryGetExpression(project, abbr, out UExpression trackExp);
+            track.TryGetExpDescriptor(project, abbr, out var descriptor);
             var list = new List<Tuple<float, bool>>();
 
             if (phonemeIndexes != null && phonemeIndexes.Length > 0) {
@@ -185,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
                         if (phonemizerExp != null) {
                             list.Add(Tuple.Create(phonemizerExp.value, false));
                         } else {
-                            list.Add(Tuple.Create(trackExp.value, false));
+                            list.Add(Tuple.Create(descriptor.CustomDefaultValue, false));
                         }
                     }
                 }
@@ -218,7 +218,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void SetExpression(UProject project, UTrack track, string abbr, float?[] values) {
-            if (!track.TryGetExpression(project, abbr, out UExpression trackExp)) {
+            if (!track.TryGetExpDescriptor(project, abbr, out var descriptor)) {
                 return;
             }
             if (values.Length == 0) {
@@ -240,7 +240,7 @@ namespace OpenUtau.Core.Ustx {
                         continue;
                     }
 
-                    phonemeExpressions.Add(new UExpression(trackExp.descriptor) {
+                    phonemeExpressions.Add(new UExpression(descriptor) {
                         index = i,
                         value = (float)value,
                     });
@@ -439,7 +439,11 @@ namespace OpenUtau.Core.Ustx {
         /// <summary>
         /// SineOut
         /// </summary>
-        o
+        o,
+        /// <summary>
+        /// Spline
+        /// </summary>
+        sp
     };
 
     public class PitchPoint : IComparable<PitchPoint> {
@@ -453,13 +457,15 @@ namespace OpenUtau.Core.Ustx {
         /// </summary>
         public float Y;
         public PitchPointShape shape;
+        [YamlIgnore] public bool autoCompleted = false;
 
         public PitchPoint() { }
 
-        public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.io) {
+        public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.io, bool autoCompleted = false) {
             X = x;
             Y = y;
             this.shape = shape;
+            this.autoCompleted = autoCompleted;
         }
 
         public PitchPoint Clone() {
@@ -467,6 +473,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public int CompareTo(PitchPoint other) { return X.CompareTo(other.X); }
+        public override string ToString() {
+            return $"x: {X}, y: {Y}, shape: {shape}";
+        }
     }
 
     public class UPitch {
