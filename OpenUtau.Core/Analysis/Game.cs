@@ -52,6 +52,7 @@ public class Game : MidiExtractor<GameOptions> {
     RunOptions? runOptions;
     bool sessionsLoaded = false;
     bool disposed = false;
+    volatile bool stopping = false;
     GameConfig config;
     string Location;
 
@@ -99,12 +100,23 @@ public class Game : MidiExtractor<GameOptions> {
     /// </summary>
     private void EnsureSessionsLoaded() {
         if (sessionsLoaded) return;
+        if (stopping) {
+            throw new OperationCanceledException();
+        }
         runOptions = new RunOptions();
+        if (stopping) {
+            runOptions.Terminate = true;
+            throw new OperationCanceledException();
+        }
         encoderSession = CreateSession("encoder.onnx", OnnxRunnerChoice.CPUForCoreML);
         segmenterSession = CreateSession("segmenter.onnx", OnnxRunnerChoice.Default);
         estimatorSession = CreateSession("estimator.onnx", OnnxRunnerChoice.Default);
         bd2durSession = CreateSession("bd2dur.onnx", OnnxRunnerChoice.Default);
         sessionsLoaded = true;
+        if (stopping) {
+            runOptions.Terminate = true;
+            throw new OperationCanceledException();
+        }
     }
 
     protected override bool SupportsBatch => true;
@@ -194,6 +206,7 @@ public class Game : MidiExtractor<GameOptions> {
     }
 
     public override void Interrupt() {
+        stopping = true;
         if (!disposed && runOptions != null) {
             runOptions.Terminate = true;
         }
