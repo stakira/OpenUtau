@@ -66,6 +66,8 @@
   <system:String x:Key="context.part.applypitch">Apply pitch from...</system:String>
   <system:String x:Key="context.part.nopitchsource">No wave part available</system:String>
   <system:String x:Key="context.part.extractingpitch">Extracting pitch</system:String>
+  <system:String x:Key="context.part.nopitchregion">There is no overlapping region between the source wave part and the target note part.</system:String>
+  <system:String x:Key="context.part.nopitchdetected">No pitch detected from the source wave part.</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>

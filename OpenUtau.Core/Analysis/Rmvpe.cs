@@ -257,11 +257,19 @@ public class RmvpeTranscriber : IDisposable {
     public RmvpeResult? Infer(UWavePart wavePart, double startMs = 0, double endMs = 0) {
         int startSample = 0;
         int endSample = wavePart.Samples.Length / wavePart.channels;
-        if (endMs > 0) {
-            startSample = (int)(startMs * wavePart.sampleRate / 1000);
-            endSample = (int)(endMs * wavePart.sampleRate / 1000);
-            startSample = Math.Clamp(startSample, 0, wavePart.Samples.Length / wavePart.channels);
-            endSample = Math.Clamp(endSample, startSample, wavePart.Samples.Length / wavePart.channels);
+        int totalSamples = endSample;
+        if (startMs > 0 || endMs > 0) {
+            if (startMs > 0) {
+                startSample = (int)(startMs * wavePart.sampleRate / 1000);
+            }
+            if (endMs > 0) {
+                endSample = (int)(endMs * wavePart.sampleRate / 1000);
+            }
+            startSample = Math.Clamp(startSample, 0, totalSamples);
+            endSample = Math.Clamp(endSample, startSample, totalSamples);
+        }
+        if (endSample <= startSample) {
+            return null;
         }
         var mono = ToMono(wavePart.Samples, startSample, endSample, wavePart.channels);
         var resampled = ResampleTo16k(mono, wavePart.sampleRate);

@@ -1340,6 +1340,16 @@ namespace OpenUtau.App.Views {
                 double startSrcFileMs = Math.Max(0, targetStartMs - srcStartMs + srcSkipMs - 1000);
                 double endSrcFileMs = Math.Min(source.fileDurationMs, targetEndMs - srcStartMs + srcSkipMs + 1000);
 
+                if (endSrcFileMs <= startSrcFileMs) {
+                    await MessageBox.Show(
+                        this,
+                        ThemeManager.GetString("context.part.nopitchregion"),
+                        ThemeManager.GetString("errors.caption"),
+                        MessageBox.MessageBoxButtons.Ok);
+                    return;
+                }
+                endSrcFileMs = Math.Max(0, endSrcFileMs);
+
                 RmvpeResult? srcResult = await Task.Run(() => {
                     using var rmvpe = new RmvpeTranscriber();
                     using (cts.Token.Register(() => rmvpe.Interrupt())) {
@@ -1371,7 +1381,7 @@ namespace OpenUtau.App.Views {
                     if (targetMidi.All(float.IsNaN)) {
                         await Dispatcher.UIThread.InvokeAsync(() => MessageBox.Show(
                             this,
-                            "No pitch detected in the overlapping region.",
+                            ThemeManager.GetString("context.part.nopitchdetected"),
                             ThemeManager.GetString("errors.caption"),
                             MessageBox.MessageBoxButtons.Ok));
                     } else {
