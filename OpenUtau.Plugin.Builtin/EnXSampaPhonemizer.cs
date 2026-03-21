@@ -1205,22 +1205,12 @@ namespace OpenUtau.Plugin.Builtin {
         protected override double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
             double otoLength = GetTransitionBasicLengthMsByOto(alias, tone, attr);
 
-            var tokens = alias.Split(' ')
-                      .Select(t => t.Trim())
-                      .Where(t => !string.IsNullOrEmpty(t))
-                      .ToList();
-
             var sortedOverrides = PhonemeOverrides.OrderByDescending(kv => kv.Key.Length);
             foreach (var kvp in sortedOverrides) {
                 var symbol = kvp.Key;
                 var value = kvp.Value;
 
-                if (symbol.Contains(" ")) {
-                    if (alias.Replace("-", "").Contains(symbol)) {
-                        return GetTransitionBasicLengthMsByConstant() * value;
-                    }
-                } 
-                else if (tokens.Contains(symbol)) {
+                if (alias.Contains(symbol)) {
                     return GetTransitionBasicLengthMsByConstant() * value;
                 }
             }
