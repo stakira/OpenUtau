@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -1344,13 +1345,13 @@ namespace OpenUtau.App.Views {
                 }
 
                 bool cancelled = false;
+                using var cts = new CancellationTokenSource();
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
-                    Action? cancel = null;
                     EventHandler closedHandler = (_, __) => {
                         cancelled = true;
-                        cancel?.Invoke();
+                        cts.Cancel();
                     };
                     msgbox.Closed += closedHandler;
                     Func<bool> confirmLongChunk = () => {
@@ -1367,13 +1368,17 @@ namespace OpenUtau.App.Views {
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
                         voicePart = await Task.Run(() => {
                             using (var some = new Some()) {
-                                cancel = () => some.Interrupt();
-                                return some.Transcribe(DocManager.Inst.Project, wavePart,
-                                    null, null,
-                                    confirmLongChunk,
-                                    (processedS, totalS) => {
-                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
-                                    });
+                                using (cts.Token.Register(() => some.Interrupt())) {
+                                    if (cts.Token.IsCancellationRequested) {
+                                        return null;
+                                    }
+                                    return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                        null, null,
+                                        confirmLongChunk,
+                                        (processedS, totalS) => {
+                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                        });
+                                }
                             }
                         });
                     } else {
@@ -1381,13 +1386,17 @@ namespace OpenUtau.App.Views {
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
                         voicePart = await Task.Run(() => {
                             using (var game = new Game()) {
-                                cancel = () => game.Interrupt();
-                                return game.Transcribe(DocManager.Inst.Project, wavePart,
-                                    gameOptions, batchingStrategy,
-                                    confirmLongChunk,
-                                    (processedS, totalS) => {
-                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
-                                    });
+                                using (cts.Token.Register(() => game.Interrupt())) {
+                                    if (cts.Token.IsCancellationRequested) {
+                                        return null;
+                                    }
+                                    return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                        gameOptions, batchingStrategy,
+                                        confirmLongChunk,
+                                        (processedS, totalS) => {
+                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                        });
+                                }
                             }
                         });
                     }
@@ -1396,8 +1405,12 @@ namespace OpenUtau.App.Views {
                         msgbox.SetText($"{text} {part.name}\nPredicting f0...");
                         rmvpeResult = await Task.Run(() => {
                             using var rmvpe = new RmvpeTranscriber();
-                            cancel = () => rmvpe.Interrupt();
-                            return rmvpe.Infer(wavePart);
+                            using (cts.Token.Register(() => rmvpe.Interrupt())) {
+                                if (cts.Token.IsCancellationRequested) {
+                                    return null;
+                                }
+                                return rmvpe.Infer(wavePart);
+                            }
                         });
                     }
                     msgbox.Closed -= closedHandler;
