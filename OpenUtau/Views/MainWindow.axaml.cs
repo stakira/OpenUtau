@@ -1343,9 +1343,16 @@ namespace OpenUtau.App.Views {
                     return;
                 }
 
+                bool cancelled = false;
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
                     var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                    Action? cancel = null;
+                    EventHandler closedHandler = (_, __) => {
+                        cancelled = true;
+                        cancel?.Invoke();
+                    };
+                    msgbox.Closed += closedHandler;
                     Func<bool> confirmLongChunk = () => {
                         return Dispatcher.UIThread.InvokeAsync(async () => {
                             var result = await MessageBox.Show(
@@ -1360,6 +1367,7 @@ namespace OpenUtau.App.Views {
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
                         voicePart = await Task.Run(() => {
                             using (var some = new Some()) {
+                                cancel = () => some.Interrupt();
                                 return some.Transcribe(DocManager.Inst.Project, wavePart,
                                     null, null,
                                     confirmLongChunk,
@@ -1373,6 +1381,7 @@ namespace OpenUtau.App.Views {
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
                         voicePart = await Task.Run(() => {
                             using (var game = new Game()) {
+                                cancel = () => game.Interrupt();
                                 return game.Transcribe(DocManager.Inst.Project, wavePart,
                                     gameOptions, batchingStrategy,
                                     confirmLongChunk,
@@ -1383,15 +1392,17 @@ namespace OpenUtau.App.Views {
                         });
                     }
                     RmvpeResult? rmvpeResult = null;
-                    if (voicePart != null && transcribeVm.PredictPitd) {
+                    if (voicePart != null && transcribeVm.PredictPitd && !cancelled) {
                         msgbox.SetText($"{text} {part.name}\nPredicting f0...");
                         rmvpeResult = await Task.Run(() => {
                             using var rmvpe = new RmvpeTranscriber();
+                            cancel = () => rmvpe.Interrupt();
                             return rmvpe.Infer(wavePart);
                         });
                     }
+                    msgbox.Closed -= closedHandler;
                     msgbox?.Close();
-                    if (voicePart != null) {
+                    if (voicePart != null && !cancelled) {
                         if (rmvpeResult != null) {
                             rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
                         }
@@ -1405,6 +1416,9 @@ namespace OpenUtau.App.Views {
                         DocManager.Inst.EndUndoGroup();
                     }
                 } catch (Exception e) {
+                    if (cancelled) {
+                        return;
+                    }
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     _ = MessageBox.ShowError(this, e);
                 }

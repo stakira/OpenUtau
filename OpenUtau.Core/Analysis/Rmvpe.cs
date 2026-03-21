@@ -201,6 +201,7 @@ public class RmvpeTranscriber : IDisposable {
     readonly string f0OutputName;
     readonly string uvOutputName;
     readonly string modelPath;
+    RunOptions? runOptions;
     bool disposed;
 
     public RmvpeTranscriber() {
@@ -225,6 +226,7 @@ public class RmvpeTranscriber : IDisposable {
             thresholdInputName,
             f0OutputName,
             uvOutputName);
+        runOptions = new RunOptions();
     }
 
     public static bool IsInstalled() {
@@ -244,7 +246,7 @@ public class RmvpeTranscriber : IDisposable {
             ?? Path.Combine(PathManager.Inst.DependencyPath, "rmvpe", "rmvpe.onnx");
     }
 
-    public RmvpeResult Infer(UWavePart wavePart) {
+    public RmvpeResult? Infer(UWavePart wavePart) {
         var mono = ToMono(wavePart);
         var resampled = ResampleTo16k(mono, wavePart.sampleRate);
         var waveform = new DenseTensor<float>(new[] { 1, resampled.Length });
@@ -252,22 +254,29 @@ public class RmvpeTranscriber : IDisposable {
             waveform[0, i] = Math.Clamp(resampled[i], -1f, 1f);
         }
         var threshold = new DenseTensor<float>(new[] { Threshold }, Array.Empty<int>());
-        using var outputs = session.Run(new[] {
-            NamedOnnxValue.CreateFromTensor(waveformInputName, waveform),
-            NamedOnnxValue.CreateFromTensor(thresholdInputName, threshold),
-        });
-        var f0Tensor = outputs.First(output => output.Name == f0OutputName).AsTensor<float>();
-        var uvTensor = outputs.First(output => output.Name == uvOutputName).AsTensor<bool>();
-        var f0 = f0Tensor.ToArray();
-        var uv = uvTensor.ToArray();
-        if (f0.Length != uv.Length) {
-            throw new InvalidDataException($"Unexpected RMVPE output sizes: f0={f0.Length}, uv={uv.Length}");
+        try {
+            using var outputs = session.Run(new[] {
+                NamedOnnxValue.CreateFromTensor(waveformInputName, waveform),
+                NamedOnnxValue.CreateFromTensor(thresholdInputName, threshold),
+            }, session.OutputNames, runOptions);
+            var f0Tensor = outputs.First(output => output.Name == f0OutputName).AsTensor<float>();
+            var uvTensor = outputs.First(output => output.Name == uvOutputName).AsTensor<bool>();
+            var f0 = f0Tensor.ToArray();
+            var uv = uvTensor.ToArray();
+            if (f0.Length != uv.Length) {
+                throw new InvalidDataException($"Unexpected RMVPE output sizes: f0={f0.Length}, uv={uv.Length}");
+            }
+            var midiPitch = ConvertToInterpolatedMidiPitch(f0, uv);
+            return new RmvpeResult {
+                TimeStepSeconds = (double)HopLength / SampleRate,
+                MidiPitch = midiPitch,
+            };
+        } catch (OnnxRuntimeException) {
+            if (runOptions != null && runOptions.Terminate) {
+                return null;
+            }
+            throw;
         }
-        var midiPitch = ConvertToInterpolatedMidiPitch(f0, uv);
-        return new RmvpeResult {
-            TimeStepSeconds = (double)HopLength / SampleRate,
-            MidiPitch = midiPitch,
-        };
     }
 
     static float[] ConvertToInterpolatedMidiPitch(float[] f0, bool[] uv) {
@@ -392,8 +401,15 @@ public class RmvpeTranscriber : IDisposable {
         if (!disposed) {
             if (disposing) {
                 session.Dispose();
+                runOptions?.Dispose();
             }
             disposed = true;
+        }
+    }
+
+    public void Interrupt() {
+        if (!disposed && runOptions != null) {
+            runOptions.Terminate = true;
         }
     }
 
