@@ -118,7 +118,7 @@ namespace OpenUtau.Core {
                     options.AppendExecutionProvider("CoreML", new Dictionary<string, string> {
                         { "MLComputeUnits", "ALL" },
                         { "RequireStaticInputShapes", "1"},
-                        { "ModelFormat", "MLProgram"},
+                        { "ModelFormat", "NeuralNetwork"},
                         { "EnableOnSubgraphs", coremlEnableOnSubgraphs ? "1" : "0" }  // Disable subgraph processing to avoid complex control flow issues
                     });
                     break;
