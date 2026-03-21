@@ -1346,10 +1346,12 @@ namespace OpenUtau.App.Views {
 
                 bool cancelled = false;
                 using var cts = new CancellationTokenSource();
+                MessageBox? msgbox = null;
+                EventHandler? closedHandler = null;
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
-                    var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
-                    EventHandler closedHandler = (_, __) => {
+                    msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                    closedHandler = (_, __) => {
                         cancelled = true;
                         cts.Cancel();
                     };
@@ -1413,8 +1415,6 @@ namespace OpenUtau.App.Views {
                             }
                         });
                     }
-                    msgbox.Closed -= closedHandler;
-                    msgbox?.Close();
                     if (voicePart != null && !cancelled) {
                         if (rmvpeResult != null) {
                             rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
@@ -1434,6 +1434,13 @@ namespace OpenUtau.App.Views {
                     }
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     _ = MessageBox.ShowError(this, e);
+                } finally {
+                    if (msgbox != null) {
+                        if (closedHandler != null) {
+                            msgbox.Closed -= closedHandler;
+                        }
+                        msgbox.Close();
+                    }
                 }
             }
         }
