@@ -167,7 +167,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var acousticPath = Path.Combine(Location, dsConfig.acoustic);
                 var acousticBytes = File.ReadAllBytes(acousticPath);
                 acousticHash = XXH64.DigestOf(acousticBytes);
-                acousticSession = Onnx.getInferenceSession(acousticBytes, OnnxRunnerChoice.CPUForCoreML);
+                acousticSession = Onnx.getInferenceSession(acousticBytes, OnnxRunnerChoice.Default);
             }
             return acousticSession;
         }
