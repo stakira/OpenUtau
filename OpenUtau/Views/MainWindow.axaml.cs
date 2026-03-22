@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -1343,9 +1344,18 @@ namespace OpenUtau.App.Views {
                     return;
                 }
 
+                bool cancelled = false;
+                using var cts = new CancellationTokenSource();
+                MessageBox? msgbox = null;
+                EventHandler? closedHandler = null;
                 try {
                     string text = ThemeManager.GetString("context.part.transcribing");
-                    var msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                    msgbox = MessageBox.ShowModal(this, $"{text} {part.name}", text);
+                    closedHandler = (_, __) => {
+                        cancelled = true;
+                        cts.Cancel();
+                    };
+                    msgbox.Closed += closedHandler;
                     Func<bool> confirmLongChunk = () => {
                         return Dispatcher.UIThread.InvokeAsync(async () => {
                             var result = await MessageBox.Show(
@@ -1360,12 +1370,17 @@ namespace OpenUtau.App.Views {
                     if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
                         voicePart = await Task.Run(() => {
                             using (var some = new Some()) {
-                                return some.Transcribe(DocManager.Inst.Project, wavePart,
-                                    null, null,
-                                    confirmLongChunk,
-                                    (processedS, totalS) => {
-                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
-                                    });
+                                using (cts.Token.Register(() => some.Interrupt())) {
+                                    if (cts.Token.IsCancellationRequested) {
+                                        return null;
+                                    }
+                                    return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                        null, null,
+                                        confirmLongChunk,
+                                        (processedS, totalS) => {
+                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                        });
+                                }
                             }
                         });
                     } else {
@@ -1373,25 +1388,34 @@ namespace OpenUtau.App.Views {
                         var batchingStrategy = transcribeVm.BuildBatchingStrategy();
                         voicePart = await Task.Run(() => {
                             using (var game = new Game()) {
-                                return game.Transcribe(DocManager.Inst.Project, wavePart,
-                                    gameOptions, batchingStrategy,
-                                    confirmLongChunk,
-                                    (processedS, totalS) => {
-                                        msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
-                                    });
+                                using (cts.Token.Register(() => game.Interrupt())) {
+                                    if (cts.Token.IsCancellationRequested) {
+                                        return null;
+                                    }
+                                    return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                        gameOptions, batchingStrategy,
+                                        confirmLongChunk,
+                                        (processedS, totalS) => {
+                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", text, part.name, processedS, totalS));
+                                        });
+                                }
                             }
                         });
                     }
                     RmvpeResult? rmvpeResult = null;
-                    if (voicePart != null && transcribeVm.PredictPitd) {
+                    if (voicePart != null && transcribeVm.PredictPitd && !cancelled) {
                         msgbox.SetText($"{text} {part.name}\nPredicting f0...");
                         rmvpeResult = await Task.Run(() => {
                             using var rmvpe = new RmvpeTranscriber();
-                            return rmvpe.Infer(wavePart);
+                            using (cts.Token.Register(() => rmvpe.Interrupt())) {
+                                if (cts.Token.IsCancellationRequested) {
+                                    return null;
+                                }
+                                return rmvpe.Infer(wavePart);
+                            }
                         });
                     }
-                    msgbox?.Close();
-                    if (voicePart != null) {
+                    if (voicePart != null && !cancelled) {
                         if (rmvpeResult != null) {
                             rmvpeResult.ApplyToPart(DocManager.Inst.Project, voicePart);
                         }
@@ -1405,8 +1429,18 @@ namespace OpenUtau.App.Views {
                         DocManager.Inst.EndUndoGroup();
                     }
                 } catch (Exception e) {
+                    if (cancelled) {
+                        return;
+                    }
                     Log.Error(e, $"Failed to transcribe part {part.name}");
                     _ = MessageBox.ShowError(this, e);
+                } finally {
+                    if (msgbox != null) {
+                        if (closedHandler != null) {
+                            msgbox.Closed -= closedHandler;
+                        }
+                        msgbox.Close();
+                    }
                 }
             }
         }
