@@ -1,4 +1,4 @@
-name: Crowdin Action
+name: THAI CVVC-VCCV
 
 on:
   workflow_dispatch: {}
