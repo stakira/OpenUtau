@@ -63,6 +63,11 @@
   <system:String x:Key="context.part.split">Split part at playhead</system:String>
   <system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>
   <system:String x:Key="context.part.transcribing">Transcribing</system:String>
+  <system:String x:Key="context.part.applypitch">Apply pitch from...</system:String>
+  <system:String x:Key="context.part.nopitchsource">No wave part available</system:String>
+  <system:String x:Key="context.part.extractingpitch">Extracting pitch</system:String>
+  <system:String x:Key="context.part.nopitchregion">There is no overlapping region between the source wave part and the target note part.</system:String>
+  <system:String x:Key="context.part.nopitchdetected">No pitch detected from the source wave part.</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
@@ -126,7 +131,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="dialogs.transcribe.game.notfound">GAME is not installed.</system:String>
   <system:String x:Key="dialogs.transcribe.rmvpe.notfound">RMVPE is not installed. Install it from the Package Manager.</system:String>
   <system:String x:Key="dialogs.transcribe.allnotfound">No transcription models are installed. Please install GAME via the Package Manager or download manually from {0}.</system:String>
-  <system:String x:Key="dialogs.transcribe.rmvpe">Predict f0 (PITD) using RMVPE</system:String>
+  <system:String x:Key="dialogs.transcribe.rmvpe">Extract pitch using RMVPE</system:String>
   <system:String x:Key="dialogs.transcribe.game.options">GAME Options</system:String>
   <system:String x:Key="dialogs.transcribe.game.language">Language</system:String>
   <system:String x:Key="dialogs.transcribe.game.language.universal">[universal]</system:String>
