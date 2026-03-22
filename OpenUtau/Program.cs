@@ -9,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using NWaves.Utils;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
@@ -30,6 +31,7 @@ namespace OpenUtau.App {
                     return;
                 }
             }
+
             Log.Information($"{Environment.OSVersion}");
             Log.Information($"{RuntimeInformation.OSDescription} " +
                 $"{RuntimeInformation.OSArchitecture} " +
@@ -40,6 +42,9 @@ namespace OpenUtau.App {
             Log.Information($"Cache path = {PathManager.Inst.CachePath}");
             Log.Information($"System encoding = {Encoding.GetEncoding(0)?.WebName ?? "null"}");
             try {
+                DocManager.Inst.AddSubscriber(new DiscordRpcSubscriber());
+                DiscordRPC.InitRPC();
+                DiscordRPC.IdleRPC();
                 Run(args);
                 Log.Information($"Exiting.");
             } finally {
