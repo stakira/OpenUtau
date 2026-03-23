@@ -52,16 +52,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double PlayPosHighlightX { get; set; }
         [Reactive] public double PlayPosHighlightWidth { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; }
-        [Reactive] public bool CursorTool { get; set; }
-        [Reactive] public bool PenTool { get; set; }
-        [Reactive] public bool PenPlusTool { get; set; }
-        [Reactive] public bool EraserTool { get; set; }
-        [Reactive] public bool DrawPitchTool { get; set; }
-        [Reactive] public bool DrawLinePitchTool { get; set; }
-        [Reactive] public bool OverwritePitchTool { get; set; }
-        [Reactive] public bool OverwriteLinePitchTool { get; set; }
-        [Reactive] public bool KnifeTool { get; set; }
-        public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
         [Reactive] public bool ShowVibrato { get; set; }
@@ -77,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Rect ExpBounds { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
         [Reactive] public bool PrimaryKeyNotSupported { get; set; }
-        [Reactive] public bool ShowCurveToolbox { get; set; }
+        [Reactive] public bool ShowCurveToolbar { get; set; }
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
@@ -168,11 +158,11 @@ namespace OpenUtau.App.ViewModels {
                             ExpTrackHeight = t.Item1.Height / descriptor.options.Length;
                             ExpShadowOpacity = 0;
                         }
-                        ShowCurveToolbox = descriptor.type == UExpressionType.Curve;
+                        ShowCurveToolbar = descriptor.type == UExpressionType.Curve;
                     } else {
                         ExpTrackHeight = 0;
                         ExpShadowOpacity = 0.3;
-                        ShowCurveToolbox = false;
+                        ShowCurveToolbar = false;
                     }
                 });
             this.WhenAnyValue(x => x.Project)
@@ -205,32 +195,6 @@ namespace OpenUtau.App.ViewModels {
                             CommandParameter = index,
                         }));
                 });
-
-            CursorTool = false;
-            if (Preferences.Default.PenPlusDefault) {
-                PenPlusTool = true;
-                PenTool = false;
-            } else {
-                PenTool = true;
-                PenPlusTool = false;
-            }
-            EraserTool = false;
-            DrawPitchTool = false;
-            DrawLinePitchTool = false;
-            OverwritePitchTool = false;
-            OverwriteLinePitchTool = false;
-            KnifeTool = false;
-            SelectToolCommand = ReactiveCommand.Create<string>(index => {
-                CursorTool = index == "1";
-                PenTool = index == "2";
-                PenPlusTool = index == "2+";
-                EraserTool = index == "3";
-                DrawPitchTool = index == "4";
-                OverwritePitchTool = index == "4+";
-                DrawLinePitchTool = index == "4++";
-                OverwriteLinePitchTool = index == "4+++";
-                KnifeTool = index == "5";
-            });
 
             ShowTips = Preferences.Default.ShowTips;
             IsSnapOn = true;
