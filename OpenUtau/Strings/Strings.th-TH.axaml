@@ -1,140 +1,138 @@
-<!--DO NOT modify this file. It is managed autometically.-->
-<!--To contribute to OpenUtau's localization, visit https://crowdin.com/project/oxygen-dioxideopenutau -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.clearcache">Clear cache of phrase</system:String>-->
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.clearcache">ล้างแคชของพาร์ท</system:String>
+  <system:String x:Key="context.note.copy">คัดลอกโน้ต</system:String>
   <system:String x:Key="context.note.delete">ลบโน้ต</system:String>
-  <!--<system:String x:Key="context.note.pasteparameters">Select and paste parameters</system:String>-->
+  <system:String x:Key="context.note.pasteparameters">เลือกและวางพารามิเตอร์</system:String>
   <system:String x:Key="context.part.delete">ลบพาร์ท</system:String>
-  <!--<system:String x:Key="context.part.gotofile">View file location</system:String>-->
+  <system:String x:Key="context.part.gotofile">ดูตำแหน่งไฟล์</system:String>
   <system:String x:Key="context.part.rename">เปลี่ยนชื่อพาร์ท</system:String>
-  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
-  <!--<system:String x:Key="context.part.transcribe">Transcribe audio to create a note part</system:String>-->
-  <!--<system:String x:Key="context.part.transcribing">Transcribing</system:String>-->
-  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <system:String x:Key="context.part.replaceaudio">เลือกไฟล์เสียงใหม่</system:String>
+  <system:String x:Key="context.part.transcribe">ถอดข้อความเสียงเพื่อสร้างโน้ต</system:String>
+  <system:String x:Key="context.part.transcribing">กำลังถอดข้อความเสียง</system:String>
+  <system:String x:Key="context.pitch.easein">โค้งเข้า (Ease in)</system:String>
+  <system:String x:Key="context.pitch.easeinout">โค้งเข้าและออก (Ease in/out)</system:String>
+  <system:String x:Key="context.pitch.easeout">โค้งออก (Ease out)</system:String>
   <system:String x:Key="context.pitch.linear">เส้นตรง</system:String>
   <system:String x:Key="context.pitch.pointadd">เพิ่มจุด</system:String>
   <system:String x:Key="context.pitch.pointdel">ลบจุด</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">สแน็ปไปยังโน้ตก่อนหน้า</system:String>
-  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
+  <system:String x:Key="context.timeline.addtempo">เพิ่มจุดเปลี่ยน Tempo ที่ {0}</system:String>
+  <system:String x:Key="context.timeline.addtimesig">เพิ่มการเปลี่ยนเครื่องหมายกำหนดจังหวะ</system:String>
+  <system:String x:Key="context.timeline.deltempo">ลบจุดเปลี่ยน Tempo ที่ {0}</system:String>
+  <system:String x:Key="context.timeline.deltimesig">ลบการเปลี่ยนเครื่องหมายกำหนดจังหวะ</system:String>
 
   <system:String x:Key="debug.clear">ล้าง</system:String>
-  <system:String x:Key="debug.copylog">บันทึกการคัดลอก</system:String>
-  <system:String x:Key="debug.reverselogorder">ย้อนกลับไปยังบันทึกคำสั่งเดิม</system:String>
+  <system:String x:Key="debug.copylog">คัดลอกบันทึกระบบ (Log)</system:String>
+  <system:String x:Key="debug.reverselogorder">จัดเรียงบันทึกคำสั่งย้อนกลับ</system:String>
 
   <system:String x:Key="dialogs.about.caption">เกี่ยวกับ OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtau มีเป้าหมายที่จะเป็นฐานข้อมูลแบบเปิดสำหรับชุมชนเสียงสังเคราะห์ UTAU ซึ่งทุกคนสามารถแก้ไขเขียนโค้ดโปรแกรมได้ ทำให้ได้รับประสบการณ์การใช้งานที่ทันสมัย และการออกเสียงที่เป็นอัจฉริยะมากยิ่งขึ้น เยี่ยมชมเราได้บน Github.
+    OpenUtau มีเป้าหมายที่จะเป็นฐานข้อมูลแบบเปิด สำหรับ ชุมชนเสียงสังเคราะห์ UTAU Diffsinger Voicevox ฯลฯ ซึ่ง ผู้ใช้งานทุกท่าน สามารถ แก้ไข เขียนโค้ด โปรแกรมได้ เพื่อเพิ่มฟีเจอร์ การใช้งานให้ดีกว่าเดิมได้ เพื่อรับประสบการณ์ การใช้งานที่ทันสมัย และ การออกเสียง ที่เป็นอัจฉริยะมากยิ่งขึ้น เยี่ยมชมเราได้บน Github
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">ออกจาก OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">โปรเจกต์ปัจจุบันยังไม่มีการบันทึกการเปลี่ยนแปลง คุณต้องการบันทึกหรือไม่?</system:String>
   <system:String x:Key="dialogs.export.caption">ส่งออก</system:String>
-  <system:String x:Key="dialogs.export.savefirst">บันทึกไฟล์โปรเจกต์ก่อน</system:String>
-  <!--<system:String x:Key="dialogs.importtracks.caption">Import tracks</system:String>-->
-  <!--<system:String x:Key="dialogs.importtracks.importtempo">The imported project contains the following tempo markers. Do you want to use them?</system:String>-->
-  <!--<system:String x:Key="dialogs.installdependency.caption">Installing dependency</system:String>-->
-  <!--<system:String x:Key="dialogs.installdependency.message">Installing </system:String>-->
-  <!--<system:String x:Key="dialogs.installdll.caption">Installing phonemizer</system:String>-->
-  <!--<system:String x:Key="dialogs.installdll.message">Installing </system:String>-->
+  <system:String x:Key="dialogs.export.savefirst">โปรดบันทึกไฟล์โปรเจกต์ก่อน</system:String>
+  <system:String x:Key="dialogs.importtracks.caption">นำเข้าแทร็ก</system:String>
+  <system:String x:Key="dialogs.importtracks.importtempo">โปรเจกต์ที่นำเข้ามีมาร์กเกอร์จังหวะ (Tempo) ดังต่อไปนี้ คุณต้องการใช้มันหรือไม่?</system:String>
+  <system:String x:Key="dialogs.installdependency.caption">กำลังติดตั้งส่วนประกอบเสริม</system:String>
+  <system:String x:Key="dialogs.installdependency.message">กำลังติดตั้ง </system:String>
+  <system:String x:Key="dialogs.installdll.caption">กำลังติดตั้ง Phonemizer</system:String>
+  <system:String x:Key="dialogs.installdll.message">กำลังติดตั้ง </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">ยกเลิก</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.copy">Copy error to clipboard</system:String>-->
+  <system:String x:Key="dialogs.messagebox.copy">คัดลอกข้อผิดพลาด</system:String>
   <system:String x:Key="dialogs.messagebox.no">ไม่</system:String>
   <system:String x:Key="dialogs.messagebox.ok">ตกลง</system:String>
   <system:String x:Key="dialogs.messagebox.yes">ใช่</system:String>
-  <system:String x:Key="dialogs.noresampler.caption">ไม่มี resampler</system:String>
-  <system:String x:Key="dialogs.noresampler.message">ไม่มี resampler! โปรดใส่ไฟล์ resampler exe หรือ dll ใน resampler folder ที่ชอบ และตั้งค่าเลือก resampler นั้น!</system:String>
-  <!--<system:String x:Key="dialogs.recovery">Previously, OpenUtau terminated abnormally. Do you want to recover?</system:String>-->
-  <!--<system:String x:Key="dialogs.recovery.caption">Recovery project</system:String>-->
-  <!--<system:String x:Key="dialogs.remaptimeaxis.message">This tool will change the tempo of the project without changing the actual positions and durations (in seconds) of notes.
-  New BPM:</system:String>-->
+  <system:String x:Key="dialogs.noresampler.caption">ไม่มี Resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">ไม่มี Resampler! โปรดใส่ไฟล์ resampler exe หรือ dll ลงในแฟ้ม Resamplers และเข้าไปเลือกในการตั้งค่าโปรแกรม!</system:String>
+  <system:String x:Key="dialogs.recovery">ก่อนหน้านี้ OpenUtau ปิดการทำงานอย่างผิดปกติ คุณต้องการกู้คืนข้อมูลหรือไม่?</system:String>
+  <system:String x:Key="dialogs.recovery.caption">กู้คืนโปรเจกต์</system:String>
+  <system:String x:Key="dialogs.remaptimeaxis.message">เครื่องมือนี้จะเปลี่ยนจังหวะของโปรเจกต์โดยไม่กระทบตำแหน่งและระยะเวลา (วินาที) ของโน้ต
+  BPM ใหม่:</system:String>
   <system:String x:Key="dialogs.timesig.caption">เครื่องหมายกำหนดจังหวะ</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
-  <!--<system:String x:Key="dialogs.unsupportedfile.caption">Unsupported file format</system:String>-->
-  <!--<system:String x:Key="dialogs.unsupportedfile.message">Unsupported file format: </system:String>-->
-  <!--<system:String x:Key="dialogs.voicecolorremapping">Voice color remapping</system:String>-->
-  <!--<system:String x:Key="dialogs.voicecolorremapping.caption">Applies to all notes in this track:</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.caption">การตั้งค่าแทร็ก</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">ตำแหน่ง</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">ตัวประมวลผล (Renderer)</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">ตั้งเป็นค่าเริ่มต้น</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.caption">รูปแบบไฟล์ไม่รองรับ</system:String>
+  <system:String x:Key="dialogs.unsupportedfile.message">รูปแบบไฟล์ที่ไม่รองรับ: </system:String>
+  <system:String x:Key="dialogs.voicecolorremapping">ปรับเปลี่ยนโทนเสียง (Voice Color)</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.caption">มีผลกับโน้ตทั้งหมดในแทร็กนี้:</system:String>
 
   <system:String x:Key="errors.caption">เกิดข้อผิดพลาด</system:String>
-  <!--<system:String x:Key="errors.details">Error Details</system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder">Error loading vocoder "{0}". Please download vocoder from {1}</system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder1">Error loading vocoder </system:String>-->
-  <!--<system:String x:Key="errors.diffsinger.downloadvocoder2">. Please download vocoder from </system:String>-->
-  <!--<system:String x:Key="errors.editing.autopitch.unsupported">The current voicebank doesn't support generating pitch curve. Please use a Diffsinger or Enunu voicebank.</system:String>-->
-  <!--<system:String x:Key="errors.encryptedarchive">Encrypted archive file isn't supported. Please extract the archive file manually.</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrlong">Abbreviation must be between 1 and 4 characters long</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrset">Abbreviation must be set</system:String>-->
-  <!--<system:String x:Key="errors.expression.abbrunique">Abbreviations must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.default">Default value must be between min and max</system:String>-->
-  <!--<system:String x:Key="errors.expression.flagunique">Flags must be unique</system:String>-->
-  <!--<system:String x:Key="errors.expression.marge">The following expressions have been merged due to duplicate flags</system:String>-->
-  <!--<system:String x:Key="errors.expression.min">Min must be smaller than max</system:String>-->
-  <!--<system:String x:Key="errors.expression.name">Name must be set</system:String>-->
-  <!--<system:String x:Key="errors.failed.export">Failed to export</system:String>-->
-  <!--<system:String x:Key="errors.failed.importaudio">Failed to import audio</system:String>-->
-  <!--<system:String x:Key="errors.failed.importfiles">Failed to import files</system:String>-->
-  <!--<system:String x:Key="errors.failed.importmidi">Failed to import midi</system:String>-->
-  <!--<system:String x:Key="errors.failed.installsinger">Failed to install singer</system:String>-->
-  <!--<system:String x:Key="errors.failed.load">Failed to load</system:String>-->
-  <!--<system:String x:Key="errors.failed.loadprefs">Failed to load prefs. Initialize it.</system:String>-->
-  <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
-  <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
-  <!--<system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>-->
-  <!--<system:String x:Key="errors.failed.render">Failed to render.</system:String>-->
-  <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
-  <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
-  <!--<system:String x:Key="errors.failed.savesingerconfig">Failed to save singer config file</system:String>-->
-  <!--<system:String x:Key="errors.failed.searchsinger">Failed to search singers</system:String>-->
-  <!--<system:String x:Key="errors.failed.synth.cutoffbeforeoffset">Oto error: cutoff before offset</system:String>-->
-  <!--<system:String x:Key="errors.failed.synth.cutoffexceedduration">Oto error: cutoff exceeds audio duration</system:String>-->
-  <!--<system:String x:Key="errors.install.cpp">Try installing the latest Visual C++ Redistributable. https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>-->
-  <!--<system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>-->
-  <!--<system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>-->
+  <system:String x:Key="errors.details">รายละเอียดข้อผิดพลาด</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder">เกิดข้อผิดพลาดในการโหลด Vocoder "{0}" โปรดดาวน์โหลดจาก {1}</system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder1">เกิดข้อผิดพลาดในการโหลด Vocoder </system:String>
+  <system:String x:Key="errors.diffsinger.downloadvocoder2"> โปรดดาวน์โหลด Vocoder จาก </system:String>
+  <system:String x:Key="errors.editing.autopitch.unsupported">คลังเสียงที่เลือกไม่รองรับการสร้างกราฟ Pitch อัตโนมัติ โปรดใช้คลังเสียงแบบ Diffsinger หรือ Enunu</system:String>
+  <system:String x:Key="errors.encryptedarchive">ไม่รองรับไฟล์ที่ถูกเข้ารหัสรหัสผ่าน โปรดแตกไฟล์ด้วยตัวเอง</system:String>
+  <system:String x:Key="errors.expression.abbrlong">ตัวย่อต้องมีความยาวระหว่าง 1 ถึง 4 ตัวอักษร</system:String>
+  <system:String x:Key="errors.expression.abbrset">ต้องระบุตัวย่อ</system:String>
+  <system:String x:Key="errors.expression.abbrunique">ตัวย่อต้องไม่ซ้ำกัน</system:String>
+  <system:String x:Key="errors.expression.default">ค่าเริ่มต้นต้องอยู่ระหว่างค่าขั้นต่ำและสูงสุด</system:String>
+  <system:String x:Key="errors.expression.flagunique">ตัวอักษร Flag ต้องไม่ซ้ำกัน</system:String>
+  <system:String x:Key="errors.expression.marge">เครื่องหมายถูกผสานรวมกันเนื่องจากมีตัวอักษร Flag ซ้ำกัน</system:String>
+  <system:String x:Key="errors.expression.min">ค่าขั้นต่ำต้องน้อยกว่าค่าสูงสุด</system:String>
+  <system:String x:Key="errors.expression.name">ต้องระบุชื่อ</system:String>
+  <system:String x:Key="errors.failed.export">ส่งออกไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.importaudio">นำเข้าไฟล์เสียงไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.importfiles">นำเข้าไฟล์ไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.importmidi">นำเข้า Midi ไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.installsinger">ติดตั้งคลังเสียงไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.load">โหลดไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.loadprefs">โหลดการตั้งค่าไม่สำเร็จ โปรแกรมทำการรีเซ็ตใหม่</system:String>
+  <system:String x:Key="errors.failed.openfile">เปิดไฟล์ไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.openlocation">เปิดตำแหน่งไฟล์ไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.opennewerproject">ไฟล์โปรเจกต์นี้มาจากโปรแกรมเวอร์ชันที่ใหม่กว่า! โปรดอัปเดต OpenUtau!</system:String>
+  <system:String x:Key="errors.failed.render">ประมวลผล (Render) ไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.runeditingmacro">รันชุดคำสั่งแก้ไขไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.save">บันทึกไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.savesingerconfig">บันทึกไฟล์การตั้งค่านักร้องไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.searchsinger">ค้นหานักร้องไม่สำเร็จ</system:String>
+  <system:String x:Key="errors.failed.synth.cutoffbeforeoffset">ข้อผิดพลาดจาก Oto: Cutoff อยู่ก่อน Offset</system:String>
+  <system:String x:Key="errors.failed.synth.cutoffexceedduration">ข้อผิดพลาดจาก Oto: Cutoff เกินความยาวของไฟล์เสียง</system:String>
+  <system:String x:Key="errors.install.cpp">ลองติดตั้ง Visual C++ Redistributable เวอร์ชันล่าสุด: https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170</system:String>
+  <system:String x:Key="errors.lyrics.regex">มีอักขระที่ไม่ได้รับอนุญาตใน Regular Expression</system:String>
+  <system:String x:Key="errors.lyrics.regexpreview">- ข้อผิดพลาด Regular Expression -</system:String>
 
-  <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
-  <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
-1. Install wine from {0}
-2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
-  <!--<system:String x:Key="exesetup.mac">To use exe resamplers or wavtools on MacOS:
-1. Install wine using following commands
-2. Set wine path in Preferences > Advanced > Wine Path</system:String>-->
-  <!--<system:String x:Key="exesetup.resampler">Install as resampler</system:String>-->
-  <!--<system:String x:Key="exesetup.title">Installing Exe File</system:String>-->
-  <!--<system:String x:Key="exesetup.wavtool">Install as wavtool</system:String>-->
+  <system:String x:Key="exesetup.installing">กำลังติดตั้ง "{0}"...</system:String>
+  <system:String x:Key="exesetup.linux">การใช้ Resamplers หรือ Wavtools (.exe) บน Linux:
+1. ติดตั้ง Wine จาก {0}
+2. ตั้งค่าเส้นทาง Wine ใน การตั้งค่า > ขั้นสูง > เส้นทาง Wine</system:String>
+  <system:String x:Key="exesetup.mac">การใช้ Resamplers หรือ Wavtools (.exe) บน MacOS:
+1. ติดตั้ง Wine ด้วยคำสั่งระบบ
+2. ตั้งค่าเส้นทาง Wine ใน การตั้งค่า > ขั้นสูง > เส้นทาง Wine</system:String>
+  <system:String x:Key="exesetup.resampler">ติดตั้งเป็น Resampler</system:String>
+  <system:String x:Key="exesetup.title">การติดตั้งไฟล์ Exe</system:String>
+  <system:String x:Key="exesetup.wavtool">ติดตั้งเป็น Wavtool</system:String>
 
-  <!--<system:String x:Key="exps.abbr">Abbreviation</system:String>-->
+  <system:String x:Key="exps.abbr">ตัวย่อ</system:String>
   <system:String x:Key="exps.apply">ใช้งาน</system:String>
-  <!--<system:String x:Key="exps.caption">Expressions</system:String>-->
+  <system:String x:Key="exps.caption">เครื่องหมาย (Expressions)</system:String>
   <system:String x:Key="exps.defaultvalue">ค่าเริ่มต้น</system:String>
-  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
-  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
-  <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
+  <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <system:String x:Key="exps.getsuggestions">เพิ่มเครื่องหมายที่แนะนำโดยตัวประมวลผลทั้งหมด</system:String>
+  <system:String x:Key="exps.isflag">เป็น Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">สูงสุด</system:String>
   <system:String x:Key="exps.minvalue">ขั้นต่ำ</system:String>
   <system:String x:Key="exps.name">ชื่อ</system:String>
   <system:String x:Key="exps.optionvalues">ค่าตัวเลือก</system:String>
-  <system:String x:Key="exps.sepbycomma">แยกค่าโดย ','</system:String>
+  <system:String x:Key="exps.sepbycomma">แยกค่าด้วย ','</system:String>
   <system:String x:Key="exps.type">ประเภท</system:String>
-  <system:String x:Key="exps.type.curve">เส้นโค้ง</system:String>
+  <system:String x:Key="exps.type.curve">กราฟโค้ง (Curve)</system:String>
   <system:String x:Key="exps.type.numerical">ตัวเลข</system:String>
   <system:String x:Key="exps.type.options">ตัวเลือก</system:String>
 
   <system:String x:Key="languages.de">เยอรมัน</system:String>
   <system:String x:Key="languages.en">อังกฤษ</system:String>
   <system:String x:Key="languages.es">สเปน</system:String>
-  <!--<system:String x:Key="languages.fil">Filipino</system:String>-->
+  <system:String x:Key="languages.fil">ฟิลิปปินส์</system:String>
   <system:String x:Key="languages.fr">ฝรั่งเศส</system:String>
-  <!--<system:String x:Key="languages.invariant">Not translating</system:String>-->
+  <system:String x:Key="languages.invariant">ไม่ใช้งานการแปล</system:String>
   <system:String x:Key="languages.it">อิตาลี</system:String>
   <system:String x:Key="languages.ja">ญี่ปุ่น</system:String>
   <system:String x:Key="languages.ko">เกาหลี</system:String>
@@ -142,7 +140,7 @@
   <system:String x:Key="languages.pt">โปรตุเกส</system:String>
   <system:String x:Key="languages.ru">รัสเซีย</system:String>
   <system:String x:Key="languages.th">ไทย</system:String>
-  <!--<system:String x:Key="languages.tr">Turkish</system:String>-->
+  <system:String x:Key="languages.tr">ตุรกี</system:String>
   <system:String x:Key="languages.vi">เวียดนาม</system:String>
   <system:String x:Key="languages.zh">จีน</system:String>
   <system:String x:Key="languages.zh-yue">กวางตุ้ง</system:String>
@@ -150,483 +148,131 @@
   <system:String x:Key="lyrics.apply">ใช้งาน</system:String>
   <system:String x:Key="lyrics.cancel">ยกเลิก</system:String>
   <system:String x:Key="lyrics.caption">แก้ไขเนื้อเพลง</system:String>
-  <system:String x:Key="lyrics.livepreview">แสดงผลตัวอย่างสด</system:String>
+  <system:String x:Key="lyrics.livepreview">แสดงผลสด</system:String>
   <system:String x:Key="lyrics.max">สูงสุด</system:String>
   <system:String x:Key="lyrics.reset">คืนค่า</system:String>
   <system:String x:Key="lyrics.selectnotes">โปรดเลือกตัวโน้ตก่อน!</system:String>
   <system:String x:Key="lyrics.separators">ตัวแบ่งแยก</system:String>
 
-  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
-  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
+  <system:String x:Key="lyricsreplace.after">เปลี่ยนแปลงเป็น :</system:String>
+  <system:String x:Key="lyricsreplace.before">ค้นหาคำ :</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">ลบตัวอักษรภาษาอังกฤษ</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">ลบตัวอักษรที่ไม่ใช่ฮิรางานะ</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">ลบคำใบ้การออกเสียง (Phonetic hint)</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">ลบช่องว่าง</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">ลบคำต่อท้ายที่เป็นตัวเลขสเกลเสียง</system:String>
+  <system:String x:Key="lyricsreplace.presets">พรีเซ็ตสำเร็จรูป</system:String>
+  <system:String x:Key="lyricsreplace.preview">ดูตัวอย่าง</system:String>
+  <system:String x:Key="lyricsreplace.regex">รองรับการใช้ Regular Expressions</system:String>
+  <system:String x:Key="lyricsreplace.replace">เครื่องมือแทนที่เนื้อเพลงแบบรวดเร็ว</system:String>
 
   <system:String x:Key="menu.edit">แก้ไข</system:String>
   <system:String x:Key="menu.edit.copy">คัดลอก</system:String>
   <system:String x:Key="menu.edit.cut">ตัด</system:String>
   <system:String x:Key="menu.edit.delete">ลบ</system:String>
-  <!--<system:String x:Key="menu.edit.lockunselectednotes">Lock editing of unselected notes</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.expressions">Expressions</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">Pitch Points</system:String>-->
-  <!--<system:String x:Key="menu.edit.lockunselectednotes.vibrato">Vibrato</system:String>-->
+  <system:String x:Key="menu.edit.lockunselectednotes">ล็อกการแก้ไขโน้ตที่ไม่ได้เลือก</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.expressions">เครื่องหมาย (Expressions)</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.pitchpoints">จุดกราฟ Pitch</system:String>
+  <system:String x:Key="menu.edit.lockunselectednotes.vibrato">ไวบราโต (Vibrato)</system:String>
   <system:String x:Key="menu.edit.paste">วาง</system:String>
   <system:String x:Key="menu.edit.redo">ทำซ้ำ</system:String>
   <system:String x:Key="menu.edit.selectall">เลือกทั้งหมด</system:String>
   <system:String x:Key="menu.edit.undo">เลิกทำ</system:String>
   <system:String x:Key="menu.file">ไฟล์</system:String>
   <system:String x:Key="menu.file.exit">ออก</system:String>
-  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds">Export DiffSinger Scripts To</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2">Export DiffSinger Scripts To (v2)</system:String>-->
-  <!--<system:String x:Key="menu.file.exportds.v2withoutpitch">Export DiffSinger Scripts To (v2, without pitch curve)</system:String>-->
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
-  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
-  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
+  <system:String x:Key="menu.file.exportaudio">ส่งออกไฟล์เสียง</system:String>
+  <system:String x:Key="menu.file.exportds">ส่งออกโปรเจกต์ DiffSinger ไปยัง...</system:String>
+  <system:String x:Key="menu.file.exportds.v2">ส่งออกโปรเจกต์ DiffSinger (v2) ไปยัง...</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">ส่งออกโปรเจกต์ DiffSinger (v2, ไม่รวมกราฟ Pitch) ไปยัง...</system:String>
+  <system:String x:Key="menu.file.exportmidi">ส่งออกเป็นไฟล์ Midi</system:String>
+  <system:String x:Key="menu.file.exportmixdown">มิกซ์ดาวน์เป็นไฟล์ Wav</system:String>
+  <system:String x:Key="menu.file.exportproject">ส่งออกโปรเจกต์</system:String>
   <system:String x:Key="menu.file.exportust">ส่งออกไฟล์ Ust</system:String>
   <system:String x:Key="menu.file.exportustto">ส่งออกไฟล์ Ust ไปยัง...</system:String>
   <system:String x:Key="menu.file.exportwav">ส่งออกไฟล์ Wav</system:String>
   <system:String x:Key="menu.file.exportwavto">ส่งออกไฟล์ Wav ไปยัง...</system:String>
-  <system:String x:Key="menu.file.importaudio">นำเข้า Audio...</system:String>
+  <system:String x:Key="menu.file.importaudio">นำเข้าไฟล์เสียง...</system:String>
   <system:String x:Key="menu.file.importmidi">นำเข้า Midi...</system:String>
-  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
-  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
-  <system:String x:Key="menu.file.importtracks">นำเข้า Tracks...</system:String>
-  <system:String x:Key="menu.file.new">ใหม่</system:String>
-  <system:String x:Key="menu.file.newfromtemplate">เทมเพลตใหม่</system:String>
+  <system:String x:Key="menu.file.importmidi.drywetmidi">เครื่องมือนำเข้าแบบ DryWetMidi</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">เครื่องมือนำเข้าแบบ Naudio</system:String>
+  <system:String x:Key="menu.file.importtracks">นำเข้าแทร็ก...</system:String>
+  <system:String x:Key="menu.file.new">สร้างใหม่</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">สร้างจากเทมเพลต</system:String>
   <system:String x:Key="menu.file.open">เปิด...</system:String>
-  <system:String x:Key="menu.file.openas">เปิดเป็น</system:String>
-  <system:String x:Key="menu.file.openexportlocation">เปิดตำแหน่งส่งออก</system:String>
-  <system:String x:Key="menu.file.openprojectlocation">เปิดตำแหน่งโปรเจกต์</system:String>
-  <system:String x:Key="menu.file.openrecent">เปิดล่าสุด</system:String>
+  <system:String x:Key="menu.file.openas">เปิดเป็น...</system:String>
+  <system:String x:Key="menu.file.openexportlocation">เปิดโฟลเดอร์ไฟล์ที่ถูกส่งออก</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">เปิดโฟลเดอร์โปรเจกต์นี้</system:String>
+  <system:String x:Key="menu.file.openrecent">โปรเจกต์ล่าสุด</system:String>
   <system:String x:Key="menu.file.save">บันทึก</system:String>
   <system:String x:Key="menu.file.saveas">บันทึกเป็น...</system:String>
-  <system:String x:Key="menu.file.savetemplate">บันทึกเทมเพลต...</system:String>
+  <system:String x:Key="menu.file.savetemplate">บันทึกเป็นเทมเพลต...</system:String>
   <system:String x:Key="menu.help">ช่วยเหลือ</system:String>
   <system:String x:Key="menu.help.about">เกี่ยวกับ OpenUtau</system:String>
-  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
-  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
-  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
-  <!--<system:String x:Key="menu.help.wiki">OpenUtau Documentation</system:String>-->
-  <!--<system:String x:Key="menu.project">Project</system:String>-->
-  <!--<system:String x:Key="menu.project.expressions">Expressions...</system:String>-->
-  <!--<system:String x:Key="menu.project.remaptimeaxis">Adjust Tempo (Preserve Timing)</system:String>-->
+  <system:String x:Key="menu.help.checkupdate">ตรวจสอบการอัปเดต</system:String>
+  <system:String x:Key="menu.help.logslocation">เปิดโฟลเดอร์เก็บข้อมูลบันทึก (Logs)</system:String>
+  <system:String x:Key="menu.help.reportissue">แจ้งปัญหาการใช้งาน</system:String>
+  <system:String x:Key="menu.help.wiki">เอกสารคู่มือ OpenUtau</system:String>
+  <system:String x:Key="menu.project">โปรเจกต์</system:String>
+  <system:String x:Key="menu.project.expressions">ตั้งค่าเครื่องหมาย (Expressions)...</system:String>
+  <system:String x:Key="menu.project.remaptimeaxis">ปรับจังหวะ Tempo (คงตำแหน่งโน้ตเดิม)</system:String>
   <system:String x:Key="menu.tools">เครื่องมือ</system:String>
   <system:String x:Key="menu.tools.clearcache">ล้างแคช</system:String>
-  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
-  <!--<system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>-->
-  <!--<system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>-->
-  <system:String x:Key="menu.tools.layout">เลย์เอาท์</system:String>
+  <system:String x:Key="menu.tools.debugwindow">หน้าต่างแก้บั๊ก (Debug)</system:String>
+  <system:String x:Key="menu.tools.dependency.install">ติดตั้งส่วนเสริมระบบ (.oudep)...</system:String>
+  <system:String x:Key="menu.tools.fullscreen">เต็มหน้าจอ</system:String>
+  <system:String x:Key="menu.tools.layout">เลย์เอาต์หน้าต่าง</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">แนวนอน 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">แนวนอน 1:2</system:String>
   <system:String x:Key="menu.tools.layout.hsplit13">แนวนอน 1:3</system:String>
   <system:String x:Key="menu.tools.layout.vsplit11">แนวตั้ง 1:1</system:String>
   <system:String x:Key="menu.tools.layout.vsplit12">แนวตั้ง 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">แนวตั้ง 1:3</system:String>
-  <system:String x:Key="menu.tools.prefs">กำหนดค่า...</system:String>
+  <system:String x:Key="menu.tools.prefs">การตั้งค่า (Preferences)...</system:String>
   <system:String x:Key="menu.tools.singer.install">ติดตั้งคลังเสียง</system:String>
-  <system:String x:Key="menu.tools.singer.installadv">ติดตั้งคลังเสียง (ขั้นสูง)...</system:String>
-  <system:String x:Key="menu.tools.singers">นักร้อง...</system:String>
-  <!--<system:String x:Key="menu.tools.wavtoolresampler.install">Install Wavtool/Resampler (.exe)...</system:String>-->
-  <!--<system:String x:Key="menu.view">View</system:String>-->
+  <system:String x:Key="menu.tools.singer.installadv">ติดตั้งคลังเสียง (โหมดขั้นสูง)...</system:String>
+  <system:String x:Key="menu.tools.singers">การจัดการนักร้อง...</system:String>
+  <system:String x:Key="menu.tools.wavtoolresampler.install">ติดตั้ง Wavtool/Resampler (.exe)...</system:String>
+  <system:String x:Key="menu.view">มุมมอง</system:String>
 
-  <!--<system:String x:Key="mergevoicebank.back">Back</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.merge">Merge</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.next">Next</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.selectsinger">This tool will merge another voicebank into current voicebank as new voice colors.
-Choose the voicebank that you want to merge into current voicebank</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.setfolder">Set new names for copied folders.</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.setsubbank">Set new prefix and suffix for subbanks.
-Syntax: prefix,suffix</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.setvoicecolor">Set new names for voice colors (shown in CLR expression).</system:String>-->
-  <!--<system:String x:Key="mergevoicebank.title">Merge voicebanks</system:String>-->
+  <system:String x:Key="mergevoicebank.back">ย้อนกลับ</system:String>
+  <system:String x:Key="mergevoicebank.merge">ผสานรวม</system:String>
+  <system:String x:Key="mergevoicebank.next">ถัดไป</system:String>
+  <system:String x:Key="mergevoicebank.selectsinger">เครื่องมือนี้จะทำการผสานคลังเสียงอื่นเข้ากับคลังเสียงปัจจุบัน โดยจัดทำเป็นโทนสีเสียงใหม่
+เลือกคลังเสียงที่คุณต้องการจะนำมาผสานร่วม</system:String>
+  <system:String x:Key="mergevoicebank.setfolder">ตั้งชื่อใหม่ให้กับโฟลเดอร์ที่ถูกคัดลอกมา</system:String>
+  <system:String x:Key="mergevoicebank.setsubbank">ตั้งค่า Prefix และ Suffix ให้กับโฟลเดอร์ย่อย (Subbank)
+รูปแบบที่ต้องพิมพ์: prefix,suffix</system:String>
+  <system:String x:Key="mergevoicebank.setvoicecolor">ตั้งชื่อใหม่ให้กับโทนสีเสียง (ชื่อที่จะแสดงในแถบตัวเลือก CLR)</system:String>
+  <system:String x:Key="mergevoicebank.title">เครื่องมือผสานคลังเสียงร่วมกัน</system:String>
 
   <system:String x:Key="notedefaults.lyric">เนื้อเพลง</system:String>
-  <!--<system:String x:Key="notedefaults.lyric.enter">When Enter</system:String>-->
-  <!--<system:String x:Key="notedefaults.lyric.knife">When Knife Tool</system:String>-->
-  <system:String x:Key="notedefaults.portamento">ปอร์ตาเมนโต</system:String>
+  <system:String x:Key="notedefaults.lyric.enter">เมื่อกดปุ่ม Enter</system:String>
+  <system:String x:Key="notedefaults.lyric.knife">เมื่อใช้งานเครื่องมือหั่นโน้ต</system:String>
+  <system:String x:Key="notedefaults.portamento">ปอร์ตาเมนโต (Portamento)</system:String>
   <system:String x:Key="notedefaults.portamento.length">ความยาว</system:String>
-  <system:String x:Key="notedefaults.portamento.start">เริ่มต้น</system:String>
-  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
-  <system:String x:Key="notedefaults.preset.namenew">ชื่อ Preset ใหม่</system:String>
-  <system:String x:Key="notedefaults.preset.remove">ลบออก</system:String>
-  <system:String x:Key="notedefaults.preset.remove.tooltip">ลบค่า Preset ที่ใช้ล่าสุดออก</system:String>
+  <system:String x:Key="notedefaults.portamento.start">จุดเริ่มต้น</system:String>
+  <system:String x:Key="notedefaults.preset">พรีเซ็ต</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">ตั้งชื่อพรีเซ็ตใหม่</system:String>
+  <system:String x:Key="notedefaults.preset.remove">ลบพรีเซ็ต</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">ลบพรีเซ็ตที่คุณกำลังเลือกใช้อยู่นี้ทิ้ง</system:String>
   <system:String x:Key="notedefaults.preset.save">บันทึก</system:String>
-  <system:String x:Key="notedefaults.preset.save.tooltip">บันทึกการตั้งค่าปัจจุบันเป็นค่า Preset ใหม่</system:String>
-  <system:String x:Key="notedefaults.reset">คืนค่าการตั้งค่าทั้งหมด</system:String>
-  <system:String x:Key="notedefaults.reset.tooltip">คืนค่าทุกการตั้งค่าเป็นค่าเริ่มต้น 
-คำเตือน: ตัวเลือกนี้จะลบการตั้งค่า Preset ที่กำหนดเอง</system:String>
-  <system:String x:Key="notedefaults.vibrato">ไวบราโต</system:String>
-  <system:String x:Key="notedefaults.vibrato.autominlength">ความยาวขั้นต่ำ</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">ไวบราโตอัตโนมัติตามความยาวโน้ต</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
-  <system:String x:Key="notedefaults.vibrato.length">ความยาว</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
-  <system:String x:Key="notedefaults.vibrato.period">ระยะเวลา</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.vollink">Volume Link</system:String>-->
+  <system:String x:Key="notedefaults.preset.save.tooltip">บันทึกการตั้งค่าเหล่านี้เป็นพรีเซ็ตตัวใหม่</system:String>
+  <system:String x:Key="notedefaults.reset">รีเซ็ตการตั้งค่าทั้งหมด</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">รีเซ็ตทุกค่าให้กลับไปเป็นแบบเดิมจากระบบ 
+คำเตือน: การกดปุ่มนี้จะลบพรีเซ็ตที่คุณสร้างขึ้นเองทั้งหมด</system:String>
+  <system:String x:Key="notedefaults.vibrato">ลูกคอ (Vibrato)</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">ความยาวของโน้ตขั้นต่ำ</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">เปิดใช้งานลูกคออัตโนมัติแบบอิงตามความยาวโน้ต</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">ความลึกของคลื่น (Depth)</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">ความเบี่ยงเบน (Drift)</system:String>
+  <system:String x:Key="notedefaults.vibrato.in">ความหน่วงก่อนเริ่มคลื่น (Fade In)</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">ความยาวรวมของคลื่น</system:String>
+  <system:String x:Key="notedefaults.vibrato.out">การจางหายของคลื่น (Fade Out)</system:String>
+  <system:String x:Key="notedefaults.vibrato.period">ช่วงความถี่คลื่น (Period)</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">เลื่อนจุดศูนย์กลาง (Shift)</system:String>
+  <system:String x:Key="notedefaults.vibrato.vollink">ลดหลั่นความดังตามคลื่นลูกคอ</system:String>
 
-  <!--<system:String x:Key="noteproperty">Note Properties</system:String>-->
-  <!--<system:String x:Key="noteproperty.apply">Apply</system:String>-->
-  <!--<system:String x:Key="noteproperty.basic">Basic</system:String>-->
-  <!--<system:String x:Key="noteproperty.cancel">Cancel</system:String>-->
-  <!--<system:String x:Key="noteproperty.set">Set</system:String>-->
-  <!--<system:String x:Key="noteproperty.setlongnote">Set only on long notes</system:String>-->
-  <!--<system:String x:Key="noteproperty.tone">Tone</system:String>-->
-  <!--<system:String x:Key="noteproperty.vibratoenable">Enable</system:String>-->
-
-  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
-  <!--<system:String x:Key="oto.color">Color</system:String>-->
-  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
-  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
-  <system:String x:Key="oto.edit.consonant">กำหนด Consonant</system:String>
-  <system:String x:Key="oto.edit.cutoff">กำหนด Cutoff</system:String>
-  <system:String x:Key="oto.edit.offset">กำหนด Offset</system:String>
-  <system:String x:Key="oto.edit.overlap">กำหนด Overlap</system:String>
-  <system:String x:Key="oto.edit.preutter">กำหนด Preutter</system:String>
-  <!--<system:String x:Key="oto.file">File</system:String>-->
-  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
-  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
-  <!--<system:String x:Key="oto.phonetic">Phonetic</system:String>-->
-  <!--<system:String x:Key="oto.prefix">Prefix</system:String>-->
-  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
-  <system:String x:Key="oto.set">ตั้งค่า</system:String>
-  <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
-
-  <system:String x:Key="phoneticassistant.caption">ผู้ช่วยการออกเสียง</system:String>
-  <system:String x:Key="phoneticassistant.copy">คัดลอก</system:String>
-
-  <!--<system:String x:Key="pianoroll.key">Key (for scale degree display)</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.batch">Batch Edits</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>-->
-  <system:String x:Key="pianoroll.menu.lyrics">เนื้อเพลง</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">แทนที่ "-" ด้วย "+"</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.edit">แก้ไขเนื้อเพลง</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">เปลี่ยนฮิระงะนะเป็นโรมันจิ</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.insertslur">Insert slur lyric</system:String>-->
-  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">เปลี่ยนระบบ JP VCV  เป็น CV</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
-  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">ลบ Letter Suffix ออก</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
-  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">ลบ Tone Suffix ออก</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">เปลี่ยนโรมันจิเป็นฮิระงะนะ</system:String>
-  <system:String x:Key="pianoroll.menu.notedefaults">โน้ตค่าเริ่มต้น</system:String>
-  <system:String x:Key="pianoroll.menu.notes">โน้ต</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.addbreath">Add breath</system:String>-->
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">เพิ่มหาง "-"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">เพิ่มหาง "R"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.autolegato">Auto Legato</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
-  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ล้างไวบราโต</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.fixoverlap">Fix overlapping notes</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
-  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">โหลดการประมวลผล Pitch</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.removetailrest">Remove tail "R"</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.aliases">Reset phoneme aliases</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.all">Reset notes to default</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.allparameters">Reset all parameters</system:String>-->
-  <system:String x:Key="pianoroll.menu.notes.reset.exps">คืนค่าเครื่องหมายทั้งหมด</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">คืนค่า phoneme timings</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">คืนค่า pitch bends</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">คืนค่าไวบราโต</system:String>
-  <system:String x:Key="pianoroll.menu.part">พาร์ท</system:String>
-  <system:String x:Key="pianoroll.menu.part.legacypluginexp">ปลั๊กอินรุ่นดั้งเดิม (รุ่นทดลอง)</system:String>
-  <!--<system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.plugin.openfolder">Open folder</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.reset">Reset</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.alias">Alias</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.close">Close</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.note">Note</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.searchnote.searchalias">Search Alias</system:String>-->
-  <!--<system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>-->
-  <system:String x:Key="pianoroll.toggle.finalpitch">ดูการประมวลผล Final Pitch (R)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
-  <system:String x:Key="pianoroll.toggle.phoneme">ดู Phonemes (O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">ดู Pitch Bend (I)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap">สลับสแน็ป (P)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap.auto">อัตโนมัติ</system:String>
-  <system:String x:Key="pianoroll.toggle.snap.autotriplet">อัตโนมัติ (triplet)</system:String>
-  <system:String x:Key="pianoroll.toggle.tips">ดูเคล็ดลับ (T)</system:String>
-  <system:String x:Key="pianoroll.toggle.tone">สลับเสียงโน้ต (Y)</system:String>
-  <system:String x:Key="pianoroll.toggle.vibrato">แสดงผลไวบราโต (U)</system:String>
-  <system:String x:Key="pianoroll.toggle.waveform">แสดงผล Waveform (W)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.drawlinepitch">Line Draw Pitch Tool (Shift + 4)
-    Left click to draw (draw straight line)
-    Right click to reset
-    Hold Ctrl to select
-    Hold Alt to smoothen
-  </system:String>-->
-  <system:String x:Key="pianoroll.tool.drawpitch">เครื่องมือวาด Pitch (4)</system:String>
-  <system:String x:Key="pianoroll.tool.eraser">ยางลบ (3)</system:String>
-  <system:String x:Key="pianoroll.tool.knife">มีด (5)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.overwritepitch">Overwrite Pitch Tool (Ctrl + 4)
-    Left click to draw (overwrites vibrato or mod+)
-    Right click to reset
-    Hold Ctrl to select
-    Hold Alt to smoothen
-  </system:String>-->
-  <system:String x:Key="pianoroll.tool.penplus">ปากกาอัจฉริยะ (Ctrl + 2)
-คลิกซ้ายเพื่อวาด
-คลิกขวาเพื่อลบ
-กด Ctrl ค้างไว้เพื่อเลือก</system:String>
-  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-    Left click to draw
-    Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
-
-  <system:String x:Key="prefs.advanced">ขั้นสูง</system:String>
-  <system:String x:Key="prefs.advanced.beta">เบต้า</system:String>
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.rememberfiletypes">Remember these file types in "Open Recent"</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">การจัดเก็บ output resempler ใน log files ตัวเลือกนี้ทำให้ UI และการแสดงผลช้าลง</system:String>
-  <system:String x:Key="prefs.advanced.stable">เสถียร</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.winepath">Wine Path (set to enable wine for compatibility)</system:String>-->
-  <system:String x:Key="prefs.appearance">รูปร่าง</system:String>
-  <!--<system:String x:Key="prefs.appearance.degree">Scale degree display style</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.degree.numbered">Numbered (1 2 3 4 5 6 7)</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.degree.off">Off</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.degree.solfege">Solfège (do re mi fa sol la ti)</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>-->
-  <system:String x:Key="prefs.appearance.lang">ภาษา</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
-  <system:String x:Key="prefs.appearance.showportrait">แสดงภาพเหมือนบน Piano roll</system:String>
-  <!--<system:String x:Key="prefs.appearance.sortorder">Singer name display language</system:String>-->
-  <system:String x:Key="prefs.appearance.theme">ธีม</system:String>
-  <system:String x:Key="prefs.appearance.theme.dark">โหมดกลางคืน</system:String>
-  <system:String x:Key="prefs.appearance.theme.light">โหมดกลางวัน</system:String>
-  <!--<system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>-->
-  <!--<system:String x:Key="prefs.cache">Cache</system:String>-->
-  <!--<system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>-->
-  <!--<system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>-->
-  <system:String x:Key="prefs.caption">การตั้งค่า</system:String>
-  <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
-  <!--<system:String x:Key="prefs.editing">Editing</system:String>-->
-  <system:String x:Key="prefs.note.restart">หมายเหตุ: โปรดรีสตาร์ท OpenUtau หลังจากเปลี่ยนรายการนี้</system:String>
-  <system:String x:Key="prefs.off">ปิด</system:String>
-  <system:String x:Key="prefs.on">เปิด</system:String>
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.setparampath">setParam Path</system:String>-->
-  <system:String x:Key="prefs.paths">เส้นทาง</system:String>
-  <system:String x:Key="prefs.paths.addlsinger">เส้นทางคลังเสียงเสริม</system:String>
-  <system:String x:Key="prefs.paths.addlsinger.install">ติดตั้งไปยังเส้นทางคลังเสียงเสริม</system:String>
-  <!--<system:String x:Key="prefs.paths.detect">Detect</system:String>-->
-  <!--<system:String x:Key="prefs.paths.loaddeepfolders">Load all depth folders</system:String>-->
-  <system:String x:Key="prefs.paths.reset">คืนค่า</system:String>
-  <system:String x:Key="prefs.paths.select">เลือก</system:String>
-  <!--<system:String x:Key="prefs.penplus">Set Pen Plus Tool as Default</system:String>-->
-  <system:String x:Key="prefs.playback">เล่นซ้ำ</system:String>
-  <system:String x:Key="prefs.playback.autoscroll">เลื่อนอัตโนมัติ</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode">โหมดเลื่อนอัตโนมัติ</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">ตัวเลื่อนหน้า</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
-  <system:String x:Key="prefs.playback.backend">ระบบเสียงหลังบ้าน</system:String>
-  <system:String x:Key="prefs.playback.backend.auto">อัตโนมัติ</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
-  <system:String x:Key="prefs.playback.cursorposition">ระยะขอบเลื่อนอัตโนมัติ</system:String>
-  <system:String x:Key="prefs.playback.device">เครื่องเล่นซ้ำ</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime">หยุดชั่วคราว</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime.off">ไม่ต้องทำอะไร</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime.on">ย้ายเคอร์เซอร์กลับไปยังตําแหน่งที่คุณเริ่มเล่น</system:String>
-  <!--<system:String x:Key="prefs.playback.lockstarttime.onlycursor">Move only cursor back to where you started playing</system:String>-->
-  <system:String x:Key="prefs.playback.test">ทดสอบ</system:String>
-  <system:String x:Key="prefs.rendering">กำลังประมวลผล</system:String>
-  <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
-  <system:String x:Key="prefs.rendering.phasecomp">การชดเชย Phase</system:String>
-  <system:String x:Key="prefs.rendering.prerender">ประมวลผลล่วงหน้า</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
-  <system:String x:Key="prefs.rendering.resampler.morewarn">
-    คําเตือน: moresampler ไม่ได้รับการสนับสนุนอย่างเต็มที่ อาจทำให้ประมวลผลล่าช้า และทําให้การใช้งาน CPU สูงมากยิ่งขึ้น หากคุณยืนยัน โปรด:
-1. ตั้งค่า "resampler-compatibility" เป็น "เปิด" ใน moreconfig.txt
-2. ตั้งค่า "auto-update-llsm-mrq" เป็น "ปิด" ใน moreconfig.txt.
-3. อดทนรอให้ moresampler สร้างไฟล์ llsm ที่หายไป
-  </system:String>
-  <system:String x:Key="prefs.rendering.resampler.note">
-    หมายเหตุ: หากต้องการใช้  resampler นอกเหนือจากโปรแกรมโปรดเพิ่มไฟล์ DLL หรือ EXE ใน Resamplers folder ในเส้นทางการติดตั้ง OpenUtau และเลือก resampler  ได้ในการตั้งค่า
-  </system:String>
-  <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Warning: too many render threads may cause OpenUtau to run slowly.
-  </system:String>-->
-  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
-  <!--<system:String x:Key="prefs.utau">UTAU</system:String>-->
-
-  <!--<system:String x:Key="progress.cachecleared">Cache cleared.</system:String>-->
-  <!--<system:String x:Key="progress.clearingcache">Clearing cache...</system:String>-->
-  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
-  <system:String x:Key="progress.saved">บันทึกโปรเจกต์ {0} แล้ว</system:String>
-  <system:String x:Key="progress.waitingrendering">โปรดรอ กำลังประมวลผล</system:String>
-
-  <system:String x:Key="singers.caption">นักร้อง</system:String>
-  <!--<system:String x:Key="singers.editoto.editinsetparam">Edit In setParam</system:String>-->
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
-  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
-  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
-  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
-  <system:String x:Key="singers.editoto.reset">คืนค่า Otos</system:String>
-  <system:String x:Key="singers.editoto.save">บันทึก Otos</system:String>
-  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
-  <!--<system:String x:Key="singers.editoto.setsetparampath">Download setParam (v4.0b or higher) from http://nwp8861.blog92.fc2.com/ and set setParam path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
-  <system:String x:Key="singers.location">ตำแหน่ง</system:String>
-  <!--<system:String x:Key="singers.merge">Merge with another voicebank</system:String>-->
-  <system:String x:Key="singers.otoview.moveleft">ขยับซ้าย</system:String>
-  <system:String x:Key="singers.otoview.moveright">ขยับไปขวา</system:String>
-  <system:String x:Key="singers.otoview.selectnext">เลือกถัดไป</system:String>
-  <system:String x:Key="singers.otoview.selectprev">เลือกก่อนหน้า</system:String>
-  <system:String x:Key="singers.otoview.showall">แสดงทั้งหมด</system:String>
-  <system:String x:Key="singers.otoview.zoomin">ซูมเข้า</system:String>
-  <system:String x:Key="singers.otoview.zoomout">ซูมออก</system:String>
-  <!--<system:String x:Key="singers.playsample">Play Sample</system:String>-->
-  <!--<system:String x:Key="singers.playselectedfile">Play Selected File</system:String>-->
-  <!--<system:String x:Key="singers.publish">Publish Singer</system:String>-->
-  <!--<system:String x:Key="singers.publish.description">Create an optimized zip package of your singer for distribution.</system:String>-->
-  <!--<system:String x:Key="singers.publish.ignoretypes">Ignore these file types during packaging (gitignore syntax):</system:String>-->
-  <!--<system:String x:Key="singers.publish.publish">Publish</system:String>-->
-  <!--<system:String x:Key="singers.publish.useignore"> Use file type ignoring</system:String>-->
-  <!--<system:String x:Key="singers.readme">Open readme.txt</system:String>-->
-  <!--<system:String x:Key="singers.readme.notfound">readme.txt not found.</system:String>-->
-  <system:String x:Key="singers.refresh">รีเฟรช</system:String>
-  <system:String x:Key="singers.setdefaultphonemizer">ตั้งค่าเริ่มต้น Phonemizer</system:String>
-  <system:String x:Key="singers.setencoding">ตั้งค่า Encoding</system:String>
-  <!--<system:String x:Key="singers.setimage">Set Icon</system:String>-->
-  <system:String x:Key="singers.setportrait">ตั้งค่า Portrait</system:String>
-  <!--<system:String x:Key="singers.setsingertype">Set Singer Type</system:String>-->
-  <system:String x:Key="singers.subbanks.cancel">ยกเลิก</system:String>
-  <system:String x:Key="singers.subbanks.clear">ล้าง</system:String>
-  <system:String x:Key="singers.subbanks.color">color</system:String>
-  <system:String x:Key="singers.subbanks.color.add">เพิ่มสี</system:String>
-  <system:String x:Key="singers.subbanks.color.remove">ลบสีออก</system:String>
-  <system:String x:Key="singers.subbanks.color.rename">เปลี่ยนชื่อ</system:String>
-  <system:String x:Key="singers.subbanks.edit">แก้ไข Subbanks</system:String>
-  <!--<system:String x:Key="singers.subbanks.export">Export prefix.map</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.import">Import prefix.map</system:String>-->
-  <system:String x:Key="singers.subbanks.reset">คืนค่า</system:String>
-  <system:String x:Key="singers.subbanks.save">บันทึก</system:String>
-  <system:String x:Key="singers.subbanks.selectall">เลือกทั้งหมด</system:String>
-  <system:String x:Key="singers.subbanks.set">ตั้งค่า</system:String>
-  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
-  <!--<system:String x:Key="singers.usefilename">Use filename as alias</system:String>-->
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
-
-  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
-  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
-  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
-  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
-  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
-  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
-
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
-  <!--<system:String x:Key="tip.exps">Numerical,Options Type
-    Left Button Draw: Set expressions
-    Shift + Left Button Draw: Set uniform expressions
-    Right Button Draw: Reset expressions
-Curve Type
-    Left Button Draw: Draw
-    Shift + Ctrl + Left Button Draw: Line Draw
-    Shift + Left Button Draw: Horizontal Line Draw
-    Right Button Draw: Reset Line</system:String>-->
-  <system:String x:Key="tip.exps.notsupported">เครื่องหมายยังไม่ได้รับการสนับสนุนจากการประมวลผล</system:String>
-  <system:String x:Key="tip.lyricbox.next">Tab: โน้ตถัดไป</system:String>
-  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: โน้ตก่อนหน้า</system:String>
-  <system:String x:Key="tip.notes.basics">เคอร์เซอร์สำหรับเลือกโน้ต
-    สร้างสี่เหลี่ยมคลุมโน้ต: เลือกโน้ตที่คลุม
-    Ctrl + สร้างสี่เหลี่ยมคลุมโน้ต: เลือกโน้ตที่ต้องการเพิ่มเติม
-    Up/Down: สลับเปลี่ยนโน้ตที่เลือก
-    Ctrl + Up/Down: เลื่อนตําแหน่งโน้ตที่เลือกโดย octave
-ปากกา
-    คลิกค้างลากด้วยปุ่มซ้าย: เพิ่มโน้ต
-    คลิกขวา: ลบโน้ตออก
-    คลิกค้างขวาคลุมโน้ต: เอาโน้ตหลายตัวออก
-ปุ่มลัดทั่วไป
-    T: ดูเคล็ดลับการใช้งาน
-    คลิกซ้ายทับบนตัวโน้ต: เคลื่อนย้ายโน้ตนั้นตามต้องการ
-    คลิกซ้ายทับท้ายตัวโน้ต: ปรับขนาดความสั้นยาวของโน้ต
-    Alt + คลิกซ้ายทับท้ายตัวโน้ต: ปรับขนาดความสั้นยาวของโน้ตที่เลือก กรณีมีโน้ตติดกันป้องกันโน้ตซ้อนกัน
-    Space: เล่น</system:String>
-  <system:String x:Key="tip.notes.zoomx">◀ เลื่อนที่นี่เพื่อซูมในแนวนอน ▶</system:String>
-  <system:String x:Key="tip.notes.zoomy">เลื่อนที่นี่เพื่อซูมในแนวตั้ง ▶</system:String>
-
-  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
-  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
-  <!--<system:String x:Key="tracks.favorite">Favorites</system:String>-->
-  <!--<system:String x:Key="tracks.installsinger">Install singer</system:String>-->
-  <system:String x:Key="tracks.more">เพิ่มเติม</system:String>
-  <system:String x:Key="tracks.movedown">ย้ายลง</system:String>
-  <system:String x:Key="tracks.moveup">ย้ายขึ้น</system:String>
-  <!--<system:String x:Key="tracks.mute">Mute</system:String>-->
-  <!--<system:String x:Key="tracks.mute.allothers">Mute all others</system:String>-->
-  <!--<system:String x:Key="tracks.mute.only">Mute this only</system:String>-->
-  <!--<system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>-->
-  <!--<system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>-->
-  <!--<system:String x:Key="tracks.opensingers">Open singers location</system:String>-->
-  <system:String x:Key="tracks.remove">ลบออก</system:String>
-  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
-  <system:String x:Key="tracks.selectrenderer">เลือกตัวประมวลผล</system:String>
-  <system:String x:Key="tracks.selectsinger">เลือกนักร้อง</system:String>
-  <!--<system:String x:Key="tracks.singerdefault">(Singer default) </system:String>-->
-  <!--<system:String x:Key="tracks.solo">Solo</system:String>-->
-  <!--<system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>-->
-  <!--<system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>-->
-  <!--<system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>-->
-  <!--<system:String x:Key="tracks.trackcolor">Change track color</system:String>-->
-  <!--<system:String x:Key="tracks.tracksettings">Track Settings</system:String>-->
-
-  <FontFamily x:Key="ui.fontfamily">Noto serif Thai,Angsana New,Noto Sans Thai,IBM Plex Sans Thai,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-
-  <system:String x:Key="updater.caption">ตรวจสอบการอัปเดต</system:String>
-  <system:String x:Key="updater.description">เปิดแพลตฟอร์มเสียงสังเคราะห์</system:String>
-  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
-  <system:String x:Key="updater.status.available">อัปเดต v{0} เสร็จสิ้นแล้ว!</system:String>
-  <system:String x:Key="updater.status.checking">ตรวจสอบการอัปเดต...</system:String>
-  <system:String x:Key="updater.status.notavailable">อัปเดตเป็นเวอร์ชั่นปัจจุบันแล้ว</system:String>
-  <system:String x:Key="updater.status.unknown">ไม่สามารถตรวจสอบการอัปเดตได้</system:String>
-  <system:String x:Key="updater.update">อัปเดต</system:String>
-
-  <system:String x:Key="warning">คำเตือน</system:String>
-  <system:String x:Key="warning.asciipath">เส้นทางหลัก OpenUtau ของคุณ "{0}" ประกอบด้วยอักขระที่ไม่ใช่ ASCII. Exe resamplers โปรแกรมอาจไม่ทำงาน</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
-
-  <!--<system:String x:Key="welcome.new">New</system:String>-->
-  <!--<system:String x:Key="welcome.new.description">Create a new project</system:String>-->
-  <!--<system:String x:Key="welcome.open">Open</system:String>-->
-  <!--<system:String x:Key="welcome.open.description">Open a local project</system:String>-->
-  <!--<system:String x:Key="welcome.recent">Recent</system:String>-->
-  <!--<system:String x:Key="welcome.start">Start</system:String>-->
-  <!--<system:String x:Key="welcome.template">Template</system:String>-->
-</ResourceDictionary>
+  <system:String x:Key="noteproperty">คุณสมบัติของโน้ต</system:String>
+  <system:String x:Key="noteproperty.apply">ยืนยัน</system:String>
+  <system:String x:Key="noteproperty.basic">พื้นฐาน</system:String>
+  <system:String
