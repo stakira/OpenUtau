@@ -7,7 +7,6 @@
         Title="SplashWindow"
         Icon="/Assets/open-utau.ico"
         CanResize="False"
-        ExtendClientAreaChromeHints="NoChrome"
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="True"
         SystemDecorations="BorderOnly"

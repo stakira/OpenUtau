@@ -22,7 +22,7 @@ namespace OpenUtau.App.Controls {
             IsVisible = false;
         }
 
-        private void Box_GotFocus(object? sender, GotFocusEventArgs e) {
+        private void Box_GotFocus(object? sender, RoutedEventArgs e) {
             box.SelectAll();
         }
 

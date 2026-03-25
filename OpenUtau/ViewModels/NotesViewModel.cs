@@ -17,7 +17,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using Serilog;
 using SharpCompress;
 
@@ -33,60 +33,60 @@ namespace OpenUtau.App.ViewModels {
     }
     public class WaveformRefreshEvent { }
 
-    public class NotesViewModel : ViewModelBase, ICmdSubscriber {
-        [Reactive] public Rect Bounds { get; set; }
+    public partial class NotesViewModel : ViewModelBase, ICmdSubscriber {
+        [Reactive] public partial Rect Bounds { get; set; }
         public int TickCount => Part?.Duration ?? 480 * 4;
         public int TrackCount => ViewConstants.MaxTone;
-        [Reactive] public double TickWidth { get; set; }
+        [Reactive] public partial double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
         public double TrackHeightMax => ViewConstants.NoteHeightMax;
-        [Reactive] public double TrackHeight { get; set; }
-        [Reactive] public int TickOrigin { get; set; }
-        [Reactive] public double TickOffset { get; set; }
-        [Reactive] public double TrackOffset { get; set; }
-        [Reactive] public int SnapDiv { get; set; }
-        [Reactive] public int Key { get; set; }
+        [Reactive] public partial double TrackHeight { get; set; }
+        [Reactive] public partial int TickOrigin { get; set; }
+        [Reactive] public partial double TickOffset { get; set; }
+        [Reactive] public partial double TrackOffset { get; set; }
+        [Reactive] public partial int SnapDiv { get; set; }
+        [Reactive] public partial int Key { get; set; }
         public ObservableCollectionExtended<int> SnapTicks { get; } = new ObservableCollectionExtended<int>();
-        [Reactive] public double PlayPosX { get; set; }
-        [Reactive] public double PlayPosHighlightX { get; set; }
-        [Reactive] public double PlayPosHighlightWidth { get; set; }
-        [Reactive] public bool PlayPosWaitingRendering { get; set; }
-        [Reactive] public bool CursorTool { get; set; }
-        [Reactive] public bool PenTool { get; set; }
-        [Reactive] public bool PenPlusTool { get; set; }
-        [Reactive] public bool EraserTool { get; set; }
-        [Reactive] public bool DrawPitchTool { get; set; }
-        [Reactive] public bool DrawLinePitchTool { get; set; }
-        [Reactive] public bool OverwritePitchTool { get; set; }
-        [Reactive] public bool OverwriteLinePitchTool { get; set; }
-        [Reactive] public bool KnifeTool { get; set; }
+        [Reactive] public partial double PlayPosX { get; set; }
+        [Reactive] public partial double PlayPosHighlightX { get; set; }
+        [Reactive] public partial double PlayPosHighlightWidth { get; set; }
+        [Reactive] public partial bool PlayPosWaitingRendering { get; set; }
+        [Reactive] public partial bool CursorTool { get; set; }
+        [Reactive] public partial bool PenTool { get; set; }
+        [Reactive] public partial bool PenPlusTool { get; set; }
+        [Reactive] public partial bool EraserTool { get; set; }
+        [Reactive] public partial bool DrawPitchTool { get; set; }
+        [Reactive] public partial bool DrawLinePitchTool { get; set; }
+        [Reactive] public partial bool OverwritePitchTool { get; set; }
+        [Reactive] public partial bool OverwriteLinePitchTool { get; set; }
+        [Reactive] public partial bool KnifeTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
-        [Reactive] public bool ShowTips { get; set; }
-        [Reactive] public bool PlayTone { get; set; }
-        [Reactive] public bool ShowVibrato { get; set; }
-        [Reactive] public bool ShowPitch { get; set; }
-        [Reactive] public bool ShowFinalPitch { get; set; }
-        [Reactive] public bool ShowWaveform { get; set; }
-        [Reactive] public bool ShowPhoneme { get; set; }
-        [Reactive] public bool ShowNoteParams { get; set; }
-        [Reactive] public bool ShowExpressions { get; set; }
-        [Reactive] public bool IsSnapOn { get; set; }
-        [Reactive] public string SnapDivText { get; set; }
-        [Reactive] public string KeyText { get; set; }
-        [Reactive] public Rect ExpBounds { get; set; }
-        [Reactive] public string PrimaryKey { get; set; }
-        [Reactive] public bool PrimaryKeyNotSupported { get; set; }
-        [Reactive] public string SecondaryKey { get; set; }
-        [Reactive] public double ExpTrackHeight { get; set; }
-        [Reactive] public double ExpShadowOpacity { get; set; }
-        [Reactive] public double ExpHeightMin { get; set; }
-        [Reactive] public double ExpHeightMax { get; set; }
-        [Reactive] public UVoicePart? Part { get; set; }
-        [Reactive] public Bitmap? Avatar { get; set; }
-        [Reactive] public Bitmap? Portrait { get; set; }
-        [Reactive] public IBrush? PortraitMask { get; set; }
-        [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
-        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
+        [Reactive] public partial bool ShowTips { get; set; }
+        [Reactive] public partial bool PlayTone { get; set; }
+        [Reactive] public partial bool ShowVibrato { get; set; }
+        [Reactive] public partial bool ShowPitch { get; set; }
+        [Reactive] public partial bool ShowFinalPitch { get; set; }
+        [Reactive] public partial bool ShowWaveform { get; set; }
+        [Reactive] public partial bool ShowPhoneme { get; set; }
+        [Reactive] public partial bool ShowNoteParams { get; set; }
+        [Reactive] public partial bool ShowExpressions { get; set; }
+        [Reactive] public partial bool IsSnapOn { get; set; }
+        [Reactive] public partial string SnapDivText { get; set; }
+        [Reactive] public partial string KeyText { get; set; }
+        [Reactive] public partial Rect ExpBounds { get; set; }
+        [Reactive] public partial string PrimaryKey { get; set; }
+        [Reactive] public partial bool PrimaryKeyNotSupported { get; set; }
+        [Reactive] public partial string SecondaryKey { get; set; }
+        [Reactive] public partial double ExpTrackHeight { get; set; }
+        [Reactive] public partial double ExpShadowOpacity { get; set; }
+        [Reactive] public partial double ExpHeightMin { get; set; }
+        [Reactive] public partial double ExpHeightMax { get; set; }
+        [Reactive] public partial UVoicePart? Part { get; set; }
+        [Reactive] public partial Bitmap? Avatar { get; set; }
+        [Reactive] public partial Bitmap? Portrait { get; set; }
+        [Reactive] public partial IBrush? PortraitMask { get; set; }
+        [Reactive] public partial string WindowTitle { get; set; } = "Piano Roll";
+        [Reactive] public partial SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -94,8 +94,8 @@ namespace OpenUtau.App.ViewModels {
         public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
-        [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
-        [Reactive] public List<MenuItemViewModel> Keys { get; set; }
+        [Reactive] public partial List<MenuItemViewModel> SnapDivs { get; set; }
+        [Reactive] public partial List<MenuItemViewModel> Keys { get; set; }
 
         public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }

@@ -11,7 +11,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace OpenUtau.App.ViewModels {
     public class PhonemeMouseoverEvent {
@@ -41,10 +41,10 @@ namespace OpenUtau.App.ViewModels {
         }
     }
 
-    public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
+    public partial class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
-        [Reactive] public NotesViewModel NotesViewModel { get; set; }
-        [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
+        [Reactive] public partial NotesViewModel NotesViewModel { get; set; }
+        [Reactive] public partial PlaybackViewModel? PlaybackViewModel { get; set; }
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -80,11 +80,11 @@ namespace OpenUtau.App.ViewModels {
         public Dictionary<Key, MenuItemViewModel> LegacyPluginShortcuts { get; private set; }
             = new Dictionary<Key, MenuItemViewModel>();
 
-        [Reactive] public double Progress { get; set; }
-        [Reactive] public bool CanUndo { get; set; } = false;
-        [Reactive] public bool CanRedo { get; set; } = false;
-        [Reactive] public string UndoText { get; set; } = ThemeManager.GetString("menu.edit.undo");
-        [Reactive] public string RedoText { get; set; } = ThemeManager.GetString("menu.edit.redo");
+        [Reactive] public partial double Progress { get; set; }
+        [Reactive] public partial bool CanUndo { get; set; } = false;
+        [Reactive] public partial bool CanRedo { get; set; } = false;
+        [Reactive] public partial string UndoText { get; set; } = ThemeManager.GetString("menu.edit.undo");
+        [Reactive] public partial string RedoText { get; set; } = ThemeManager.GetString("menu.edit.redo");
 
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
