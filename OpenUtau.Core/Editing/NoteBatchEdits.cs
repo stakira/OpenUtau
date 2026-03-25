@@ -267,7 +267,7 @@ namespace OpenUtau.Core.Editing {
             DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, notes));
             int minDurTick = part.GetMinDurTick(project);
             if (part.Duration < minDurTick) {
-                DocManager.Inst.ExecuteCmd(new ResizePartCommand(project, part, minDurTick - part.Duration, false));
+                DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(project, part, minDurTick - part.Duration, false));
             }
             DocManager.Inst.EndUndoGroup();
         }
@@ -759,13 +759,7 @@ namespace OpenUtau.Core.Editing {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
                     var start = tickRangeAndPitch.Item1 - part.position;
                     var end = tickRangeAndPitch.Item2 - part.position;
-                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD,
-                        start, 0,
-                        start, 0));
-                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD,
-                        end, 0,
-                        end, 0));
-                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD,
+                    docManager.ExecuteCmd(new PasteCurveCommand(project, part, Format.Ustx.PITD,
                         start, 0,
                         end, 0));
                 }

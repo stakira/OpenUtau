@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600" Width="400"
-             x:Class="OpenUtau.App.Controls.NotePropertiesControl" KeyDown="OnKeyDown" Margin="0">
+             x:Class="OpenUtau.App.Controls.NotePropertiesControl"
+             KeyDown="OnKeyDown" Focusable="True">
   <UserControl.Styles>
     <Style Selector="Button,CheckBox">
       <Setter Property="Focusable" Value="False"/>
@@ -69,6 +70,16 @@
               <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoStart}" Minimum="-200" Maximum="200"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
                       Tag="PortamentoStart"/>
+            </Grid>
+            <Grid ColumnDefinitions="123,20,*">
+              <Label Content="{DynamicResource context.pitch.shape}"/>
+              <ComboBox Grid.Column="2" Margin="0" SelectedIndex="{Binding PitchCurveShape}" HorizontalAlignment="Stretch">
+                <ComboBoxItem Content="{DynamicResource context.pitch.easeinout}"/>
+                <ComboBoxItem Content="{DynamicResource context.pitch.linear}"/>
+                <ComboBoxItem Content="{DynamicResource context.pitch.easein}"/>
+                <ComboBoxItem Content="{DynamicResource context.pitch.easeout}"/>
+                <ComboBoxItem Content="{DynamicResource context.pitch.smooth}"/>
+              </ComboBox>
             </Grid>
           </StackPanel>
         </Expander>
