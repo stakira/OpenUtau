@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -88,17 +87,10 @@ namespace OpenUtau.App.Controls {
             args.Handled = true;
         }
 
-        async void SingerButtonClicked(object sender, RoutedEventArgs args) {
+        void SingerButtonClicked(object sender, RoutedEventArgs args) {
             try {
-                if (ViewModel != null && VisualRoot is Window window) {
-                    var dialog = new Views.SingerSelectorDialog() {
-                        DataContext = new SingerSelectorViewModel(ViewModel.Singer),
-                    };
-                    await dialog.ShowDialog(window);
-                    if (dialog.SelectedSinger != null) {
-                        ((ICommand)ViewModel.SelectSingerCommand).Execute(dialog.SelectedSinger);
-                    }
-                }
+                ViewModel?.RefreshSingers();
+                SingersMenu.Open((Control)sender);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
