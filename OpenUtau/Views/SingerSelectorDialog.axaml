@@ -12,61 +12,25 @@
     <Style Selector="ListBox#SingerList ListBoxItem">
       <Setter Property="Padding" Value="0"/>
       <Setter Property="Margin" Value="8"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="FocusAdorner" Value="{x:Null}"/>
       <Setter Property="MinHeight" Value="138"/>
-      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:pointerover">
-      <Setter Property="Background" Value="Transparent"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:selected">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="HorizontalAlignment" Value="Stretch"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:selected /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:selected:pointerover /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:focus /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:focus-visible /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ListBox#SingerList ListBoxItem:focus-within /template/ ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter Background="Transparent"
+                            BorderBrush="#00000000"
+                            BorderThickness="0"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
     </Style>
     <Style Selector="Border.singer-card">
       <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}"/>
       <Setter Property="Width" Value="116"/>
@@ -85,36 +49,20 @@
       <Setter Property="Padding" Value="2"/>
       <Setter Property="Width" Value="22"/>
       <Setter Property="Height" Value="22"/>
-      <Setter Property="CornerRadius" Value="11"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="FocusAdorner" Value="{x:Null}"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:pointerover">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:pressed">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked:pointerover">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked:pressed">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="3"/>
+      <Setter Property="Template">
+        <ControlTemplate>
+          <ContentPresenter Background="Transparent"
+                            BorderBrush="#00000000"
+                            BorderThickness="0"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+        </ControlTemplate>
+      </Setter>
     </Style>
     <Style Selector="ToggleButton.favorite Path">
       <Setter Property="Fill" Value="#00000000"/>
@@ -123,52 +71,6 @@
     </Style>
     <Style Selector="ToggleButton.favorite:checked Path">
       <Setter Property="Fill" Value="{DynamicResource SystemAccentColor}"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="11"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
-    </Style>
-    <Style Selector="ToggleButton.favorite:focus-within /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderBrush" Value="#00000000"/>
-      <Setter Property="BorderThickness" Value="0"/>
     </Style>
   </Window.Styles>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
@@ -183,7 +85,7 @@
     </Grid.ColumnDefinitions>
 
     <Border Grid.Row="0" Grid.Column="0" Margin="12,12,0,8"
-            BorderThickness="1" CornerRadius="8"
+            BorderThickness="1" CornerRadius="3"
             BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
       <Grid Margin="12" RowDefinitions="Auto,Auto,Auto,*">
         <TextBlock Text="{DynamicResource tracks.selectsinger}" FontSize="22" FontWeight="SemiBold" />
@@ -232,9 +134,9 @@
               <ListBox.ItemTemplate>
                 <DataTemplate>
                   <Border Classes="singer-card" ToolTip.Tip="{Binding Location}">
-                    <StackPanel Spacing="8">
-                      <Grid Width="88" Height="88">
-                        <Border Width="88" Height="88" CornerRadius="8" ClipToBounds="True" Background="#22000000"
+                    <Grid Width="100" HorizontalAlignment="Center" RowDefinitions="88,8,34">
+                      <Grid Grid.Row="0" Width="88" Height="88" HorizontalAlignment="Center">
+                        <Border Width="88" Height="88" CornerRadius="3" ClipToBounds="True" Background="#22000000"
                                 BorderThickness="1" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
                           <Image Width="88" Height="88" Source="{Binding Avatar}" Stretch="UniformToFill"
                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -251,10 +153,10 @@
                           </Path>
                         </ToggleButton>
                       </Grid>
-                      <TextBlock Width="96" HorizontalAlignment="Center"
+                      <TextBlock Grid.Row="2" HorizontalAlignment="Stretch"
                                  Text="{Binding Name}" TextAlignment="Center"
                                  TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
+                    </Grid>
                   </Border>
                 </DataTemplate>
               </ListBox.ItemTemplate>
@@ -265,7 +167,7 @@
     </Border>
 
     <Border Grid.Row="0" Grid.Column="2" Margin="0,12,12,8"
-            BorderThickness="1" CornerRadius="8"
+            BorderThickness="1" CornerRadius="3"
             BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
       <Grid Margin="16" RowDefinitions="Auto,12,*,10,Auto" ColumnDefinitions="*,Auto">
         <StackPanel Grid.Row="0" Grid.Column="0" Spacing="3">
@@ -277,7 +179,7 @@
         <Button Grid.Row="0" Grid.Column="1" MinWidth="96" HorizontalAlignment="Right"
                 VerticalAlignment="Top" IsEnabled="{Binding HasSelectedSinger}"
                 Content="{DynamicResource singers.playsample}" Click="OnPlaySample"/>
-        <Border Grid.Row="2" Grid.ColumnSpan="2" CornerRadius="8" ClipToBounds="True"
+        <Border Grid.Row="2" Grid.ColumnSpan="2" CornerRadius="3" ClipToBounds="True"
                 BorderThickness="1"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
           <Grid>
@@ -286,7 +188,7 @@
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Grid>
         </Border>
-        <Border Grid.Row="4" Grid.ColumnSpan="2" BorderThickness="1" CornerRadius="8"
+        <Border Grid.Row="4" Grid.ColumnSpan="2" BorderThickness="1" CornerRadius="3"
                 BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
           <ScrollViewer Height="92" VerticalScrollBarVisibility="Auto">
             <TextBlock Margin="8" Text="{Binding SelectedSingerInfo}" TextWrapping="Wrap"/>
