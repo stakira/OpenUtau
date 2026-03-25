@@ -9,7 +9,7 @@
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaTitleBarHeightHint="-1"
         ExtendClientAreaToDecorationsHint="True"
-        SystemDecorations="BorderOnly">
+        WindowDecorations="BorderOnly">
 
     <Grid>
         <Image Margin="20" Width="80" Height="80"
