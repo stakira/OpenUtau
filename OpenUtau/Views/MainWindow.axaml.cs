@@ -1229,6 +1229,7 @@ namespace OpenUtau.App.Views {
                     openPianoRollWindow = true;
                 } else {
                     viewModel.ShowPianoRoll = true;
+                    pianoRoll.Focus();
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));

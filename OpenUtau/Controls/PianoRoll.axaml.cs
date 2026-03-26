@@ -470,6 +470,10 @@ namespace OpenUtau.App.Controls {
             dialog.ShowDialog(RootWindow);
         }
 
+        private void LyricBoxLostFocus(object sender, RoutedEventArgs e) {
+            this.Focus();
+        }
+
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
             var notesVM = ViewModel.NotesViewModel;
             if (notesVM.Part == null) {
