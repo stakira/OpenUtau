@@ -77,6 +77,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public partial Rect ExpBounds { get; set; }
         [Reactive] public partial string PrimaryKey { get; set; }
         [Reactive] public partial bool PrimaryKeyNotSupported { get; set; }
+        [Reactive] public partial bool ShowCurveToolbox { get; set; }
         [Reactive] public partial string SecondaryKey { get; set; }
         [Reactive] public partial double ExpTrackHeight { get; set; }
         [Reactive] public partial double ExpShadowOpacity { get; set; }

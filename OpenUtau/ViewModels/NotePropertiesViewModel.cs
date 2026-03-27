@@ -21,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public partial FontWeight TuningFontWeight { get; set; } = FontWeight.Normal;
         [Reactive] public partial float PortamentoLength { get; set; }
         [Reactive] public partial float PortamentoStart { get; set; }
+        [Reactive] public partial int PitchCurveShape { get; set; } = -1;
         [Reactive] public partial bool VibratoEnable { get; set; }
         [Reactive] public partial float VibratoLength { get; set; }
         [Reactive] public partial float VibratoPeriod { get; set; }

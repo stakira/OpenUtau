@@ -46,6 +46,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public partial NotesViewModel NotesViewModel { get; set; }
         [Reactive] public partial PlaybackViewModel? PlaybackViewModel { get; set; }
+        [Reactive] public partial CurveViewModel CurveViewModel { get; set; }
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;

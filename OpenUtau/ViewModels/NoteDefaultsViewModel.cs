@@ -14,6 +14,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public partial string? SplittedLyric { get; set; }
         [Reactive] public partial int CurrentPortamentoLength { get; set; }
         [Reactive] public partial int CurrentPortamentoStart { get; set; }
+        [Reactive] public partial int CurrentPitchShape { get; set; }
         [Reactive] public partial float CurrentVibratoLength { get; set; }
         [Reactive] public partial float CurrentVibratoPeriod { get; set; }
         [Reactive] public partial float CurrentVibratoDepth { get; set; }
