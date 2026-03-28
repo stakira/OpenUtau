@@ -223,6 +223,7 @@ namespace OpenUtau.App.ViewModels {
                             } else {
                                 exp.FlagValue = string.Empty;
                             }
+                            exp.Warning = string.Empty;
                             continue;
                         }
 
@@ -258,8 +259,10 @@ namespace OpenUtau.App.ViewModels {
                             exp.Value = exp.defaultValue;
                         } else if (exp.IsOptions) {
                             exp.SelectedOption = (int)exp.defaultValue;
+                        } else if (exp.IsFlagBox) {
+                            exp.FlagValue = string.Empty;
+                            exp.Warning = string.Empty;
                         }
-                        exp.FlagValue = string.Empty;
                     }
                 }
             }
@@ -585,7 +588,8 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             }
         }
-        public void SetFlagFromText(string? text) {
+        public void SetFlagFromText(string? text, out string? warning) {
+            warning = null;
             if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
                 var dict = new Dictionary<string, float>();
                 if (!string.IsNullOrWhiteSpace(text)) {
@@ -600,13 +604,44 @@ namespace OpenUtau.App.ViewModels {
                 track.GetSupportedExps(DocManager.Inst.Project)
                     .Where(d => d.isFlag && d.type == UExpressionType.Numerical)
                     .ForEach(descriptor => {
-                        if (dict.TryGetValue(descriptor.flag, out float value) && value != descriptor.CustomDefaultValue) {
-                            value = float.Clamp(value, descriptor.min, descriptor.max);
-                            DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, value));
+                        if (dict.TryGetValue(descriptor.flag, out float value)) {
+                            dict.Remove(descriptor.flag);
+                            if (value != descriptor.CustomDefaultValue) {
+                                value = float.Clamp(value, descriptor.min, descriptor.max);
+                                DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, value));
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                            }
                         } else {
                             DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
                         }
                 });
+                track.GetSupportedExps(DocManager.Inst.Project)
+                    .Where(d => d.isFlag && d.type == UExpressionType.Options)
+                    .ForEach(descriptor => {
+                        bool find = false;
+                        for (int i = 0; i < descriptor.options.Length; i++) {
+                            string option = descriptor.options[i];
+                            var flag = dict.FirstOrDefault(flag => option == $"{flag.Key}{flag.Value}" || option == $"{flag.Key}");
+                            if (!string.IsNullOrEmpty(flag.Key)) {
+                                dict.Remove(flag.Key);
+                                find = true;
+                                if (i != descriptor.CustomDefaultValue) {
+                                    DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, i));
+                                } else {
+                                    DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                                }
+                                break;
+                            }
+                        }
+                        if (!find) {
+                            DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                        }
+                    });
+                if (dict.Count > 0) {
+                    ThemeManager.TryGetString("errors.failed.parseflag", out string str);
+                    warning = string.Format(str, string.Join(", ", dict.Keys));
+                }
                 DocManager.Inst.EndUndoGroup();
             }
         }
@@ -664,6 +699,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool DropDownOpen { get; set; }
         [Reactive] public bool HasValue { get; set; } = false;
         [Reactive] public FontWeight NameFontWeight { get; set; }
+        [Reactive] public string Warning { get; set; } = string.Empty;
 
         private NotePropertiesViewModel parentViewmodel;
 
@@ -724,7 +760,8 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SetFlagFromText(string? text) {
-            parentViewmodel.SetFlagFromText(text);
+            parentViewmodel.SetFlagFromText(text, out string? warning);
+            Warning = warning ?? string.Empty;
         }
 
         public override string ToString() {

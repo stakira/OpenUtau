@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
@@ -38,6 +39,13 @@ namespace OpenUtau.App.Controls {
                     NotePropertiesViewModel.PanelControlPressed = true;
                     viewModel.SetFlagFromText(textBox.Text);
                     NotePropertiesViewModel.PanelControlPressed = false;
+
+                    if (!string.IsNullOrEmpty(viewModel.Warning)) {
+                        var scrollViewer = this.FindAncestorOfType<ScrollViewer>();
+                        if (scrollViewer != null) {
+                            scrollViewer.ScrollToEnd();
+                        }
+                    }
                 }
             }
         }
