@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text;
 using Avalonia.Media;
+using OpenUtau.Classic;
+using OpenUtau.Classic.Flags;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -194,6 +198,10 @@ namespace OpenUtau.App.ViewModels {
                         Expressions.Add(viewModel);
                     }
                 }
+                if (track.RendererSettings.renderer == Renderers.CLASSIC) {
+                    var viewModel = new NotePropertyExpViewModel(this); // FlagBox
+                    Expressions.Add(viewModel);
+                }
                 AttachExpressions();
             } else {
                 this.Part = null;
@@ -204,9 +212,21 @@ namespace OpenUtau.App.ViewModels {
             if (Expressions.Count > 0) {
                 if (selectedNotes.Count > 0) {
                     var note = selectedNotes.First();
-
                     foreach (NotePropertyExpViewModel exp in Expressions) {
                         exp.IsNoteSelected = true;
+
+                        if (exp.IsFlagBox) {
+                            var phoneme = Part?.phonemes.FirstOrDefault(phoneme => phoneme.Parent == note);
+                            if (phoneme != null) {
+                                exp.FlagValue = string.Empty; // Assign a different value just in case the text box is empty
+                                exp.FlagValue = GetFlagText(phoneme);
+                            } else {
+                                exp.FlagValue = string.Empty;
+                            }
+                            exp.Warning = string.Empty;
+                            continue;
+                        }
+
                         var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == exp.abbr && e.index == 0);
                         if (phonemeExpression != null) {
                             if (exp.IsNumerical) {
@@ -217,6 +237,7 @@ namespace OpenUtau.App.ViewModels {
                             exp.HasValue = true;
                         } else {
                             if (exp.IsNumerical) {
+                                exp.Value = exp.defaultValue + 1; // Assign a different value just in case the text box is empty
                                 exp.Value = exp.defaultValue;
                             } else if (exp.IsOptions) {
                                 exp.SelectedOption = (int)exp.defaultValue;
@@ -234,13 +255,39 @@ namespace OpenUtau.App.ViewModels {
                         exp.IsNoteSelected = false;
                         exp.HasValue = false;
                         if (exp.IsNumerical) {
+                            exp.Value = exp.defaultValue + 1;
                             exp.Value = exp.defaultValue;
                         } else if (exp.IsOptions) {
                             exp.SelectedOption = (int)exp.defaultValue;
+                        } else if (exp.IsFlagBox) {
+                            exp.FlagValue = string.Empty;
+                            exp.Warning = string.Empty;
                         }
                     }
                 }
             }
+        }
+
+        private string GetFlagText(UPhoneme phoneme) {
+            if (Part == null) {
+                return string.Empty;
+            }
+            var track = DocManager.Inst.Project.tracks[Part.trackNo];
+            if (track.RendererSettings.renderer != Renderers.CLASSIC) {
+                return string.Empty;
+            }
+
+            var resampler = ToolsManager.Inst.GetResampler(Renderers.CLASSIC);
+            var flags = phoneme.GetResamplerFlags(DocManager.Inst.Project, track)
+                .Where(flag => flag.Item3 != null && resampler.SupportsFlag(flag.Item3));
+            var builder = new StringBuilder();
+            foreach (var flag in flags) {
+                builder.Append(flag.Item1);
+                if (flag.Item2.HasValue) {
+                    builder.Append(flag.Item2.Value);
+                }
+            }
+            return builder.ToString();
         }
 
         #region ICmdSubscriber
@@ -541,6 +588,63 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             }
         }
+        public void SetFlagFromText(string? text, out string? warning) {
+            warning = null;
+            if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
+                var dict = new Dictionary<string, float>();
+                if (!string.IsNullOrWhiteSpace(text)) {
+                    var parser = new UstFlagParser();
+                    foreach (UstFlag flag in parser.Parse(text)) {
+                        dict.Add(flag.Key, flag.Value);
+                    }
+                }
+
+                var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                DocManager.Inst.StartUndoGroup("command.property.edit");
+                track.GetSupportedExps(DocManager.Inst.Project)
+                    .Where(d => d.isFlag && d.type == UExpressionType.Numerical)
+                    .ForEach(descriptor => {
+                        if (dict.TryGetValue(descriptor.flag, out float value)) {
+                            dict.Remove(descriptor.flag);
+                            if (value != descriptor.CustomDefaultValue) {
+                                value = float.Clamp(value, descriptor.min, descriptor.max);
+                                DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, value));
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                            }
+                        } else {
+                            DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                        }
+                });
+                track.GetSupportedExps(DocManager.Inst.Project)
+                    .Where(d => d.isFlag && d.type == UExpressionType.Options)
+                    .ForEach(descriptor => {
+                        bool find = false;
+                        for (int i = 0; i < descriptor.options.Length; i++) {
+                            string option = descriptor.options[i];
+                            var flag = dict.FirstOrDefault(flag => option == $"{flag.Key}{flag.Value}" || option == $"{flag.Key}");
+                            if (!string.IsNullOrEmpty(flag.Key)) {
+                                dict.Remove(flag.Key);
+                                find = true;
+                                if (i != descriptor.CustomDefaultValue) {
+                                    DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, i));
+                                } else {
+                                    DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                                }
+                                break;
+                            }
+                        }
+                        if (!find) {
+                            DocManager.Inst.ExecuteCmd(new SetNotesSameExpressionCommand(DocManager.Inst.Project, track, Part, selectedNotes, descriptor.abbr, null));
+                        }
+                    });
+                if (dict.Count > 0) {
+                    ThemeManager.TryGetString("errors.failed.parseflag", out string str);
+                    warning = string.Format(str, string.Join(", ", dict.Keys));
+                }
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
 
         // presets
         public void SavePortamentoPreset(string name) {
@@ -581,6 +685,7 @@ namespace OpenUtau.App.ViewModels {
         public string Name { get; set; }
         public bool IsNumerical { get; set; } = false;
         public bool IsOptions { get; set; } = false;
+        public bool IsFlagBox { get; set; } = false;
         public float Min { get; set; }
         public float Max { get; set; }
         public ObservableCollection<string> Options { get; set; } = new ObservableCollection<string>();
@@ -589,10 +694,12 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public bool IsNoteSelected { get; set; } = false;
         [Reactive] public float Value { get; set; }
+        [Reactive] public string FlagValue { get; set; } = string.Empty;
         [Reactive] public int SelectedOption { get; set; }
         [Reactive] public bool DropDownOpen { get; set; }
         [Reactive] public bool HasValue { get; set; } = false;
         [Reactive] public FontWeight NameFontWeight { get; set; }
+        [Reactive] public string Warning { get; set; } = string.Empty;
 
         private NotePropertiesViewModel parentViewmodel;
 
@@ -631,6 +738,15 @@ namespace OpenUtau.App.ViewModels {
                     }
                 });
         }
+        // Flag text box
+        public NotePropertyExpViewModel(NotePropertiesViewModel parent) {
+            Name = "Flags";
+            defaultValue = 0;
+            abbr = string.Empty;
+            IsFlagBox = true;
+            parentViewmodel = parent;
+            NameFontWeight = FontWeight.Normal;
+        }
 
         public void SetNumericalExpressions(object? obj) {
             float? value = null;
@@ -641,7 +757,11 @@ namespace OpenUtau.App.ViewModels {
                 value = f;
             }
             parentViewmodel.SetNumericalExpressionsChanges(abbr, value);
-            this.RaisePropertyChanged(nameof(Value));
+        }
+
+        public void SetFlagFromText(string? text) {
+            parentViewmodel.SetFlagFromText(text, out string? warning);
+            Warning = warning ?? string.Empty;
         }
 
         public override string ToString() {
