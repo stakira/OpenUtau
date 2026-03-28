@@ -58,7 +58,7 @@ namespace OpenUtau.App.Controls {
         }
 
         private string textBoxValue = string.Empty;
-        void OnTextBoxGotFocus(object? sender, GotFocusEventArgs args) {
+        void OnTextBoxGotFocus(object? sender, RoutedEventArgs args) {
             Log.Debug("Note property textbox got focus");
             if(sender is TextBox text) {
                 textBoxValue = text.Text ?? string.Empty;

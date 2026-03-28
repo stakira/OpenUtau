@@ -22,7 +22,7 @@ namespace OpenUtau.App.Controls {
             IsVisible = false;
         }
 
-        private void Box_GotFocus(object? sender, GotFocusEventArgs e) {
+        private void Box_GotFocus(object? sender, RoutedEventArgs e) {
             box.SelectAll();
         }
 
@@ -158,7 +158,7 @@ namespace OpenUtau.App.Controls {
             viewModel.IsVisible = true;
             box.SelectAll();
             focusTimer = new DispatcherTimer(
-                TimeSpan.FromMilliseconds(15),
+                TimeSpan.FromMilliseconds(150),
                 DispatcherPriority.Normal,
                 FocusTimer_Tick);
             focusTimer.Start();
@@ -166,6 +166,7 @@ namespace OpenUtau.App.Controls {
 
         private void FocusTimer_Tick(object? sender, System.EventArgs e) {
             box.Focus();
+            box.SelectAll();
             if (focusTimer != null) {
                 focusTimer.Tick -= FocusTimer_Tick;
                 focusTimer.Stop();

@@ -92,7 +92,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
+      <TextBox Text="{Binding SearchAlias}" PlaceholderText="{DynamicResource singers.editoto.searchalias}" Margin="0"
                MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding UseSearchAlias}" />
     </StackPanel>
     <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0" Height="20"

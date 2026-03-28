@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using Xunit.Abstractions;
 using System.IO;
 using System.Reflection;
 using NAudio.Wave;

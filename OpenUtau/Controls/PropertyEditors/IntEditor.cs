@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.Input;
 using ReactiveUI;
 
 namespace OpenUtau.Controls{
@@ -51,8 +52,9 @@ namespace OpenUtau.Controls{
             }
         }
 
-        protected override void OnLostFocus(RoutedEventArgs e) {
+        protected override void OnLostFocus(FocusChangedEventArgs e) {
             base.OnLostFocus(e);
+    
             if (!int.TryParse(Text, out int newValue))
             {
                 Text = Value.ToString();
