@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
@@ -10,6 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
@@ -27,6 +27,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using SharpCompress;
+using Path = System.IO.Path;
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
@@ -1056,7 +1057,6 @@ namespace OpenUtau.App.Views {
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            // Avalonia 12: use args.Source and walk up the tree instead of InputHitTest
             var sourceControl = args.Source as Control;
             var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
 
@@ -1159,7 +1159,6 @@ namespace OpenUtau.App.Views {
                 partEditState.Update(point.Pointer, point.Position);
                 return;
             }
-            // Avalonia 12: use args.Source and walk up the tree
             var sourceControl = args.Source as Control;
             var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
             if (hitPartControl != null) {
@@ -1208,8 +1207,13 @@ namespace OpenUtau.App.Views {
             if (!(sender is Canvas canvas)) {
                 return;
             }
-            var control = canvas.InputHitTest(args.GetPosition(canvas));
-            if (control is PartControl partControl && partControl.part is UVoicePart) {
+            
+            var point = args.GetPosition(canvas);
+            var visuals = canvas.GetVisualsAt(point);
+            var hitPartControl = visuals
+                .Select(v => v.FindAncestorOfType<PartControl>(includeSelf: true))
+                .FirstOrDefault(pc => pc != null);    
+            if (hitPartControl?.part is UVoicePart) {
                 if (pianoRoll == null) {
                     LoadingWindow.BeginLoading(this);
 
@@ -1243,7 +1247,7 @@ namespace OpenUtau.App.Views {
                     viewModel.ShowPianoRoll = true;
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
-                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
+                DocManager.Inst.ExecuteCmd(new LoadPartNotification(hitPartControl.part, DocManager.Inst.Project, tick));
                 pianoRoll.AttachExpressions();
             }
         }
