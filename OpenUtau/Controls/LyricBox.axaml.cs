@@ -158,7 +158,7 @@ namespace OpenUtau.App.Controls {
             viewModel.IsVisible = true;
             box.SelectAll();
             focusTimer = new DispatcherTimer(
-                TimeSpan.FromMilliseconds(100),
+                TimeSpan.FromMilliseconds(150),
                 DispatcherPriority.Normal,
                 FocusTimer_Tick);
             focusTimer.Start();
