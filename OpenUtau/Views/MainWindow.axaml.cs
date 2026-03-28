@@ -13,6 +13,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using Avalonia.Threading;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
@@ -1055,7 +1056,10 @@ namespace OpenUtau.App.Views {
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            var hitControl = control.InputHitTest(point.Position);
+            // Avalonia 12: use args.Source and walk up the tree instead of InputHitTest
+            var sourceControl = args.Source as Control;
+            var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
+
             if (partEditState != null) {
                 return;
             }
@@ -1063,51 +1067,52 @@ namespace OpenUtau.App.Views {
                 if (args.KeyModifiers == cmdKey) {
                     partEditState = new PartSelectionEditState(control, viewModel, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
-                } else if (hitControl == control) {
+                } else if (hitPartControl == null) {
+                    // Clicked empty canvas — equivalent to old `hitControl == control`
                     viewModel.TracksViewModel.DeselectParts();
                     var part = viewModel.TracksViewModel.MaybeAddPart(point.Position);
                     if (part != null) {
-                        // Start moving right away
                         partEditState = new PartMoveEditState(control, viewModel, part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
-                } else if (hitControl is PartControl partControl) {
+                } else {
+                    // Clicked on a part
                     bool fadein = false;
                     bool fadeout = false;
-                    if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
-                        var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                    if (hitPartControl.part is UWavePart && point.Position.Y < hitPartControl.Bounds.Top + 6) {
+                        var fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeIn;
                         fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
-                        fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                        fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeOut;
                         fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
                     }
-                    bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    bool skip = point.Position.X < hitPartControl.Bounds.Left + ViewConstants.ResizeMargin;
+                    bool trim = point.Position.X > hitPartControl.Bounds.Right - ViewConstants.ResizeMargin;
                     if (fadein) {
-                        partEditState = new PartFadeInState(control, viewModel, (UWavePart)partControl.part);
+                        partEditState = new PartFadeInState(control, viewModel, (UWavePart)hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (fadeout) {
-                        partEditState = new PartFadeOutState(control, viewModel, (UWavePart)partControl.part);
+                        partEditState = new PartFadeOutState(control, viewModel, (UWavePart)hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (skip) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part, true);
+                        partEditState = new PartResizeEditState(control, viewModel, hitPartControl.part, true);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (trim) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        partEditState = new PartResizeEditState(control, viewModel, hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else {
-                        partEditState = new PartMoveEditState(control, viewModel, partControl.part);
+                        partEditState = new PartMoveEditState(control, viewModel, hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
-                if (hitControl is PartControl partControl) {
-                    if (!viewModel.TracksViewModel.SelectedParts.Contains(partControl.part)) {
+                if (hitPartControl != null) {
+                    if (!viewModel.TracksViewModel.SelectedParts.Contains(hitPartControl.part)) {
                         viewModel.TracksViewModel.DeselectParts();
-                        viewModel.TracksViewModel.SelectPart(partControl.part);
+                        viewModel.TracksViewModel.SelectPart(hitPartControl.part);
                     }
                     if (PartsContextMenu != null && viewModel.TracksViewModel.SelectedParts.Count > 0) {
                         var menuArgs = new PartsContextMenuArgs {
-                            Part = partControl.part,
+                            Part = hitPartControl.part,
                             PartDeleteCommand = viewModel.PartDeleteCommand,
                             PartGotoFileCommand = PartGotoFileCommand,
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
@@ -1116,7 +1121,7 @@ namespace OpenUtau.App.Views {
                             PartMergeCommand = PartMergeCommand,
                             PartSplitCommand = PartSplitCommand
                         };
-                        if (partControl.part is UVoicePart voicePart) {
+                        if (hitPartControl.part is UVoicePart voicePart) {
                             menuArgs.PartApplyPitchMenuItems = DocManager.Inst.Project.parts
                                 .OfType<UWavePart>()
                                 .OrderBy(p => p.trackNo)
@@ -1154,18 +1159,20 @@ namespace OpenUtau.App.Views {
                 partEditState.Update(point.Pointer, point.Position);
                 return;
             }
-            var hitControl = control.InputHitTest(point.Position);
-            if (hitControl is PartControl partControl) {
+            // Avalonia 12: use args.Source and walk up the tree
+            var sourceControl = args.Source as Control;
+            var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
+            if (hitPartControl != null) {
                 bool fadein = false;
                 bool fadeout = false;
-                if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
-                    var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                if (hitPartControl.part is UWavePart && point.Position.Y < hitPartControl.Bounds.Top + 6) {
+                    var fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeIn;
                     fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
-                    fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                    fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeOut;
                     fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
                 }
-                bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                bool skip = point.Position.X < hitPartControl.Bounds.Left + ViewConstants.ResizeMargin;
+                bool trim = point.Position.X > hitPartControl.Bounds.Right - ViewConstants.ResizeMargin;
                 if (fadein || fadeout) {
                     Cursor = ViewConstants.cursorHand;
                 } else if (skip || trim) {
