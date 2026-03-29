@@ -1055,28 +1055,110 @@ namespace OpenUtau.Plugin.Builtin {
 
             };
 
-            // Check if the given type exists in the aliasFormats dictionary
-            if (!aliasFormats.ContainsKey(type)) {
+            if (!aliasFormats.ContainsKey(type) && !type.Contains("dynamic")) {
                 return alias;
             }
-            // Get the array of possible alias formats for the specified type
+
+            if (type.Contains("dynStart")) {
+                string consonant = "";
+                string vowel = "";
+                // If the alias contains a space, split it into consonant and vowel
+                if (alias.Contains(" ")) {
+                    var parts = alias.Split(' ');
+                    consonant = parts[0];
+                    vowel = parts[1];
+                } else {
+                    consonant = alias;
+                }
+                var dynamicVariations = new List<string> {
+                    $"- {consonant}{vowel}",        // "- CV"
+                    $"- {consonant} {vowel}",       // "- C V"
+                    $"-{consonant} {vowel}",        // "-C V"
+                    $"-{consonant}{vowel}",         // "-CV"
+                    $"-{consonant}_{vowel}",        // "-C_V"
+                    $"- {consonant}_{vowel}",       // "- C_V"
+                };
+
+                foreach (var variation in dynamicVariations) {
+                    if (HasOto(variation, tone)) {
+                        return variation;
+                    } else if (HasOto(ValidateAlias(variation), tone)) {
+                        return ValidateAlias(variation);
+                    }
+                }
+            }
+
+            if (type.Contains("dynMid")) {
+                string consonant = "";
+                string vowel = "";
+
+                if (alias.Contains(" ")) {
+                    var parts = alias.Split(' ');
+                    consonant = parts[0];
+                    vowel = parts[1];
+                } else {
+                    consonant = alias;
+                }
+                var dynamicVariations1 = new List<string> {
+                    $"{consonant}{vowel}",    // "CV"
+                    $"{consonant} {vowel}",    // "C V"
+                    $"{consonant}_{vowel}",    // "C_V"
+                };
+
+                foreach (var variation1 in dynamicVariations1) {
+                    if (HasOto(variation1, tone)) {
+                        return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
+                    }
+                }
+            }
+
+            if (type.Contains("dynEnd")) {
+                string consonant = "";
+                string vowel = "";
+
+                if (alias.Contains(" ")) {
+                    var parts = alias.Split(' ');
+                    consonant = parts[1];
+                    vowel = parts[0];
+                } else {
+                    consonant = alias;
+                }
+                var dynamicVariations1 = new List<string> {
+                    $"{vowel}{consonant} -",    // "VC -"
+                    $"{vowel} {consonant}-",    // "V C-"
+                    $"{vowel}{consonant}-",    // "VC-"
+                    $"{vowel} {consonant} -",    // "V C -"
+                };
+
+                foreach (var variation1 in dynamicVariations1) {
+                    if (HasOto(variation1, tone)) {
+                        return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
+                    }
+                }
+            }
+
+            // Get the array of possible alias formats for the specified type if not dynamic
             var formatsToTry = aliasFormats[type];
             int counter = 0;
             foreach (var format in formatsToTry) {
                 string aliasFormat;
                 if (type.Contains("mix") && counter < 4) {
-                    // Alternate between alias + format and format + alias for the first 4 iterations
-                    aliasFormat = (counter % 2 == 0) ? alias + format : format + alias;
+                    aliasFormat = (counter % 2 == 0) ? $"{alias}{format}" : $"{format}{alias}";
                     counter++;
-                } else if (type.Contains("end")) {
-                    aliasFormat = alias + format;
+                } else if (type.Contains("end") || type.Contains("End") && !(type.Contains("dynEnd"))) {
+                    aliasFormat = $"{alias}{format}";
                 } else {
-                    aliasFormat = format + alias;
+                    aliasFormat = $"{format}{alias}";
                 }
-                // Check if the formatted alias exists using HasOto and ValidateAlias
-                if (HasOto(aliasFormat, tone) || HasOto(ValidateAlias(aliasFormat), tone)) {
-                    alias = aliasFormat;
-                    return alias;
+
+                if (HasOto(aliasFormat, tone)) {
+                    return aliasFormat;
+                } else if (HasOto(ValidateAlias(aliasFormat), tone)) {
+                    return ValidateAlias(aliasFormat);
                 }
             }
             return alias;

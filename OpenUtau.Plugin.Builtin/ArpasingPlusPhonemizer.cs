@@ -1196,7 +1196,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
         private string AliasFormat(string alias, string type, int tone, string prevV) {
             var aliasFormats = new Dictionary<string, string[]> {
-            // Define alias formats for different types
                 { "dynStart", new string[] { "" } },
                 { "dynMid", new string[] { "" } },
                 { "dynMid_vv", new string[] { "" } },
@@ -1217,12 +1216,10 @@ namespace OpenUtau.Plugin.Builtin {
                 { "cc1_mix", new string[] { "", " -", "-", " R", "_", "- ", "-" } },
             };
 
-            // Check if the given type exists in the aliasFormats dictionary
             if (!aliasFormats.ContainsKey(type) && !type.Contains("dynamic")) {
                 return alias;
             }
 
-            // Handle dynamic variations when type contains "dynamic"
             if (type.Contains("dynStart")) {
                 string consonant = "";
                 string vowel = "";
@@ -1234,10 +1231,7 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     consonant = alias;
                 }
-
-                // Handle the alias with space and without space
                 var dynamicVariations = new List<string> {
-                    // Variations with space, dash, and underscore
                     $"- {consonant}{vowel}",        // "- CV"
                     $"- {consonant} {vowel}",       // "- C V"
                     $"-{consonant} {vowel}",        // "-C V"
@@ -1245,10 +1239,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"-{consonant}_{vowel}",        // "-C_V"
                     $"- {consonant}_{vowel}",       // "- C_V"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation in dynamicVariations) {
-                    if (HasOto(variation, tone) || HasOto(ValidateAlias(variation), tone)) {
+                    if (HasOto(variation, tone)) {
                         return variation;
+                    } else if (HasOto(ValidateAlias(variation), tone)) {
+                        return ValidateAlias(variation);
                     }
                 }
             }
@@ -1256,7 +1252,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (type.Contains("dynMid")) {
                 string consonant = "";
                 string vowel = "";
-                // If the alias contains a space, split it into consonant and vowel
+
                 if (alias.Contains(" ")) {
                     var parts = alias.Split(' ');
                     consonant = parts[0];
@@ -1269,10 +1265,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"{consonant} {vowel}",    // "C V"
                     $"{consonant}_{vowel}",    // "C_V"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation1 in dynamicVariations1) {
-                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
+                    if (HasOto(variation1, tone)) {
                         return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
                     }
                 }
             }
@@ -1280,7 +1278,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (type.Contains("dynEnd")) {
                 string consonant = "";
                 string vowel = "";
-                // If the alias contains a space, split it into consonant and vowel
+
                 if (alias.Contains(" ")) {
                     var parts = alias.Split(' ');
                     consonant = parts[1];
@@ -1294,10 +1292,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"{vowel}{consonant}-",    // "VC-"
                     $"{vowel} {consonant} -",    // "V C -"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation1 in dynamicVariations1) {
-                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
+                    if (HasOto(variation1, tone)) {
                         return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
                     }
                 }
             }
@@ -1315,9 +1315,11 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     aliasFormat = $"{format}{alias}";
                 }
-                // Check if the formatted alias exists
-                if (HasOto(aliasFormat, tone) || HasOto(ValidateAlias(aliasFormat), tone)) {
+
+                if (HasOto(aliasFormat, tone)) {
                     return aliasFormat;
+                } else if (HasOto(ValidateAlias(aliasFormat), tone)) {
+                    return ValidateAlias(aliasFormat);
                 }
             }
             return alias;
