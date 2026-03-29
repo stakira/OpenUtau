@@ -35,7 +35,6 @@ namespace OpenUtau.App.Views {
 
         private PianoRollDetachedWindow? pianoRollWindow;
         private PianoRoll? pianoRoll;
-        private bool openPianoRollWindow;
 
         private PartEditState? partEditState;
         private readonly DispatcherTimer timer;
@@ -1174,26 +1173,19 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
-            if (partEditState != null) {
-                if (partEditState.MouseButton != args.InitialPressMouseButton) {
-                    return;
-                }
-                var control = (Control)sender;
-                var point = args.GetCurrentPoint(control);
-                partEditState.Update(point.Pointer, point.Position);
-                partEditState.End(point.Pointer, point.Position);
-                partEditState = null;
-                Cursor = null;
+            if (partEditState?.MouseButton != args.InitialPressMouseButton) {
+                return;
             }
-            if (openPianoRollWindow) {
-                pianoRollWindow?.Show();
-                pianoRollWindow?.Activate();
-                openPianoRollWindow = false;
-            }
+            var control = (Control)sender;
+            var point = args.GetCurrentPoint(control);
+            partEditState.Update(point.Pointer, point.Position);
+            partEditState.End(point.Pointer, point.Position);
+            partEditState = null;
+            Cursor = null;
         }
 
         public async void PartsCanvasDoubleTapped(object sender, TappedEventArgs args) {
-            if (!(sender is Canvas canvas)) {
+            if (sender is not Canvas canvas) {
                 return;
             }
             var control = canvas.InputHitTest(args.GetPosition(canvas));
@@ -1209,11 +1201,9 @@ namespace OpenUtau.App.Views {
                     };
 
                     if (Preferences.Default.DetachPianoRoll) {
-                        viewModel!.ShowPianoRoll = false;
+                        viewModel.ShowPianoRoll = false;
                         pianoRollWindow = new(pianoRoll);
-                        pianoRollWindow.Show();
                     } else {
-                        viewModel!.ShowPianoRoll = true;
                         PianoRollContainer.Content = pianoRoll;
                     }
 
@@ -1224,11 +1214,12 @@ namespace OpenUtau.App.Views {
 
                     pianoRoll.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
                 }
-                // Workaround for new window losing focus.
                 if (pianoRollWindow != null) {
-                    openPianoRollWindow = true;
+                    pianoRollWindow.Show();
+                    pianoRollWindow.Activate();
                 } else {
                     viewModel.ShowPianoRoll = true;
+                    pianoRoll.Focus();
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
@@ -1244,11 +1235,11 @@ namespace OpenUtau.App.Views {
                 pianoRollWindow?.ForceClose();
                 pianoRollWindow = null;
                 PianoRollContainer.Content = pianoRoll;
-                viewModel!.ShowPianoRoll = true;
+                viewModel.ShowPianoRoll = true;
                 Preferences.Default.DetachPianoRoll = false;
             } else {
                 PianoRollContainer.Content = null;
-                viewModel!.ShowPianoRoll = false;
+                viewModel.ShowPianoRoll = false;
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new(pianoRoll);
                     pianoRollWindow.Show();
