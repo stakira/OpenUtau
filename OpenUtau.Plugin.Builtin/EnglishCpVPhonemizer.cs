@@ -1115,17 +1115,8 @@ namespace OpenUtau.Plugin.Builtin {
             return alias.EndsWith(phoneme);
         }
         
-        private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
-            var escapedPhoneme = Regex.Escape(phoneme);
-            if (Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b\s*-") ||
-                Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b-")) {
-                return true;
-            }
-            if (Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b R")) {
-                return true;
-            }
-            return false;
-        }
+
+        protected override bool NoGap => true;
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             //I wish these were automated instead :')
@@ -1162,17 +1153,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            foreach (var c in allConsonants) {
-                if (PhonemeHasEndingSuffix(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            foreach (var v in vowels) {
-                if (alias.EndsWith("-")) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
 
             foreach (var c in fricative) {
                 if (PhonemeIsPresent(alias, c)) {
