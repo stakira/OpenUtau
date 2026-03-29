@@ -666,13 +666,12 @@ namespace OpenUtau.Plugin.Builtin {
             return alias;
         }
 
-        protected override double GetTransitionBasicLengthMs(string alias = "") {
-            foreach (var c in longConsonants) {
-                if (alias.Contains(c)) {
-                    return base.GetTransitionBasicLengthMs() * 2.0;
-                }
-            }
-            return base.GetTransitionBasicLengthMs();
+        // Endings has 50 ticks gap
+        protected override bool NoGap => true;
+        protected override double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
+            double otoLength = GetTransitionBasicLengthMsByOto(alias, tone, attr);
+            
+            return otoLength;
         }
     }
 }

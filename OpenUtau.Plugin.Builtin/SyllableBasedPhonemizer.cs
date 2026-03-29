@@ -160,14 +160,19 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var phonemes = new List<Phoneme>();
+            int globalPhonemeIndex = 0; // Track the exact index for OpenUtau's UI
+            
             foreach (var syllable in syllables) {
-                phonemes.AddRange(MakePhonemes(ProcessSyllable(syllable), syllable.duration, syllable.position, false));
+                var syllablePhonemes = ProcessSyllable(syllable);
+                phonemes.AddRange(MakePhonemes(syllablePhonemes, syllable.duration, syllable.position, false, syllable.tone, notes[0].phonemeAttributes, globalPhonemeIndex));
+                globalPhonemeIndex += syllablePhonemes.Count;
             }
             if (!nextNeighbour.HasValue) {
                 var tryEnding = MakeEnding(notes);
                 if (tryEnding.HasValue) {
                     var ending = tryEnding.Value;
-                    phonemes.AddRange(MakePhonemes(ProcessEnding(ending), ending.duration, ending.position, true));
+                    var endingPhonemes = ProcessEnding(ending);
+                    phonemes.AddRange(MakePhonemes(endingPhonemes, ending.duration, ending.position, true, ending.tone, notes[0].phonemeAttributes, globalPhonemeIndex));
                 }
             }
 
@@ -187,11 +192,17 @@ namespace OpenUtau.Plugin.Builtin {
                 while (noteIndex < notes.Length - 1 && notes[noteIndex].position - notes[0].position < phoneme.position) {
                     noteIndex++;
                 }
-                var noteStartPosition = notes[noteIndex].position - notes[0].position;
-                int tone = (prevs != null && prevs.Length > 0 && phoneme.position < noteStartPosition) ?
-                    prevs.Last().tone : (noteIndex > 0 && phoneme.position < noteStartPosition) ?
-                    notes[noteIndex - 1].tone : notes[noteIndex].tone;
 
+                var noteStartPosition = notes[noteIndex].position - notes[0].position;
+                int tone;
+                if (phoneme.position < noteStartPosition) {
+                    tone = (noteIndex > 0) ? notes[noteIndex - 1].tone : 
+                        (prevs != null && prevs.Length > 0) ? prevs.Last().tone : 
+                        notes[noteIndex].tone;
+                } else {
+                    tone = notes[noteIndex].tone;
+                }
+                
                 var validatedAlias = phoneme.phoneme;
                 if (validatedAlias != null) {
                     validatedAlias = ValidateAliasIfNeeded(validatedAlias, tone + toneShift);
@@ -304,7 +315,7 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
-                        Log.Warning($"Subword '{subword}' from word '{note.lyric}' can't be found in the dictionary");
+                        //Log.Warning($"Subword '{subword}' from word '{note.lyric}' can't be found in the dictionary");
                         subResult = HandleWordNotFound(note);
                         if (subResult == null) {
                             return null;
@@ -317,6 +328,16 @@ namespace OpenUtau.Plugin.Builtin {
                 return getSymbolsRaw(note.lyric);
             }
         }
+
+        /// <summary>
+        /// Defines whether a consonant (like a liquid or semi-vowel etc) should be placed ON the note (anchor)
+        /// instead of pushing backward.
+        /// </summary>
+        protected virtual bool IsGlide(string alias) {
+            return false;
+        }
+
+        protected virtual bool NoGap => true;
 
         /// <summary>
         /// Instead of changing symbols in cmudict itself for each reclist, 
@@ -547,6 +568,33 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         /// <summary>
+        /// Uses Preutterance length
+        /// </summary>
+        protected virtual double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
+            return GetTransitionBasicLengthMs(alias);
+        }
+
+        /// <summary>
+        /// OTO HELPER: Calculates transition length based on the mapped Oto's Preutterance.
+        /// </summary>
+        protected double GetTransitionBasicLengthMsByOto(string alias, int tone = 0, PhonemeAttributes attr = default) {
+            if (string.IsNullOrEmpty(alias)) return GetTransitionBasicLengthMsByConstant();
+
+            string color = attr.voiceColor ?? string.Empty;
+            string alt = attr.alternate?.ToString() ?? string.Empty;
+            int toneShift = attr.toneShift;
+            
+            var validatedAlias = ValidateAliasIfNeeded(alias, tone + toneShift);
+            var mappedAlias = MapPhoneme(validatedAlias, tone + toneShift, color, alt, singer);
+
+            if (singer.TryGetMappedOto(mappedAlias, tone + toneShift, out var oto)) {
+                return oto.Preutter; 
+            }
+
+            return GetTransitionBasicLengthMsByConstant();
+        }
+
+        /// <summary>
         /// a note length modifier, from 1 to 0.3. Used to make transition notes shorter on high tempo
         /// </summary>
         /// <returns></returns>
@@ -752,33 +800,76 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return vowelIds;
         }
-
-        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, bool isEnding) {
-
+        
+        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, bool isEnding, int tone = 0, PhonemeAttributes[] attributes = null, int globalStartIndex = 0) {
             var phonemes = new Phoneme[phonemeSymbols.Count];
+            
+            int[] trueLengths = new int[phonemeSymbols.Count];
+            for (int i = 1; i < phonemeSymbols.Count; i++) {
+                var prevPhonemeI = phonemeSymbols.Count - i;
+                var nextGlobalIndex = globalStartIndex + prevPhonemeI;
+                var nextPAttr = attributes?.FirstOrDefault(a => a.index == nextGlobalIndex) ?? default;
+                double nextStretch = nextPAttr.consonantStretchRatio ?? 1.0;
+                
+                string nextAlias = phonemeSymbols[prevPhonemeI];
+                double baseLengthMs = GetTransitionBasicLengthMs(nextAlias, tone, nextPAttr);
+                trueLengths[i] = MsToTick(baseLengthMs * nextStretch);
+            }
+
+            // IsGlide
+            int anchorI = 0;
+            if (!isEnding) {
+                for (int i = 1; i < phonemeSymbols.Count; i++) {
+                    var phonemeI = phonemeSymbols.Count - i - 1;
+                    if (phonemeSymbols[phonemeI] != null && IsGlide(phonemeSymbols[phonemeI])) {
+                        anchorI = i;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
             for (var i = 0; i < phonemeSymbols.Count; i++) {
                 var phonemeI = phonemeSymbols.Count - i - 1;
-
+                var globalIndex = globalStartIndex + phonemeI;
                 var validatedAlias = phonemeSymbols[phonemeI];
+
                 if (validatedAlias != null) {
                     phonemes[phonemeI].phoneme = validatedAlias;
-                    var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme));
+                    
                     if (i == 0) {
-                        if (!isEnding) {
-                            transitionLengthTick = 0;
+                        if (isEnding) {
+                            var pAttr = attributes?.FirstOrDefault(a => a.index == globalIndex) ?? default;
+                            double baseLengthMs = GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme, tone, pAttr);
+                            
+                            if (NoGap) {
+                                // Snapped mode: Use a visible 50-tick anchor capped at 1/3 of the note
+                                int targetTicks = 50; 
+                                int maxAllowed = containerLength / 3;
+                                phonemes[phonemeI].position = System.Math.Min(targetTicks, maxAllowed);
+                            } else {
+                                // Natural mode: Use the full Preutterance (Right Blank space)
+                                // Useful when the endings has a sound like those VC-'s in VCCV
+                                phonemes[phonemeI].position = MsToTick(baseLengthMs);
+                            }
                         } else {
-                            transitionLengthTick *= 2;
+                            int sum = 0;
+                            for (int k = 1; k <= anchorI; k++) {
+                                sum += trueLengths[k];
+                            }
+                            phonemes[phonemeI].position = -sum;
                         }
+                    } else {
+                        // VC transitions keep their full length.
+                        phonemes[phonemeI].position = trueLengths[i];
                     }
-                    // yet it's actually a length; will became position in ScalePhonemes
-                    phonemes[phonemeI].position = transitionLengthTick;
                 } else {
                     phonemes[phonemeI].phoneme = null;
                     phonemes[phonemeI].position = 0;
                 }
             }
-
-            return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+            
+            return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count - 1 : phonemeSymbols.Count - 1, containerLength);
         }
 
         private string ValidateAliasIfNeeded(string alias, int tone) {
@@ -790,18 +881,23 @@ namespace OpenUtau.Plugin.Builtin {
 
         private Phoneme[] ScalePhonemes(Phoneme[] phonemes, int startPosition, int phonemesCount, int containerLengthTick = -1) {
             var offset = 0;
-            // reserved length for prev vowel, double length of a transition;
-            var containerSafeLengthTick = MsToTick(GetTransitionBasicLengthMsByConstant() * 2);
             var lengthModifier = 1.0;
+
             if (containerLengthTick > 0) {
                 var allTransitionsLengthTick = phonemes.Sum(n => n.position);
-                if (allTransitionsLengthTick + containerSafeLengthTick > containerLengthTick) {
-                    lengthModifier = (double)containerLengthTick / (allTransitionsLengthTick + containerSafeLengthTick);
+
+                // Instead of a fixed "Constant * 2", use a proportional limit.
+                // This allows transitions to occupy up to 80% of the note.
+                var maxAllowedConsonantTick = (int)(containerLengthTick * 0.8);
+
+                if (allTransitionsLengthTick > maxAllowedConsonantTick) {
+                    lengthModifier = (double)maxAllowedConsonantTick / allTransitionsLengthTick;
                 }
             }
 
             for (var i = phonemes.Length - 1; i >= 0; i--) {
-                var finalLengthTick = (int)(phonemes[i].position * lengthModifier) / 5 * 5;
+                if (phonemes[i].phoneme == null) continue;
+                var finalLengthTick = (int)(phonemes[i].position * lengthModifier);
                 phonemes[i].position = startPosition - finalLengthTick - offset;
                 offset += finalLengthTick;
             }
