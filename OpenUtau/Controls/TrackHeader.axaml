@@ -97,16 +97,15 @@
                   Content="{Binding TrackName}" Click="TrackNameButtonClicked"/>
           <Button Classes="clear" Margin="1" Padding="2,1,0,0" Height="17" IsVisible="{Binding IsSingerVisible}"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
-                  Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked"
-                  ContextRequested="SingerButtonContextRequested" ToolTip.Tip="{Binding Singer}" ContextMenu="{StaticResource SingersMenuRes}"/>
+                  Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}"
+                  Click="SingerButtonClicked" ToolTip.Tip="{Binding Singer}"/>
           <Button Classes="clear" Margin="1" Padding="2,1,0,0" Height="17" IsVisible="{Binding IsPhonemizerVisible}"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
-                  Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
-                  ToolTip.Tip="{Binding Phonemizer}" ContextMenu="{StaticResource PhonemizerMenuRes}"/>
+                  Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ToolTip.Tip="{Binding Phonemizer}"/>
           <Button Classes="clear" Margin="1" Padding="2,1,0,0" Height="17" IsVisible="{Binding IsRendererVisible}"
                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
-                  Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
-                  ToolTip.Tip="{DynamicResource tracks.selectrenderer}" ContextMenu="{StaticResource RendererMenuRes}"/>
+                  Content="{Binding Renderer}" Click="RendererButtonClicked"
+                  ToolTip.Tip="{DynamicResource tracks.selectrenderer}"/>
         </StackPanel>
         <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="3,2*,2,28,5,*,2,26">
           <Grid.Styles>
@@ -154,17 +153,17 @@
               <StackPanel Spacing="2">
                 <Button Classes="clear" Margin="1" Height="18" IsVisible="{Binding !IsSingerVisible}"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
-                        Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" 
-                        ContextRequested="SingerButtonContextRequested" ToolTip.Tip="{Binding Singer}" ContextMenu="{StaticResource SingersMenuRes}"/>
+                        Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}"
+                        Click="SingerButtonClicked" ToolTip.Tip="{Binding Singer}"/>
                 <Button Classes="clear" Margin="1" Height="18" IsVisible="{Binding !IsPhonemizerVisible}"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
-                        Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
-                        ToolTip.Tip="{Binding Phonemizer}" ContextMenu="{StaticResource PhonemizerMenuRes}"/>
+                        Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked"
+                        ToolTip.Tip="{Binding Phonemizer}"/>
                 <Grid ColumnDefinitions="*,auto" IsVisible="{Binding !IsRendererVisible}">
                   <Button Grid.Column="0" Classes="clear" Margin="1"
                           Height="18" HorizontalContentAlignment="Left" Focusable="False"
-                          Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
-                          ToolTip.Tip="{DynamicResource tracks.selectrenderer}" ContextMenu="{StaticResource RendererMenuRes}"/>
+                          Content="{Binding Renderer}" Click="RendererButtonClicked"
+                          ToolTip.Tip="{DynamicResource tracks.selectrenderer}"/>
                   <Button Grid.Column="1" Margin="1" Padding="0" Height="18" Background="Transparent"
                           HorizontalAlignment="Right" Click="TrackSettingsButtonClicked"
                           ToolTip.Tip="{DynamicResource tracks.tracksettings}">
