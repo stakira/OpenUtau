@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
@@ -206,6 +206,49 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             docManager.EndUndoGroup();
+        }
+    }
+
+    // [DELTA SYNTH] ลบโน้ตกลุ่ม br AP SP Br อัตโนมัติ
+    public class RemoveThaiBreaths : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+
+        public RemoveThaiBreaths() {
+            name = "pianoroll.menu.lyrics.removethaibreaths";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes.ToArray() : part.notes.ToArray();
+            if (notes.Length == 0) {
+                return;
+            }
+
+            // กำหนดกลุ่มคำร้องที่ต้องการลบทิ้ง
+            string[] breathLyrics = { "br", "AP", "SP", "Br" };
+            var notesToRemove = notes.Where(n => breathLyrics.Contains(n.lyric)).ToArray();
+            
+            if (notesToRemove.Length > 0) {
+                docManager.StartUndoGroup(true);
+                foreach (var note in notesToRemove) {
+                    docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
+                }
+                docManager.EndUndoGroup();
+            }
+        }
+    }
+
+    // [DELTA SYNTH] แก้ไข Ooh \ กับ / ให้เป็น + ทันที
+    public class ThaiVsqxCleanup : SingleNoteLyricEdit {
+        public override string Name => "pianoroll.menu.lyrics.thaivsqxcleanup";
+        protected override string Transform(string lyric) {
+            if (lyric == @"Ooh \" || lyric == @"\" || lyric == "/") {
+                return "+";
+            }
+            if (lyric.Contains(@"Ooh \")) {
+                return lyric.Replace(@"Ooh \", "+");
+            }
+            return lyric;
         }
     }
 }
