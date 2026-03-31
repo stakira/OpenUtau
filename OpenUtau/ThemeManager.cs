@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -174,6 +174,7 @@ namespace OpenUtau.App {
             } catch { }
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
         }
+        
         private static void SetKeyboardBrush() {
             if (Application.Current == null) {
                 return;
@@ -183,6 +184,31 @@ namespace OpenUtau.App {
             var themeVariant = ThemeVariant.Default;
 
             if (Preferences.Default.UseTrackColor) {
+                // [DELTA SYNTH] ระบบผสมสีพื้นหลังให้กลมกลืนกับสีแทร็ก (Adaptive Background)
+                if (resDict.TryGetResource("SelectedTrackAccentBrush", themeVariant, out outVar) && outVar is SolidColorBrush accentBrush) {
+                    Color accent = accentBrush.Color;
+                    Color bgColor, gridColor;
+
+                    if (IsDarkMode) {
+                        // โหมดมืด: เอาสีแทร็กมาผสมกับสีเทาเข้มๆ เพื่อให้ดูสุขุม ไม่แยงตา
+                        bgColor = Color.FromArgb(255, (byte)(accent.R * 0.1 + 25), (byte)(accent.G * 0.1 + 25), (byte)(accent.B * 0.1 + 25));
+                        gridColor = Color.FromArgb(255, (byte)(accent.R * 0.2 + 40), (byte)(accent.G * 0.2 + 40), (byte)(accent.B * 0.2 + 40));
+                    } else {
+                        // โหมดสว่าง: เอาสีแทร็กมาผสมกับสีขาวให้เป็นสีพาสเทลอ่อนๆ สบายตา
+                        bgColor = Color.FromArgb(255, (byte)(255 - (255 - accent.R) * 0.08), (byte)(255 - (255 - accent.G) * 0.08), (byte)(255 - (255 - accent.B) * 0.08));
+                        gridColor = Color.FromArgb(255, (byte)(255 - (255 - accent.R) * 0.15), (byte)(255 - (255 - accent.G) * 0.15), (byte)(255 - (255 - accent.B) * 0.15));
+                    }
+
+                    var bgSolidBrush = new SolidColorBrush(bgColor);
+                    var gridSolidBrush = new SolidColorBrush(gridColor);
+
+                    // ยัดสีใหม่เข้าไปใน Background และ Grid Lines
+                    resDict["SystemControlBackgroundAltHighBrush"] = bgSolidBrush;
+                    resDict["TickLineBrushLow"] = gridSolidBrush;
+                    BackgroundBrush = bgSolidBrush;
+                    TickLineBrushLow = gridSolidBrush;
+                }
+
                 if (IsDarkMode) {
                     if (resDict.TryGetResource("SelectedTrackAccentBrush", themeVariant, out outVar)) {
                         CenterKeyNameBrush = (IBrush)outVar!;
@@ -228,7 +254,18 @@ namespace OpenUtau.App {
                     ExpShadowBrush = CenterKeyBrush;
                     ExpShadowNameBrush = CenterKeyNameBrush;
                 }
-            } else { // DefColor
+            } else { // DefColor (กรณีที่ผู้ใช้ปิดฟีเจอร์ UseTrackColor)
+                // [DELTA SYNTH] คืนค่าสีพื้นหลังและสีเส้นกริดกลับเป็นค่าเดิมของธีม
+                resDict.Remove("SystemControlBackgroundAltHighBrush");
+                resDict.Remove("TickLineBrushLow");
+                
+                if (resDict.TryGetResource("SystemControlBackgroundAltHighBrush", themeVariant, out outVar)) {
+                    BackgroundBrush = (IBrush)outVar!;
+                }
+                if (resDict.TryGetResource("TickLineBrushLow", themeVariant, out outVar)) {
+                    TickLineBrushLow = (IBrush)outVar!;
+                }
+
                 if (resDict.TryGetResource("WhiteKeyBrush", themeVariant, out outVar)) {
                     WhiteKeyBrush = (IBrush)outVar!;
                 }
