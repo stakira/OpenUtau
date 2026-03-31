@@ -9,8 +9,8 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Thai2 CVVC&VCCV Phonemizer", "TH2 CVVC&VCCV", " Phonemizer by Ferina, PRINTmov and DELTA SYNTH ", language: "TH")]
-    public class Thai2 CVVC&VCCV Phonemizer : TH2 Phonemizer {
+    [Phonemizer("Thai VCCV_CVVC Phonemizer2", "TH2", " Phonemizer by Ferina, PRINTmov and DELTA SYNTH ", language: "TH")]
+    public class Thai VCCV_CVVC Phonemizer2 : TH2 Phonemizer {
         static readonly string[] vowels = new string[] {
             "a", "i", "u", "e", "o", "@", "Q", "3", "6", "1", "ia", "ua", "I", "8"
         };
