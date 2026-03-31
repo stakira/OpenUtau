@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -200,6 +200,7 @@ namespace OpenUtau.Core.Render {
                 handles = pinnedFrq == null
                     ? new[] { pinnedSample, pinnedPitchBend }
                     : new[] { pinnedSample, pinnedPitchBend, pinnedFrq.Value };
+                
                 request = new SynthRequest {
                     sample_fs = fs,
                     sample_length = sample.Length,
@@ -217,13 +218,17 @@ namespace OpenUtau.Core.Render {
                     tempo = item.tempo,
                     pitch_bend_length = item.pitches.Length,
                     pitch_bend = pinnedPitchBend.AddrOfPinnedObject(),
+                    
+                    // [DELTA SYNTH EDIT] 
+                    // ลดการเกลี่ยเสียงของ Vocoder ให้เหลือน้อยที่สุด เพื่อคงความคมชัดแบบไฟล์ต้นฉบับ
                     flag_g = 0,
                     flag_O = 0,
-                    flag_P = 86,
+                    flag_P = 0,   // เปลี่ยนจาก 86 เป็น 0 เพื่อลด Peak Phase Smoothing
                     flag_Mt = 0,
                     flag_Mb = 0,
-                    flag_Mv = 100,
+                    flag_Mv = 100
                 };
+
                 var flag = item.flags.FirstOrDefault(f => f.Item1 == "g");
                 if (flag != null && flag.Item2.HasValue) {
                     request.flag_g = flag.Item2.Value;
@@ -250,6 +255,7 @@ namespace OpenUtau.Core.Render {
                 }
                 Validate(request);
             }
+
             static void Validate(SynthRequest request) {
                 int frame_ms = 10;
                 var total_ms = 1000.0 * request.sample_length / request.sample_fs;
