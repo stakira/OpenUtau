@@ -1255,7 +1255,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var symbol = kvp.Key;
                 var value = kvp.Value;
 
-                if (alias.Contains(symbol)) {
+                if (Regex.IsMatch(alias, $@"(?<![a-zA-Z]){Regex.Escape(symbol)}(?![a-zA-Z])")) {
                     return GetTransitionBasicLengthMsByConstant() * value;
                 }
             }

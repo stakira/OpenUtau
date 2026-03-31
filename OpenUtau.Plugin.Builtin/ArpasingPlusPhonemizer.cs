@@ -2035,10 +2035,19 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return base.ValidateAlias(alias);
         }
+        bool PhonemeIsPresent(string alias, string phoneme) {
+            if (string.IsNullOrEmpty(alias) || string.IsNullOrEmpty(phoneme))
+                return false;
+
+            // Exact token match
+            if (alias == phoneme)
+                return true;
+
+            return alias.EndsWith(phoneme);
+        }
 
         // Endings has 50 ticks gap
         protected override bool NoGap => true;
-
         protected override double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
             double otoLength = GetTransitionBasicLengthMsByOto(alias, tone, attr);
 
@@ -2047,7 +2056,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var symbol = kvp.Key;
                 var value = kvp.Value;
 
-                if (alias.Contains(symbol)) {
+                if (Regex.IsMatch(alias, $@"(?<![a-zA-Z]){Regex.Escape(symbol)}(?![a-zA-Z])")) {
                     return GetTransitionBasicLengthMsByConstant() * value;
                 }
             }
