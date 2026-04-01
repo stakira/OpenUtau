@@ -28,14 +28,14 @@ namespace OpenUtau.Plugin.Builtin {
         "eu", "oe", "yw", "yx", "wx", "ox", "ex", "ea", "ia", "oa", "ua", "ean", "eam", "eang"
         };
         private string[] consonants = "b,ch,d,dh,dr,dx,f,g,hh,jh,k,l,m,n,ng,p,q,r,s,sh,t,th,tr,v,w,y,z".Split(',');
-        private static string[] affricate = "".Split(',');
-        private static string[] fricative = "".Split(',');
-        private static string[] aspirate = "".Split(',');
-        private static string[] semivowel = "".Split(',');
-        private static string[] liquid = "".Split(',');
-        private static string[] nasal = "".Split(',');
-        private static string[] stop = "".Split(',');
-        private static string[] tap = "".Split(',');
+        private static string[] affricate = Array.Empty<string>();
+        private static string[] fricative = Array.Empty<string>();
+        private static string[] aspirate = Array.Empty<string>();
+        private static string[] semivowel = Array.Empty<string>();
+        private static string[] liquid = Array.Empty<string>();
+        private static string[] nasal = Array.Empty<string>();
+        private static string[] stop = Array.Empty<string>();
+        private static string[] tap = Array.Empty<string>();
         private Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
 
         protected override string[] GetVowels() => vowels;

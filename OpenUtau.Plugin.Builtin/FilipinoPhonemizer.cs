@@ -18,15 +18,15 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] vowels = {
         "a", "e", "i", "o", "u", "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw"
         };
-        private string[] consonants = "".Split(',');
-        private static string[] affricate = "".Split(',');
-        private static string[] fricative = "".Split(',');
-        private static string[] aspirate = "".Split(',');
-        private static string[] semivowel = "".Split(',');
-        private static string[] liquid = "".Split(',');
-        private static string[] nasal = "".Split(',');
-        private static string[] stop = "".Split(',');
-        private static string[] tap = "".Split(',');
+        private string[] consonants = Array.Empty<string>();
+        private static string[] affricate = Array.Empty<string>();
+        private static string[] fricative = Array.Empty<string>();
+        private static string[] aspirate = Array.Empty<string>();
+        private static string[] semivowel = Array.Empty<string>();
+        private static string[] liquid = Array.Empty<string>();
+        private static string[] nasal = Array.Empty<string>();
+        private static string[] stop = Array.Empty<string>();
+        private static string[] tap = Array.Empty<string>();
         private Dictionary<string, double> PhonemeOverrides = new Dictionary<string, double>();
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
