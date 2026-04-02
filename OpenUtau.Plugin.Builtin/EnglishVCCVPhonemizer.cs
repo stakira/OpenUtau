@@ -23,6 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
     // cadlaxa here ^_^
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
         private const string LatestVersion = "1.1";
+        private const string YamlFile = "envccv.yaml";
         private string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
         private Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
@@ -132,7 +133,7 @@ namespace OpenUtau.Plugin.Builtin {
             var g2ps = new List<IG2p>();
 
             // Load dictionary from plugin folder.
-            string path = Path.Combine(PluginDir, "envccv.yaml");
+            string path = Path.Combine(PluginDir, YamlFile);
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
                 File.WriteAllBytes(path, Data.Resources.envccv_template);
@@ -141,7 +142,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Load dictionary from singer folder.
             if (singer != null && singer.Found && singer.Loaded) {
-                string file = Path.Combine(singer.Location, "envccv.yaml");
+                string file = Path.Combine(singer.Location, YamlFile);
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
@@ -170,7 +171,7 @@ namespace OpenUtau.Plugin.Builtin {
                 finalPhonemes = new List<string>();
                 while (i < modified.Count) {
                     bool replaced = false;
-                    foreach (var rule in mergingReplacements.Concat(splittingReplacements)) {
+                    foreach (var rule in mergingReplacements.Concat(splittingReplacements).Where(r => r.where == "inside")) {
                         if (rule.from is string[] fromArray && i + fromArray.Length <= modified.Count) {
                             bool match = true;
                             for (int j = 0; j < fromArray.Length; j++) {
@@ -195,7 +196,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!replaced && splittingReplacements.Any()) {
                         string currentPhoneme = modified[i];
                         bool singleReplaced = false;
-                        foreach (var rule in splittingReplacements) {
+                        foreach (var rule in splittingReplacements.Where(r => r.where == "inside")) {
                             if (rule.from.ToString() == currentPhoneme && rule.to is string[] toArray) {
                                 finalPhonemes.AddRange(toArray);
                                 singleReplaced = true;
@@ -239,10 +240,10 @@ namespace OpenUtau.Plugin.Builtin {
             if (this.singer != singer) {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
-                    file = Path.Combine(singer.Location, "envccv.yaml");
+                    file = Path.Combine(singer.Location, YamlFile);
                 }
                 else if (!string.IsNullOrEmpty(PluginDir)) {
-                    file = Path.Combine(PluginDir, "envccv.yaml");
+                    file = Path.Combine(PluginDir, YamlFile);
                 }
                 else {
                     Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'envccv.yaml'.");
@@ -294,10 +295,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 $"envccv_backup.yaml"
                             );
                             File.Move(file, backupFile);
-                            Log.Warning($"Old envccv.yaml has been backed up as: {backupFile}");
+                            Log.Warning($"Old {YamlFile} has been backed up as: {backupFile}");
                         }
                         catch (Exception e) {
-                            Log.Error(e, "Failed to back up old envccv.yaml. Proceeding with new template anyway.");
+                            Log.Error(e, $"Failed to back up old {YamlFile}. Proceeding with new template anyway.");
                         }
                     }
 
@@ -308,12 +309,12 @@ namespace OpenUtau.Plugin.Builtin {
                             Log.Information($"'{file}' created or updated to latest version {LatestVersion}");
                         }
                         catch (Exception e) {
-                            Log.Error(e, $"Failed to write 'envccv.yaml' to {file}");
+                            Log.Error(e, $"Failed to write '{YamlFile}' to {file}");
                         }
                     }
                 }
                 catch (Exception ex) {
-                    Log.Error(ex, $"Unexpected error while ensuring envccv.yaml at {file}");
+                    Log.Error(ex, $"Unexpected error while ensuring {YamlFile} at {file}");
                 }
 
                 if (File.Exists(file)) {
@@ -329,7 +330,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                             vowels = vowels.Concat(loadVowels).Distinct().ToArray();
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load vowels from envccv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load vowels from {YamlFile}: {ex.Message}");
                         }
                         // Load replacements
                         try {
@@ -339,14 +340,15 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 foreach (var replacement in data.replacements) {
                                     try {
+                                        string ruleScope = string.IsNullOrEmpty(replacement.where) ? "inside" : replacement.where.ToLowerInvariant();
                                         if (replacement.from != null && replacement.to != null) {
                                             if (replacement.from is IEnumerable<object> fromList) {
                                                 // 'from' is a list (e.g., [ae, n])
                                                 string[] fromArray = fromList.Select(item => item.ToString()).ToArray();
                                                 if (replacement.to is string toString) {
-                                                    mergingReplacements.Add(new Replacement { from = fromArray, to = toString });
+                                                    mergingReplacements.Add(new Replacement { from = fromArray, to = toString, where = ruleScope });
                                                 } else if (replacement.to is IEnumerable<object> toList) {
-                                                    splittingReplacements.Add(new Replacement { from = fromArray, to = toList.Select(item => item.ToString()).ToArray() });
+                                                    splittingReplacements.Add(new Replacement { from = fromArray, to = toList.Select(item => item.ToString()).ToArray(), where = ruleScope });
                                                 } else {
                                                     Log.Error($"Error: Invalid 'to' type in replacement: {replacement}");
                                                 }
@@ -355,7 +357,7 @@ namespace OpenUtau.Plugin.Builtin {
                                                 if (replacement.to is string toString) {
                                                     dictionaryReplacements[fromString] = toString;
                                                 } else if (replacement.to is IEnumerable<object> toList) {
-                                                    splittingReplacements.Add(new Replacement { from = fromString, to = toList.Select(item => item.ToString()).ToArray() });
+                                                    splittingReplacements.Add(new Replacement { from = fromString, to = toList.Select(item => item.ToString()).ToArray(), where = ruleScope });
                                                 } else {
                                                     Log.Error($"Error: Invalid 'to' type in replacement: {replacement}");
                                                 }
@@ -374,7 +376,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 splittingReplacements = new List<Replacement>();
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from en-vccv.yaml: {ex.Message}");
+                            Log.Error($"Failed to load replacements from {YamlFile}: {ex.Message}");
                         }
                         // Load fallbacks
                         try {
@@ -393,7 +395,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
+                       Log.Error($"Failed to parse {YamlFile}: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 ReadDictionaryAndInit();
@@ -418,6 +420,7 @@ namespace OpenUtau.Plugin.Builtin {
         public class Replacement {
             public object from { get; set; }
             public object to { get; set; }
+            public string where { get; set; } = "inside";
 
             public List<string> FromList {
                 get {
@@ -450,14 +453,86 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            syllable.prevV = tails.Contains(syllable.prevV) ? "" : syllable.prevV;
-            var replacedPrevV = ReplacePhoneme(syllable.prevV, syllable.tone);
-            var prevV = string.IsNullOrEmpty(replacedPrevV) ? "" : replacedPrevV;
-            string v = ReplacePhoneme(syllable.v, syllable.vowelTone);
-            string[] cc = syllable.cc.Select(ReplacePhoneme).ToArray();
-            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
-            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
-            int lastC = cc.Length - 1;
+            // Replacement for note boundaries
+            List<string> currentPhonemes = new List<string>();
+            bool hasPrevV = !string.IsNullOrEmpty(syllable.prevV);
+            bool hasV = !string.IsNullOrEmpty(syllable.v);
+
+            if (hasPrevV) currentPhonemes.Add(syllable.prevV);
+            currentPhonemes.AddRange(syllable.cc);
+            if (hasV) currentPhonemes.Add(syllable.v);
+
+            List<string> finalPhonemes = new List<string>();
+            int idx = 0;
+            while (idx < currentPhonemes.Count) {
+                bool replaced = false;
+                foreach (var rule in mergingReplacements.Concat(splittingReplacements).Where(r => r.where == "all" || (hasPrevV && syllable.position == 0 && r.where == "boundary"))) {
+                    if (rule.from is string[] fromArray && idx + fromArray.Length <= currentPhonemes.Count) {
+                        bool match = true;
+                        for (int j = 0; j < fromArray.Length; j++) {
+                            if (currentPhonemes[idx + j] != fromArray[j]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (match) {
+                            if (rule.to is string toString) {
+                                finalPhonemes.Add(toString);
+                            } else if (rule.to is string[] toArray) {
+                                finalPhonemes.AddRange(toArray);
+                            }
+                            idx += fromArray.Length;
+                            replaced = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!replaced && splittingReplacements.Any()) {
+                    string currentPhoneme = currentPhonemes[idx];
+                    bool singleReplaced = false;
+                    foreach (var rule in splittingReplacements.Where(r => r.where == "all" || (hasPrevV && syllable.position == 0 && r.where == "boundary"))) {
+                        if (rule.from.ToString() == currentPhoneme && rule.to is string[] toArray) {
+                            finalPhonemes.AddRange(toArray);
+                            singleReplaced = true;
+                            break;
+                        }
+                    }
+                    if (!singleReplaced) {
+                        finalPhonemes.Add(ReplacePhoneme(currentPhonemes[idx], syllable.tone));
+                    }
+                    idx++;
+                } else if (!replaced) {
+                    finalPhonemes.Add(ReplacePhoneme(currentPhonemes[idx], syllable.tone));
+                    idx++;
+                }
+            }
+
+            string newPrevV = "";
+            string newV = "";
+            List<string> newCc = new List<string>();
+
+            if (finalPhonemes.Count > 0) {
+                if (hasPrevV) {
+                    newPrevV = finalPhonemes[0];
+                    finalPhonemes.RemoveAt(0);
+                }
+                if (hasV && finalPhonemes.Count > 0) {
+                    newV = finalPhonemes.Last();
+                    finalPhonemes.RemoveAt(finalPhonemes.Count - 1);
+                }
+                newCc.AddRange(finalPhonemes);
+            }
+            
+            var prevV = string.IsNullOrEmpty(newPrevV) ? "" : newPrevV;
+            string[] cc = newCc.ToArray();
+            string v = newV;
+            List<string> vowels = new List<string> { v };
+            var lastC = cc.Length - 1;
+            var firstC = 0;
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(c => ReplacePhoneme(c, syllable.tone)).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(c => ReplacePhoneme(c, syllable.tone)).ToArray();
+            int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
             int lastCPrevWord = syllable.prevWordConsonantsCount;
 
             foreach (var entry in replacements) {
