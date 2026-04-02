@@ -403,7 +403,11 @@
           </Border>
           <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DragIncrement="1"
                         Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth" IsVisible="{Binding ShowPianoRoll}"/>
-          <ContentControl Name="PianoRollContainer" Grid.Row="4" Grid.ColumnSpan="3" Margin="0,-5" Padding="0,5"/>
+          <Canvas Grid.Row="4" Grid.ColumnSpan="3">
+            <ContentControl Name="PianoRollContainer"
+                            Width="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                            Height="{Binding Bounds.Height, RelativeSource={RelativeSource AncestorType=Canvas}}"/>
+          </Canvas>
           <TextBlock Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
           <ProgressBar Grid.Row="6" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
         </Grid>
