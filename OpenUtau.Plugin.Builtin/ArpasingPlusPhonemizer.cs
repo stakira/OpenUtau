@@ -18,6 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
     // main focus of this Phonemizer is to bring fallbacks to existing available alias from
     // all ARPAsing banks
     public class ArpasingPlusPhonemizer : SyllableBasedPhonemizer {
+        private const string YamlFile = "arpasing.yaml";
         private string[] vowels = {
         "aa", "ax", "ae", "ah", "ao", "aw", "ay", "eh", "er", "ey", "ih", "iy", "ow", "oy", "uh", "uw", "a", "e", "i", "o", "u", "ai", "ei", "oi", "au", "ou", "ix", "ux",
         "aar", "ar", "axr", "aer", "ahr", "aor", "or", "awr", "aur", "ayr", "air", "ehr", "eyr", "eir", "ihr", "iyr", "ir", "owr", "our", "oyr", "oir", "uhr", "uwr", "ur",
@@ -135,7 +136,7 @@ namespace OpenUtau.Plugin.Builtin {
                 finalPhonemes = new List<string>();
                 while (i < modified.Count) {
                     bool replaced = false;
-                    foreach (var rule in mergingReplacements.Concat(splittingReplacements)) {
+                    foreach (var rule in mergingReplacements.Concat(splittingReplacements).Where(r => r.where == "inside")) {
                         if (rule.from is string[] fromArray && i + fromArray.Length <= modified.Count) {
                             bool match = true;
                             for (int j = 0; j < fromArray.Length; j++) {
@@ -160,7 +161,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!replaced && splittingReplacements.Any()) {
                         string currentPhoneme = modified[i];
                         bool singleReplaced = false;
-                        foreach (var rule in splittingReplacements) {
+                        foreach (var rule in splittingReplacements.Where(r => r.where == "inside")) {
                             if (rule.from.ToString() == currentPhoneme && rule.to is string[] toArray) {
                                 finalPhonemes.AddRange(toArray);
                                 singleReplaced = true;
@@ -255,14 +256,14 @@ namespace OpenUtau.Plugin.Builtin {
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
             // LOAD DICTIONARY FROM FOLDER
-            string path = Path.Combine(PluginDir, "arpasing.yaml");
+            string path = Path.Combine(PluginDir, YamlFile);
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
                 File.WriteAllBytes(path, Data.Resources.arpasing_template);
             }
             // LOAD DICTIONARY FROM SINGER FOLDER
             if (singer != null && singer.Found && singer.Loaded) {
-                string file = Path.Combine(singer.Location, "arpasing.yaml");
+                string file = Path.Combine(singer.Location, YamlFile);
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
@@ -279,24 +280,24 @@ namespace OpenUtau.Plugin.Builtin {
             if (this.singer != singer) {
                 string file;
                 if (singer != null && singer.Found && singer.Loaded && !string.IsNullOrEmpty(singer.Location)) {
-                    file = Path.Combine(singer.Location, "arpasing.yaml");
+                    file = Path.Combine(singer.Location, YamlFile);
                     if (!File.Exists(file)) {
                         try {
                             File.WriteAllBytes(file, Data.Resources.arpasing_template);
                         } catch (Exception e) {
-                            Log.Error(e, $"Failed to write 'arpasing.yaml' to singer folder at {file}");
+                            Log.Error(e, $"Failed to write '{YamlFile}' to singer folder at {file}");
                         }
                     }
                 } else if (!string.IsNullOrEmpty(PluginDir)) {
-                    file = Path.Combine(PluginDir, "arpasing.yaml");
+                    file = Path.Combine(PluginDir, YamlFile);
                 } else {
-                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'arpasing.yaml'.");
+                    Log.Error($"Singer location and PluginDir are both null or empty. Cannot locate '{YamlFile}'.");
                     return; // Exit early to avoid null file issues
                 }
 
                 if (File.Exists(file)) {
                     try {
-                        var data = Core.Yaml.DefaultDeserializer.Deserialize<ArpabetYAMLData>(File.ReadAllText(file));
+                        var data = Core.Yaml.DefaultDeserializer.Deserialize<YAMLData>(File.ReadAllText(file));
                         // Load vowels
                         try {
                             var loadVowels = data.symbols
@@ -306,7 +307,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                             vowels = vowels.Concat(loadVowels).Distinct().ToArray();
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load vowels from arpasing.yaml: {ex.Message}");
+                            Log.Error($"Failed to load vowels from {YamlFile}: {ex.Message}");
                         }
                         // Load tails
                         try {
@@ -317,7 +318,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                             tails = tails.Concat(loadTails).Distinct().ToArray();
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load tails from arpasing.yaml: {ex.Message}");
+                            Log.Error($"Failed to load tails from {YamlFile}: {ex.Message}");
                         }
                         // Load stop and tap consonants
                         try {
@@ -328,7 +329,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                             consExceptions.AddRange(loadConsonants);
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load stop and tap consonants from filipino.yaml: {ex.Message}");
+                            Log.Error($"Failed to load stop and tap consonants from {YamlFile}: {ex.Message}");
                         }
                         // Load the various consonant types 
                         var fricatives = data.symbols
@@ -385,7 +386,7 @@ namespace OpenUtau.Plugin.Builtin {
                         stop = stops.Distinct().ToArray();
                         tap = taps.Distinct().ToArray();
                         affricate = affricates.Distinct().ToArray();
-                        /*consonants = fricatives
+                        consonants = fricatives
                             .Concat(aspirates)
                             .Concat(semivowels)
                             .Concat(liquids)
@@ -394,7 +395,7 @@ namespace OpenUtau.Plugin.Builtin {
                             .Concat(tap)
                             .Concat(affricate)
                             .Distinct()
-                            .ToArray();*/
+                            .ToArray();
 
                         // Load replacements
                         try {
@@ -405,14 +406,15 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 foreach (var replacement in data.replacements) {
                                     try {
+                                        string ruleScope = string.IsNullOrEmpty(replacement.where) ? "inside" : replacement.where.ToLowerInvariant();
                                         if (replacement.from != null && replacement.to != null) {
                                             if (replacement.from is IEnumerable<object> fromList) {
                                                 // 'from' is a list (e.g., [ae, n])
                                                 string[] fromArray = fromList.Select(item => item.ToString()).ToArray();
                                                 if (replacement.to is string toString) {
-                                                    mergingReplacements.Add(new Replacement { from = fromArray, to = toString });
+                                                    mergingReplacements.Add(new Replacement { from = fromArray, to = toString, where = ruleScope  });
                                                 } else if (replacement.to is IEnumerable<object> toList) {
-                                                    splittingReplacements.Add(new Replacement { from = fromArray, to = toList.Select(item => item.ToString()).ToArray() });
+                                                    splittingReplacements.Add(new Replacement { from = fromArray, to = toList.Select(item => item.ToString()).ToArray(), where = ruleScope  });
                                                 } else {
                                                     Log.Error($"Error: Invalid 'to' type in replacement: {replacement}");
                                                 }
@@ -421,7 +423,7 @@ namespace OpenUtau.Plugin.Builtin {
                                                 if (replacement.to is string toString) {
                                                     dictionaryReplacements[fromString] = toString;
                                                 } else if (replacement.to is IEnumerable<object> toList) {
-                                                    splittingReplacements.Add(new Replacement { from = fromString, to = toList.Select(item => item.ToString()).ToArray() });
+                                                    splittingReplacements.Add(new Replacement { from = fromString, to = toList.Select(item => item.ToString()).ToArray(), where = ruleScope  });
                                                 } else {
                                                     Log.Error($"Error: Invalid 'to' type in replacement: {replacement}");
                                                 }
@@ -441,7 +443,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 splittingReplacements = new List<Replacement>();
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from arpasing.yaml: {ex.Message}");
+                            Log.Error($"Failed to load replacements from {YamlFile}: {ex.Message}");
                         }
                         // load fallbacks
                         try {
@@ -453,10 +455,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load fallbacks from arpasing.yaml: {ex.Message}");
+                            Log.Error($"Failed to load fallbacks from {YamlFile}: {ex.Message}");
                         }
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse arpasing.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
+                       Log.Error($"Failed to parse {YamlFile}: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
                 
@@ -464,7 +466,7 @@ namespace OpenUtau.Plugin.Builtin {
                 this.singer = singer;
             }
         }
-        public class ArpabetYAMLData {
+        public class YAMLData {
             public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
             public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
             public Fallbacks[] fallbacks { get; set; } = Array.Empty<Fallbacks>();
@@ -487,6 +489,7 @@ namespace OpenUtau.Plugin.Builtin {
         public class Replacement {
             public object from { get; set; }
             public object to { get; set; }
+            public string where { get; set; } = "inside";
 
             public List<string> FromList {
                 get {
@@ -518,17 +521,87 @@ namespace OpenUtau.Plugin.Builtin {
             return phoneme;
         }
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            var replacedPrevV = ReplacePhoneme(syllable.prevV, syllable.tone);
-            var prevV = string.IsNullOrEmpty(replacedPrevV) ? "" : replacedPrevV;
-            string[] cc = syllable.cc.Select(c => ReplacePhoneme(c, syllable.tone)).ToArray();
-            List<string> vowels = new List<string> { ReplacePhoneme(syllable.v, syllable.vowelTone) };
-            string v = ReplacePhoneme(syllable.v, syllable.vowelTone);
+            // Replacement for note boundaries
+            List<string> currentPhonemes = new List<string>();
+            bool hasPrevV = !string.IsNullOrEmpty(syllable.prevV);
+            bool hasV = !string.IsNullOrEmpty(syllable.v);
+
+            if (hasPrevV) currentPhonemes.Add(syllable.prevV);
+            currentPhonemes.AddRange(syllable.cc);
+            if (hasV) currentPhonemes.Add(syllable.v);
+
+            List<string> finalPhonemes = new List<string>();
+            int idx = 0;
+            while (idx < currentPhonemes.Count) {
+                bool replaced = false;
+                foreach (var rule in mergingReplacements.Concat(splittingReplacements).Where(r => r.where == "all" || (hasPrevV && syllable.position == 0 && r.where == "boundary"))) {
+                    if (rule.from is string[] fromArray && idx + fromArray.Length <= currentPhonemes.Count) {
+                        bool match = true;
+                        for (int j = 0; j < fromArray.Length; j++) {
+                            if (currentPhonemes[idx + j] != fromArray[j]) {
+                                match = false;
+                                break;
+                            }
+                        }
+                        if (match) {
+                            if (rule.to is string toString) {
+                                finalPhonemes.Add(toString);
+                            } else if (rule.to is string[] toArray) {
+                                finalPhonemes.AddRange(toArray);
+                            }
+                            idx += fromArray.Length;
+                            replaced = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!replaced && splittingReplacements.Any()) {
+                    string currentPhoneme = currentPhonemes[idx];
+                    bool singleReplaced = false;
+                    foreach (var rule in splittingReplacements.Where(r => r.where == "all" || (hasPrevV && syllable.position == 0 && r.where == "boundary"))) {
+                        if (rule.from.ToString() == currentPhoneme && rule.to is string[] toArray) {
+                            finalPhonemes.AddRange(toArray);
+                            singleReplaced = true;
+                            break;
+                        }
+                    }
+                    if (!singleReplaced) {
+                        finalPhonemes.Add(ReplacePhoneme(currentPhonemes[idx], syllable.tone));
+                    }
+                    idx++;
+                } else if (!replaced) {
+                    finalPhonemes.Add(ReplacePhoneme(currentPhonemes[idx], syllable.tone));
+                    idx++;
+                }
+            }
+
+            string newPrevV = "";
+            string newV = "";
+            List<string> newCc = new List<string>();
+
+            if (finalPhonemes.Count > 0) {
+                if (hasPrevV) {
+                    newPrevV = finalPhonemes[0];
+                    finalPhonemes.RemoveAt(0);
+                }
+                if (hasV && finalPhonemes.Count > 0) {
+                    newV = finalPhonemes.Last();
+                    finalPhonemes.RemoveAt(finalPhonemes.Count - 1);
+                }
+                newCc.AddRange(finalPhonemes);
+            }
+            
+            var prevV = string.IsNullOrEmpty(newPrevV) ? "" : newPrevV;
+            string[] cc = newCc.ToArray();
+            string v = newV;
+            List<string> vowels = new List<string> { v };
             string basePhoneme;
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
-            string[] CurrentWordCc = syllable.CurrentWordCc.Select(ReplacePhoneme).ToArray();
-            string[] PreviousWordCc = syllable.PreviousWordCc.Select(ReplacePhoneme).ToArray();
+            string[] CurrentWordCc = syllable.CurrentWordCc.Select(c => ReplacePhoneme(c, syllable.tone)).ToArray();
+            string[] PreviousWordCc = syllable.PreviousWordCc.Select(c => ReplacePhoneme(c, syllable.tone)).ToArray();
             int prevWordConsonantsCount = syllable.prevWordConsonantsCount;
 
             bool isAtomicCluster = cc.Length == 2 && ccvException.Contains(cc[0]);
