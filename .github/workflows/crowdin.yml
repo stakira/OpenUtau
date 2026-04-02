@@ -1,77 +1,33 @@
-name: THAI CVVC-VCCV
+name: THAI CVVC-VCCV Build
 
 on:
+  # อนุญาตให้กดรัน Workflow นี้ได้ด้วยตัวเองผ่านหน้าเว็บ GitHub Actions
   workflow_dispatch: {}
-  schedule:
-    # runs every day
-    - cron: '0 4 * * *'
+  
+  # (ตัวเลือกเสริม) ถ้าอยากให้รันอัตโนมัติทุกครั้งที่อัปเดตโค้ดขึ้น branch main ให้เอาคอมเมนต์ด้านล่างออกครับ
+  # push:
+  #   branches: [ "main" ]
 
 jobs:
-  synchronize-with-crowdin:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest # ใช้ Windows ในการ Build เพื่อความเข้ากันได้กับ OpenUtau
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: git config
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-      
-      - name: Sync from official repo
-        run: |
-          git pull --unshallow
-          git remote add official https://github.com/stakira/OpenUtau
-          git fetch official
-          git merge --no-edit official/master
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x' # ระบุเวอร์ชัน .NET (ปรับตามไฟล์ .csproj ของคุณ)
 
-      - run: ls -l OpenUtau/Strings
-      
-      - name: crowdin action
-        uses: crowdin/github-action@v2.5.0
-        with:
-          upload_sources: true
-          upload_sources_args: --auto-update
-          upload_translations: false
-          download_translations: true
-          localization_branch_name: crowdin-translated
-          create_pull_request: false
-        env:
-          # A classic GitHub Personal Access Token with the 'repo' scope selected (the user should have write access to the repository).
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          
-          # A numeric ID, found at https://crowdin.com/project/<projectName>/tools/api
-          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+    - name: Build Phonemizer Plugin
+      # สั่ง Compile โค้ดแบบ Release เพื่อให้ได้ไฟล์ที่เบาและทำงานเร็วที่สุด
+      run: dotnet build -c Release
 
-          # Visit https://crowdin.com/settings#api-key to create this token
-          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-
-  sync-strings:
-    needs: [synchronize-with-crowdin]
-    runs-on: windows-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: crowdin-translated
-          
-      - name: Run sync_strings.py
-        run: python Misc/sync_strings.py
-      
-      - name: git config
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          
-      - name: git commit
-        run: |
-          git add .
-          git commit -m "sync strings"
-
-      - name: git push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          branch: crowdin-translated
+    - name: Upload Plugin Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: THAI-CVVC-VCCV-Plugin
+        # ระบุ Path ไปหาไฟล์ .dll ที่สร้างเสร็จแล้ว (ปรับพาธให้ตรงกับโครงสร้างโฟลเดอร์ของคุณ)
+        path: bin/Release/net6.0/OpenUtau.Plugin.Builtin.dll
