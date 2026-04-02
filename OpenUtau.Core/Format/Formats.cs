@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {
-    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi, Ufdata, Musicxml };
+    // 1. เพิ่มนามสกุลใหม่เข้าไปใน Enum
+    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi, Ufdata, Musicxml, Svp, Tssln, Acep, Vsq };
 
     public static class Formats {
         const string ustMatch = "[#SETTING]";
@@ -16,6 +17,13 @@ namespace OpenUtau.Core.Format {
         const string midiMatch = "MThd";
         const string ufdataMatch = "\"formatVersion\":";
         const string musicxmlMatch = "score-partwise";
+        
+        // [DELTA SYNTH] คำค้นหา (Match) สำหรับไฟล์ใหม่ๆ (อาจต้องปรับเปลี่ยนตาม Header จริงของไฟล์)
+        const string svpMatch = "\"version\""; // ไฟล์ SVP ของ SynthV มักเป็น JSON ที่มีคำว่า version หรือ svkey
+        const string acepMatch = "ACEStudio";  // ไฟล์ Acep มักจะมีลายเซ็นของ ACE Studio
+        const string tsslnMatch = "vocaloid5"; // หรือโครงสร้างเฉพาะของ V5/V6
+        // หมายเหตุ: ไฟล์ .vsq ของ Vocaloid 2 โครงสร้างเป็น MIDI ดังนั้นมันจะไปเข้าข่าย midiMatch ก่อน
+        // เราอาจจะต้องเช็คนามสกุลไฟล์ (Extension) ช่วยด้วยในกรณีของ VSQ
 
         public static ProjectFormats DetectProjectFormat(string file) {
             var lines = new List<string>();
@@ -25,6 +33,8 @@ namespace OpenUtau.Core.Format {
                 }
             }
             string contents = string.Join("\n", lines);
+            string extension = Path.GetExtension(file).ToLower(); // ดึงนามสกุลไฟล์มาช่วยเช็ค
+
             if (contents.Contains(ustMatch)) {
                 return ProjectFormats.Ust;
             } else if (contents.Contains(ustxMatchJson) || contents.Contains(ustxMatchYaml)) {
@@ -33,21 +43,25 @@ namespace OpenUtau.Core.Format {
                 return ProjectFormats.Vsq3;
             } else if (contents.Contains(vsq4Match)) {
                 return ProjectFormats.Vsq4;
-            } else if (contents.Contains(midiMatch)) {
-                return ProjectFormats.Midi;
             } else if (contents.Contains(ufdataMatch)) {
                 return ProjectFormats.Ufdata;
             } else if (contents.Contains(musicxmlMatch)) {
                 return ProjectFormats.Musicxml;
+            } else if (contents.Contains(svpMatch) && extension == ".svp") {
+                return ProjectFormats.Svp;
+            } else if (contents.Contains(acepMatch) || extension == ".acep") {
+                return ProjectFormats.Acep;
+            } else if (contents.Contains(tsslnMatch) || extension == ".tssln") {
+                return ProjectFormats.Tssln;
+            } else if (contents.Contains(midiMatch)) {
+                // ถ้าเป็น MIDI แต่ลงท้ายด้วย .vsq ให้มองเป็น VSQ
+                if (extension == ".vsq") return ProjectFormats.Vsq;
+                return ProjectFormats.Midi;
             } else {
                 return ProjectFormats.Unknown;
             }
         }
 
-        /// <summary>
-        /// Read project from files to a new UProject object, used by LoadProject and ImportTracks.
-        /// </summary>
-        /// <param name="files">Names of the files to be loaded</param>
         public static UProject? ReadProject(string[] files){
             if (files.Length < 1) {
                 return null;
@@ -74,16 +88,27 @@ namespace OpenUtau.Core.Format {
                 case ProjectFormats.Musicxml:
                     project = MusicXML.LoadProject(files[0]);
                     break;
+                
+                // [DELTA SYNTH] จุดเชื่อมต่อไปยัง Parser (ต้องมีคลาสเหล่านี้อยู่ในโปรเจกต์ด้วย)
+                case ProjectFormats.Svp:
+                    // project = Svp.Load(files[0]); 
+                    break;
+                case ProjectFormats.Tssln:
+                    // project = Tssln.Load(files[0]); 
+                    break;
+                case ProjectFormats.Acep:
+                    // project = Acep.Load(files[0]); 
+                    break;
+                case ProjectFormats.Vsq:
+                    // project = Vsq.Load(files[0]); 
+                    break;
+
                 default:
                     throw new FileFormatException("Unknown file format");
             }
             return project;
         }
 
-        /// <summary>
-        /// Load project from files.
-        /// </summary>
-        /// <param name="files">Names of the files to be loaded</param>
         public static void LoadProject(string[] files) {
             UProject project = ReadProject(files);
             if (project != null) {
@@ -91,12 +116,6 @@ namespace OpenUtau.Core.Format {
             }
         }
 
-
-        /// <summary>
-        /// Read multiple projects for importing tracks
-        /// </summary>
-        /// <param name="files">Names of the files to be loaded</param>
-        /// <returns></returns>
         public static UProject[] ReadProjects(string[] files){
             if (files == null || files.Length < 1) {
                 return new UProject[0];
@@ -108,10 +127,6 @@ namespace OpenUtau.Core.Format {
                 .ToArray();
         }
 
-        /// <summary>
-        /// Load project from backup file.
-        /// </summary>
-        /// <param name="files">Names of the files to be loaded</param>
         public static void RecoveryProject(string[] files) {
             UProject project = ReadProject(files);
             if (project != null) {
@@ -127,13 +142,6 @@ namespace OpenUtau.Core.Format {
             }
         }
 
-        /// <summary>
-        /// Import tracks from files to the current existing editing project.
-        /// </summary>
-        /// <param name="project">The current existing editing project</param>
-        /// <param name="loadedProjects">loaded project objects to be imported</param>
-        /// <param name="importTempo">If set to true, the tempo of the imported project will be used</param>
-        /// <exception cref="FileFormatException"></exception>
         public static void ImportTracks(UProject project, UProject[] loadedProjects, bool importTempo = true) {
             if (loadedProjects == null || loadedProjects.Length < 1) {
                 return;
@@ -174,13 +182,6 @@ namespace OpenUtau.Core.Format {
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
         }
 
-        /// <summary>
-        /// Import tracks from files to the current existing editing project.
-        /// </summary>
-        /// <param name="project">The current existing editing project</param>
-        /// <param name="files">Names of the files to be imported</param>
-        /// <param name="importTempo">If set to true, the tempo of the imported project will be used</param>
-        /// <exception cref="FileFormatException"></exception>
         public static void ImportTracks(UProject project, string[] files, bool importTempo = true) {
             if (files == null || files.Length < 1) {
                 return;
