@@ -404,9 +404,7 @@
           <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth" IsVisible="{Binding ShowPianoRoll}"/>
           <Canvas Grid.Row="4" Grid.ColumnSpan="3">
-            <ContentControl Name="PianoRollContainer"
-                            Width="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Canvas}}"
-                            Height="{Binding Bounds.Height, RelativeSource={RelativeSource AncestorType=Canvas}}"/>
+            <ContentControl Name="PianoRollContainer" Width="{Binding $parent[Canvas].Bounds.Width}" Height="{Binding $parent[Canvas].Bounds.Height}"/>
           </Canvas>
           <TextBlock Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
           <ProgressBar Grid.Row="6" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
