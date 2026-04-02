@@ -1,0 +1,10 @@
+public class DefaultPhonemizerTest : PhonemizerTest<DefaultPhonemizer> { }
+    public class ArpasingPhonemizerTest : PhonemizerTest<ArpasingPhonemizer> { }
+    public class JapaneseCVVCPhonemizerTest : PhonemizerTest<JapaneseCVVCPhonemizer> { }
+    public class JapaneseVCVPhonemizerTest : PhonemizerTest<JapaneseVCVPhonemizer> { }
+    public class KoreanCVCPhonemizerTest : PhonemizerTest<KoreanCVCPhonemizer> { }
+    public class KoreanCVVCPhonemizerTest : PhonemizerTest<KoreanCVVCPhonemizer> { }
+    
+    // [DELTA SYNTH] เพิ่มคลาสทดสอบสำหรับ Phonemizer ภาษาไทย
+    public class ThaiVCCVPhonemizerTest : PhonemizerTest<ThaiVCCVPhonemizer> { }
+    public class ThaiCVVCPhonemizerTest : PhonemizerTest<ThaiCVVCPhonemizer> { }
