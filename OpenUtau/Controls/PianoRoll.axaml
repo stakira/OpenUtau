@@ -7,7 +7,7 @@
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
         x:Class="OpenUtau.App.Controls.PianoRoll"
-        Focusable="True">
+        Focusable="True" Background="Transparent">
   <UserControl.Styles>
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </UserControl.Styles>
