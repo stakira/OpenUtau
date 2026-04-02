@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -95,8 +95,6 @@ namespace OpenUtau.Core.Format {
                 UTrack utrack = new UTrack(uproject) { Singer = usinger, TrackNo = uproject.tracks.Count };
                 uproject.tracks.Add(utrack);
 
-                //utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
-                //utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
                 utrack.TrackNo = int.Parse(track.SelectSingleNode(tracknoPath, nsmanager).InnerText);
 
                 foreach (XmlNode part in track.SelectNodes(partPath, nsmanager)) // musical part
@@ -117,11 +115,7 @@ namespace OpenUtau.Core.Format {
                     foreach (XmlNode ctrlPt in part.SelectNodes($"{nsPrefix}{(nsPrefix == "v3:" ? "mCtrl" : "cc")}", nsmanager)) {
                         var t = int.Parse(ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "posTick" : "t")}", nsmanager).InnerText);
                         var valNode = ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}", nsmanager);
-                        // type of controller
-                        // D: DYN, [0,128), default: 64
-                        // S: PBS, [0,24], default: 2.
-                        // P: PIT, [-8192,8192), default: 0
-                        // Pitch curve is calculated by multiplying PIT with PBS, max/min PIT shifts pitch by {PBS} semitones.
+                        
                         var type = valNode.Attributes["id"].Value;
                         var v = int.Parse(valNode.InnerText);
                         if (type == "DYN" || type == "D") {
@@ -141,7 +135,6 @@ namespace OpenUtau.Core.Format {
                         GetCurve(uproject, upart, Ustx.DYN).Set(upart.Duration, lastV ?? 0, lastT ?? 0, 0);
                     }
 
-                    // Make sure that points are ordered by time
                     const int pbsDefaultVal = 2;
                     pbsList.Sort((tuple1, tuple2) => tuple1.Item1.CompareTo(tuple2.Item1));
                     pitList.Sort((tuple1, tuple2) => tuple1.Item1.CompareTo(tuple2.Item1));
@@ -154,11 +147,9 @@ namespace OpenUtau.Core.Format {
                         var semitone = pbsList.FindLast(tuple => tuple.Item1 <= t)?.Item2 ?? pbsDefaultVal;
                         var pit = (int)Math.Round(v * semitone * 100);
                         if (Math.Abs(pit) > 1200) {
-                            // Exceed OpenUTAU's limit. clip value
                             pit = Math.Sign(pit) * 1200;
                         }
                         if (t > 0 && lastV.HasValue) {
-                            // Mimic Vsqx's Hold property
                             GetCurve(uproject, upart, Ustx.PITD).Set(t - UCurve.interval, lastV.Value, lastT ?? t, 0);
                             GetCurve(uproject, upart, Ustx.PITD).Set(t, pit, t - UCurve.interval, 0);
                         } else {
@@ -171,6 +162,7 @@ namespace OpenUtau.Core.Format {
                         GetCurve(uproject, upart, Ustx.PITD).Set(upart.Duration, lastV ?? 0, lastT ?? 0, 0);
                     }
 
+                    // --- [DELTA SYNTH] ระบบวิเคราะห์โน้ตที่โหลดเข้ามาทีละตัว ---
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager)) {
                         UNote unote = uproject.CreateNote();
 
@@ -178,14 +170,36 @@ namespace OpenUtau.Core.Format {
                         unote.duration = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
                         unote.tone = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
-                        if (unote.lyric == "-") {
+
+                        // 1. แปลงขยะคำร้องของ Vocaloid ให้กลายเป็นสัญลักษณ์ต่อท้าย (+)
+                        if (unote.lyric == "-" || unote.lyric == @"Ooh \" || unote.lyric == @"\" || unote.lyric == "/") {
                             unote.lyric = "+";
+                        } else if (unote.lyric.Contains(@"Ooh \")) {
+                            unote.lyric = unote.lyric.Replace(@"Ooh \", "+");
                         }
 
+                        // 2. ตรวจสอบว่าสามารถรวมร่างโน้ตที่ถูกซอย (Tie) ได้หรือไม่
+                        UNote prevNote = upart.notes.Count > 0 ? upart.notes[upart.notes.Count - 1] : null;
+                        
+                        // เงื่อนไข: มีโน้ตก่อนหน้า + ระดับคีย์เดียวกัน + เวลาต่อติดกันพอดี + เป็นเนื้อร้องที่ต้องลากเสียง (+)
+                        if (prevNote != null && 
+                            prevNote.tone == unote.tone && 
+                            prevNote.position + prevNote.duration == unote.position && 
+                            unote.lyric == "+") {
+                            
+                            // โอนความยาวของโน้ตซอยตัวนี้ ไปบวกเพิ่มให้โน้ตหลักด้านหน้า
+                            prevNote.duration += unote.duration;
+                            
+                            // สั่งข้ามคำสั่งเพิ่มโน้ต (Discard) ทันที 
+                            continue;
+                        }
+
+                        // ถ้าไม่เข้าเงื่อนไขรวมโน้ต (เช่น เป็นคนละคีย์ หรือเป็นคำร้องใหม่) ให้ตั้งค่าและเพิ่มลง Part ตามปกติ
                         unote.phonemeExpressions.Add(new UExpression(Ustx.VEL) {
                             index = 0,
                             value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText) * 100 / 64,
                         });
+                        
                         foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager)) {
                             if (notestyle.Attributes["id"].Value == "accent") {
                                 unote.phonemeExpressions.Add(new UExpression(Ustx.ATK) {
@@ -195,7 +209,6 @@ namespace OpenUtau.Core.Format {
                             } else if (notestyle.Attributes["id"].Value == "decay") {
                                 unote.phonemeExpressions.Add(new UExpression(Ustx.DEC) {
                                     index = 0,
-                                    // V4 default is 50. Translate it to no effect in OU. V4 dec 100 roughly maps to OU 50.
                                     value = Math.Max(0, int.Parse(notestyle.InnerText) - 50),
                                 });
                             }
@@ -205,6 +218,7 @@ namespace OpenUtau.Core.Format {
                         int length = Util.NotePresets.Default.DefaultPortamento.PortamentoLength;
                         unote.pitch.data[0].X = start;
                         unote.pitch.data[1].X = start + length;
+                        
                         upart.notes.Add(unote);
                     }
                 }
