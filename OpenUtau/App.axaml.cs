@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using OpenUtau.App.Views;
 using OpenUtau.Colors;
 using Serilog;
@@ -89,13 +90,35 @@ namespace OpenUtau.App {
         }
 
         public static void SetTheme() {
+            var themeOption = Core.Util.Preferences.Default.ThemeName;
+            var legacyTheme = Core.Util.Preferences.Default.Theme;
+            
+            // Legacy theme migrator
+            if (themeOption == "Light" && legacyTheme != null) {
+                switch (legacyTheme) {
+                    case 1:
+                        Core.Util.Preferences.Default.ThemeName = "Light";
+                        break;
+                    case 2:
+                        Core.Util.Preferences.Default.ThemeName = "Dark";
+                        break;
+                    case 3:
+                        Log.Error("Legacy custom themes need to be moved to a 'Theme' folder");
+                        Core.Util.Preferences.Default.ThemeName = "Light";
+                        break;
+                }
+                Core.Util.Preferences.Default.Theme = null;
+                Core.Util.Preferences.Save();
+                themeOption = Core.Util.Preferences.Default.ThemeName;
+            }
+            
             if (Current == null) {
                 return;
             }
             var light = (IResourceDictionary) Current.Resources["themes-light"]!;
             var dark = (IResourceDictionary) Current.Resources["themes-dark"]!;
             var custom = (IResourceDictionary) Current.Resources["themes-custom"]!;
-            switch (Core.Util.Preferences.Default.ThemeName) { 
+            switch (themeOption) { 
                 case "Light":
                     ApplyTheme(light);
                     Current.RequestedThemeVariant = ThemeVariant.Light;

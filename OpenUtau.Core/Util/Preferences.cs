@@ -133,6 +133,7 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public WindowSize MainWindowSize = new WindowSize();
             public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
@@ -143,6 +144,8 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public string ThemeName = "Light";
+            public int? Theme;
+            // Marked as nullable to prevent a flashbang from happening when updating
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
