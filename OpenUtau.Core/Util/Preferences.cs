@@ -113,6 +113,13 @@ namespace OpenUtau.Core.Util {
                     if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
                     if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
                     if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
+                    if (Default.Theme != null) {
+                        Default.ThemeName = Default.Theme switch {
+                            1 => "Dark",
+                            _ => "Light"
+                        };
+                        Default.Theme = null;
+                    }
                 } else {
                     Reset();
                 }
@@ -133,7 +140,6 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
-            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public WindowSize MainWindowSize = new WindowSize();
             public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
@@ -144,8 +150,6 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public string ThemeName = "Light";
-            public int? Theme;
-            // Marked as nullable to prevent a flashbang from happening when updating
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
@@ -245,6 +249,10 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = false;
+
+            // Legacy
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public int? Theme;
         }
     }
 }
