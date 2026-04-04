@@ -113,6 +113,13 @@ namespace OpenUtau.Core.Util {
                     if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
                     if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
                     if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
+                    if (Default.Theme != null) {
+                        Default.ThemeName = Default.Theme switch {
+                            1 => "Dark",
+                            _ => "Light"
+                        };
+                        Default.Theme = null;
+                    }
                 } else {
                     Reset();
                 }
@@ -242,6 +249,10 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = false;
+
+            // Legacy
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public int? Theme;
         }
     }
 }
