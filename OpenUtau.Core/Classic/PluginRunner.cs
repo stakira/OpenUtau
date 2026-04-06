@@ -53,7 +53,7 @@ namespace OpenUtau.Classic {
                 var tempFile = Path.Combine(PathManager.CachePath, "temp.tmp");
                 var sequence = Ust.WritePlugin(project, part, first, last, tempFile, encoding: plugin.Encoding);
                 byte[]? beforeHash = HashFile(tempFile);
-                plugin.Run(tempFile);
+                await plugin.Run(tempFile);
                 byte[]? afterHash = HashFile(tempFile);
                 if (beforeHash == null || afterHash == null || Enumerable.SequenceEqual(beforeHash, afterHash)) {
                     Log.Information("Legacy plugin temp file has not changed.");

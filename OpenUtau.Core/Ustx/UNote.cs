@@ -439,7 +439,11 @@ namespace OpenUtau.Core.Ustx {
         /// <summary>
         /// SineOut
         /// </summary>
-        o
+        o,
+        /// <summary>
+        /// Spline
+        /// </summary>
+        sp
     };
 
     public class PitchPoint : IComparable<PitchPoint> {
@@ -453,13 +457,15 @@ namespace OpenUtau.Core.Ustx {
         /// </summary>
         public float Y;
         public PitchPointShape shape;
+        [YamlIgnore] public bool autoCompleted = false;
 
         public PitchPoint() { }
 
-        public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.io) {
+        public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.io, bool autoCompleted = false) {
             X = x;
             Y = y;
             this.shape = shape;
+            this.autoCompleted = autoCompleted;
         }
 
         public PitchPoint Clone() {
@@ -467,6 +473,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public int CompareTo(PitchPoint other) { return X.CompareTo(other.X); }
+        public override string ToString() {
+            return $"x: {X}, y: {Y}, shape: {shape}";
+        }
     }
 
     public class UPitch {

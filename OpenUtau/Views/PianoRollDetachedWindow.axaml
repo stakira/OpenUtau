@@ -8,7 +8,7 @@
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
         x:Class="OpenUtau.App.Views.PianoRollDetachedWindow"
         Icon="/Assets/open-utau.ico"
-        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" 
+        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
         Focusable="True" TransparencyLevelHint="None"
         Closing="WindowClosing" Deactivated="WindowDeactivated">
     <ContentControl Name="PianoRollContainer"/>
