@@ -24,6 +24,8 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartTranscribeCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartMergeCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartSplitCommand { get; set; }
+        public IEnumerable<MenuItemViewModel> PartApplyPitchMenuItems { get; set; } = new List<MenuItemViewModel>();
     }
 
     public class RecentFileInfo {
@@ -75,6 +77,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string ProgressText { get; set; }
         [Reactive] public bool ShowPianoRoll { get; set; }
         [Reactive] public double PianoRollMaxHeight { get; set; }
+        [Reactive] public double PianoRollMinHeight { get; set; }
         public ReactiveCommand<UPart, Unit> PartDeleteCommand { get; set; }
         public ReactiveCommand<int, Unit>? AddTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
@@ -129,7 +132,10 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.AddSubscriber(this);
 
             this.WhenAnyValue(vm => vm.ShowPianoRoll)
-                .Subscribe(x => PianoRollMaxHeight = x ? Double.PositiveInfinity : 0);
+                .Subscribe(x => {
+                    PianoRollMaxHeight = x ? double.PositiveInfinity : 0;
+                    PianoRollMinHeight = x ? ViewConstants.PianoRollMinHeight : 0;
+                });
         }
 
         public void Undo() {
@@ -416,7 +422,7 @@ namespace OpenUtau.App.ViewModels {
                     var partOldDuration = voicePart.Duration;
                     var partNewDuration = RemapTickPos(partOldStartTick + voicePart.duration, oldTimeAxis, newTimeAxis) - partNewStartTick;
                     if(partNewDuration != partOldDuration) {
-                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(
+                        DocManager.Inst.ExecuteCmd(new ResizeVoicePartCommand(
                             project, voicePart, partNewDuration - partOldDuration, false));
                     }
                     var noteCommands = new List<UCommand>();
@@ -451,7 +457,7 @@ namespace OpenUtau.App.ViewModels {
                 Dispatcher.UIThread.InvokeAsync(() => {
                     Progress = progressBarNotification.Progress;
                     ProgressText = progressBarNotification.Info;
-                });
+                }, DispatcherPriority.Background);
             } else if (cmd is LoadProjectNotification loadProject) {
                 Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {

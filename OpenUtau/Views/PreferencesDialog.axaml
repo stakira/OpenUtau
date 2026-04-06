@@ -201,9 +201,11 @@
           </Grid>
           <TextBlock Text="{DynamicResource prefs.rendering.onnxrunner}" Margin="0,10,0,0"/>
           <ComboBox ItemsSource="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
-          <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" Margin="0,10,0,0"/>
-          <ComboBox ItemsSource="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
-          <TextBlock Classes="restart"/>
+          <StackPanel IsVisible="{Binding ShowOnnxGpu}">
+            <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" Margin="0,10,0,0"/>
+            <ComboBox ItemsSource="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
+            <TextBlock Classes="restart"/>
+          </StackPanel>
         </StackPanel>
 
         <!-- Appearance -->
