@@ -73,7 +73,7 @@ namespace OpenUtau.App.ViewModels {
                     UpdateRecentSingers(singer);
                     Preferences.Save();
                     MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
-                    }
+                }
                 this.RaisePropertyChanged(nameof(Singer));
                 this.RaisePropertyChanged(nameof(Renderer));
                 RefreshAvatar();
@@ -84,12 +84,12 @@ namespace OpenUtau.App.ViewModels {
                     //if (track.Singer != singer) {
                         ApplySingerToTrack(track, singer);
                     //}
-                    }
-                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
-                    DocManager.Inst.EndUndoGroup();
+                }
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
+                DocManager.Inst.EndUndoGroup();
                 UpdateRecentSingers(singer);
-                    Preferences.Save();
-                    MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 this.RaisePropertyChanged(nameof(Singer));
                 this.RaisePropertyChanged(nameof(Renderer));
@@ -621,6 +621,38 @@ namespace OpenUtau.App.ViewModels {
                 TrackExpressions = track.TrackExpressions.Select(exp => exp.Clone()).ToList()
             }));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        public void StandardizeSettings() {
+            DocManager.Inst.StartUndoGroup("command.track.setting");
+            foreach (var targetTrack in DocManager.Inst.Project.tracks) {
+                if (targetTrack == track) {
+                    continue;
+                }
+                if (track.Singer != targetTrack.Singer) {
+                    ApplySingerToTrack(targetTrack, track.Singer);
+                }
+                if (targetTrack.Phonemizer.GetType() != track.Phonemizer.GetType()) {
+                    var phonemizerFactory = PhonemizerFactory.Get(track.Phonemizer.GetType());
+                    var phonemizer = phonemizerFactory?.Create();
+                    if (phonemizer != null) {
+                        DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, targetTrack, phonemizer));
+                    }
+                }
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(
+                    DocManager.Inst.Project,
+                    targetTrack,
+                    track.RendererSettings.Clone()));
+                targetTrack.Mute = track.Mute;
+                targetTrack.Muted = track.Muted;
+                targetTrack.Volume = track.Volume;
+                targetTrack.Pan = track.Pan;
+                targetTrack.TrackColor = track.TrackColor;
+                targetTrack.TrackExpressions = track.TrackExpressions.Select(exp => exp.Clone()).ToList();
+            }
+            DocManager.Inst.EndUndoGroup();
+            MessageBus.Current.SendMessage(new TracksRefreshEvent());
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
         }
 
         public void VoiceColorRemapping() {

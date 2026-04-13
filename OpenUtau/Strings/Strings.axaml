@@ -772,7 +772,7 @@ General
     Space: Play</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
-
+    
   <system:String x:Key="tracks.duplicate">Duplicate Track</system:String>
   <system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>
   <system:String x:Key="tracks.favorite">Favorites</system:String>
@@ -796,6 +796,7 @@ General
   <system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>
   <system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>
   <system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>
+  <system:String x:Key="tracks.standardizesettings">Standardize Track Settings</system:String>
   <system:String x:Key="tracks.trackcolor">Change track color</system:String>
   <system:String x:Key="tracks.tracksettings">Track Settings</system:String>
 
