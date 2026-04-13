@@ -277,6 +277,7 @@
           <MenuItem Classes="context" Header="{DynamicResource tracks.duplicate}" Command="{Binding Duplicate}"/>
           <MenuItem Classes="context" Header="{DynamicResource tracks.duplicatesettings}" Command="{Binding DuplicateSettings}"/>
           <MenuItem Classes="context" Header="{DynamicResource tracks.standardizesettings}" Command="{Binding StandardizeSettings}"/>
+          <MenuItem Classes="context" Header="{DynamicResource tracks.rotateselectedtracksingers}" Command="{Binding RotateSelectedTrackSingers}"/>
           <MenuItem Classes="context" Header="{DynamicResource dialogs.voicecolorremapping}" Command="{Binding VoiceColorRemapping}"/>
         </ContextMenu>
       </Grid.ContextMenu>

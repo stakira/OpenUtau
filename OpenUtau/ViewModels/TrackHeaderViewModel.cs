@@ -44,9 +44,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool Solo { get; set; }
         [Reactive] public bool IsSelected { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
-        [Reactive] public bool IsSingerVisible  { get; set; }
-        [Reactive] public bool IsPhonemizerVisible  { get; set; }
-        [Reactive] public bool IsRendererVisible  { get; set; }
+        [Reactive] public bool IsSingerVisible { get; set; }
+        [Reactive] public bool IsPhonemizerVisible { get; set; }
+        [Reactive] public bool IsRendererVisible { get; set; }
         [Reactive] public IBrush HeaderBorderBrush { get; set; } = ThemeManager.NeutralAccentBrushSemi;
 
         public ViewModelActivator Activator { get; }
@@ -272,6 +272,12 @@ namespace OpenUtau.App.ViewModels {
                 Muted = false;
             }
             this.RaisePropertyChanged(nameof(Muted));
+        }
+
+        private static bool IsTrackSelected(UTrack projectTrack) {
+            var tracksViewModel = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
+                ?.MainWindow?.DataContext as MainWindowViewModel;
+            return tracksViewModel?.TracksViewModel.SelectedTracks.Contains(projectTrack) == true;
         }
 
         private void ApplySingerToTrack(UTrack targetTrack, USinger? singer) {
@@ -526,8 +532,16 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void ManuallyRaise() {
+            TrackName = track.TrackName;
+            TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+            TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
             this.RaisePropertyChanged(nameof(Singer));
             this.RaisePropertyChanged(nameof(TrackNo));
+            this.RaisePropertyChanged(nameof(TrackName));
+            this.RaisePropertyChanged(nameof(TrackAccentColor));
+            this.RaisePropertyChanged(nameof(TrackColor));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
             this.RaisePropertyChanged(nameof(Renderer));
@@ -668,6 +682,29 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
             MessageBus.Current.SendMessage(new TracksRefreshEvent());
             MessageBus.Current.SendMessage(new PianorollRefreshEvent("TrackColor"));
+        }
+
+        public void RotateSelectedTrackSingers() {
+            var targetTracks = DocManager.Inst.Project.tracks
+                .Where(projectTrack => projectTrack != null)
+                .Where(projectTrack => IsTrackSelected(projectTrack))
+                .OrderBy(targetTrack => targetTrack.TrackNo)
+                .ToList();
+            if (targetTracks.Count <= 1) {
+                targetTracks = DocManager.Inst.Project.tracks;
+            }
+            var singers = targetTracks
+                .Select(targetTrack => targetTrack.Singer)
+                .ToList();
+            DocManager.Inst.StartUndoGroup("command.track.singer");
+            for (int i = 0; i < targetTracks.Count; i++) {
+                var singer = singers[(i + 1) % singers.Count];
+                ApplySingerToTrack(targetTracks[i], singer); 
+            }
+            DocManager.Inst.EndUndoGroup();
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
+            MessageBus.Current.SendMessage(new TracksRefreshEvent());
+            MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
         }
 
         public void VoiceColorRemapping() {

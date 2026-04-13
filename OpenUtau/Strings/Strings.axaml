@@ -789,6 +789,7 @@ General
   <system:String x:Key="tracks.opensingers">Open singers location</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
   <system:String x:Key="tracks.rename">Rename track</system:String>
+  <system:String x:Key="tracks.rotateselectedtracksingers">Rotate singers across selected tracks</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
   <system:String x:Key="tracks.singerdefault">(Singer default) </system:String>
