@@ -78,10 +78,16 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Move track";
         public override void Execute() {
+            if (index < 0 || index + 1 >= project.tracks.Count) {
+                return;
+            }
             project.tracks.Reverse(index, 2);
             UpdateTrackNo();
         }
         public override void Unexecute() {
+            if (index < 0 || index + 1 >= project.tracks.Count) {
+                return;
+            }
             project.tracks.Reverse(index, 2);
             UpdateTrackNo();
         }
