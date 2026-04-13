@@ -84,13 +84,18 @@ namespace OpenUtau.App.ViewModels {
                 RefreshAvatar();
             });
             AllSetSingerCommand = ReactiveCommand.Create<USinger?>(singer => {
-                DocManager.Inst.StartUndoGroup("command.track.singer");
-                foreach (var track in DocManager.Inst.Project.tracks) {
-                    //if (track.Singer != singer) {
-                        ApplySingerToTrack(track, singer);
-                    //}
+                var targetTracks = DocManager.Inst.Project.tracks
+                    .Where(projectTrack => projectTrack != null)
+                    .Where(projectTrack => IsTrackSelected(projectTrack))
+                    .ToList();
+                if (targetTracks.Count <= 1) {
+                    targetTracks = DocManager.Inst.Project.tracks;
                 }
-                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
+                DocManager.Inst.StartUndoGroup("command.track.singer");
+                foreach (var targetTrack in targetTracks) {
+                    ApplySingerToTrack(targetTrack, singer);
+                }
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 DocManager.Inst.EndUndoGroup();
                 UpdateRecentSingers(singer);
                 Preferences.Save();
@@ -132,10 +137,17 @@ namespace OpenUtau.App.ViewModels {
                 } else {
                     return;
                 }
+                var targetTracks = DocManager.Inst.Project.tracks
+                    .Where(projectTrack => projectTrack != null)
+                    .Where(projectTrack => IsTrackSelected(projectTrack))
+                    .ToList();
+                if (targetTracks.Count <= 1) {
+                    targetTracks = DocManager.Inst.Project.tracks;
+                }
                 DocManager.Inst.StartUndoGroup("command.track.setting");
-                foreach (var track in DocManager.Inst.Project.tracks) {
+                foreach (var targetTrack in targetTracks) {
                     if (phonemizer != null) {
-                        DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
+                        DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, targetTrack, phonemizer));
                     }
                     if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
                         Preferences.Default.SingerPhonemizers[Singer.Id] = name;
