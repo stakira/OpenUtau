@@ -42,10 +42,12 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Muted { get; set; }
         [Reactive] public bool Solo { get; set; }
+        [Reactive] public bool IsSelected { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
-        [Reactive] public bool IsSingerVisible { get; set; }
-        [Reactive] public bool IsPhonemizerVisible { get; set; }
-        [Reactive] public bool IsRendererVisible { get; set; }
+        [Reactive] public bool IsSingerVisible  { get; set; }
+        [Reactive] public bool IsPhonemizerVisible  { get; set; }
+        [Reactive] public bool IsRendererVisible  { get; set; }
+        [Reactive] public IBrush HeaderBorderBrush { get; set; } = ThemeManager.NeutralAccentBrushSemi;
 
         public ViewModelActivator Activator { get; }
 
@@ -60,6 +62,9 @@ namespace OpenUtau.App.ViewModels {
             SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
             track = new UTrack(DocManager.Inst.Project);
+            this.WhenAnyValue(x => x.IsSelected)
+                .Subscribe(_ => RefreshSelectionStyle());
+            RefreshSelectionStyle();
         }
 
         public TrackHeaderViewModel(UTrack track) {
@@ -198,8 +203,17 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(solo => {
                     track.Solo = solo;
                 });
+            this.WhenAnyValue(x => x.IsSelected)
+                .Subscribe(_ => RefreshSelectionStyle());
 
             RefreshAvatar();
+            RefreshSelectionStyle();
+        }
+
+        public void RefreshSelectionStyle() {
+            HeaderBorderBrush = IsSelected
+                ? TrackAccentColor
+                : ThemeManager.NeutralAccentBrushSemi;
         }
 
         public void ToggleSolo() {
@@ -576,6 +590,7 @@ namespace OpenUtau.App.ViewModels {
                 TrackColor = Preferences.Default.UseTrackColor
                 ? ThemeManager.GetTrackColor(track.TrackColor)
                 : ThemeManager.GetTrackColor("Blue");
+                RefreshSelectionStyle();
             }
         }
 

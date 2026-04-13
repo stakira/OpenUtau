@@ -548,6 +548,9 @@ namespace OpenUtau.App.Views {
                         if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                             singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo]);
                         }
+                        if (singer == null && viewModel.TracksViewModel.SelectedTracks.Count > 0) {
+                            singer = TrackSingerIfFound(viewModel.TracksViewModel.SelectedTracks.First());
+                        }
                         if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
                             singer = TrackSingerIfFound(viewModel.TracksViewModel.Tracks.First());
                         }
@@ -845,6 +848,9 @@ namespace OpenUtau.App.Views {
                             var part = viewModel.TracksViewModel.SelectedParts.First();
                             var track = DocManager.Inst.Project.tracks[part.trackNo];
                             MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo, false));
+                        } else if (viewModel.TracksViewModel.SelectedTracks.Count > 0) {
+                            var track = viewModel.TracksViewModel.SelectedTracks.First();
+                            MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo, false));
                         }
                         break;
                     // mute
@@ -852,6 +858,9 @@ namespace OpenUtau.App.Views {
                         if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                             var part = viewModel.TracksViewModel.SelectedParts.First();
                             MessageBus.Current.SendMessage(new TracksMuteEvent(part.trackNo, false));
+                        } else if (viewModel.TracksViewModel.SelectedTracks.Count > 0) {
+                            var track = viewModel.TracksViewModel.SelectedTracks.First();
+                            MessageBus.Current.SendMessage(new TracksMuteEvent(track.TrackNo, false));
                         }
                         break;
                     default:
