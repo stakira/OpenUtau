@@ -90,8 +90,8 @@ namespace OpenUtau.Classic {
         public double Overlap;
 
         public bool IsValid;
-        public string Error;
-        public FileTrace FileTrace;
+        public string Error = string.Empty;
+        public FileTrace? FileTrace;
 
         public override string ToString() {
             return Alias;

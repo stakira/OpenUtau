@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using OpenUtau.Classic;
 using OpenUtau.Core.Util;
@@ -11,10 +12,10 @@ namespace OpenUtau.Core.Ustx {
         public string Alias { get; private set; }
         public string Phonetic { get; private set; }
         public string Set { get; private set; }
-        public string Color { get; private set; }
-        public string Prefix { get; private set; }
-        public string Suffix { get; private set; }
-        public SortedSet<int> ToneSet { get; private set; }
+        public USubbank[] Subbanks { get; private set; }
+        public string Color { get => string.Join(", ", Subbanks.Select(x => string.IsNullOrWhiteSpace(x.Color) ? "(main)" : x.Color)); }
+        public string Prefix { get => Subbanks.First().Prefix; }
+        public string Suffix { get => Subbanks.First().Suffix; }
         public string File { get; private set; }
         public string DisplayFile { get; private set; }
         public double Offset {
@@ -52,7 +53,7 @@ namespace OpenUtau.Core.Ustx {
                 NotifyPropertyChanged(nameof(Overlap));
             }
         }
-        public OtoFrq Frq { get;set; }
+        public OtoFrq? Frq { get; set; }
         public List<string> SearchTerms { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -66,15 +67,12 @@ namespace OpenUtau.Core.Ustx {
 
         public UOto() { }
 
-        public UOto(Oto oto, UOtoSet set, USubbank subbank) {
+        public UOto(Oto oto, UOtoSet set, USubbank[] subbanks) {
             this.oto = oto;
             Alias = oto.Alias;
             Phonetic = oto.Phonetic;
             Set = set.Name;
-            Color = subbank?.Color;
-            Prefix = subbank?.Prefix;
-            Suffix = subbank?.Suffix;
-            ToneSet = subbank?.toneSet;
+            Subbanks = subbanks;
             if (!string.IsNullOrEmpty(oto.Wav)) {
                 File = Path.Combine(set.Location, oto.Wav);
             } else {
@@ -94,6 +92,11 @@ namespace OpenUtau.Core.Ustx {
             Alias = alias,
             Phonetic = alias,
         };
+
+        public bool IsColorMatch(string color) {
+            if (Subbanks.Any(s => s.Color == color)) return true;
+            return false;
+        }
 
         public void WriteBack() {
             oto.Offset = offset;
@@ -184,11 +187,15 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
         }
+
+        public override string ToString() {
+            return $"color:{Color}, suffix:{Suffix}";
+        }
     }
 
-    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5, Voicevox=0x6 }
+    [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger = 0x5, Voicevox = 0x6 }
 
-    public static class SingerTypeUtils{
+    public static class SingerTypeUtils {
         public static Dictionary<USingerType?, string> SingerTypeNames = new Dictionary<USingerType?, string>(){
             {USingerType.Classic, "utau"},
             {USingerType.Enunu, "enunu"},
@@ -262,16 +269,16 @@ namespace OpenUtau.Core.Ustx {
 
         private string name;
 
-        public string LocalizedName { 
+        public string LocalizedName {
             get {
-                if(LocalizedNames == null) {
+                if (LocalizedNames == null) {
                     return Found ? Name : $"[Missing] {Name}";
                 }
                 string language = Preferences.Default.SortingOrder;
                 if (language == null) {
                     language = Preferences.Default.Language;
                 }
-                if (language == string.Empty) { // InvariantCulture
+                if (string.IsNullOrEmpty(language)) { // InvariantCulture
                     return Found ? Name : $"[Missing] {Name}";
                 }
                 if (LocalizedNames.TryGetValue(language, out var localizedName)) {
@@ -330,6 +337,6 @@ namespace OpenUtau.Core.Ustx {
         /// - the voicebank may be used again even after this method is called.
         /// - this method may be called even when the singer has not been used
         /// </summary>
-        public virtual void FreeMemory(){ }
+        public virtual void FreeMemory() { }
     }
 }

@@ -1,5 +1,6 @@
 %YAML 1.2
 ---
+version: 1.1
 symbols:
 #CZsampa standard vowels
   - {symbol: '@', type: vowel}
@@ -70,6 +71,20 @@ symbols:
   - {symbol: 9, type: vowel}
   - {symbol: x, type: vowel}
   - {symbol: dd, type: tap}
+
+replacements:
+  - {from: [h, E], to: [hh, E]}
+  - {from: [h, y], to: [hh, y]}
+  - {from: [i, ng], to: [1, ng]}
+  - {from: [9, r], to: [0, r]}
+  - {from: [e, r], to: [A, r]}
+  - {from: ['@', m], to: ['&', m]}
+  - {from: ['@', n], to: ['&', n]}
+  - {from: ['@', ng], to: [A, ng]}
+  - {from: [O, l], to: [0, l]}
+
+fallbacks: 
+  - {from: h, to: hh}
 
 entries:
   - grapheme: openutau

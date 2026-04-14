@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtau.Classic;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
@@ -83,16 +84,7 @@ namespace OpenUtau.Core.Render {
                     .Where(part => part is UWavePart && part.trackNo == i)
                     .Select(part => part as UWavePart)
                     .Where(part => part.Samples != null)
-                    .Select(part => {
-                        double offsetMs = project.timeAxis.TickPosToMsPos(part.position);
-                        double estimatedLengthMs = project.timeAxis.TickPosToMsPos(part.End) - offsetMs;
-                        var waveSource = new WaveSource(
-                            offsetMs,
-                            estimatedLengthMs,
-                            part.skipMs, part.channels);
-                        waveSource.SetSamples(part.Samples);
-                        return (ISignalSource)waveSource;
-                    }));
+                    .Select(part => part.TrimSamples(project)));
                 var trackMix = new WaveMix(trackSources);
                 var fader = new Fader(trackMix);
                 fader.Scale = PlaybackManager.DecibelToVolume(track.Muted ? -24 : track.Volume);
@@ -254,7 +246,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public static void ReleaseSourceTemp() {
-            Classic.VoicebankFiles.Inst.ReleaseSourceTemp();
+            VoicebankFiles.Inst.ReleaseSourceTemp();
         }
     }
 }

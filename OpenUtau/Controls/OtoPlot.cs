@@ -75,8 +75,8 @@ namespace OpenUtau.App.Controls {
         private byte[]? wavBitmapData;
         private WriteableBitmap? melBitmap;
 
-        private IBrush blueFill = new SolidColorBrush(Colors.LightBlue, 0.5);
-        private IBrush pinkFill = new SolidColorBrush(Colors.Pink, 0.5);
+        private IBrush blueFill = new SolidColorBrush(Avalonia.Media.Colors.LightBlue, 0.5);
+        private IBrush pinkFill = new SolidColorBrush(Avalonia.Media.Colors.Pink, 0.5);
         private IPen blueLine = new Pen(SolidColorBrush.Parse("#4EA6EA"), 2);
         private IPen limeLine = new Pen(Brushes.Lime);
         private IPen redLine = new Pen(Brushes.Red);
@@ -228,13 +228,13 @@ namespace OpenUtau.App.Controls {
                     xStart / duration * samples.Length, 0, samples.Length - 1);
                 int endSample = (int)Math.Clamp(
                     (xStart + xSpan) / duration * samples.Length, 0, samples.Length - 1);
-                double sampelsPerPiexl = (endSample - startSample) / width;
-                if (sampelsPerPiexl > 64) {
+                double samplesPerPixel = (endSample - startSample) / width;
+                if (samplesPerPixel > 64) {
                     for (int x = 0; x < width; ++x) {
                         double min = 0;
                         double max = 0;
-                        for (int j = startSample + (int)(sampelsPerPiexl * x);
-                            j < startSample + (int)(sampelsPerPiexl * (x + 1)); ++j) {
+                        for (int j = startSample + (int)(samplesPerPixel * x);
+                            j < startSample + (int)(samplesPerPixel * (x + 1)); ++j) {
                             min = Math.Min(min, samples[j]);
                             max = Math.Max(max, samples[j]);
                         }
@@ -252,7 +252,7 @@ namespace OpenUtau.App.Controls {
                     double lastX = 0;
                     double lastY = 0;
                     for (int i = startSample; i < endSample; ++i) {
-                        double x = Math.Clamp((i - startSample) / sampelsPerPiexl, 0, width - 1);
+                        double x = Math.Clamp((i - startSample) / samplesPerPixel, 0, width - 1);
                         double y = Math.Clamp((height - 1) * (0.5 - samples[i] / 2), 0, height - 1);
                         if (i > startSample) {
                             double dx;

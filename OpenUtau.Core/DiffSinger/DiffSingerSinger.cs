@@ -6,6 +6,7 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
 
@@ -166,7 +167,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var acousticPath = Path.Combine(Location, dsConfig.acoustic);
                 var acousticBytes = File.ReadAllBytes(acousticPath);
                 acousticHash = XXH64.DigestOf(acousticBytes);
-                acousticSession = Onnx.getInferenceSession(acousticBytes);
+                acousticSession = Onnx.getInferenceSession(acousticBytes, OnnxRunnerChoice.Default);
             }
             return acousticSession;
         }
@@ -186,7 +187,6 @@ namespace OpenUtau.Core.DiffSinger {
             if(pitchPredictor is null) {
                 if(HasPitchPredictor){
                     pitchPredictor = new DsPitch(Path.Join(Location, "dspitch"));
-                    return pitchPredictor;
                 }
             }
             return pitchPredictor;
@@ -203,7 +203,6 @@ namespace OpenUtau.Core.DiffSinger {
             if(variancePredictor is null) {
                 if(HasVariancePredictor){
                     variancePredictor = new DsVariance(Path.Join(Location, "dsvariance"));
-                    return variancePredictor;
                 }
             }
             return variancePredictor;

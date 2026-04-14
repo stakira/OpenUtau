@@ -75,7 +75,7 @@ namespace OpenUtau.App.Views {
                             var s = line.Split('\t');
                             if (s.Length == 3) {
                                 var row = ViewModel.Rows.First(row => row.Tone == s[0]);
-                                if(row != null) {
+                                if (row != null) {
                                     row.Prefix = s[1];
                                     row.Suffix = s[2];
                                 }
@@ -93,7 +93,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel.Singer == null) {
                 return;
             }
-            if (ViewModel.Colors.Count > 0 && ViewModel.Colors.First(c => c.Name == string.Empty) is VoiceColor main) {
+            if (ViewModel.Colors.Count > 0 && ViewModel.Colors.First(c => string.IsNullOrEmpty(c.Name)) is VoiceColor main) {
                 var file = await FilePicker.SaveFile(this, "singers.subbanks.export", ViewModel.Singer.Location, "prefix.map", FilePicker.PrefixMap);
                 if (!string.IsNullOrEmpty(file)) {
                     try {
@@ -111,7 +111,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if(SuffixGrid.SelectedItems.Count > 0 && SuffixGrid.SelectedItems[0] is VoiceColorRow row) {
+            if (SuffixGrid.SelectedItems.Count > 0 && SuffixGrid.SelectedItems[0] is VoiceColorRow row) {
                 ViewModel.Prefix = row.Prefix;
                 ViewModel.Suffix = row.Suffix;
             }
