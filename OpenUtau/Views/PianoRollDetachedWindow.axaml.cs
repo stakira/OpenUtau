@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Avalonia;
 using Avalonia.Controls;
 using OpenUtau.App.Controls;
@@ -23,9 +23,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void WindowClosing(object? sender, WindowClosingEventArgs e) {
-            if (WindowState != WindowState.Maximized) {
-                Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
-            }
+            Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+            Preferences.Save();
             Hide();
             e.Cancel = !forceClose;
         }

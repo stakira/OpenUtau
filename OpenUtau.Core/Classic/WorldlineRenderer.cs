@@ -136,7 +136,7 @@ namespace OpenUtau.Classic {
                             NamedOnnxValue.CreateFromTensor("sp_env", spEnvTensor),
                             NamedOnnxValue.CreateFromTensor("ap", apTensor)
                         };
-                        var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, true);
+                        var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, OnnxRunnerChoice.CPU);
                         using var results = session.Run(inputs);
                         var melOutput = results.First(r => r.Name == "mel").AsTensor<float>();
                         const string vocoderPkg = "pc-nsf-hifigan";
@@ -155,7 +155,7 @@ namespace OpenUtau.Classic {
                                 File.ReadAllText(configPath, System.Text.Encoding.UTF8));
                             vocoderBytes = File.ReadAllBytes(Path.Combine(vocoderPath, config.model));
                         }
-                        var vocoderSession = Onnx.getInferenceSession(vocoderBytes!, false);
+                        var vocoderSession = Onnx.getInferenceSession(vocoderBytes!, OnnxRunnerChoice.Default);
                         var vocoderInputs = new List<NamedOnnxValue> {
                             NamedOnnxValue.CreateFromTensor("mel", melOutput),
                             NamedOnnxValue.CreateFromTensor("f0", f0Tensor),

@@ -368,18 +368,26 @@
                           IsVisible="{Binding IsWavePart}"
                           Command="{Binding PartReplaceAudioCommand}"
                           CommandParameter="{Binding Part}"/>
-                <MenuItem Header="{DynamicResource context.part.rename}"
-                          IsVisible="{Binding IsVoicePart}"
-                          Command="{Binding PartRenameCommand}"
-                          CommandParameter="{Binding Part}"/>
                 <MenuItem Header="{DynamicResource context.part.transcribe}"
                           IsVisible="{Binding IsWavePart}"
                           Command="{Binding PartTranscribeCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.rename}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartRenameCommand}"
                           CommandParameter="{Binding Part}"/>
                 <MenuItem Header="{DynamicResource context.part.merge}"
                           IsVisible="{Binding IsVoicePart}"
                           Command="{Binding PartMergeCommand}"
                           CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.split}"
+                          IsVisible="{Binding IsVoicePart}"
+                          Command="{Binding PartSplitCommand}"
+                          CommandParameter="{Binding Part}"/>
+                <MenuItem Header="{DynamicResource context.part.applypitch}"
+                          IsVisible="{Binding IsVoicePart}"
+                          ItemsSource="{Binding PartApplyPitchMenuItems}"
+                          Classes="MenuItemWithSubMenu"/>
               </ContextMenu>
             </c:PartsCanvas.ContextMenu>
           </c:PartsCanvas>
