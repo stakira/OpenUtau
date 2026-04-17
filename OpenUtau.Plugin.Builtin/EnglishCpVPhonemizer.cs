@@ -523,8 +523,8 @@ namespace OpenUtau.Plugin.Builtin {
                         Log.Error($"Failed to parse en-cPv.yaml: {ex.Message}, Exception Type: {ex.GetType()}");
                     }
                 }
-                ReadDictionaryAndInit();
                 this.singer = singer;
+                ReadDictionaryAndInit();
             }
         }
 
