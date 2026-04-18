@@ -17,8 +17,6 @@ using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
-        const float headMs = DiffSingerUtils.headMs;
-        const float tailMs = DiffSingerUtils.tailMs;
         const string VELC = DiffSingerUtils.VELC;
         const string ENE = DiffSingerUtils.ENE;
         const string PEXP = DiffSingerUtils.PEXP;
@@ -65,7 +63,7 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return supportedExp.Contains(descriptor.abbr) || 
+            return supportedExp.Contains(descriptor.abbr) ||
                 (descriptor.abbr.StartsWith(VoiceColorHeader) && int.TryParse(descriptor.abbr.Substring(2), out int _));
         }
 
@@ -73,6 +71,12 @@ namespace OpenUtau.Core.DiffSinger {
         //including the position of the phrase, 
         //the length of the head consonant, and the estimated total length
         public RenderResult Layout(RenderPhrase phrase) {
+            var singer = phrase.singer as DiffSingerSinger;
+            if (singer == null) {
+                throw new InvalidDataException("Singer is not DiffSingerSinger.");
+            }
+            float headMs = DiffSingerUtils.GetHeadMs(phrase);
+            float tailMs = DiffSingerUtils.GetTailMs(phrase);
             return new RenderResult() {
                 leadingMs = headMs,
                 positionMs = phrase.positionMs,
@@ -207,8 +211,8 @@ namespace OpenUtau.Core.DiffSinger {
             var acousticModel = singer.getAcousticSession();
             var frameMs = vocoder.frameMs();
             var frameSec = frameMs / 1000;
-            int headFrames = (int)Math.Round(headMs / frameMs);
-            int tailFrames = (int)Math.Round(tailMs / frameMs);
+            int headFrames = DiffSingerUtils.headFrames;
+            int tailFrames = DiffSingerUtils.tailFrames;
             var result = Layout(phrase);
             //acoustic
             //mel = session.run(['mel'], {'tokens': tokens, 'durations': durations, 'f0': f0, 'speedup': speedup})[0]
@@ -496,13 +500,13 @@ namespace OpenUtau.Core.DiffSinger {
             var variancePredictor = singer.getVariancePredictor()!;
             lock (variancePredictor) {
                 var result = variancePredictor.Process(phrase);
-                var startMs = phrase.positionMs - headMs;
+                var startMs = phrase.positionMs - DiffSingerUtils.GetHeadMs(phrase);
                 var frameMs = variancePredictor.FrameMs;
                 var realCurves = new (string, float[], float[], Func<float, float>)[] {
                     (
                         ENE, result.energy ?? Array.Empty<float>(),
                         phrase.curves.FirstOrDefault(curve => curve.Item1 == ENE)?.Item2
-                        ?? Enumerable.Repeat(0f, 2).ToArray(),
+                        ?? Array.Empty<float>(),
                         x => Math.Clamp(x, -96f, 0f) / 96f + 1f
                     ),
                     (
@@ -520,14 +524,25 @@ namespace OpenUtau.Core.DiffSinger {
                 }.Select(t => {
                     var abbr = t.Item1;
                     var realCurve = t.Item2;
-                    var deltaCurve = DiffSingerUtils.ResampleCurve(t.Item3, realCurve.Length);
+                    if (realCurve.Length == 0) {
+                        return new RenderRealCurveResult {
+                            abbr = abbr,
+                            ticks = Array.Empty<float>(),
+                            values = Array.Empty<float>(),
+                        };
+                    }
+                    var deltaCurve = DiffSingerUtils.ResampleCurve(t.Item3, realCurve.Length
+                        - DiffSingerUtils.headFrames - DiffSingerUtils.tailFrames);
+                    float[] paddedDeltaCurve = new float[realCurve.Length];
+                    Array.Fill(paddedDeltaCurve, 0f);
+                    Array.Copy(deltaCurve, 0, paddedDeltaCurve, DiffSingerUtils.headFrames, deltaCurve.Length);
                     var normFunc = t.Item4;
                     return new RenderRealCurveResult {
                         abbr = abbr,
                         ticks = Enumerable.Range(0, realCurve.Length)
                             .Select(i => (float)phrase.timeAxis.MsPosToTickPos(startMs + i * frameMs) - phrase.position)
                             .ToArray(),
-                        values = realCurve.Zip(deltaCurve, varianceDeltaFunctions[abbr])
+                        values = realCurve.Zip(paddedDeltaCurve, varianceDeltaFunctions[abbr])
                             .Select(normFunc)
                             .ToArray()
                     };

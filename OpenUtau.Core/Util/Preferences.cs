@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "failed to load prefs-default.json");
+            }
             Save();
         }
 
@@ -118,12 +133,8 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
-            public const int MidiWidth = 1024;
-            public const int MidiHeight = 768;
-            public int MainWidth = 1024;
-            public int MainHeight = 768;
-            public bool MainMaximized;
-            public bool MidiMaximized;
+            public WindowSize MainWindowSize = new WindowSize();
+            public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
             public string PlaybackDevice = string.Empty;
@@ -131,7 +142,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public string ThemeName = "Light";
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
@@ -230,6 +241,7 @@ namespace OpenUtau.Core.Util {
 errors.txt
 ";
             public string RecoveryPath = string.Empty;
+            public bool DetachPianoRoll = false;
         }
     }
 }

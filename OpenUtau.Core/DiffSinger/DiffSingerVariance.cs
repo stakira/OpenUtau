@@ -30,8 +30,6 @@ namespace OpenUtau.Core.DiffSinger{
         InferenceSession varianceModel;
         IG2p g2p;
         float frameMs;
-        const float headMs = DiffSingerUtils.headMs;
-        const float tailMs = DiffSingerUtils.tailMs;
         DiffSingerSpeakerEmbedManager speakerEmbedManager;
 
         public float FrameMs => frameMs;
@@ -110,8 +108,8 @@ namespace OpenUtau.Core.DiffSinger{
         }
 
         public VarianceResult Process(RenderPhrase phrase){
-            int headFrames = (int)Math.Round(headMs / frameMs);
-            int tailFrames = (int)Math.Round(tailMs / frameMs);
+            int headFrames = DiffSingerUtils.headFrames;
+            int tailFrames = DiffSingerUtils.tailFrames;
             if (dsConfig.predict_dur) {
                 //Check if all phonemes are defined in dsdict.yaml (for their types)
                 foreach (var phone in phrase.phones) {
