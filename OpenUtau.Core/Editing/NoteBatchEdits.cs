@@ -209,7 +209,11 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    // [DELTA SYNTH] ลบโน้ตกลุ่ม br AP SP Br อัตโนมัติ
+    // ==========================================
+    // [DELTA SYNTH] CUSTOM LYRIC BATCH EDITS
+    // ==========================================
+
+    // 1. ลบโน้ตกลุ่ม br, AP, SP, Br อัตโนมัติ (ลบออกจาก Piano Roll)
     public class RemoveThaiBreaths : BatchEdit {
         public virtual string Name => name;
         private string name;
@@ -225,8 +229,8 @@ namespace OpenUtau.Core.Editing {
             }
 
             // กำหนดกลุ่มคำร้องที่ต้องการลบทิ้ง
-            string[] breathLyrics = { "br", "AP", "SP", "Br" };
-            var notesToRemove = notes.Where(n => breathLyrics.Contains(n.lyric)).ToArray();
+            string[] breathLyrics = { "br", "AP", "SP", "Br", "Pao", "b1", "b2", "Breath" };
+            var notesToRemove = notes.Where(n => breathLyrics.Contains(n.lyric.Trim())).ToArray();
             
             if (notesToRemove.Length > 0) {
                 docManager.StartUndoGroup(true);
@@ -238,7 +242,7 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    // [DELTA SYNTH] แก้ไข Ooh \ กับ / ให้เป็น + ทันที
+    // 2. แก้ไข Ooh \ กับ / ให้เป็น + ทันที (ล้างขยะ VSQX)
     public class ThaiVsqxCleanup : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.thaivsqxcleanup";
         protected override string Transform(string lyric) {
@@ -252,22 +256,25 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    // [DELTA SYNTH] ลบ Suffix พิเศษของ UTAU และตัวเลขท้ายคำ
+    // 3. ลบ Suffix พิเศษของ UTAU และตัวเลขท้ายคำ (เวอร์ชัน Safe-Thai 100%)
     public class RemoveUtauSuffixes : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removeutausuffixes";
         protected override string Transform(string lyric) {
             string lrc = lyric;
             
-            // 1. ลบสัญลักษณ์และคันจิพิเศษที่ติดมากับ UTAU (แถม 強 กับ ↓ เผื่อไว้ให้ด้วยครับ)
-            lrc = Regex.Replace(lrc, @"[_]?[囁↑↓弱強息]", "");
+            // 1. ลบ Suffix ที่เป็นระดับเสียง (เช่น C4, G#3, Bb5) ที่ห้อยท้าย
+            lrc = Regex.Replace(lrc, @"[_]?[A-Ga-g](#|b)?[0-9]+$", "");
             
-            // 2. ลบ Suffix ประเภทตัวเลขหรือระดับเสียงท้ายคำ (เช่น b2, C4, 1, _A3)
-            // Regex ตัวนี้จะกวาดสิ่งที่อยู่ "ท้ายสุด" ของคำออกจนเหลือแค่ฐานฮิรางานะหรือโรมาจิ
-            lrc = Regex.Replace(lrc, @"[_]?([A-Ga-g](#|b)?[0-9]|[a-zA-Z]?[0-9]+)$", "");
+            // 2. ลบตัวเลขล้วนที่ห้อยท้าย (เช่น _1, a2)
+            lrc = Regex.Replace(lrc, @"[_]?[0-9]+$", "");
             
-            // ถ้าคำร้องว่างเปล่าจากการลบ (ซึ่งไม่ควรเกิด) ให้คืนค่าดั้งเดิมกลับไปกันเหนียวครับ
-            if (string.IsNullOrEmpty(lrc)) {
-                return lyric;
+            // 3. ลบสัญลักษณ์ UTAU ด้วย Unicode (ป้องกันโค้ดพังและภาษาไทยกลายเป็น ?)
+            // \u56C1=囁, \u2191=↑, \u2193=↓, \u5F31=弱, \u5F37=強, \u606F=息
+            lrc = Regex.Replace(lrc, @"[_]?[\u56C1\u2191\u2193\u5F31\u5F37\u606F]", "");
+
+            // [DELTA SYNTH Safety Guard] กฎเหล็ก: ห้ามปล่อยให้เนื้อเพลงกลายเป็น ? หรือว่างเปล่า
+            if (string.IsNullOrWhiteSpace(lrc) || lrc.Contains("?")) {
+                return lyric; 
             }
             
             return lrc;
