@@ -181,43 +181,53 @@ namespace OpenUtau.Core.Format {
                         // 2. ตรวจสอบว่าสามารถรวมร่างโน้ตที่ถูกซอย (Tie) ได้หรือไม่
                         UNote prevNote = upart.notes.Count > 0 ? upart.notes[upart.notes.Count - 1] : null;
                         
-                        // เงื่อนไข: มีโน้ตก่อนหน้า + ระดับคีย์เดียวกัน + เวลาต่อติดกันพอดี + เป็นเนื้อร้องที่ต้องลากเสียง (+)
                         if (prevNote != null && 
                             prevNote.tone == unote.tone && 
                             prevNote.position + prevNote.duration == unote.position && 
                             unote.lyric == "+") {
                             
-                            // โอนความยาวของโน้ตซอยตัวนี้ ไปบวกเพิ่มให้โน้ตหลักด้านหน้า
                             prevNote.duration += unote.duration;
-                            
-                            // สั่งข้ามคำสั่งเพิ่มโน้ต (Discard) ทันที 
                             continue;
                         }
 
-                        // ถ้าไม่เข้าเงื่อนไขรวมโน้ต (เช่น เป็นคนละคีย์ หรือเป็นคำร้องใหม่) ให้ตั้งค่าและเพิ่มลง Part ตามปกติ
                         unote.phonemeExpressions.Add(new UExpression(Ustx.VEL) {
                             index = 0,
                             value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText) * 100 / 64,
                         });
                         
                         foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager)) {
-                            if (notestyle.Attributes["id"].Value == "accent") {
+                            var styleId = notestyle.Attributes["id"].Value;
+                            var styleVal = int.Parse(notestyle.InnerText);
+
+                            if (styleId == "accent") {
                                 unote.phonemeExpressions.Add(new UExpression(Ustx.ATK) {
                                     index = 0,
-                                    value = int.Parse(notestyle.InnerText) * 2,
+                                    value = styleVal * 2,
                                 });
-                            } else if (notestyle.Attributes["id"].Value == "decay") {
+                            } else if (styleId == "decay") {
                                 unote.phonemeExpressions.Add(new UExpression(Ustx.DEC) {
                                     index = 0,
-                                    value = Math.Max(0, int.Parse(notestyle.InnerText) - 50),
+                                    value = Math.Max(0, styleVal - 50),
                                 });
+                            }
+                            // --- [DELTA SYNTH] นำเข้าลูกคอ (Vibrato) ดั้งเดิม ---
+                            else if (styleId == "vibLen") {
+                                unote.vibrato.length = styleVal; // ความยาวลูกคอ
+                            } else if (styleId == "vibDep") {
+                                // ปรับอัตราส่วน Depth ของ Vocaloid (0-127) ให้เข้ากับ OpenUtau
+                                unote.vibrato.depth = (styleVal / 64f) * 25f;
+                            } else if (styleId == "vibRate") {
+                                // แปลงความเร็ว (Rate) ให้เป็นคลื่น (Period)
+                                if (styleVal > 0) {
+                                    unote.vibrato.period = 175f * (50f / styleVal);
+                                }
                             }
                         }
 
-                        int start = Util.NotePresets.Default.DefaultPortamento.PortamentoStart;
-                        int length = Util.NotePresets.Default.DefaultPortamento.PortamentoLength;
-                        unote.pitch.data[0].X = start;
-                        unote.pitch.data[1].X = start + length;
+                        // --- [DELTA SYNTH] ปิด Portamento อัตโนมัติ เพื่อรักษาการจูนเดิม (PIT) ---
+                        // เมื่อปิดส่วนนี้ OpenUtau จะไม่สร้างเส้นสไลด์ทับการจูนเดิมของคุณ
+                        unote.pitch.data[0].X = 0;
+                        unote.pitch.data[1].X = 0;
                         
                         upart.notes.Add(unote);
                     }
