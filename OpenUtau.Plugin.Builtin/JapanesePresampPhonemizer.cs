@@ -158,9 +158,15 @@ namespace OpenUtau.Plugin.Builtin {
                 return new string[] { rawLyric };
             }
 
+            bool isBracketed = rawLyric.StartsWith("[") && rawLyric.EndsWith("]");
+            
+            if (isBracketed) {
+                string innerText = rawLyric.Substring(1, rawLyric.Length - 2).Trim();
+                symbolsArr = innerText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            }
             // If the voicebank has an exact recording for this lyric (e.g., explicit VC "a t", VCV "- あ"),
             // protect it as a single block so it doesn't get aggressively split into "a" and "t".
-            if (IsSymbolSupported(rawLyric, note)) {
+            else if (IsSymbolSupported(rawLyric, note)) {
                 symbolsArr = new string[] { rawLyric };
             }
             // Manual + splitting
