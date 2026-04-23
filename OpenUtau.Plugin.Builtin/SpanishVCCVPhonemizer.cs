@@ -65,24 +65,11 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
-            if (tails.Contains(note.lyric)) {
-                return new string[] { note.lyric };
-            }
             if (original == null) {
                 return null;
             }
-            var mappedOriginal = new List<string>();
-            foreach (var p in original) {
-                if (dictionaryReplacements.ContainsKey(p)) {
-                    mappedOriginal.Add(dictionaryReplacements[p]);
-                } else {
-                    mappedOriginal.Add(p);
-                }
-            }
             List<string> finalProcessedPhonemes = new List<string>();
-            IEnumerable<string> phonemes;
-            phonemes = mappedOriginal;
-            foreach (string s in phonemes) {
+            foreach (string s in original) {
                 switch (s) {
                     default:
                         finalProcessedPhonemes.Add(s);
@@ -398,17 +385,18 @@ namespace OpenUtau.Plugin.Builtin {
         protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc.Select(c => ReplacePhoneme(c, ending.tone)).ToArray();
             string v = ReplacePhoneme(ending.prevV, ending.tone);
+            string t = ending.HasTail ? ReplacePhoneme(ending.tail, ending.tone) : "-";
 
             var phonemes = new List<string>();
             if (ending.IsEndingV) {
-                TryAddPhoneme(phonemes, ending.tone, $"{v}-", ValidateAlias($"{v}-"));
+                TryAddPhoneme(phonemes, ending.tone, $"{v}{t}", ValidateAlias($"{v}{t}"));
             } else if (ending.IsEndingVCWithOneConsonant) {
-                var vcr = $"{v}{cc[0]}-";
+                var vcr = $"{v}{cc[0]}{t}";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
                 } else {
                     phonemes.Add($"{v} {cc[0]}");
-                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}-", ValidateAlias($"{cc[0]}-"));
+                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}{t}", ValidateAlias($"{cc[0]}{t}"));
                 }
             } else {
                 var vcc1 = $"{v} {string.Join("", cc)}";
@@ -444,7 +432,7 @@ namespace OpenUtau.Plugin.Builtin {
                         cc1 = ValidateAlias(cc1);
                     }
                     TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1));
-                    TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()}-", ValidateAlias($"{cc.Last()}-"));
+                    TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()}{t}", ValidateAlias($"{cc.Last()}{t}"));
                 }
             }
             return phonemes;

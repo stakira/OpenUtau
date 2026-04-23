@@ -143,7 +143,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
-            g2ps.Add(new ArpabetPlusG2p());
+            g2ps.Add(new ArpabetG2p());
             return new G2pFallbacks(g2ps.ToArray());
         }
 
@@ -155,21 +155,9 @@ namespace OpenUtau.Plugin.Builtin {
             if (original == null) {
                 return null;
             }
-            var mappedOriginal = new List<string>();
-            foreach (var p in original) {
-                if (dictionaryReplacements.ContainsKey(p)) {
-                    mappedOriginal.Add(dictionaryReplacements[p]);
-                } else {
-                    mappedOriginal.Add(p);
-                }
-            }
             List<string> finalProcessedPhonemes = new List<string>();
-            
-            IEnumerable<string> phonemes;
-            phonemes = mappedOriginal;
-           
             string[] tr_dr = new[] { "tr", "dr"};
-            foreach (string s in phonemes) {
+            foreach (string s in original) {
                 switch (s) {
                     case var str when tr_dr.Contains(str) && !HasOto(str, note.tone) && !HasOto($"A {str}", note.tone):
                         finalProcessedPhonemes.AddRange(new string[] { s[0].ToString(), s[1].ToString() });

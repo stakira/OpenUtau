@@ -117,6 +117,11 @@ namespace OpenUtau.Plugin.Builtin {
             /// </summary>
             public string[] cc;
             /// <summary>
+            /// The exact lyric/symbol of the tail (e.g., "R", "br", "-", etc.)
+            /// </summary>
+            public string tail;
+            public bool HasTail => !string.IsNullOrEmpty(tail);
+            /// <summary>
             /// last note position + duration, all phonemes must be less than this
             /// </summary>
             public int position;
@@ -161,17 +166,44 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<Phoneme>();
             foreach (var syllable in syllables) {
-                // INTERCEPT: Apply boundary rules automatically before the child phonemizer sees it!
                 var modifiedSyllable = ApplyBoundaryReplacements(syllable);
+                
+                if (tails.Contains(modifiedSyllable.v)) {
+                    var ending = new Ending {
+                        prevV = modifiedSyllable.prevV,
+                        cc = modifiedSyllable.cc,
+                        tail = modifiedSyllable.v,
+                        position = modifiedSyllable.position,
+                        duration = modifiedSyllable.duration,
+                        tone = modifiedSyllable.tone,
+                        attr = modifiedSyllable.attr
+                    };
+                    
+                    var endingPhonemes = ProcessEnding(ending);
+                    
+                    if (endingPhonemes != null) {
+                        phonemes.AddRange(MakePhonemes(endingPhonemes, modifiedSyllable.duration, modifiedSyllable.position, false));
+                    }
+                    continue; 
+                }
                 phonemes.AddRange(MakePhonemes(ProcessSyllable(modifiedSyllable), modifiedSyllable.duration, modifiedSyllable.position, false));
             }
+
             if (!nextNeighbour.HasValue) {
                 var tryEnding = MakeEnding(notes);
                 if (tryEnding.HasValue) {
                     var ending = tryEnding.Value;
-                    // INTERCEPT: Apply ending boundary rules!
+
+                    if (nextNeighbour.HasValue && tails.Contains(nextNeighbour.Value.lyric)) {
+                        ending.tail = nextNeighbour.Value.lyric;
+                    }
+                    
                     var modifiedEnding = ApplyBoundaryReplacements(ending);
-                    phonemes.AddRange(MakePhonemes(ProcessEnding(modifiedEnding), modifiedEnding.duration, modifiedEnding.position, true));
+                    var endingPhonemes = ProcessEnding(modifiedEnding);
+
+                    if (endingPhonemes != null) {
+                        phonemes.AddRange(MakePhonemes(endingPhonemes, modifiedEnding.duration, modifiedEnding.position, true));
+                    }
                 }
             }
 
@@ -440,6 +472,10 @@ namespace OpenUtau.Plugin.Builtin {
                 if (lyrics == null) {
                     return new string[0];
                 } else return lyrics.Split(" ");
+            }
+
+            if (tails.Contains(note.lyric)) {
+                return new string[] { note.lyric };
             }
 
             if (hasDictionary) {

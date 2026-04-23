@@ -102,13 +102,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] ccvException = { "ch", "dh", "dx", "fh", "gh", "hh", "jh", "kh", "ph", "ng", "sh", "th", "vh", "wh", "zh" };
         private readonly string[] RomajiException = { "a", "e", "i", "o", "u" };
-        private bool isTails = false;
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
-            if (tails.Contains(note.lyric)) {
-                isTails = true;
-                return new string[] { note.lyric };
-            }
             if (original == null) {
                 return null;
             }
@@ -346,13 +341,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
-                    // EXTEND AS [V]
-                } else if (!HasOto($"{prevV} {v}", syllable.vowelTone) || !HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone) || missingVphonemes.ContainsKey(prevV)) {
-                    basePhoneme = AliasFormat(v, "vv", syllable.vowelTone, "");
-                } else if (HasOto($"{prevV} {v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV} {v}"), syllable.vowelTone) || missingVphonemes.ContainsKey(prevV)) {
-                    basePhoneme = AliasFormat(v, "vv", syllable.vowelTone, "");
                 } else {
-                    // PREVIOUS ALIAS WILL EXTEND as [V V]
                     basePhoneme = null;
                 }
 
@@ -379,15 +368,6 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 // [V] to [-V] to [- V]
                 basePhoneme = AliasFormat(v, "cv", syllable.vowelTone, "");
-                if (isTails && basePhoneme.Contains("-")) {
-                    if (HasOto($"{cc.Last()} -", syllable.tone) || HasOto($"{cc.Last()}-", syllable.tone)
-                    || HasOto($"{cc.Last()}_", syllable.tone)) {
-                        // like [C1 -]
-                        basePhoneme = AliasFormat($"{cc.Last()}", "cc_end", syllable.tone, "");
-                    } else {
-                        basePhoneme = null;
-                    }
-                }
                 // try [V C], [V CC], [VC C], [V -][- C]
                 for (var i = lastC + 1; i >= 0; i--) {
                     var vr = $"_{prevV}";
@@ -519,59 +499,57 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
-            if (tails.Contains(ending.prevV)) {
-                return new List<string>();
-            }
+            string t = ending.HasTail ? ReplacePhoneme(ending.tail, ending.tone) : "-";
+
             if (ending.IsEndingV) {
-                var vR = $"{v} -";
-                var vR1 = $"{v} R";
-                var vR2 = $"{v}-";
-                var endV = AliasFormat(v, "ending", ending.tone, "");
-                if (HasOto(vR, ending.tone) || HasOto(ValidateAlias(vR), ending.tone) || (HasOto(vR1, ending.tone) || HasOto(ValidateAlias(vR1), ending.tone) || (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone)))) {
-                    TryAddPhoneme(phonemes, ending.tone, AliasFormat(v, "ending", ending.tone, ""));
+                var vR = $"{v} {t}";
+                var vR2 = $"{v}{t}";
+                var endV = AliasFormat(v, "ending", ending.tone, "", t);
+                if (HasOto(vR, ending.tone) || HasOto(ValidateAlias(vR), ending.tone) || (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone))) {
+                    TryAddPhoneme(phonemes, ending.tone, AliasFormat(v, "ending", ending.tone, "", t));
                     /// split diphthong vowels
                 } else if (DiphthongExceptions.ContainsKey(prevV) && !(HasOto(vR, ending.tone) && HasOto(ValidateAlias(vR), ending.tone) && (HasOto(vR2, ending.tone) || HasOto(ValidateAlias(vR2), ending.tone)))) {
-                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "cv", ending.tone, ""));
+                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "cv", ending.tone, "", t));
                 }
             } else if (ending.IsEndingVCWithOneConsonant) {
                 var vc = $"{v} {cc[0]}";
-                var vcr = $"{v} {cc[0]}-";
-                var vcr2 = $"{v}{cc[0]} -";
+                var vcr = $"{v} {cc[0]}{t}";
+                var vcr2 = $"{v}{cc[0]} {t}";
                 var vr = $"_{v}";
-                var vr1 = $"{v}-";
+                var vr1 = $"{v}{t}";
                 if (!RomajiException.Contains(cc[0])) {
                     if (HasOto(vcr, ending.tone) || HasOto(ValidateAlias(vcr), ending.tone)) {
                         TryAddPhoneme(phonemes, ending.tone, vcr);
                     } else if (!HasOto(vcr, ending.tone) && !HasOto(ValidateAlias(vcr), ending.tone) && (HasOto(vcr2, ending.tone) || HasOto(ValidateAlias(vcr2), ending.tone))) {
                         TryAddPhoneme(phonemes, ending.tone, vcr2);
                         // double the consonants if has [C -]/[C-]
-                    } else if (DiphthongExceptions.ContainsKey(prevV) && (c_cR.Contains(cc.Last())) && ((HasOto(AliasFormat(v, "ending_mix", ending.tone, ""), ending.tone) && (HasOto($"{c_cR[0]} -", ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone)))))) {
+                    } else if (DiphthongExceptions.ContainsKey(prevV) && (c_cR.Contains(cc.Last())) && ((HasOto(AliasFormat(v, "ending_mix", ending.tone, ""), ending.tone) && (HasOto($"{c_cR[0]} {t}", ending.tone) || (HasOto($"{c_cR[0]}{t}", ending.tone)))))) {
                         // ex: [ow][ow-][z][z -]
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, ""));
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, "", t));
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, "", t));
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                     } else if (DiphthongExceptions.ContainsKey(prevV) && ((HasOto(AliasFormat(v, "ending_mix", ending.tone, ""), ending.tone)) && !HasOto(vc, ending.tone))) {
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, ""));
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, "", t));
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                         /// use consonants for diphthongs if the vb doesn't have vowel endings
-                    } else if (DiphthongExceptions.ContainsKey(prevV) && (!(HasOto(AliasFormat(v, "ending_mix", ending.tone, ""), ending.tone) && !HasOto(vc, ending.tone)))) {
-                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, ""));
+                    } else if (DiphthongExceptions.ContainsKey(prevV) && (!(HasOto(AliasFormat(v, "ending_mix", ending.tone, "", t), ending.tone) && !HasOto(vc, ending.tone)))) {
+                        TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, "", t));
                         if (c_cR.Contains(cc.Last())) {
                             if (HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone)) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, "", t));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, "", t));
                             } else {
-                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} {t}", $"{cc[0]}{t}");
                             }
                         } else if (!c_cR.Contains(cc.Last())) {
                             if (HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone)) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                             } else if (!(HasOto(AliasFormat($"{c_cR[0]}", "cc_mix", ending.tone, ""), ending.tone))) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, "", t));
                             } else {
-                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
+                                TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} {t}", $"{cc[0]}{t}");
                             }
                         }
                         /// add additional c to those consonants on the top
@@ -579,30 +557,30 @@ namespace OpenUtau.Plugin.Builtin {
                         if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) {
                             TryAddPhoneme(phonemes, ending.tone, vc);
                             //TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
-                        } else if (HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone))) {
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, ""));
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
-                        } else if (!(HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone)))) {
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
+                        } else if (HasOto($"{c_cR[0]} {t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} {t}"), ending.tone) || (HasOto($"{c_cR[0]}{t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}{t}"), ending.tone))) {
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc1_mix", ending.tone, "", t));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
+                        } else if (!(HasOto($"{c_cR[0]} {t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} {t}"), ending.tone) || (HasOto($"{c_cR[0]}{t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}{t}"), ending.tone)))) {
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                         } else {
-                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} {t}", $"{cc[0]}{t}");
                         }
                     } else {
                         TryAddPhoneme(phonemes, ending.tone, vc);
                         if (vc.Contains(cc[0])) {
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                         } else {
-                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-");
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} {t}", $"{cc[0]}{t}");
                         }
                     }
                 }
             } else {
                 for (var i = lastC; i >= 0; i--) {
                     var vr = $"_{v}";
-                    var vr1 = $"{v}-";
-                    var vcc = $"{v} {string.Join("", cc.Take(2))}-";
-                    var vcc2 = $"{v}{string.Join(" ", cc.Take(2))} -";
+                    var vr1 = $"{v}{t}";
+                    var vcc = $"{v} {string.Join("", cc.Take(2))}{t}";
+                    var vcc2 = $"{v}{string.Join(" ", cc.Take(2))} {t}";
                     var vcc3 = $"{v}{string.Join(" ", cc.Take(2))}";
                     var vcc4 = $"{v} {string.Join("", cc.Take(2))}";
                     var vc = $"{v} {cc[0]}";
@@ -624,7 +602,7 @@ namespace OpenUtau.Plugin.Builtin {
                             TryAddPhoneme(phonemes, ending.tone, vcc3);
                             if (vcc3.EndsWith(cc.Last()) && lastC == 1) {
                                 if (consonants.Contains(cc.Last())) {
-                                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                                 }
                             }
                             firstC = 1;
@@ -633,7 +611,7 @@ namespace OpenUtau.Plugin.Builtin {
                             TryAddPhoneme(phonemes, ending.tone, vcc4);
                             if (vcc4.EndsWith(cc.Last()) && lastC == 1) {
                                 if (consonants.Contains(cc.Last())) {
-                                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, ""));
+                                    TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[0]}", "cc_mix", ending.tone, "", t));
                                 }
                             }
                             firstC = 1;
@@ -643,7 +621,7 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                             /// use consonants for diphthongs if the vb doesn't have vowel endings
                         } else if (DiphthongExceptions.ContainsKey(prevV) && (!(HasOto(vr, ending.tone) || HasOto(ValidateAlias(vr), ending.tone) || (HasOto(vr1, ending.tone) || HasOto(ValidateAlias(vr1), ending.tone)) && !HasOto(vc, ending.tone)))) {
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, ""));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{DiphthongExceptions[prevV]}", "diph_mix", ending.tone, "", t));
                             break;
                         } else {
                             TryAddPhoneme(phonemes, ending.tone, vc);
@@ -669,21 +647,21 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc1, ending.tone)) {
                             cc1 = ValidateAlias(cc1);
                         }
-                        if (HasOto(cc1, ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone))) {
+                        if (HasOto(cc1, ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}{t}", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}{t}"), ending.tone))) {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
-                        } else if ((HasOto(cc[i], ending.tone) || HasOto(ValidateAlias(cc[i]), ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone)))) {
+                        } else if ((HasOto(cc[i], ending.tone) || HasOto(ValidateAlias(cc[i]), ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}{t}", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}{t}"), ending.tone)))) {
                             // like [C1 C2-][C3 ...]
                             phonemes.Add(cc[i]);
-                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-", ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"))) {
+                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}{t}", ValidateAlias($"{cc[i + 1]} {cc[i + 2]}{t}"))) {
                             // like [C1 C2-][C3 ...]
                             i++;
                         } else if (TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1))) {
                             i++;
                         } else {
                             // like [C1][C2 ...]
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, ""));
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, ""));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, "", t));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, "", t));
                             i++;
                         }
                     } else {
@@ -693,7 +671,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // CC FALLBACKS
                         if (!HasOto(cc1, ending.tone) || !HasOto(ValidateAlias(cc1), ending.tone)) {
                             // [C1] [C2]
-                            cc1 = AliasFormat($"{cc[i + 1]}", "cc_end", ending.tone, "");
+                            cc1 = AliasFormat($"{cc[i + 1]}", "cc_end", ending.tone, "", t);
                         }
                         if (!HasOto(cc1, ending.tone)) {
                             cc1 = ValidateAlias(cc1);
@@ -701,34 +679,34 @@ namespace OpenUtau.Plugin.Builtin {
                         // CC FALLBACKS
                         if (!HasOto(cc1, ending.tone) || !HasOto(ValidateAlias(cc1), ending.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", ending.tone)) {
                             // [C1] [C2]
-                            cc1 = AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, ""); ;
+                            cc1 = AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, "", t); ;
                         }
                         if (!HasOto(cc1, ending.tone)) {
                             cc1 = ValidateAlias(cc1);
                         }
-                        if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}-"))) {
+                        if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}{t}", ValidateAlias($"{cc[i]} {cc[i + 1]}{t}"))) {
                             // like [C1 C2-]
                             i++;
                         } else if (c_cR.Contains(cc.Last())) {
-                            if (HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone))) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, ""));
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, ""));
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, ""));
+                            if (HasOto($"{c_cR[0]} {t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} {t}"), ending.tone) || (HasOto($"{c_cR[0]}{t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}{t}"), ending.tone))) {
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, "", t));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc1_mix", ending.tone, "", t));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, "", t));
                                 i++;
-                            } else if (!(HasOto($"{c_cR[0]} -", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} -"), ending.tone) || (HasOto($"{c_cR[0]}-", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}-"), ending.tone)))) {
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, ""));
-                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, ""));
+                            } else if (!(HasOto($"{c_cR[0]} {t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]} {t}"), ending.tone) || (HasOto($"{c_cR[0]}{t}", ending.tone) || HasOto(ValidateAlias($"{c_cR[0]}{t}"), ending.tone)))) {
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i]}", "cc1_mix", ending.tone, "", t));
+                                TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, "", t));
                                 i++;
                             }
                         } else if (TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1))) {
                             // like [C1 C2][C2 -]
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, ""));
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{cc[i + 1]}", "cc_mix", ending.tone, "", t));
                             i++;
 
                         } else if (!HasOto(cc1, ending.tone) && !HasOto($"{cc[i]} {cc[i + 1]}", ending.tone)) {
                             // [C1 -] [- C2]
                             TryAddPhoneme(phonemes, ending.tone, $"- {cc[i + 1]}", ValidateAlias($"- {cc[i + 1]}"), cc[i + 1], ValidateAlias(cc[i + 1]));
-                            phonemes.Add($"{cc[i]} -");
+                            phonemes.Add($"{cc[i]} {t}");
                             i++;
                         }
 
@@ -737,21 +715,21 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return phonemes;
         }
-        private string AliasFormat(string alias, string type, int tone, string prevV) {
+        private string AliasFormat(string alias, string type, int tone, string prevV, string t = "-") {
             var aliasFormats = new Dictionary<string, string[]> {
                 // Define alias formats for different types
                 { "startingV", new string[] { "-", "- ", "_", "" } },
                 { "vv", new string[] { "-", "", "_", "- " } },
                 { "vvExtend", new string[] { "", "_", "-", "- " } },
                 { "cv", new string[] { "-", "", "- ", "_" } },
-                { "ending", new string[] { " -", "-", " R" } },
-                { "ending_mix", new string[] { "-", " -", "R", " R", "_", "--" } },
+                { "ending", new string[] { $" {t}", $"{t}" } },
+                { "ending_mix", new string[] { $"{t}", $" {t}", "_", "--" } },
                 { "cc", new string[] { "", "-", "- ", "_" } },
                 { "cc_start", new string[] { "- ", "-", "", "_" } },
-                { "cc_end", new string[] { " -", "-", "" } },
-                { "cc_mix", new string[] { " -", " R", "-", "", "_", "- ", "-" } },
+                { "cc_end", new string[] { $" {t}", $"{t}", "" } },
+                { "cc_mix", new string[] { $" {t}", $" {t}", $"{t}", "", "_", "- ", "-" } },
                 { "cc1_mix", new string[] { "", " -", "-", " R", "_", "- ", "-" } },
-                { "diph_mix", new string[] { "-", "_", "", " -", "", "_", "- ", "-" } },
+                { "diph_mix", new string[] { $"{t}", "_", "", $" {t}", "", "_", "- ", "-" } },
 
             };
 
