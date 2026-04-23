@@ -65,23 +65,6 @@ namespace OpenUtau.Plugin.Builtin {
             return note.lyric.Normalize();
         }
 
-        // Helper method to multisyllable lyrics into raw syllables
-        private string[] SplitSyllables(string lyric) {
-            if (lyric.Contains(" ") || lyric == "+") {
-                return lyric.Split(new char[] { ' ', '+' }, StringSplitOptions.RemoveEmptyEntries);
-            }
-
-            // Group prefixes (like っ, ー, -) directly with the following syllable
-            var pattern = @"[ーっッ・-]*[ぁ-んァ-ン][ゃゅょャュョぁぃぅぇぉァィゥェォ]?|[ーっッ・-]*[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]*[aeiouAEIOU]|[nN](?![aeiouAEIOU])|[ーっッ・-]";
-            var matches = Regex.Matches(lyric, pattern);
-            
-            if (matches.Count > 0) {
-                return matches.Cast<Match>().Select(m => m.Value).ToArray();
-            }
-
-            return new string[] { lyric };
-        }
-
         // Helper method to combine raw dictionary output (e.g., "g", "a", "k", "u") into proper syllables ("ga", "ku")
         private string[] CombineRomajiPhonemes(string[] phonemes) {
             var result = new List<string>();
@@ -143,7 +126,7 @@ namespace OpenUtau.Plugin.Builtin {
             var attr = note.phonemeAttributes?.FirstOrDefault(a => a.index == 0) ?? default;
             string color = attr.voiceColor ?? string.Empty;
             int tone = note.tone + attr.toneShift;
-            string alt = attr.alternate?.ToString() ?? "";
+            string alt = attr.alternate?.ToString() ?? ""; 
 
             var vcvpad = string.IsNullOrEmpty(presamp.AliasRules?.VCVPAD) ? " " : presamp.AliasRules.VCVPAD;
             var vcpad = string.IsNullOrEmpty(presamp.AliasRules?.VCPAD) ? "" : presamp.AliasRules.VCPAD;
@@ -166,27 +149,59 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private string[] GetSymbols(Note note) {
-            var rawLyric = GetRawLyric(note);
+            var rawLyric = GetRawLyric(note).Trim();
             if (string.IsNullOrEmpty(rawLyric)) return new string[0];
 
-            string[] rawSymbols = SplitSyllables(rawLyric);
-            rawSymbols = CombineRomajiPhonemes(rawSymbols);
-            
+            string[] symbolsArr;
+
+            if (rawLyric == "+") {
+                return new string[] { rawLyric };
+            }
+
+            // If the voicebank has an exact recording for this lyric (e.g., explicit VC "a t", VCV "- あ"),
+            // protect it as a single block so it doesn't get aggressively split into "a" and "t".
+            if (IsSymbolSupported(rawLyric, note)) {
+                symbolsArr = new string[] { rawLyric };
+            }
+            // Manual + splitting
+            else if (rawLyric.Contains("+")) {
+                symbolsArr = rawLyric.Split(new char[] { '+' }, StringSplitOptions.RemoveEmptyEntries);
+            }
+            // Pure Romaji with spaces (e.g. phonetic hint "g a k u") -> fuse to "ga" "ku"
+            else if (Regex.IsMatch(rawLyric, @"^[a-zA-Z\s]+$") && rawLyric.Contains(" ")) {
+                var parts = rawLyric.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                symbolsArr = CombineRomajiPhonemes(parts);
+            }
+            // Has space but not pure romaji (e.g., standard VCV forms like "- あ" missing from bank) -> treat as single
+            else if (rawLyric.Contains(" ")) {
+                symbolsArr = new string[] { rawLyric };
+            }
+            // Otherwise, auto-chunk using Mora Regex
+            else {
+                var pattern = @"[ーっッ・-]*[ぁ-んァ-ン][ゃゅょャュョぁぃぅぇぉァィゥェォ]?[ーっッ・-]*|[ーっッ・-]*[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]*[aeiouAEIOU][ーっッ・-]*|[nN](?![aeiouAEIOU])[ーっッ・-]*|[ーっッ・-]+";
+                var matches = Regex.Matches(rawLyric, pattern);
+                if (matches.Count > 0) {
+                    symbolsArr = matches.Cast<Match>().Select(m => m.Value).ToArray();
+                } else {
+                    symbolsArr = new string[] { rawLyric };
+                }
+            }
+
             var symbols = new List<string>();
-            foreach (var sym in rawSymbols) {
+            foreach (var sym in symbolsArr) {
                 string replaced = ApplyPresampReplace(sym);
                 
                 // Smart Fallback: If Hiragana conversion happened, check if the voicebank actually supports it
                 if (replaced != sym) {
                     if (!IsSymbolSupported(replaced, note) && IsSymbolSupported(sym, note)) {
-                        symbols.Add(sym); // VB has no Hiragana oto, fall back to Romaji
+                        symbols.Add(sym); 
                         continue;
                     }
                 }
                 symbols.Add(replaced);
             }
 
-            var symbolsArr = symbols.ToArray();
+            symbolsArr = symbols.ToArray();
 
             // Sokuon Prefix Fix
             if (symbolsArr.Length > 1 && symbolsArr[0] == "っ") {
@@ -200,21 +215,18 @@ namespace OpenUtau.Plugin.Builtin {
         private Phoneme ApplyCFlags(Phoneme phoneme, string alias) {
             bool isConsonant = false;
             
-            // Identify if the alias is a standalone consonant
             string baseAlias = alias.TrimStart('-', '*', '・', ' ');
             if (presamp.PhonemeList.TryGetValue(baseAlias, out var ph)) {
                 isConsonant = !ph.HasVowel && ph.HasConsonant;
             } else if (presamp.PhonemeList.TryGetValue(alias, out var ph2)) {
                 isConsonant = !ph2.HasVowel && ph2.HasConsonant;
             } else {
-                // Fallback check: if it contains no vowels, it acts as a consonant phoneme
                 isConsonant = !Regex.IsMatch(alias, "[aiueoAIUEOあいうえおぁぃぅぇぉんンNn]");
             }
 
             if (isConsonant) {
-                int pValue = 0; // Default P flag value is 0
+                int pValue = 0; 
                 
-                // Override default if explicitly set in presamp.ini
                 if (!string.IsNullOrEmpty(presamp.CFlags)) {
                     var match = Regex.Match(presamp.CFlags, @"[pP](\d+)");
                     if (match.Success && int.TryParse(match.Groups[1].Value, out int val)) {
@@ -226,7 +238,6 @@ namespace OpenUtau.Plugin.Builtin {
                     phoneme.expressions = new List<PhonemeExpression>();
                 }
                 
-                // Apply OpenUtau's built-in NORM expression
                 phoneme.expressions.Add(new PhonemeExpression() { abbr = Core.Format.Ustx.NORM, value = pValue });
             }
 
@@ -260,7 +271,6 @@ namespace OpenUtau.Plugin.Builtin {
                 return new Result { phonemes = new Phoneme[0] };
             }
 
-            // Fallback for presamp.ini values
             var vcvpad = string.IsNullOrEmpty(presamp.AliasRules?.VCVPAD) ? " " : presamp.AliasRules.VCVPAD;
             var vcpad = string.IsNullOrEmpty(presamp.AliasRules?.VCPAD) ? "" : presamp.AliasRules.VCPAD;
 
@@ -279,13 +289,11 @@ namespace OpenUtau.Plugin.Builtin {
             int lastSyllablePosition = 0; 
 
             for (int i = 0; i < symbols.Length; i++) {
-                // Avoid OpenUtau's reserved VC (1) and -C (2) index slots for subsequent syllables
                 int pIndex = i == 0 ? 0 : i + 2;
-                int noteIndex = Math.Min(i, notes.Length - 1); // Map the syllable to the correct tied note
+                int noteIndex = Math.Min(i, notes.Length - 1); 
 
                 string currentSymbol = symbols[i];
                 
-                // Extract the base phonetic target for CVVC fallback (e.g., "っと" -> "と")
                 string baseSymbol = currentSymbol.TrimStart('っ', 'ッ', 'ー', '-', '・');
                 if (string.IsNullOrEmpty(baseSymbol)) baseSymbol = currentSymbol;
 
@@ -296,7 +304,6 @@ namespace OpenUtau.Plugin.Builtin {
                 string cfLyric = $"*{vcpad}{currentSymbol}";
                 string cfLyricBase = $"*{vcpad}{baseSymbol}";
 
-                // Smart Vowel Extractor: Supports both Japanese characters and Romaji arrays natively via presamp definitions
                 string vowelUpper = Regex.Match(baseSymbol, "[あいうえおんン]").Value;
                 if (string.IsNullOrEmpty(vowelUpper)) {
                     if (presamp.PhonemeList.TryGetValue(currentAlias, out var ph) && ph.HasVowel) {
@@ -315,7 +322,6 @@ namespace OpenUtau.Plugin.Builtin {
                 bool preCFlag = false;
                 string convertedLyric = currentSymbol;
 
-                // Convert phoneme checking attributes relative to dynamic index
                 if (i == 0 && !string.IsNullOrEmpty(note.phoneticHint) && symbols.Length == 1) { 
                     var tests = new List<string> { currentSymbol, baseSymbol };
                     if (checkOtoUntilHit(tests, notes, noteIndex, pIndex, out var oto)) {
@@ -717,7 +723,7 @@ namespace OpenUtau.Plugin.Builtin {
             oto = default;
             var attr = GetMergedAttribute(notes, noteIndex, pIndex);
             string color = attr.voiceColor ?? string.Empty;
-            string alt = attr.alternate?.ToString() ?? string.Empty; // Fixed string cast
+            string alt = attr.alternate?.ToString() ?? string.Empty; 
             int tone = notes[noteIndex].tone + attr.toneShift;
 
             var otos = new List<UOto>();
