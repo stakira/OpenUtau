@@ -127,15 +127,11 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
             });
             AllSetPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
-                string name = string.Empty;
-                Phonemizer? phonemizer = null;
-                if (factory != null) {
-                    phonemizer = factory.Create();
-                    name = phonemizer.GetType().FullName!;
-                    Log.Information($"Loading Phonemizer: {phonemizer.ToString()}");
-                } else {
+                if (factory == null) {
                     return;
                 }
+                var name = factory.type.FullName!;
+                Log.Information($"Loading Phonemizer: {factory}");
                 var targetTracks = DocManager.Inst.Project.tracks
                     .Where(projectTrack => projectTrack != null)
                     .Where(projectTrack => IsTrackSelected(projectTrack))
@@ -145,6 +141,7 @@ namespace OpenUtau.App.ViewModels {
                 }
                 DocManager.Inst.StartUndoGroup("command.track.setting");
                 foreach (var targetTrack in targetTracks) {
+                    var phonemizer = factory.Create();
                     if (phonemizer != null) {
                         DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, targetTrack, phonemizer));
                     }
@@ -543,6 +540,7 @@ namespace OpenUtau.App.ViewModels {
             TrackColor = Preferences.Default.UseTrackColor
                 ? ThemeManager.GetTrackColor(track.TrackColor)
                 : ThemeManager.GetTrackColor("Blue");
+            RefreshSelectionStyle();
             this.RaisePropertyChanged(nameof(Singer));
             this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(TrackName));
@@ -766,12 +764,21 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project,
                     targetTrack,
                     track.RendererSettings.Clone()));
-                targetTrack.Mute = track.Mute;
-                targetTrack.Muted = track.Muted;
-                targetTrack.Volume = track.Volume;
-                targetTrack.Pan = track.Pan;
-                targetTrack.TrackColor = track.TrackColor;
-                targetTrack.TrackExpressions = track.TrackExpressions.Select(exp => exp.Clone()).ToList();
+                DocManager.Inst.ExecuteCmd(new TrackChangeSettingsCommand(
+                    DocManager.Inst.Project,
+                    targetTrack,
+                    track.Mute,
+                    track.Volume,
+                    track.Pan));
+                DocManager.Inst.ExecuteCmd(new ChangeTrackColorCommand(
+                    DocManager.Inst.Project,
+                    targetTrack,
+                    track.TrackColor));
+                DocManager.Inst.ExecuteCmd(new ConfigureExpressionsCommand(
+                    DocManager.Inst.Project,
+                    DocManager.Inst.Project.expressions.Values.ToArray(),
+                    targetTrack,
+                    track.TrackExpressions.Select(exp => exp.Clone()).ToArray()));
             }
             DocManager.Inst.EndUndoGroup();
             MessageBus.Current.SendMessage(new TracksRefreshEvent());

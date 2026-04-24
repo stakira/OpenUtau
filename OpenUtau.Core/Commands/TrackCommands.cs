@@ -119,6 +119,36 @@ namespace OpenUtau.Core {
         public override void Unexecute() => track.TrackColor = oldName;
     }
 
+    public class TrackChangeSettingsCommand : TrackCommand {
+        readonly bool newMute;
+        readonly bool oldMute;
+        readonly double newVolume;
+        readonly double oldVolume;
+        readonly double newPan;
+        readonly double oldPan;
+        public TrackChangeSettingsCommand(UProject project, UTrack track, bool mute, double volume, double pan) {
+            this.project = project;
+            this.track = track;
+            newMute = mute;
+            newVolume = volume;
+            newPan = pan;
+            oldMute = track.Mute;
+            oldVolume = track.Volume;
+            oldPan = track.Pan;
+        }
+        public override string ToString() => "Change track settings";
+        public override void Execute() {
+            track.Mute = newMute;
+            track.Volume = newVolume;
+            track.Pan = newPan;
+        }
+        public override void Unexecute() {
+            track.Mute = oldMute;
+            track.Volume = oldVolume;
+            track.Pan = oldPan;
+        }
+    }
+
     public class TrackChangeSingerCommand : TrackCommand {
         readonly USinger newSinger, oldSinger;
         public TrackChangeSingerCommand(UProject project, UTrack track, USinger newSinger) {
