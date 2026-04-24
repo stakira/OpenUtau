@@ -246,6 +246,31 @@ namespace OpenUtau.Core {
             AudioOutput.Play();
         }
 
+        public void PlayMetronomeClick() {
+            masterMix = null;
+            PlayingMaster = false;
+            toneGenerator.EndAllTones();
+            AudioOutput.Stop();
+            AudioOutput.Init(new MixingSampleProvider(new[] {
+                CreateMetronomePreviewTone(Preferences.Default.MetronomeHighFrequency, TimeSpan.Zero),
+                CreateMetronomePreviewTone(Preferences.Default.MetronomeLowFrequency, TimeSpan.FromMilliseconds(300)),
+            }) {
+                ReadFully = true,
+            });
+            AudioOutput.Play();
+        }
+
+        private static ISampleProvider CreateMetronomePreviewTone(double frequency, TimeSpan delay) {
+            return new OffsetSampleProvider(new SineGenerator(frequency, GetMetronomePreviewGain(), 5, 80)) {
+                DelayBy = delay,
+                Take = TimeSpan.FromMilliseconds(120),
+            };
+        }
+
+        private static float GetMetronomePreviewGain() {
+            return MathF.Sqrt(Math.Clamp(Preferences.Default.MetronomeVolume / 100f, 0f, 1f));
+        }
+
         public void PlayTone(double freq) {
             toneGenerator.StartTone(freq);
 

@@ -3,16 +3,18 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.SignalChain {
     class MetronomeEngine : ISignalSource {
-        private const double MetronomeBarFreq = 1760;
-        private const double MetronomeBeatFreq = 1320;
-        private const double MetronomeBarAccentFreq = 2640;
-        private const double MetronomeBeatAccentFreq = 2200;
         private const int MetronomeAttackMs = 5;
         private const int MetronomeBeatReleaseMs = 10;
         private const int MetronomeBarReleaseMs = 10;
+        private const double AccentFrequencyOffset = 880;
 
-        private readonly ToneGenerator toneGenerator = new ToneGenerator();
+        private readonly ToneGenerator toneGenerator = new ToneGenerator(0.6f);
         private readonly MetronomeScheduler scheduler = new MetronomeScheduler();
+
+        private static double MetronomeBarFreq => Preferences.Default.MetronomeHighFrequency;
+        private static double MetronomeBeatFreq => Preferences.Default.MetronomeLowFrequency;
+        private static double MetronomeBarAccentFreq => Preferences.Default.MetronomeHighFrequency + AccentFrequencyOffset;
+        private static double MetronomeBeatAccentFreq => Preferences.Default.MetronomeLowFrequency + AccentFrequencyOffset;
 
         public bool Enabled { get; private set; }
 

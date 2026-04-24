@@ -176,6 +176,9 @@ namespace OpenUtau.Core.Util {
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
+            public int MetronomeVolume = 60;
+            public int MetronomeHighFrequency = 2200;
+            public int MetronomeLowFrequency = 1320;
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
