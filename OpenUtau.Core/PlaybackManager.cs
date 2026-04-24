@@ -327,6 +327,7 @@ namespace OpenUtau.Core {
             AudioOutput.Stop();
             Render(project, tick, endTick, trackNo);
             StartingToPlay = true;
+            PlayingMaster = true;
         }
 
         public void StopPlayback() {
@@ -370,12 +371,10 @@ namespace OpenUtau.Core {
                     var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false);
                     var playbackAdapter = new MasterAdapter(new PlaybackMix(result.Item1, metronomeEngine));
                     playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
-                    if (playbackAdapter.IsPlayable()) {
-                        faders = result.Item2;
-                        StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
-                        PlayingMaster = true;
-                    }
+                    faders = result.Item2;
+                    PlayingMaster = true;
                     StartingToPlay = false;
+                    StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to render.");
                     StopPlayback();

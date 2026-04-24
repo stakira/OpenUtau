@@ -361,6 +361,10 @@ namespace OpenUtau.App.Views {
                 var maxDelta = Math.Max(0, neighborNote.duration - minNoteTicks);
                 deltaDuration = Math.Min(deltaDuration, maxDelta);
             }
+            // Prevent note from moving past part start (position < 0)
+            if (this.fromStart) {
+                deltaDuration = Math.Min(deltaDuration, note.position);
+            }
             if (deltaDuration == 0) {
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
