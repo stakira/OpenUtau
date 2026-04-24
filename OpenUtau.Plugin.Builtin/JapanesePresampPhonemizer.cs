@@ -516,7 +516,9 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         
                         int prevSyllableDuration = position - lastSyllablePosition;
-                        vcLength = Convert.ToInt32(Math.Min(prevSyllableDuration / 2, Math.Max(30, vcLength * (attr.consonantStretchRatio ?? 1))));
+                        
+                        int maxVcLength = Math.Max(10, prevSyllableDuration - 15);
+                        vcLength = Convert.ToInt32(Math.Min(maxVcLength, vcLength * (attr.consonantStretchRatio ?? 1)));
 
                         var expressions = new List<PhonemeExpression>();
                         if (internalVCColor != null) {
@@ -721,8 +723,9 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     
                     int lastSyllableDuration = totalDuration - lastSyllablePosition;
-                    vcLength = Convert.ToInt32(Math.Min(lastSyllableDuration / 2, Math.Max(30, vcLength * (nextAttr.consonantStretchRatio ?? 1))));
-
+                    int maxLastVcLength = Math.Max(10, lastSyllableDuration - 15);
+                    vcLength = Convert.ToInt32(Math.Min(maxLastVcLength, vcLength * (nextAttr.consonantStretchRatio ?? 1)));
+                    
                     var finalVC = new Phoneme() {
                         phoneme = vcPhoneme,
                         position = totalDuration - vcLength,
