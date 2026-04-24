@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -169,16 +169,13 @@ namespace OpenUtau.Core {
         }
 
         public void EndAllTones() {
-            foreach (var tone in activeFrequencies) {
-                tone.Value.Stop();
-
-                lock (_lockObj) {
-                    // Move to inactive frequencies list
-                    inactiveFrequencies.Add(tone.Value);
-                    activeFrequencies.Remove(tone.Key);
+            lock (_lockObj) {
+                foreach (var tone in activeFrequencies.Values) {
+                    tone.Stop();
+                    inactiveFrequencies.Add(tone);
                 }
+                activeFrequencies.Clear();
             }
-
 
             CleanupTones();
         }
@@ -211,7 +208,6 @@ namespace OpenUtau.Core {
     }
 
     public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
-
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
             try {
@@ -222,16 +218,15 @@ namespace OpenUtau.Core {
             }
 
             toneGenerator = new ToneGenerator();
-            metronomeGenerator = new ToneGenerator();
+            metronomeEngine = new MetronomeEngine();
             editingMix = new MasterAdapter(toneGenerator);
         }
 
         public readonly ToneGenerator toneGenerator;
-        private readonly ToneGenerator metronomeGenerator;
+        private readonly MetronomeEngine metronomeEngine;
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
-        int lastMetronomeTick = -1;
         
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
@@ -300,6 +295,7 @@ namespace OpenUtau.Core {
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 PlayingMaster = true;
+                metronomeEngine.StartPlayback(project.timeAxis, DocManager.Inst.playPosTick);
                 AudioOutput.Play();
                 return;
             }
@@ -310,29 +306,28 @@ namespace OpenUtau.Core {
 
         public void StopPlayback() {
             AudioOutput.Stop();
+            masterMix = null;
             PlayingMaster = false;
-            metronomeGenerator.EndAllTones();
-            lastMetronomeTick = -1;
+            metronomeEngine.Stop();
         }
 
         public void PausePlayback() {
             AudioOutput.Pause();
             PlayingMaster = false;
-            metronomeGenerator.EndAllTones();
+            metronomeEngine.Stop();
         }
 
         public void PlayMetronome(bool enabled) {
-            if (enabled) {
-                MetronomeEnabled = true;
-            }else {
-                MetronomeEnabled = false;
-                metronomeGenerator.EndAllTones();
-            }
+            MetronomeEnabled = enabled;
+            metronomeEngine.SetEnabled(
+                enabled,
+                PlayingMaster ? DocManager.Inst.Project.timeAxis : null,
+                PlayingMaster ? DocManager.Inst.playPosTick : -1);
         }
 
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
             toneGenerator.EndAllTones();
-            metronomeGenerator.EndAllTones();
+            metronomeEngine.StartPlayback(DocManager.Inst.Project.timeAxis, StartTick);
 
             this.startMs = startMs;
             var start = TimeSpan.FromMilliseconds(startMs);
@@ -348,7 +343,7 @@ namespace OpenUtau.Core {
                 try {
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false);
-                    var playbackAdapter = new MasterAdapter(new PlaybackMix(result.Item1, metronomeGenerator));
+                    var playbackAdapter = new MasterAdapter(new PlaybackMix(result.Item1, metronomeEngine));
                     playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
                     if (playbackAdapter.IsPlayable()) {
                         faders = result.Item2;
@@ -367,47 +362,17 @@ namespace OpenUtau.Core {
 
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && PlayingMaster) {
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
-                TryPlayMetronome(tick);
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
-            }
-        }
-
-        private void TryPlayMetronome(int tick) {
-            if (!MetronomeEnabled || tick <= lastMetronomeTick) {
-                return;
-            }
-            var timeAxis = DocManager.Inst.Project.timeAxis;
-            timeAxis.TickPosToBarBeat(lastMetronomeTick, out int lastBar, out int lastBeat, out int lastRemainingTicks);
-            int beatTick = timeAxis.BarBeatToTickPos(lastBar, lastBeat);
-            if (lastRemainingTicks > 0) {
-                timeAxis.NextBarBeat(lastBar, lastBeat, out lastBar, out lastBeat);
-                beatTick = timeAxis.BarBeatToTickPos(lastBar, lastBeat);
-            }
-            double MetronomeBarFreq = 1760;
-            double MetronomeBeatFreq = 1320;
-            double MetronomeBarAccentFreq = 2640;
-            double MetronomeBeatAccentFreq = 2200;
-            int MetronomeAttackMs = 1;
-            int MetronomeBeatReleaseMs = 45;
-            int MetronomeBarReleaseMs = 45;
-            while (beatTick <= tick) {
-                if (lastBeat == 0) {
-                    metronomeGenerator.StartTones(
-                        (MetronomeBarFreq, MetronomeAttackMs, MetronomeBarReleaseMs),
-                        (MetronomeBarAccentFreq, MetronomeAttackMs, MetronomeBeatReleaseMs));
-                    metronomeGenerator.EndTones(MetronomeBarFreq, MetronomeBarAccentFreq);
-                } else {
-                    metronomeGenerator.StartTones(
-                        (MetronomeBeatFreq, MetronomeAttackMs, MetronomeBeatReleaseMs),
-                        (MetronomeBeatAccentFreq, MetronomeAttackMs, MetronomeBeatReleaseMs / 2));
-                    metronomeGenerator.EndTones(MetronomeBeatFreq, MetronomeBeatAccentFreq);
+                var currentMasterMix = masterMix;
+                if (currentMasterMix == null) {
+                    return;
                 }
-                timeAxis.NextBarBeat(lastBar, lastBeat, out lastBar, out lastBeat);
-                beatTick = timeAxis.BarBeatToTickPos(lastBar, lastBeat);
+                double ms = (AudioOutput.GetPosition() / sizeof(float) - currentMasterMix.Waited / 2) * 1000.0 / 44100;
+                double currentMs = startMs + ms;
+                var timeAxis = DocManager.Inst.Project.timeAxis;
+                int tick = timeAxis.MsPosToTickPos(currentMs);
+                metronomeEngine.TryPlay(tick, currentMs, timeAxis);
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, currentMasterMix.IsWaiting));
             }
-            lastMetronomeTick = tick;
         }
 
         public static float DecibelToVolume(double db) {
@@ -500,6 +465,15 @@ namespace OpenUtau.Core {
                 if (faders != null && faders.Count > _cmd!.TrackNo) {
                     faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
                 }
+            } else if (cmd is BpmCommand ||
+                cmd is TimeSignatureCommand ||
+                cmd is AddTempoChangeCommand ||
+                cmd is DelTempoChangeCommand ||
+                cmd is AddTimeSigCommand ||
+                cmd is DelTimeSigCommand) {
+                if (PlayingMaster && MetronomeEnabled) {
+                    metronomeEngine.UpdateSchedule(DocManager.Inst.Project.timeAxis, DocManager.Inst.playPosTick);
+                }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
                 renderCancellation?.Cancel();
@@ -515,3 +489,9 @@ namespace OpenUtau.Core {
         #endregion
     }
 }
+
+
+
+
+
+
