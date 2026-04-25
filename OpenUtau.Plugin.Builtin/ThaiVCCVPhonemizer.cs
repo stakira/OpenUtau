@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -161,7 +161,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 var noteDuration = notes.Sum(n => n.duration);
 
-                for (int i = 0; i < tests.ToArray().Length; i++) {
+                for (int i = 0; i < tests.Count; i++) { // แก้ไขเพื่อประสิทธิภาพ
 
                     int position = 0;
                     int vcPosition = noteDuration - 120;
@@ -186,7 +186,6 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
                     }
-
 
                     if (noteTh.Dipthong == null || tests.Count <= 2) {
                         if (i == 1) {
@@ -259,7 +258,6 @@ namespace OpenUtau.Plugin.Builtin {
             return (consonant, diphthong, vowel, endingConsonant);
         }
 
-
         public string WordToPhonemes(string input) {
             input = input.Replace(" ", "");
             input = RemoveInvalidLetters(input);
@@ -297,11 +295,12 @@ namespace OpenUtau.Plugin.Builtin {
                 if (input[1] == 'ว') {
                     return ConvertC(input[0].ToString()) + "ua" + ConvertX(input[2].ToString());
                 } else {
-                    return ConvertC(input.Substring(0, 2).ToString()) + "o" + ConvertX(input[1].ToString());
+                    // แก้ไข: เปลี่ยนจาก input[1] เป็น input[2] เพื่อให้ดึงตัวสะกดได้อย่างถูกต้อง
+                    return ConvertC(input.Substring(0, 2)) + "o" + ConvertX(input[2].ToString());
                 }
             } else if (input.Length == 4) {
                 if (input[2] == 'ว') {
-                    return ConvertC(input.Substring(0, 2).ToString()) + "ua" + ConvertX(input[3].ToString());
+                    return ConvertC(input.Substring(0, 2)) + "ua" + ConvertX(input[3].ToString());
                 }
             }
             return input;
