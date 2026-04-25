@@ -330,8 +330,8 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Da Hanzi a Pinyin</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.lengthencrossfade">Lengthen crossfades</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carica Pitch Renderizzato</system:String>
-  <system:String x:Key="pianoroll.menu.notes.octavedown">Trasponi un'ottava su</system:String>
-  <system:String x:Key="pianoroll.menu.notes.octaveup">Trasponi un'ottava giù</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Trasponi un'ottava giù</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Trasponi un'ottava su</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.quantize">Quantize to grid size</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.refreshrealcurves">Refresh real curves</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.removetaildash">Remove tail "-"</system:String>-->
