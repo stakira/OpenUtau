@@ -97,8 +97,36 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(Renderer));
                 RefreshAvatar();
             });
-            SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
+            SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(async factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
+                    if (track.Singer != null && track.Singer.Found) {
+                        string singerEngine = track.Singer.SingerType.ToString().ToLowerInvariant();
+                        string phonemizerEngine = factory.engine?.ToLowerInvariant() ?? "classic";
+                        if (phonemizerEngine == "utau") {
+                            phonemizerEngine = "classic";
+                        }
+
+                        if (singerEngine != phonemizerEngine) {
+                            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+                            if (mainWindow != null) {
+
+                                string popupTitle = ThemeManager.GetString("warning.enginemismatch.title");
+                                string popupMsgTemplate = ThemeManager.GetString("warning.enginemismatch.msg");
+                                string formattedMsg = string.Format(popupMsgTemplate, singerEngine.ToUpper(), phonemizerEngine.ToUpper());
+                                Log.Information($"Phonemizer mismatch detected: Voicebank is '{singerEngine}', Phonemizer is '{phonemizerEngine}'.");
+
+                                var result = await MessageBox.Show(
+                                    mainWindow,
+                                    formattedMsg,
+                                    popupTitle,
+                                    MessageBox.MessageBoxButtons.YesNo
+                                );
+                                if (result != MessageBox.MessageBoxResult.Yes) {
+                                    return; 
+                                }
+                            }
+                        }
+                    }
                     DocManager.Inst.StartUndoGroup("command.track.setting");
                     var phonemizer = factory.Create();
                     Log.Information($"Loading Phonemizer: {phonemizer.ToString()}");
