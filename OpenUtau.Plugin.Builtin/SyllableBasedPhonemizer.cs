@@ -8,6 +8,7 @@ using System.IO;
 using Serilog;
 using System.Threading.Tasks;
 using static OpenUtau.Api.Phonemizer;
+using System.Collections;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -931,38 +932,54 @@ namespace OpenUtau.Plugin.Builtin {
         protected List<Replacement> splittingReplacements = new List<Replacement>();
 
         protected virtual bool IsGroupKeyword(string rulePhoneme) {
-            string baseGroup = rulePhoneme.Split(new[] { '!', '+' })[0];
+            string baseGroup = rulePhoneme.Split(new[] { '!', '=', '+' })[0];
             return new[] { "vowel", "vowels", "consonant", "consonants", 
                            "affricate", "fricative", "aspirate", "semivowel", 
                            "liquid", "nasal", "stop", "tap" }.Contains(baseGroup);
         }
 
         protected virtual bool IsGroupMatch(string rulePhoneme, string actualPhoneme) {
-            string baseGroup = rulePhoneme.Split(new[] { '!', '+' })[0];
-            
-            if (rulePhoneme.Contains("!")) {
-                string[] exceptions = rulePhoneme.Split('!')[1].Split(',');
-                if (exceptions.Contains(actualPhoneme)) return false;
-            }
-            
+            string baseGroup = rulePhoneme.Split(new[] { '!', '=', '+' })[0];
             if (rulePhoneme.Contains("+")) {
-                string[] inclusions = rulePhoneme.Split('+')[1].Split(',');
-                if (!inclusions.Contains(actualPhoneme)) return false;
+                string added = rulePhoneme.Substring(rulePhoneme.IndexOf('+') + 1).Split(new[] { '!', '=' })[0];
+                // If it matches another group name, or a literal letter, it passes
+                foreach (string inc in added.Split(',')) {
+                    if (IsGroupKeyword(inc) ? IsGroupMatch(inc, actualPhoneme) : inc == actualPhoneme) {
+                        return true;
+                    }
+                }
             }
 
+            // BASE GROUP: If it wasn't an addition, it must belong to the base group.
+            bool inBaseGroup = false;
             switch (baseGroup) {
-                case "vowel": case "vowels": return GetVowels().Contains(actualPhoneme);
-                case "consonant": case "consonants": return GetConsonants().Contains(actualPhoneme);
-                case "affricate": return affricate.Contains(actualPhoneme);
-                case "fricative": return fricative.Contains(actualPhoneme);
-                case "aspirate": return aspirate.Contains(actualPhoneme);
-                case "semivowel": return semivowel.Contains(actualPhoneme);
-                case "liquid": return liquid.Contains(actualPhoneme);
-                case "nasal": return nasal.Contains(actualPhoneme);
-                case "stop": return stop.Contains(actualPhoneme);
-                case "tap": return tap.Contains(actualPhoneme);
-                default: return false;
+                case "vowel": case "vowels": inBaseGroup = GetVowels().Contains(actualPhoneme); break;
+                case "consonant": case "consonants": inBaseGroup = GetConsonants().Contains(actualPhoneme); break;
+                case "affricate": inBaseGroup = affricate.Contains(actualPhoneme); break;
+                case "fricative": inBaseGroup = fricative.Contains(actualPhoneme); break;
+                case "aspirate": inBaseGroup = aspirate.Contains(actualPhoneme); break;
+                case "semivowel": inBaseGroup = semivowel.Contains(actualPhoneme); break;
+                case "liquid": inBaseGroup = liquid.Contains(actualPhoneme); break;
+                case "nasal": inBaseGroup = nasal.Contains(actualPhoneme); break;
+                case "stop": inBaseGroup = stop.Contains(actualPhoneme); break;
+                case "tap": inBaseGroup = tap.Contains(actualPhoneme); break;
             }
+
+            if (!inBaseGroup) return false;
+
+            // EXCLUSIONS (!): Reject if it's in the excluded list.
+            if (rulePhoneme.Contains("!")) {
+                string excluded = rulePhoneme.Substring(rulePhoneme.IndexOf('!') + 1).Split(new[] { '=', '+' })[0];
+                if (excluded.Split(',').Contains(actualPhoneme)) return false;
+            }
+
+            // RESTRICTIONS (=): Reject if an equals list exists, and the phoneme isn't in it.
+            if (rulePhoneme.Contains("=")) {
+                string restricted = rulePhoneme.Substring(rulePhoneme.IndexOf('=') + 1).Split(new[] { '!', '+' })[0];
+                if (!restricted.Split(',').Contains(actualPhoneme)) return false;
+            }
+
+            return true;
         }
 
         protected virtual List<string> ApplyReplacements(List<string> inputPhonemes, bool isBoundary) {
@@ -979,8 +996,16 @@ namespace OpenUtau.Plugin.Builtin {
 
             while (idx < inputPhonemes.Count) {
                 bool replaced = false;
+                
                 foreach (var rule in validRules) {
-                    if (rule.from is string[] fromArray && idx + fromArray.Length <= inputPhonemes.Count) {
+                    string[] fromArray = null;
+                    if (rule.from is IList fromList) {
+                        fromArray = fromList.Cast<object>().Select(x => x?.ToString()).ToArray();
+                    } else if (rule.from is string[] strArr) {
+                        fromArray = strArr;
+                    }
+
+                    if (fromArray != null && fromArray.Length > 0 && idx + fromArray.Length <= inputPhonemes.Count) {
                         bool match = true;
                         var captures = new Dictionary<string, Queue<string>>();
                         
@@ -1001,13 +1026,21 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         
                         if (match) {
-                            if (rule.to is string toString) {
-                                finalPhonemes.Add(IsGroupKeyword(toString) && captures.ContainsKey(toString) && captures[toString].Count > 0 ? captures[toString].Dequeue() : toString);
-                            } else if (rule.to is string[] toArray) {
+                            string[] toArray = null;
+                            if (rule.to is IList toList) {
+                                toArray = toList.Cast<object>().Select(x => x?.ToString()).ToArray();
+                            } else if (rule.to is string[] strArr) {
+                                toArray = strArr;
+                            } else if (rule.to is string toStr) {
+                                toArray = new string[] { toStr };
+                            }
+
+                            if (toArray != null) {
                                 foreach (string toPh in toArray) {
                                     finalPhonemes.Add(IsGroupKeyword(toPh) && captures.ContainsKey(toPh) && captures[toPh].Count > 0 ? captures[toPh].Dequeue() : toPh);
                                 }
                             }
+                            
                             idx += fromArray.Length;
                             replaced = true;
                             break;
@@ -1019,12 +1052,28 @@ namespace OpenUtau.Plugin.Builtin {
                     string currentPhoneme = inputPhonemes[idx];
                     bool singleReplaced = false;
                     foreach (var rule in validSplits) {
-                        string rulePh = rule.from.ToString();
+                        if (rule.from is IList || rule.from is string[]) continue;
+
+                        string rulePh = rule.from?.ToString();
+                        if (rulePh == null) continue;
+
                         if (IsGroupKeyword(rulePh) ? IsGroupMatch(rulePh, currentPhoneme) : rulePh == currentPhoneme) {
-                            if (rule.to is string[] toArray) {
+                            
+                            string[] toArray = null;
+                            if (rule.to is IList toList) {
+                                toArray = toList.Cast<object>().Select(x => x?.ToString()).ToArray();
+                            } else if (rule.to is string[] strArr) {
+                                toArray = strArr;
+                            }
+
+                            if (toArray != null) {
                                 foreach(string toPh in toArray) {
                                     finalPhonemes.Add(toPh == rulePh ? currentPhoneme : toPh);
                                 }
+                                singleReplaced = true;
+                                break;
+                            } else if (rule.to is string toStr) {
+                                finalPhonemes.Add(toStr == rulePh ? currentPhoneme : toStr);
                                 singleReplaced = true;
                                 break;
                             }
