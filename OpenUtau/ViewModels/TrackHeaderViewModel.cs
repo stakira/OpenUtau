@@ -408,16 +408,27 @@ namespace OpenUtau.App.ViewModels {
             //more phonemizers grouped by singing language
             items.Add(new MenuItemViewModel() {
                 Header = $"{ThemeManager.GetString("tracks.more")} ...",
-                Items = PhonemizerFactory.GetAll().GroupBy(factory => factory.language)
-                .OrderBy(group => group.Key)
-                .Select(group => new MenuItemViewModel() {
-                    Header = GetPhonemizerGroupHeader(group.Key),
-                    Items = group.Select(factory => new MenuItemViewModel() {
-                        Header = factory.ToString(),
-                        Command = SelectPhonemizerCommand,
-                        CommandParameter = factory,
-                    }).ToArray(),
-                }).ToArray()
+                Items = PhonemizerFactory.GetAll()
+                    // Engine type
+                    .GroupBy(factory => factory.engine ?? "Utau")
+                    .OrderBy(typeGroup => typeGroup.Key)
+                    .Select(typeGroup => new MenuItemViewModel() {
+                        Header = typeGroup.Key,
+                        
+                        // language specific to the engine
+                        Items = typeGroup.GroupBy(factory => factory.language)
+                            .OrderBy(langGroup => langGroup.Key)
+                            .Select(langGroup => new MenuItemViewModel() {
+                                Header = GetPhonemizerGroupHeader(langGroup.Key),
+                                
+                                // actual phonemizers in that language folder
+                                Items = langGroup.Select(factory => new MenuItemViewModel() {
+                                    Header = factory.ToString(),
+                                    Command = SelectPhonemizerCommand,
+                                    CommandParameter = factory,
+                                }).ToArray(),
+                            }).ToArray()
+                    }).ToArray()
             });
             PhonemizerMenuItems = items.ToArray();
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));
