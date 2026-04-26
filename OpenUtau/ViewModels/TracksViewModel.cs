@@ -373,9 +373,6 @@ namespace OpenUtau.App.ViewModels {
 
         private void SetPlayPos(int tick, bool waitingRendering) {
             PlayPosWaitingRendering = waitingRendering;
-            if (waitingRendering) {
-                return;
-            }
             PlayPosX = TickTrackToPoint(tick, 0).X;
             TickToLineTick(tick, out int left, out int right);
             PlayPosHighlightX = TickTrackToPoint(left, 0).X;

@@ -58,6 +58,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
+        [Reactive] public bool NoteSelectionOnPlay { get; set; }
 
         // Paths
         public string SingerPath => PathManager.Inst.SingersPath;
@@ -141,6 +142,7 @@ namespace OpenUtau.App.ViewModels {
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
+            NoteSelectionOnPlay = Preferences.Default.NoteSelectionOnPlay;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
             LoadDeepFolders = Preferences.Default.LoadDeepFolderSinger;
             ToolsManager.Inst.Initialize();
@@ -218,6 +220,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PlayPosMarkerMargin)
                 .Subscribe(playPosMarkerMargin => {
                     Preferences.Default.PlayPosMarkerMargin = playPosMarkerMargin;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.NoteSelectionOnPlay)
+                .Subscribe(val => {
+                    Preferences.Default.NoteSelectionOnPlay = val;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.LockStartTime)
