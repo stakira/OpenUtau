@@ -1,128 +1,172 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using OpenUtau.Classic;
-using OpenUtau.Core.Ustx;
+using System.Reactive.Linq;
+using Avalonia;
+using Avalonia.Controls.Primitives;
+using Avalonia.Media;
+using OpenUtau.Core;
 using OpenUtau.Core.Util;
-using Serilog;
+using ReactiveUI;
 
-namespace OpenUtau.Core {
-    public class SingerManager : SingletonBase<SingerManager> {
-        public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
-        public Dictionary<USingerType, List<USinger>> SingerGroups { get; private set; } = new Dictionary<USingerType, List<USinger>>();
+namespace OpenUtau.App.Controls {
+    class TrackBackground : TemplatedControl {
+        public static readonly DirectProperty<TrackBackground, double> TrackHeightProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, double>(
+                nameof(TrackHeight),
+                o => o.TrackHeight,
+                (o, v) => o.TrackHeight = v);
+        public static readonly DirectProperty<TrackBackground, double> TrackOffsetProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, double>(
+                nameof(TrackOffset),
+                o => o.TrackOffset,
+                (o, v) => o.TrackOffset = v);
+        public static readonly DirectProperty<TrackBackground, bool> IsPianoRollProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, bool>(
+                nameof(IsPianoRoll),
+                o => o.IsPianoRoll,
+                (o, v) => o.IsPianoRoll = v);
+        public static readonly DirectProperty<TrackBackground, bool> IsKeyboardProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, bool>(
+                nameof(IsKeyboard),
+                o => o.IsKeyboard,
+                (o, v) => o.IsKeyboard = v);
+        public static readonly DirectProperty<TrackBackground, int> KeyProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, int>(
+                nameof(Key),
+                o => o.Key,
+                (o, v) => o.Key = v);
 
-        private readonly ConcurrentQueue<USinger> reloadQueue = new ConcurrentQueue<USinger>();
-        private CancellationTokenSource reloadCancellation;
-
-        private HashSet<USinger> singersUsed = new HashSet<USinger>();
-
-        public void Initialize() {
-            SearchAllSingers();
+        public double TrackHeight {
+            get => _trackHeight;
+            private set => SetAndRaise(TrackHeightProperty, ref _trackHeight, value);
+        }
+        public double TrackOffset {
+            get => _trackOffset;
+            private set => SetAndRaise(TrackOffsetProperty, ref _trackOffset, value);
+        }
+        public bool IsPianoRoll {
+            get => _isPianoRoll;
+            set => SetAndRaise(IsPianoRollProperty, ref _isPianoRoll, value);
+        }
+        public bool IsKeyboard {
+            get => _isKeyboard;
+            set => SetAndRaise(IsPianoRollProperty, ref _isKeyboard, value);
+        }
+        public int Key {
+            get => _key;
+            set => SetAndRaise(KeyProperty, ref _key, value);
         }
 
-        public void SearchAllSingers() {
-            Log.Information("Searching singers.");
-            Directory.CreateDirectory(PathManager.Inst.SingersPath);
-            var stopWatch = Stopwatch.StartNew();
-            var singers = ClassicSingerLoader.FindAllSingers()
-                .Concat(Vogen.VogenSingerLoader.FindAllSingers())
-                .Distinct();
-            Singers = singers
-                .ToLookup(s => s.Id)
-                .ToDictionary(g => g.Key, g => g.First());
-            SingerGroups = singers
-                .GroupBy(s => s.SingerType)
-                .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.LocalizedName).ToList());
-            stopWatch.Stop();
-            Log.Information($"Search all singers: {stopWatch.Elapsed}");
+        private double _trackHeight;
+        private double _trackOffset;
+        private bool _isPianoRoll;
+        private bool _isKeyboard;
+        private int _key;
+
+        public TrackBackground() {
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(e => InvalidateVisual());
         }
 
-        public USinger GetSinger(string name) {
-            Log.Information($"Attach singer to track: {name}");
-            name = name.Replace("%VOICE%", "");
-            if (Singers.ContainsKey(name)) {
-                return Singers[name];
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
+            base.OnPropertyChanged(change);
+            if (change.Property == TrackHeightProperty ||
+                change.Property == TrackOffsetProperty ||
+                change.Property == ForegroundProperty ||
+                change.Property == KeyProperty) {
+                InvalidateVisual();
             }
-            return null;
         }
 
-        public void ScheduleReload(USinger singer) {
-            reloadQueue.Enqueue(singer);
-            ScheduleReload();
+        int mod(int a, int b){
+            return (a % b + b) % b;
         }
 
-        private void ScheduleReload() {
-            var newCancellation = new CancellationTokenSource();
-            var oldCancellation = Interlocked.Exchange(ref reloadCancellation, newCancellation);
-            if (oldCancellation != null) {
-                oldCancellation.Cancel();
-                oldCancellation.Dispose();
+        public override void Render(DrawingContext context) {
+            if (TrackHeight == 0) {
+                return;
             }
-            Task.Run(() => {
-                Thread.Sleep(200);
-                if (newCancellation.IsCancellationRequested) {
-                    return;
+            int track = (int)TrackOffset;
+            double top = TrackHeight * (track - TrackOffset);
+            string[] degreeNames;
+            switch(Preferences.Default.DegreeStyle){
+                case 1:
+                    degreeNames = MusicMath.Solfeges;
+                    break;
+                case 2:
+                    degreeNames = MusicMath.NumberedNotations;
+                    break;
+                default:
+                    degreeNames = Enumerable.Repeat("", 12).ToArray();
+                    break;
+            }
+            
+            // กำหนดฟอนต์มาตรฐานสากลที่สวยงามและรองรับภาษาไทยได้สมบูรณ์
+            Typeface customTypeface = new Typeface("Leelawadee UI, Tahoma, Sarabun, Arial");
+
+            while (top < Bounds.Height) {
+                bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
+                bool isCenterKey = IsKeyboard && IsCenterKey(track);
+                var brush = isCenterKey ? ThemeManager.CenterKeyBrush
+                    : IsKeyboard ? (isAltTrack ? ThemeManager.BlackKeyBrush : ThemeManager.WhiteKeyBrush)
+                    : isAltTrack ? Foreground : Background;
+                context.DrawRectangle(
+                    brush,
+                    null,
+                    new Rect(0, (int)top, Bounds.Width, TrackHeight));
+                
+                if (IsKeyboard && TrackHeight >= 12) {
+                    brush = isCenterKey ? ThemeManager.CenterKeyNameBrush
+                        : isAltTrack ? ThemeManager.BlackKeyNameBrush
+                            : ThemeManager.WhiteKeyNameBrush;
+                    int tone = ViewConstants.MaxTone - 1 - track;
+                    string toneName = MusicMath.GetToneName(tone);
+                    
+                    // วาดชื่อตัวโน้ตด้วยฟอนต์ใหม่ (ขวา)
+                    var formattedTone = new FormattedText(
+                        toneName,
+                        System.Globalization.CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        customTypeface,
+                        12, // ขนาดฟอนต์ 12 กำลังสบายตา
+                        brush
+                    );
+                    var toneTextPosition = new Point(Bounds.Width - 4 - formattedTone.Width, (int)(top + (TrackHeight - formattedTone.Height) / 2));
+                    context.DrawText(formattedTone, toneTextPosition);
+
+                    // วาดชื่อระดับเสียง (องศา) ด้วยฟอนต์ใหม่ (ซ้าย)
+                    int degree = mod(tone - Key, 12);
+                    string degreeName = degreeNames[degree];
+                    var formattedDegree = new FormattedText(
+                        degreeName,
+                        System.Globalization.CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        customTypeface,
+                        12, // ขนาดฟอนต์ 12
+                        brush
+                    );
+                    var degreeTextPosition = new Point(4, (int)(top + (TrackHeight - formattedDegree.Height) / 2));
+                    context.DrawText(formattedDegree, degreeTextPosition);
                 }
-                Refresh();
-            });
-        }
-
-        private void Refresh() {
-            var singers = new HashSet<USinger>();
-            while (reloadQueue.TryDequeue(out USinger singer)) {
-                singers.Add(singer);
-            }
-            foreach (var singer in singers) {
-                Log.Information($"Reloading {singer.Id}");
-                new Task(() => {
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloading {singer.Id}"));
-                }).Start(DocManager.Inst.MainScheduler);
-                int retries = 5;
-                while (retries > 0) {
-                    retries--;
-                    try {
-                        singer.Reload();
-                        break;
-                    } catch (Exception e) {
-                        if (retries == 0) {
-                            Log.Error(e, $"Failed to reload {singer.Id}");
-                        } else {
-                            Log.Error(e, $"Retrying reload {singer.Id}");
-                            Thread.Sleep(200);
-                        }
-                    }
-                }
-                Log.Information($"Reloaded {singer.Id}");
-                new Task(() => {
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloaded {singer.Id}"));
-                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification(external: true));
-                }).Start(DocManager.Inst.MainScheduler);
+                track++;
+                top += TrackHeight;
             }
         }
 
-        //Check which singers are in use and free memory for those that are not
-        public void ReleaseSingersNotInUse(UProject project) {
-            //Check which singers are in use
-            var singersInUse = new HashSet<USinger>();
-            foreach (var track in project.tracks) {
-                var singer = track.Singer;
-                if (singer != null && singer.Found && !singersInUse.Contains(singer)) {
-                    singersInUse.Add(singer);
-                }
+        private bool IsAltTrack(int track) {
+            if (!IsPianoRoll) {
+                return track % 2 == 1;
             }
-            //Release singers that are no longer in use
-            foreach (var singer in singersUsed) {
-                if (!singersInUse.Contains(singer)) {
-                    singer.FreeMemory();
-                }
+            int tone = ViewConstants.MaxTone - 1 - track;
+            if (tone < 0) {
+                return false;
             }
-            //Update singers used
-            singersUsed = singersInUse;
+            return MusicMath.IsBlackKey(tone);
+        }
+
+        private bool IsCenterKey(int track) {
+            int tone = ViewConstants.MaxTone - 1 - track;
+            return MusicMath.IsCenterKey(tone);
         }
     }
 }
