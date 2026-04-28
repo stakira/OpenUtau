@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +14,7 @@ using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core {
+    // Enhanced & Optimized Audio Core by DELTA SYNTH & Gemini
     public class SineGenerator : ISampleProvider {
         public WaveFormat WaveFormat => waveFormat;
         private WaveFormat waveFormat;
@@ -45,8 +46,8 @@ namespace OpenUtau.Core {
             // Duplicate sample across two channels
             for (int i = 0; i < count / 2; i++) {
                 float sample = GetNextSample();
-                buffer[offset + (i * 2)] += (float)sample * gain;
-                buffer[offset + (i * 2) + 1] += (float)sample * gain;
+                buffer[offset + (i * 2)] += sample;
+                buffer[offset + (i * 2) + 1] += sample;
             }
             return count;
         }
@@ -116,46 +117,41 @@ namespace OpenUtau.Core {
 
             return position + count;
         }
+        
         public void StartTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                if (activeFrequencies[freq].isActive) {
-                    // Don't cut off tone to replace with the same frequency
-                    // Should never happen
-                    return;
-                }
-            }
-
             lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    if (activeFrequencies[freq].isActive) {
+                        // Don't cut off tone to replace with the same frequency
+                        // Should never happen
+                        return;
+                    }
+                }
                 activeFrequencies[freq] = new SineGenerator(freq, gain);
             }
         }
 
         public void EndTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                activeFrequencies[freq].Stop();
-
-                lock (_lockObj) {
+            lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    activeFrequencies[freq].Stop();
                     // Move to inactive frequencies list
                     inactiveFrequencies.Add(activeFrequencies[freq]);
                     activeFrequencies.Remove(freq);
                 }
             }
-
             CleanupTones();
         }
 
+        // แก้บั๊ก InvalidOperationException ลบข้อมูลขณะลูป
         public void EndAllTones() {
-            foreach (var tone in activeFrequencies) {
-                tone.Value.Stop();
-
-                lock (_lockObj) {
-                    // Move to inactive frequencies list
-                    inactiveFrequencies.Add(tone.Value);
-                    activeFrequencies.Remove(tone.Key);
+            lock (_lockObj) {
+                foreach (var tone in activeFrequencies.Values) {
+                    tone.Stop();
+                    inactiveFrequencies.Add(tone);
                 }
+                activeFrequencies.Clear();
             }
-
-
             CleanupTones();
         }
 
@@ -213,6 +209,10 @@ namespace OpenUtau.Core {
         }
 
         public void EndTone(double freq) {
+            EndToneAction(freq);
+        }
+
+        private void EndToneAction(double freq) {
             toneGenerator.EndTone(freq);
         }
 
