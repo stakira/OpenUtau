@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -19,6 +23,7 @@ namespace OpenUtau.App.Controls {
             }
             return langCode;
         }
+        
         //Calculates the position of a phoneme alias on a piano roll view, 
         //considering factors like tick width, phoneme text, and text layout. 
         //It returns the x-coordinate and text y-coordinate of the alias
@@ -31,7 +36,20 @@ namespace OpenUtau.App.Controls {
             }
             var x = viewModel.TickToneToPoint(phoneme.position, 0).X;
             var bold = phoneme.phoneme != phoneme.rawPhoneme;
-            var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
+            
+            // อัปเกรด: บังคับใช้กลุ่มฟอนต์มาตรฐานสากลเพื่อให้อ่านง่าย สบายตา และรองรับภาษาไทยได้สมบูรณ์แบบ
+            Typeface customTypeface = new Typeface("Leelawadee UI, Tahoma, Sarabun, Arial");
+            
+            // วาด TextLayout โดยใช้ฟอนต์ที่กำหนดเอง (ขนาด 12)
+            var textLayout = new TextLayout(
+                phonemeText,
+                customTypeface,
+                12,
+                ThemeManager.ForegroundBrush!,
+                TextAlignment.Left,
+                bold ? FontWeight.Bold : FontWeight.Normal
+            );
+            
             if (x < lastTextEndX) {
                 raiseText = !raiseText;
             } else {
