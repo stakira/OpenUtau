@@ -1,4 +1,6 @@
-version: 0.1.{build}
+# Version: 1.0
+# Credit: DELTA SYNTH & Gemini, stakira
+version: 0.2.{build}
 environment:
   access_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
@@ -9,6 +11,7 @@ image:
 branches:
   only:
     - stable
+    - master
 skip_commits:
   files:
     - .github/*
