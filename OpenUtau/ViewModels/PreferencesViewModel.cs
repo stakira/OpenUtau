@@ -41,6 +41,7 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
         }
         [Reactive] public bool Beta { get; set; }
+        [Reactive] public bool DiscordRichPresence { get; set; }
 
         // Playback
         private List<AudioOutputDevice>? audioOutputDevices;
@@ -189,6 +190,7 @@ namespace OpenUtau.App.ViewModels {
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
+            DiscordRichPresence = Preferences.Default.DiscordRichPresence;
 
             MessageBus.Current.Listen<ThemeEditorStateChangedEvent>()
                 .Subscribe(_ => this.RaisePropertyChanged(nameof(IsThemeEditorOpen)));
@@ -391,6 +393,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
                 .Subscribe(skipRenderingMutedTracks => {
                     Preferences.Default.SkipRenderingMutedTracks = skipRenderingMutedTracks;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiscordRichPresence)
+                .Subscribe(beta => {
+                    Preferences.Default.DiscordRichPresence = beta;
                     Preferences.Save();
                 });
         }
