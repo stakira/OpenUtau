@@ -1,4 +1,7 @@
-﻿using System.IO;
+// Version: 1.0
+// Credit: DELTA SYNTH & Gemini (Original: stakira / OpenUtau)
+
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
