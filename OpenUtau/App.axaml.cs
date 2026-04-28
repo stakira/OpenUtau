@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+// Version: 1.0
+// Credit: DELTA SYNTH & Gemini (Original: stakira)
+
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
