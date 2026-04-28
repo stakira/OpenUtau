@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
@@ -100,6 +100,10 @@ namespace OpenUtau.App.Controls {
                     degreeNames = Enumerable.Repeat("", 12).ToArray();
                     break;
             }
+            
+            // กำหนดฟอนต์มาตรฐานสากลที่สวยงามและรองรับภาษาไทยได้สมบูรณ์
+            Typeface customTypeface = new Typeface("Leelawadee UI, Tahoma, Sarabun, Arial");
+
             while (top < Bounds.Height) {
                 bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
@@ -110,25 +114,39 @@ namespace OpenUtau.App.Controls {
                     brush,
                     null,
                     new Rect(0, (int)top, Bounds.Width, TrackHeight));
+                
                 if (IsKeyboard && TrackHeight >= 12) {
                     brush = isCenterKey ? ThemeManager.CenterKeyNameBrush
                         : isAltTrack ? ThemeManager.BlackKeyNameBrush
                             : ThemeManager.WhiteKeyNameBrush;
                     int tone = ViewConstants.MaxTone - 1 - track;
                     string toneName = MusicMath.GetToneName(tone);
-                    var toneTextLayout = TextLayoutCache.Get(toneName, brush, 12);
-                    var toneTextPosition = new Point(Bounds.Width - 4 - (int)toneTextLayout.Width, (int)(top + (TrackHeight - toneTextLayout.Height) / 2));
-                    using (var state = context.PushTransform(Matrix.CreateTranslation(toneTextPosition))) {
-                        toneTextLayout.Draw(context, new Point());
-                    }
-                    //scale degree display
+                    
+                    // วาดชื่อตัวโน้ตด้วยฟอนต์ใหม่ (ขวา)
+                    var formattedTone = new FormattedText(
+                        toneName,
+                        System.Globalization.CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        customTypeface,
+                        12, // ขนาดฟอนต์ 12 กำลังสบายตา
+                        brush
+                    );
+                    var toneTextPosition = new Point(Bounds.Width - 4 - formattedTone.Width, (int)(top + (TrackHeight - formattedTone.Height) / 2));
+                    context.DrawText(formattedTone, toneTextPosition);
+
+                    // วาดชื่อระดับเสียง (องศา) ด้วยฟอนต์ใหม่ (ซ้าย)
                     int degree = mod(tone - Key, 12);
                     string degreeName = degreeNames[degree];
-                    var degreeTextLayout = TextLayoutCache.Get(degreeName, brush, 12);
-                    var degreeTextPosition = new Point(4, (int)(top + (TrackHeight - degreeTextLayout.Height) / 2));
-                    using (var state = context.PushTransform(Matrix.CreateTranslation(degreeTextPosition))) {
-                        degreeTextLayout.Draw(context, new Point());
-                    }
+                    var formattedDegree = new FormattedText(
+                        degreeName,
+                        System.Globalization.CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        customTypeface,
+                        12, // ขนาดฟอนต์ 12
+                        brush
+                    );
+                    var degreeTextPosition = new Point(4, (int)(top + (TrackHeight - formattedDegree.Height) / 2));
+                    context.DrawText(formattedDegree, degreeTextPosition);
                 }
                 track++;
                 top += TrackHeight;
