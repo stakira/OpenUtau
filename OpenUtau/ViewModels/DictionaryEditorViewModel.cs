@@ -70,7 +70,6 @@ namespace OpenUtau.App.ViewModels {
             IsConfirmingDelete = false;
             NewFileName = string.Empty;
         }
-
         public void ToggleConfirmDeletePanel() {
             if (string.IsNullOrEmpty(SelectedFile)) return;
             IsConfirmingDelete = !IsConfirmingDelete;
@@ -78,7 +77,6 @@ namespace OpenUtau.App.ViewModels {
             IsCreatingNewCategory = false;
             IsManagingColumns = false;
         }
-
         public void ToggleNewCategoryPanel() {
             IsCreatingNewCategory = !IsCreatingNewCategory;
             IsCreatingNewFile = false;
@@ -87,7 +85,6 @@ namespace OpenUtau.App.ViewModels {
             NewCategoryName = string.Empty;
             NewCategoryColumns = string.Empty;
         }
-
         public void ToggleManageColumnsPanel() {
             IsManagingColumns = !IsManagingColumns;
             IsCreatingNewFile = false;
@@ -97,6 +94,16 @@ namespace OpenUtau.App.ViewModels {
         }
 
         // File Actions
+        public string GetSelectedFileFullPath() {
+            if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) {
+                return string.Empty;
+            }
+            if (_filePaths.TryGetValue(SelectedFile, out string? relativePath) && relativePath != null) {
+                return Path.Combine(_currentDirectory, relativePath);
+            }
+
+            return string.Empty;
+        }
         public void ConfirmNewFile() {
             if (string.IsNullOrWhiteSpace(NewFileName) || string.IsNullOrEmpty(_currentDirectory)) return;
 
@@ -112,7 +119,6 @@ namespace OpenUtau.App.ViewModels {
             SelectedFile = fileName;
             ToggleNewFilePanel();
         }
-
         public void DeleteSelectedFile() {
             if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) return;
 
@@ -127,7 +133,6 @@ namespace OpenUtau.App.ViewModels {
             if (AvailableFiles.Count > 0) SelectedFile = AvailableFiles[0];
             else ClearContext();
         }
-
         public void ConfirmDeleteFile() {
             if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) return;
 
@@ -225,13 +230,11 @@ namespace OpenUtau.App.ViewModels {
                 SelectedFile = AvailableFiles[0];
             }
         }
-
         public void ClearContext() {
             _currentDirectory = string.Empty;
             AvailableFiles.Clear();
             Categories.Clear();
         }
-
         public void LoadYaml(string filePath) {
             Categories.Clear();
             if (!File.Exists(filePath)) return;

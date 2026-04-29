@@ -23,7 +23,6 @@ namespace OpenUtau.App.Controls {
             get => GetValue(PartProperty);
             set => SetValue(PartProperty, value);
         }
-
         public DictionaryEditorControl() {
             InitializeComponent();
 
@@ -39,7 +38,6 @@ namespace OpenUtau.App.Controls {
 
             this.Loaded += (s, e) => LoadDictionaryForPart(Part);
         }
-
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
             if (change.Property == PartProperty) {
@@ -47,7 +45,6 @@ namespace OpenUtau.App.Controls {
                 LoadDictionaryForPart((UVoicePart?)change.NewValue);
             }
         }
-
         private void RebuildGridColumns(YamlCategory? category) {
             var grid = this.FindControl<DataGrid>("EditorGrid");
             if (grid == null) return;
@@ -69,26 +66,22 @@ namespace OpenUtau.App.Controls {
             }
             grid.ItemsSource = currentData;
         }
-
         private void OnRefreshClicked(object? sender, RoutedEventArgs e) {
             Log.Information("DictionaryEditor: Refresh button clicked.");
             LoadDictionaryForPart(Part);
         }
 
         private void OnOpenFileClicked(object? sender, RoutedEventArgs e) {
-            if (string.IsNullOrEmpty(ViewModel.SelectedFile)) return;
+            string filePath = ViewModel.GetSelectedFileFullPath();
 
-            var project = DocManager.Inst.Project;
-            if (project == null || Part == null || Part.trackNo >= project.tracks.Count) return;
-
-            var singer = project.tracks[Part.trackNo].Singer;
-            if (singer != null && !string.IsNullOrEmpty(singer.Location)) {
-                var filePath = Path.Combine(singer.Location, ViewModel.SelectedFile);
-                if (File.Exists(filePath)) {
-                    Process.Start(new ProcessStartInfo {
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)) {
+                try {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
                         FileName = filePath,
                         UseShellExecute = true
                     });
+                } catch (Exception ex) {
+                    Serilog.Log.Error(ex, $"DictionaryEditor: Failed to open file in external editor: {filePath}");
                 }
             }
         }
