@@ -18,6 +18,10 @@ namespace OpenUtau.Core.DiffSinger{
         public float[]? breathiness;
         public float[]? voicing;
         public float[]? tension;
+        public float frameMs;
+        public int headFrames;
+        public int tailFrames;
+        public int totalFrames;
     }
     public class DsVariance : IDisposable{
         string rootPath;
@@ -126,11 +130,7 @@ namespace OpenUtau.Core.DiffSinger{
                 .Append("SP")
                 .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
-            var ph_dur = phrase.phones
-                .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error
-                .Prepend(headFrames)
-                .Append(tailFrames)
-                .ToArray();
+            var ph_dur = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames);
             int totalFrames = ph_dur.Sum();
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
                 new DenseTensor<Int64>(tokens, new int[] { tokens.Length }, false)
@@ -301,6 +301,10 @@ namespace OpenUtau.Core.DiffSinger{
                 breathiness = breathiness_pred?.ToArray(),
                 voicing = voicing_pred?.ToArray(),
                 tension = tension_pred?.ToArray(),
+                frameMs = frameMs,
+                headFrames = headFrames,
+                tailFrames = tailFrames,
+                totalFrames = totalFrames,
             };
         }
 

@@ -105,9 +105,7 @@ namespace OpenUtau.Core.DiffSinger
         }
         
         public RenderPitchResult Process(RenderPhrase phrase){
-            var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs)
-                - DiffSingerUtils.GetHeadMs(phrase);
-            var endMs = phrase.notes[^1].endMs + DiffSingerUtils.GetTailMs(phrase);
+            var startMs = phrase.phones[0].positionMs - DiffSingerUtils.GetHeadMs(frameMs);
             int headFrames = DiffSingerUtils.headFrames;
             int tailFrames = DiffSingerUtils.tailFrames;
             //Check if all phonemes are defined in dsdict.yaml (for their types)
@@ -125,11 +123,7 @@ namespace OpenUtau.Core.DiffSinger
                 .Append("SP")
                 .Select(x => (Int64)PhonemeTokenize(x))
                 .ToArray();
-            var ph_dur = phrase.phones
-                .Select(p=>(int)Math.Round(p.endMs/frameMs) - (int)Math.Round(p.positionMs/frameMs))
-                .Prepend(headFrames)
-                .Append(tailFrames)
-                .ToArray();
+            var ph_dur = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames);
             int totalFrames = ph_dur.Sum();
             linguisticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
                 new DenseTensor<Int64>(tokens, new int[] { tokens.Length }, false)
@@ -199,16 +193,11 @@ namespace OpenUtau.Core.DiffSinger
             //Pitch Predictor   
             var note_rest = new List<bool>{true};
             bool prevNoteRest = true;
-            int phIndex = 0;
             foreach(var note in phrase.notes) {
                 //Slur notes follow the previous note's rest status
                 if(note.lyric.StartsWith("+")) {
                     note_rest.Add(prevNoteRest);
                     continue;
-                }
-                //find all the phonemes in the note's time range
-                while(phIndex<phrase.phones.Length && phrase.phones[phIndex].endMs<=note.endMs) {
-                    phIndex++;
                 }
                 var phs = phrase.phones
                     .SkipWhile(ph => ph.end <= note.position + 1)
@@ -221,10 +210,12 @@ namespace OpenUtau.Core.DiffSinger
                 note_rest.Add(isRest);
                 prevNoteRest = isRest;
             }
+            note_rest.Add(true);
 
             var note_midi = phrase.notes
                 .Select(n=>(float)n.adjustedTone)
                 .Prepend((float)phrase.notes[0].adjustedTone)
+                .Append((float)phrase.notes[^1].adjustedTone)
                 .ToArray();
             //get the index of groups of consecutive rest notes
             var restGroups = new List<Tuple<int,int>>();
@@ -236,40 +227,41 @@ namespace OpenUtau.Core.DiffSinger
                 i = j;
             }
             //Set tone for each rest group
-            foreach(var restGroup in restGroups){
-                if(restGroup.Item1 == 0 && restGroup.Item2 == note_rest.Count){
-                    //If All the notes are rest notes, don't set tone
-                    break;
-                }
-                if(restGroup.Item1 == 0){
-                    //If the first note is a rest note, set the tone to the tone of the first non-rest note
-                    SetRange<float>(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
-                } else if(restGroup.Item2 == note_rest.Count){
-                    //If the last note is a rest note, set the tone to the tone of the last non-rest note
-                    SetRange<float>(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count);
-                } else {
-                    //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
-                    SetRange<float>(note_midi, 
-                        note_midi[restGroup.Item1-1], 
-                        restGroup.Item1, 
-                        (restGroup.Item1 + restGroup.Item2 + 1)/2
-                    );
-                    SetRange<float>(note_midi, 
-                        note_midi[restGroup.Item2], 
-                        (restGroup.Item1 + restGroup.Item2 + 1)/2, 
-                        restGroup.Item2
-                    );
+            if (note_rest.All(rest => rest)) {
+                Array.Fill(note_midi, 60f);
+            } else {
+                foreach(var restGroup in restGroups){
+                    if(restGroup.Item1 == 0){
+                        //If the first note is a rest note, set the tone to the tone of the first non-rest note
+                        SetRange<float>(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
+                    } else if(restGroup.Item2 == note_rest.Count){
+                        //If the last note is a rest note, set the tone to the tone of the last non-rest note
+                        SetRange<float>(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count);
+                    } else {
+                        //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
+                        SetRange<float>(note_midi,
+                            note_midi[restGroup.Item1-1],
+                            restGroup.Item1,
+                            (restGroup.Item1 + restGroup.Item2 + 1)/2
+                        );
+                        SetRange<float>(note_midi,
+                            note_midi[restGroup.Item2],
+                            (restGroup.Item1 + restGroup.Item2 + 1)/2,
+                            restGroup.Item2
+                        );
+                    }
                 }
             }
 
-            //use the delta of the positions of the next note and the current note
-            //to prevent incorrect timing when there is a small space between two notes
-            var note_dur = phrase.notes.Zip(phrase.notes.Skip(1),
-                    (curr,next)=> (int)Math.Round(next.positionMs/frameMs) - (int)Math.Round(curr.positionMs/frameMs))
-                .Prepend((int)Math.Round(phrase.notes[0].positionMs/frameMs) - (int)Math.Round(startMs/frameMs))
-                .Append(0)
+            var noteDurMs = phrase.notes
+                .Select(note => note.durationMs)
+                .Prepend(Math.Max(0, phrase.notes[0].positionMs - startMs))
+                .Append(DiffSingerUtils.GetTailMs(frameMs))
+                .ToArray();
+            var note_dur = DiffSingerUtils.FitDurationSum(
+                    DiffSingerUtils.DurationsMsToFrames(noteDurMs, frameMs),
+                    totalFrames)
                 .ToList();
-            note_dur[^1]=totalFrames-note_dur.Sum();
             var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();
             var retake = Enumerable.Repeat(true, totalFrames).ToArray();
             var pitchInputs = new List<NamedOnnxValue>();
