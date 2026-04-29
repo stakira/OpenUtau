@@ -1540,6 +1540,13 @@ namespace OpenUtau.App.Controls {
                         return true;
                     }
                     break;
+                case Key.Oem2:
+                case Key.Divide:
+                    if (isNone) {
+                        notesVm.ShowDictionaryEditor = !notesVm.ShowDictionaryEditor;
+                        return true;
+                    }
+                    break;
                 #endregion
                 #region navigate keys
                 // NAVIGATE/EDIT/SELECT HANDLERS

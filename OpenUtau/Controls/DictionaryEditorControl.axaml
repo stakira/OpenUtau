@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OpenUtau.App.Controls.DictionaryEditorControl"
+             x:Name="DictControl"
+             Width="400">
+
+  <Grid Margin="10" RowDefinitions="Auto, *" DataContext="{Binding ViewModel, ElementName=DictControl}">
+
+    <Expander Grid.Row="0" Header="{DynamicResource dict.setup}" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,5">
+      <Grid ColumnDefinitions="50,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="10,5">
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource dict.file}" VerticalAlignment="Center" Margin="0,5"/>
+        <DockPanel Grid.Row="0" Grid.Column="1" Margin="0,5">
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="2" Margin="5,0,0,0">
+            <Button Command="{Binding ToggleConfirmDeletePanel}" Padding="6,2" ToolTip.Tip="{DynamicResource dict.file.delete.tooltip}">-</Button>
+            <Button Command="{Binding ToggleNewFilePanel}" Padding="6,2" ToolTip.Tip="{DynamicResource dict.file.new.tooltip}">+</Button>
+            <Button Click="OnRefreshClicked" Padding="6,2" ToolTip.Tip="{DynamicResource dict.file.refresh.tooltip}">↻</Button>
+          </StackPanel>
+          <ComboBox ItemsSource="{Binding AvailableFiles}" SelectedItem="{Binding SelectedFile}" HorizontalAlignment="Stretch" PlaceholderText="{DynamicResource dict.file.none}"/>
+        </DockPanel>
+
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsCreatingNewFile}" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,5,0,5">
+          <StackPanel Spacing="5">
+            <TextBlock Text="{DynamicResource dict.file.new.title}" FontWeight="Bold" FontSize="12"/>
+            <TextBox Text="{Binding NewFileName}" Watermark="{DynamicResource dict.file.new.filename}"/>
+            <Button Command="{Binding ConfirmNewFile}" Content="{DynamicResource dict.file.new.create}" ToolTip.Tip="{DynamicResource dict.file.new.create.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsConfirmingDelete}" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,5,0,5">
+          <Border.BorderBrush>
+            <SolidColorBrush Color="{DynamicResource AccentColor2}" />
+          </Border.BorderBrush>
+          <StackPanel Spacing="5">
+            <TextBlock Text="{DynamicResource dict.file.delete.title}" FontWeight="Bold" FontSize="12">
+              <TextBlock.Foreground>
+                <SolidColorBrush Color="{DynamicResource AccentColor2}" />
+              </TextBlock.Foreground>
+            </TextBlock>
+            <WrapPanel Margin="0,0,0,5">
+              <TextBlock Text="{DynamicResource dict.file.delete.confirm}" FontSize="11" Margin="0,0,4,0"/>
+              <TextBlock Text="{Binding SelectedFile}" FontSize="11" FontWeight="Bold"/>
+            </WrapPanel>
+            <Grid ColumnDefinitions="*,*">
+              <Button Grid.Column="0" Command="{Binding ToggleConfirmDeletePanel}" Content="{DynamicResource dict.cancel}" Margin="0,0,2,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+              <Button Grid.Column="1" Command="{Binding ConfirmDeleteFile}" Content="{DynamicResource dict.delete}" Margin="2,0,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <Button.Background>
+                  <SolidColorBrush Color="{DynamicResource AccentColor3}" />
+                </Button.Background>
+              </Button>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{DynamicResource dict.object}" VerticalAlignment="Center" Margin="0,5"/>
+        <DockPanel Grid.Row="3" Grid.Column="1" Margin="0,0">
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="2" Margin="5,0,0,0">
+            <Button Command="{Binding DeleteSelectedCategory}" Padding="6,2" ToolTip.Tip="{DynamicResource dict.object.delete.tooltip}">-</Button>
+            <Button Command="{Binding ToggleNewCategoryPanel}" Padding="6,2" ToolTip.Tip="{DynamicResource dict.object.new.tooltip}">+</Button>
+            <Button Command="{Binding ToggleManageColumnsPanel}" Content="{DynamicResource dict.cols.manage}" Padding="6,2" ToolTip.Tip="{DynamicResource dict.cols.manage.tooltip}"/>
+          </StackPanel>
+          <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" HorizontalAlignment="Stretch">
+            <ComboBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Name}" /></DataTemplate></ComboBox.ItemTemplate>
+          </ComboBox>
+        </DockPanel>
+
+        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsCreatingNewCategory}" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,5,0,5">
+          <StackPanel Spacing="5">
+            <TextBlock Text="{DynamicResource dict.object.new.title}" FontWeight="Bold" FontSize="12"/>
+            <TextBox Text="{Binding NewCategoryName}" Watermark="{DynamicResource dict.object.new.name}"/>
+            <TextBox Text="{Binding NewCategoryColumns}" Watermark="{DynamicResource dict.object.new.columns}"/>
+            <Button Command="{Binding ConfirmNewCategory}" Content="{DynamicResource dict.object.new.create}" ToolTip.Tip="{DynamicResource dict.object.new.create.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsManagingColumns}" Background="{DynamicResource SystemControlBackgroundAltHighBrush}" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="1" CornerRadius="4" Padding="8" Margin="0,5,0,5">
+          <StackPanel Spacing="5">
+            <TextBlock Text="{DynamicResource dict.cols.manage.title}" FontWeight="Bold" FontSize="12"/>
+            <TextBox Text="{Binding ManageColumnName}" Watermark="{DynamicResource dict.cols.manage.name}"/>
+            <Grid ColumnDefinitions="*,*">
+              <Button Grid.Column="0" Command="{Binding AddNewColumn}" Content="{DynamicResource dict.add}" ToolTip.Tip="{DynamicResource dict.add.tooltip}" Margin="0,0,2,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+              <Button Grid.Column="1" Command="{Binding RemoveColumn}" Content="{DynamicResource dict.remove}" ToolTip.Tip="{DynamicResource dict.remove.tooltip}" Margin="2,0,0,0" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"/>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="*,*" Margin="0,10,0,0">
+          <Button Grid.Column="0" Click="OnOpenFileClicked" Content="{DynamicResource dict.file.open}" ToolTip.Tip="{DynamicResource dict.file.open.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,2,0"/>
+          <Button Grid.Column="1" Command="{Binding SaveYaml}" Content="{DynamicResource dict.file.save}" ToolTip.Tip="{DynamicResource dict.file.save.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,0"/>
+        </Grid>
+
+      </Grid>
+    </Expander>
+
+    <Expander Grid.Row="1" Header="{DynamicResource dict.editor}" IsExpanded="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0">
+      <Grid RowDefinitions="*, Auto">
+
+        <DataGrid Grid.Row="0" x:Name="EditorGrid" ItemsSource="{Binding SelectedCategory.Rows}"
+                  SelectedItem="{Binding SelectedRow}"
+                  AutoGenerateColumns="False" GridLinesVisibility="All" Margin="10,5"
+                  CanUserResizeColumns="True">
+          <DataGrid.Styles>
+            <Style Selector="DataGridColumnHeader">
+              <Setter Property="FontWeight" Value="Bold"/>
+            </Style>
+          </DataGrid.Styles>
+        </DataGrid>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="5,0,5,5">
+          <Button Grid.Column="0" Command="{Binding DeleteSelectedRow}" Content="{DynamicResource dict.entry.delete}" ToolTip.Tip="{DynamicResource dict.entry.delete.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,2,0"/>
+          <Button Grid.Column="1" Command="{Binding AddNewRow}" Content="{DynamicResource dict.entry.add}" ToolTip.Tip="{DynamicResource dict.entry.add.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,0"/>
+        </Grid>
+
+      </Grid>
+    </Expander>
+
+  </Grid>
+</UserControl>
