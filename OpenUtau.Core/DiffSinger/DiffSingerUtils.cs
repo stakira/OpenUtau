@@ -65,6 +65,50 @@ namespace OpenUtau.Core.DiffSinger {
                 frameMs);
         }
 
+        public static (Int64[] wordDiv, Int64[] wordDur) PaddedWordDivAndDur(
+            RenderPhrase phrase, int[] phDur, Func<string, bool> isVowel) {
+            if (phrase.phones.Length == 0) {
+                throw new InvalidDataException("DiffSinger word mode requires at least one phoneme.");
+            }
+            if (phDur.Length != phrase.phones.Length + 2) {
+                throw new InvalidDataException(
+                    $"DiffSinger word mode duration length mismatch: {phDur.Length} durations for {phrase.phones.Length + 2} padded tokens.");
+            }
+
+            var vowelIds = Enumerable.Range(0, phrase.phones.Length)
+                .Where(i => isVowel(phrase.phones[i].phoneme))
+                .ToArray();
+            if (vowelIds.Length == 0) {
+                vowelIds = new int[] { phrase.phones.Length - 1 };
+            }
+
+            var wordDiv = vowelIds.Zip(vowelIds.Skip(1), (a, b) => (Int64)(b - a))
+                .Prepend(vowelIds[0] + 1)
+                .Append(phrase.phones.Length - vowelIds[^1] + 1)
+                .ToArray();
+
+            if (wordDiv.Any(d => d <= 0)) {
+                throw new InvalidDataException("DiffSinger word mode generated an empty word division.");
+            }
+            if (wordDiv.Sum() != phDur.Length) {
+                throw new InvalidDataException(
+                    $"DiffSinger word mode division mismatch: word_div sums to {wordDiv.Sum()} for {phDur.Length} padded tokens.");
+            }
+
+            var wordDur = new Int64[wordDiv.Length];
+            int offset = 0;
+            for (int i = 0; i < wordDiv.Length; ++i) {
+                int length = (int)wordDiv[i];
+                wordDur[i] = phDur.Skip(offset).Take(length).Sum();
+                offset += length;
+            }
+            if (wordDur.Sum() != phDur.Sum()) {
+                throw new InvalidDataException(
+                    $"DiffSinger word mode duration mismatch: word_dur sums to {wordDur.Sum()} for {phDur.Sum()} phone frames.");
+            }
+            return (wordDiv, wordDur);
+        }
+
         public static int[] FitDurationSum(int[] durations, int totalFrames) {
             if (durations.Length == 0) {
                 return durations;
