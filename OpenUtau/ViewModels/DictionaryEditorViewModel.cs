@@ -51,6 +51,11 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool IsConfirmingDelete { get; set; } = false;
         [Reactive] public bool IsCreatingNewFile { get; set; } = false;
         [Reactive] public string NewFileName { get; set; } = string.Empty;
+        public Action? RefreshIndices { get; set; }
+        [Reactive] public string? ReplaceColumn { get; set; }
+        [Reactive] public string FindText { get; set; } = string.Empty;
+        [Reactive] public string ReplaceText { get; set; } = string.Empty;
+        [Reactive] public bool UseRegex { get; set; } = false;
 
         public DictionaryEditorViewModel() {
             this.WhenAnyValue(x => x.SelectedFile)
@@ -62,7 +67,72 @@ namespace OpenUtau.App.ViewModels {
                     }
                 });
         }
+        public void ExecuteFind() {
+            if (SelectedCategory == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
 
+            int startIndex = 0;
+            if (SelectedRow != null) {
+                startIndex = SelectedCategory.Rows.IndexOf(SelectedRow) + 1;
+            }
+
+            // Loop through all rows, wrapping around to the top if necessary
+            for (int i = 0; i < SelectedCategory.Rows.Count; i++) {
+                int index = (startIndex + i) % SelectedCategory.Rows.Count;
+                var row = SelectedCategory.Rows[index];
+                string currentVal = row[ReplaceColumn];
+
+                if (string.IsNullOrEmpty(currentVal)) continue;
+
+                bool isMatch = false;
+                if (UseRegex) {
+                    try {
+                        isMatch = System.Text.RegularExpressions.Regex.IsMatch(currentVal, FindText);
+                    } catch { }
+                } else {
+                    isMatch = currentVal.Contains(FindText);
+                }
+
+                if (isMatch) {
+                    SelectedRow = row;
+                    return; 
+                }
+            }
+        }
+
+        public void ExecuteReplace() {
+            if (SelectedCategory == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
+
+            if (SelectedRow != null) {
+                // If a row is selected, ONLY replace the text in that specific row
+                string currentVal = SelectedRow[ReplaceColumn];
+                if (!string.IsNullOrEmpty(currentVal)) {
+                    if (UseRegex) {
+                        try {
+                            SelectedRow[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText);
+                        } catch { }
+                    } else {
+                        SelectedRow[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
+                    }
+                }
+                
+                // Optional: Automatically jump to the next match after replacing!
+                ExecuteFind(); 
+            } else {
+                // If nothing is selected, replace ALL occurrences in the column
+                foreach (var row in SelectedCategory.Rows) {
+                    string currentVal = row[ReplaceColumn];
+                    if (string.IsNullOrEmpty(currentVal)) continue;
+
+                    if (UseRegex) {
+                        try {
+                            row[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText);
+                        } catch { }
+                    } else {
+                        row[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
+                    }
+                }
+            }
+        }
         public void ToggleNewFilePanel() {
             IsCreatingNewFile = !IsCreatingNewFile;
             IsCreatingNewCategory = false;
@@ -203,20 +273,29 @@ namespace OpenUtau.App.ViewModels {
                 if (index >= 0) {
                     SelectedCategory.Rows.Insert(index + 1, newRow);
                     SelectedRow = newRow;
+                    RefreshIndices?.Invoke(); 
                     return;
                 }
             }
             // Otherwise, just drop it at the bottom
             SelectedCategory.Rows.Add(newRow);
             SelectedRow = newRow;
+            RefreshIndices?.Invoke(); 
         }
 
-        public void DeleteSelectedRow() {
-            if (SelectedCategory != null && SelectedRow != null) {
+        public void DeleteSelectedRow(object? parameter) {
+            if (SelectedCategory == null) return;
+            if (parameter is System.Collections.IList selectedItems && selectedItems.Count > 0) {
+                var itemsToDelete = selectedItems.Cast<DynamicYamlRow>().ToList();
+                foreach (var item in itemsToDelete) {
+                    SelectedCategory.Rows.Remove(item);
+                }
+            }
+            else if (SelectedRow != null) {
                 SelectedCategory.Rows.Remove(SelectedRow);
             }
+            RefreshIndices?.Invoke();
         }
-
         public void SetSingerContext(string dir, Dictionary<string, string> fileMap) {
             _currentDirectory = dir;
             _filePaths = fileMap;

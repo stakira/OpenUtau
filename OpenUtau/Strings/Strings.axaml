@@ -497,7 +497,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.snapdiv">Snap Division</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
-  <system:String x:Key="pianoroll.toggle.dictionary">Toggle Dictionary Editor (/)</system:String>
+  <system:String x:Key="pianoroll.toggle.dictionary">View Dictionary Editor (/)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>
@@ -866,4 +866,17 @@ General
   <system:String x:Key="dict.entry.delete.tooltip">Deletes the selected row</system:String>
   <system:String x:Key="dict.entry.add">Add Entry</system:String>
   <system:String x:Key="dict.entry.add.tooltip">Adds a new blank row</system:String>
+  <system:String x:Key="dict.replace.title">Find &amp; Replace</system:String>
+  <system:String x:Key="dict.replace.column">Target Column:</system:String>
+  <system:String x:Key="dict.replace.column.tooltip">Select the column to search in</system:String>
+  <system:String x:Key="dict.replace.find">Find...</system:String>
+  <system:String x:Key="dict.replace.find.tooltip">Text to search for</system:String>
+  <system:String x:Key="dict.replace.replace">Replace With...</system:String>
+  <system:String x:Key="dict.replace.replace.tooltip">Text to replace the found text with</system:String>
+  <system:String x:Key="dict.replace.regex">Use Regular Expressions (Regex)</system:String>
+  <system:String x:Key="dict.replace.regex.tooltip">Enable to use Regular Expressions for searching</system:String>
+  <system:String x:Key="dict.replace.findbtn">Find Next</system:String>
+  <system:String x:Key="dict.replace.findbtn.tooltip">Find and highlight the next occurrence</system:String>
+  <system:String x:Key="dict.replace.replacebtn">Replace</system:String>
+  <system:String x:Key="dict.replace.replacebtn.tooltip">Replace the highlighted occurrence, or replace ALL if nothing is selected</system:String>
 </ResourceDictionary>

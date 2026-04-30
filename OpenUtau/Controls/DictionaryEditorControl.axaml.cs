@@ -6,6 +6,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Interactivity;
+using Avalonia.Input;
+using Avalonia.VisualTree;
+using Avalonia.Threading;
+using Avalonia.Controls.Primitives;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -37,6 +41,33 @@ namespace OpenUtau.App.Controls {
             };
 
             this.Loaded += (s, e) => LoadDictionaryForPart(Part);
+        }
+        private void EditorGrid_LoadingRow(object? sender, Avalonia.Controls.DataGridRowEventArgs e) {
+            e.Row.Header = (e.Row.Index + 1).ToString();
+        }
+        private void EditorGrid_SelectionChanged(object? sender, Avalonia.Controls.SelectionChangedEventArgs e) {
+            if (EditorGrid.SelectedItem != null) {
+                EditorGrid.ScrollIntoView(EditorGrid.SelectedItem, null);
+            }
+        }
+        private void EditorGrid_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) {
+            if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed) {
+                EditorGrid.SelectedItem = null;
+            }
+        }
+        protected override void OnDataContextChanged(EventArgs e) {
+            base.OnDataContextChanged(e);
+            
+            if (this.DataContext is DictionaryEditorViewModel vm) {
+                vm.RefreshIndices = () => {
+                    Dispatcher.UIThread.Post(() => {
+                        var rows = EditorGrid.GetVisualDescendants().OfType<Avalonia.Controls.DataGridRow>();
+                        foreach (var row in rows) {
+                            row.Header = (row.Index + 1).ToString();
+                        }
+                    }, DispatcherPriority.Background);
+                };
+            }
         }
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
