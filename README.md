@@ -1,86 +1,80 @@
+# OpenUtau (DELTA SYNTH Edition)
 
-# OpenUtau
+**OpenUtau** คือโปรแกรมแก้ไขเสียงร้อง (Editor) แบบโอเพนซอร์สและใช้งานฟรี ที่ถูกสร้างขึ้นมาเพื่อยกระดับประสบการณ์ของผู้ใช้งานในชุมชน UTAU ให้ทันสมัยและมีประสิทธิภาพสูงสุด
 
-OpenUtau is a free, open-source editor made for the UTAU community.
-
-[![Build](https://img.shields.io/github/actions/workflow/status/stakira/OpenUtau/build.yml?style=for-the-badge)](https://github.com/stakira/OpenUtau/actions/workflows/build.yml)
+[![สถานะการสร้าง](https://img.shields.io/github/actions/workflow/status/stakira/OpenUtau/build.yml?style=for-the-badge)](https://github.com/stakira/OpenUtau/actions/workflows/build.yml)
 [![Discord](https://img.shields.io/discord/551606189386104834?style=for-the-badge&label=discord&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/UfpMnqMmEM)
-[![QQ Qroup](https://img.shields.io/badge/QQ-485658015-blue?style=for-the-badge)](https://qm.qq.com/cgi-bin/qm/qr?k=8EtEpehB1a-nfTNAnngTVqX3o9xoIxmT&jump_from=webapi)
-[![Trello](https://img.shields.io/badge/trello-go-blue?style=for-the-badge&logo=trello)](https://trello.com/b/93ANoCIV/openutau)
+[![Made And Checked By](https://img.shields.io/badge/Made%20And%20Checked%20By-DELTA%20SYNTH%20%26%20Gemini%20AI-blueviolet?style=for-the-badge)](https://github.com/stakira/OpenUtau)
 
-## Getting started
+## การเริ่มต้นใช้งาน (Getting Started)
 
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x64.zip)</br>
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x86&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x86.zip)</br>
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=macos-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-osx-x64.dmg)</br>
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=linux-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-linux-x64.tar.gz)
+คุณสามารถดาวน์โหลดเวอร์ชันล่าสุดสำหรับระบบปฏิบัติการต่างๆ ได้ที่นี่:
 
-It is **strongly recommended** that you read these Github wiki pages before using the software.
-- [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
-- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers-and-Wavtools)
-- [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
-- [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
+*   **Windows:** [ดาวน์โหลด x64](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x64.zip) | [ดาวน์โหลด x86](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-win-x86.zip)
+*   **macOS:** [ดาวน์โหลด DMG (x64)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-osx-x64.dmg)
+*   **Linux:** [ดาวน์โหลด tar.gz (x64)](https://github.com/stakira/OpenUtau/releases/latest/download/OpenUtau-linux-x64.tar.gz)
 
-- [中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+> **ข้อแนะนำสำคัญ:** เพื่อการใช้งานที่สมบูรณ์แบบที่สุด ผมขอแนะนำให้คุณศึกษาคู่มือผ่าน [Github Wiki](https://github.com/stakira/OpenUtau/wiki) โดยเฉพาะหัวใจหลักอย่าง **Phonemizers** และ **Resamplers** ครับ
 
-## How to contribute
+---
 
-Tried OpenUtau and not satisfied? Don't just walk away! You can help:
-- Report issues on our [Discord server](https://discord.gg/UfpMnqMmEM) or Github.
-- Suggest features on Discord or Github.
-- Add or update translations for your language on [Crowdin](https://crowdin.com/project/oxygen-dioxideopenutau).
+## คุณสมบัติหลักที่น่าสนใจ (Main Features)
 
-Know how to code? Got an idea for an improvement? Don't keep it to yourself!
-- Contribute fixes via pull requests.
-- Check out the development roadmap on [Trello](https://trello.com/b/93ANoCIV/openutau) and discuss it on Discord.
+*   **ประสบการณ์การใช้งานที่ทันสมัย:** อินเทอร์เฟซถูกออกแบบมาให้ลื่นไหล รองรับการซูมและเคลื่อนที่ด้วยเมาส์และ Scroll Wheel อย่างเป็นธรรมชาติ
+*   **เครื่องมือปรับแต่งเสียงที่ครบครัน:** 
+    *   **MIDI Editor:** จัดการโน้ตและนำเข้าไฟล์ VSQX (Vocaloid 4) ได้อย่างง่ายดาย
+    *   **Vibrato Editor:** สร้างลูกเอื้อนที่มีเอกลักษณ์และถ่ายทอดอารมณ์ได้ชัดเจน
+    *   **Expressions:** ใช้ระบบการปรับแต่งแทนที่ "Flags" แบบเดิม ช่วยให้การจูนเสียงมีความละเอียดสูง (คล้ายกับโปรแกรมระดับอาชีพอย่าง WORLDLINE-R)
+*   **ระบบ Phonemizer อัจฉริยะ:** รองรับระบบการร้องหลากหลายรูปแบบ เช่น **VCCV**, CVVC, และ Arpasing ครอบคลุมหลายภาษา รวมถึงภาษาไทยที่เรากำลังพัฒนากันอยู่
+*   **เทคโนโลยี Pre-rendering:** ระบบจะทำการประมวลผลเสียงล่วงหน้า ทำให้คุณสามารถฟังพรีวิวระหว่างการปรับจูนได้ทันทีโดยไม่ต้องรอ Render นานๆ
+*   **การรองรับ AI:** รองรับนักร้องระบบ **ENUNU (NNSVS)** และเทคโนโลยีใหม่ๆ ในอนาคต
 
-## Plugin development
+---
 
-Want to contribute plugins to help other users? Check out our API documentation:
-- [Editing Macros API Document](OpenUtau.Core/Editing/README.md)
-- [Phonemizers API Document](OpenUtau.Core/Api/README.md)
+## สรุปภาพรวมความสามารถ (All Features)
 
-## Main features
+| คุณสมบัติ | รายละเอียด |
+| :--- | :--- |
+| **การรองรับภาษา** | UI ภาษาไทยและภาษาอื่นๆ ทั่วโลก ไม่ต้องเปลี่ยน System Locale |
+| **ความเข้ากันได้** | รองรับการใช้งานร่วมกับ Resampler ของ UTAU เกือบทั้งหมด |
+| **ระบบปลั๊กอิน** | มี API ที่เปิดกว้างสำหรับนักพัฒนาในการสร้าง Macros และ Phonemizers |
+| **การทำงานข้ามแพลตฟอร์ม** | ทำงานได้สมบูรณ์แบบทั้งบน Windows, macOS และ Linux |
 
-Navigate the interface naturally and fluently using the mouse and scroll wheel. Keyboard shortcuts are also available.
+---
 
-![Editor](Misc/GIFs/editor.gif)
+## การมีส่วนร่วมและการพัฒนา (How to Contribute)
 
-Easily create songs and covers using the feature-rich MIDI editor.
+หากคุณต้องการเป็นส่วนหนึ่งของการพัฒนาโปรเจกต์นี้:
+1.  **รายงานปัญหา:** แจ้งบั๊กผ่านทาง Discord หรือ GitHub Issues
+2.  **เสนอแนะฟีเจอร์:** ร่วมพูดคุยแนวทางการพัฒนากับทีมงาน
+3.  **เขียนโค้ด:** คุณสามารถส่ง Pull Requests เพื่อแก้ไขหรือปรับปรุงประสิทธิภาพของโปรแกรมได้เสมอ
 
-![Editor](Misc/GIFs/editor2.gif)
+---
 
-Create expressive vibratos with the easy-to-use vibrato editor.
+### ไฟล์คำสั่งรันระบบตรวจสอบโปรเจกต์ (.bat)
 
-![Vibrato](Misc/GIFs/vibrato.gif)
+สำหรับเดลต้าที่ต้องการเปิดดูไฟล์เอกสารหรือตรวจสอบความพร้อมของ README ในโฟลเดอร์งานครับ:
+```batch
+@echo off
+:: Made And Checked By DELTA SYNTH & Gemini AI
+title OpenUtau Document Viewer v1.0
 
-Pre-rendering and built-in resamplers let you quickly preview your work.
+:loop
+echo =======================================================
+echo    ระบบตรวจสอบเอกสารโปรเจกต์ (DELTA SYNTH Tools)
+echo =======================================================
+echo [ลากโฟลเดอร์โปรเจกต์ OpenUtau มาที่นี่เพื่อเปิด README]
+set /p folder=Path: 
 
-![Playback](Misc/GIFs/playback.gif)
+set folder=%folder:"=%
 
-See the [Getting-Started Wiki page](https://github.com/stakira/OpenUtau/wiki/Getting-Started) for more!
+if exist "%folder%\README.md" (
+    echo [สถานะ] ตรวจพบไฟล์เอกสาร กำลังเปิดด้วยโปรแกรมแก้ไข...
+    start "" "%folder%\README.md"
+) else (
+    echo [ข้อผิดพลาด] ไม่พบไฟล์ README.md ในที่อยู่ที่ระบุ
+)
 
-## All features
-- Modern user experience.
-- Easy navigation using the mouse and keyboard.
-- Feature-rich MIDI editor.
-  - Support for importing VSQX (Vocaloid 4) tracks.
-- Selective backward compatibility with UTAU.
-  - OpenUtau aims to solve problems with fewer steps. It is not designed to replicate UTAU features exactly.
-- Extensible real-time phonetic editing.
-  - Includes phonemizers for different phonetic systems (VCV, CVVC, Arpasing, etc.) in many different languages (English, Japanese, Chinese, Korean, Russian and more).
-- Expressions replace the standard UTAU "flags" for tuning.
-  - The built-in WORLDLINE-R resampler supports curve tuning, similar to many vocal synth editors.
-- Internationalisation, including UI translation and file system encoding support.
-  - Unlike UTAU, there is no need to change your system locale to use OpenUtau.
-- Smooth preview/rendering experience.
-  - Pre-rendering allows OpenUtau to render vocals before playback, saving time during editing and tuning.
-- Supports ENUNU AI singers. See the [ENUNU wiki page](https://github.com/stakira/OpenUtau/wiki/ENUNU-NNSVS-Support) for more info.
-- Easy-to-use plugin system.
-- Versatile resampling engine interface.
-  - Compatible with most UTAU resamplers.
-- Runs on Windows (32/64 bit), macOS, and Linux.
-
-### What it doesn't do
-- While OpenUtau can do very minimal mixing, it will not replace your digital audio workstation of choice.
-- OpenUtau does not aim for Vocaloid compatibility, except for some limited features.
+echo.
+echo -------------------------------------------------------
+goto loop
