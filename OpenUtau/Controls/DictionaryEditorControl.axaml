@@ -7,7 +7,7 @@
   <Grid Margin="10" RowDefinitions="Auto, Auto, *" DataContext="{Binding ViewModel, ElementName=DictControl}">
 
     <Expander Grid.Row="0" Header="{DynamicResource dict.setup}" IsExpanded="True" HorizontalAlignment="Stretch" Margin="0,0,0,5">
-      <Grid ColumnDefinitions="50,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="10,5">
+      <Grid ColumnDefinitions="50,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="6,6">
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource dict.file}" VerticalAlignment="Center" Margin="0,5"/>
         <DockPanel Grid.Row="0" Grid.Column="1" Margin="0,5">
@@ -113,7 +113,7 @@
     </Expander>
 
     <Expander Grid.Row="1" BorderThickness="0" Header="{DynamicResource dict.replace.title}" IsExpanded="False" HorizontalAlignment="Stretch" Margin="0,0,0,5">
-      <Grid Margin="10,5">
+      <Grid Margin="6,6">
         <StackPanel Spacing="5">
           
           <DockPanel>
@@ -148,18 +148,32 @@
 
         <DataGrid Grid.Row="0" x:Name="EditorGrid" ItemsSource="{Binding SelectedCategory.Rows}"
                   SelectedItem="{Binding SelectedRow}"
-                  AutoGenerateColumns="False" GridLinesVisibility="All" Margin="10,5"
+                  AutoGenerateColumns="False" GridLinesVisibility="All" Margin="6,6"
                   CanUserResizeColumns="True"
                   HeadersVisibility="All"
                   LoadingRow="EditorGrid_LoadingRow"
-                  SelectionChanged="EditorGrid_SelectionChanged"
-                  PointerPressed="EditorGrid_PointerPressed">
+                  SelectionChanged="EditorGrid_SelectionChanged">
                   
           <DataGrid.Styles>
             <Style Selector="DataGridColumnHeader">
               <Setter Property="FontWeight" Value="Bold"/>
             </Style>
           </DataGrid.Styles>
+
+          <DataGrid.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="{DynamicResource dict.menu.deselect}" Command="{Binding DeselectAll}" InputGesture="Escape"/>
+              <Separator/>
+              <MenuItem Header="{DynamicResource dict.entry.delete}" Command="{Binding DeleteSelectedRow}"/>
+              <MenuItem Header="{DynamicResource dict.entry.add}" Command="{Binding AddNewRow}"/>
+
+              <Separator/>
+              <MenuItem Header="{DynamicResource dict.menu.cut}" Command="{Binding CutRow}" CommandParameter="{Binding #EditorGrid.SelectedItems}"/>
+              <MenuItem Header="{DynamicResource dict.menu.copy}" Command="{Binding CopyRow}" CommandParameter="{Binding #EditorGrid.SelectedItems}"/>
+              <MenuItem Header="{DynamicResource dict.menu.paste}" Command="{Binding PasteRow}"/>
+            </ContextMenu>
+          </DataGrid.ContextMenu>
+
         </DataGrid>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="5,0,5,5">

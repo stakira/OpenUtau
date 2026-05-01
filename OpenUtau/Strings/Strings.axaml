@@ -884,4 +884,8 @@ General
   <system:String x:Key="dict.replace.findprev.tooltip">Find previous occurrence (Up)</system:String>
   <system:String x:Key="dict.replace.replaceall">Replace All</system:String>
   <system:String x:Key="dict.replace.replaceall.tooltip">Replace every matching occurrence in the column at once</system:String>
+  <system:String x:Key="dict.menu.deselect">Deselect</system:String>
+  <system:String x:Key="dict.menu.cut">Cut</system:String>
+  <system:String x:Key="dict.menu.copy">Copy</system:String>
+  <system:String x:Key="dict.menu.paste">Paste</system:String>
 </ResourceDictionary>

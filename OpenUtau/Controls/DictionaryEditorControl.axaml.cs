@@ -33,11 +33,24 @@ namespace OpenUtau.App.Controls {
             ViewModel.PropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(ViewModel.SelectedCategory)) {
                     RebuildGridColumns(ViewModel.SelectedCategory);
+                    
+                    if (ViewModel.SelectedCategory != null && ViewModel.SelectedCategory.Columns.Count > 0) {
+                        ViewModel.ReplaceColumn = ViewModel.SelectedCategory.Columns[0];
+                    }
                 }
             };
+            
             // Listen for dynamic column additions/removals
             ViewModel.ColumnsChanged += () => {
                 RebuildGridColumns(ViewModel.SelectedCategory);
+                
+                if (ViewModel.SelectedCategory != null && ViewModel.SelectedCategory.Columns.Count > 0) {
+                    if (string.IsNullOrEmpty(ViewModel.ReplaceColumn) || !ViewModel.SelectedCategory.Columns.Contains(ViewModel.ReplaceColumn)) {
+                        ViewModel.ReplaceColumn = ViewModel.SelectedCategory.Columns[0];
+                    }
+                } else {
+                    ViewModel.ReplaceColumn = null;
+                }
             };
 
             this.Loaded += (s, e) => LoadDictionaryForPart(Part);

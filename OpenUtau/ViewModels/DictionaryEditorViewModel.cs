@@ -56,6 +56,53 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string FindText { get; set; } = string.Empty;
         [Reactive] public string ReplaceText { get; set; } = string.Empty;
         [Reactive] public bool UseRegex { get; set; } = false;
+        private List<DynamicYamlRow> _internalClipboard = new();
+
+        public void DeselectAll() {
+            SelectedRow = null;
+        }
+        private DynamicYamlRow CloneRow(DynamicYamlRow original) {
+            var clone = new DynamicYamlRow();
+            if (SelectedCategory != null) {
+                foreach (var col in SelectedCategory.Columns) {
+                    clone[col] = original[col];
+                }
+            }
+            return clone;
+        }
+        public void CopyRow(object? parameter) {
+            _internalClipboard.Clear();
+            if (parameter is System.Collections.IList selectedItems && selectedItems.Count > 0) {
+                foreach (var item in selectedItems.Cast<DynamicYamlRow>()) {
+                    _internalClipboard.Add(CloneRow(item));
+                }
+            } 
+            else if (SelectedRow != null) {
+                _internalClipboard.Add(CloneRow(SelectedRow));
+            }
+        }
+        public void CutRow(object? parameter) {
+            CopyRow(parameter);
+            DeleteSelectedRow(parameter); 
+        }
+
+        public void PasteRow() {
+            if (SelectedCategory == null || _internalClipboard.Count == 0) return;
+            int insertIndex = SelectedCategory.Rows.Count;
+            if (SelectedRow != null) {
+                insertIndex = SelectedCategory.Rows.IndexOf(SelectedRow) + 1;
+            }
+
+            foreach (var copiedItem in _internalClipboard) {
+                var newRow = CloneRow(copiedItem);
+                SelectedCategory.Rows.Insert(insertIndex, newRow);
+                insertIndex++;
+                
+                SelectedRow = newRow;
+            }
+
+            RefreshIndices?.Invoke(); 
+        }
 
         public DictionaryEditorViewModel() {
             this.WhenAnyValue(x => x.SelectedFile)
@@ -210,7 +257,9 @@ namespace OpenUtau.App.ViewModels {
                 AvailableFiles.Add(fileName);
             }
             SelectedFile = fileName;
+            LoadYaml(filePath); 
             ToggleNewFilePanel();
+            NewFileName = string.Empty;
         }
         public void DeleteSelectedFile() {
             if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) return;
