@@ -67,17 +67,24 @@ namespace OpenUtau.App.ViewModels {
                     }
                 });
         }
-        public void ExecuteFind() {
+        private void Find(bool searchUp) {
             if (SelectedCategory == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
 
             int startIndex = 0;
             if (SelectedRow != null) {
-                startIndex = SelectedCategory.Rows.IndexOf(SelectedRow) + 1;
+                startIndex = SelectedCategory.Rows.IndexOf(SelectedRow);
+                startIndex += searchUp ? -1 : 1;
             }
 
-            // Loop through all rows, wrapping around to the top if necessary
-            for (int i = 0; i < SelectedCategory.Rows.Count; i++) {
-                int index = (startIndex + i) % SelectedCategory.Rows.Count;
+            int count = SelectedCategory.Rows.Count;
+            if (count == 0) return;
+
+            // Loop through all rows, wrapping around the top/bottom if necessary
+            for (int i = 0; i < count; i++) {
+                int offset = searchUp ? -i : i;
+                int index = (startIndex + offset) % count;
+                if (index < 0) index += count;
+
                 var row = SelectedCategory.Rows[index];
                 string currentVal = row[ReplaceColumn];
 
@@ -85,9 +92,7 @@ namespace OpenUtau.App.ViewModels {
 
                 bool isMatch = false;
                 if (UseRegex) {
-                    try {
-                        isMatch = System.Text.RegularExpressions.Regex.IsMatch(currentVal, FindText);
-                    } catch { }
+                    try { isMatch = System.Text.RegularExpressions.Regex.IsMatch(currentVal, FindText); } catch { }
                 } else {
                     isMatch = currentVal.Contains(FindText);
                 }
@@ -98,38 +103,56 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
         }
-
-        public void ExecuteReplace() {
+        public void ExecuteFindNext() => Find(searchUp: false);
+        public void ExecuteFindPrevious() => Find(searchUp: true);
+        public void ExecuteFindAll(object? parameter) {
             if (SelectedCategory == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
 
-            if (SelectedRow != null) {
-                // If a row is selected, ONLY replace the text in that specific row
-                string currentVal = SelectedRow[ReplaceColumn];
-                if (!string.IsNullOrEmpty(currentVal)) {
-                    if (UseRegex) {
-                        try {
-                            SelectedRow[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText);
-                        } catch { }
-                    } else {
-                        SelectedRow[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
-                    }
-                }
-                
-                // Optional: Automatically jump to the next match after replacing!
-                ExecuteFind(); 
-            } else {
-                // If nothing is selected, replace ALL occurrences in the column
+            if (parameter is System.Collections.IList selectedItems) {
+                selectedItems.Clear(); // Deselect everything first
+
                 foreach (var row in SelectedCategory.Rows) {
                     string currentVal = row[ReplaceColumn];
                     if (string.IsNullOrEmpty(currentVal)) continue;
 
+                    bool isMatch = false;
                     if (UseRegex) {
-                        try {
-                            row[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText);
-                        } catch { }
+                        try { isMatch = System.Text.RegularExpressions.Regex.IsMatch(currentVal, FindText); } catch { }
                     } else {
-                        row[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
+                        isMatch = currentVal.Contains(FindText);
                     }
+
+                    if (isMatch) {
+                        selectedItems.Add(row);
+                    }
+                }
+            }
+        }
+        public void ExecuteReplace() {
+            if (SelectedCategory == null || SelectedRow == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
+
+            string currentVal = SelectedRow[ReplaceColumn];
+            if (!string.IsNullOrEmpty(currentVal)) {
+                if (UseRegex) {
+                    try { SelectedRow[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText); } catch { }
+                } else {
+                    SelectedRow[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
+                }
+            }
+            
+            ExecuteFindNext();
+        }
+        public void ExecuteReplaceAll() {
+            if (SelectedCategory == null || string.IsNullOrEmpty(ReplaceColumn) || string.IsNullOrEmpty(FindText)) return;
+
+            foreach (var row in SelectedCategory.Rows) {
+                string currentVal = row[ReplaceColumn];
+                if (string.IsNullOrEmpty(currentVal)) continue;
+
+                if (UseRegex) {
+                    try { row[ReplaceColumn] = System.Text.RegularExpressions.Regex.Replace(currentVal, FindText, ReplaceText); } catch { }
+                } else {
+                    row[ReplaceColumn] = currentVal.Replace(FindText, ReplaceText);
                 }
             }
         }

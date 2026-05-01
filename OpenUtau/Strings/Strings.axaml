@@ -879,4 +879,9 @@ General
   <system:String x:Key="dict.replace.findbtn.tooltip">Find and highlight the next occurrence</system:String>
   <system:String x:Key="dict.replace.replacebtn">Replace</system:String>
   <system:String x:Key="dict.replace.replacebtn.tooltip">Replace the highlighted occurrence, or replace ALL if nothing is selected</system:String>
+  <system:String x:Key="dict.replace.findall">Find All</system:String>
+  <system:String x:Key="dict.replace.findall.tooltip">Highlight all matching occurrences</system:String>
+  <system:String x:Key="dict.replace.findprev.tooltip">Find previous occurrence (Up)</system:String>
+  <system:String x:Key="dict.replace.replaceall">Replace All</system:String>
+  <system:String x:Key="dict.replace.replaceall.tooltip">Replace every matching occurrence in the column at once</system:String>
 </ResourceDictionary>
