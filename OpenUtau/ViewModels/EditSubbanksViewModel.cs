@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,17 +10,31 @@ using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
+/*
+ * Made And Checked By DELTA SYNTH & Gemini AI
+ * Original Author: OpenUtau Team & Delta
+ */
+
 namespace OpenUtau.App.ViewModels {
+    /// <summary>
+    /// ตัวแทนข้อมูล Voice Color ที่ประกอบไปด้วยช่วงเสียงต่างๆ
+    /// </summary>
     class VoiceColor : ReactiveObject {
         [Reactive] public string Name { get; set; }
         [Reactive] public ObservableCollectionExtended<VoiceColorRow> Rows { get; set; }
+
         public VoiceColor(string color, List<Subbank> subbanks) {
             Name = color;
             Rows = new ObservableCollectionExtended<VoiceColorRow>();
+            
+            // สร้างช่วงคีย์เปียโน (Midi Note 24 ถึง 107)
             for (int i = 107; i >= 24; --i) {
                 Rows.Add(new VoiceColorRow(i, string.Empty, string.Empty));
             }
+
             foreach (var subbank in subbanks) {
+                if (subbank.ToneRanges == null) continue;
+                
                 foreach (var range in subbank.ToneRanges) {
                     var parts = range.Split('-');
                     if (parts.Length == 1) {
@@ -44,14 +58,18 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public override string ToString() =>
-            string.IsNullOrEmpty(Name) ? "(main)" : Name;
+            string.IsNullOrEmpty(Name) ? "(เสียงหลัก)" : Name;
     }
 
+    /// <summary>
+    /// ข้อมูลแต่ละแถวใน Voice Color (แทนค่าหนึ่งตัวโน้ต)
+    /// </summary>
     class VoiceColorRow : ReactiveObject {
         public readonly int index;
         [Reactive] public string Tone { get; private set; }
         [Reactive] public string Prefix { get; set; }
         [Reactive] public string Suffix { get; set; }
+
         public VoiceColorRow(int index, string prefix, string suffix) {
             this.index = index;
             Tone = MusicMath.GetToneName(index);
@@ -60,7 +78,7 @@ namespace OpenUtau.App.ViewModels {
         }
     }
 
-    class EditSubbanksViewModel : ViewModelBase {
+    public class EditSubbanksViewModel : ViewModelBase {
         [Reactive] public ObservableCollectionExtended<VoiceColor> Colors { get; set; }
         [Reactive] public VoiceColor? SelectedColor { get; set; }
         [Reactive] public bool IsEditableColor { get; set; }
@@ -73,11 +91,14 @@ namespace OpenUtau.App.ViewModels {
 
         public EditSubbanksViewModel() {
             Colors = new ObservableCollectionExtended<VoiceColor>();
+            
+            // ตรวจสอบการเลือก Voice Color เพื่อเปิด/ปิดการแก้ไข
             this.WhenAnyValue(x => x.SelectedColor)
                 .Subscribe(color => {
                     Rows = color?.Rows;
                     IsEditableColor = color != null && !string.IsNullOrEmpty(color.Name);
                 });
+
             Prefix = string.Empty;
             Suffix = string.Empty;
         }
@@ -87,62 +108,62 @@ namespace OpenUtau.App.ViewModels {
             LoadSubbanks();
         }
 
+        /// <summary>
+        /// โหลดข้อมูล Subbank จากตัวนักร้อง (Singer)
+        /// </summary>
         public void LoadSubbanks() {
-            if (Singer == null) {
-                return;
-            }
+            if (Singer == null) return;
+
             try {
                 Colors.Clear();
-                var colors = new Dictionary<string, List<Subbank>>();
+                var colorsMap = new Dictionary<string, List<Subbank>>();
+
                 foreach (var subbank in Singer.Subbanks) {
-                    if (!colors.TryGetValue(subbank.Color ?? string.Empty, out var subbanks)) {
+                    string colorName = subbank.Color ?? string.Empty;
+                    if (!colorsMap.TryGetValue(colorName, out var subbanks)) {
                         subbanks = new List<Subbank>();
-                        colors[subbank.Color ?? string.Empty] = subbanks;
+                        colorsMap[colorName] = subbanks;
                     }
                     subbanks.Add(subbank.subbank);
                 }
-                foreach (var key in colors.Keys.OrderBy(k => k)) {
-                    Colors.Add(new VoiceColor(key, colors[key]));
+
+                foreach (var key in colorsMap.Keys.OrderBy(k => k)) {
+                    Colors.Add(new VoiceColor(key, colorsMap[key]));
                 }
+
                 if (Colors.Count == 0) {
                     Colors.Add(new VoiceColor(string.Empty, new List<Subbank>()));
                 }
+
                 SelectedColor = Colors[0];
             } catch (Exception e) {
-                var customEx = new MessageCustomizableException("Failed to load subbanks", "<translate:errors.failed.load>: subbanks", e);
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                NotifyError("ไม่สามารถโหลดข้อมูล Subbanks ได้", e);
             }
         }
 
         public void AddSubbank(string name) {
-            if (string.IsNullOrEmpty(name)) {
-                return;
-            }
-            if (Colors.Any(color => color.Name == name)) {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(name) || Colors.Any(c => c.Name == name)) return;
+
             var color = new VoiceColor(name, new List<Subbank>());
             Colors.Add(color);
             SelectedColor = color;
         }
 
         public void RemoveSubbank() {
-            if (SelectedColor == null || string.IsNullOrEmpty(SelectedColor.Name)) {
-                return;
-            }
+            if (SelectedColor == null || string.IsNullOrEmpty(SelectedColor.Name)) return;
+
             Colors.Remove(SelectedColor);
-            SelectedColor = Colors[0];
+            SelectedColor = Colors.FirstOrDefault();
         }
 
         public void RenameSubbank(string name) {
-            if (string.IsNullOrEmpty(name) ||
-                string.IsNullOrEmpty(SelectedColor?.Name) ||
-                SelectedColor?.Name == name) {
-                return;
-            }
-            SelectedColor!.Name = name;
+            if (string.IsNullOrWhiteSpace(name) || SelectedColor == null || SelectedColor.Name == name) return;
+            SelectedColor.Name = name;
         }
 
+        /// <summary>
+        /// ตั้งค่า Prefix และ Suffix ให้กับแถวที่เลือก
+        /// </summary>
         public void Set(IList items) {
             foreach (var item in items) {
                 if (item is VoiceColorRow row) {
@@ -152,6 +173,9 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        /// <summary>
+        /// ล้างค่า Prefix และ Suffix ของแถวที่เลือก
+        /// </summary>
         public void Clear(IList items) {
             foreach (var item in items) {
                 if (item is VoiceColorRow row) {
@@ -161,88 +185,88 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        /// <summary>
+        /// บันทึกการตั้งค่า Subbanks ลงในไฟล์ character.yaml
+        /// </summary>
         public void SaveSubbanks() {
-            if (Singer == null) {
-                return;
-            }
-            var yamlFile = Path.Combine(Singer.Location, "character.yaml");
+            if (Singer == null) return;
+
+            var yamlPath = Path.Combine(Singer.Location, "character.yaml");
             VoicebankConfig? bankConfig = null;
+
             try {
-                // Load from character.yaml
-                if (File.Exists(yamlFile)) {
-                    using (var stream = File.OpenRead(yamlFile)) {
-                        bankConfig = VoicebankConfig.Load(stream);
-                    }
+                if (File.Exists(yamlPath)) {
+                    using var stream = File.OpenRead(yamlPath);
+                    bankConfig = VoicebankConfig.Load(stream);
                 }
-            } catch {
-            }
-            if (bankConfig == null) {
-                bankConfig = new VoicebankConfig();
-            }
+            } catch { /* ปล่อยผ่านหากโหลดไฟล์เก่าไม่ได้เพื่อสร้างใหม่ */ }
+
+            bankConfig ??= new VoicebankConfig();
             bankConfig.Subbanks = ColorsToSubbanks();
+
             try {
-                using (var stream = File.Open(yamlFile, FileMode.Create)) {
-                    bankConfig.Save(stream);
-                }
+                using var stream = File.Open(yamlPath, FileMode.Create);
+                bankConfig.Save(stream);
+                LoadSubbanks(); // รีโหลดข้อมูลเพื่อให้ UI อัปเดตล่าสุด
             } catch (Exception e) {
-                var customEx = new MessageCustomizableException("Failed to save subbanks", "<translate:errors.failed.save>: subbanks", e);
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+                NotifyError("ไม่สามารถบันทึกข้อมูล Subbanks ได้", e);
             }
-            LoadSubbanks();
         }
 
         private Subbank[] ColorsToSubbanks() {
             var result = new List<Subbank>();
             foreach (var color in Colors) {
-                var subbanks = new Dictionary<Tuple<string, string>, Subbank>();
-                var toneSets = new Dictionary<Tuple<string, string>, SortedSet<int>>();
+                var subbankGroups = new Dictionary<Tuple<string, string>, SortedSet<int>>();
+
                 foreach (var row in color.Rows) {
                     var key = Tuple.Create(row.Prefix, row.Suffix);
-                    if (!subbanks.TryGetValue(key, out var subbank)) {
-                        subbank = new Subbank() {
-                            Color = color.Name,
-                            Prefix = row.Prefix,
-                            Suffix = row.Suffix,
-                        };
-                        subbanks[key] = subbank;
-                    }
-                    if (!toneSets.TryGetValue(key, out var toneSet)) {
+                    if (!subbankGroups.TryGetValue(key, out var toneSet)) {
                         toneSet = new SortedSet<int>();
-                        toneSets[key] = toneSet;
+                        subbankGroups[key] = toneSet;
                     }
                     toneSet.Add(row.index);
                 }
-                foreach (var pair in subbanks) {
-                    pair.Value.ToneRanges = ToneSetToRanges(toneSets[pair.Key]);
+
+                foreach (var group in subbankGroups) {
+                    result.Add(new Subbank {
+                        Color = color.Name,
+                        Prefix = group.Key.Item1,
+                        Suffix = group.Key.Item2,
+                        ToneRanges = ToneSetToRanges(group.Value)
+                    });
                 }
-                result.AddRange(subbanks.Values);
             }
             return result.ToArray();
         }
 
         private string[] ToneSetToRanges(SortedSet<int> toneSet) {
             var ranges = new List<string>();
-            int start = -1;
-            for (int i = 24; i <= 107; ++i) {
-                if (start < 0) {
-                    if (toneSet.Contains(i)) {
-                        start = i;
-                    }
-                } else {
-                    if (!toneSet.Contains(i)) {
-                        if (i - 1 == start) {
-                            ranges.Add($"{MusicMath.GetToneName(start)}");
-                        } else {
-                            ranges.Add($"{MusicMath.GetToneName(start)}-{MusicMath.GetToneName(i - 1)}");
-                        }
-                        start = -1;
-                    }
+            int? start = null;
+            int last = -1;
+
+            foreach (var tone in toneSet) {
+                if (start == null) {
+                    start = tone;
+                } else if (tone != last + 1) {
+                    ranges.Add(FormatRange(start.Value, last));
+                    start = tone;
                 }
+                last = tone;
             }
-            if (start > 0) {
-                ranges.Add($"{MusicMath.GetToneName(start)}-{MusicMath.GetToneName(107)}");
+
+            if (start != null) {
+                ranges.Add(FormatRange(start.Value, last));
             }
+
             return ranges.ToArray();
+        }
+
+        private string FormatRange(int start, int end) =>
+            start == end ? MusicMath.GetToneName(start) : $"{MusicMath.GetToneName(start)}-{MusicMath.GetToneName(end)}";
+
+        private void NotifyError(string message, Exception e) {
+            var customEx = new MessageCustomizableException(message, $"<translate:errors.failed.generic>: {message}", e);
+            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
         }
     }
 }
