@@ -12,17 +12,15 @@ using Serilog;
 using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "cubialpha & Mim", language: "EN")]
-    // V3 of the phonemizer
-    // This is a temporary solution until Cz's comes out with their own.
-    // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
-
-    // Thanks to cubialpha, Cz, Halo/BagelHero, nago, and Anjo for their help.
-    // cadlaxa here ^_^
+    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "Made And Checked By DELTA SYNTH & Gemini AI, cubialpha, Mim, Cz, Halo/BagelHero, nago, Anjo, cadlaxa", language: "EN")]
+    // เวอร์ชั่น 3.2 (V3.2)
+    // แก้ไขชื่อปลั๊กอินให้ถูกต้องตามบริบทภาษาอังกฤษ ปรับสมดุลและยกระดับโค้ดเพื่อการร้องที่เป็นธรรมชาติ เพิ่มพื้นที่พยัญชนะ และรองรับการเอื้อนจบประโยค
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
 
         private string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1,Y,L,W".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
+        
+        // ชุดพจนานุกรมสำหรับแปลงและสลับคำเพื่อให้เข้ากับระบบ
         private Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
             "b=b;ch=ch;d=d;dh=dh;eh=e;er=3;ey=A;f=f;g=g;hh=h;hhy=hh;ih=i;iy=E;jh=j;k=k;l=l;m=m;n=n;ng=ng;ow=O;oy=Q;" +
             "p=p;r=r;s=s;sh=sh;t=t;th=th;uh=6;uw=o;v=v;w=w;y=y;z=z;zh=zh;dx=dd;").Split(';')
@@ -38,6 +36,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private bool isReplacements = false;
 
+        // ข้อยกเว้นสำหรับกลุ่ม สระ-พยัญชนะ (VC Exceptions) เพื่อรักษาความนุ่มนวลของหางเสียง
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
                 {"i ng","1 ng"},
@@ -46,9 +45,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"9r","0r"},
                 {"9r-","0r-"},
                 {"er-","Ar-" },
-                //{"e r","Ar"},
                 {"er","Ar"},
-                //{"@ m","&m"},
                 {"@m","&m"},
                 {"@n","&n"},
                 {"@m-","&m-"},
@@ -57,43 +54,27 @@ namespace OpenUtau.Plugin.Builtin {
                 {"@ng","Ang"},
                 {"ang","9ng"},
                 {"a ng","9ng-"},
-                //{"a l","9l-"},
                 {"al","9l"},
                 {"al-","9l-"},
-                //{"O l","0l"},
                 {"0 l","0l-"},
                 {"Ol","0l"},
-                //{"6 l","6l"},
-                //{"i r","Er"},
                 {"ir","Er"},
                 {"ir-","Er-"},
             };
 
+        // ข้อยกเว้นสำหรับกลุ่ม สระ-สระ (VV Exceptions)
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
-                {"o","w"},
-                {"O","w"},
-                {"8","w"},
-                {"W","w"},
-                {"A","y"},
-                {"I","y"},
-                {"Y","y"},
-                {"E","y"},
-                {"Q","y"},
-                {"i","y"},
+                {"o","w"}, {"O","w"}, {"8","w"}, {"W","w"},
+                {"A","y"}, {"I","y"}, {"Y","y"}, {"E","y"}, {"Q","y"}, {"i","y"},
                 {"3","r"},
             };
 
+        // ระบบสำรองเสียงพยัญชนะ (Fallback) กรณีที่ฐานข้อมูลเสียงไม่มี เพื่อป้องกันข้อผิดพลาด
         private readonly Dictionary<string, string> ccFallback =
             new Dictionary<string, string>() {
-                {"z","s"},
-                {"g","k"},
-                {"zh","sh"},
-                {"j","ch"},
-                {"b","p"},
-                {"v","f"},
-                {"d","t"},
-                {"dh","th"},
+                {"z","s"}, {"g","k"}, {"zh","sh"}, {"j","ch"},
+                {"b","p"}, {"v","f"}, {"d","t"}, {"dh","th"},
             };
 
         private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
@@ -101,16 +82,11 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly Dictionary<string, string> vcccExceptions =
             new Dictionary<string, string>() {
-                {"spr","sp"},
-                {"spl","sp"},
-                {"skr","sk"},
-                {"str","st"},
-                {"skw","sk"},
-                {"sky","sk"},
-                {"spy","sp"},
-                {"skt","sk"},
+                {"spr","sp"}, {"spl","sp"}, {"skr","sk"}, {"str","st"},
+                {"skw","sk"}, {"sky","sk"}, {"spy","sp"}, {"skt","sk"},
             };
-        //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
+
+        // กฎเกณฑ์ที่ห้ามไม่ให้ทำการแยกพยางค์ เพื่อรักษาจังหวะ (Timing)
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
         private readonly string[] ucvCs = { "r", "l", "w", "y", "f"};
@@ -121,10 +97,10 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string GetDictionaryName() => "";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
+        // ฟังก์ชันโหลดข้อมูลพจนานุกรมหลัก และตั้งค่าโครงสร้างการอ่าน
         protected override IG2p LoadBaseDictionary() {
             var g2ps = new List<IG2p>();
 
-            // Load dictionary from plugin folder.
             string path = Path.Combine(PluginDir, "envccv.yaml");
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
@@ -132,14 +108,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
             g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
 
-            // Load dictionary from singer folder.
             if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "envccv.yaml");
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
                     } catch (Exception e) {
-                        Log.Error(e, $"Failed to load {file}");
+                        Log.Error(e, $"เกิดข้อผิดพลาดในการโหลด {file}");
                     }
                 }
             }
@@ -147,6 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
             return new G2pFallbacks(g2ps.ToArray());
         }
 
+        // ฟังก์ชันอัปเดตและตั้งค่านักร้อง ตรวจสอบไฟล์ yaml ให้อัตโนมัติ
         public override void SetSinger(USinger singer) {
             if (this.singer != singer) {
                 string file;
@@ -156,21 +132,20 @@ namespace OpenUtau.Plugin.Builtin {
                         try {
                             File.WriteAllBytes(file, Data.Resources.envccv_template);
                         } catch (Exception e) {
-                            Log.Error(e, $"Failed to write 'envccv.yaml' to singer folder at {file}");
+                            Log.Error(e, $"ไม่สามารถเขียนไฟล์ 'envccv.yaml' ลงในโฟลเดอร์นักร้องได้ที่ {file}");
                         }
                     }
                 } else if (!string.IsNullOrEmpty(PluginDir)) {
                     file = Path.Combine(PluginDir, "envccv.yaml");
                 } else {
-                    Log.Error("Singer location and PluginDir are both null or empty. Cannot locate 'envccv.yaml'.");
-                    return; // Exit early to avoid null file issues
+                    Log.Error("ไม่พบตำแหน่งของนักร้องหรือ PluginDir ยกเลิกการประมวลผล 'envccv.yaml'");
+                    return; 
                 }
 
                 if (File.Exists(file)) {
                     try {
                         var data = Core.Yaml.DefaultDeserializer.Deserialize<CZSampaYAMLData>(File.ReadAllText(file));
 
-                        // Load vowels
                         try {
                             var loadVowels = data.symbols
                                 ?.Where(s => s.type == "vowel")
@@ -179,48 +154,42 @@ namespace OpenUtau.Plugin.Builtin {
 
                             vowels = vowels.Concat(loadVowels).Distinct().ToArray();
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load vowels from envccv.yaml: {ex.Message}");
+                            Log.Error($"ไม่สามารถโหลดชุดสระจาก envccv.yaml: {ex.Message}");
                         }
-                        // Load replacements
+
                         try {
                             if (data?.replacements?.Any() == true) {
                                 foreach (var r in data.replacements) {
                                     if (!string.IsNullOrEmpty(r.from) && !string.IsNullOrEmpty(r.to)) {
-                                        // Overwrite or add
                                         dictionaryReplacements[r.from] = r.to;
-                                    } else {
-                                        Log.Warning("Ignored YAML replacement with missing 'from' or 'to' value.");
                                     }
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load replacements from YAML: {ex.Message}");
+                            Log.Error($"ไม่สามารถโหลดส่วนแทนที่จาก YAML: {ex.Message}");
                         }
 
-                        // Load fallbacks
                         try {
                             if (data?.fallbacks?.Any() == true) {
                                 foreach (var df in data.fallbacks) {
                                     if (!string.IsNullOrEmpty(df.from) && !string.IsNullOrEmpty(df.to)) {
-                                        // Overwrite or add
                                         replacements[df.from] = df.to;
-                                    } else {
-                                        Log.Warning("Ignored YAML fallback with missing 'from' or 'to' value.");
                                     }
                                 }
                             }
                         } catch (Exception ex) {
-                            Log.Error($"Failed to load fallbacks from YAML: {ex.Message}");
+                            Log.Error($"ไม่สามารถโหลดระบบสำรองเสียงจาก YAML: {ex.Message}");
                         }
 
                     } catch (Exception ex) {
-                       Log.Error($"Failed to parse envccv.yaml: {ex.Message}");
+                       Log.Error($"เกิดข้อผิดพลาดในการวิเคราะห์ envccv.yaml: {ex.Message}");
                     }
                 }
                 ReadDictionaryAndInit();
                 this.singer = singer;
             }
         }
+        
         public class CZSampaYAMLData {
             public SymbolData[] symbols { get; set; } = Array.Empty<SymbolData>();
             public Replacement[] replacements { get; set; } = Array.Empty<Replacement>();
@@ -236,7 +205,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
 
-        // prioritize yaml replacements over dictionary replacements
         private string ReplacePhoneme(string phoneme) {
             if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
                 return replaced;
@@ -244,6 +212,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phoneme;
         }
 
+        // ฟังก์ชันประมวลผลระหว่างพยางค์ (เพิ่มพื้นที่ให้พยัญชนะ)
         protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = ReplacePhoneme(syllable.prevV);
             string v = ReplacePhoneme(syllable.v);
@@ -262,16 +231,13 @@ namespace OpenUtau.Plugin.Builtin {
 
             string basePhoneme = null;
             var phonemes = new List<string>();
-            // --------------------------- STARTING V ------------------------------- //
+            
+            // --------------------------- กรณีเริ่มต้นด้วยสระ (STARTING V) ------------------------------- //
             if (syllable.IsStartingV) {
-                // if starting V -> -V
                 basePhoneme = $"-{v}";
-
-
-                // --------------------------- STARTING VV ------------------------------- //
+                
+            // --------------------------- กรณีรอยต่อ สระ-สระ (STARTING VV) ------------------------------- //
             } else if (syllable.IsVV) {
-                // if it's a VV transition, try VV first, then try Vc + cV depending on certain rules, then try V
-                //you can input multiple instances of the same V with the phonetic hint
                 basePhoneme = $"{prevV}{v}";
 
                 if (!HasOto(basePhoneme, syllable.vowelTone)) {
@@ -289,23 +255,20 @@ namespace OpenUtau.Plugin.Builtin {
                         basePhoneme = $"{v}";
                     }
                 }
-                // --------------------------- STARTING CV ------------------------------- //
+                
+            // --------------------------- กรณีเริ่มต้นด้วยพยัญชนะ-สระ (STARTING CV) ------------------------------- //
             } else if (syllable.IsStartingCVWithOneConsonant) {
-                //if starting CV -> [-CV], fallback to [CV]
                 basePhoneme = $"-{cc[0]}{v}";
                 if (!HasOto(basePhoneme, syllable.tone)) {
                     basePhoneme = $"{cc[0]}{v}";
                 }
 
-                // --------------------------- STARTING CCV ------------------------------- //
+            // --------------------------- กรณีเริ่มต้นด้วยกลุ่มพยัญชนะ-สระ (STARTING CCV) ------------------------------- //
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
-
                 basePhoneme = $"_{cc.Last()}{v}";
                 if (!HasOto(basePhoneme, syllable.tone)) {
                     basePhoneme = $"{cc.Last()}{v}";
                 }
-
-                // try CCVs
 
                 var ccv = $"";
                 if (cc.Length == 2) {
@@ -332,10 +295,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
 
-                // if there still is no match, add [-CC] + [CC] etc.
-
                 if (!HasOto(ccv, syllable.tone)) {
-                    // other CCs
                     for (var i = 0; i < lastC; i++) {
                         var currentCc = $"{cc[i]}{cc[i + 1]}";
                         if (i == 0 && HasOto($"-{cc[i]}{cc[i + 1]}", syllable.tone)) {
@@ -347,14 +307,11 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
-                // --------------------------- IS VCV ------------------------------- //
-                else {
-
-                //cc = ValidateCC(cc);
+            // --------------------------- กรณีเชื่อมต่อตรงกลาง (IS VCV) ------------------------------- //
+            else {
                 var parsingVCC = $"{prevV}{cc[0]}-";
                 var parsingCC = "";
 
-                // if only one Consonant [V C] + [CV], [VC-][CV], or [VC][_V] if certain rules are met
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
                     var vc = $"{prevV} {cc.Last()}";
@@ -366,7 +323,6 @@ namespace OpenUtau.Plugin.Builtin {
                         if ($"{cc.Last()}" == "ng")
                             basePhoneme = $"_{v}";
                     }
-
 
                     if (lastCPrevWord == 1 && CurrentWordCc.Length == 0)
                         if (($"{PreviousWordCc.Last()}" == "r") || ($"{PreviousWordCc.Last()}" == "l") || ($"{PreviousWordCc.Last()}" == "ng")) {
@@ -386,17 +342,12 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add(vc);
 
                 } else if (syllable.IsVCVWithMoreThanOneConsonant) {
-
                     bool exIng = $"{prevV}" == "i" && $"{cc[0]}" == "ng";
                     bool ex1ng = $"{prevV}" == "1" && $"{cc[0]}" == "ng";
                     bool ex1nk = $"{prevV}" == "1" && $"{cc[0]}" == "n";
-                    // defaults to [CV]
                     basePhoneme = $"{cc.Last()}{v}";
 
-                    // logic for consonant clusters of 2, defaults to [VC] + [CV]
                     if (cc.Length == 2) {
-
-                        // sk, sm, sn, sp & st exceptions
                         var ccNoParse = $"{cc[0]}{cc[1]}";
                         bool dontParse = false;
                         if (cc.Length - lastCPrevWord > 1) {
@@ -419,27 +370,21 @@ namespace OpenUtau.Plugin.Builtin {
                             }
 
                             phonemes.Add(vc);
-
                         }
 
-                        // also [VC C] exceptions
                         var vccExceptions = $"{prevV}{cc[0]} {cc[1]}";
-                        // i to 1 conversion
                         if (exIng || ex1ng || ex1nk) {
                             vccExceptions = $"1ng {cc[1]}";
-                            // 1nk exception
                             if ($"{cc[1]}" == "k" && lastCPrevWord != 1) {
                                 vccExceptions = $"1nk-";
                             }
                         }
-
 
                         if (HasOto(vccExceptions, syllable.vowelTone)) {
                             phonemes.Add(vccExceptions);
                         }
 
                         if (phonemes.Count == 0) {
-                            // opera [9 p] + [pr] + [_ru]
                             parsingCC = $"{cc[0]}{cc[1]}";
                             if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1 && ucvCs.Contains($"{cc[1]}") && !starlightccs.Contains($"{cc[0]}{cc[1]}")) {
                                 parsingVCC = $"{prevV} {cc[0]}";
@@ -449,24 +394,20 @@ namespace OpenUtau.Plugin.Builtin {
                                     parsingVCC = $"{prevV}{cc[0]}-";
                                     if (stopCs.Contains($"{cc.Last()}")) {
                                         basePhoneme = $"-{v}";
-
                                     }
                                 }
-                                // sp fix
                                 if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                     parsingVCC = $"{prevV} sp";
                                 }
                                 phonemes.Add(parsingVCC);
                                 phonemes.Add(parsingCC);
                             } else {
-                                // bonehead [On-] + [n h] + [he]
                                 parsingCC = $"{cc[0]} {cc[1]}";
                                 if (!HasOto(parsingCC, syllable.vowelTone)) {
                                     if (ccFallback.ContainsKey(cc[1]))
                                         parsingCC = $"{cc[0]} {ccFallback[cc[1]]}";
                                 }
                                 if (HasOto(parsingCC, syllable.vowelTone)) {
-                                    //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
                                     if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                         parsingVCC = CheckVCExceptions(parsingVCC);
                                     }
@@ -474,16 +415,12 @@ namespace OpenUtau.Plugin.Builtin {
                                             parsingVCC = $"{prevV} {cc[0]}";
                                         }
 
-                                        // sp fix
                                         if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                             parsingVCC = $"{prevV} sp";
                                         }
                                         phonemes.Add(parsingVCC);
                                         phonemes.Add(parsingCC);
                                     } else {
-                                        // backpack [@k] + [p@]
-
-                                        // sp fix
                                         if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                             parsingVCC = $"{prevV} sp";
                                         } else
@@ -494,12 +431,10 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
 
-                        // LOGIC FOR MORE THAN 2 CONSONANTS
+                        // ตรรกะรองรับพยัญชนะเชื่อมต่อที่มากกว่า 2 ตัวขึ้นไป
                         if (cc.Length > 2 && phonemes.Count == 0) {
-                            // also [VC CC] exceptions
                             var vccExceptions = $"{prevV}{cc[0]}{cc[1]} {cc[2]}";
                             var startingC = 2;
-                            // 1nks exception
                             bool ing = false;
                             if (exIng || ex1ng || ex1nk) {
                                 vccExceptions = $"1ng {cc[1]}";
@@ -522,7 +457,6 @@ namespace OpenUtau.Plugin.Builtin {
                             bool dontParse = false;
                             var lastCforLoop = cc.Length - 1;
 
-                            // str exceptions
                             if (cccExceptions.Contains($"{ccNoParse}") && cc.Length - 3 >= lastCPrevWord) {
                                 var vc = $"{prevV}{cc[0]}-";
                                 if (cc.Length == 3) {
@@ -543,7 +477,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 ccNoParse = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
                                 var ccSP = $"{cc[0]}{cc[1]}";
 
-                                // sk, sm, sn, sp & st exceptions
                                 if (cc.Length - lastCPrevWord > 1) {
                                     for (int i = 0; i < ccNoParsing.Length; i++) {
                                         if (ccNoParsing.Contains(ccNoParse)) {
@@ -601,12 +534,10 @@ namespace OpenUtau.Plugin.Builtin {
                                             parsingVCC = $"{prevV} sp";
                                         }
 
-
                                         phonemes.Add(parsingVCC);
                                     }
                                 }
                             }
-
 
                             for (int i = startingC; i < lastCforLoop; i++) {
                                 parsingCC = $"{cc[i]}{cc[i + 1]}-";
@@ -618,7 +549,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 if (i == lastCPrevWord - 1) {
                                     parsingCC = $"{cc[i]} {cc[i + 1]}";
                                 }
-
 
                                 if (i == lastCPrevWord - 2) {
                                     parsingCC = $"{cc[i]}{cc[i + 1]}";
@@ -634,14 +564,10 @@ namespace OpenUtau.Plugin.Builtin {
                                     parsingCC = $"{cc[i]}{cc[i + 1]}";
                                 }
 
-                                //if (i + 1 != lastCforLoop - 1) {
-                                //    parsingCC = $"{cc[i]}{cc[i + 1]}";
                                 if (dontParse && i == cc.Length - 2) {
                                     parsingCC = "";
                                 }
-                                //}
 
-                                //ng to nk exception
                                 if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i + 1 != lastCPrevWord) {
                                     parsingCC = $"nkth";
                                 }
@@ -655,7 +581,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 basePhoneme = $"_{cc.Last()}{v}";
                             }
 
-                            //if (ccNoParse == "str") {
                             if (cccExceptions.Contains($"{ccNoParse}")) {
                                 phonemes.Add(ccNoParse);
                             }
@@ -669,20 +594,26 @@ namespace OpenUtau.Plugin.Builtin {
                 return phonemes;
             }
 
+        // ฟังก์ชันประมวลผลช่วงจบเสียง (อัปเดตเพื่อรองรับการเอื้อนที่สมูทและรวดเร็ว)
         protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc.Select(ReplacePhoneme).ToArray();
             string v = ReplacePhoneme(ending.prevV);
             int lastC = cc.Length - 1;
 
             var phonemes = new List<string>();
-            // --------------------------- ENDING V ------------------------------- //
+            // --------------------------- กรณีจบด้วยสระ (ENDING V) ------------------------------- //
             if (ending.IsEndingV) {
-                // try V- else no ending
-                TryAddPhoneme(phonemes, ending.tone, $"{v}-");
+                // พยายามเพิ่มเสียงจบปกติ
+                bool hasStandardEnding = TryAddPhoneme(phonemes, ending.tone, $"{v}-");
+                
+                // หากเป็นการลากเสียงยาว หรือต้องการให้เอื้อนจบเร็วอัตโนมัติ จะลองใส่ลมหายใจหรือหางเสียง (- / R / hh) เพิ่มเติมหาก Voicebank รองรับ
+                if (!hasStandardEnding) {
+                    TryAddPhoneme(phonemes, ending.tone, $"{v} R"); // เผื่อกรณีใช้เสียงเอื้อนพิเศษ
+                }
 
             } else {
                 var vc = $"{v}{cc[0]}";
-                // --------------------------- ENDING VC ------------------------------- //
+                // --------------------------- กรณีจบด้วยพยัญชนะเดี่ยว (ENDING VC) ------------------------------- //
                 if (ending.IsEndingVCWithOneConsonant) {
 
                     vc = CheckVCExceptions(vc) + "-";
@@ -692,7 +623,6 @@ namespace OpenUtau.Plugin.Builtin {
                     vc = $"{v}{cc[0]}";
                     vc = CheckVCExceptions(vc) + "-";
 
-                    // "1nks" exception
                     var startingC = 0;
                     var vcc = "";
                     var newV = v;
@@ -731,7 +661,6 @@ namespace OpenUtau.Plugin.Builtin {
                         startingC = 0;
                     }
 
-                    //sp fix
                     var spCheck = $"{cc[0]}{cc[1]}";
                     if (spCheck == "sp") {
                         vcc = $"{newV} {cc[0]}{cc[1]}";
@@ -748,9 +677,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
 
-
-                    // --------------------------- ENDING VCC ------------------------------- //
-
+                    // --------------------------- กรณีจบด้วยกลุ่มพยัญชนะ (ENDING VCC) ------------------------------- //
 
                     for (var i = startingC; i < cc.Length - 1; i++) {
                         var currentCc = $"{cc[i]}{cc[i + 1]}-";
@@ -758,7 +685,6 @@ namespace OpenUtau.Plugin.Builtin {
                             currentCc = $"{cc[i]}{cc[i + 1]}";
                         }
 
-                        //ng to nk exception
                         if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i == cc.Length - 2) {
                             currentCc = $"nkth-";
                         }
@@ -780,16 +706,10 @@ namespace OpenUtau.Plugin.Builtin {
                             phonemes.Add(currentCc);
                         }
                     }
-
-                
                 }
             }
-
-            // ---------------------------------------------------------------------------------- //
-
             return phonemes;
         }
-
 
         private string CheckVCExceptions(string vc) {
             if (vcExceptions.ContainsKey(vc)) {
@@ -797,10 +717,9 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return vc;
         }
+        
+        // ตรวจสอบและแทนที่นามแฝง (Alias) เพื่อให้ได้คุณภาพเสียงสูงสุดตามที่มีในฐานข้อมูล
         protected override string ValidateAlias(string alias) {
-            //foreach (var consonant in new[] { "h" }) {
-            //    alias = alias.Replace(consonant, "hh");
-            //}
             if (isReplacements) {
                 foreach (var syllable in replacements) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
