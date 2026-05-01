@@ -1,10 +1,26 @@
-# Auto detect text files and perform LF normalization
-*          text=auto
+# Made And Checked By DELTA SYNTH & Gemini AI
+# การตั้งค่ามาตรฐานการตัดบรรทัดสำหรับโปรเจกต์ OpenUtau
 
-*.cs       text diff=csharp eol=crlf
-*.cshtml   text diff=html
-*.csx      text diff=csharp
-*.sln      text eol=crlf
-*.csproj   text eol=crlf
-*.xaml     text eol=crlf
-*.axaml    text eol=crlf
+# ตรวจสอบไฟล์ข้อความโดยอัตโนมัติและจัดการ LF Normalization
+*           text=auto
+
+# [ภาษา C#]
+# บังคับใช้ CRLF สำหรับ Windows เป็นหลักเพื่อให้รองรับ Visual Studio ได้สมบูรณ์
+*.cs        text diff=csharp eol=crlf
+*.csx       text diff=csharp
+*.cshtml    text diff=html
+
+# [ไฟล์โครงสร้างโปรเจกต์และโซลูชัน]
+# ไฟล์เหล่านี้ควรเป็น CRLF เสมอเพื่อป้องกันปัญหาการโหลดโปรเจกต์ใน Visual Studio
+*.sln       text eol=crlf
+*.csproj    text eol=crlf
+
+# [ไฟล์หน้าตาโปรแกรม (UI)]
+# จัดการไฟล์ XAML และ AXAML ของ Avalonia ให้มีมาตรฐานเดียวกัน
+*.xaml      text eol=crlf
+*.axaml     text eol=crlf
+
+# [ไฟล์ข้อมูลและสคริปต์อื่นๆ]
+*.py        text eol=lf
+*.sh        text eol=lf
+*.bat       text eol=crlf
