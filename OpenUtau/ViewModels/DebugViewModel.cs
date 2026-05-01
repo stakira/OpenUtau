@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
@@ -16,125 +16,145 @@ using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Formatting.Display;
 
+/*
+ * Made And Checked By DELTA SYNTH & Gemini AI
+ * Original Author: OpenUtau Team & Delta
+ */
+
 namespace OpenUtau.App.ViewModels {
+    /// <summary>
+    /// ตัวแปลงค่า LogEvent สำหรับการแสดงผลบน UI ภาษาไทย
+    /// </summary>
     public class LogEventConverter : IValueConverter {
-        private ITextFormatter formater;
-        private StringWriter stringWriter;
+        private readonly ITextFormatter _formatter;
+        
         public LogEventConverter() {
+            // ปรับรูปแบบ Template ให้เหมาะสมและอ่านง่าย
             const string template = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
-            formater = new MessageTemplateTextFormatter(template);
-            stringWriter = new StringWriter();
+            _formatter = new MessageTemplateTextFormatter(template);
         }
+
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
             if (value is LogEvent logEvent) {
-                formater.Format(logEvent, stringWriter);
-                string message = stringWriter.GetStringBuilder().ToString();
-                stringWriter.GetStringBuilder().Clear();
-                return message;
+                using var stringWriter = new StringWriter();
+                _formatter.Format(logEvent, stringWriter);
+                return stringWriter.ToString();
             }
             return string.Empty;
         }
+
         public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) {
             return new Avalonia.Data.BindingNotification(new NotImplementedException(), Avalonia.Data.BindingErrorType.Error);
         }
     }
 
     public class DebugViewModel : ViewModelBase {
-
-        private DebugWindow? window;
+        private DebugWindow? _window;
 
         public void SetWindow(DebugWindow w) {
-            window = w;
+            _window = w;
         }
 
         public DebugViewModel() {
-            ReverseLogOrderCommand = ReactiveCommand.Create(() => { Sink.Inst.ReverseOrder(); });
+            // คำสั่งสำหรับการสลับลำดับการแสดงผล Log
+            ReverseLogOrderCommand = ReactiveCommand.Create(() => { 
+                Sink.Inst.ToggleOrder(); 
+            });
+
+            // คำสั่งสำหรับคัดลอก Log ทั้งหมดไปยังคลิปบอร์ด
             CopyLogCommand = ReactiveCommand.Create(() => {
-                window?.CopyLogText();
+                _window?.CopyLogText();
             });
         }
 
+        /// <summary>
+        /// ระบบรับข้อมูล Log (Log Sink) ที่เชื่อมต่อกับ Serilog
+        /// </summary>
         public class Sink : ILogEventSink {
-            static Sink sink = new Sink();
-            public static Sink Inst => sink;
+            private static readonly Sink _instance = new Sink();
+            public static Sink Inst => _instance;
 
-            public LoggingLevelSwitch LevelSwitch =
-                new LoggingLevelSwitch(LogEventLevel.Error);
-            public ObservableCollectionExtended<LogEvent> LogEvents =
-                new ObservableCollectionExtended<LogEvent>();
+            public LoggingLevelSwitch LevelSwitch { get; } = new LoggingLevelSwitch(LogEventLevel.Error);
+            public ObservableCollectionExtended<LogEvent> LogEvents { get; } = new ObservableCollectionExtended<LogEvent>();
 
-            private bool reverseLogOrder = Preferences.Default.ReverseLogOrder;
+            private bool _reverseLogOrder = Preferences.Default.ReverseLogOrder;
 
-            public void ReverseOrder() {
-                if (!reverseLogOrder) {
-                    reverseLogOrder = true;
-                    reverseOrder();
-                } else {
-                    reverseLogOrder = false;
-                    reverseOrder();
-                }
+            /// <summary>
+            /// สลับลำดับ Log ระหว่าง ใหม่ไปเก่า หรือ เก่าไปใหม่
+            /// </summary>
+            public void ToggleOrder() {
+                _reverseLogOrder = !_reverseLogOrder;
+                ApplyOrderReversal();
             }
 
-            private void reverseOrder() {
-                var t = LogEvents;
-                var x = t.AsEnumerable().Reverse().ToArray();
-                LogEvents.Clear();
-                foreach (var i in x) {
-                    LogEvents.Add(i);
+            private void ApplyOrderReversal() {
+                var currentEvents = LogEvents.ToList();
+                currentEvents.Reverse();
+                
+                using (LogEvents.SuspendNotifications()) {
+                    LogEvents.Clear();
+                    LogEvents.AddRange(currentEvents);
                 }
             }
 
             /// <summary>
-            /// Allows you to set the reversal of the LogEvents to a specified value
+            /// กำหนดสถานะการเรียงลำดับโดยตรง
             /// </summary>
-            /// <param name="reversed">true = logevents are reversed, false = logevents are not reversed</param>
-            public void ReverseOrder(bool reversed) {
-                if (reversed) {
-                    if (!reverseLogOrder) {
-                        ReverseOrder();
-                    }
-                } else {
-                    if (reverseLogOrder) {
-                        ReverseOrder();
-                    }
+            public void SetReverseOrder(bool reversed) {
+                if (_reverseLogOrder != reversed) {
+                    ToggleOrder();
                 }
             }
 
             public void Emit(LogEvent logEvent) {
-                if (reverseLogOrder) {
-                    LogEvents.Insert(0, logEvent);
-                } else {
-                    LogEvents.Add(logEvent);
-                }
+                // จัดการเรื่อง Thread Safety และการจัดลำดับข้อมูล
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+                    if (_reverseLogOrder) {
+                        LogEvents.Insert(0, logEvent);
+                    } else {
+                        LogEvents.Add(logEvent);
+                    }
+                    
+                    // จำกัดจำนวน Log เพื่อประสิทธิภาพ (ตัวอย่าง: เก็บไว้ 1,000 รายการ)
+                    if (LogEvents.Count > 1000) {
+                        LogEvents.RemoveAt(_reverseLogOrder ? 1000 : 0);
+                    }
+                });
             }
 
-            /// <summary>
-            /// make the debug string for copying to the clipboard
-            /// </summary>
             public override string ToString() {
                 var sb = new StringBuilder();
                 foreach (var l in LogEvents) {
-                    sb.AppendLine($"{l.Timestamp} : {l.Level} : {l.MessageTemplate.Text}");
+                    sb.AppendLine($"[{l.Timestamp:yyyy-MM-dd HH:mm:ss}] [{l.Level}] {l.MessageTemplate.Text}");
                 }
-
                 return sb.ToString();
             }
         }
 
+        // Properties สำหรับ UI
         [Reactive] public LogEventLevel LogEventLevel { get; set; }
         public ObservableCollection<LogEvent> LogEvents => Sink.Inst.LogEvents;
-        public ReactiveCommand<Unit, Unit> ReverseLogOrderCommand { get; private set; }
-        public ReactiveCommand<Unit, Unit> CopyLogCommand { get; private set; }
+        public ReactiveCommand<Unit, Unit> ReverseLogOrderCommand { get; }
+        public ReactiveCommand<Unit, Unit> CopyLogCommand { get; }
 
+        /// <summary>
+        /// ล้างข้อมูลบันทึกทั้งหมด
+        /// </summary>
         public void Clear() {
             Sink.Inst.LogEvents.Clear();
         }
 
+        /// <summary>
+        /// เริ่มต้นการติดตามการทำงาน (Attach Debug)
+        /// </summary>
         public void Attach() {
             Core.Util.ProcessRunner.DebugSwitch = true;
             Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
         }
 
+        /// <summary>
+        /// ยกเลิกการติดตามการทำงาน (Detach Debug)
+        /// </summary>
         public void Detach() {
             Core.Util.ProcessRunner.DebugSwitch = false;
             Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Error;
