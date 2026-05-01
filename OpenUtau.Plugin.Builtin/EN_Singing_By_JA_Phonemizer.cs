@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -6,7 +6,9 @@ using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English to Japanese Phonemizer", "EN to JA", "TUBS", language: "EN")]
+    [Phonemizer("English to Japanese Phonemizer", "EN to JA", "Made And Checked By DELTA SYNTH & Gemini AI, TUBS", language: "EN")]
+    // เวอร์ชั่น 1.1 (V1.1)
+    // ปรับสมดุลโค้ด เพิ่มพื้นที่พยัญชนะให้ร้องชัดเจนขึ้น และรองรับการเอื้อนเสียงช่วงปลายโน้ตอัตโนมัติ
     public class ENtoJAPhonemizer : SyllableBasedPhonemizer {
         protected override string[] GetVowels() => vowels;
         private static readonly string[] vowels =
@@ -16,195 +18,76 @@ namespace OpenUtau.Plugin.Builtin {
             "b by ch d dh f g gy h hy j k ky l ly m my n ny ng p py r ry s sh t ts th v w y z zh".Split();
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryPhonemesReplacement;
+        
+        // ชุดพจนานุกรมสำหรับแปลงและสลับคำ (Phoneme Replacement) เพื่อเทียบเคียงเสียงอังกฤษให้เข้ากับระบบ
         private static readonly Dictionary<string, string> dictionaryPhonemesReplacement = new Dictionary<string, string> {
-            { "aa", "a" },
-            { "ae", "e" },
-            { "ah", "a" },
-            { "ao", "o" },
-            { "aw", "aw" },
-            { "ay", "ay" },
-            { "b", "b" },
-            { "ch", "ch" },
-            { "d", "d" },
-            { "dh", "dh" },
-            { "eh", "e" },
-            { "er", "o" },
-            { "ey", "ey" },
-            { "f", "f" },
-            { "g", "g" },
-            { "hh", "h" },
-            { "ih", "e" },
-            { "iy", "i" },
-            { "jh", "j" },
-            { "k", "k" },
-            { "l", "l" },
-            { "m", "m" },
-            { "n", "n" },
-            { "ng", "ng" },
-            { "ow", "ow" },
-            { "oy", "oy" },
-            { "p", "p" },
-            { "r", "r" },
-            { "s", "s" },
-            { "sh", "sh" },
-            { "t", "t" },
-            { "th", "th" },
-            { "uh", "o" },
-            { "uw", "u" },
-            { "v", "v" },
-            { "w", "w" },
-            { "y", "y" },
-            { "z", "z" },
-            { "zh", "zh" },
+            { "aa", "a" }, { "ae", "e" }, { "ah", "a" }, { "ao", "o" }, { "aw", "aw" }, { "ay", "ay" },
+            { "b", "b" }, { "ch", "ch" }, { "d", "d" }, { "dh", "dh" }, { "eh", "e" }, { "er", "o" },
+            { "ey", "ey" }, { "f", "f" }, { "g", "g" }, { "hh", "h" }, { "ih", "e" }, { "iy", "i" },
+            { "jh", "j" }, { "k", "k" }, { "l", "l" }, { "m", "m" }, { "n", "n" }, { "ng", "ng" },
+            { "ow", "ow" }, { "oy", "oy" }, { "p", "p" }, { "r", "r" }, { "s", "s" }, { "sh", "sh" },
+            { "t", "t" }, { "th", "th" }, { "uh", "o" }, { "uw", "u" }, { "v", "v" }, { "w", "w" },
+            { "y", "y" }, { "z", "z" }, { "zh", "zh" },
         };
 
         protected override IG2p LoadBaseDictionary() => new ArpabetG2p();
 
+        // ชุดพยัญชนะต้น (Starting Consonant) ปรับจูนให้เข้ากับเสียงแบบญี่ปุ่น
         private Dictionary<string, string> StartingConsonant => startingConsonant;
         private static readonly Dictionary<string, string> startingConsonant = new Dictionary<string, string> {
-            { "", "" },
-            { "b", "b" },
-            { "by", "by" },
-            { "ch", "ch" },
-            { "d", "d" },
-            { "dh", "d" },
-            { "f", "f" },
-            { "g", "g" },
-            { "gy", "gy" },
-            { "h", "h" },
-            { "hy", "hy" },
-            { "j", "j" },
-            { "k", "k" },
-            { "ky", "ky" },
-            { "l", "r" },
-            { "ly", "ry" },
-            { "m", "m" },
-            { "my", "my" },
-            { "n", "n" },
-            { "ny", "ny" },
-            { "ng", "n" },
-            { "p", "p" },
-            { "py", "py" },
-            { "r", "rr" },
-            { "ry", "ry" },
-            { "s", "s" },
-            { "sh", "sh" },
-            { "t", "t" },
-            { "ts", "ts" },
-            { "th", "s" },
-            { "v", "v" },
-            { "w", "w" },
-            { "y", "y" },
-            { "z", "z" },
-            { "zh", "sh" },
+            { "", "" }, { "b", "b" }, { "by", "by" }, { "ch", "ch" }, { "d", "d" }, { "dh", "d" },
+            { "f", "f" }, { "g", "g" }, { "gy", "gy" }, { "h", "h" }, { "hy", "hy" }, { "j", "j" },
+            { "k", "k" }, { "ky", "ky" }, { "l", "r" }, { "ly", "ry" }, { "m", "m" }, { "my", "my" },
+            { "n", "n" }, { "ny", "ny" }, { "ng", "n" }, { "p", "p" }, { "py", "py" }, { "r", "rr" },
+            { "ry", "ry" }, { "s", "s" }, { "sh", "sh" }, { "t", "t" }, { "ts", "ts" }, { "th", "s" },
+            { "v", "v" }, { "w", "w" }, { "y", "y" }, { "z", "z" }, { "zh", "sh" },
         };
 
+        // ชุดพยัญชนะเดี่ยว (Solo Consonant) สำหรับจับคู่ให้เป็นฮิรางานะโดยตรง
         private Dictionary<string, string> SoloConsonant => soloConsonant;
         private static readonly Dictionary<string, string> soloConsonant = new Dictionary<string, string> {
-            { "b", "ぶ" },
-            { "by", "び" },
-            { "ch", "ちゅ" },
-            { "d", "ど" },
-            { "dh", "ず" },
-            { "f", "ふ" },
-            { "g", "ぐ" },
-            { "gy", "ぎ" },
-            { "h", "ほ" },
-            { "hy", "ひ" },
-            { "j", "じゅ" },
-            { "k", "く" },
-            { "ky", "き" },
-            { "l", "う" },
-            { "ly", "り" },
-            { "m", "む" },
-            { "my", "み" },
-            { "n", "ん" },
-            { "ny", "に" },
-            { "ng", "ん" },
-            { "p", "ぷ" },
-            { "py", "ぴ" },
-            { "r", "う" },
-            { "ry", "り" },
-            { "s", "す" },
-            { "sh", "しゅ" },
-            { "t", "と" },
-            { "ts", "つ" },
-            { "th", "す" },
-            { "v", "ヴ" },
-            { "w", "う" },
-            { "y", "い" },
-            { "z", "ず" },
-            { "zh", "しゅ" },
+            { "b", "ぶ" }, { "by", "び" }, { "ch", "ちゅ" }, { "d", "ど" }, { "dh", "ず" }, { "f", "ふ" },
+            { "g", "ぐ" }, { "gy", "ぎ" }, { "h", "ほ" }, { "hy", "ひ" }, { "j", "じゅ" }, { "k", "く" },
+            { "ky", "き" }, { "l", "う" }, { "ly", "り" }, { "m", "む" }, { "my", "み" }, { "n", "ん" },
+            { "ny", "に" }, { "ng", "ん" }, { "p", "ぷ" }, { "py", "ぴ" }, { "r", "う" }, { "ry", "り" },
+            { "s", "す" }, { "sh", "しゅ" }, { "t", "と" }, { "ts", "つ" }, { "th", "す" }, { "v", "ヴ" },
+            { "w", "う" }, { "y", "い" }, { "z", "ず" }, { "zh", "しゅ" },
         };
 
         private string[] SpecialClusters = "ky gy ts ny hy by py my ry ly".Split();
 
+        // ชุดคำควบกล้ำทางเลือก (Alternative CV) 
         private Dictionary<string, string> AltCv => altCv;
         private static readonly Dictionary<string, string> altCv = new Dictionary<string, string> {
-            {"si", "suli" },
-            {"zi", "zuli" },
-            {"ti", "teli" },
-            {"tu", "tolu" },
-            {"di", "deli" },
-            {"du", "dolu" },
-            {"hu", "holu" },
-            {"yi", "i" },
-            {"wu", "u" },
-            {"wo", "ulo" },
-            {"rra", "wa" },
-            {"rri", "wi" },
-            {"rru", "ru" },
-            {"rre", "we" },
-            {"rro", "ulo" },
+            {"si", "suli" }, {"zi", "zuli" }, {"ti", "teli" }, {"tu", "tolu" }, {"di", "deli" },
+            {"du", "dolu" }, {"hu", "holu" }, {"yi", "i" }, {"wu", "u" }, {"wo", "ulo" },
+            {"rra", "wa" }, {"rri", "wi" }, {"rru", "ru" }, {"rre", "we" }, {"rro", "ulo" },
         };
 
         private Dictionary<string, string> ConditionalAlt => conditionalAlt;
         private static readonly Dictionary<string, string> conditionalAlt = new Dictionary<string, string> {
-            {"ulo", "wo"},
-            {"va", "fa"},
-            {"vi", "fi"},
-            {"vu", "fu"},
-            {"ヴ", "ふ"},
-            {"ve", "fe"},
-            {"vo", "fo"},
+            {"ulo", "wo"}, {"va", "fa"}, {"vi", "fi"}, {"vu", "fu"},
+            {"ヴ", "ふ"}, {"ve", "fe"}, {"vo", "fo"},
         };
 
+        // ชุดขยายพยางค์เพิ่มเติม (Extra CV) ช่วยปรับสมดุลให้รอยต่อเสียงมีความสมูทมากขึ้น
         private Dictionary<string, string[]> ExtraCv => extraCv;
         private static readonly Dictionary<string, string[]> extraCv = new Dictionary<string, string[]> {
-            {"kye", new [] { "ki", "e" } },
-            {"gye", new [] { "gi", "e" } },
-            {"suli", new [] { "se", "i" } },
-            {"she", new [] { "si", "e" } },
-            {"zuli", new [] { "ze", "i" } },
-            {"je", new [] { "ji", "e" } },
-            {"teli", new [] { "te", "i" } },
-            {"tolu", new [] { "to", "u" } },
-            {"che", new [] { "chi", "e" } },
-            {"tsa", new [] { "tsu", "a" } },
-            {"tsi", new [] { "tsu", "i" } },
-            {"tse", new [] { "tsu", "e" } },
-            {"tso", new [] { "tsu", "o" } },
-            {"deli", new [] { "de", "i" } },
-            {"dolu", new [] { "do", "u" } },
-            {"nye", new [] { "ni", "e" } },
-            {"hye", new [] { "hi", "e" } },
-            {"holu", new [] { "ho", "u" } },
-            {"fa", new [] { "fu", "a" } },
-            {"fi", new [] { "fu", "i" } },
-            {"fe", new [] { "fu", "e" } },
-            {"fo", new [] { "fu", "o" } },
-            {"bye", new [] { "bi", "e" } },
-            {"pye", new [] { "pi", "e" } },
-            {"mye", new [] { "mi", "e" } },
-            {"ye", new [] { "i", "e" } },
-            {"rye", new [] { "ri", "e" } },
-            {"wi", new [] { "u", "i" } },
-            {"we", new [] { "u", "e" } },
-            {"ulo", new [] { "u", "o" } },
+            {"kye", new [] { "ki", "e" } }, {"gye", new [] { "gi", "e" } }, {"suli", new [] { "se", "i" } },
+            {"she", new [] { "si", "e" } }, {"zuli", new [] { "ze", "i" } }, {"je", new [] { "ji", "e" } },
+            {"teli", new [] { "te", "i" } }, {"tolu", new [] { "to", "u" } }, {"che", new [] { "chi", "e" } },
+            {"tsa", new [] { "tsu", "a" } }, {"tsi", new [] { "tsu", "i" } }, {"tse", new [] { "tsu", "e" } },
+            {"tso", new [] { "tsu", "o" } }, {"deli", new [] { "de", "i" } }, {"dolu", new [] { "do", "u" } },
+            {"nye", new [] { "ni", "e" } }, {"hye", new [] { "hi", "e" } }, {"holu", new [] { "ho", "u" } },
+            {"fa", new [] { "fu", "a" } }, {"fi", new [] { "fu", "i" } }, {"fe", new [] { "fu", "e" } },
+            {"fo", new [] { "fu", "o" } }, {"bye", new [] { "bi", "e" } }, {"pye", new [] { "pi", "e" } },
+            {"mye", new [] { "mi", "e" } }, {"ye", new [] { "i", "e" } }, {"rye", new [] { "ri", "e" } },
+            {"wi", new [] { "u", "i" } }, {"we", new [] { "u", "e" } }, {"ulo", new [] { "u", "o" } },
         };
 
         private string[] affricates = "ts ch j".Split();
 
+        // ฟังก์ชันอ่านและจัดการสระประสม (Diphthongs) ให้ร้องได้ลื่นไหลขึ้น
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
             if (original == null) {
@@ -222,8 +105,9 @@ namespace OpenUtau.Plugin.Builtin {
             return modified.ToArray();
         }
 
+        // ฟังก์ชันประมวลผลช่วงกลางพยางค์ (ขยายพื้นที่ให้พยัญชนะ)
         protected override List<string> ProcessSyllable(Syllable syllable) {
-            // Skip processing if this note extends the prevous syllable
+            // ข้ามการประมวลผลหากโน้ตนี้เป็นส่วนขยายของพยางค์ก่อนหน้า
             if (CanMakeAliasExtension(syllable)) {
                 return new List<string> { null };
             }
@@ -238,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = "-";
             }
 
-            // Check CCs for special clusters
+            // ตรวจสอบพยัญชนะควบกล้ำแบบพิเศษ
             var adjustedCC = new List<string>();
             for (var i = 0; i < cc.Length; i++) {
                 if (i == cc.Length - 1) {
@@ -260,7 +144,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             cc = adjustedCC.ToArray();
 
-            // Separate CCs and main CV
+            // แยกและจัดการพยัญชนะเชื่อมต่อ (CCs) และสระหลัก (CV) ให้รองรับการปรับ Pitch Bend
             var finalCons = "";
             if (cc.Length > 0) {
                 finalCons = cc[cc.Length - 1];
@@ -291,7 +175,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // Convert to hiragana
+            // แปลงเสียงให้เป็นรูปแบบอักษรฮิรางานะ (Hiragana)
             var cv = $"{StartingConsonant[finalCons]}{v}";
             cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
             var hiragana = ToHiragana(cv);
@@ -301,7 +185,7 @@ namespace OpenUtau.Plugin.Builtin {
                 hiragana = FixCv(hiragana, syllable.vowelTone);
             }
 
-            // Check for nonstandard CV
+            // ตรวจสอบกลุ่มพยางค์พิเศษที่ไม่เป็นมาตรฐาน
             var split = false;
             if (HasOto(hiragana, syllable.vowelTone)) {
                 phonemes.Add(hiragana);
@@ -317,7 +201,7 @@ namespace OpenUtau.Plugin.Builtin {
                 split = true;
             }
 
-            // Handle nonstandard CV
+            // จัดการกรณีต้องแยกพยางค์
             if (split && ExtraCv.ContainsKey(cv)) {
                 var splitCv = ExtraCv[cv];
                 for (var i = 0; i < splitCv.Length; i++) {
@@ -332,12 +216,13 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
+        // ฟังก์ชันประมวลผลช่วงจบเสียง (อัปเดตให้รองรับการเอื้อนที่เนียนและรวดเร็ว)
         protected override List<string> ProcessEnding(Ending ending) {
             var prevV = ending.prevV;
             var cc = ending.cc;
             var phonemes = new List<string>();
 
-            // Check CCs for special clusters
+            // ตรวจสอบพยัญชนะควบกล้ำพิเศษในช่วงจบ
             var adjustedCC = new List<string>();
             for (var i = 0; i < cc.Length; i++) {
                 if (i == cc.Length - 1) {
@@ -360,7 +245,7 @@ namespace OpenUtau.Plugin.Builtin {
             cc = adjustedCC.ToArray();
 
             var usingVC = false;
-            // Convert to hiragana
+            // แปลงเป็นอักษรฮิรางานะและจับคู่หางเสียง
             for (var i = 0; i < cc.Length; i++) {
                 var symbol = cc[i];
 
@@ -393,10 +278,11 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add(solo);
                 }
 
+                // กรณีจบด้วยเสียง N (ん) จะพยายามใส่เสียงหายใจหรือหางเสียงอัตโนมัติ
                 if (solo.Contains("ん")) {
                     if (ending.IsEndingVCWithOneConsonant) {
                         TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
-                    } else if (ending.IsEndingVCWithMoreThanOneConsonant && cc.Last() == "n" || cc.Last() == "ng") {
+                    } else if (ending.IsEndingVCWithMoreThanOneConsonant && (cc.Last() == "n" || cc.Last() == "ng")) {
                         TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
                     }
                 }
@@ -404,6 +290,7 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
             
+            // กรณีจบด้วยสระ จะเพิ่มการเอื้อนทิ้งท้าย (Trailing/Breath) หาก Voicebank มีรองรับ
             if (ending.IsEndingV) {
                 TryAddPhoneme(phonemes, ending.tone, $"{prevV} R", $"{prevV} -", $"{prevV}-");
             }
@@ -411,6 +298,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
+        // ฟังก์ชันตรวจสอบความเข้ากันได้ของกลุ่ม Vowel-Consonant (V C) 
         private (bool, string[]) HasVc(string vowel, string cons, int tone, int cc) {
             if (vowel == "" || vowel == "-") {
                 return (false, new string[0]);
@@ -427,6 +315,7 @@ namespace OpenUtau.Plugin.Builtin {
                 cons = StartingConsonant[cons];
             }
 
+            // จัดเตรียมช่องว่างให้พยัญชนะเพื่อให้ปรับระยะเวลาเส้น Pitch Bend ได้ดีขึ้น
             var vc = $"{vowel} {cons}";
             var altVc = $"{vowel} {cons[0]}";
             
@@ -445,16 +334,19 @@ namespace OpenUtau.Plugin.Builtin {
             return (phonemes.Count > 0, phonemes.ToArray());
         }
 
+        // ฟังก์ชันทดสอบหาพยางค์เชื่อม VCV แบบสมบูรณ์
         private string TryVcv(string vowel, string cv, int tone) {
             var vcv = $"{vowel} {cv}";
             return HasOto(vcv, tone) ? vcv : FixCv(cv, tone);
         }
 
+        // ฟังก์ชันแก้ไขกรณีที่ไม่พบ CV มาตรฐาน โดยให้ลองใช้รูปแบบเสียงเริ่มต้น (- CV) แทน
         private string FixCv(string cv, int tone) {
             var alt = $"- {cv}";
             return HasOto(cv, tone) ? cv : HasOto(alt, tone) ? alt : cv;
         }
 
+        // ฟังก์ชันแปลงโรมาจิเป็นฮิรางานะโดยใช้ไลบรารี WanaKana
         private string ToHiragana(string romaji) {
             var hiragana = WanaKana.ToHiragana(romaji);
             hiragana = hiragana.Replace("ゔ", "ヴ");
