@@ -1,10 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  
+  <!-- ============================================================ -->
+  <!-- GENERAL SETTINGS & TARGET FRAMEWORK                          -->
+  <!-- ============================================================ -->
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
     <TargetFramework>net8.0-windows</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
@@ -16,6 +21,10 @@
     <DebugType>embedded</DebugType>
     <StartupObject />
   </PropertyGroup>
+
+  <!-- ============================================================ -->
+  <!-- MACOS APP BUNDLE CONFIGURATION (INFO.PLIST)                 -->
+  <!-- ============================================================ -->
   <PropertyGroup>
     <CFBundleName>OpenUtau</CFBundleName>
     <CFBundleDisplayName>OpenUtau</CFBundleDisplayName>
@@ -47,34 +56,49 @@
                 </array>
             </dict>
         </array>          
-  </CFBundleDocumentTypes>
+    </CFBundleDocumentTypes>
   </PropertyGroup>
+
+  <!-- ============================================================ -->
+  <!-- RESOURCES & PACKAGES                                         -->
+  <!-- ============================================================ -->
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
+
   <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.4" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.4" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.4" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.3" />
-    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
-    <PackageReference Include="Avalonia" Version="11.2.4" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.4" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.4" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.4" />
     <PackageReference Include="Serilog" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.2" />
   </ItemGroup>
+
+  <!-- ============================================================ -->
+  <!-- PROJECT REFERENCES                                           -->
+  <!-- ============================================================ -->
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
+
+  <!-- ============================================================ -->
+  <!-- NATIVE RUNTIMES & LIBRARIES (CONDITIONAL)                    -->
+  <!-- ============================================================ -->
   <ItemGroup Condition="'$(Configuration)'=='DEBUG'">
     <None Include="..\runtimes\**" CopyToOutputDirectory="PreserveNewest" LinkBase="runtimes\" />
   </ItemGroup>
+
+  <!-- Windows -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
     <None Include="..\runtimes\win-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
@@ -84,29 +108,29 @@
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-arm64'">
     <None Include="..\runtimes\win-arm64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
+
+  <!-- macOS -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
     <None Include="..\runtimes\osx\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">
-    <None Include="..\runtimes\osx\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
-  </ItemGroup>
+
+  <!-- Linux -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
     <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
     <None Include="..\runtimes\linux-arm64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
+
+  <!-- ============================================================ -->
+  <!-- UI CONTROL UPDATES & LOCALIZATION                            -->
+  <!-- ============================================================ -->
   <ItemGroup>
     <Compile Update="Controls\NotePropertyExpression.axaml.cs">
       <DependentUpon>NotePropertyExpression.axaml</DependentUpon>
     </Compile>
     <Compile Update="Controls\NotePropertiesControl.axaml.cs">
       <DependentUpon>NotePropertiesControl.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Resources\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Update="Views\PasteParamDialog.axaml.cs">
       <DependentUpon>PasteParamDialog.axaml</DependentUpon>
@@ -117,11 +141,18 @@
     <Compile Update="Views\TrackColorDialog.axaml.cs">
       <DependentUpon>TrackColorDialog.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Update="Resources\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
 </Project>
