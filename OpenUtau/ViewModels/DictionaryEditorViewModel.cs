@@ -478,9 +478,13 @@ namespace OpenUtau.App.ViewModels {
                         lines.Add($"{row["Key"]}={row["Value"]}");
                     } 
                     else {
-                        string val = row["Value"] ?? "";
-                        if (!string.IsNullOrEmpty(val)) {
-                            lines.Add(val);
+                        if (cat.Columns.Count > 0) {
+                            string firstCol = cat.Columns[0];
+                            string val = row[firstCol] ?? "";
+                            
+                            if (!string.IsNullOrEmpty(val)) {
+                                lines.Add(val);
+                            }
                         }
                     }
                 }
