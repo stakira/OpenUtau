@@ -34,9 +34,11 @@ namespace OpenUtau.App.ViewModels {
 
     public class DictionaryEditorViewModel : ViewModelBase {
         private string _currentDirectory = string.Empty;
+        private System.Text.Encoding _currentPresampEncoding = System.Text.Encoding.UTF8;
         private Dictionary<string, string> _filePaths = new();
         public ObservableCollection<string> AvailableFiles { get; } = new();
         [Reactive] public string SelectedFile { get; set; } = string.Empty;
+        public string CurrentFileType => !string.IsNullOrEmpty(SelectedFile) && SelectedFile.EndsWith(".ini", StringComparison.OrdinalIgnoreCase) ? "ini" : "yaml";
 
         // Dynamic categories for new tables
         public ObservableCollection<YamlCategory> Categories { get; } = new();
@@ -107,10 +109,9 @@ namespace OpenUtau.App.ViewModels {
         public DictionaryEditorViewModel() {
             this.WhenAnyValue(x => x.SelectedFile)
                 .Subscribe(file => {
+                    this.RaisePropertyChanged(nameof(CurrentFileType)); 
                     if (!string.IsNullOrEmpty(file) && !string.IsNullOrEmpty(_currentDirectory)) {
-                        if (_filePaths.TryGetValue(file, out string? relativePath) && relativePath != null) {
-                            LoadYaml(Path.Combine(_currentDirectory, relativePath));
-                        }
+                        LoadSelectedFile(); 
                     }
                 });
         }
@@ -385,6 +386,131 @@ namespace OpenUtau.App.ViewModels {
             _currentDirectory = string.Empty;
             AvailableFiles.Clear();
             Categories.Clear();
+        }
+        public void LoadPresamp(string filePath) {
+            Categories.Clear();
+            if (!File.Exists(filePath)) return;
+            
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            byte[] rawBytes = File.ReadAllBytes(filePath);
+            var strictUtf8 = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+            try {
+                strictUtf8.GetString(rawBytes);
+                _currentPresampEncoding = new System.Text.UTF8Encoding(true); 
+            } 
+            catch (System.Text.DecoderFallbackException) {
+                _currentPresampEncoding = System.Text.Encoding.GetEncoding("shift_jis");
+            }
+            string[] lines = File.ReadAllLines(filePath, _currentPresampEncoding);
+            YamlCategory? currentCategory = null;
+
+            foreach (var rawLine in lines) {
+                string line = rawLine.Trim();
+                if (string.IsNullOrEmpty(line)) continue;
+
+                if (line.StartsWith("[") && line.EndsWith("]")) {
+                    string sectionName = line.Substring(1, line.Length - 2);
+                    currentCategory = new YamlCategory { Name = sectionName };
+                    Categories.Add(currentCategory);
+
+                    if (sectionName == "VOWEL") {
+                        currentCategory.Columns = new List<string> { "ID", "Base", "Phonemes", "Vol" };
+                    } else if (sectionName == "CONSONANT") {
+                        currentCategory.Columns = new List<string> { "ID", "Phonemes", "Crossfade" };
+                    } else if (sectionName == "REPLACE" || sectionName == "ALIAS") {
+                        currentCategory.Columns = new List<string> { "Key", "Value" };
+                    } else {
+                        currentCategory.Columns = new List<string> { "Value" };
+                    }
+                    continue;
+                }
+
+                if (currentCategory == null) continue;
+                var newRow = new DynamicYamlRow();
+                
+                if (currentCategory.Name == "VOWEL") {
+                    var parts = line.Split('=');
+                    newRow["ID"] = parts.Length > 0 ? parts[0] : "";
+                    newRow["Base"] = parts.Length > 1 ? parts[1] : "";
+                    newRow["Phonemes"] = parts.Length > 2 ? parts[2] : "";
+                    newRow["Vol"] = parts.Length > 3 ? parts[3] : "";
+                } 
+                else if (currentCategory.Name == "CONSONANT") {
+                    var parts = line.Split('=');
+                    newRow["ID"] = parts.Length > 0 ? parts[0] : "";
+                    newRow["Phonemes"] = parts.Length > 1 ? parts[1] : "";
+                    newRow["Crossfade"] = parts.Length > 2 ? parts[2] : "";
+                } 
+                else if (currentCategory.Name == "REPLACE" || currentCategory.Name == "ALIAS") {
+                    var parts = line.Split(new[] { '=' }, 2);
+                    newRow["Key"] = parts.Length > 0 ? parts[0] : "";
+                    newRow["Value"] = parts.Length > 1 ? parts[1] : "";
+                } 
+                else {
+                    // Single value lists like [PRIORITY], [APPEND], [PITCH]
+                    newRow["Value"] = line;
+                }
+
+                currentCategory.Rows.Add(newRow);
+            }
+
+            if (Categories.Count > 0) SelectedCategory = Categories[0];
+            
+            // FIX 2: Added the missing semicolon!
+            ColumnsChanged?.Invoke(); 
+        }
+        public void SavePresamp(string filePath) {
+            var lines = new List<string>();
+
+            foreach (var cat in Categories) {
+                lines.Add($"[{cat.Name}]");
+
+                foreach (var row in cat.Rows) {
+                    if (cat.Name == "VOWEL") {
+                        lines.Add($"{row["ID"]}={row["Base"]}={row["Phonemes"]}={row["Vol"]}");
+                    } 
+                    else if (cat.Name == "CONSONANT") {
+                        lines.Add($"{row["ID"]}={row["Phonemes"]}={row["Crossfade"]}");
+                    } 
+                    else if (cat.Name == "REPLACE" || cat.Name == "ALIAS") {
+                        lines.Add($"{row["Key"]}={row["Value"]}");
+                    } 
+                    else {
+                        string val = row["Value"] ?? "";
+                        if (!string.IsNullOrEmpty(val)) {
+                            lines.Add(val);
+                        }
+                    }
+                }
+            }
+
+            File.WriteAllLines(filePath, lines, _currentPresampEncoding);
+        }
+        public void LoadSelectedFile() {
+            if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) return;
+            if (_filePaths.TryGetValue(SelectedFile, out string? relativePath) && relativePath != null) {
+                string targetPath = Path.Combine(_currentDirectory, relativePath);
+                if (SelectedFile.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)) {
+                    LoadPresamp(targetPath);
+                } else {
+                    LoadYaml(targetPath);
+                }
+            }
+        }
+
+        public void SaveCurrentFile() {
+            if (string.IsNullOrEmpty(SelectedFile) || string.IsNullOrEmpty(_currentDirectory)) return;
+            
+            if (_filePaths.TryGetValue(SelectedFile, out string? relativePath) && relativePath != null) {
+                string targetPath = Path.Combine(_currentDirectory, relativePath);
+                if (SelectedFile.EndsWith(".ini", StringComparison.OrdinalIgnoreCase)) {
+                    SavePresamp(targetPath);
+                } else {
+                    SaveYaml(); 
+                }
+            }
         }
         public void LoadYaml(string filePath) {
             Categories.Clear();

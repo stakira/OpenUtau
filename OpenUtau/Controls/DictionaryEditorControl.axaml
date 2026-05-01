@@ -105,8 +105,36 @@
         </Border>
 
         <Grid Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="*,*" Margin="0,10,0,0">
-          <Button Grid.Column="0" Click="OnOpenFileClicked" Content="{DynamicResource dict.file.open}" ToolTip.Tip="{DynamicResource dict.file.open.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,2,0"/>
-          <Button Grid.Column="1" Command="{Binding SaveYaml}" Content="{DynamicResource dict.file.save}" ToolTip.Tip="{DynamicResource dict.file.save.tooltip}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,0"/>
+          <Button Grid.Column="0" Click="OnOpenFileClicked" Tag="{Binding CurrentFileType}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,0,2,0">
+            <Button.Styles>
+              <!-- yaml-->
+              <Style Selector="Button">
+                <Setter Property="Content" Value="{DynamicResource dict.file.open}"/>
+                <Setter Property="ToolTip.Tip" Value="{DynamicResource dict.file.open.tooltip}"/>
+              </Style>
+              <!-- presamp -->
+              <Style Selector="Button[Tag=ini]">
+                <Setter Property="Content" Value="{DynamicResource dict.file.open.ini}"/>
+                <Setter Property="ToolTip.Tip" Value="{DynamicResource dict.file.open.ini.tooltip}"/>
+              </Style>
+            </Button.Styles>
+          </Button>
+
+          <Button Grid.Column="1" Command="{Binding SaveCurrentFile}" Tag="{Binding CurrentFileType}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="2,0,0,0">
+            <Button.Styles>
+              <!-- yaml -->
+              <Style Selector="Button">
+                <Setter Property="Content" Value="{DynamicResource dict.file.save}"/>
+                <Setter Property="ToolTip.Tip" Value="{DynamicResource dict.file.save.tooltip}"/>
+              </Style>
+              
+              <!-- presamp -->
+              <Style Selector="Button[Tag=ini]">
+                <Setter Property="Content" Value="{DynamicResource dict.file.save.ini}"/>
+                <Setter Property="ToolTip.Tip" Value="{DynamicResource dict.file.save.ini.tooltip}"/>
+              </Style>
+            </Button.Styles>
+          </Button>
         </Grid>
 
       </Grid>

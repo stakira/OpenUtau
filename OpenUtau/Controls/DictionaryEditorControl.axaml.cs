@@ -159,8 +159,13 @@ namespace OpenUtau.App.Controls {
             var excludedFiles = new HashSet<string> { "character.yaml", "dsconfig.yaml", "vocoder.yaml" };
 
             var validFiles = allFiles
-                .Where(f => (f.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase))
-                         && !excludedFiles.Contains(Path.GetFileName(f).ToLower()))
+                .Where(f => {
+                    string fileName = Path.GetFileName(f).ToLower();
+                    bool isValidYaml = fileName.EndsWith(".yaml") && !excludedFiles.Contains(fileName);
+                    bool isPresamp = fileName == "presamp.ini";
+                    
+                    return isValidYaml || isPresamp;
+                })
                 .ToList();
 
             // Group by filename to find duplicates
@@ -177,7 +182,6 @@ namespace OpenUtau.App.Controls {
                     displayNames.Add(fileName);
                     fileMap[fileName] = relativePath;
                 } else {
-                    // Duplicate file names exist, so we append the folder name
                     foreach (var filePath in group) {
                         var fileName = Path.GetFileName(filePath);
                         var folderName = Path.GetFileName(Path.GetDirectoryName(filePath));
@@ -197,7 +201,7 @@ namespace OpenUtau.App.Controls {
                 }
             }
 
-            Log.Information($"DictionaryEditor: Found {displayNames.Count} valid YAML dictionaries.");
+            Log.Information($"DictionaryEditor: Found {displayNames.Count} valid dictionary/presamp files.");
             ViewModel.SetSingerContext(singer.Location, fileMap);
         }
     }

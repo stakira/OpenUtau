@@ -861,6 +861,10 @@ General
   <system:String x:Key="dict.file.open.tooltip">Open in Text Editor</system:String>
   <system:String x:Key="dict.file.save">Save YAML</system:String>
   <system:String x:Key="dict.file.save.tooltip">Saves the YAML file</system:String>
+  <system:String x:Key="dict.file.save.ini">Save Presamp</system:String>
+  <system:String x:Key="dict.file.save.ini.tooltip">Save changes to presamp.ini</system:String>
+  <system:String x:Key="dict.file.open.ini">Open Presamp</system:String>
+  <system:String x:Key="dict.file.open.ini.tooltip">Browse for an existing presamp.ini file</system:String>
   <system:String x:Key="dict.editor">Editor</system:String>
   <system:String x:Key="dict.entry.delete">Delete Entry</system:String>
   <system:String x:Key="dict.entry.delete.tooltip">Deletes the selected row</system:String>
