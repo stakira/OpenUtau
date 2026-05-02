@@ -160,7 +160,7 @@ namespace OpenUtau.Core.DiffSinger {
         public string? velocity_timestep = null;
         public string? velocity = null;
 
-        static string FormatSeconds(double ms) {
+        static string FormatMsAsSeconds(double ms) {
             return (ms / 1000).ToString("G9", CultureInfo.InvariantCulture);
         }
 
@@ -172,8 +172,8 @@ namespace OpenUtau.Core.DiffSinger {
             note_seq = String.Join(" ", 
                 script.noteSeq
                 .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
-            ph_dur = String.Join(" ",script.phDurMs.Select(FormatSeconds));
-            note_dur = String.Join(" ",script.noteDurMs.Select(FormatSeconds));
+            ph_dur = String.Join(" ",script.phDurMs.Select(FormatMsAsSeconds));
+            note_dur = String.Join(" ",script.noteDurMs.Select(FormatMsAsSeconds));
             note_dur_seq = ph_dur;
             note_slur = String.Join(" ", script.note_slur);
             is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));

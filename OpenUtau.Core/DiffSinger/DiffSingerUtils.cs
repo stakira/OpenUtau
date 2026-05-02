@@ -25,7 +25,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (singer == null) {
                 throw new InvalidDataException("Singer is not DiffSingerSinger.");
             }
-            return singer.dsConfig.frameMs() * DiffSingerUtils.headFrames;
+            return GetHeadMs(singer.dsConfig.frameMs());
         }
 
         public static float GetTailMs(double frameMs) {
@@ -37,7 +37,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (singer == null) {
                 throw new InvalidDataException("Singer is not DiffSingerSinger.");
             }
-            return singer.dsConfig.frameMs() * DiffSingerUtils.tailFrames;
+            return GetTailMs(singer.dsConfig.frameMs());
         }
 
         public static int[] DurationsMsToFrames(IEnumerable<double> durationsMs, double frameMs) {
@@ -99,7 +99,11 @@ namespace OpenUtau.Core.DiffSinger {
             int offset = 0;
             for (int i = 0; i < wordDiv.Length; ++i) {
                 int length = (int)wordDiv[i];
-                wordDur[i] = phDur.Skip(offset).Take(length).Sum();
+                long sum = 0;
+                for (int j = 0; j < length; ++j) {
+                    sum += phDur[offset + j];
+                }
+                wordDur[i] = sum;
                 offset += length;
             }
             if (wordDur.Sum() != phDur.Sum()) {

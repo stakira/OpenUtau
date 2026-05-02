@@ -90,11 +90,6 @@ namespace OpenUtau.Core.DiffSinger
             return speakerEmbedManager;
         }
 
-        void SetRange<T>(T[] list, T value, int startIndex, int endIndex){
-            for(int i=startIndex;i<endIndex;i++){
-                list[i] = value;
-            }
-        }
 
         int PhonemeTokenize(string phoneme){
             bool success = phonemeTokens.TryGetValue(phoneme, out int token);
@@ -219,22 +214,15 @@ namespace OpenUtau.Core.DiffSinger
                 foreach(var restGroup in restGroups){
                     if(restGroup.Item1 == 0){
                         //If the first note is a rest note, set the tone to the tone of the first non-rest note
-                        SetRange<float>(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
+                        Array.Fill(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
                     } else if(restGroup.Item2 == note_rest.Count){
                         //If the last note is a rest note, set the tone to the tone of the last non-rest note
-                        SetRange<float>(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count);
+                        Array.Fill(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count - restGroup.Item1);
                     } else {
                         //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
-                        SetRange<float>(note_midi,
-                            note_midi[restGroup.Item1-1],
-                            restGroup.Item1,
-                            (restGroup.Item1 + restGroup.Item2 + 1)/2
-                        );
-                        SetRange<float>(note_midi,
-                            note_midi[restGroup.Item2],
-                            (restGroup.Item1 + restGroup.Item2 + 1)/2,
-                            restGroup.Item2
-                        );
+                        int mid = (restGroup.Item1 + restGroup.Item2 + 1) / 2;
+                        Array.Fill(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, mid - restGroup.Item1);
+                        Array.Fill(note_midi, note_midi[restGroup.Item2], mid, restGroup.Item2 - mid);
                     }
                 }
             }
