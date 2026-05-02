@@ -144,11 +144,16 @@ namespace OpenUtau.Core.DiffSinger {
             for (int i = 0; i < length; i++) {
                 double posMs = startMs + i * frameMs;
                 int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
-                int index = Math.Max(0, (int)((double)ticks / interval));
-                if (index < curve.Length) {
-                    result[i] = convert(curve[index]);
-                } else {
+                double index = (double)ticks / interval;
+                if (index <= 0) {
+                    result[i] = convert(curve[0]);
+                } else if (index >= curve.Length - 1) {
                     result[i] = convert(curve[^1]);
+                } else {
+                    int index0 = (int)Math.Floor(index);
+                    int index1 = index0 + 1;
+                    double value = curve[index0] + (curve[index1] - curve[index0]) * (index - index0);
+                    result[i] = convert(value);
                 }
             }
             return result;
@@ -195,33 +200,37 @@ namespace OpenUtau.Core.DiffSinger {
         public static float[] ResamplePaddedCurve(
                 float[] curve, int length,
                 int sourceHeadFrames, int sourceTailFrames,
-                int targetHeadFrames, int targetTailFrames) {
+                int targetHeadFrames, int targetTailFrames,
+                float sourceFrameMs, float targetFrameMs) {
             if (curve == null || curve.Length == 0) {
                 return null;
             }
             if (length == curve.Length
                     && sourceHeadFrames == targetHeadFrames
-                    && sourceTailFrames == targetTailFrames) {
+                    && sourceTailFrames == targetTailFrames
+                    && Math.Abs(sourceFrameMs - targetFrameMs) < 0.001f) {
                 return curve;
             }
             int sourceBodyFrames = curve.Length - sourceHeadFrames - sourceTailFrames;
             int targetBodyFrames = length - targetHeadFrames - targetTailFrames;
             if (sourceBodyFrames < 0 || targetBodyFrames < 0) {
-                return ResampleCurve(curve, length);
+                return ResampleCurve(curve, length, sourceFrameMs, targetFrameMs);
             }
 
             var result = new float[length];
-            CopyResampledSegment(curve, 0, sourceHeadFrames, result, 0, targetHeadFrames);
+            CopyResampledSegment(curve, 0, sourceHeadFrames, result, 0, targetHeadFrames,
+                sourceFrameMs, targetFrameMs);
             CopyResampledSegment(curve, sourceHeadFrames, sourceBodyFrames,
-                result, targetHeadFrames, targetBodyFrames);
+                result, targetHeadFrames, targetBodyFrames, sourceFrameMs, targetFrameMs);
             CopyResampledSegment(curve, curve.Length - sourceTailFrames, sourceTailFrames,
-                result, length - targetTailFrames, targetTailFrames);
+                result, length - targetTailFrames, targetTailFrames, sourceFrameMs, targetFrameMs);
             return result;
         }
 
         static void CopyResampledSegment(
                 float[] source, int sourceStart, int sourceLength,
-                float[] target, int targetStart, int targetLength) {
+                float[] target, int targetStart, int targetLength,
+                float sourceFrameMs, float targetFrameMs) {
             if (targetLength <= 0) {
                 return;
             }
@@ -231,8 +240,35 @@ namespace OpenUtau.Core.DiffSinger {
             }
             var segment = new float[sourceLength];
             Array.Copy(source, sourceStart, segment, 0, sourceLength);
-            var resampled = ResampleCurve(segment, targetLength);
+            var resampled = ResampleCurve(segment, targetLength, sourceFrameMs, targetFrameMs);
             Array.Copy(resampled, 0, target, targetStart, targetLength);
+        }
+
+        public static float[] ResampleCurve(float[] curve, int length, float sourceFrameMs, float targetFrameMs) {
+            if (curve == null || curve.Length == 0) {
+                return null;
+            }
+            if (length == curve.Length && Math.Abs(sourceFrameMs - targetFrameMs) < 0.001f) {
+                return curve;
+            }
+            if (length == 1 || curve.Length == 1 || sourceFrameMs <= 0 || targetFrameMs <= 0) {
+                return ResampleCurve(curve, length);
+            }
+
+            float[] result = new float[length];
+            for (int i = 0; i < length; i++) {
+                var x = i * targetFrameMs / sourceFrameMs;
+                if (x <= 0) {
+                    result[i] = curve[0];
+                } else if (x >= curve.Length - 1) {
+                    result[i] = curve[^1];
+                } else {
+                    int x0 = (int)Math.Floor(x);
+                    int x1 = x0 + 1;
+                    result[i] = LinearF(x0, x1, curve[x0], curve[x1], x);
+                }
+            }
+            return result;
         }
 
         /// <summary>
