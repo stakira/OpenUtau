@@ -5,8 +5,8 @@ using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using OpenUtau.App.ViewModels;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
@@ -40,6 +40,8 @@ namespace OpenUtau.App.Controls {
             get => _items;
             set => SetAndRaise(ItemsProperty, ref _items, value);
         }
+
+        public Separator? TrackMover { get; private set; }
 
         private double trackHeight;
         private double trackOffset;
@@ -104,7 +106,17 @@ namespace OpenUtau.App.Controls {
             base.OnInitialized();
             trackAdder = new TrackAdder();
             trackAdder.Bind(this);
+            TrackMover = new Separator() {
+                Height = 2,
+                Width = 300,
+                IsVisible = false,
+                Margin = new(0)
+            };
+            TrackMover.Bind(BackgroundProperty,
+                this.GetResourceObservable("SystemAccentColor")
+                    .Select(c => new SolidColorBrush((Color)c!)));
             Children.Add(trackAdder);
+            Children.Add(TrackMover);
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {

@@ -201,6 +201,67 @@ namespace OpenUtau.App.Controls {
             textBox.IsVisible = true;
             textBox.Focus();
         }
+
+        private void MoveHandlePressed(object? sender, PointerPressedEventArgs e)
+        {
+            var control = sender as Control;
+            var pointer = e.GetCurrentPoint(control);
+            if (control != null && pointer.Properties.IsLeftButtonPressed) {
+                e.Pointer.Capture(control);
+            }
+        }
+
+        private void MoveHandleReleased(object? sender, PointerReleasedEventArgs e) {
+            if (e.InitialPressMouseButton != MouseButton.Left) {
+                return;
+            }
+            if (Parent is TrackHeaderCanvas canvas) {
+                Cursor = null;
+                Point point = e.GetPosition(canvas);
+                int tracksMaxIdx = DocManager.Inst.Project.tracks.Count - 1;
+                double sizeHidden = Math.Abs(Offset.Y);
+                if (point.Y > 0 && track != null) {
+                    int position = (int) Math.Floor((sizeHidden + point.Y) / TrackHeight);
+                    int idx = tracksMaxIdx < position ? tracksMaxIdx : position;
+
+                    if (track.TrackNo != idx) {
+                        DocManager.Inst.StartUndoGroup("command.track.order");
+                        DocManager.Inst.ExecuteCmd(new SetTrackNoCommand(DocManager.Inst.Project, track, idx));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+
+                }
+                if (canvas.TrackMover != null) {
+                    canvas.TrackMover.IsVisible = false;
+                }
+            }
+            e.Pointer.Capture(null);
+        }
+
+        private void MoveHandleMoved(object? sender, PointerEventArgs e) {
+            var control = sender as Control;
+            var pointer = e.GetCurrentPoint(control);
+            if (pointer.Properties.IsLeftButtonPressed
+                && e.Pointer.Captured == control
+                && Parent is TrackHeaderCanvas canvas)
+            {
+                if (canvas.TrackMover == null) {
+                    return;
+                }
+                canvas.TrackMover.IsVisible = true;
+                Cursor = ViewConstants.cursorSizeNS;
+                double maxHeight = DocManager.Inst.Project.tracks.Count * TrackHeight;
+                Point point = e.GetPosition(canvas);
+                double offset = Math.Abs(Offset.Y);
+                double leftOver = offset % TrackHeight;
+                if (point.Y > 0 && track != null) {
+                    double position = Math.Floor((point.Y + leftOver) / TrackHeight) * TrackHeight;
+                    double finalPos = maxHeight < offset + position ? maxHeight - offset : position - leftOver;
+                    Canvas.SetTop(canvas.TrackMover, finalPos - 1);
+                }
+            }
+        }
+
         private void FinishVolumeOrPanInput(object sender, bool commit) {
             if (sender == VolumeTextBox) {
                 if (!VolumeTextBox.IsVisible) {
