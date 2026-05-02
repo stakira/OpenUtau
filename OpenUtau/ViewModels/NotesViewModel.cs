@@ -289,12 +289,21 @@ namespace OpenUtau.App.ViewModels {
             .Subscribe(showNoteParams => {
                 Preferences.Default.ShowNoteParams = showNoteParams;
                 Preferences.Save();
+                
+                if (showNoteParams) {
+                    ShowDictionaryEditor = false;
+                }
             });
+            
             ShowDictionaryEditor = Preferences.Default.ShowDictionaryEditor;
             this.WhenAnyValue(x => x.ShowDictionaryEditor)
             .Subscribe(show => {
                 Preferences.Default.ShowDictionaryEditor = show;
                 Preferences.Save();
+                
+                if (show) {
+                    ShowNoteParams = false;
+                }
             });
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
