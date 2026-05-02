@@ -291,6 +291,8 @@ namespace OpenUtau.Core.DiffSinger
             return token;
         }
         
+        protected virtual string[] PostProcessWordSymbols(Note[][] phrase, int wordIndex, string[] symbols) { return symbols; }
+
         protected override void ProcessPart(Note[][] phrase) {
             float padding = 500f;//Padding time for consonants at the beginning of a sentence, ms
             float frameMs = dsConfig.frameMs();
@@ -307,6 +309,7 @@ namespace OpenUtau.Core.DiffSinger
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
                 var symbols = GetSymbols(word[0]).Where(s => phonemeTokens.ContainsKey(s)).ToArray();
+                symbols = PostProcessWordSymbols(phrase, wordIndex, symbols);
                 if (symbols == null || symbols.Length == 0) {
                     symbols = new string[] { defaultPause };
                     wordFound[wordIndex] = false;
