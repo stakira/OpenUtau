@@ -221,7 +221,7 @@ namespace OpenUtau.App.Controls {
                 int tracksMaxIdx = DocManager.Inst.Project.tracks.Count - 1;
                 double sizeHidden = Math.Abs(Offset.Y);
                 if (point.Y > 0 && track != null) {
-                    int position = (int) Math.Floor((sizeHidden + point.Y) / TrackHeight);
+                    int position = (int) Math.Round((sizeHidden + point.Y) / TrackHeight);
                     int idx = tracksMaxIdx < position ? tracksMaxIdx : position;
 
                     if (track.TrackNo != idx) {
@@ -255,7 +255,7 @@ namespace OpenUtau.App.Controls {
                 double offset = Math.Abs(Offset.Y);
                 double leftOver = offset % TrackHeight;
                 if (point.Y > 0 && track != null) {
-                    double position = Math.Floor((point.Y + leftOver) / TrackHeight) * TrackHeight;
+                    double position = Math.Round((point.Y + leftOver) / TrackHeight) * TrackHeight;
                     double finalPos = maxHeight < offset + position ? maxHeight - offset : position - leftOver;
                     Canvas.SetTop(canvas.TrackMover, finalPos - 1);
                 }
