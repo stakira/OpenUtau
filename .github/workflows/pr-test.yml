@@ -20,7 +20,7 @@ jobs:
             arch: linux-x64
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
 
     - uses: actions/setup-dotnet@v4
       with:
@@ -33,3 +33,4 @@ jobs:
 
     - name: test
       run: dotnet test OpenUtau.Test
+      timeout-minutes: 30
