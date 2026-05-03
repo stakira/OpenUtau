@@ -41,7 +41,7 @@ namespace OpenUtau.App.Controls {
             set => SetAndRaise(ItemsProperty, ref _items, value);
         }
 
-        public Separator? TrackMover { get; private set; }
+        public Border? TrackMover { get; private set; }
 
         private double trackHeight;
         private double trackOffset;
@@ -106,15 +106,18 @@ namespace OpenUtau.App.Controls {
             base.OnInitialized();
             trackAdder = new TrackAdder();
             trackAdder.Bind(this);
-            TrackMover = new Separator() {
-                Height = 2,
+            TrackMover = new Border() {
+                Height = TrackHeight,
                 Width = 300,
                 IsVisible = false,
-                Margin = new(0)
+                Margin = new(1),
+                BorderThickness = new(2),
+                CornerRadius = new(2)
             };
-            TrackMover.Bind(BackgroundProperty,
+            TrackMover.Bind(Border.BorderBrushProperty,
                 this.GetResourceObservable("SystemAccentColor")
                     .Select(c => new SolidColorBrush((Color)c!)));
+            TrackMover.Bind(HeightProperty, this.GetObservable(TrackHeightProperty));
             Children.Add(trackAdder);
             Children.Add(TrackMover);
         }

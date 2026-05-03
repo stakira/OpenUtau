@@ -250,12 +250,12 @@ namespace OpenUtau.App.Controls {
                 }
                 canvas.TrackMover.IsVisible = true;
                 Cursor = ViewConstants.cursorSizeNS;
-                double maxHeight = DocManager.Inst.Project.tracks.Count * TrackHeight;
+                double maxHeight = (DocManager.Inst.Project.tracks.Count - 1) * TrackHeight;
                 Point point = e.GetPosition(canvas);
                 double offset = Math.Abs(Offset.Y);
                 double leftOver = offset % TrackHeight;
                 if (point.Y > 0 && track != null) {
-                    double position = Math.Round((point.Y + leftOver) / TrackHeight) * TrackHeight;
+                    double position = Math.Round((point.Y + leftOver) / TrackHeight - 0.5) * TrackHeight;
                     double finalPos = maxHeight < offset + position ? maxHeight - offset : position - leftOver;
                     Canvas.SetTop(canvas.TrackMover, finalPos - 1);
                 }
