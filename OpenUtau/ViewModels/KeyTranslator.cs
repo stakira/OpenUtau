@@ -45,18 +45,17 @@ namespace OpenUtau.App.ViewModels {
                 "D6" => "6", "D7" => "7", "D8" => "8", "D9" => "9", "D0" => "0",
 
                 // OEM Symbols
-                "OemTilde" => "~",
-                "OemMinus" => "-",
-                "OemPlus" => "=",
-                "OemOpenBrackets" => "[",
-                "OemCloseBrackets" => "]",
-                "OemPipe" => "\\",
-                "OemSemicolon" => ";",
-                "OemQuotes" => "'",
-                "OemComma" => ",",
-                "OemPeriod" => ".",
-                "OemQuestion" => "/",
-                "OemBackslash" => "\\",
+                "OemTilde" or "Oem8" or "Oem3" => "~",
+                "OemMinus" or "OemMinusSign" => "-",
+                "OemPlus" or "OemPlusSign" => "=",
+                "OemOpenBrackets" or "Oem4" => "[",
+                "OemCloseBrackets" or "Oem6" => "]",
+                "OemPipe" or "Oem5" or "OemBackslash" => "\\",
+                "OemSemicolon" or "Oem1" => ";",
+                "OemQuotes" or "Oem7" => "'",
+                "OemComma" or "OemCommaSign" => ",",
+                "OemPeriod" or "OemPeriodSign" => ".",
+                "OemQuestion" or "Oem2" => "/",
 
                 _ => keyName
             };
