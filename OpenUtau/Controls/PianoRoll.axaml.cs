@@ -1389,6 +1389,10 @@ namespace OpenUtau.App.Controls {
 
                 // Lyrics
                 case "EditLyrics":
+                    if (LyricBox != null && LyricBox.IsVisible) {
+                        return false; 
+                    }
+
                     if (notesVm.Selection.Count == 1) {
                         var note = notesVm.Selection.First();
                         LyricBox?.Show(ViewModel.NotesViewModel.Part!, new LyricBoxNote(note), note.lyric);
