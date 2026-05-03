@@ -96,7 +96,7 @@
             <TextBlock Text="{DynamicResource prefs.shortcuts}" Margin="0,10,0,10" FontWeight="Bold"/>
             
             <Grid ColumnDefinitions="*, Auto" Margin="5,0,5,10">
-              <TextBox Grid.Column="0" Text="{Binding ShortcutSearchText}" Watermark="Search by name or key..." />
+              <TextBox Grid.Column="0" Text="{Binding ShortcutSearchText}" Watermark="{DynamicResource prefs.shortcut.search.watermark}" />
               <Button Grid.Column="1" Margin="10,0,0,0" Content="{DynamicResource pianoroll.menu.reset}" Command="{Binding ResetAllShortcuts}" />
             </Grid>
 

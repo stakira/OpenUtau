@@ -642,6 +642,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="shortcut.MoveToNextPartUp">Move to Next Part (Up)</system:String>
   <system:String x:Key="shortcut.MoveToNextPartDown">Move to Next Part (Down)</system:String>
   <system:String x:Key="prefs.shortcut.tooltip">Left click to change. Right click to reset.</system:String>
+  <system:String x:Key="prefs.shortcut.search.watermark">Search by name or key...</system:String>
   <system:String x:Key="prefs.shortcuts.duplicate">The shortcut '{0}' is already assigned to '{1}'.</system:String>
 
   <system:String x:Key="prefs.appearance">Appearance</system:String>
