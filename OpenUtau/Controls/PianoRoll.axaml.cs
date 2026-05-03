@@ -46,17 +46,17 @@ namespace OpenUtau.App.Controls {
 
         private Window RootWindow => (Window) TopLevel.GetTopLevel(this)!;
 
-        private string? GetActionIdForShortcut(Key key, KeyModifiers modifiers) {
-            var normalizedModifiers = modifiers;
-            if (modifiers == cmdKey) {
-                normalizedModifiers = OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
+        string? GetActionIdForShortcut(Key pressedKey, KeyModifiers pressedMods) {
+            foreach (var sc in Preferences.Default.Shortcuts) {
+                if (Enum.TryParse(sc.KeyName, out Key parsedKey) && 
+                    Enum.TryParse(sc.ModifiersName, out KeyModifiers parsedMods)) {
+                    
+                    if (KeyTranslator.IsKeyMatch(parsedKey, pressedKey) && parsedMods == pressedMods) {
+                        return sc.ActionId;
+                    }
+                }
             }
-
-            // Search the user's saved preferences for a match
-            var binding = Preferences.Default.Shortcuts.FirstOrDefault(
-                s => s.KeyName == key.ToString() && s.ModifiersName == normalizedModifiers.ToString());
-            
-            return binding?.ActionId;
+            return null;
         }
 
         public PianoRoll(PianoRollViewModel model) {

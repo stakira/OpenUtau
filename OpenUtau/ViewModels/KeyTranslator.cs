@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Avalonia.Input; // <-- Added to use the Key enum
 
 namespace OpenUtau.App.ViewModels {
     public static class KeyTranslator {
@@ -58,6 +59,27 @@ namespace OpenUtau.App.ViewModels {
                 "OemQuestion" or "Oem2" => "/",
 
                 _ => keyName
+            };
+        }
+
+        /// <summary>
+        /// Fuzzy matcher for cross-platform keyboard quirks.
+        /// If the exact enum doesn't match, it checks known hardware equivalents.
+        /// </summary>
+        public static bool IsKeyMatch(Key savedKey, Key pressedKey) {
+            if (savedKey == pressedKey) return true;
+
+            return savedKey switch {
+                Key.OemPipe => pressedKey == Key.Oem5 || pressedKey == Key.OemBackslash,
+                Key.OemOpenBrackets => pressedKey == Key.Oem4,
+                Key.OemCloseBrackets => pressedKey == Key.Oem6,
+                Key.OemQuotes => pressedKey == Key.Oem7,
+                Key.OemSemicolon => pressedKey == Key.Oem1,
+                Key.OemTilde => pressedKey == Key.Oem3 || pressedKey == Key.Oem8,
+                Key.OemMinus => pressedKey == Key.Subtract,
+                Key.OemPlus => pressedKey == Key.Add,
+                Key.OemQuestion => pressedKey == Key.Oem2,
+                _ => false
             };
         }
     }
