@@ -67,7 +67,7 @@ jobs:
         run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
 
       - name: Build (Windows and Linux)
-        run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
+        run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -p:IlcInstructionSet=sse4.2 -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
 
       - name: Build (MacOS)
