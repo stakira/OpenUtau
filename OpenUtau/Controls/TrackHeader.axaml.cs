@@ -221,7 +221,7 @@ namespace OpenUtau.App.Controls {
                 int tracksMaxIdx = DocManager.Inst.Project.tracks.Count - 1;
                 double sizeHidden = Math.Abs(Offset.Y);
                 if (point.Y > 0 && track != null) {
-                    int position = (int) Math.Round((sizeHidden + point.Y) / TrackHeight);
+                    int position = (int) Math.Round((sizeHidden + point.Y - TrackHeight * 0.5) / TrackHeight);
                     int idx = tracksMaxIdx < position ? tracksMaxIdx : position;
 
                     if (track.TrackNo != idx) {
