@@ -24,7 +24,9 @@ namespace OpenUtau.App.Views {
         }
 
         public void WindowGotFocus(object sender, GotFocusEventArgs e) {
-            pianoRoll.Focus();
+            if (e.Source is PianoRollDetachedWindow) {
+                pianoRoll.Focus();
+            }
         }
 
         public void WindowClosing(object? sender, WindowClosingEventArgs e) {
