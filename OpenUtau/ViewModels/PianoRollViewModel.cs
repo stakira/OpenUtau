@@ -47,6 +47,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
         [Reactive] public CurveViewModel CurveViewModel { get; set; }
+        [Reactive] public Dictionary<string, string> Hotkeys { get; set; } = new Dictionary<string, string>();
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -104,7 +105,23 @@ namespace OpenUtau.App.ViewModels {
 
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
 
+        public void ReloadShortcuts() {
+            var newHotkeys = new Dictionary<string, string>();
+            
+            foreach (var sc in Preferences.Default.Shortcuts) {
+                string mods = sc.ModifiersName
+                    .Replace("None", "")
+                    .Replace(", ", "+");
+                
+                string key = KeyTranslator.GetFriendlyName(sc.KeyName); 
+                newHotkeys[sc.ActionId] = string.IsNullOrEmpty(mods) ? key : $"{mods}+{key}";
+            }
+            
+            Hotkeys = newHotkeys;
+        }
+
         public PianoRollViewModel() {
+            ReloadShortcuts();
             NotesViewModel = new NotesViewModel();
             CurveViewModel = new CurveViewModel();
 

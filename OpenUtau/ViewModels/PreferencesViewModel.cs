@@ -13,6 +13,9 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using OpenUtau.Core.Render;
 using Serilog;
+using Avalonia.Input;
+using System.Collections.ObjectModel;
+using System.Reactive;
 
 namespace OpenUtau.App.ViewModels {
     public class LyricsHelperOption {
@@ -24,7 +27,29 @@ namespace OpenUtau.App.ViewModels {
             return klass.Name;
         }
     }
+    public class ShortcutsRefreshEvent { }
+    public class ShortcutItemViewModel : ViewModelBase {
+        public string ActionName { get; set; } = string.Empty;
+        public string ActionId { get; set; } = string.Empty;
+        
+        [Reactive] public Key Key { get; set; }
+        [Reactive] public KeyModifiers Modifiers { get; set; }
+        [Reactive] public bool IsListening { get; set; }
 
+        public string DisplayString {
+            get {
+                if (IsListening) return ThemeManager.GetString("prefs.shortcuts.listening") ?? "Press keys...";
+                
+                string mods = Modifiers == KeyModifiers.None ? "" : $"{Modifiers} + ";
+                string friendlyKey = KeyTranslator.GetFriendlyName(Key.ToString());
+                return $"{mods}{friendlyKey}";
+            }
+        }
+
+        public void RefreshDisplay() {
+            this.RaisePropertyChanged(nameof(DisplayString));
+        }
+    }
     public class PreferencesViewModel : ViewModelBase {
         // General
         private CultureInfo? language;
@@ -127,7 +152,128 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool RememberVsqx { get; set; }
         public string WinePath => Preferences.Default.WinePath;
 
+        // Shortcuts
+        [Reactive] public ShortcutItemViewModel? ActiveShortcut { get; set; }
+        public void ListenForShortcut(ShortcutItemViewModel item) {
+            // Cancel any existing listening item
+            if (ActiveShortcut != null) {
+                ActiveShortcut.IsListening = false;
+                ActiveShortcut.RefreshDisplay();
+            }
+
+            ActiveShortcut = item;
+            ActiveShortcut.IsListening = true;
+            ActiveShortcut.RefreshDisplay();
+        }
+
+        private void SaveShortcuts() {
+            Preferences.Default.Shortcuts.Clear();
+            // ALWAYS save from the master list, not the filtered search list!
+            foreach (var sc in allShortcuts) { 
+                Preferences.Default.Shortcuts.Add(new Preferences.ShortcutBinding {
+                    ActionId = sc.ActionId,
+                    KeyName = sc.Key.ToString(),
+                    ModifiersName = sc.Modifiers.ToString()
+                });
+            }
+            Preferences.Save();
+            MessageBus.Current.SendMessage(new ShortcutsRefreshEvent());
+        }
+
+        public void AssignShortcut(Key key, KeyModifiers modifiers) {
+            if (ActiveShortcut == null) return;
+            if (key == Key.LeftCtrl || key == Key.RightCtrl || key == Key.LeftShift || key == Key.RightShift || key == Key.LeftAlt || key == Key.RightAlt || key == Key.LWin || key == Key.RWin) {
+                return;
+            }
+
+            var duplicate = allShortcuts.FirstOrDefault(s => s != ActiveShortcut && s.Key == key && s.Modifiers == modifiers);
+            
+            if (duplicate != null) {
+                ActiveShortcut.IsListening = false;
+                ActiveShortcut.RefreshDisplay();
+                ActiveShortcut = null;
+                string formatString = ThemeManager.GetString("prefs.shortcuts.duplicate") ?? "The shortcut '{0}' is already assigned to '{1}'.";
+                string message = string.Format(formatString, duplicate.DisplayString, duplicate.ActionName);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(message));
+                return; 
+            }
+            ActiveShortcut.Key = key;
+            ActiveShortcut.Modifiers = modifiers;
+            ActiveShortcut.IsListening = false;
+            ActiveShortcut.RefreshDisplay();
+            ActiveShortcut = null;
+            SaveShortcuts();
+        }
+
+        public void ResetShortcut(ShortcutItemViewModel item) {
+            var defaults = new Preferences.SerializablePreferences().Shortcuts;
+            var defaultBinding = defaults.FirstOrDefault(s => s.ActionId == item.ActionId);
+            
+            if (defaultBinding != null && 
+                Enum.TryParse<Key>(defaultBinding.KeyName, out var defKey) && 
+                Enum.TryParse<KeyModifiers>(defaultBinding.ModifiersName, out var defMods)) {
+                
+                item.Key = defKey;
+                item.Modifiers = defMods;
+                item.IsListening = false;
+                item.RefreshDisplay();
+                SaveShortcuts();
+            }
+        }
+
+        public void ResetAllShortcuts() {
+            var defaults = new Preferences.SerializablePreferences().Shortcuts;
+            foreach (var item in allShortcuts) {
+                var defaultBinding = defaults.FirstOrDefault(s => s.ActionId == item.ActionId);
+                if (defaultBinding != null && 
+                    Enum.TryParse<Key>(defaultBinding.KeyName, out var defKey) && 
+                    Enum.TryParse<KeyModifiers>(defaultBinding.ModifiersName, out var defMods)) {
+                    
+                    item.Key = defKey;
+                    item.Modifiers = defMods;
+                    item.IsListening = false;
+                    item.RefreshDisplay();
+                }
+            }
+            SaveShortcuts();
+        }
+        private List<ShortcutItemViewModel> allShortcuts = new List<ShortcutItemViewModel>();
+        public ObservableCollection<ShortcutItemViewModel> FilteredShortcuts { get; } = new ObservableCollection<ShortcutItemViewModel>();
+        [Reactive] public string ShortcutSearchText { get; set; } = string.Empty;
+        public ReactiveCommand<ShortcutItemViewModel, Unit> ListenForShortcutCommand { get; }
+
         public PreferencesViewModel() {
+            ListenForShortcutCommand = ReactiveCommand.Create<ShortcutItemViewModel>(ListenForShortcut);
+
+            if (Preferences.Default.Shortcuts != null) {
+                foreach (var binding in Preferences.Default.Shortcuts) {
+                    
+                    // 3. Ensure the strings aren't null before parsing
+                    if (!string.IsNullOrEmpty(binding.KeyName) && 
+                        Enum.TryParse<Key>(binding.KeyName, out var parsedKey) &&
+                        Enum.TryParse<KeyModifiers>(binding.ModifiersName, out var parsedMods)) {
+                        
+                        allShortcuts.Add(new ShortcutItemViewModel {
+                            ActionId = binding.ActionId,
+                            ActionName = ThemeManager.GetString($"shortcut.{binding.ActionId}") ?? binding.ActionId,
+                            Key = parsedKey,
+                            Modifiers = parsedMods
+                        });
+                    }
+                }
+            }
+            this.WhenAnyValue(vm => vm.ShortcutSearchText)
+                .Subscribe(text => {
+                    FilteredShortcuts.Clear();
+                    var lowerText = text?.ToLowerInvariant() ?? string.Empty;
+                    foreach (var sc in allShortcuts) {
+                        if (string.IsNullOrEmpty(lowerText) || 
+                            sc.ActionName.ToLowerInvariant().Contains(lowerText) || 
+                            sc.DisplayString.ToLowerInvariant().Contains(lowerText)) {
+                            FilteredShortcuts.Add(sc);
+                        }
+                    }
+                });
             var audioOutput = PlaybackManager.Inst.AudioOutput;
             if (audioOutput != null) {
                 AudioOutputDevices = audioOutput.GetOutputDevices();

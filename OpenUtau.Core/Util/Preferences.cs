@@ -7,6 +7,7 @@ using System.Text;
 using Newtonsoft.Json;
 using OpenUtau.Core.Render;
 using Serilog;
+using System.Collections.Generic;
 
 namespace OpenUtau.Core.Util {
 
@@ -16,7 +17,11 @@ namespace OpenUtau.Core.Util {
         static Preferences() {
             Load();
         }
-
+        public class ShortcutBinding {
+            public string ActionId { get; set; }
+            public string KeyName { get; set; } 
+            public string ModifiersName { get; set; }
+        }
         public static void Save() {
             try {
                 File.WriteAllText(PathManager.Inst.PrefsFilePath,
@@ -214,6 +219,118 @@ namespace OpenUtau.Core.Util {
             public bool LockUnselectedNotesPitch = true;
             public bool LockUnselectedNotesVibrato = true;
             public bool LockUnselectedNotesExpressions = true;
+            [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+            public List<ShortcutBinding> Shortcuts { get; set; } = new List<ShortcutBinding> {
+                // Playback & Selection
+                new ShortcutBinding { ActionId = "PlayOrPause", KeyName = "Space", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "PlaySelection", KeyName = "Space", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ClearSelection", KeyName = "Escape", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "SelectAll", KeyName = "A", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "DeselectAll", KeyName = "D", ModifiersName = "Control" },
+
+                // UI & Windows
+                new ShortcutBinding { ActionId = "HideDetachedWindow", KeyName = "F4", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "FullScreen", KeyName = "F11", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "OpenPluginMenu", KeyName = "N", ModifiersName = "None" },
+
+                // Lyrics
+                new ShortcutBinding { ActionId = "EditLyrics", KeyName = "Enter", ModifiersName = "None" },
+
+                // Tools
+                new ShortcutBinding { ActionId = "ToolSelect1", KeyName = "D1", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToolSelect2Main", KeyName = "D2", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToolSelect2Alt", KeyName = "D2", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "ToolSelect3", KeyName = "D3", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToolSelect4Main", KeyName = "D4", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToolSelect4Overwrite", KeyName = "D4", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "ToolSelect4Line", KeyName = "D4", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "ToolSelect4LineOverwrite", KeyName = "D4", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "ToolSelect5", KeyName = "D5", ModifiersName = "None" },
+
+                // Expressions
+                new ShortcutBinding { ActionId = "ExpSelect1", KeyName = "D1", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect2", KeyName = "D2", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect3", KeyName = "D3", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect4", KeyName = "D4", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect5", KeyName = "D5", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect6", KeyName = "D6", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect7", KeyName = "D7", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect8", KeyName = "D8", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect9", KeyName = "D9", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ExpSelect10", KeyName = "D0", ModifiersName = "Alt" },
+
+                // Toggles
+                new ShortcutBinding { ActionId = "ToggleFinalPitch", KeyName = "R", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToggleTips", KeyName = "T", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToggleVibrato", KeyName = "U", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "TogglePitch", KeyName = "I", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "TogglePhoneme", KeyName = "O", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToggleExpressions", KeyName = "L", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToggleSnap", KeyName = "P", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "OpenSnapMenu", KeyName = "P", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ToggleNoteParams", KeyName = "OemPipe", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "TogglePlayTone", KeyName = "Y", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ToggleWaveform", KeyName = "W", ModifiersName = "None" },
+
+                // Transposition
+                new ShortcutBinding { ActionId = "TransposeUp", KeyName = "Up", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "TransposeOctaveUp", KeyName = "Up", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "TransposeDown", KeyName = "Down", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "TransposeOctaveDown", KeyName = "Down", ModifiersName = "Control" },
+
+                // Note Movement & Sizing
+                new ShortcutBinding { ActionId = "MoveCursorLeft", KeyName = "Left", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ResizeNotesLeft", KeyName = "Left", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "MoveNotesLeft", KeyName = "Left", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "ExtendSelectionLeft", KeyName = "Left", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "MoveCursorRight", KeyName = "Right", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ResizeNotesRight", KeyName = "Right", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "MoveNotesRight", KeyName = "Right", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "ExtendSelectionRight", KeyName = "Right", ModifiersName = "Shift" },
+
+                // Edit Operations
+                new ShortcutBinding { ActionId = "Undo", KeyName = "Z", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "Redo", KeyName = "Y", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "Copy", KeyName = "C", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "Cut", KeyName = "X", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "Paste", KeyName = "V", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "PastePlain", KeyName = "V", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "PasteParameters", KeyName = "V", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "InsertNote", KeyName = "Insert", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "DeleteNotes", KeyName = "Delete", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "MergeNotes", KeyName = "U", ModifiersName = "Control" },
+
+                // Playhead & Timeline Navigation
+                new ShortcutBinding { ActionId = "PlayheadHome", KeyName = "Home", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "SelectToStart", KeyName = "Home", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "PlayheadEnd", KeyName = "End", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "SelectToEnd", KeyName = "End", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "PlayheadLeft", KeyName = "OemOpenBrackets", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "PlayheadToSelectionStart", KeyName = "OemOpenBrackets", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "PlayheadToViewStart", KeyName = "OemOpenBrackets", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "PlayheadRight", KeyName = "OemCloseBrackets", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "PlayheadToSelectionEnd", KeyName = "OemCloseBrackets", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "PlayheadToViewEnd", KeyName = "OemCloseBrackets", ModifiersName = "Shift" },
+
+                // Scrolling & Zooming
+                new ShortcutBinding { ActionId = "ScrollLeft", KeyName = "A", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ScrollRight", KeyName = "D", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ScrollUp", KeyName = "W", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ScrollDown", KeyName = "S", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "ZoomIn", KeyName = "E", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "ZoomOut", KeyName = "Q", ModifiersName = "None" },
+
+                // Track & Project Operations
+                new ShortcutBinding { ActionId = "SaveProject", KeyName = "S", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "SoloTrack", KeyName = "S", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "MuteTrack", KeyName = "M", ModifiersName = "Shift" },
+                new ShortcutBinding { ActionId = "FocusSelection", KeyName = "F", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "SearchNote", KeyName = "F", ModifiersName = "Control" },
+
+                // Parts Navigation
+                new ShortcutBinding { ActionId = "MoveToNextPartUp", KeyName = "PageUp", ModifiersName = "None" },
+                new ShortcutBinding { ActionId = "MoveToNextPartDown", KeyName = "PageDown", ModifiersName = "None" }
+            };
             public bool VoicebankPublishUseIgnore = true;
             public string VoicebankPublishIgnores = @"#Adobe Audition
 *.pkf
