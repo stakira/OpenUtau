@@ -125,6 +125,7 @@ namespace OpenUtau.App.Controls {
                 new RemoveLetterSuffix(),
                 new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
+                new AutoConvelVCCV(),
                 new DashToPlus(),
                 new DashToPlusTilda(),
                 new InsertSlur(),

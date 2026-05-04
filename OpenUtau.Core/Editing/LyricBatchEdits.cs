@@ -85,6 +85,34 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class AutoConvelVCCV : BatchEdit {
+        public string Name => name;
+        private string name;
+
+        public AutoConvelVCCV() {
+            name = "pianoroll.menu.lyrics.autoconvelvccv";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes.ToArray() : part.notes.ToArray();
+            if (notes.Length == 0) {
+                return;
+            }
+            var baseConvel = (project.bpm / 120) * 100;
+            var track = project.tracks[part.trackNo];
+
+            foreach (var note in notes) {
+                if (note.duration < 480) {
+                    float?[] calculatedConvel = new float?[] {(float)(baseConvel + 100 - (100 * note.duration) / 480)};
+                    note.SetExpression(project, track, "vel", calculatedConvel);
+                } else {
+                    float?[] calculatedConvel = new float?[] { (float)(baseConvel - 50 + (100 * note.duration) / 960) };
+                    note.SetExpression(project, track, "vel", calculatedConvel);
+                }
+            }
+        }
+    }
+
     public class MoveSuffixToVoiceColor : BatchEdit {
         public virtual string Name => name;
         private string name;
