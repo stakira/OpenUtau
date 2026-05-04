@@ -50,6 +50,7 @@ namespace OpenUtau.App.Controls {
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         private UTrack? track;
+        private TrackHeaderCanvas? canvas;
 
         public TrackHeader() {
             InitializeComponent();
@@ -66,6 +67,7 @@ namespace OpenUtau.App.Controls {
 
         internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
             this.track = track;
+            this.canvas = canvas;
             unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
             unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
             unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
@@ -212,10 +214,7 @@ namespace OpenUtau.App.Controls {
         }
 
         private void MoveHandleReleased(object? sender, PointerReleasedEventArgs e) {
-            if (e.InitialPressMouseButton != MouseButton.Left) {
-                return;
-            }
-            if (Parent is TrackHeaderCanvas canvas) {
+            if (e.InitialPressMouseButton == MouseButton.Left && canvas != null) {
                 Cursor = null;
                 Point point = e.GetPosition(canvas);
                 int tracksMaxIdx = DocManager.Inst.Project.tracks.Count - 1;
@@ -241,13 +240,7 @@ namespace OpenUtau.App.Controls {
         private void MoveHandleMoved(object? sender, PointerEventArgs e) {
             var control = sender as Control;
             var pointer = e.GetCurrentPoint(control);
-            if (pointer.Properties.IsLeftButtonPressed
-                && e.Pointer.Captured == control
-                && Parent is TrackHeaderCanvas canvas)
-            {
-                if (canvas.TrackMover == null) {
-                    return;
-                }
+            if (pointer.Properties.IsLeftButtonPressed && e.Pointer.Captured == control && canvas?.TrackMover != null) {
                 canvas.TrackMover.IsVisible = true;
                 Cursor = ViewConstants.cursorSizeNS;
                 double maxHeight = (DocManager.Inst.Project.tracks.Count - 1) * TrackHeight;
