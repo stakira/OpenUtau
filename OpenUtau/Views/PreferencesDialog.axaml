@@ -91,33 +91,48 @@
         </StackPanel>
 
         <!-- Shortcuts -->
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
-          <StackPanel Margin="0,10,0,0">
-            <TextBlock Text="{DynamicResource prefs.shortcuts}" Margin="0,10,0,10" FontWeight="Bold"/>
-            
-            <Grid ColumnDefinitions="*, Auto" Margin="5,0,5,10">
-              <TextBox Grid.Column="0" Text="{Binding ShortcutSearchText}" Watermark="{DynamicResource prefs.shortcut.search.watermark}" />
-              <Button Grid.Column="1" Margin="10,0,0,0" Content="{DynamicResource pianoroll.menu.reset}" Command="{Binding ResetAllShortcuts}" />
-            </Grid>
-
+        <Grid RowDefinitions="Auto, Auto, Auto, *">
+          <TextBlock Grid.Row="0" 
+                Text="{DynamicResource prefs.shortcuts}" 
+                Margin="0,10,0,10" 
+                FontWeight="Bold"/>
+          <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="5,0,5,5">
+            <TextBox Grid.Column="0" 
+                Text="{Binding ShortcutSearchText}" 
+                Watermark="{DynamicResource prefs.shortcut.search.watermark}" />
+            <Button Grid.Column="1" 
+                Margin="10,0,0,0" 
+                Content="{DynamicResource pianoroll.menu.reset}" 
+                Command="{Binding ResetAllShortcuts}" />
+          </Grid>
+          <TextBlock Grid.Row="2" 
+                Text="{DynamicResource prefs.note.restart}" 
+                Margin="5,0,5,10" 
+                FontStyle="Italic" 
+                Opacity="0.75" 
+                TextWrapping="Wrap"/>
+          <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
             <ItemsControl ItemsSource="{Binding FilteredShortcuts}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <Grid ColumnDefinitions="*, Auto" Margin="5">
-                    <TextBlock Text="{Binding ActionName}" VerticalAlignment="Center"/>
-                    
-                    <Button Grid.Column="1" Content="{Binding DisplayString}" 
-                            x:CompileBindings="False"
-                            Command="{Binding $parent[Window].DataContext.ListenForShortcutCommand}" 
-                            CommandParameter="{Binding}"
-                            PointerReleased="OnShortcutRightClick"
-                            ToolTip.Tip="{DynamicResource prefs.shortcut.tooltip}"/>
+                    <TextBlock Grid.Column="0" 
+                          Text="{Binding ActionName}" 
+                          VerticalAlignment="Center" 
+                          TextWrapping="Wrap"/>
+                    <Button Grid.Column="1" 
+                          Content="{Binding DisplayString}" 
+                          x:CompileBindings="False"
+                          Command="{Binding $parent[Window].DataContext.ListenForShortcutCommand}" 
+                          CommandParameter="{Binding}"
+                          PointerReleased="OnShortcutRightClick"
+                          ToolTip.Tip="{DynamicResource prefs.shortcut.tooltip}"/>
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-          </StackPanel>
-        </ScrollViewer>
+          </ScrollViewer>
+        </Grid>
         
         <!-- Playback -->
         <StackPanel>
