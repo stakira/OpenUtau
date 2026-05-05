@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using Avalonia.Input; // <-- Added to use the Key enum
+using Avalonia.Input;
 
 namespace OpenUtau.App.ViewModels {
     public static class KeyTranslator {

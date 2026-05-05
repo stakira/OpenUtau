@@ -16,6 +16,7 @@ using Serilog;
 using Avalonia.Input;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using OpenUtau.Core.Editing;
 
 namespace OpenUtau.App.ViewModels {
     public class LyricsHelperOption {
@@ -168,7 +169,6 @@ namespace OpenUtau.App.ViewModels {
 
         private void SaveShortcuts() {
             Preferences.Default.Shortcuts.Clear();
-            // ALWAYS save from the master list, not the filtered search list!
             foreach (var sc in allShortcuts) { 
                 Preferences.Default.Shortcuts.Add(new Preferences.ShortcutBinding {
                     ActionId = sc.ActionId,
@@ -215,10 +215,13 @@ namespace OpenUtau.App.ViewModels {
                 
                 item.Key = defKey;
                 item.Modifiers = defMods;
-                item.IsListening = false;
-                item.RefreshDisplay();
-                SaveShortcuts();
+            } else {
+                item.Key = Key.None;
+                item.Modifiers = KeyModifiers.None;
             }
+            item.IsListening = false;
+            item.RefreshDisplay();
+            SaveShortcuts();
         }
 
         public void ResetAllShortcuts() {
@@ -231,9 +234,12 @@ namespace OpenUtau.App.ViewModels {
                     
                     item.Key = defKey;
                     item.Modifiers = defMods;
-                    item.IsListening = false;
-                    item.RefreshDisplay();
+                } else {
+                    item.Key = Key.None;
+                    item.Modifiers = KeyModifiers.None;
                 }
+                item.IsListening = false;
+                item.RefreshDisplay();
             }
             SaveShortcuts();
         }
@@ -248,32 +254,129 @@ namespace OpenUtau.App.ViewModels {
             if (Preferences.Default.Shortcuts != null) {
                 foreach (var binding in Preferences.Default.Shortcuts) {
                     
-                    // 3. Ensure the strings aren't null before parsing
                     if (!string.IsNullOrEmpty(binding.KeyName) && 
                         Enum.TryParse<Key>(binding.KeyName, out var parsedKey) &&
                         Enum.TryParse<KeyModifiers>(binding.ModifiersName, out var parsedMods)) {
                         
+                        string displayName = ThemeManager.GetString($"shortcut.{binding.ActionId}") ?? binding.ActionId;
+                        if (displayName.StartsWith("shortcut.")) {
+                            displayName = displayName.Substring(9);
+                        }
+
                         allShortcuts.Add(new ShortcutItemViewModel {
                             ActionId = binding.ActionId,
-                            ActionName = ThemeManager.GetString($"shortcut.{binding.ActionId}") ?? binding.ActionId,
+                            ActionName = displayName,
                             Key = parsedKey,
                             Modifiers = parsedMods
                         });
                     }
                 }
             }
-            this.WhenAnyValue(vm => vm.ShortcutSearchText)
-                .Subscribe(text => {
-                    FilteredShortcuts.Clear();
-                    var lowerText = text?.ToLowerInvariant() ?? string.Empty;
-                    foreach (var sc in allShortcuts) {
-                        if (string.IsNullOrEmpty(lowerText) || 
-                            sc.ActionName.ToLowerInvariant().Contains(lowerText) || 
-                            sc.DisplayString.ToLowerInvariant().Contains(lowerText)) {
-                            FilteredShortcuts.Add(sc);
+            
+            // external batch edits
+            foreach (var type in DocManager.Inst.ExternalBatchEditTypes) {
+                try {
+                    if (Activator.CreateInstance(type) is BatchEdit edit) {
+                        
+                        var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == edit.Name);
+                        Key savedKey = Key.None;
+                        KeyModifiers savedMods = KeyModifiers.None;
+                        
+                        if (savedSc != null) {
+                            Enum.TryParse(savedSc.KeyName, out savedKey);
+                            Enum.TryParse(savedSc.ModifiersName, out savedMods);
                         }
+
+                        string pluginName = edit.Name;
+                        if (allShortcuts.Any(s => s.ActionId == pluginName)) {
+                            continue; 
+                        }
+                        
+                        string lookupKey = "shortcut." + pluginName;
+                        string displayName = ThemeManager.GetString(lookupKey);
+                        
+                        if (string.IsNullOrEmpty(displayName) || displayName == lookupKey) {
+                            displayName = pluginName;
+                        }
+                        if (displayName.StartsWith("shortcut.")) {
+                            displayName = displayName.Substring(9);
+                        }
+
+                        allShortcuts.Add(new ShortcutItemViewModel {
+                            ActionId = pluginName, 
+                            ActionName = displayName,
+                            Key = savedKey,
+                            Modifiers = savedMods
+                        });
                     }
-                });
+                } catch { 
+                }
+            }
+            
+            // legacy plugins
+            if (DocManager.Inst.Plugins != null) {
+                foreach (var plugin in DocManager.Inst.Plugins) {
+                    try {
+                        var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == plugin.Name);
+                        
+                        Key savedKey = Key.None;
+                        KeyModifiers savedMods = KeyModifiers.None;
+                        
+                        if (savedSc != null) {
+                            Enum.TryParse(savedSc.KeyName, out savedKey);
+                            Enum.TryParse(savedSc.ModifiersName, out savedMods);
+                        }
+
+                        string pluginName = plugin.Name;
+                        string lookupKey = "shortcut." + pluginName;
+                        string displayName = ThemeManager.GetString(lookupKey);
+                        
+                        if (string.IsNullOrEmpty(displayName) || displayName == lookupKey) {
+                            displayName = pluginName;
+                        }
+
+                        if (displayName.StartsWith("shortcut.")) {
+                            displayName = displayName.Substring(9);
+                        }
+
+                        string legacyTag = ThemeManager.GetString("pianoroll.menu.part.legacypluginexp.shortcuts");
+                        if (string.IsNullOrEmpty(legacyTag) || legacyTag == "pianoroll.menu.part.legacypluginexp.shortcuts") {
+                            legacyTag = "(legacy)";
+                        }
+
+                        var existingItem = allShortcuts.FirstOrDefault(s => s.ActionId == pluginName);
+                        if (existingItem != null) {
+                            if (!existingItem.ActionName.EndsWith(legacyTag)) {
+                                existingItem.ActionName = $"{existingItem.ActionName} {legacyTag}";
+                            }
+                            continue;
+                        }
+
+                        allShortcuts.Add(new ShortcutItemViewModel {
+                            ActionId = pluginName, 
+                            ActionName = $"{displayName} {legacyTag}",
+                            Key = savedKey,
+                            Modifiers = savedMods
+                        });
+                    } catch {
+                        
+                    }
+                }
+            }
+
+            this.WhenAnyValue(vm => vm.ShortcutSearchText)
+            .Subscribe(text => {
+                FilteredShortcuts.Clear();
+                var lowerText = text?.ToLowerInvariant() ?? string.Empty;
+                foreach (var sc in allShortcuts) {
+                    if (string.IsNullOrEmpty(lowerText) || 
+                        sc.ActionName.ToLowerInvariant().Contains(lowerText) || 
+                        sc.DisplayString.ToLowerInvariant().Contains(lowerText)) {
+                        FilteredShortcuts.Add(sc);
+                    }
+                }
+            });
+
             var audioOutput = PlaybackManager.Inst.AudioOutput;
             if (audioOutput != null) {
                 AudioOutputDevices = audioOutput.GetOutputDevices();

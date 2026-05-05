@@ -1518,6 +1518,29 @@ namespace OpenUtau.App.Controls {
                 case "MoveToNextPartUp": MoveToNextPart(false); return true;
                 case "MoveToNextPartDown": MoveToNextPart(true); return true;
             }
+            // External and batch note edits
+            if (!string.IsNullOrEmpty(action)) {
+                var allDynamicMenus = ViewModel.NoteBatchEdits
+                    .Concat(ViewModel.LyricBatchEdits)
+                    .Concat(ViewModel.ResetBatchEdits)
+                    .Concat(ViewModel.ExternalBatchEdits);
+
+                foreach (var menu in allDynamicMenus) {
+                    if (menu.CommandParameter is BatchEdit edit && edit.Name == action) {
+                        menu.Command?.Execute(edit);
+                        return true;
+                    }
+                }
+            }
+            // Legacy plugins
+            if (!string.IsNullOrEmpty(action)) {
+                foreach (var menu in ViewModel.LegacyPlugins) {
+                    if (menu.Header?.ToString() == action) {
+                        menu.Command?.Execute(menu.CommandParameter);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
