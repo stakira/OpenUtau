@@ -50,6 +50,8 @@ namespace OpenUtau.Core {
             });
             SearchAllPlugins();
             SearchAllLegacyPlugins();
+            SearchAllDependencies();
+            PhonemizerFactory.BuildList();
             this.mainThread = mainThread;
             this.mainScheduler = mainScheduler;
             PhonemizerRunner = new PhonemizerRunner(mainScheduler);
@@ -72,7 +74,7 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var files = new List<string>();
             try {
-                files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
+                files.Add(Path.Combine(AppContext.BaseDirectory, kBuiltin));
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
                 if (File.Exists(oldBuiltin)) {
@@ -112,9 +114,50 @@ namespace OpenUtau.Core {
                     PhonemizerFactory.Get(type);
                 }
             }
-            PhonemizerFactory.BuildList();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
+        }
+
+        private void SearchAllDependencies() {
+            try {
+                var stopWatch = Stopwatch.StartNew();
+
+                (Directory.Exists(PathManager.Inst.BuiltInDependenciesPath)
+                  ? Directory.EnumerateFiles(PathManager.Inst.BuiltInDependenciesPath, "oudep.yaml", SearchOption.AllDirectories)
+                  : [])
+                    .Concat(Directory.Exists(PathManager.Inst.DependencyPath)
+                        ? Directory.EnumerateFiles(PathManager.Inst.DependencyPath, "oudep.yaml", SearchOption.AllDirectories)
+                        : [])
+                    .ToList()
+                    .ForEach(path => {
+                        try {
+                            using var reader = new StreamReader(path);
+                            var metadata = Yaml.DefaultDeserializer.Deserialize<OudepMetadata>(reader);
+                            if (metadata?.entry_points == null) return;
+                            foreach (var (_, ep) in metadata.entry_points) {
+                                if ((ep?.@class) == "LuaPhonemizer") {
+                                    if (string.IsNullOrEmpty(ep.lua)) continue;
+                                    string oudepDir = Path.GetDirectoryName(path)!;
+                                    string scriptPath = Path.GetFullPath(Path.Combine(oudepDir, ep.lua));
+                                    if (File.Exists(scriptPath)) {
+                                        var factory = LuaPhonemizer.TryLoadFactory(scriptPath, oudepDir);
+                                        if (factory != null) {
+                                            PhonemizerFactory.RegisterLua(factory);
+                                            Log.Information("Loaded Lua phonemizer [{Tag}] from {Path}", factory.tag, scriptPath);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.Warning(e, "Failed to read oudep.yaml in {Path}", path);
+                        }
+                    });
+
+                stopWatch.Stop();
+                Log.Information($"Search all dependencies: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search dependencies.");
+            }
         }
 
         #region Command Queue
@@ -147,7 +190,7 @@ namespace OpenUtau.Core {
                 }
                 string dir = untitled
                     ? PathManager.Inst.BackupsPath
-                    : Path.GetDirectoryName(Project.FilePath);
+                    : (Path.GetDirectoryName(Project.FilePath) ?? PathManager.Inst.BackupsPath);
                 string filename = untitled
                     ? "Untitled"
                     : Path.GetFileNameWithoutExtension(Project.FilePath);
@@ -175,7 +218,7 @@ namespace OpenUtau.Core {
                 }
                 string dir = untitled
                     ? PathManager.Inst.BackupsPath
-                    : Path.GetDirectoryName(Project.FilePath);
+                    : (Path.GetDirectoryName(Project.FilePath) ?? PathManager.Inst.BackupsPath);
                 string filename = untitled
                     ? "Untitled"
                     : Path.GetFileNameWithoutExtension(Project.FilePath);

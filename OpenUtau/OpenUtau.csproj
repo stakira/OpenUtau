@@ -53,6 +53,9 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\oudeps\**" CopyToOutputDirectory="PreserveNewest" LinkBase="BuiltInDependencies\" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.4" />
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     <PackageReference Include="Material.Avalonia" Version="3.13.3" />

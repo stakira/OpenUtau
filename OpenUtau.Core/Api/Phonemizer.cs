@@ -147,6 +147,7 @@ namespace OpenUtau.Api {
         public string Name { get; set; }
         public string Tag { get; set; }
         public string Language { get; set; }
+        public virtual string PhonemizerIdentity => GetType().FullName;
 
         protected double bpm;
         protected TimeAxis timeAxis;

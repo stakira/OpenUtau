@@ -38,12 +38,20 @@ namespace OpenUtau.Core {
         }
     }
 
+    public class OudepEntryPoint {
+        /// <summary>The class of this entry point (e.g., "LuaPhonemizer", "G2pPackV2").</summary>
+        public string @class = string.Empty;
+        /// <summary>Relative path to a single .lua script. Used when class = "LuaPhonemizer".</summary>
+        public string lua = string.Empty;
+        /// <summary>Relative path to a config file. Used for config-driven entry points (e.g., G2pPackV2).</summary>
+        public string config = string.Empty;
+    }
+
     public class OudepMetadata {
         public string id = string.Empty;
-        [Obsolete] public string? name = null;
         public string version = string.Empty;
         public string description = string.Empty;
-        public string @class = string.Empty;
+        public Dictionary<string, OudepEntryPoint>? entry_points = null;
     }
 
 
@@ -211,9 +219,6 @@ namespace OpenUtau.Core {
                 throw new ArgumentException("Archive metadata does not match expected id/version");
             }
             var id = metadata.id;
-            if (string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(metadata.name)) {
-                id = metadata.name;
-            }
             await Task.Run(() => {
                 var basePath = Path.Combine(PathManager.Inst.DependencyPath, id);
                 try {

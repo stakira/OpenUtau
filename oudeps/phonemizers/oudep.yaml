@@ -1,0 +1,7 @@
+id: builtin
+version: '1.0.0'
+description: Built-in Lua phonemizers
+entry_points:
+  arpasing:
+    class: LuaPhonemizer
+    lua: arpasing/arpasing.lua

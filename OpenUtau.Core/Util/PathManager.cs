@@ -14,7 +14,7 @@ namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
-            RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            RootPath = AppContext.BaseDirectory;
             if (OS.IsMacOS()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 DataPath = Path.Combine(userHome, "Library", "OpenUtau");
@@ -29,22 +29,21 @@ namespace OpenUtau.Core {
                 } catch { }
             } else if (OS.IsLinux()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+                string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME") ?? string.Empty;
                 if (string.IsNullOrEmpty(dataHome)) {
                     dataHome = Path.Combine(userHome, ".local", "share");
                 }
                 DataPath = Path.Combine(dataHome, "OpenUtau");
-                string cacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
+                string cacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME") ?? string.Empty;
                 if (string.IsNullOrEmpty(cacheHome)) {
                     cacheHome = Path.Combine(userHome, ".cache");
                 }
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
             } else {
-                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-                IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
+                IsInstalled = File.Exists(Path.Combine(RootPath, "installed.txt"));
                 if (!IsInstalled) {
-                    DataPath = exePath;
+                    DataPath = RootPath;
                 } else {
                     string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                     DataPath = Path.Combine(dataHome, "OpenUtau");
@@ -76,9 +75,11 @@ namespace OpenUtau.Core {
                 : SingersPath;
         public string ResamplersPath => Path.Combine(DataPath, "Resamplers");
         public string WavtoolsPath => Path.Combine(DataPath, "Wavtools");
+        public string BuiltInDependenciesPath => Path.Combine(RootPath, "BuiltInDependencies");
         public string DependencyPath => Path.Combine(DataPath, "Dependencies");
         public string PluginsPath => Path.Combine(DataPath, "Plugins");
         public string DictionariesPath => Path.Combine(DataPath, "Dictionaries");
+        public string DependencyConfigsPath => Path.Combine(DataPath, "DependencyConfigs");
         public string TemplatesPath => Path.Combine(DataPath, "Templates");
         public string LogsPath => Path.Combine(DataPath, "Logs");
         public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
@@ -103,7 +104,8 @@ namespace OpenUtau.Core {
         Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
 
         public string GetPartSavePath(string exportPath, string partName, int partNo) {
-            var dir = Path.GetDirectoryName(exportPath);
+            var dir = Path.GetDirectoryName(exportPath)
+                ?? throw new ArgumentException($"Invalid export path: {exportPath}");
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(exportPath);
             var name = invalid.Replace(partName, "_");
@@ -114,7 +116,8 @@ namespace OpenUtau.Core {
         }
 
         public string GetExportPath(string exportPath, UTrack track) {
-            var dir = Path.GetDirectoryName(exportPath);
+            var dir = Path.GetDirectoryName(exportPath)
+                ?? throw new ArgumentException($"Invalid export path: {exportPath}");
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(exportPath);
             var trackName = invalid.Replace(track.TrackName, "_");
