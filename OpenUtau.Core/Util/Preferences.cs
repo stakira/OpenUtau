@@ -274,9 +274,9 @@ namespace OpenUtau.Core.Util {
 
                 // Transposition
                 new ShortcutBinding { ActionId = "TransposeUp", KeyName = "Up", ModifiersName = "None" },
-                new ShortcutBinding { ActionId = "TransposeOctaveUp", KeyName = "Up", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.octaveup", KeyName = "Up", ModifiersName = "Control" },
                 new ShortcutBinding { ActionId = "TransposeDown", KeyName = "Down", ModifiersName = "None" },
-                new ShortcutBinding { ActionId = "TransposeOctaveDown", KeyName = "Down", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.octavedown", KeyName = "Down", ModifiersName = "Control" },
 
                 // Note Movement & Sizing
                 new ShortcutBinding { ActionId = "MoveCursorLeft", KeyName = "Left", ModifiersName = "None" },
@@ -329,7 +329,73 @@ namespace OpenUtau.Core.Util {
 
                 // Parts Navigation
                 new ShortcutBinding { ActionId = "MoveToNextPartUp", KeyName = "PageUp", ModifiersName = "None" },
-                new ShortcutBinding { ActionId = "MoveToNextPartDown", KeyName = "PageDown", ModifiersName = "None" }
+                new ShortcutBinding { ActionId = "MoveToNextPartDown", KeyName = "PageDown", ModifiersName = "None" },
+                
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.loadrenderedpitch", KeyName = "R", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.refreshrealcurves", KeyName = "R", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.bakepitch", KeyName = "K", ModifiersName = "Alt" },
+
+                // Tails and Overlap
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.addtaildash", KeyName = "OemMinus", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.addtailrest", KeyName = "R", ModifiersName = "Alt, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.removetaildash", KeyName = "OemMinus", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.removetailrest", KeyName = "R", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.fixoverlap", KeyName = "F", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.autolegato", KeyName = "A", ModifiersName = "Alt" },
+
+                // Common notes
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.commonnotecopy", KeyName = "C", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.commonnotepaste", KeyName = "P", ModifiersName = "Control, Shift" },
+
+                // Timings
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.randomizetiming", KeyName = "T", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.randomizeoffset", KeyName = "T", ModifiersName = "Control, Alt" },
+
+                // Lang
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.romajitohiragana", KeyName = "J", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.hiraganatoromaji", KeyName = "J", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.javcvtocv", KeyName = "K", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.hanzitopinyin", KeyName = "H", ModifiersName = "Control, Alt" },
+
+                // Suffixes and Phonetic Hints
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.removetonesuffix", KeyName = "S", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.removelettersuffix", KeyName = "S", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.movesuffixtovoicecolor", KeyName = "C", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.removephonetichint", KeyName = "P", ModifiersName = "Control, Alt" },
+
+                // Dash and Slur
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.dashtoplus", KeyName = "OemPlus", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.dashtoplustilda", KeyName = "OemPlus", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.lyrics.insertslur", KeyName = "I", ModifiersName = "Alt" },
+
+                // Reset
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.all", KeyName = "Delete", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.allparameters", KeyName = "I", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.exps", KeyName = "E", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.clear.vibratos", KeyName = "V", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.vibratos", KeyName = "U", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.pitchbends", KeyName = "B", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.phonemetimings", KeyName = "T", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "pianoroll.menu.notes.reset.aliases", KeyName = "A", ModifiersName = "Control, Alt" },
+
+                // other toggles
+                new ShortcutBinding { ActionId = "Lock Pitch Points", KeyName = "L", ModifiersName = "Control, Shift" },
+                new ShortcutBinding { ActionId = "Lock Vibrato", KeyName = "U", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "Lock Expressions", KeyName = "E", ModifiersName = "Control, Alt" },
+                new ShortcutBinding { ActionId = "Show Portrait", KeyName = "P", ModifiersName = "Alt, Shift" },
+                new ShortcutBinding { ActionId = "Show Icon", KeyName = "I", ModifiersName = "Alt, Shift" },
+                new ShortcutBinding { ActionId = "Show Ghost Notes", KeyName = "G", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Use Track Color", KeyName = "C", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Detach Piano Roll", KeyName = "D", ModifiersName = "Alt, Shift" },
+                new ShortcutBinding { ActionId = "Hide Piano Roll", KeyName = "H", ModifiersName = "Alt, Shift" },
+                new ShortcutBinding { ActionId = "lyricsreplace.replace", KeyName = "H", ModifiersName = "Control" },
+                new ShortcutBinding { ActionId = "Quantize Notes", KeyName = "Q", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Randomize Tuning", KeyName = "R", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Lengthen Crossfade", KeyName = "L", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Add Breath", KeyName = "B", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Edit Note Defaults", KeyName = "N", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Open Singers Window", KeyName = "O", ModifiersName = "Alt" },
+                new ShortcutBinding { ActionId = "Open Expressions", KeyName = "E", ModifiersName = "Alt" },
             };
             public bool VoicebankPublishUseIgnore = true;
             public string VoicebankPublishIgnores = @"#Adobe Audition

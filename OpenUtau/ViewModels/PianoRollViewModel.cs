@@ -230,32 +230,35 @@ namespace OpenUtau.App.ViewModels {
 
         private void LoadLegacyPlugins() {
             LegacyPlugins.Clear();
+            
+            Avalonia.Input.KeyGesture? GetGesture(string actionId) {
+                var sc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == actionId);
+                if (sc != null && Enum.TryParse<Key>(sc.KeyName, out var k) && Enum.TryParse<KeyModifiers>(sc.ModifiersName, out var m) && k != Key.None) {
+                    return new Avalonia.Input.KeyGesture(k, m);
+                }
+                return null;
+            }
+
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
+                InputGesture = GetGesture(plugin.Name),
                 Command = legacyPluginCommand,
                 CommandParameter = plugin,
             }));
 
             LegacyPluginShortcuts.Clear();
             foreach (MenuItemViewModel menu in LegacyPlugins) {
-                if (menu.CommandParameter is Classic.Plugin plugin) {
-                    if (Enum.TryParse(plugin.Shortcut, out Key key) && !LegacyPluginShortcuts.ContainsKey(key)) {
-                        LegacyPluginShortcuts.Add(key, menu);
-                    }
+                if (menu.InputGesture != null && !LegacyPluginShortcuts.ContainsKey(menu.InputGesture.Key)) {
+                    LegacyPluginShortcuts.Add(menu.InputGesture.Key, menu);
                 }
             }
-            LegacyPlugins.Add(new MenuItemViewModel() { // Separator
-                Header = "-",
-                Height = 1
-            });
+
+            LegacyPlugins.Add(new MenuItemViewModel() { Header = "-", Height = 1 });
             LegacyPlugins.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.plugin.openfolder"),
                 Command = ReactiveCommand.Create(() => {
-                    try {
-                        OS.OpenFolder(PathManager.Inst.PluginsPath);
-                    } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                    }
+                    try { OS.OpenFolder(PathManager.Inst.PluginsPath); } 
+                    catch (Exception e) { DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e)); }
                 })
             });
             LegacyPlugins.Add(new MenuItemViewModel() {

@@ -330,6 +330,11 @@
             </MenuItem>
 
             <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
+              <MenuItem.Styles>
+                  <Style Selector="MenuItem">
+                      <Setter Property="InputGesture" Value="{Binding InputGesture}"/>
+                  </Style>
+              </MenuItem.Styles>
               <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}" Classes="MenuItemWithSubMenu"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}" Classes="MenuItemWithSubMenu"/>
               <MenuItem Header="{DynamicResource pianoroll.menu.reset}" ItemsSource="{Binding ResetBatchEdits}" Classes="MenuItemWithSubMenu"/>

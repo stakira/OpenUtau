@@ -226,8 +226,12 @@ namespace OpenUtau.App.ViewModels {
 
         public void ResetAllShortcuts() {
             var defaults = new Preferences.SerializablePreferences().Shortcuts;
+
+            Preferences.Default.Shortcuts = defaults.ToList(); 
+            Preferences.Save(); 
             foreach (var item in allShortcuts) {
                 var defaultBinding = defaults.FirstOrDefault(s => s.ActionId == item.ActionId);
+                
                 if (defaultBinding != null && 
                     Enum.TryParse<Key>(defaultBinding.KeyName, out var defKey) && 
                     Enum.TryParse<KeyModifiers>(defaultBinding.ModifiersName, out var defMods)) {
@@ -238,10 +242,11 @@ namespace OpenUtau.App.ViewModels {
                     item.Key = Key.None;
                     item.Modifiers = KeyModifiers.None;
                 }
+                
                 item.IsListening = false;
                 item.RefreshDisplay();
             }
-            SaveShortcuts();
+            SaveShortcuts(); 
         }
         private List<ShortcutItemViewModel> allShortcuts = new List<ShortcutItemViewModel>();
         public ObservableCollection<ShortcutItemViewModel> FilteredShortcuts { get; } = new ObservableCollection<ShortcutItemViewModel>();
@@ -258,7 +263,17 @@ namespace OpenUtau.App.ViewModels {
                         Enum.TryParse<Key>(binding.KeyName, out var parsedKey) &&
                         Enum.TryParse<KeyModifiers>(binding.ModifiersName, out var parsedMods)) {
                         
-                        string displayName = ThemeManager.GetString($"shortcut.{binding.ActionId}") ?? binding.ActionId;
+                        string lookupKey = "shortcut." + binding.ActionId;
+                        string displayName = ThemeManager.GetString(lookupKey);
+                        
+                        if (string.IsNullOrEmpty(displayName) || displayName == lookupKey) {
+                            displayName = ThemeManager.GetString(binding.ActionId);
+                        }
+
+                        if (string.IsNullOrEmpty(displayName) || displayName == binding.ActionId) {
+                            displayName = binding.ActionId;
+                        }
+
                         if (displayName.StartsWith("shortcut.")) {
                             displayName = displayName.Substring(9);
                         }
@@ -362,6 +377,16 @@ namespace OpenUtau.App.ViewModels {
                         
                     }
                 }
+            }
+
+            var uniqueShortcuts = allShortcuts
+                .GroupBy(sc => sc.ActionId)
+                .Select(group => group.First())
+                .ToList();
+
+            allShortcuts.Clear();
+            foreach (var sc in uniqueShortcuts) {
+                allShortcuts.Add(sc);
             }
 
             this.WhenAnyValue(vm => vm.ShortcutSearchText)

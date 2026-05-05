@@ -30,6 +30,16 @@ namespace OpenUtau.App.Controls {
     }
 
     public partial class PianoRoll : UserControl, IValueTip, ICmdSubscriber {
+        private Avalonia.Input.KeyGesture? GetGesture(string actionId) {
+            var sc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == actionId);
+            if (sc != null && 
+                Enum.TryParse<Avalonia.Input.Key>(sc.KeyName, out var k) && 
+                Enum.TryParse<Avalonia.Input.KeyModifiers>(sc.ModifiersName, out var m) && 
+                k != Avalonia.Input.Key.None) {
+                return new Avalonia.Input.KeyGesture(k, m);
+            }
+            return null;
+        }
         public MainWindow? MainWindow { get; set; }
         public PianoRollViewModel ViewModel;
 
@@ -124,11 +134,24 @@ namespace OpenUtau.App.Controls {
                 new BakePitch(),
                 new RandomizeTiming(),
                 new RandomizePhonemeOffset()
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
+            }.Select(edit => {
+                Avalonia.Input.KeyGesture? menuGesture = null;
+                var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == edit.Name);
+                if (savedSc != null && 
+                    Enum.TryParse<Avalonia.Input.Key>(savedSc.KeyName, out var parsedKey) && 
+                    Enum.TryParse<Avalonia.Input.KeyModifiers>(savedSc.ModifiersName, out var parsedMods) && 
+                    parsedKey != Avalonia.Input.Key.None) {
+                    menuGesture = new Avalonia.Input.KeyGesture(parsedKey, parsedMods);
+                }
+
+                return new MenuItemViewModel() {
+                    Header = ThemeManager.GetString(edit.Name),
+                    InputGesture = menuGesture,
+                    Command = noteBatchEditCommand,
+                    CommandParameter = edit,
+                };
             }));
+
             ViewModel.LyricBatchEdits.AddRange(new List<BatchEdit>() {
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
@@ -141,11 +164,24 @@ namespace OpenUtau.App.Controls {
                 new DashToPlus(),
                 new DashToPlusTilda(),
                 new InsertSlur(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
+            }.Select(edit => {
+                Avalonia.Input.KeyGesture? menuGesture = null;
+                var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == edit.Name);
+                if (savedSc != null && 
+                    Enum.TryParse<Avalonia.Input.Key>(savedSc.KeyName, out var parsedKey) && 
+                    Enum.TryParse<Avalonia.Input.KeyModifiers>(savedSc.ModifiersName, out var parsedMods) && 
+                    parsedKey != Avalonia.Input.Key.None) {
+                    menuGesture = new Avalonia.Input.KeyGesture(parsedKey, parsedMods);
+                }
+
+                return new MenuItemViewModel() {
+                    Header = ThemeManager.GetString(edit.Name),
+                    InputGesture = menuGesture,
+                    Command = noteBatchEditCommand,
+                    CommandParameter = edit,
+                };
             }));
+
             ViewModel.ResetBatchEdits.AddRange(new List<BatchEdit>() {
                 new ResetAll(),
                 new ResetPitchBends(),
@@ -154,20 +190,45 @@ namespace OpenUtau.App.Controls {
                 new ResetVibratos(),
                 new ClearTimings(),
                 new ResetAliases(),
-            }.Select(edit => new MenuItemViewModel() {
-                Header = ThemeManager.GetString(edit.Name),
-                Command = noteBatchEditCommand,
-                CommandParameter = edit,
+            }.Select(edit => {
+                Avalonia.Input.KeyGesture? menuGesture = null;
+                var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == edit.Name);
+                if (savedSc != null && 
+                    Enum.TryParse<Avalonia.Input.Key>(savedSc.KeyName, out var parsedKey) && 
+                    Enum.TryParse<Avalonia.Input.KeyModifiers>(savedSc.ModifiersName, out var parsedMods) && 
+                    parsedKey != Avalonia.Input.Key.None) {
+                    menuGesture = new Avalonia.Input.KeyGesture(parsedKey, parsedMods);
+                }
+
+                return new MenuItemViewModel() {
+                    Header = ThemeManager.GetString(edit.Name),
+                    InputGesture = menuGesture,
+                    Command = noteBatchEditCommand,
+                    CommandParameter = edit,
+                };
             }));
             try {
                 ViewModel.ExternalBatchEdits.AddRange(
                     DocManager.Inst.ExternalBatchEditTypes
                         .Select(type => Activator.CreateInstance(type) as BatchEdit)
                         .Where(edit => edit != null)
-                        .Select(edit => new MenuItemViewModel() {
-                            Header = ThemeManager.GetString(edit!.Name),
-                            Command = noteBatchEditCommand,
-                            CommandParameter = edit,
+                        .Select(edit => {
+                            Avalonia.Input.KeyGesture? menuGesture = null;
+                            var savedSc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == edit!.Name);
+                            
+                            if (savedSc != null && 
+                                Enum.TryParse<Avalonia.Input.Key>(savedSc.KeyName, out var parsedKey) && 
+                                Enum.TryParse<Avalonia.Input.KeyModifiers>(savedSc.ModifiersName, out var parsedMods) && 
+                                parsedKey != Avalonia.Input.Key.None) {
+                                menuGesture = new Avalonia.Input.KeyGesture(parsedKey, parsedMods);
+                            }
+
+                            return new MenuItemViewModel() {
+                                Header = ThemeManager.GetString(edit!.Name),
+                                InputGesture = menuGesture,
+                                Command = noteBatchEditCommand,
+                                CommandParameter = edit,
+                            };
                         })
                 );
             } catch (Exception e) {
@@ -178,30 +239,35 @@ namespace OpenUtau.App.Controls {
 
             ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
+                InputGesture = GetGesture("Add Breath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
             ViewModel.NoteBatchEdits.Insert(9, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
+                InputGesture = GetGesture("Quantize Notes"),
                 Command = ReactiveCommand.Create(() => {
                     QuantizeNotes();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.randomizetuning"),
+                InputGesture = GetGesture("Randomize Tuning"),
                 Command = ReactiveCommand.Create(() => {
                     RandomizeTuning();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
+                InputGesture = GetGesture("Lengthen Crossfade"),
                 Command = ReactiveCommand.Create(() => {
                     LengthenCrossfade();
                 })
             });
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
+                InputGesture = GetGesture("lyricsreplace.replace"),
                 Command = ReactiveCommand.Create(() => {
                     ReplaceLyrics();
                 })
@@ -1439,9 +1505,9 @@ namespace OpenUtau.App.Controls {
 
                 // Transposition
                 case "TransposeUp": notesVm.TransposeSelection(1); return true;
-                case "TransposeOctaveUp": notesVm.TransposeSelection(12); return true;
+                case "pianoroll.menu.notes.octaveup": notesVm.TransposeSelection(12); return true;
                 case "TransposeDown": notesVm.TransposeSelection(-1); return true;
-                case "TransposeOctaveDown": notesVm.TransposeSelection(-12); return true;
+                case "pianoroll.menu.notes.octavedown": notesVm.TransposeSelection(-12); return true;
 
                 // Note Movement & Sizing
                 case "MoveCursorLeft": notesVm.MoveCursor(-1); return true;
@@ -1514,9 +1580,24 @@ namespace OpenUtau.App.Controls {
                     return true;
                 case "SearchNote": SearchNote(); return true;
 
-                // Parts Navigation
-                case "MoveToNextPartUp": MoveToNextPart(false); return true;
-                case "MoveToNextPartDown": MoveToNextPart(true); return true;
+                // others
+                case "Quantize Notes": QuantizeNotes(); return true;
+                case "lyricsreplace.replace": ReplaceLyrics(); return true;
+                case "Randomize Tuning": RandomizeTuning(); return true;
+                case "Lengthen Crossfade": LengthenCrossfade(); return true;
+                case "Add Breath": AddBreathNote(); return true; 
+                case "Edit Note Defaults": EditNoteDefaults(); return true;
+                case "Open Singers Window": OnMenuSingers(this, new RoutedEventArgs()); return true;
+                case "Open Expressions": OnExpButtonClick(this, new RoutedEventArgs()); return true;
+                case "Lock Pitch Points": OnMenuLockPitchPoints(this, new RoutedEventArgs()); return true;
+                case "Lock Vibrato": OnMenuLockVibrato(this, new RoutedEventArgs()); return true;
+                case "Lock Expressions": OnMenuLockExpressions(this, new RoutedEventArgs()); return true;
+                case "Show Portrait": OnMenuShowPortrait(this, new RoutedEventArgs()); return true;
+                case "Show Icon": OnMenuShowIcon(this, new RoutedEventArgs()); return true;
+                case "Show Ghost Notes": OnMenuShowGhostNotes(this, new RoutedEventArgs()); return true;
+                case "Use Track Color": OnMenuUseTrackColor(this, new RoutedEventArgs()); return true;
+                case "Detach Piano Roll": OnMenuDetachPianoRoll(this, new RoutedEventArgs()); return true;
+                case "Hide Piano Roll": OnMenuHidePianoRoll(this, new RoutedEventArgs()); return true;
             }
             // External and batch note edits
             if (!string.IsNullOrEmpty(action)) {
