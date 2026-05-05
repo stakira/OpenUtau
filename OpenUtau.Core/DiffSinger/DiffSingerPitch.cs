@@ -171,69 +171,74 @@ namespace OpenUtau.Core.DiffSinger
                 .First()
                 .AsTensor<bool>();
             
-            //Pitch Predictor   
-            var note_rest = new List<bool>{true};
-            bool prevNoteRest = true;
-            foreach(var note in phrase.notes) {
-                //Slur notes follow the previous note's rest status
-                if(note.lyric.StartsWith("+")) {
-                    note_rest.Add(prevNoteRest);
-                    continue;
+            //Build note durations, inserting rest notes for gaps between notes
+            //that are bridged by ahead-of-time consonants in the same phrase
+            var noteDurMsList = new List<double>();
+            var noteMidiList = new List<float>();
+            var noteRestList = new List<bool>();
+            //Head padding
+            noteDurMsList.Add(Math.Max(0, phrase.notes[0].positionMs - startMs));
+            noteMidiList.Add(phrase.notes[0].adjustedTone);
+            noteRestList.Add(true);
+            double prevNoteEndMs = phrase.notes[0].positionMs;
+            foreach (var note in phrase.notes) {
+                double gapMs = note.positionMs - prevNoteEndMs;
+                if (gapMs > 0) {
+                    //Insert a rest note for the gap
+                    noteDurMsList.Add(gapMs);
+                    noteMidiList.Add(note.adjustedTone);
+                    noteRestList.Add(true);
                 }
-                var phs = phrase.phones
-                    .SkipWhile(ph => ph.end <= note.position + 1)
-                    .TakeWhile(ph => ph.position < note.end - 1)
-                    .ToArray();
-                //If all the phonemes in a note's time range are AP, SP or consonant,
-                //it is a rest note
-                bool isRest = phs.Length == 0
-                    || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
-                note_rest.Add(isRest);
-                prevNoteRest = isRest;
+                noteDurMsList.Add(note.durationMs);
+                noteMidiList.Add(note.adjustedTone);
+                //Slur notes follow the previous note's rest status
+                if (note.lyric.StartsWith("+")) {
+                    noteRestList.Add(noteRestList[^1]);
+                } else {
+                    var phs = phrase.phones
+                        .SkipWhile(ph => ph.end <= note.position + 1)
+                        .TakeWhile(ph => ph.position < note.end - 1)
+                        .ToArray();
+                    bool isRest = phs.Length == 0
+                        || phs.All(ph => ph.phoneme == "AP" || ph.phoneme == "SP" || !g2p.IsVowel(ph.phoneme));
+                    noteRestList.Add(isRest);
+                }
+                prevNoteEndMs = note.positionMs + note.durationMs;
             }
-            note_rest.Add(true);
+            //Tail padding
+            noteDurMsList.Add(DiffSingerUtils.GetTailMs(frameMs));
+            noteMidiList.Add(phrase.notes[^1].adjustedTone);
+            noteRestList.Add(true);
 
-            var note_midi = phrase.notes
-                .Select(n=>(float)n.adjustedTone)
-                .Prepend((float)phrase.notes[0].adjustedTone)
-                .Append((float)phrase.notes[^1].adjustedTone)
-                .ToArray();
-            //get the index of groups of consecutive rest notes
-            var restGroups = new List<Tuple<int,int>>();
-            for (var i = 0; i < note_rest.Count; ++i) {
-                if (!note_rest[i]) continue;
-                var j = i + 1;
-                for (; j < note_rest.Count && note_rest[j]; ++j) { }
-                restGroups.Add(new Tuple<int, int>(i, j));
-                i = j;
-            }
-            //Set tone for each rest group
+            //Set tone for each rest group using nearest non-rest note
+            var note_rest = noteRestList;
+            var note_midi = noteMidiList.ToArray();
             if (note_rest.All(rest => rest)) {
                 Array.Fill(note_midi, 60f);
             } else {
-                foreach(var restGroup in restGroups){
-                    if(restGroup.Item1 == 0){
-                        //If the first note is a rest note, set the tone to the tone of the first non-rest note
+                var restGroups = new List<Tuple<int, int>>();
+                for (var i = 0; i < note_rest.Count; ++i) {
+                    if (!note_rest[i]) continue;
+                    var j = i + 1;
+                    for (; j < note_rest.Count && note_rest[j]; ++j) { }
+                    restGroups.Add(new Tuple<int, int>(i, j));
+                    i = j;
+                }
+                foreach (var restGroup in restGroups) {
+                    if (restGroup.Item1 == 0) {
                         Array.Fill(note_midi, note_midi[restGroup.Item2], 0, restGroup.Item2);
-                    } else if(restGroup.Item2 == note_rest.Count){
-                        //If the last note is a rest note, set the tone to the tone of the last non-rest note
-                        Array.Fill(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, note_rest.Count - restGroup.Item1);
+                    } else if (restGroup.Item2 == note_rest.Count) {
+                        Array.Fill(note_midi, note_midi[restGroup.Item1 - 1], restGroup.Item1, note_rest.Count - restGroup.Item1);
                     } else {
-                        //If the first and last notes are non-rest notes, set the tone to the nearest non-rest note
                         int mid = (restGroup.Item1 + restGroup.Item2 + 1) / 2;
-                        Array.Fill(note_midi, note_midi[restGroup.Item1-1], restGroup.Item1, mid - restGroup.Item1);
+                        Array.Fill(note_midi, note_midi[restGroup.Item1 - 1], restGroup.Item1, mid - restGroup.Item1);
                         Array.Fill(note_midi, note_midi[restGroup.Item2], mid, restGroup.Item2 - mid);
                     }
                 }
             }
 
-            var noteDurMs = phrase.notes
-                .Select(note => note.durationMs)
-                .Prepend(Math.Max(0, phrase.notes[0].positionMs - startMs))
-                .Append(DiffSingerUtils.GetTailMs(frameMs))
-                .ToArray();
             var note_dur = DiffSingerUtils.FitDurationSum(
-                    DiffSingerUtils.DurationsMsToFrames(noteDurMs, frameMs),
+                    DiffSingerUtils.DurationsMsToFrames(noteDurMsList, frameMs),
                     totalFrames)
                 .ToList();
             var pitch = Enumerable.Repeat(60f, totalFrames).ToArray();

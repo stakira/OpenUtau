@@ -47,23 +47,24 @@ namespace OpenUtau.Core.DiffSinger {
                 .Prepend(headMs)
                 .Append(tailMs)
                 .ToArray();
-            note_slur = notes
-                .Select(n => n.lyric.StartsWith("+") ? 1 : 0)
-                .Prepend(0)
-                .Append(0)
-                .ToArray();
             //ph_num
             var phNumList = new List<int>();
             int ep = 4;//the max error between note position and phoneme position is 4 ticks
             int prevNotePhId = 0;
             int phId = 0;
             int phCount = phones.Length;
+            double prevEndMs = notes[0].positionMs;
             foreach(var note in notes.Where(n=>!n.lyric.StartsWith("+"))) {
+                //Insert 0 phonemes for gap rest notes
+                if (note.positionMs - prevEndMs > 0) {
+                    phNumList.Add(0);
+                }
                 while(phId < phCount && phones[phId].position < note.position-ep){
                     ++phId;
                 }
                 phNumList.Add(phId - prevNotePhId);
                 prevNotePhId = phId;
+                prevEndMs = note.positionMs + note.durationMs;
             }
             phNumList.Add(phCount - prevNotePhId);
             phNumList.Add(1);//tail AP
@@ -71,23 +72,47 @@ namespace OpenUtau.Core.DiffSinger {
             ph_num = phNumList.ToArray();
 
             if(v2){
-                noteSeq = notes
-                    .Select(n => (n.lyric == "SP" || n.lyric == "AP") ? 0 : n.tone)
-                    .Prepend(0)
-                    .Append(0)
-                    .ToArray();
+                //Build note arrays with rest notes inserted for gaps between notes
+                var noteSeqList = new List<int> { 0 };//head padding
+                var noteDurList = new List<double> { headMs+(notes[0].positionMs-phones[0].positionMs) };
+                var noteSlurList = new List<int> { 0 };//head padding
+                double prevNoteEndMs = notes[0].positionMs;
+                foreach(var note in notes) {
+                    double gapMs = note.positionMs - prevNoteEndMs;
+                    if (gapMs > 0) {
+                        //Insert a rest note for the gap
+                        noteSeqList.Add(0);
+                        noteDurList.Add(gapMs);
+                        noteSlurList.Add(0);
+                    }
+                    noteSeqList.Add((note.lyric == "SP" || note.lyric == "AP") ? 0 : note.tone);
+                    noteDurList.Add(note.durationMs);
+                    noteSlurList.Add(note.lyric.StartsWith("+") ? 1 : 0);
+                    prevNoteEndMs = note.positionMs + note.durationMs;
+                }
+                noteSeqList.Add(0);//tail padding
+                noteDurList.Add(tailMs);
+                noteSlurList.Add(0);//tail padding
+                noteSeq = noteSeqList.ToArray();
+                noteDurMs = noteDurList.ToArray();
+                note_slur = noteSlurList.ToArray();
             }else{
                 noteSeq = phones
                     .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
                     .Prepend(0)
                     .Append(0)
                     .ToArray();
+                noteDurMs = notes
+                    .Select(n => n.durationMs)
+                    .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
+                    .Append(tailMs)
+                    .ToArray();
+                note_slur = notes
+                    .Select(n => n.lyric.StartsWith("+") ? 1 : 0)
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
             }
-            noteDurMs = notes
-                .Select(n => n.durationMs)
-                .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
-                .Append(tailMs)
-                .ToArray();
             
             frameMs = singer?.dsConfig.frameMs() ?? 10;
             
