@@ -133,7 +133,7 @@
             </ItemsControl>
           </ScrollViewer>
         </Grid>
-        
+
         <!-- Playback -->
         <StackPanel>
           <TextBlock Text="{DynamicResource prefs.playback.device}" FontWeight="Bold"/>

@@ -256,6 +256,33 @@ namespace OpenUtau.App.ViewModels {
         public PreferencesViewModel() {
             ListenForShortcutCommand = ReactiveCommand.Create<ShortcutItemViewModel>(ListenForShortcut);
 
+            var validActionIds = new HashSet<string>();
+            
+            var defaultShortcuts = new Preferences.SerializablePreferences().Shortcuts;
+            foreach (var sc in defaultShortcuts) {
+                validActionIds.Add(sc.ActionId);
+            }
+            foreach (var type in DocManager.Inst.ExternalBatchEditTypes) {
+                try { if (Activator.CreateInstance(type) is BatchEdit edit) validActionIds.Add(edit.Name); } catch { }
+            }
+            if (DocManager.Inst.Plugins != null) {
+                foreach (var plugin in DocManager.Inst.Plugins) {
+                    validActionIds.Add(plugin.Name);
+                }
+            }
+            if (Preferences.Default.Shortcuts != null) {
+                bool ghostsRemoved = false;
+                for (int i = Preferences.Default.Shortcuts.Count - 1; i >= 0; i--) {
+                    if (!validActionIds.Contains(Preferences.Default.Shortcuts[i].ActionId)) {
+                        Preferences.Default.Shortcuts.RemoveAt(i);
+                        ghostsRemoved = true;
+                    }
+                }
+                if (ghostsRemoved) {
+                    Preferences.Save();
+                }
+            }
+
             if (Preferences.Default.Shortcuts != null) {
                 foreach (var binding in Preferences.Default.Shortcuts) {
                     
