@@ -58,6 +58,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
+        [Reactive] public bool UseSolidPlaybackLine { get; set; }
 
         // Paths
         public string SingerPath => PathManager.Inst.SingersPath;
@@ -140,6 +141,7 @@ namespace OpenUtau.App.ViewModels {
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
             PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
+            UseSolidPlaybackLine = Preferences.Default.UseSolidPlaybackLine;
             LockStartTime = Preferences.Default.LockStartTime;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath;
             LoadDeepFolders = Preferences.Default.LoadDeepFolderSinger;
@@ -219,6 +221,12 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(playPosMarkerMargin => {
                     Preferences.Default.PlayPosMarkerMargin = playPosMarkerMargin;
                     Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.UseSolidPlaybackLine)
+                .Subscribe(useSolidPlaybackLine => {
+                    Preferences.Default.UseSolidPlaybackLine = useSolidPlaybackLine;
+                    Preferences.Save();
+                    MessageBus.Current.SendMessage(new NotesViewModel.PlaybackLineModeChangedEvent(useSolidPlaybackLine));
                 });
             this.WhenAnyValue(vm => vm.LockStartTime)
                 .Subscribe(lockStartTime => {
