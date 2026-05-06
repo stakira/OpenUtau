@@ -100,9 +100,10 @@ namespace OpenUtau.App.Controls {
                 });
             MessageBus.Current.Listen<TrackSelectionEvent>()
                 .Subscribe(e => {
+                    var selectedTracks = new HashSet<UTrack>(e.selectedTracks);
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
-                            header.ViewModel.IsSelected = e.selectedTracks.Contains(track);
+                            header.ViewModel.IsSelected = selectedTracks.Contains(track);
                         }
                     }
                 });

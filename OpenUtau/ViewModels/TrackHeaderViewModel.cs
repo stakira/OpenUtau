@@ -74,8 +74,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                     MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 }
-                Preferences.Save();
-                MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 this.RaisePropertyChanged(nameof(Singer));
                 this.RaisePropertyChanged(nameof(Renderer));
@@ -219,12 +217,6 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Muted));
         }
 
-        private static bool IsTrackSelected(UTrack projectTrack) {
-            var tracksViewModel = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
-                ?.MainWindow?.DataContext as MainWindowViewModel;
-            return tracksViewModel?.TracksViewModel.SelectedTracks.Contains(projectTrack) == true;
-        }
-
         private void ApplySingerToTrack(UTrack targetTrack, USinger? singer) {
             if (singer is USinger selectedSinger) {
                 Log.Information($"Loading Singer: {selectedSinger.Name}");
@@ -235,7 +227,7 @@ namespace OpenUtau.App.ViewModels {
                 } else if (!string.IsNullOrEmpty(selectedSinger.DefaultPhonemizer)) {
                     TryChangePhonemizer(targetTrack, selectedSinger.DefaultPhonemizer);
                 }
-                if (selectedSinger.SingerType != targetTrack.RendererSettings.Renderer?.SingerType) {
+                if (!selectedSinger.Found || selectedSinger.SingerType != targetTrack.RendererSettings.Renderer?.SingerType) {
                     var settings = new URenderSettings();
                     if (selectedSinger.Found) {
                         settings = new URenderSettings {
