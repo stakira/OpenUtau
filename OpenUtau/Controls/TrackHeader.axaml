@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:OpenUtau.App.Controls"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="104"
              x:Class="OpenUtau.App.Controls.TrackHeader" Width="300" Height="104" TrackNo="{Binding TrackNo}">
