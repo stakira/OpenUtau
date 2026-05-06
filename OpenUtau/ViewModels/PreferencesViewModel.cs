@@ -271,14 +271,46 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             if (Preferences.Default.Shortcuts != null) {
-                bool ghostsRemoved = false;
-                for (int i = Preferences.Default.Shortcuts.Count - 1; i >= 0; i--) {
-                    if (!validActionIds.Contains(Preferences.Default.Shortcuts[i].ActionId)) {
-                        Preferences.Default.Shortcuts.RemoveAt(i);
-                        ghostsRemoved = true;
+                var orderedShortcuts = new List<Preferences.ShortcutBinding>();
+                bool requiresSave = false;
+
+                foreach (var defaultBinding in defaultShortcuts) {
+                    var userBinding = Preferences.Default.Shortcuts.FirstOrDefault(s => s.ActionId == defaultBinding.ActionId);
+
+                    if (userBinding != null) {
+                        orderedShortcuts.Add(userBinding);
+                    } else {
+                        orderedShortcuts.Add(new Preferences.ShortcutBinding {
+                            ActionId = defaultBinding.ActionId,
+                            KeyName = defaultBinding.KeyName,
+                            ModifiersName = defaultBinding.ModifiersName
+                        });
+                        requiresSave = true;
                     }
                 }
-                if (ghostsRemoved) {
+
+                foreach (var userBinding in Preferences.Default.Shortcuts) {
+                    bool isDefault = defaultShortcuts.Any(d => d.ActionId == userBinding.ActionId);
+                    bool isValidPlugin = validActionIds.Contains(userBinding.ActionId);
+
+                    if (!isDefault && isValidPlugin) {
+                        orderedShortcuts.Add(userBinding);
+                    }
+                }
+
+                if (Preferences.Default.Shortcuts.Count != orderedShortcuts.Count) {
+                    requiresSave = true;
+                } else {
+                    for (int i = 0; i < orderedShortcuts.Count; i++) {
+                        if (Preferences.Default.Shortcuts[i].ActionId != orderedShortcuts[i].ActionId) {
+                            requiresSave = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (requiresSave) {
+                    Preferences.Default.Shortcuts = orderedShortcuts;
                     Preferences.Save();
                 }
             }
@@ -286,32 +318,37 @@ namespace OpenUtau.App.ViewModels {
             if (Preferences.Default.Shortcuts != null) {
                 foreach (var binding in Preferences.Default.Shortcuts) {
                     
-                    if (!string.IsNullOrEmpty(binding.KeyName) && 
-                        Enum.TryParse<Key>(binding.KeyName, out var parsedKey) &&
-                        Enum.TryParse<KeyModifiers>(binding.ModifiersName, out var parsedMods)) {
-                        
-                        string lookupKey = "shortcut." + binding.ActionId;
-                        string displayName = ThemeManager.GetString(lookupKey);
-                        
-                        if (string.IsNullOrEmpty(displayName) || displayName == lookupKey) {
-                            displayName = ThemeManager.GetString(binding.ActionId);
-                        }
-
-                        if (string.IsNullOrEmpty(displayName) || displayName == binding.ActionId) {
-                            displayName = binding.ActionId;
-                        }
-
-                        if (displayName.StartsWith("shortcut.")) {
-                            displayName = displayName.Substring(9);
-                        }
-
-                        allShortcuts.Add(new ShortcutItemViewModel {
-                            ActionId = binding.ActionId,
-                            ActionName = displayName,
-                            Key = parsedKey,
-                            Modifiers = parsedMods
-                        });
+                    Key parsedKey = Key.None;
+                    KeyModifiers parsedMods = KeyModifiers.None;
+                    
+                    if (!string.IsNullOrEmpty(binding.KeyName)) {
+                        Enum.TryParse(binding.KeyName, out parsedKey);
                     }
+                    if (!string.IsNullOrEmpty(binding.ModifiersName)) {
+                        Enum.TryParse(binding.ModifiersName, out parsedMods);
+                    }
+
+                    string lookupKey = "shortcut." + binding.ActionId;
+                    string displayName = ThemeManager.GetString(lookupKey);
+                    
+                    if (string.IsNullOrEmpty(displayName) || displayName == lookupKey) {
+                        displayName = ThemeManager.GetString(binding.ActionId);
+                    }
+
+                    if (string.IsNullOrEmpty(displayName) || displayName == binding.ActionId) {
+                        displayName = binding.ActionId;
+                    }
+
+                    if (displayName.StartsWith("shortcut.")) {
+                        displayName = displayName.Substring(9);
+                    }
+
+                    allShortcuts.Add(new ShortcutItemViewModel {
+                        ActionId = binding.ActionId,
+                        ActionName = displayName,
+                        Key = parsedKey,
+                        Modifiers = parsedMods
+                    });
                 }
             }
             
