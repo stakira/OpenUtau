@@ -299,9 +299,6 @@ namespace OpenUtau.App.ViewModels {
                         };
                     }
                     DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, targetTrack, settings));
-                } else {
-                    var settings = new URenderSettings();
-                    DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, targetTrack, settings));
                 }
             } else {
                 DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, targetTrack, USinger.CreateMissing(string.Empty)));
@@ -325,6 +322,7 @@ namespace OpenUtau.App.ViewModels {
             return new SingerMenuItemViewModel() {
                 Header = singer.LocalizedName,
                 Command = SelectSingerCommand,
+                SecondaryCommand = AllSetSingerCommand,
                 CommandParameter = singer,
             };
         }
@@ -471,7 +469,7 @@ namespace OpenUtau.App.ViewModels {
             if (track != null && track.Singer != null && track.Singer.Found) {
                 var factory = FindPhonemizerByName(track.Singer.DefaultPhonemizer);
                 if (factory != null) {
-                    items.Add(new MenuItemViewModel() {
+                    items.Add(new PhonemizerMenuItemViewModel() {
                         Header = ThemeManager.GetString("tracks.singerdefault") + factory.ToString(),
                         Command = SelectPhonemizerCommand,
                         CommandParameter = factory,
@@ -483,9 +481,10 @@ namespace OpenUtau.App.ViewModels {
                 .Select(name => FindPhonemizerByName(name))
                 .OfType<PhonemizerFactory>()
                 .OrderBy(factory => factory.tag)
-                .Select(factory => new MenuItemViewModel() {
+                .Select(factory => new PhonemizerMenuItemViewModel() {
                     Header = factory.ToString(),
                     Command = SelectPhonemizerCommand,
+                    SecondaryCommand = AllSetPhonemizerCommand,
                     CommandParameter = factory,
                 }));
             //more phonemizers grouped by singing language
@@ -495,9 +494,10 @@ namespace OpenUtau.App.ViewModels {
                 .OrderBy(group => group.Key)
                 .Select(group => new MenuItemViewModel() {
                     Header = GetPhonemizerGroupHeader(group.Key),
-                    Items = group.Select(factory => new MenuItemViewModel() {
+                    Items = group.Select(factory => new PhonemizerMenuItemViewModel() {
                         Header = factory.ToString(),
                         Command = SelectPhonemizerCommand,
+                        SecondaryCommand = AllSetPhonemizerCommand,
                         CommandParameter = factory,
                     }).ToArray(),
                 }).ToArray()
@@ -810,7 +810,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.StartUndoGroup("command.track.singer");
             for (int i = 0; i < targetTracks.Count; i++) {
                 var singer = singers[(i + 1) % singers.Count];
-                ApplySingerToTrack(targetTracks[i], singer);
+                ApplySingerToTrack(targetTracks[i], singer); 
             }
             DocManager.Inst.EndUndoGroup();
             DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
