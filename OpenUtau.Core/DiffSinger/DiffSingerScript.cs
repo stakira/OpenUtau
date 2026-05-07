@@ -53,18 +53,12 @@ namespace OpenUtau.Core.DiffSinger {
             int prevNotePhId = 0;
             int phId = 0;
             int phCount = phones.Length;
-            double prevEndMs = notes[0].positionMs;
             foreach(var note in notes.Where(n=>!n.lyric.StartsWith("+"))) {
-                //Insert 0 phonemes for gap rest notes
-                if (note.positionMs - prevEndMs > 0) {
-                    phNumList.Add(0);
-                }
                 while(phId < phCount && phones[phId].position < note.position-ep){
                     ++phId;
                 }
                 phNumList.Add(phId - prevNotePhId);
                 prevNotePhId = phId;
-                prevEndMs = note.positionMs + note.durationMs;
             }
             phNumList.Add(phCount - prevNotePhId);
             phNumList.Add(1);//tail AP
