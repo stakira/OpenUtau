@@ -14,7 +14,7 @@ namespace OpenUtau.App.ViewModels {
                 // Modifiers
                 "Windows" or "LWin" or "RWin" => IsMac ? "Cmd" : "Win",
                 "LeftAlt" or "RightAlt" or "Alt" => IsMac ? "Opt" : "Alt",
-                "Control" or "LeftCtrl" or "RightCtrl" or "LControl" or "RControl" => "Ctrl",
+                "Control" or "LeftCtrl" or "RightCtrl" or "LControl" or "RControl"=> IsMac ? "Cmd" : "Ctrl",
                 "Shift" or "LeftShift" or "RightShift" => "Shift",
                 
                 // Navigation & Editing
