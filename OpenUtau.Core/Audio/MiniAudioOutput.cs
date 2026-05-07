@@ -32,10 +32,10 @@ namespace OpenUtau.Audio {
             }
             if (Preferences.Default.UseSystemDefaultAudioDevice) {
                 nativeContext = ou_init_audio_device_auto(callbackPtr);
-                if (nativeContext == IntPtr.Zero) {
-                    throw new Exception("Failed to init default audio device");
+                if (nativeContext != IntPtr.Zero) {
+                    return;
                 }
-                return;
+                Log.Warning("Failed to init default audio device, falling back to enumerated audio devices.");
             }
             UpdateDeviceList();
             if (Guid.TryParse(Preferences.Default.PlaybackDevice, out var guid)) {
