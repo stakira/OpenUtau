@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NAudio.Wave;
+#if WINDOWS
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
+#endif
 using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
