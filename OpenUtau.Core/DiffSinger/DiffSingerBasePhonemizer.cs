@@ -153,14 +153,21 @@ namespace OpenUtau.Core.DiffSinger
                 .ToArray();
         }
 
-        string[] GetSymbols(Note note) {
+        string[] GetRejectedSymbols(string phoneticHint) {
+            return phoneticHint.Split()
+                .Where(s => String.IsNullOrEmpty(ValidatePhoneme(s)))
+                .ToArray();
+        }
+
+        string[] GetSymbols(Note note, out string[] rejectedSymbols) {
+            rejectedSymbols = Array.Empty<string>();
             //priority:
             //1. phonetic hint
             //2. query from g2p dictionary
             //3. treat lyric as phonetic hint, including single phoneme
             //4. empty
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
-                // Split space-separated symbols into an array.
+                rejectedSymbols = GetRejectedSymbols(note.phoneticHint);
                 return ParsePhoneticHint(note.phoneticHint);
             }
             // User has not provided hint, query g2p dictionary.
@@ -170,6 +177,7 @@ namespace OpenUtau.Core.DiffSinger
                 return g2presult;
             }
             //not found in g2p dictionary, treat lyric as phonetic hint
+            rejectedSymbols = GetRejectedSymbols(note.lyric);
             var lyricSplited = ParsePhoneticHint(note.lyric);
             if (lyricSplited.Length > 0) {
                 return lyricSplited;
@@ -301,8 +309,17 @@ namespace OpenUtau.Core.DiffSinger
             var wordFound = new bool[phrase.Length];
             foreach (int wordIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] word = phrase[wordIndex];
-                var symbols = GetSymbols(word[0]).Where(s => phonemeTokens.ContainsKey(s)).ToArray();
-                if (symbols == null || symbols.Length == 0) {
+                var rawSymbols = GetSymbols(word[0], out string[] rejectedSymbols);
+                var symbols = rawSymbols.Where(s => phonemeTokens.ContainsKey(s)).ToArray();
+                // Collect symbols that passed GetSymbols but failed phonemeTokens lookup
+                var tokensRejected = rawSymbols.Where(s => !phonemeTokens.ContainsKey(s));
+                rejectedSymbols = rejectedSymbols.Concat(tokensRejected).ToArray();
+                if (rejectedSymbols.Length > 0) {
+                    unrecognizedLyrics[word[0].position] = string.Join(" ", rejectedSymbols);
+                } else if (symbols.Length == 0) {
+                    unrecognizedLyrics[word[0].position] = word[0].lyric ?? string.Empty;
+                }
+                if (symbols.Length == 0) {
                     symbols = new string[] { defaultPause };
                     wordFound[wordIndex] = false;
                 } else {
@@ -429,7 +446,6 @@ namespace OpenUtau.Core.DiffSinger
                 var noteResult = new List<Tuple<string, int>>();
                 if (!wordFound[wordIndex]){
                     partResult[word[0].position] = noteResult;
-                    unrecognizedLyrics[word[0].position] = word[0].lyric;
                     continue;
                 }
                 if (word[0].lyric.StartsWith("+")) {

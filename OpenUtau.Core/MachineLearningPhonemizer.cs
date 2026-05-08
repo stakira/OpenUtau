@@ -60,7 +60,10 @@ namespace OpenUtau.Core {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             if (unrecognizedLyrics.TryGetValue(notes[0].position, out var lyric)) {
-                throw new Exception($"Unrecognized lyric \"{lyric}\"");
+                if (string.IsNullOrEmpty(lyric)) {
+                    throw new Exception("Phoneme not found for this note");
+                }
+                throw new Exception($"Unrecognized phoneme \"{lyric}\"");
             }
             if (!partResult.TryGetValue(notes[0].position, out var phonemes)) {
                 var cause = lastProcessPartException ?? SetUpException;
