@@ -140,46 +140,26 @@ namespace OpenUtau.Core {
             return position + count;
         }
         public void StartTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                if (activeFrequencies[freq].isActive) {
-                    // Don't cut off tone to replace with the same frequency
-                    // Should never happen
-                    return;
-                }
-            }
-
             lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    if (activeFrequencies[freq].isActive) {
+                        // Don't cut off tone to replace with the same frequency
+                        // Should never happen
+                        return;
+                    }
+                }
                 activeFrequencies[freq] = new SineGenerator(freq, gain);
             }
         }
 
-        public void StartTone(double freq, int attackMs, int releaseMs) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                if (activeFrequencies[freq].isActive) {
-                    return;
-                }
-            }
-
-            lock (_lockObj) {
-                activeFrequencies[freq] = new SineGenerator(freq, gain, attackMs, releaseMs);
-            }
-        }
-
         public void StartTone(double freq, int attackMs, int releaseMs, int startSampleOffset) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                if (activeFrequencies[freq].isActive) {
-                    return;
-                }
-            }
-
             lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    if (activeFrequencies[freq].isActive) {
+                        return;
+                    }
+                }
                 activeFrequencies[freq] = new SineGenerator(freq, gain, attackMs, releaseMs, startSampleOffset);
-            }
-        }
-
-        public void StartTones(params (double freq, int attackMs, int releaseMs)[] tones) {
-            foreach (var tone in tones) {
-                StartTone(tone.freq, tone.attackMs, tone.releaseMs);
             }
         }
 
@@ -196,16 +176,15 @@ namespace OpenUtau.Core {
         }
 
         public void EndTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                activeFrequencies[freq].Stop();
 
-                lock (_lockObj) {
+            lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    activeFrequencies[freq].Stop();
                     // Move to inactive frequencies list
                     inactiveFrequencies.Add(activeFrequencies[freq]);
                     activeFrequencies.Remove(freq);
                 }
             }
-
             CleanupTones();
         }
 
