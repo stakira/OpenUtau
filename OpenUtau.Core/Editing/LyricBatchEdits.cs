@@ -154,7 +154,7 @@ namespace OpenUtau.Core.Editing {
         public virtual string Name => name;
         private string name;
         static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
-        static readonly List<string> ignoreList = new List<string>(new string[] {"-", "R", "br", "AP", "SP", "cl" });
+        static readonly List<string> ignoreList = new List<string>(new string[] {"R", "br", "AP", "SP", "cl", " -"});
 
         public AddPhoneticHints() {
             name = "pianoroll.menu.lyrics.addphonetichints";
@@ -166,7 +166,8 @@ namespace OpenUtau.Core.Editing {
                 return; // make no edits if no notes exist
             }
             //string lyric = notes[0].lyric + "[ka]";
-            var phonemizer = project.tracks[part.trackNo].Phonemizer;
+            var track = project.tracks[part.trackNo];
+            var phonemizer = track.Phonemizer;
             if (phonemizer == null) return;
 
 
@@ -176,13 +177,9 @@ namespace OpenUtau.Core.Editing {
                     continue;
                 }
 
-                var constructNote = new OpenUtau.Api.Phonemizer.Note {
-                    lyric = note.lyric,
-                    phoneticHint = "",
-                    tone = -1,
-                    position = note.position,
-                    duration = note.duration
-                }; // reconstruct Note so that we can isolate response from phonemizer.
+                // note.tone = -1; prevent tone from interfering from phonemizer output.
+                var constructNote = note.ToPhonemizerNote(track, part);
+                // reconstruct Note so that we can isolate response from phonemizer.
 
                 if (phonemizer is IG2pSymbols sym) {
                     var phonemeList = sym.GetSymbols(constructNote);
@@ -203,7 +200,7 @@ namespace OpenUtau.Core.Editing {
                     
                     var phonemeList = phonemeResults.phonemes
                         .Select(p => p.phoneme.Trim())
-                        .Where(p => !string.IsNullOrEmpty(p))
+                        .Where(p => !string.IsNullOrEmpty(p) && !ignoreList.Contains(p))
                         .ToList();
                       
                     string lyric = note.lyric + " [" + string.Join(" ", phonemeList).Replace("-", "").Trim() + "]";

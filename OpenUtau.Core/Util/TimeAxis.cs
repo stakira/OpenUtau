@@ -122,6 +122,10 @@ namespace OpenUtau.Core {
             return segment.bpm;
         }
 
+        /*public UNote GetNoteAtTick(UProject project, int trackNo) {
+            return UNote();
+        }*/
+
         public double TickPosToMsPos(double tick) {
             var segment = tempoSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
             return segment.msPos + segment.msPerTick * (tick - segment.tickPos);
