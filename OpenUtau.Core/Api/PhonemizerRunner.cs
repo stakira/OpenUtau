@@ -102,6 +102,7 @@ namespace OpenUtau.Api {
                 phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
             } catch (Exception e) {
                 Log.Error(e, $"phonemizer failed to setup.");
+                phonemizer.SetUpException = e;
             }
 
             var result = new List<Phonemizer.Phoneme[]>();
@@ -142,7 +143,8 @@ namespace OpenUtau.Api {
                     phonemizerResult = new Phonemizer.Result() {
                         phonemes = new Phonemizer.Phoneme[] {
                             new Phonemizer.Phoneme {
-                                phoneme = "error"
+                                phoneme = "error",
+                                error = e
                             }
                         }
                     };

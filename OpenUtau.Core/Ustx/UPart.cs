@@ -159,7 +159,8 @@ namespace OpenUtau.Core.Ustx {
                                     rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = resp.phonemes[i][j].index ?? j,
-                                    Parent = note
+                                    Parent = note,
+                                    ErrorException = resp.phonemes[i][j].error
                                 };
                                 // Check for duplicate indexes
                                 if (phonemes.Any(p => p.Parent == phoneme.Parent && p.index == phoneme.index)) {

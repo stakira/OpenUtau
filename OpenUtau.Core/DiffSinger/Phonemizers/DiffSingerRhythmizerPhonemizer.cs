@@ -7,6 +7,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using System.Text;
 using System.Linq;
+using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
 
@@ -97,7 +98,8 @@ namespace OpenUtau.Core.DiffSinger {
                 //Load pinyin to phoneme dictionary from rhythmizer package
                 phoneDict = rhythmizer.phoneDict;
             } catch (Exception ex) {
-                return;
+                Log.Error(ex, "Failed to load rhythmizer");
+                throw;
             }
         }
 

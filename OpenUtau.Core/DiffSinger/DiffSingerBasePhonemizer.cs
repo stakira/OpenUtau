@@ -65,7 +65,7 @@ namespace OpenUtau.Core.DiffSinger
                 dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(configTxt);
             } catch(Exception e) {
                 Log.Error(e, $"failed to load dsconfig from {configPath}");
-                return false;
+                throw;
             }
             //Load language id if needed
             if (dsConfig.use_lang_id) {
@@ -78,7 +78,7 @@ namespace OpenUtau.Core.DiffSinger
                     languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
                 } catch (Exception e) {
                     Log.Error(e, $"failed to load language id from {langIdPath}");
-                    return false;
+                    throw;
                 }
             }
             this.frameMs = dsConfig.frameMs();
@@ -95,7 +95,7 @@ namespace OpenUtau.Core.DiffSinger
                 linguisticModel = new InferenceSession(linguisticModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load linguistic model from {linguisticModelPath}");
-                return false;
+                throw;
             }
             var durationModelPath = Path.Join(rootPath, dsConfig.dur);
             try {
@@ -104,7 +104,7 @@ namespace OpenUtau.Core.DiffSinger
                 durationModel = new InferenceSession(durationModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load duration model from {durationModelPath}");
-                return false;
+                throw;
             }
             return true;
         }
@@ -124,6 +124,7 @@ namespace OpenUtau.Core.DiffSinger
                         g2pBuilder.Load(File.ReadAllText(dictionaryPath)).Build();
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {dictionaryPath}");
+                        throw;
                     }
                     break;
                 }
@@ -433,7 +434,8 @@ namespace OpenUtau.Core.DiffSinger
                 Note[] word = phrase[wordIndex];
                 var noteResult = new List<Tuple<string, int>>();
                 if (!wordFound[wordIndex]){
-                    //partResult[word[0].position] = noteResult;
+                    partResult[word[0].position] = noteResult;
+                    unrecognizedLyrics[word[0].position] = word[0].lyric;
                     continue;
                 }
                 if (word[0].lyric.StartsWith("+")) {
