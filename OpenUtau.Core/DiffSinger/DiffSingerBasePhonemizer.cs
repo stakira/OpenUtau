@@ -47,17 +47,12 @@ namespace OpenUtau.Core.DiffSinger
         private bool _executeSetSinger(USinger singer) {
             this.singer = singer;
             if (singer == null) {
-                return false;
+                throw new Exception("Singer is null.");
             }
             if(singer.Location == null){
-                Log.Error("Singer location is null");
-                return false;
+                throw new Exception("Singer location is null.");
             }
-            if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
-                rootPath = Path.Combine(singer.Location, "dsdur");
-            } else {
-                rootPath = singer.Location;
-            }
+            rootPath = Path.Combine(singer.Location, "dsdur");
             //Load Config
             var configPath = Path.Join(rootPath, "dsconfig.yaml");
             try {
@@ -70,8 +65,7 @@ namespace OpenUtau.Core.DiffSinger
             //Load language id if needed
             if (dsConfig.use_lang_id) {
                 if (dsConfig.languages == null) {
-                    Log.Error("\"languages\" field is not specified in dsconfig.yaml");
-                    return false;
+                    throw new Exception("\"languages\" field is not specified in dsconfig.yaml");
                 }
                 var langIdPath = Path.Join(rootPath, dsConfig.languages);
                 try {
