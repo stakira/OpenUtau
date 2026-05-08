@@ -1,4 +1,10 @@
-﻿using System;
+/*
+ * Version: 1.5
+ * Made And Checked By DELTA SYNTH & Gemini AI
+ * Original Concept by Ferina and Printmov
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,53 +13,58 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
-    /// The Thai Arpasing Phonemizer.
-    /// <para>
-    /// Arpasing is a system that uses CMUdict as dictionary to convert Thai words to phoneme symbols.
-    /// See http://www.speech.cs.cmu.edu/cgi-bin/cmudict and https://arpasing.neocities.org/en/faq.html.
-    /// </para>
+    /// ตัวแปลงหน่วยเสียง Thai Arpasing Phonemizer
+    /// ปรับแต่งมาเพื่อรองรับอักขระและสระภาษาไทยโดยเฉพาะ อ้างอิงโครงสร้าง Arpasing 
     /// </summary>
-    [Phonemizer("Thai Arpasing Phonemizer", "THAI ARPA")]
-    public class ArpasingPhonemizer : LatinDiphonePhonemizer {
-        public ArpasingPhonemizer() {
+    [Phonemizer("ตัวแปลงหน่วยเสียง Thai Arpasing (รุ่น 1.5)", "TH Arpasing v1.5", language: "TH")]
+    public class ThaiArpasingPhonemizer : LatinDiphonePhonemizer {
+        
+        public ThaiArpasingPhonemizer() {
             try {
                 Initialize();
             } catch (Exception e) {
-                Log.Error(e, "Failed to initialize.");
+                // ปรับข้อความแจ้งเตือน Error เป็นภาษาไทยเพื่อให้ตรวจสอบปัญหาได้ง่ายขึ้น
+                Log.Error(e, "เกิดข้อผิดพลาดในการเริ่มต้นระบบ Thai Arpasing Phonemizer");
             }
         }
 
         protected override IG2p LoadG2p() {
             var g2ps = new List<IG2p>();
 
-            // Load dictionary from plugin folder.
-            string path = Path.Combine(PluginDir, "Thai arpasing.yaml");
+            // 1. โหลดพจนานุกรมหลักจากโฟลเดอร์ของปลั๊กอิน (thai_arpasing.yaml)
+            string path = Path.Combine(PluginDir, "thai_arpasing.yaml");
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
+                // สร้างไฟล์แม่แบบป้องกันโปรแกรมแครชหากยังไม่มีไฟล์ดิกชันนารี
                 File.WriteAllBytes(path, Data.Resources.arpasing_template);
             }
             g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
 
-            // Load dictionary from singer folder.
+            // 2. โหลดพจนานุกรมระดับ Voicebank (Singer-specific dictionary)
+            // เปิดโอกาสให้ UTAU แต่ละตัวมีดิกชันนารีเฉพาะของตัวเองได้
             if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
                     } catch (Exception e) {
-                        Log.Error(e, $"Failed to load {file}");
+                        Log.Error(e, $"ไม่สามารถโหลดไฟล์พจนานุกรมจาก {file} ได้");
                     }
                 }
             }
 
-            // Load base g2p.
+            // 3. โหลด G2P พื้นฐานสำรอง
             g2ps.Add(new ArpabetG2p());
 
             return new G2pFallbacks(g2ps.ToArray());
         }
 
+        // 4. ระบบปรับสมดุลเสียงสระสำรอง (Vowel Fallbacks) สำหรับภาษาไทย
         protected override Dictionary<string, string[]> LoadVowelFallbacks() {
-            return "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
+            // หาก Voicebank ขาดเสียงสระประสมบางตัว ระบบจะดึงสระเดี่ยวที่ใกล้เคียงมาประติประต่อให้แทน
+            // เช่น หา เอีย (ia) ไม่เจอ จะใช้ อี (ih) + อา (ah) แทนอัตโนมัติ
+            return "ia=ih,ah;ua=uh,ah;eu=er,ue;ue=uh,er;ae=eh,ah;ao=oh,aw;ay=ah,ih;aw=ah,uh;am=ah,m;aa=ah;ah=aa;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh"
+                .Split(';')
                 .Select(entry => entry.Split('='))
                 .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
         }
