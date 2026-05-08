@@ -226,10 +226,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append("SP")
                 .Select(phoneme => (Int64)singer.PhonemeTokenize(phoneme))
                 .ToList();
-            var durations = phrase.phones
-                .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error
-                .Prepend(headFrames)
-                .Append(tailFrames)
+            var durations = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames)
                 .ToList();
             int totalFrames = durations.Sum();
             float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
@@ -364,7 +361,11 @@ namespace OpenUtau.Core.DiffSinger {
                         throw new KeyNotFoundException(
                             "The parameter \"energy\" required by acoustic model is not found in variance predictions.");
                     }
-                    var predictedEnergy = DiffSingerUtils.ResampleCurve(varianceResult.energy, totalFrames);
+                    var predictedEnergy = DiffSingerUtils.ResamplePaddedCurve(
+                        varianceResult.energy, totalFrames,
+                        varianceResult.headFrames, varianceResult.tailFrames,
+                        headFrames, tailFrames,
+                        varianceResult.frameMs, frameMs);
                     var energy = predictedEnergy.Zip(userEnergy, varianceDeltaFunctions[ENE]).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
                         new DenseTensor<float>(energy, new int[] { energy.Length })
@@ -378,7 +379,11 @@ namespace OpenUtau.Core.DiffSinger {
                         throw new KeyNotFoundException(
                             "The parameter \"breathiness\" required by acoustic model is not found in variance predictions.");
                     }
-                    var predictedBreathiness = DiffSingerUtils.ResampleCurve(varianceResult.breathiness, totalFrames);
+                    var predictedBreathiness = DiffSingerUtils.ResamplePaddedCurve(
+                        varianceResult.breathiness, totalFrames,
+                        varianceResult.headFrames, varianceResult.tailFrames,
+                        headFrames, tailFrames,
+                        varianceResult.frameMs, frameMs);
                     var breathiness = predictedBreathiness.Zip(userBreathiness, varianceDeltaFunctions[Format.Ustx.BREC]).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
                         new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
@@ -392,7 +397,11 @@ namespace OpenUtau.Core.DiffSinger {
                         throw new KeyNotFoundException(
                             "The parameter \"voicing\" required by acoustic model is not found in variance predictions.");
                     }
-                    var predictedVoicing = DiffSingerUtils.ResampleCurve(varianceResult.voicing, totalFrames);
+                    var predictedVoicing = DiffSingerUtils.ResamplePaddedCurve(
+                        varianceResult.voicing, totalFrames,
+                        varianceResult.headFrames, varianceResult.tailFrames,
+                        headFrames, tailFrames,
+                        varianceResult.frameMs, frameMs);
                     var voicing = predictedVoicing.Zip(userVoicing, varianceDeltaFunctions[Format.Ustx.VOIC]).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
                         new DenseTensor<float>(voicing, new int[] { voicing.Length })
@@ -406,7 +415,11 @@ namespace OpenUtau.Core.DiffSinger {
                         throw new KeyNotFoundException(
                             "The parameter \"tension\" required by acoustic model is not found in variance predictions.");
                     }
-                    var predictedTension = DiffSingerUtils.ResampleCurve(varianceResult.tension, totalFrames);
+                    var predictedTension = DiffSingerUtils.ResamplePaddedCurve(
+                        varianceResult.tension, totalFrames,
+                        varianceResult.headFrames, varianceResult.tailFrames,
+                        headFrames, tailFrames,
+                        varianceResult.frameMs, frameMs);
                     var tension = predictedTension.Zip(userTension, varianceDeltaFunctions[Format.Ustx.TENC]).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
                         new DenseTensor<float>(tension, new int[] { tension.Length })
@@ -500,8 +513,10 @@ namespace OpenUtau.Core.DiffSinger {
             var variancePredictor = singer.getVariancePredictor()!;
             lock (variancePredictor) {
                 var result = variancePredictor.Process(phrase);
-                var startMs = phrase.positionMs - DiffSingerUtils.GetHeadMs(phrase);
-                var frameMs = variancePredictor.FrameMs;
+                var frameMs = result.frameMs;
+                var headFrames = result.headFrames;
+                var tailFrames = result.tailFrames;
+                var startMs = phrase.positionMs - headFrames * frameMs;
                 var realCurves = new (string, float[], float[], Func<float, float>)[] {
                     (
                         ENE, result.energy ?? Array.Empty<float>(),
@@ -531,18 +546,18 @@ namespace OpenUtau.Core.DiffSinger {
                             values = Array.Empty<float>(),
                         };
                     }
-                    var deltaCurve = DiffSingerUtils.ResampleCurve(t.Item3, realCurve.Length
-                        - DiffSingerUtils.headFrames - DiffSingerUtils.tailFrames);
-                    float[] paddedDeltaCurve = new float[realCurve.Length];
-                    Array.Fill(paddedDeltaCurve, 0f);
-                    Array.Copy(deltaCurve, 0, paddedDeltaCurve, DiffSingerUtils.headFrames, deltaCurve.Length);
+                    var deltaCurve = DiffSingerUtils.SampleCurve(
+                        phrase, t.Item3, 0, frameMs, realCurve.Length,
+                        headFrames, tailFrames, x => x)
+                        .Select(x => (float)x)
+                        .ToArray();
                     var normFunc = t.Item4;
                     return new RenderRealCurveResult {
                         abbr = abbr,
                         ticks = Enumerable.Range(0, realCurve.Length)
                             .Select(i => (float)phrase.timeAxis.MsPosToTickPos(startMs + i * frameMs) - phrase.position)
                             .ToArray(),
-                        values = realCurve.Zip(paddedDeltaCurve, varianceDeltaFunctions[abbr])
+                        values = realCurve.Zip(deltaCurve, varianceDeltaFunctions[abbr])
                             .Select(normFunc)
                             .ToArray()
                     };

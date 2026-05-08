@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,7 @@ namespace OpenUtau.Core.DiffSinger {
 
             var notes = phrase.notes;
             var phones = phrase.phones;
+            DiffSingerSinger singer = phrase.singer as DiffSingerSinger;
             
             text = notes.Select(n => n.lyric)
                 .Where(s=>!s.StartsWith("+"))
@@ -44,11 +46,6 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(p => p.durationMs)
                 .Prepend(headMs)
                 .Append(tailMs)
-                .ToArray();
-            note_slur = notes
-                .Select(n => n.lyric.StartsWith("+") ? 1 : 0)
-                .Prepend(0)
-                .Append(0)
                 .ToArray();
             //ph_num
             var phNumList = new List<int>();
@@ -69,29 +66,54 @@ namespace OpenUtau.Core.DiffSinger {
             ph_num = phNumList.ToArray();
 
             if(v2){
-                noteSeq = notes
-                    .Select(n => (n.lyric == "SP" || n.lyric == "AP") ? 0 : n.tone)
-                    .Prepend(0)
-                    .Append(0)
-                    .ToArray();
+                //Build note arrays with rest notes inserted for gaps between notes
+                var noteSeqList = new List<int> { 0 };//head padding
+                var noteDurList = new List<double> { headMs+(notes[0].positionMs-phones[0].positionMs) };
+                var noteSlurList = new List<int> { 0 };//head padding
+                double prevNoteEndMs = notes[0].positionMs;
+                foreach(var note in notes) {
+                    double gapMs = note.positionMs - prevNoteEndMs;
+                    if (gapMs > 0) {
+                        //Insert a rest note for the gap
+                        noteSeqList.Add(0);
+                        noteDurList.Add(gapMs);
+                        noteSlurList.Add(0);
+                    }
+                    noteSeqList.Add((note.lyric == "SP" || note.lyric == "AP") ? 0 : note.tone);
+                    noteDurList.Add(note.durationMs);
+                    noteSlurList.Add(note.lyric.StartsWith("+") ? 1 : 0);
+                    prevNoteEndMs = note.positionMs + note.durationMs;
+                }
+                noteSeqList.Add(0);//tail padding
+                noteDurList.Add(tailMs);
+                noteSlurList.Add(0);//tail padding
+                noteSeq = noteSeqList.ToArray();
+                noteDurMs = noteDurList.ToArray();
+                note_slur = noteSlurList.ToArray();
             }else{
                 noteSeq = phones
                     .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
                     .Prepend(0)
                     .Append(0)
                     .ToArray();
+                noteDurMs = notes
+                    .Select(n => n.durationMs)
+                    .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
+                    .Append(tailMs)
+                    .ToArray();
+                note_slur = notes
+                    .Select(n => n.lyric.StartsWith("+") ? 1 : 0)
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
             }
-            noteDurMs = notes
-                .Select(n => n.durationMs)
-                .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
-                .Append(tailMs)
-                .ToArray();
             
-            frameMs = 10;
+            frameMs = singer?.dsConfig.frameMs() ?? 10;
             
-            int headFrames = (int)(headMs / frameMs);
-            int tailFrames = (int)(tailMs / frameMs);
-            var totalFrames = (int)(phDurMs.Sum() / frameMs);
+            var phDurFrames = DiffSingerUtils.DurationsMsToFrames(phDurMs, frameMs);
+            int headFrames = phDurFrames[0];
+            int tailFrames = phDurFrames[^1];
+            var totalFrames = phDurFrames.Sum();
 
             //f0
             if(exportPitch){
@@ -109,10 +131,6 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //voicebank specific features
-            DiffSingerSinger singer = null;
-            if (phrase.singer != null) { 
-                singer = phrase.singer as DiffSingerSinger; 
-            }
             if(singer != null) {
                 //gender
                 if (singer.dsConfig.useKeyShiftEmbed) {
@@ -161,6 +179,10 @@ namespace OpenUtau.Core.DiffSinger {
         public string? velocity_timestep = null;
         public string? velocity = null;
 
+        static string FormatMsAsSeconds(double ms) {
+            return (ms / 1000).ToString("G9", CultureInfo.InvariantCulture);
+        }
+
         public RawDiffSingerScript(DiffSingerScript script) {
             offset = script.offsetMs / 1000;
             text = String.Join(" ", script.text);
@@ -169,25 +191,25 @@ namespace OpenUtau.Core.DiffSinger {
             note_seq = String.Join(" ", 
                 script.noteSeq
                 .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
-            ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f4")));
-            note_dur = String.Join(" ",script.noteDurMs.Select(x => (x/1000).ToString("f4")));
+            ph_dur = String.Join(" ",script.phDurMs.Select(FormatMsAsSeconds));
+            note_dur = String.Join(" ",script.noteDurMs.Select(FormatMsAsSeconds));
             note_dur_seq = ph_dur;
             note_slur = String.Join(" ", script.note_slur);
             is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));
             
             if(script.f0_seq!=null){
-                f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
+                f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1", CultureInfo.InvariantCulture)));
             }
-            f0_timestep = (script.frameMs / 1000).ToString();
+            f0_timestep = (script.frameMs / 1000).ToString("G9", CultureInfo.InvariantCulture);
 
             if(script.gender != null) {
                 gender_timestep = f0_timestep;
-                gender = String.Join(" ", script.gender.Select(x => x.ToString("f3")));
+                gender = String.Join(" ", script.gender.Select(x => x.ToString("f3", CultureInfo.InvariantCulture)));
             }
 
             if (script.velocity != null) {
                 velocity_timestep = f0_timestep;
-                velocity = String.Join(" ", script.velocity.Select(x => x.ToString("f3")));
+                velocity = String.Join(" ", script.velocity.Select(x => x.ToString("f3", CultureInfo.InvariantCulture)));
             }
         }
     }
