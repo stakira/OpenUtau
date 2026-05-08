@@ -96,6 +96,7 @@ namespace OpenUtau.Api {
                     timestamp = request.timestamp,
                 };
             }
+            phonemizer.SetUpException = null;
             try {
                 phonemizer.SetSinger(request.singer);
             } catch (Exception e) {

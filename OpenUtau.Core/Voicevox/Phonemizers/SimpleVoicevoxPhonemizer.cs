@@ -25,13 +25,13 @@ namespace Voicevox {
                 if (lyricList.Length > 1) {
                     currentLyric = lyricList[1];
                 }
-                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(notes[i].lyric)) {
-                    if (VoicevoxUtils.TryGetPau(notes[i].lyric, out string pau)) {
+                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
+                    if (VoicevoxUtils.TryGetPau(currentLyric, out string pau)) {
                         phonemes.Add(new Phoneme { phoneme = pau });
-                    } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(notes[i].lyric)) {
+                    } else if (VoicevoxUtils.phoneme_List.kanas.ContainsKey(currentLyric)) {
                         phonemes.Add(new Phoneme { phoneme = currentLyric });
-                    } else if (VoicevoxUtils.dic.IsDic(notes[i].lyric)) {
-                        phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(notes[i].lyric) });
+                    } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
+                        phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(currentLyric) });
                     } else {
                         throw new Exception($"Unrecognized lyric \"{notes[i].lyric}\"");
                     }

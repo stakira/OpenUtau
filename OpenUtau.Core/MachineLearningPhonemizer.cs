@@ -13,13 +13,15 @@ namespace OpenUtau.Core {
         //value: a list of phonemes and their positions in the note
         protected Dictionary<int, List<Tuple<string, int>>> partResult = new Dictionary<int, List<Tuple<string, int>>>();
         protected Dictionary<int, string> unrecognizedLyrics = new Dictionary<int, string>();
-        private Exception lastProcessPartException;
+        private Exception? lastProcessPartException;
         //Called when the note is changed, and the entire song is passed into the SetUp function as long as the note is changed
         //groups is a two-dimensional array of Note, each Note[] represents a lyrical note and its following slur notes
         //Run phoneme timing model in sections to prevent butterfly effect
         public override void SetUp(Note[][] groups, UProject project, UTrack track) {
             SetUpException = null;
             lastProcessPartException = null;
+            partResult.Clear();
+            unrecognizedLyrics.Clear();
             if (groups.Length == 0) {
                 return;
             }
