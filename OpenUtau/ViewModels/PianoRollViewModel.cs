@@ -47,6 +47,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
         [Reactive] public CurveViewModel CurveViewModel { get; set; }
+        [Reactive] public Dictionary<string, string> Hotkeys { get; set; } = new Dictionary<string, string>();
 
         public double Width => Preferences.Default.PianorollWindowSize.Width;
         public double Height => Preferences.Default.PianorollWindowSize.Height;
@@ -104,7 +105,28 @@ namespace OpenUtau.App.ViewModels {
 
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
 
+        public void ReloadShortcuts() {
+            var newHotkeys = new Dictionary<string, string>();
+            
+            foreach (var sc in Preferences.Default.Shortcuts) {
+                Enum.TryParse<KeyModifiers>(sc.ModifiersName, out var parsedMods);
+                
+                string mods = KeyTranslator.GetFriendlyModifiersName(parsedMods);
+                string key = KeyTranslator.GetFriendlyName(sc.KeyName); 
+                
+                if (string.IsNullOrEmpty(mods) || sc.ModifiersName == "None") {
+                    newHotkeys[sc.ActionId] = key;
+                } else {
+                    // Mac gets no separator, Windows gets standard "+" for menus
+                    newHotkeys[sc.ActionId] = KeyTranslator.IsMac ? $"{mods}{key}" : $"{mods.Replace(" + ", "+")}+{key}";
+                }
+            }
+            
+            Hotkeys = newHotkeys;
+        }
+
         public PianoRollViewModel() {
+            ReloadShortcuts();
             NotesViewModel = new NotesViewModel();
             CurveViewModel = new CurveViewModel();
 
@@ -213,32 +235,27 @@ namespace OpenUtau.App.ViewModels {
 
         private void LoadLegacyPlugins() {
             LegacyPlugins.Clear();
+            
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
+                InputGesture = KeyTranslator.GetGesture(plugin.Name),
                 Command = legacyPluginCommand,
                 CommandParameter = plugin,
             }));
 
             LegacyPluginShortcuts.Clear();
             foreach (MenuItemViewModel menu in LegacyPlugins) {
-                if (menu.CommandParameter is Classic.Plugin plugin) {
-                    if (Enum.TryParse(plugin.Shortcut, out Key key) && !LegacyPluginShortcuts.ContainsKey(key)) {
-                        LegacyPluginShortcuts.Add(key, menu);
-                    }
+                if (menu.InputGesture != null && !LegacyPluginShortcuts.ContainsKey(menu.InputGesture.Key)) {
+                    LegacyPluginShortcuts.Add(menu.InputGesture.Key, menu);
                 }
             }
-            LegacyPlugins.Add(new MenuItemViewModel() { // Separator
-                Header = "-",
-                Height = 1
-            });
+
+            LegacyPlugins.Add(new MenuItemViewModel() { Header = "-", Height = 1 });
             LegacyPlugins.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.plugin.openfolder"),
                 Command = ReactiveCommand.Create(() => {
-                    try {
-                        OS.OpenFolder(PathManager.Inst.PluginsPath);
-                    } catch (Exception e) {
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                    }
+                    try { OS.OpenFolder(PathManager.Inst.PluginsPath); } 
+                    catch (Exception e) { DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e)); }
                 })
             });
             LegacyPlugins.Add(new MenuItemViewModel() {

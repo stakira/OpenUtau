@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Colors;
 using OpenUtau.Core;
+using Avalonia.Input;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
@@ -15,6 +16,37 @@ namespace OpenUtau.App.Views {
 
         public PreferencesDialog() {
             InitializeComponent();
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            if (DataContext is PreferencesViewModel vm && vm.ActiveShortcut != null) {
+                // If they hit escape without modifiers, cancel listening
+                if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None) {
+                    vm.ActiveShortcut.IsListening = false;
+                    vm.ActiveShortcut.RefreshDisplay();
+                    vm.ActiveShortcut = null;
+                    e.Handled = true;
+                    return;
+                }
+
+                vm.AssignShortcut(e.Key, e.KeyModifiers);
+                e.Handled = true;
+                return;
+            }
+
+            base.OnKeyDown(e);
+        }
+
+        public void OnShortcutRightClick(object sender, PointerReleasedEventArgs e) {
+            if (e.InitialPressMouseButton == MouseButton.Right && 
+                sender is Button btn && 
+                btn.DataContext is ShortcutItemViewModel item) {
+                
+                if (DataContext is PreferencesViewModel vm) {
+                    vm.ResetShortcut(item);
+                    e.Handled = true;
+                }
+            }
         }
 
         void OpenSingersFolder(object sender, RoutedEventArgs e) {
