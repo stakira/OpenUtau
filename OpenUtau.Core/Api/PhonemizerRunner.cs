@@ -96,13 +96,20 @@ namespace OpenUtau.Api {
                     timestamp = request.timestamp,
                 };
             }
-            phonemizer.SetSinger(request.singer);
-            phonemizer.SetTiming(request.timeAxis);
             try {
-                phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                phonemizer.SetSinger(request.singer);
             } catch (Exception e) {
-                Log.Error(e, $"phonemizer failed to setup.");
+                Log.Error(e, $"phonemizer failed to set singer.");
                 phonemizer.SetUpException = e;
+            }
+            phonemizer.SetTiming(request.timeAxis);
+            if (phonemizer.SetUpException == null) {
+                try {
+                    phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                } catch (Exception e) {
+                    Log.Error(e, $"phonemizer failed to setup.");
+                    phonemizer.SetUpException = e;
+                }
             }
 
             var result = new List<Phonemizer.Phoneme[]>();
