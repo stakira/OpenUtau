@@ -405,7 +405,12 @@ namespace OpenUtau.App.Views {
             var project = DocManager.Inst.Project;
             bool allRendered = project.parts
                 .OfType<UVoicePart>()
-                .All(part => part.Mix != null);
+                .All(part => part.renderPhrases.Count > 0 &&
+                    part.renderPhrases.All(phrase => {
+                        var hashStr = $"{phrase.hash:x16}";
+                        return Directory.EnumerateFiles(
+                            PathManager.Inst.CachePath, $"*{hashStr}*.wav").Any();
+                    }));
             if (!allRendered) {
                 await MessageBox.Show(
                     this,
