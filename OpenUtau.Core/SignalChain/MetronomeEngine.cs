@@ -3,13 +3,16 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.SignalChain {
     class MetronomeEngine : ISignalSource {
+        private const int SampleRate = 44100;
+        private const int Channels = 2;
         private const int MetronomeAttackMs = 5;
         private const int MetronomeBeatReleaseMs = 10;
         private const int MetronomeBarReleaseMs = 10;
         private const double AccentFrequencyOffset = 880;
 
-        private readonly ToneGenerator toneGenerator = new ToneGenerator(0.6f);
+        private readonly ToneGenerator toneGenerator = new ToneGenerator(PlaybackManager.GetMetronomeGain());
         private readonly MetronomeScheduler scheduler = new MetronomeScheduler();
+        private TimeAxis? playbackTimeAxis;
 
         private static double MetronomeBarFreq => Preferences.Default.MetronomeHighFrequency;
         private static double MetronomeBeatFreq => Preferences.Default.MetronomeLowFrequency;
@@ -18,11 +21,17 @@ namespace OpenUtau.Core.SignalChain {
 
         public bool Enabled { get; private set; }
 
+        public MetronomeEngine() {
+            UpdateGain();
+        }
+
         public bool IsReady(int position, int count) {
             return toneGenerator.IsReady(position, count);
         }
 
         public int Mix(int position, float[] buffer, int offset, int count) {
+            UpdateGain();
+            ScheduleBuffer(position, count);
             return toneGenerator.Mix(position, buffer, offset, count);
         }
 
@@ -33,6 +42,7 @@ namespace OpenUtau.Core.SignalChain {
                 return;
             }
             if (timeAxis != null && tick >= 0) {
+                playbackTimeAxis = timeAxis;
                 scheduler.Reset(timeAxis, tick);
             }
         }
@@ -40,11 +50,13 @@ namespace OpenUtau.Core.SignalChain {
         public void Stop() {
             toneGenerator.EndAllTones();
             scheduler.Clear();
+            playbackTimeAxis = null;
         }
 
         public void StartPlayback(TimeAxis timeAxis, int tick) {
             ArgumentNullException.ThrowIfNull(timeAxis);
             toneGenerator.EndAllTones();
+            playbackTimeAxis = timeAxis;
             if (Enabled) {
                 scheduler.Reset(timeAxis, tick);
             } else {
@@ -58,34 +70,45 @@ namespace OpenUtau.Core.SignalChain {
                 scheduler.Clear();
                 return;
             }
+            playbackTimeAxis = timeAxis;
             scheduler.Reset(timeAxis, tick);
         }
 
-        public void TryPlay(int tick, double currentMs, TimeAxis timeAxis) {
-            ArgumentNullException.ThrowIfNull(timeAxis);
-            if (!Enabled || !scheduler.IsScheduled || currentMs < scheduler.NextMs) {
+        private void ScheduleBuffer(int position, int count) {
+            if (!Enabled || playbackTimeAxis == null || !scheduler.IsScheduled) {
                 return;
             }
-            PlayClick(scheduler.NextBeat == 0);
-            scheduler.Advance(timeAxis);
-            scheduler.SkipPast(timeAxis, currentMs);
-            if (scheduler.IsScheduled && scheduler.NextTick <= tick) {
-                scheduler.Reset(timeAxis, tick);
+
+            double bufferStartMs = position * 1000.0 / (SampleRate * Channels);
+            double bufferEndMs = (position + count) * 1000.0 / (SampleRate * Channels);
+            while (scheduler.IsScheduled && scheduler.NextMs < bufferStartMs) {
+                scheduler.Advance(playbackTimeAxis);
+            }
+            while (scheduler.IsScheduled && scheduler.NextMs < bufferEndMs) {
+                int startSampleOffset = (int)Math.Round((scheduler.NextMs - bufferStartMs) * SampleRate / 1000.0);
+                PlayClick(scheduler.NextBeat == 0, startSampleOffset);
+                scheduler.Advance(playbackTimeAxis);
             }
         }
 
-        private void PlayClick(bool accent) {
+        private void PlayClick(bool accent, int startSampleOffset = 0) {
             if (accent) {
                 toneGenerator.StartTones(
+                    startSampleOffset,
                     (MetronomeBarFreq, MetronomeAttackMs, MetronomeBarReleaseMs),
                     (MetronomeBarAccentFreq, MetronomeAttackMs, MetronomeBeatReleaseMs));
                 toneGenerator.EndTones(MetronomeBarFreq, MetronomeBarAccentFreq);
             } else {
                 toneGenerator.StartTones(
+                    startSampleOffset,
                     (MetronomeBeatFreq, MetronomeAttackMs, MetronomeBeatReleaseMs),
                     (MetronomeBeatAccentFreq, MetronomeAttackMs, MetronomeBeatReleaseMs / 2));
                 toneGenerator.EndTones(MetronomeBeatFreq, MetronomeBeatAccentFreq);
             }
+        }
+
+        private void UpdateGain() {
+            toneGenerator.SetGain(PlaybackManager.GetMetronomeGain());
         }
     }
 }
