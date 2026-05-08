@@ -40,10 +40,13 @@ namespace OpenUtau.App.ViewModels {
         public string DisplayString {
             get {
                 if (IsListening) return ThemeManager.GetString("prefs.shortcuts.listening") ?? "Press keys...";
-                
-                string mods = Modifiers == KeyModifiers.None ? "" : $"{Modifiers} + ";
+                string mods = KeyTranslator.GetFriendlyModifiersName(Modifiers);
                 string friendlyKey = KeyTranslator.GetFriendlyName(Key.ToString());
-                return $"{mods}{friendlyKey}";
+                if (!string.IsNullOrEmpty(mods)) {
+                    return KeyTranslator.IsMac ? $"{mods}{friendlyKey}" : $"{mods} + {friendlyKey}";
+                }
+                
+                return friendlyKey;
             }
         }
 

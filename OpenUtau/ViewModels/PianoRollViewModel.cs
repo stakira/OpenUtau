@@ -109,12 +109,17 @@ namespace OpenUtau.App.ViewModels {
             var newHotkeys = new Dictionary<string, string>();
             
             foreach (var sc in Preferences.Default.Shortcuts) {
-                string mods = sc.ModifiersName
-                    .Replace("None", "")
-                    .Replace(", ", "+");
+                Enum.TryParse<KeyModifiers>(sc.ModifiersName, out var parsedMods);
                 
+                string mods = KeyTranslator.GetFriendlyModifiersName(parsedMods);
                 string key = KeyTranslator.GetFriendlyName(sc.KeyName); 
-                newHotkeys[sc.ActionId] = string.IsNullOrEmpty(mods) ? key : $"{mods}+{key}";
+                
+                if (string.IsNullOrEmpty(mods) || sc.ModifiersName == "None") {
+                    newHotkeys[sc.ActionId] = key;
+                } else {
+                    // Mac gets no separator, Windows gets standard "+" for menus
+                    newHotkeys[sc.ActionId] = KeyTranslator.IsMac ? $"{mods}{key}" : $"{mods.Replace(" + ", "+")}+{key}";
+                }
             }
             
             Hotkeys = newHotkeys;
@@ -231,17 +236,9 @@ namespace OpenUtau.App.ViewModels {
         private void LoadLegacyPlugins() {
             LegacyPlugins.Clear();
             
-            Avalonia.Input.KeyGesture? GetGesture(string actionId) {
-                var sc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == actionId);
-                if (sc != null && Enum.TryParse<Key>(sc.KeyName, out var k) && Enum.TryParse<KeyModifiers>(sc.ModifiersName, out var m) && k != Key.None) {
-                    return new Avalonia.Input.KeyGesture(k, m);
-                }
-                return null;
-            }
-
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
-                InputGesture = GetGesture(plugin.Name),
+                InputGesture = KeyTranslator.GetGesture(plugin.Name),
                 Command = legacyPluginCommand,
                 CommandParameter = plugin,
             }));

@@ -30,16 +30,7 @@ namespace OpenUtau.App.Controls {
     }
 
     public partial class PianoRoll : UserControl, IValueTip, ICmdSubscriber {
-        private Avalonia.Input.KeyGesture? GetGesture(string actionId) {
-            var sc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == actionId);
-            if (sc != null && 
-                Enum.TryParse<Avalonia.Input.Key>(sc.KeyName, out var k) && 
-                Enum.TryParse<Avalonia.Input.KeyModifiers>(sc.ModifiersName, out var m) && 
-                k != Avalonia.Input.Key.None) {
-                return new Avalonia.Input.KeyGesture(k, m);
-            }
-            return null;
-        }
+
         public MainWindow? MainWindow { get; set; }
         public PianoRollViewModel ViewModel;
 
@@ -239,35 +230,35 @@ namespace OpenUtau.App.Controls {
 
             ViewModel.NoteBatchEdits.Insert(6, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.addbreath"),
-                InputGesture = GetGesture("Add Breath"),
+                InputGesture = KeyTranslator.GetGesture("Add Breath"),
                 Command = ReactiveCommand.Create(() => {
                     AddBreathNote();
                 })
             });
             ViewModel.NoteBatchEdits.Insert(9, new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.quantize"),
-                InputGesture = GetGesture("Quantize Notes"),
+                InputGesture = KeyTranslator.GetGesture("Quantize Notes"),
                 Command = ReactiveCommand.Create(() => {
                     QuantizeNotes();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.randomizetuning"),
-                InputGesture = GetGesture("Randomize Tuning"),
+                InputGesture = KeyTranslator.GetGesture("Randomize Tuning"),
                 Command = ReactiveCommand.Create(() => {
                     RandomizeTuning();
                 })
             });
             ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
-                InputGesture = GetGesture("Lengthen Crossfade"),
+                InputGesture = KeyTranslator.GetGesture("Lengthen Crossfade"),
                 Command = ReactiveCommand.Create(() => {
                     LengthenCrossfade();
                 })
             });
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
-                InputGesture = GetGesture("lyricsreplace.replace"),
+                InputGesture = KeyTranslator.GetGesture("lyricsreplace.replace"),
                 Command = ReactiveCommand.Create(() => {
                     ReplaceLyrics();
                 })
@@ -863,18 +854,18 @@ namespace OpenUtau.App.Controls {
                             Header = ThemeManager.GetString("context.note.copy"),
                             Command = ViewModel.NoteCopyCommand,
                             CommandParameter = hitInfo,
-                            InputGesture = new KeyGesture(Key.C, KeyModifiers.Control),
+                            InputGesture = KeyTranslator.GetGesture("Copy"),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.delete"),
                             Command = ViewModel.NoteDeleteCommand,
                             CommandParameter = hitInfo,
-                            InputGesture = new KeyGesture(Key.Delete),
+                            InputGesture = KeyTranslator.GetGesture("DeleteNotes"),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("context.note.pasteparameters"),
                             Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(RootWindow)),
-                            InputGesture = new KeyGesture(Key.V, KeyModifiers.Alt),
+                            InputGesture = KeyTranslator.GetGesture("PasteParameters"),
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notes"),

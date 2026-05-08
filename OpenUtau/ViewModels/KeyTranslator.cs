@@ -1,9 +1,12 @@
+using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Avalonia.Input;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.App.ViewModels {
     public static class KeyTranslator {
-        private static readonly bool IsMac = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+        public static readonly bool IsMac = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
         /// <summary>
         /// Converts ugly internal Avalonia key names into human-readable strings.
@@ -12,10 +15,10 @@ namespace OpenUtau.App.ViewModels {
         public static string GetFriendlyName(string keyName) {
             return keyName switch {
                 // Modifiers
-                "Windows" or "LWin" or "RWin" => IsMac ? "Cmd" : "Win",
-                "LeftAlt" or "RightAlt" or "Alt" => IsMac ? "Opt" : "Alt",
-                "Control" or "LeftCtrl" or "RightCtrl" or "LControl" or "RControl"=> IsMac ? "Cmd" : "Ctrl",
-                "Shift" or "LeftShift" or "RightShift" => "Shift",
+                "Windows" or "LWin" or "RWin" => IsMac ? "⌘" : "Win",
+                "LeftAlt" or "RightAlt" or "Alt" => IsMac ? "⌥" : "Alt",
+                "Control" or "LeftCtrl" or "RightCtrl" or "LControl" or "RControl" => IsMac ? "⌘" : "Ctrl",
+                "Shift" or "LeftShift" or "RightShift" => IsMac ? "⇧" : "Shift",
                 
                 // Navigation & Editing
                 "Escape" => "Esc",
@@ -81,6 +84,47 @@ namespace OpenUtau.App.ViewModels {
                 Key.OemQuestion => pressedKey == Key.Oem2,
                 _ => false
             };
+        }
+
+        /// <summary>
+        /// Converts raw Avalonia KeyModifiers into a clean, OS-specific string.
+        /// Windows: "Ctrl + Shift" | macOS: "⇧⌘"
+        /// </summary>
+        public static string GetFriendlyModifiersName(KeyModifiers modifiers) {
+            if (modifiers == KeyModifiers.None) return "";
+            var parts = new System.Collections.Generic.List<string>();
+            if (modifiers.HasFlag(KeyModifiers.Control)) {
+                parts.Add(IsMac ? "⌃" : "Ctrl");
+            }
+            if (modifiers.HasFlag(KeyModifiers.Alt)) {
+                parts.Add(IsMac ? "⌥" : "Alt");
+            }
+            if (modifiers.HasFlag(KeyModifiers.Shift)) {
+                parts.Add(IsMac ? "⇧" : "Shift");
+            }
+            if (modifiers.HasFlag(KeyModifiers.Meta)) {
+                parts.Add(IsMac ? "⌘" : "Win");
+            }
+
+            // Windows joins with " + ". Mac joins with nothing.
+            return string.Join(IsMac ? "" : " + ", parts);
+        }
+
+        /// <summary>
+        /// Generates a native Avalonia KeyGesture for UI Menus (Top Menu, Right-Click).
+        /// Automatically formats for Windows (Ctrl+S) or Mac (⌘S).
+        /// </summary>
+        public static Avalonia.Input.KeyGesture? GetGesture(string actionId) {
+            var sc = Preferences.Default.Shortcuts?.FirstOrDefault(s => s.ActionId == actionId);
+            
+            if (sc != null && 
+                Enum.TryParse<Avalonia.Input.Key>(sc.KeyName, out var k) && 
+                Enum.TryParse<Avalonia.Input.KeyModifiers>(sc.ModifiersName, out var m) && 
+                k != Avalonia.Input.Key.None) {
+                
+                return new Avalonia.Input.KeyGesture(k, m);
+            }
+            return null;
         }
     }
 }
