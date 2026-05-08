@@ -6,11 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -20,6 +20,7 @@ namespace OpenUtau.Core {
 
         private readonly double attackSampleCount;
         private readonly double releaseSampleCount;
+        private int startSampleOffset;
 
         public double freq { get; set; }
 
@@ -41,13 +42,23 @@ namespace OpenUtau.Core {
             releaseSampleCount = (releaseMs / 1000.0f) * waveFormat.SampleRate;
         }
 
+        public SineGenerator(double freq, float gain, int attackMs, int releaseMs, int startSampleOffset)
+            : this(freq, gain, attackMs, releaseMs) {
+            this.startSampleOffset = Math.Max(0, startSampleOffset);
+        }
+
+        public void SetGain(float gain) {
+            this.gain = gain;
+        }
+
         public int Read(float[] buffer, int offset, int count) {
             // Duplicate sample across two channels
             for (int i = 0; i < count / 2; i++) {
-                float sample = GetNextSample();
+                float sample = i < startSampleOffset ? 0 : GetNextSample();
                 buffer[offset + (i * 2)] += (float)sample * gain;
                 buffer[offset + (i * 2) + 1] += (float)sample * gain;
             }
+            startSampleOffset = Math.Max(0, startSampleOffset - count / 2);
             return count;
         }
 
@@ -86,7 +97,7 @@ namespace OpenUtau.Core {
     public class ToneGenerator : ISignalSource {
         private Dictionary<double, SineGenerator> activeFrequencies = new Dictionary<double, SineGenerator>();
         private List<SineGenerator> inactiveFrequencies = new List<SineGenerator>();
-        private readonly float gain = 0.4f;
+        private float gain = 0.4f;
 
         private readonly object _lockObj = new object();
 
@@ -94,6 +105,18 @@ namespace OpenUtau.Core {
 
         public ToneGenerator(float gain) {
             this.gain = gain;
+        }
+
+        public void SetGain(float gain) {
+            this.gain = gain;
+            lock (_lockObj) {
+                foreach (var generator in activeFrequencies.Values) {
+                    generator.SetGain(gain);
+                }
+                foreach (var generator in inactiveFrequencies) {
+                    generator.SetGain(gain);
+                }
+            }
         }
 
         public bool IsReady(int position, int count) {
@@ -117,44 +140,62 @@ namespace OpenUtau.Core {
             return position + count;
         }
         public void StartTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                if (activeFrequencies[freq].isActive) {
-                    // Don't cut off tone to replace with the same frequency
-                    // Should never happen
-                    return;
-                }
-            }
-
             lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    if (activeFrequencies[freq].isActive) {
+                        // Don't cut off tone to replace with the same frequency
+                        // Should never happen
+                        return;
+                    }
+                }
                 activeFrequencies[freq] = new SineGenerator(freq, gain);
             }
         }
 
-        public void EndTone(double freq) {
-            if (activeFrequencies.ContainsKey(freq)) {
-                activeFrequencies[freq].Stop();
+        public void StartTone(double freq, int attackMs, int releaseMs, int startSampleOffset) {
+            lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    if (activeFrequencies[freq].isActive) {
+                        return;
+                    }
+                }
+                activeFrequencies[freq] = new SineGenerator(freq, gain, attackMs, releaseMs, startSampleOffset);
+            }
+        }
 
-                lock (_lockObj) {
+        public void StartTones(int startSampleOffset, params (double freq, int attackMs, int releaseMs)[] tones) {
+            foreach (var tone in tones) {
+                StartTone(tone.freq, tone.attackMs, tone.releaseMs, startSampleOffset);
+            }
+        }
+
+        public void EndTones(params double[] freqs) {
+            foreach (var freq in freqs) {
+                EndTone(freq);
+            }
+        }
+
+        public void EndTone(double freq) {
+
+            lock (_lockObj) {
+                if (activeFrequencies.ContainsKey(freq)) {
+                    activeFrequencies[freq].Stop();
                     // Move to inactive frequencies list
                     inactiveFrequencies.Add(activeFrequencies[freq]);
                     activeFrequencies.Remove(freq);
                 }
             }
-
             CleanupTones();
         }
 
         public void EndAllTones() {
-            foreach (var tone in activeFrequencies) {
-                tone.Value.Stop();
-
-                lock (_lockObj) {
-                    // Move to inactive frequencies list
-                    inactiveFrequencies.Add(tone.Value);
-                    activeFrequencies.Remove(tone.Key);
+            lock (_lockObj) {
+                foreach (var tone in activeFrequencies.Values) {
+                    tone.Stop();
+                    inactiveFrequencies.Add(tone);
                 }
+                activeFrequencies.Clear();
             }
-
 
             CleanupTones();
         }
@@ -163,6 +204,26 @@ namespace OpenUtau.Core {
             lock (_lockObj) {
                 inactiveFrequencies.RemoveAll(gen => !gen.isPlaying);
             }
+        }
+    }
+
+    class PlaybackMix : ISignalSource {
+        private readonly ISignalSource masterSource;
+        private readonly ISignalSource overlaySource;
+
+        public PlaybackMix(ISignalSource masterSource, ISignalSource overlaySource) {
+            this.masterSource = masterSource;
+            this.overlaySource = overlaySource;
+        }
+
+        public bool IsReady(int position, int count) {
+            return masterSource.IsReady(position, count) && overlaySource.IsReady(position, count);
+        }
+
+        public int Mix(int position, float[] buffer, int offset, int count) {
+            int masterPos = masterSource.Mix(position, buffer, offset, count);
+            int overlayPos = overlaySource.Mix(position, buffer, offset, count);
+            return Math.Max(masterPos, overlayPos);
         }
     }
 
@@ -177,10 +238,12 @@ namespace OpenUtau.Core {
             }
 
             toneGenerator = new ToneGenerator();
+            metronomeEngine = new MetronomeEngine();
             editingMix = new MasterAdapter(toneGenerator);
         }
 
         public readonly ToneGenerator toneGenerator;
+        private readonly MetronomeEngine metronomeEngine;
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
@@ -193,6 +256,7 @@ namespace OpenUtau.Core {
         public bool OutputActive => AudioOutput.PlaybackState == PlaybackState.Playing;
         public bool StartingToPlay { get; private set; }
         public bool PlayingMaster { get; private set; }
+        public bool MetronomeEnabled { get; private set; }
 
         public void PlayTestSound() {
             masterMix = null;
@@ -200,6 +264,35 @@ namespace OpenUtau.Core {
             AudioOutput.Stop();
             AudioOutput.Init(new SignalGenerator(44100, 1).Take(TimeSpan.FromSeconds(1)));
             AudioOutput.Play();
+        }
+
+        public void PlayMetronomeClick() {
+            masterMix = null;
+            PlayingMaster = false;
+            toneGenerator.EndAllTones();
+            AudioOutput.Stop();
+            AudioOutput.Init(new MixingSampleProvider(new[] {
+                CreateMetronomePreviewTone(Preferences.Default.MetronomeHighFrequency, TimeSpan.Zero),
+                CreateMetronomePreviewTone(Preferences.Default.MetronomeLowFrequency, TimeSpan.FromMilliseconds(300)),
+            }) {
+                ReadFully = true,
+            });
+            AudioOutput.Play();
+        }
+
+        private static ISampleProvider CreateMetronomePreviewTone(double frequency, TimeSpan delay) {
+            return new OffsetSampleProvider(new SineGenerator(frequency, GetMetronomePreviewGain(), 5, 80)) {
+                DelayBy = delay,
+                Take = TimeSpan.FromMilliseconds(120),
+            };
+        }
+
+        private static float GetMetronomePreviewGain() {
+            return MathF.Sqrt(Math.Clamp(Preferences.Default.MetronomeVolume / 100f, 0f, 1f));
+        }
+
+        public static float GetMetronomeGain() {
+            return GetMetronomePreviewGain();
         }
 
         public void PlayTone(double freq) {
@@ -251,6 +344,7 @@ namespace OpenUtau.Core {
         public void Play(UProject project, int tick, int endTick = -1, int trackNo = -1) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 PlayingMaster = true;
+                metronomeEngine.StartPlayback(project.timeAxis, DocManager.Inst.playPosTick);
                 AudioOutput.Play();
                 return;
             }
@@ -262,18 +356,29 @@ namespace OpenUtau.Core {
 
         public void StopPlayback() {
             AudioOutput.Stop();
+            masterMix = null;
             PlayingMaster = false;
+            metronomeEngine.Stop();
         }
 
         public void PausePlayback() {
             AudioOutput.Pause();
             PlayingMaster = false;
+            metronomeEngine.Stop();
+        }
+
+        public void PlayMetronome(bool enabled) {
+            MetronomeEnabled = enabled;
+            metronomeEngine.SetEnabled(
+                enabled,
+                PlayingMaster ? DocManager.Inst.Project.timeAxis : null,
+                PlayingMaster ? DocManager.Inst.playPosTick : -1);
         }
 
         private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
             toneGenerator.EndAllTones();
-
             this.startMs = startMs;
+            metronomeEngine.StartPlayback(DocManager.Inst.Project.timeAxis, StartTick);
             var start = TimeSpan.FromMilliseconds(startMs);
             Log.Information($"StartPlayback at {start}");
             masterMix = masterAdapter;
@@ -286,10 +391,13 @@ namespace OpenUtau.Core {
             Task.Run(() => {
                 try {
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
-                    var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false);
+                    var playbackAdapter = new MasterAdapter(new PlaybackMix(result.Item1, metronomeEngine));
+                    playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
                     faders = result.Item2;
+                    PlayingMaster = true;
                     StartingToPlay = false;
-                    StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
+                    StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to render.");
                     StopPlayback();
@@ -301,9 +409,15 @@ namespace OpenUtau.Core {
 
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && PlayingMaster) {
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
+                var currentMasterMix = masterMix;
+                if (currentMasterMix == null) {
+                    return;
+                }
+                double ms = (AudioOutput.GetPosition() / sizeof(float) - currentMasterMix.Waited / 2) * 1000.0 / 44100;
+                double currentMs = startMs + ms;
+                var timeAxis = DocManager.Inst.Project.timeAxis;
+                int tick = timeAxis.MsPosToTickPos(currentMs);
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, currentMasterMix.IsWaiting));
             }
         }
 
@@ -396,6 +510,15 @@ namespace OpenUtau.Core {
                 var _cmd = cmd as PanChangeNotification;
                 if (faders != null && faders.Count > _cmd!.TrackNo) {
                     faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
+                }
+            } else if (cmd is BpmCommand ||
+                cmd is TimeSignatureCommand ||
+                cmd is AddTempoChangeCommand ||
+                cmd is DelTempoChangeCommand ||
+                cmd is AddTimeSigCommand ||
+                cmd is DelTimeSigCommand) {
+                if (PlayingMaster && MetronomeEnabled) {
+                    metronomeEngine.UpdateSchedule(DocManager.Inst.Project.timeAxis, DocManager.Inst.playPosTick);
                 }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();

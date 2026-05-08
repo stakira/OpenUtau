@@ -3,6 +3,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class TimeAxisChangedEvent { }
@@ -16,9 +17,17 @@ namespace OpenUtau.App.ViewModels {
         public int Resolution => Project.resolution;
         public int PlayPosTick => DocManager.Inst.playPosTick;
         public TimeSpan PlayPosTime => TimeSpan.FromMilliseconds((int)Project.timeAxis.TickPosToMsPos(DocManager.Inst.playPosTick));
+        [Reactive] public bool MetronomeEnabled { get; set; } = Preferences.Default.MetronomeEnabled;
 
         public PlaybackViewModel() {
             DocManager.Inst.AddSubscriber(this);
+
+            this.WhenAnyValue(x => x.MetronomeEnabled)
+             .Subscribe(metronomeEnabled => {
+                 Preferences.Default.MetronomeEnabled = metronomeEnabled;
+                 Preferences.Save();
+                 PlaybackManager.Inst.PlayMetronome(MetronomeEnabled);
+             });
         }
 
         public void SeekStart() {
