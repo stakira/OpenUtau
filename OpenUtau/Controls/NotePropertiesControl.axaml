@@ -59,14 +59,14 @@
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.portamento.length}"/>
-              <TextBox Grid.Column="2" Text="{Binding PortamentoLength, Mode=OneWay}" Tag="PortamentoLength"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoLength, Mode=OneWay}" Tag="PortamentoLength_TextBox"/>
               <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoLength}" Minimum="2" Maximum="320"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
                       Tag="PortamentoLength"/>
             </Grid>
             <Grid ColumnDefinitions="130,20,50,20,*">
               <Label Content="{DynamicResource notedefaults.portamento.start}"/>
-              <TextBox Grid.Column="2" Text="{Binding PortamentoStart, Mode=OneWay}" Tag="PortamentoStart" Margin="0"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoStart, Mode=OneWay}" Tag="PortamentoStart_TextBox" Margin="0"/>
               <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoStart}" Minimum="-200" Maximum="200"
                       TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"
                       Tag="PortamentoStart"/>
