@@ -33,7 +33,7 @@ namespace Voicevox {
                     } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
                         phonemes.Add(new Phoneme { phoneme = VoicevoxUtils.dic.Lyrictodic(currentLyric) });
                     } else {
-                        throw new Exception($"Unrecognized lyric \"{notes[i].lyric}\"");
+                        throw new Exception($"Unrecognized lyric \"{currentLyric}\"");
                     }
                 }
             }

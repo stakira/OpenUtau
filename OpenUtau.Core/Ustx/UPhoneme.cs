@@ -46,8 +46,11 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part, UNote note) {
-            Error = note.Error || ErrorException != null;
+            Error = note.Error;
             ValidateDuration(project, part);
+            if (ErrorException != null) {
+                Error = true;
+            }
             ValidateOto(track, note);
             ValidateOverlap(project, track, part, note);
             ValidateEnvelope(project, track, note);
