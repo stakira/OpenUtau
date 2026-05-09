@@ -52,6 +52,17 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double PlayPosHighlightX { get; set; }
         [Reactive] public double PlayPosHighlightWidth { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; }
+        [Reactive] public int SelectionAnchorTick { get; set; }
+        [Reactive] public int SelectionActiveTick { get; set; }
+        [Reactive] public bool HasSelectionRange { get; set; }
+        [Reactive] public bool IsSelectingRange { get; set; }
+        [Reactive] public double SelectionStartX { get; set; }
+        [Reactive] public double SelectionWidth { get; set; }
+        public double SelectionEndX => SelectionStartX + SelectionWidth;
+        public double SelectionLeftMarkerCenterX => SelectionStartX;
+        public double SelectionRightMarkerCenterX => SelectionEndX;
+        public double SelectionLeftMarkerX => SelectionStartX - 2;
+        public double SelectionRightMarkerX => SelectionEndX - 2;
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PenTool { get; set; }
         [Reactive] public bool PenPlusTool { get; set; }
@@ -96,11 +107,18 @@ namespace OpenUtau.App.ViewModels {
         public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
+        // Tick-space derived values used by interaction logic and visual range calculations.
+        public int SelectionStartTick => Math.Min(SelectionAnchorTick, SelectionActiveTick);
+        public int SelectionEndTick => Math.Max(SelectionAnchorTick, SelectionActiveTick);
+        public int SelectionDurationTicks => SelectionEndTick - SelectionStartTick;
+        public int SelectionProjectStartTick => (Part?.position ?? 0) + SelectionStartTick;
+        public int SelectionProjectEndTick => (Part?.position ?? 0) + SelectionEndTick;
         [Reactive] public List<MenuItemViewModel> SnapDivs { get; set; }
         [Reactive] public List<MenuItemViewModel> Keys { get; set; }
 
         public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
         public ReactiveCommand<int, Unit> SetKeyCommand { get; set; }
+        public TimelineSelectionViewModel TimelineSelection { get; }
 
         // See the comments on TracksViewModel.playPosXToTickOffset
         private double playPosXToTickOffset => Bounds.Width != 0 ? ViewportTicks / Bounds.Width : 0;
@@ -119,7 +137,8 @@ namespace OpenUtau.App.ViewModels {
         private int userSnapDiv = -2;
         private int userKey => Project.key;
 
-        public NotesViewModel() {
+        public NotesViewModel(TimelineSelectionViewModel? timelineSelection = null) {
+            TimelineSelection = timelineSelection ?? new TimelineSelectionViewModel();
             SnapDivs = new List<MenuItemViewModel>();
             SetSnapUnitCommand = ReactiveCommand.Create<int>(div => {
                 userSnapDiv = div;
@@ -156,10 +175,21 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(tickWidth => {
                     UpdateSnapDiv();
                     SetPlayPos(DocManager.Inst.playPosTick, false);
+                    UpdateSelectionRangeVisual();
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
                     SetPlayPos(DocManager.Inst.playPosTick, false);
+                    UpdateSelectionRangeVisual();
+                });
+            TimelineSelection.WhenAnyValue(x => x.SelectionAnchorTick, x => x.SelectionActiveTick, x => x.HasSelectionRange, x => x.IsSelectingRange)
+                .Subscribe(_ => {
+                    SyncSelectionRangeFromTimeline();
+                    RaiseSelectionRangeProperties();
+                    this.RaisePropertyChanged(nameof(SelectionEndX));
+                    this.RaisePropertyChanged(nameof(SelectionLeftMarkerX));
+                    this.RaisePropertyChanged(nameof(SelectionRightMarkerX));
+                    UpdateSelectionRangeVisual();
                 });
             this.WhenAnyValue(x => x.ExpBounds, x => x.PrimaryKey)
                 .Subscribe(t => {
@@ -390,6 +420,63 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(ViewportTracks));
         }
 
+        private void RaiseSelectionRangeProperties() {
+            this.RaisePropertyChanged(nameof(SelectionStartTick));
+            this.RaisePropertyChanged(nameof(SelectionEndTick));
+            this.RaisePropertyChanged(nameof(SelectionDurationTicks));
+            this.RaisePropertyChanged(nameof(SelectionProjectStartTick));
+            this.RaisePropertyChanged(nameof(SelectionProjectEndTick));
+            this.RaisePropertyChanged(nameof(SelectionEndX));
+            this.RaisePropertyChanged(nameof(SelectionLeftMarkerCenterX));
+            this.RaisePropertyChanged(nameof(SelectionRightMarkerCenterX));
+            this.RaisePropertyChanged(nameof(SelectionLeftMarkerX));
+            this.RaisePropertyChanged(nameof(SelectionRightMarkerX));
+        }
+
+        private void SyncSelectionRangeFromTimeline() {
+            int partPosition = Part?.position ?? 0;
+            SelectionAnchorTick = TimelineSelection.SelectionAnchorTick - partPosition;
+            SelectionActiveTick = TimelineSelection.SelectionActiveTick - partPosition;
+            HasSelectionRange = TimelineSelection.HasSelectionRange;
+            IsSelectingRange = TimelineSelection.IsSelectingRange;
+        }
+
+        private void UpdateSelectionRangeVisual() {
+            if (!HasSelectionRange) {
+                SelectionStartX = 0;
+                SelectionWidth = 0;
+                return;
+            }
+            SelectionStartX = TickToneToPoint(SelectionStartTick, 0).X;
+            SelectionWidth = Math.Max(0, SelectionDurationTicks * TickWidth);
+            this.RaisePropertyChanged(nameof(SelectionEndX));
+            this.RaisePropertyChanged(nameof(SelectionLeftMarkerCenterX));
+            this.RaisePropertyChanged(nameof(SelectionRightMarkerCenterX));
+            this.RaisePropertyChanged(nameof(SelectionLeftMarkerX));
+            this.RaisePropertyChanged(nameof(SelectionRightMarkerX));
+        }
+
+        public void BeginSelectionRange(int tick) {
+            TimelineSelection.BeginSelectionRange((Part?.position ?? 0) + tick);
+        }
+
+        public void UpdateSelectionRange(int tick) {
+            TimelineSelection.UpdateSelectionRange((Part?.position ?? 0) + tick);
+        }
+
+        public void CommitSelectionRange() {
+            TimelineSelection.CommitSelectionRange();
+        }
+
+        public void SetSelectionRange(int startTick, int endTick) {
+            int partPosition = Part?.position ?? 0;
+            TimelineSelection.SetSelectionRange(partPosition + startTick, partPosition + endTick);
+        }
+
+        public void ClearSelectionRange() {
+            TimelineSelection.ClearSelectionRange();
+        }
+
         /// <summary>
         /// Convert mouse position in piano roll window to tick in part
         /// </summary>
@@ -588,6 +675,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             TickOrigin = Part.position;
+            SyncSelectionRangeFromTimeline();
             Notify();
         }
 

@@ -63,6 +63,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
+        public TimelineSelectionViewModel TimelineSelection { get; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenTemplateCommand { get; private set; }
         public ObservableCollectionExtended<MenuItemViewModel> OpenRecentMenuItems => openRecentMenuItems;
@@ -97,8 +98,9 @@ namespace OpenUtau.App.ViewModels {
         public Func<Task<bool>>? AskIfSaveAndContinue { get; set; }
 
         public MainWindowViewModel() {
+            TimelineSelection = new TimelineSelectionViewModel();
             PlaybackViewModel = new PlaybackViewModel();
-            TracksViewModel = new TracksViewModel();
+            TracksViewModel = new TracksViewModel(TimelineSelection);
             ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
             ShowPianoRoll = false;
