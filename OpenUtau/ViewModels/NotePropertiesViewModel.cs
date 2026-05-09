@@ -37,7 +37,30 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool IsNoteSelected { get; set; } = false;
         [Reactive] public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<string?, System.Reactive.Unit> SelectPhonemizerCommand { get; }
-        public string PhonemizerOverrideText => string.IsNullOrEmpty(PhonemizerOverride) ? "Default" : PhonemizerOverride;
+        public string PhonemizerOverrideText {
+            get {
+                string targetId = PhonemizerOverride ?? "";
+                bool isDefault = string.IsNullOrEmpty(targetId);
+                if (isDefault && Part != null && DocManager.Inst?.Project?.tracks != null && Part.trackNo < DocManager.Inst.Project.tracks.Count) {
+                    var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                    targetId = track.phonemizer ?? "";
+                    if (string.IsNullOrEmpty(targetId) && track.Phonemizer != null) {
+                        targetId = track.Phonemizer.GetType().FullName ?? "";
+                    }
+                }
+                if (string.IsNullOrEmpty(targetId)) return "Default";
+                var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => 
+                    f.name == targetId || f.GetType().FullName == targetId || f.GetType().Name == targetId);
+                string displayName = factory?.tag ?? "";
+                if (string.IsNullOrEmpty(displayName)) displayName = factory?.language ?? "";
+                if (string.IsNullOrEmpty(displayName)) {
+                    string rawName = targetId.Split('.').Last().Replace("Phonemizer", "");
+                    displayName = System.Text.RegularExpressions.Regex.Replace(rawName, "([A-Z])", " $1").Trim();
+                }
+
+                return isDefault ? $"Default ({displayName})" : displayName;
+            }
+        }
 
         private string? _phonemizerOverride;
         public string? PhonemizerOverride {
@@ -226,8 +249,27 @@ namespace OpenUtau.App.ViewModels {
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
 
+            string defaultHeader = "Default";
+            if (Part != null && DocManager.Inst?.Project?.tracks != null && Part.trackNo < DocManager.Inst.Project.tracks.Count) {
+                var track = DocManager.Inst.Project.tracks[Part.trackNo];
+                
+                string trackPhonemizerID = track.phonemizer ?? "";
+                if (!string.IsNullOrEmpty(trackPhonemizerID)) {
+                    var factory = OpenUtau.Api.PhonemizerFactory.Get(trackPhonemizerID);
+                    if (factory != null) defaultHeader = $"Default ({factory.ToString()})";
+                } else if (track.Phonemizer != null) {
+                    string className = track.Phonemizer.GetType().FullName?? "";
+                    var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == className || f.GetType().FullName == className);
+                    if (factory != null) {
+                        defaultHeader = $"Default ({factory.ToString()})";
+                    } else {
+                        defaultHeader = $"Default ({track.Phonemizer.GetType().Name.Replace("Phonemizer", "")})";
+                    }
+                }
+            }
+
             items.Add(new MenuItemViewModel() {
-                Header = "Default",
+                Header = defaultHeader,
                 Command = SelectPhonemizerCommand,
                 CommandParameter = null,
             });

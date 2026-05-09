@@ -226,34 +226,60 @@ namespace OpenUtau.App.Controls {
             if (TrackHeight < 10 || note.lyric.Length == 0) {
                 return;
             }
-            if (ShowPhonemizerTags && !string.IsNullOrEmpty(note.PhonemizerOverride) && TrackHeight >= 20) {
-                bool isTransition = note.Prev == null || note.Prev.PhonemizerOverride != note.PhonemizerOverride;
-                if (isTransition) {
-                    var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == note.PhonemizerOverride);
-                    
-                    string? lang = factory?.language;
-                    if (string.IsNullOrEmpty(lang) && !string.IsNullOrEmpty(factory?.tag)) {
-                        lang = factory.tag.Split(' ')[0]; 
+            if (ShowPhonemizerTags && TrackHeight >= 20) {
+                string trackPhonemizer = "";
+                if (part != null && OpenUtau.Core.DocManager.Inst?.Project?.tracks != null && part.trackNo < OpenUtau.Core.DocManager.Inst.Project.tracks.Count) {
+                    var track = OpenUtau.Core.DocManager.Inst.Project.tracks[part.trackNo];
+                    trackPhonemizer = track.phonemizer ?? "";
+                    if (string.IsNullOrEmpty(trackPhonemizer) && track.Phonemizer != null) {
+                        trackPhonemizer = track.Phonemizer.GetType().Name ?? "";
                     }
+                }
+                string currentOver = note.PhonemizerOverride ?? "";
+                string currentPh = (string.IsNullOrEmpty(currentOver) || currentOver.Equals("Default", StringComparison.OrdinalIgnoreCase)) 
+                    ? trackPhonemizer : currentOver;
 
-                    if (!string.IsNullOrEmpty(lang)) {
-                        var langLayout = TextLayoutCache.Get(lang, Brushes.White, 10);
-                        double paddingX = 4;
-                        double paddingY = 2;
-                        Rect badgeRect = new Rect(
+                string prevPh = trackPhonemizer; 
+                if (note.Prev != null) {
+                    string prevOver = note.Prev.PhonemizerOverride ?? "";
+                    prevPh = (string.IsNullOrEmpty(prevOver) || prevOver.Equals("Default", StringComparison.OrdinalIgnoreCase)) 
+                        ? trackPhonemizer 
+                        : prevOver;
+                }
+
+                bool isTransition = (note.Prev == null && currentPh != trackPhonemizer) || (note.Prev != null && currentPh != prevPh);
+                if (isTransition && !string.IsNullOrEmpty(currentPh)) {
+                    var factory = OpenUtau.Api.PhonemizerFactory.Get(currentPh) 
+                        ?? OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == currentPh || (currentPh.Length > 0 && f.name.EndsWith(currentPh)));
+                    string displayLang = factory?.language ?? "";
+                    if (string.IsNullOrEmpty(displayLang) && !string.IsNullOrEmpty(factory?.tag)) {
+                        displayLang = factory.tag.Split(' ')[0]; 
+                    }
+                    if (string.IsNullOrEmpty(displayLang)) {
+                        string rawName = currentPh.Split('.').Last().Replace("Phonemizer", "");
+                        displayLang = System.Text.RegularExpressions.Regex.Replace(rawName, "([A-Z])", " $1").Trim();
+                        if (displayLang.Length > 5) {
+                            displayLang = displayLang.Substring(0, 5);
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(displayLang)) {
+                        var langLayout = TextLayoutCache.Get(displayLang, Avalonia.Media.Brushes.White, 10);
+                        double paddingX = 3;
+                        double paddingY = 1.5;
+                        Avalonia.Rect badgeRect = new Avalonia.Rect(
                             leftTop.X + 2, 
                             leftTop.Y - langLayout.Height - (paddingY * 2) - 4, 
                             langLayout.Width + (paddingX * 2), 
                             langLayout.Height + (paddingY * 2)
                         );
-                        var badgeBrush = brush = selectedNotes.Contains(note)
-                        ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
-                        : (note.Error ? ThemeManager.AccentBrush1Semi : ThemeManager.AccentBrush1);
-                        context.DrawRectangle(badgeBrush, null, badgeRect, 4, 4);
+                        var badgeBrush = selectedNotes.Contains(note)
+                            ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
+                            : (note.Error ? ThemeManager.AccentBrush1Semi : ThemeManager.AccentBrush1);
                         
-                        Point textPos = new Point(badgeRect.X + paddingX, badgeRect.Y + paddingY);
-                        using (var state = context.PushTransform(Matrix.CreateTranslation(textPos.X, textPos.Y))) {
-                            langLayout.Draw(context, new Point());
+                        context.DrawRectangle(badgeBrush, null, badgeRect, 3, 3);
+                        Avalonia.Point textPos = new Avalonia.Point(badgeRect.X + paddingX, badgeRect.Y + paddingY);
+                        using (var state = context.PushTransform(Avalonia.Matrix.CreateTranslation(textPos.X, textPos.Y))) {
+                            langLayout?.Draw(context, new Avalonia.Point());
                         }
                     }
                 }
