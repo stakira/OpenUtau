@@ -120,6 +120,7 @@ namespace OpenUtau.Api {
                     result.Insert(0, new Phonemizer.Phoneme[] {
                         new Phonemizer.Phoneme {
                             phoneme = "error",
+                            position = notes[i][0].position,
                             error = phonemizer.SetUpException
                         }
                     });
