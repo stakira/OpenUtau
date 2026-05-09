@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
@@ -29,6 +30,23 @@ namespace OpenUtau.App.Controls {
             Log.Debug("Note property textbox lost focus");
             if (sender is TextBox textBox && textBoxValue != textBox.Text) {
                 SetNumericalExpressions(textBox.Text);
+            }
+        }
+        void OnFlagBoxLostFocus(object? sender, RoutedEventArgs args) {
+            Log.Debug("Note property textbox lost focus");
+            if (sender is TextBox textBox && textBoxValue != textBox.Text) {
+                if (DataContext is NotePropertyExpViewModel viewModel) {
+                    NotePropertiesViewModel.PanelControlPressed = true;
+                    viewModel.SetFlagFromText(textBox.Text);
+                    NotePropertiesViewModel.PanelControlPressed = false;
+
+                    if (!string.IsNullOrEmpty(viewModel.Warning)) {
+                        var scrollViewer = this.FindAncestorOfType<ScrollViewer>();
+                        if (scrollViewer != null) {
+                            scrollViewer.ScrollToEnd();
+                        }
+                    }
+                }
             }
         }
 
