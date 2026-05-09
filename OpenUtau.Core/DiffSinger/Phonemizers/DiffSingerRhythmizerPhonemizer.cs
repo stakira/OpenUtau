@@ -99,7 +99,7 @@ namespace OpenUtau.Core.DiffSinger {
                 phoneDict = rhythmizer.phoneDict;
             } catch (Exception ex) {
                 Log.Error(ex, "Failed to load rhythmizer");
-                throw;
+                throw new Exception("Failed to load rhythmizer", ex);
             }
         }
 

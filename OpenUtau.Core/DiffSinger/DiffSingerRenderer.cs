@@ -110,7 +110,7 @@ namespace OpenUtau.Core.DiffSinger {
                                 result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                             }
                         } catch (Exception e) {
-                            Log.Error(e, "Failed to render.");
+                            Log.Error(e, "Failed to read cached render, re-rendering.");
                         }
                     }
                     if (result.samples == null) {
@@ -141,6 +141,9 @@ namespace OpenUtau.Core.DiffSinger {
             if(String.IsNullOrEmpty(singer.dsConfig.vocoder) ||
                 String.IsNullOrEmpty(singer.dsConfig.acoustic) ||
                 String.IsNullOrEmpty(singer.dsConfig.phonemes)){
+                if(singer.Errors.Count > 0) {
+                    throw new Exception(singer.Errors[0]);
+                }
                 throw new Exception("Invalid dsconfig.yaml. Please ensure that dsconfig.yaml contains keys \"vocoder\", \"acoustic\" and \"phonemes\".");
             }
 
@@ -333,6 +336,10 @@ namespace OpenUtau.Core.DiffSinger {
                 || singer.dsConfig.useEnergyEmbed
                 || singer.dsConfig.useVoicingEmbed
                 || singer.dsConfig.useTensionEmbed) {
+                if(!singer.HasVariancePredictor){
+                    throw new Exception(
+                        "This singer has no variance predictor but its acoustic model requires one.");
+                }
                 var variancePredictor = singer.getVariancePredictor();
                 VarianceResult varianceResult;
                 lock(variancePredictor){
