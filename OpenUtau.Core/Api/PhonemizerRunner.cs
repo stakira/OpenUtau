@@ -98,27 +98,43 @@ namespace OpenUtau.Api {
                     timestamp = request.timestamp,
                 };
             }
-
-            var distinctPhonemizers = phonemizers.Where(p => p != null).Distinct().ToList();
-            foreach (var p in distinctPhonemizers) {
-                p.SetSinger(request.singer);
-                p.SetTiming(request.timeAxis);
+            foreach (var p in phonemizers) {
+                p.SetUpException = null;
                 try {
-                    p.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                    p.SetSinger(request.singer);
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer {p.Name} failed to setup.");
+                    Log.Error(e, $"phonemizer failed to set singer.");
+                    p.SetUpException = e;
+                }
+                p.SetTiming(request.timeAxis);
+                if (p.SetUpException == null) {
+                    try {
+                        p.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                    } catch (Exception e) {
+                        Log.Error(e, $"phonemizer failed to setup.");
+                        p.SetUpException = e;
+                    }
                 }
             }
-
             var result = new List<Phonemizer.Phoneme[]>();
             for (int i = notes.Length - 1; i >= 0; i--) {
+                var phonemizer = phonemizers[request.notePhonemizerIndices[i]];
+                if (phonemizer.SetUpException != null) {
+                    // Short-circuit: return an error phoneme for this note group
+                    result.Insert(0, new Phonemizer.Phoneme[] {
+                        new Phonemizer.Phoneme {
+                            phoneme = "error",
+                            error = phonemizer.SetUpException
+                        }
+                    });
+                    continue; // Skip processing and go to the next note
+                }
                 Phonemizer.Result phonemizerResult;
                 bool prevIsNeighbour = false;
                 bool nextIsNeighbour = false;
                 Phonemizer.Note[] prevs = null;
                 Phonemizer.Note? prev = null;
                 Phonemizer.Note? next = null;
-                var phonemizer = phonemizers[request.notePhonemizerIndices[i]];
                 if (i > 0) {
                     prevs = notes[i - 1];
                     prev = notes[i - 1][0];
@@ -130,7 +146,6 @@ namespace OpenUtau.Api {
                     var thisLast = notes[i].Last();
                     nextIsNeighbour = thisLast.position + thisLast.duration >= next.Value.position;
                 }
-
                 if (next != null && result.Count > 0 && result[0].Length > 0) {
                     var end = notes[i].Last().position + notes[i].Last().duration;
                     int endPushback = Math.Min(0, result[0][0].position - end);
@@ -145,11 +160,12 @@ namespace OpenUtau.Api {
                         nextIsNeighbour ? next : null,
                         (prevIsNeighbour ? prevs : null) ?? new Phonemizer.Note[0]);
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer error {notes[i][0].lyric} using {phonemizer.Name}");
+                    Log.Error(e, $"phonemizer error {notes[i][0].lyric}");
                     phonemizerResult = new Phonemizer.Result() {
                         phonemes = new Phonemizer.Phoneme[] {
                             new Phonemizer.Phoneme {
-                                phoneme = "error"
+                                phoneme = "error",
+                                error = e
                             }
                         }
                     };
@@ -166,14 +182,15 @@ namespace OpenUtau.Api {
                     phonemizerResult.phonemes[j].position += notes[i][0].position;
                 }
                 result.Insert(0, phonemizerResult.phonemes);
-            }
-            foreach (var p in distinctPhonemizers) {
+            } 
+            foreach (var p in phonemizers) {
                 try {
                     p.CleanUp();
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer {p.Name} failed to cleanup.");
+                    Log.Error(e, $"phonemizer failed to cleanup.");
                 }
             }
+
             return new PhonemizerResponse() {
                 noteIndexes = request.noteIndexes,
                 part = request.part,

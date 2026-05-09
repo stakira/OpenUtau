@@ -37,12 +37,7 @@ namespace OpenUtau.Core.DiffSinger {
         };
 
         private static readonly Dictionary<string, Func<float, float, float>> varianceDeltaFunctions =
-            new Dictionary<string, Func<float, float, float>>() {
-                {ENE, (x, y) => x + y * 12 / 100},
-                {Format.Ustx.BREC, (x, y) => x + y * 12 / 100},
-                {Format.Ustx.VOIC, (x, y) => x + (y - 100) * 12 / 100},
-                {Format.Ustx.TENC, (x, y) => x + y / 20},
-            };
+            DiffSingerUtils.VarianceDeltaFunctions;
 
         static readonly object lockObj = new object();
 

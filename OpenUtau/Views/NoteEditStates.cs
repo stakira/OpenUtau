@@ -629,6 +629,13 @@ namespace OpenUtau.App.Views {
             } else if (isFirst && note.pitch.snapFirst) {
                 var snapTo = note.Prev == null ? note : note.Prev.End == note.position ? note.Prev : note;
                 deltaY = (snapTo.AdjustedTone - note.AdjustedTone) * 10 - pitchPoint.Y;
+            } else if (ctrlHeld) {
+                var snappedSemitone = Math.Round(notesVm.PointToToneDouble(point) - note.AdjustedTone, MidpointRounding.AwayFromZero);
+                deltaY = snappedSemitone * 10 - pitchPoint.Y;
+            } else if (altShiftHeld && note.pitch.data.Count > 2 && !isLast) {
+                deltaY = note.pitch.data[index + 1].Y - pitchPoint.Y;
+            } else if (shiftHeld && note.pitch.data.Count > 2 && !isFirst) {
+                deltaY = note.pitch.data[index - 1].Y - pitchPoint.Y;
             } else {
                 deltaY = (notesVm.PointToToneDouble(point) - note.AdjustedTone) * 10 - pitchPoint.Y;
             }
