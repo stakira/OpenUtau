@@ -289,6 +289,62 @@
                   PointerPressed="TimelinePointerPressed"
                   PointerMoved="TimelinePointerMoved"
                   PointerReleased="TimelinePointerReleased">
+            <Rectangle Name="TimelineSelectionRange"
+                       Canvas.Left="{Binding TracksViewModel.SelectionStartX, Mode=OneWay}"
+                       Canvas.Top="0"
+                       Width="{Binding TracksViewModel.SelectionWidth, Mode=OneWay}"
+                       Height="24"
+                       ZIndex="10"
+                       IsHitTestVisible="False"
+                       IsVisible="{Binding TracksViewModel.HasSelectionRange, Mode=OneWay}"
+                       Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                       Stroke="{DynamicResource NeutralAccentBrush}"
+                       StrokeThickness="1"/>
+            <Rectangle Name="TimelineSelectionTopLine"
+                       Canvas.Left="{Binding TracksViewModel.SelectionStartX, Mode=OneWay}"
+                       Canvas.Top="0"
+                       Width="{Binding TracksViewModel.SelectionWidth, Mode=OneWay}"
+                       Height="3"
+                       RadiusX="1"
+                       RadiusY="1"
+                       ZIndex="11"
+                       IsHitTestVisible="False"
+                       IsVisible="{Binding TracksViewModel.HasSelectionRange, Mode=OneWay}"
+                       Fill="{DynamicResource NeutralAccentBrush}"/>
+            <Path Name="TimelineSelectionLeftMarker"
+                  Canvas.Left="{Binding TracksViewModel.SelectionLeftMarkerCenterX, Mode=OneWay}"
+                  Canvas.Top="0"
+                  Width="10"
+                  Height="8"
+                  Stretch="Fill"
+                  ZIndex="12"
+                  IsHitTestVisible="False"
+                  IsVisible="{Binding TracksViewModel.HasSelectionRange, Mode=OneWay}"
+                  Fill="{DynamicResource NeutralAccentBrush}"
+                  Stroke="{DynamicResource NeutralAccentBrush}"
+                  StrokeThickness="1"
+                  Data="M 0 0 L 10 0 L 5 8 Z">
+                <Path.RenderTransform>
+                    <TranslateTransform X="-5" Y="0"/>
+                </Path.RenderTransform>
+            </Path>
+            <Path Name="TimelineSelectionRightMarker"
+                  Canvas.Left="{Binding TracksViewModel.SelectionRightMarkerCenterX, Mode=OneWay}"
+                  Canvas.Top="0"
+                  Width="10"
+                  Height="8"
+                  Stretch="Fill"
+                  ZIndex="12"
+                  IsHitTestVisible="False"
+                  IsVisible="{Binding TracksViewModel.HasSelectionRange, Mode=OneWay}"
+                  Fill="{DynamicResource NeutralAccentBrush}"
+                  Stroke="{DynamicResource NeutralAccentBrush}"
+                  StrokeThickness="1"
+                  Data="M 0 0 L 10 0 L 5 8 Z">
+                <Path.RenderTransform>
+                    <TranslateTransform X="-5" Y="0"/>
+                </Path.RenderTransform>
+            </Path>
             <Path Name="PlayPos"
                   Canvas.Left="{Binding TracksViewModel.PlayPosX}"
                   Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
@@ -341,12 +397,30 @@
                         DoubleTapped="PartsCanvasDoubleTapped"
                         PointerWheelChanged="MainPagePointerWheelChanged">
             <Rectangle Name="PlayPosHighlight"
-                      Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
-                      Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
-                      Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
-                      Canvas.Top="0"
-                      Fill="{DynamicResource NeutralAccentBrushSemi2}"
-                      IsHitTestVisible="False"/>
+                       Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
+                       Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                       Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
+                       Canvas.Top="0"
+                       Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                       IsHitTestVisible="False"/>
+            <Rectangle Name="TimelineSelectionLeftGuide"
+                       Canvas.Left="{Binding SelectionLeftMarkerCenterX, Mode=OneWay}"
+                       Canvas.Top="0"
+                       Width="1"
+                       Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                       ZIndex="8"
+                       IsHitTestVisible="False"
+                       IsVisible="{Binding HasSelectionRange, Mode=OneWay}"
+                       Fill="{DynamicResource NeutralAccentBrush}"/>
+            <Rectangle Name="TimelineSelectionRightGuide"
+                       Canvas.Left="{Binding SelectionRightMarkerCenterX, Mode=OneWay}"
+                       Canvas.Top="0"
+                       Width="1"
+                       Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                       ZIndex="8"
+                       IsHitTestVisible="False"
+                       IsVisible="{Binding HasSelectionRange, Mode=OneWay}"
+                       Fill="{DynamicResource NeutralAccentBrush}"/>
             <Rectangle Name="SelectionBox" StrokeThickness="2"
                       Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
                       Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"

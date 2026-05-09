@@ -104,8 +104,8 @@ namespace OpenUtau.App.ViewModels {
 
         private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
 
-        public PianoRollViewModel() {
-            NotesViewModel = new NotesViewModel();
+        public PianoRollViewModel(TimelineSelectionViewModel timelineSelection) {
+            NotesViewModel = new NotesViewModel(timelineSelection);
             CurveViewModel = new CurveViewModel();
 
             NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {

@@ -110,6 +110,62 @@
               PointerPressed="TimelinePointerPressed"
               PointerMoved="TimelinePointerMoved"
               PointerReleased="TimelinePointerReleased">
+        <Rectangle Name="TimelineSelectionRange"
+                   Canvas.Left="{Binding NotesViewModel.SelectionStartX, Mode=OneWay}"
+                   Canvas.Top="0"
+                   Width="{Binding NotesViewModel.SelectionWidth, Mode=OneWay}"
+                   Height="24"
+                   ZIndex="10"
+                   IsHitTestVisible="False"
+                   IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                   Stroke="{DynamicResource NeutralAccentBrush}"
+                   StrokeThickness="1"/>
+        <Rectangle Name="TimelineSelectionTopLine"
+                   Canvas.Left="{Binding NotesViewModel.SelectionStartX, Mode=OneWay}"
+                   Canvas.Top="0"
+                   Width="{Binding NotesViewModel.SelectionWidth, Mode=OneWay}"
+                   Height="3"
+                   RadiusX="1"
+                   RadiusY="1"
+                   ZIndex="11"
+                   IsHitTestVisible="False"
+                   IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+                   Fill="{DynamicResource NeutralAccentBrush}"/>
+        <Path Name="TimelineSelectionLeftMarker"
+              Canvas.Left="{Binding NotesViewModel.SelectionLeftMarkerCenterX, Mode=OneWay}"
+              Canvas.Top="0"
+              Width="10"
+              Height="8"
+              Stretch="Fill"
+              ZIndex="12"
+              IsHitTestVisible="False"
+              IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+              Fill="{DynamicResource NeutralAccentBrush}"
+              Stroke="{DynamicResource NeutralAccentBrush}"
+              StrokeThickness="1"
+              Data="M 0 0 L 10 0 L 5 8 Z">
+            <Path.RenderTransform>
+                <TranslateTransform X="-5" Y="0"/>
+            </Path.RenderTransform>
+        </Path>
+        <Path Name="TimelineSelectionRightMarker"
+              Canvas.Left="{Binding NotesViewModel.SelectionRightMarkerCenterX, Mode=OneWay}"
+              Canvas.Top="0"
+              Width="10"
+              Height="8"
+              Stretch="Fill"
+              ZIndex="12"
+              IsHitTestVisible="False"
+              IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+              Fill="{DynamicResource NeutralAccentBrush}"
+              Stroke="{DynamicResource NeutralAccentBrush}"
+              StrokeThickness="1"
+              Data="M 0 0 L 10 0 L 5 8 Z">
+            <Path.RenderTransform>
+                <TranslateTransform X="-5" Y="0"/>
+            </Path.RenderTransform>
+        </Path>
         <Path Name="PlayPos"
               Canvas.Left="{Binding NotesViewModel.PlayPosX}"
               Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
@@ -172,6 +228,22 @@
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>
       <Canvas Grid.Row="3" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
+        <Rectangle Name="TimelineSelectionLeftGuide"
+                   Canvas.Left="{Binding NotesViewModel.SelectionLeftMarkerCenterX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-10"
+                   Width="1"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   IsHitTestVisible="False"
+                   IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+                   Fill="{DynamicResource NeutralAccentBrush}"/>
+        <Rectangle Name="TimelineSelectionRightGuide"
+                   Canvas.Left="{Binding NotesViewModel.SelectionRightMarkerCenterX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-10"
+                   Width="1"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   IsHitTestVisible="False"
+                   IsVisible="{Binding NotesViewModel.HasSelectionRange, Mode=OneWay}"
+                                   Fill="{DynamicResource NeutralAccentBrush}"/>
         <Rectangle Name="PlayPosHighlight"
                    Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
