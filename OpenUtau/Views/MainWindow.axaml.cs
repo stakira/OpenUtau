@@ -42,6 +42,9 @@ namespace OpenUtau.App.Views {
         private bool forceClose;
 
         private bool shouldOpenPartsContextMenu;
+        private bool timelineSelectingRange;
+        private int timelineSelectionInitialLeft;
+        private int timelineSelectionInitialRight;
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
         private readonly ReactiveCommand<UPart, Unit> PartGotoFileCommand;
@@ -496,6 +499,7 @@ namespace OpenUtau.App.Views {
 
         void OnMenuUndo(object sender, RoutedEventArgs args) => viewModel.Undo();
         void OnMenuRedo(object sender, RoutedEventArgs args) => viewModel.Redo();
+        void OnMenuClearSelectionRange(object sender, RoutedEventArgs args) => viewModel.TracksViewModel.ClearSelectionRange();
 
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
             var dialog = new ExpressionsDialog() {
@@ -787,6 +791,13 @@ namespace OpenUtau.App.Views {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
                     case Key.Space: PlayOrPause(); break;
                     case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
+                    case Key.Escape:
+                        if (viewModel.TracksViewModel.HasSelectionRange) {
+                            viewModel.TracksViewModel.ClearSelectionRange();
+                            break;
+                        }
+                        args.Handled = false;
+                        break;
                     case Key.End:
                         if (viewModel.TracksViewModel.Parts.Count > 0) {
                             int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
@@ -1015,6 +1026,16 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(control);
+                if ((args.KeyModifiers & KeyModifiers.Shift) != 0) {
+                    viewModel.TracksViewModel.PointToLineTick(point.Position, out int rangeLeft, out int rangeRight);
+                    timelineSelectingRange = true;
+                    timelineSelectionInitialLeft = rangeLeft;
+                    timelineSelectionInitialRight = rangeRight;
+                    viewModel.TracksViewModel.IsSelectingRange = true;
+                    viewModel.TracksViewModel.SetSelectionRange(rangeLeft, rangeRight);
+                    return;
+                }
+
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
             } else if (point.Properties.IsRightButtonPressed) {
@@ -1027,6 +1048,18 @@ namespace OpenUtau.App.Views {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
+                if (timelineSelectingRange) {
+                    viewModel.TracksViewModel.PointToLineTick(point.Position, out int rangeLeft, out int rangeRight);
+                    if (rangeRight <= timelineSelectionInitialLeft) {
+                        viewModel.TracksViewModel.SetSelectionRange(rangeLeft, timelineSelectionInitialRight);
+                    } else if (rangeLeft >= timelineSelectionInitialRight) {
+                        viewModel.TracksViewModel.SetSelectionRange(timelineSelectionInitialLeft, rangeRight);
+                    } else {
+                        viewModel.TracksViewModel.SetSelectionRange(timelineSelectionInitialLeft, timelineSelectionInitialRight);
+                    }
+                    Cursor = null;
+                    return;
+                }
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
             }
@@ -1034,6 +1067,10 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
+            if (timelineSelectingRange) {
+                viewModel.TracksViewModel.CommitSelectionRange();
+                timelineSelectingRange = false;
+            }
             args.Pointer.Capture(null);
         }
 
@@ -1184,7 +1221,7 @@ namespace OpenUtau.App.Views {
                 if (pianoRoll == null) {
                     LoadingWindow.BeginLoading(this);
 
-                    var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel());
+                    var model = await Task.Run<PianoRollViewModel>(() => new PianoRollViewModel(viewModel.TimelineSelection));
 
                     // Let's attach when needed to avoid startup slowdowns
                     pianoRoll = new PianoRoll(model) {
