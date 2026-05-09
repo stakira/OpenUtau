@@ -788,7 +788,7 @@ General
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.mute">Mute</system:String>
   <system:String x:Key="tracks.mute.allothers">Mute all others</system:String>
-  <system:String x:Key="tracks.mute.only">Mute this only (which removes solo from other tracks)</system:String>
+  <system:String x:Key="tracks.mute.only">Mute this only</system:String>
   <system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>
   <system:String x:Key="tracks.nosinger">There is no singer</system:String>
   <system:String x:Key="tracks.openaddsingers">Open additional singers location</system:String>
