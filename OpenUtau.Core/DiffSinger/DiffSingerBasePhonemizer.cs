@@ -60,7 +60,7 @@ namespace OpenUtau.Core.DiffSinger
                 dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(configTxt);
             } catch(Exception e) {
                 Log.Error(e, $"failed to load dsconfig from {configPath}");
-                throw;
+                throw new Exception($"Failed to load {configPath}", e);
             }
             //Load language id if needed
             if (dsConfig.use_lang_id) {
@@ -72,7 +72,7 @@ namespace OpenUtau.Core.DiffSinger
                     languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
                 } catch (Exception e) {
                     Log.Error(e, $"failed to load language id from {langIdPath}");
-                    throw;
+                    throw new Exception($"Failed to load {langIdPath}", e);
                 }
             }
             this.frameMs = dsConfig.frameMs();
@@ -89,7 +89,7 @@ namespace OpenUtau.Core.DiffSinger
                 linguisticModel = new InferenceSession(linguisticModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load linguistic model from {linguisticModelPath}");
-                throw;
+                throw new Exception($"Failed to load {linguisticModelPath}", e);
             }
             var durationModelPath = Path.Join(rootPath, dsConfig.dur);
             try {
@@ -98,7 +98,7 @@ namespace OpenUtau.Core.DiffSinger
                 durationModel = new InferenceSession(durationModelBytes);
             } catch (Exception e) {
                 Log.Error(e, $"failed to load duration model from {durationModelPath}");
-                throw;
+                throw new Exception($"Failed to load {durationModelPath}", e);
             }
             return true;
         }
@@ -111,6 +111,7 @@ namespace OpenUtau.Core.DiffSinger
             var dictionaryNames = new string[] {GetDictionaryName(), "dsdict.yaml"};
             // Load dictionary from singer folder.
             G2pDictionary.Builder g2pBuilder = new G2pDictionary.Builder();
+            bool dictFound = false;
             foreach(var dictionaryName in dictionaryNames){
                 string dictionaryPath = Path.Combine(rootPath, dictionaryName);
                 if (File.Exists(dictionaryPath)) {
@@ -120,8 +121,14 @@ namespace OpenUtau.Core.DiffSinger
                         Log.Error(e, $"Failed to load {dictionaryPath}");
                         throw;
                     }
+                    dictFound = true;
                     break;
                 }
+            }
+            if(!dictFound){
+                var triedPaths = string.Join(", ", dictionaryNames.Select(n => Path.Combine(rootPath, n)));
+                throw new FileNotFoundException(
+                    $"No dictionary file found. Tried: {triedPaths}");
             }
             //SP and AP should always be vowel
             g2pBuilder.AddSymbol("SP", true);
@@ -185,13 +192,23 @@ namespace OpenUtau.Core.DiffSinger
             return new string[] { };
         }
 
-        string GetSpeakerAtIndex(Note note, int index){
+        string GetSpeakerAtIndex(Note note, int index) {
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
             var speaker = singer.Subbanks
-                .Where(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone))
-                .FirstOrDefault();
-            if(speaker is null) {
-                return "";
+                .FirstOrDefault(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone));
+            if (speaker is null) {
+                //Fall back to the first subbank matching the voice color
+                speaker = singer.Subbanks
+                    .FirstOrDefault(subbank => subbank.Color == attr.voiceColor);
+            }
+            if (speaker is null) {
+                //Fall back to the first defined subbank
+                speaker = singer.Subbanks.FirstOrDefault();
+            }
+            if (speaker is null) {
+                throw new Exception(
+                    $"No subbanks defined for singer \"{singer.Name}\". " +
+                    "Please check the singer's configuration.");
             }
             return speaker.Suffix;
         }
@@ -289,7 +306,7 @@ namespace OpenUtau.Core.DiffSinger
         int PhonemeTokenize(string phoneme){
             bool success = phonemeTokens.TryGetValue(phoneme, out int token);
             if(!success){
-                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by timing model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
+                throw new Exception($"Phoneme \"{phoneme}\" isn't supported by duration model. Please check {Path.Combine(rootPath, dsConfig.phonemes)}");
             }
             return token;
         }

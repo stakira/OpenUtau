@@ -41,9 +41,13 @@ namespace OpenUtau.Core.DiffSinger{
         public DsVariance(string rootPath)
         {
             this.rootPath = rootPath;
-            dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(
-                File.ReadAllText(Path.Combine(rootPath, "dsconfig.yaml"),
-                    Encoding.UTF8));
+            var dsconfigPath = Path.Combine(rootPath, "dsconfig.yaml");
+            try {
+                dsConfig = Yaml.DefaultDeserializer.Deserialize<DsConfig>(
+                    File.ReadAllText(dsconfigPath, Encoding.UTF8));
+            } catch (Exception e) {
+                throw new Exception($"Failed to load {dsconfigPath}", e);
+            }
             if(dsConfig.variance == null){
                 throw new Exception("This voicebank doesn't contain a variance model");
             }
@@ -57,7 +61,7 @@ namespace OpenUtau.Core.DiffSinger{
                     languageIds = DiffSingerUtils.LoadLanguageIds(langIdPath);
                 } catch (Exception e) {
                     Log.Error(e, $"failed to load language id from {langIdPath}");
-                    return;
+                    throw new Exception($"Failed to load {langIdPath}", e);
                 }
             }
             //Load phonemes list
@@ -89,11 +93,15 @@ namespace OpenUtau.Core.DiffSinger{
             if(!File.Exists(file)){
                 throw new Exception($"File not found: {file}");
             }
-            var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
-            //SP and AP should always be vowel
-            g2pBuilder.AddSymbol("SP", true);
-            g2pBuilder.AddSymbol("AP", true);
-            return g2pBuilder.Build(); 
+            try {
+                var g2pBuilder = G2pDictionary.NewBuilder().Load(File.ReadAllText(file));
+                //SP and AP should always be vowel
+                g2pBuilder.AddSymbol("SP", true);
+                g2pBuilder.AddSymbol("AP", true);
+                return g2pBuilder.Build();
+            } catch (Exception e) {
+                throw new Exception($"Failed to load {file}", e);
+            }
         }
 
         public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){

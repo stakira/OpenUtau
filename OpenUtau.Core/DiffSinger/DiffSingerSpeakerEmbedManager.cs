@@ -24,7 +24,7 @@ namespace OpenUtau.Core.DiffSinger
         public NDArray loadSpeakerEmbed(string speaker) {
             string path = Path.Join(rootPath, speaker + ".emb");
             if(File.Exists(path)) {
-                var reader = new BinaryReader(File.OpenRead(path));
+                using var reader = new BinaryReader(File.OpenRead(path));
                 return np.array<float>(Enumerable.Range(0, dsConfig.hiddenSize)
                     .Select(i => reader.ReadSingle()));
             } else {
@@ -57,12 +57,14 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
 
-        public int getSpeakerIndexBySuffix(string suffix){
+        public int getSpeakerIndexBySuffix(string suffix) {
             var speakerIndex = dsConfig.speakers.IndexOf(suffix);
-            if(speakerIndex == -1){
-                speakerIndex = 0;
+            if (speakerIndex >= 0) {
+                return speakerIndex;
             }
-            return speakerIndex;
+            throw new Exception(
+                $"Speaker suffix \"{suffix}\" not found in dsConfig.speakers. " +
+                $"Candidates: {string.Join(',', dsConfig.speakers)}.");
         }
 
         //used by phonemizer (duration model)

@@ -52,6 +52,7 @@ namespace OpenUtau.Core.DiffSinger
             // Load dictionary from singer folder.
             G2pDictionary.Builder g2pBuilder = new G2pDictionary.Builder();
             var replacements = new Dictionary<string,string>();
+            bool dictFound = false;
             foreach(var dictionaryName in dictionaryNames){
                 string dictionaryPath = Path.Combine(rootPath, dictionaryName);
                 if (File.Exists(dictionaryPath)) {
@@ -66,12 +67,19 @@ namespace OpenUtau.Core.DiffSinger
                                 phonemeSymbols[symbol.symbol.Trim()] = true;
                             }
                         }
-                        Log.Error("Loaded symbols: " + string.Join(", ", phonemeSymbols.Keys));
+                        Log.Information("Loaded symbols: " + string.Join(", ", phonemeSymbols.Keys));
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {dictionaryPath}");
+                        throw new Exception($"Failed to load {dictionaryPath}", e);
                     }
+                    dictFound = true;
                     break;
                 }
+            }
+            if(!dictFound){
+                var triedPaths = string.Join(", ", dictionaryNames.Select(n => Path.Combine(rootPath, n)));
+                throw new FileNotFoundException(
+                    $"No dictionary file found. Tried: {triedPaths}");
             }
             //SP and AP should always be vowel
             g2pBuilder.AddSymbol("SP", true);

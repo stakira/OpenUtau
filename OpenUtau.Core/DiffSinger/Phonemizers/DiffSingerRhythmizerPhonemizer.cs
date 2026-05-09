@@ -93,7 +93,7 @@ namespace OpenUtau.Core.DiffSinger {
                     } else {
                         rhythmizerName = DsRhythmizer.DefaultRhythmizer;
                     }
-                        rhythmizer = DsRhythmizer.FromName(rhythmizerName);
+                    rhythmizer = DsRhythmizer.FromName(rhythmizerName);
                 }
                 //Load pinyin to phoneme dictionary from rhythmizer package
                 phoneDict = rhythmizer.phoneDict;
