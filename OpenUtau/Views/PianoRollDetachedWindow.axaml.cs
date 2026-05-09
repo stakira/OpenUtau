@@ -28,7 +28,21 @@ namespace OpenUtau.App.Views {
         }
 
         public void WindowClosing(object? sender, WindowClosingEventArgs e) {
-            Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+            // Check window state first cuz it flops sometimes
+            if (WindowState != WindowState.Minimized) {
+                Preferences.Default.PianorollWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
+            } else {
+                // when the window flops like maximized -> minimized, the size and position are lost
+                // so we need to restore them to the default values
+                var prevSize = Preferences.Default.PianorollWindowSize;
+                Preferences.Default.PianorollWindowSize.Set(
+                    prevSize.Width, 
+                    prevSize.Height, 
+                    prevSize.PositionX ?? 0, 
+                    prevSize.PositionY ?? 0, 
+                    (int)WindowState.Normal 
+                );
+            }
             Preferences.Save();
             Hide();
             e.Cancel = !forceClose;
