@@ -247,7 +247,9 @@ namespace OpenUtau.App.Controls {
                         : prevOver;
                 }
 
-                bool isTransition = (note.Prev == null && currentPh != trackPhonemizer) || (note.Prev != null && currentPh != prevPh);
+                bool isContinuation = note.lyric.StartsWith("+");
+                bool isCurrentDefault = string.IsNullOrEmpty(currentOver) || currentOver.Equals("Default", StringComparison.OrdinalIgnoreCase);
+                bool isTransition = !isContinuation && ((note.Prev == null && !isCurrentDefault) || (note.Prev != null && currentPh != prevPh));
                 if (isTransition && !string.IsNullOrEmpty(currentPh)) {
                     var factory = OpenUtau.Api.PhonemizerFactory.Get(currentPh) 
                         ?? OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == currentPh || (currentPh.Length > 0 && f.name.EndsWith(currentPh)));

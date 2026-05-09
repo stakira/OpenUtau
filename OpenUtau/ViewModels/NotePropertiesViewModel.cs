@@ -37,6 +37,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool IsNoteSelected { get; set; } = false;
         [Reactive] public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<string?, System.Reactive.Unit> SelectPhonemizerCommand { get; }
+        [Reactive] public bool IsPhonemizerEnabled { get; set; } = true;
         public string PhonemizerOverrideText {
             get {
                 string targetId = PhonemizerOverride ?? "";
@@ -54,7 +55,7 @@ namespace OpenUtau.App.ViewModels {
                 string displayName = factory?.tag ?? "";
                 if (string.IsNullOrEmpty(displayName)) displayName = factory?.language ?? "";
                 if (string.IsNullOrEmpty(displayName)) {
-                    string rawName = targetId.Split('.').Last().Replace("Phonemizer", "");
+                    string rawName = targetId.Split('.').Last();
                     displayName = System.Text.RegularExpressions.Regex.Replace(rawName, "([A-Z])", " $1").Trim();
                 }
 
@@ -175,11 +176,16 @@ namespace OpenUtau.App.ViewModels {
             if (selectedNotes.Count > 0) {
                 IsNoteSelected = true;
                 var note = selectedNotes.First();
+                IsPhonemizerEnabled = !note.lyric.StartsWith("+"); 
+                if (!IsPhonemizerEnabled) {
+                    PhonemizerOverride = ThemeManager.GetString("noteproperty.parent.phonemizer");
+                } else {
+                    PhonemizerOverride = note.PhonemizerOverride ?? "";
+                }
 
                 Lyric = note.lyric;
                 Tone = MusicMath.GetToneName(note.tone);
                 Tuning = note.tuning;
-                PhonemizerOverride = note.PhonemizerOverride ?? "";
                 SetTuningFontWeight();
                 if (note.pitch.data.Count >= 2) {
                     PortamentoLength = note.pitch.data.Last().X - note.pitch.data.First().X;

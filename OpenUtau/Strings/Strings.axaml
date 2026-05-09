@@ -381,6 +381,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="noteproperty.tuning">Tuning</system:String>
   <system:String x:Key="noteproperty.vibratoenable">Enable</system:String>
   <system:String x:Key="noteproperty.phonemizer">Phonemizer</system:String>
+  <system:String x:Key="noteproperty.parent.phonemizer">Follows Parent Phonemizer</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.color">Color</system:String>
