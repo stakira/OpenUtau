@@ -11,6 +11,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using SharpCompress;
+using OpenUtau.Api;
 
 namespace OpenUtau.App.ViewModels {
     public class NotePropertiesViewModel : ViewModelBase, ICmdSubscriber {
@@ -34,7 +35,18 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float AutoVibratoNoteLength { get; set; }
         [Reactive] public bool AutoVibratoToggle { get; set; }
         [Reactive] public bool IsNoteSelected { get; set; } = false;
+        [Reactive] public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
+        public ReactiveCommand<string?, System.Reactive.Unit> SelectPhonemizerCommand { get; }
+        public string PhonemizerOverrideText => string.IsNullOrEmpty(PhonemizerOverride) ? "Default" : PhonemizerOverride;
 
+        private string? _phonemizerOverride;
+        public string? PhonemizerOverride {
+            get => _phonemizerOverride;
+            set {
+                this.RaiseAndSetIfChanged(ref _phonemizerOverride, value);
+                this.RaisePropertyChanged(nameof(PhonemizerOverrideText));
+            }
+        }
         [Reactive] public ObservableCollection<NotePresets.PortamentoPreset>? PortamentoPresets { get; private set; }
         public NotePresets.PortamentoPreset? ApplyPortamentoPreset {
             get => appliedPortamentoPreset;
@@ -102,6 +114,13 @@ namespace OpenUtau.App.ViewModels {
                         DocManager.Inst.EndUndoGroup();
                     }
                 });
+            SelectPhonemizerCommand = ReactiveCommand.Create<string?>(name => {
+                DocManager.Inst.StartUndoGroup("command.property.edit");
+                PanelControlPressed = true;
+                SetNoteParams("PhonemizerOverride", name);
+                PanelControlPressed = false;
+                DocManager.Inst.EndUndoGroup();
+            });
 
             MessageBus.Current.Listen<NotesSelectionEvent>()
                 .Subscribe(e => {
@@ -136,6 +155,7 @@ namespace OpenUtau.App.ViewModels {
                 Lyric = note.lyric;
                 Tone = MusicMath.GetToneName(note.tone);
                 Tuning = note.tuning;
+                PhonemizerOverride = note.PhonemizerOverride ?? "";
                 SetTuningFontWeight();
                 if (note.pitch.data.Count == 2) {
                     PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
@@ -158,6 +178,7 @@ namespace OpenUtau.App.ViewModels {
                 Lyric = string.Empty;
                 Tone = string.Empty;
                 Tuning = 0;
+                PhonemizerOverride = "";
                 SetTuningFontWeight();
                 PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                 PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
@@ -179,6 +200,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void LoadPart(UPart? part) {
             Expressions.Clear();
+            RefreshPhonemizers();
             if (part != null && part is UVoicePart) {
                 this.Part = part as UVoicePart;
                 var track = DocManager.Inst.Project.tracks[part.trackNo];
@@ -198,6 +220,51 @@ namespace OpenUtau.App.ViewModels {
             } else {
                 this.Part = null;
             }
+        }
+
+        public void RefreshPhonemizers() {
+            var items = new List<MenuItemViewModel>();
+
+            items.Add(new MenuItemViewModel() {
+                Header = "Default",
+                Command = SelectPhonemizerCommand,
+                CommandParameter = null,
+            });
+
+            items.Add(new MenuItemViewModel() { Header = "-", Height = 1 });
+            items.AddRange(Preferences.Default.RecentPhonemizers
+                .Select(name => PhonemizerFactory.Get(name))
+                .OfType<PhonemizerFactory>()
+                .OrderBy(factory => factory.tag)
+                .Select(factory => new MenuItemViewModel() {
+                    Header = factory.ToString(),
+                    Command = SelectPhonemizerCommand,
+                    CommandParameter = factory.name,
+                }));
+
+            items.Add(new MenuItemViewModel() {
+                Header = $"{ThemeManager.GetString("tracks.more")} ...",
+                Items = PhonemizerFactory.GetAll().GroupBy(factory => factory.language)
+                .OrderBy(group => group.Key)
+                .Select(group => new MenuItemViewModel() {
+                    Header = GetPhonemizerGroupHeader(group.Key),
+                    Items = group.Select(factory => new MenuItemViewModel() {
+                        Header = factory.ToString(),
+                        Command = SelectPhonemizerCommand,
+                        CommandParameter = factory.name,
+                    }).ToArray(),
+                }).ToArray()
+            });
+
+            PhonemizerMenuItems = items;
+        }
+
+        public string GetPhonemizerGroupHeader(string key) {
+            if (string.IsNullOrEmpty(key)) return "General";
+            if (ThemeManager.TryGetString($"languages.{key.ToLowerInvariant()}", out var value)) {
+                return $"{key}: {value}";
+            }
+            return key;
         }
 
         private void AttachExpressions() {
@@ -317,6 +384,12 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is NotePresetChangedNotification) {
                 PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
                 VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
+            } else if (cmd is ChangeNotePhonemizerCommand) {
+                PhonemizerOverride = note.PhonemizerOverride ?? "";
+                this.RaisePropertyChanged(nameof(PhonemizerOverride));
+                if (Part != null) {
+                    DocManager.Inst.Project.Validate(new ValidateOptions { Part = Part });
+                }
             }
         }
         #endregion
@@ -342,6 +415,19 @@ namespace OpenUtau.App.ViewModels {
                         Lyric = note != null ? note.lyric : string.Empty;
                         this.RaisePropertyChanged(nameof(Lyric));
                     }
+                } else if (tag == "PhonemizerOverride") {
+                    string? newOverride = obj as string;
+                    if (string.IsNullOrEmpty(newOverride)) {
+                        newOverride = null;
+                    }
+                    
+                    DocManager.Inst.StartUndoGroup("command.property.edit");
+                    foreach (UNote note in selectedNotes) {
+                        if (note.PhonemizerOverride != newOverride) {
+                            DocManager.Inst.ExecuteCmd(new ChangeNotePhonemizerCommand(Part, note, newOverride)); 
+                        }
+                    }
+                    DocManager.Inst.EndUndoGroup();
                 } else if (tag == "Tone") {
                     try {
                         if (obj is string s && !string.IsNullOrEmpty(s)) {

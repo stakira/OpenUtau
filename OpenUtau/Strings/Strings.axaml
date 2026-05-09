@@ -376,6 +376,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="noteproperty.tone">Tone</system:String>
   <system:String x:Key="noteproperty.tuning">Tuning</system:String>
   <system:String x:Key="noteproperty.vibratoenable">Enable</system:String>
+  <system:String x:Key="noteproperty.phonemizer">Phonemizer</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.color">Color</system:String>
@@ -502,6 +503,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>
   <system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>
   <system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>
+  <system:String x:Key="pianoroll.toggle.phonemizer">View Phonemizer Tags</system:String>
   <system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>

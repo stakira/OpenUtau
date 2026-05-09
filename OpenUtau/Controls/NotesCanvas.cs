@@ -52,6 +52,11 @@ namespace OpenUtau.App.Controls {
                 nameof(ShowVibrato),
                 o => o.ShowVibrato,
                 (o, v) => o.ShowVibrato = v);
+        public static readonly DirectProperty<NotesCanvas, bool> ShowPhonemizerTagsProperty =
+            AvaloniaProperty.RegisterDirect<NotesCanvas, bool>(
+                nameof(ShowPhonemizerTags),
+                o => o.ShowPhonemizerTags,
+                (o, v) => o.ShowPhonemizerTags = v);
 
         public double TickWidth {
             get => tickWidth;
@@ -85,6 +90,10 @@ namespace OpenUtau.App.Controls {
             get => showVibrato;
             private set => SetAndRaise(ShowVibratoProperty, ref showVibrato, value);
         }
+        public bool ShowPhonemizerTags {
+            get => showPhonemizerTags;
+            private set => SetAndRaise(ShowPhonemizerTagsProperty, ref showPhonemizerTags, value);
+        }
 
         private double tickWidth;
         private double trackHeight;
@@ -94,6 +103,7 @@ namespace OpenUtau.App.Controls {
         private bool showPitch = true;
         private bool showFinalPitch = true;
         private bool showVibrato = true;
+        private bool showPhonemizerTags = true;
         private PolylineGeometry polylineGeometry = new PolylineGeometry();
         private Points points = new Points();
 
@@ -215,6 +225,38 @@ namespace OpenUtau.App.Controls {
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
             if (TrackHeight < 10 || note.lyric.Length == 0) {
                 return;
+            }
+            if (ShowPhonemizerTags && !string.IsNullOrEmpty(note.PhonemizerOverride) && TrackHeight >= 20) {
+                bool isTransition = note.Prev == null || note.Prev.PhonemizerOverride != note.PhonemizerOverride;
+                if (isTransition) {
+                    var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == note.PhonemizerOverride);
+                    
+                    string? lang = factory?.language;
+                    if (string.IsNullOrEmpty(lang) && !string.IsNullOrEmpty(factory?.tag)) {
+                        lang = factory.tag.Split(' ')[0]; 
+                    }
+
+                    if (!string.IsNullOrEmpty(lang)) {
+                        var langLayout = TextLayoutCache.Get(lang, Brushes.White, 10);
+                        double paddingX = 4;
+                        double paddingY = 2;
+                        Rect badgeRect = new Rect(
+                            leftTop.X + 2, 
+                            leftTop.Y - langLayout.Height - (paddingY * 2) - 4, 
+                            langLayout.Width + (paddingX * 2), 
+                            langLayout.Height + (paddingY * 2)
+                        );
+                        var badgeBrush = brush = selectedNotes.Contains(note)
+                        ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
+                        : (note.Error ? ThemeManager.AccentBrush1Semi : ThemeManager.AccentBrush1);
+                        context.DrawRectangle(badgeBrush, null, badgeRect, 4, 4);
+                        
+                        Point textPos = new Point(badgeRect.X + paddingX, badgeRect.Y + paddingY);
+                        using (var state = context.PushTransform(Matrix.CreateTranslation(textPos.X, textPos.Y))) {
+                            langLayout.Draw(context, new Point());
+                        }
+                    }
+                }
             }
             string displayLyric = note.lyric;
             int txtsize = 12;
