@@ -57,14 +57,14 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
 
-        public int getSpeakerIndexBySuffix(string suffix){
+        public int getSpeakerIndexBySuffix(string suffix) {
             var speakerIndex = dsConfig.speakers.IndexOf(suffix);
-            if(speakerIndex == -1){
-                throw new Exception(
-                    $"Speaker suffix \"{suffix}\" not found in dsConfig.speakers. " +
-                    "Please check the voice color configuration.");
+            if (speakerIndex >= 0) {
+                return speakerIndex;
             }
-            return speakerIndex;
+            throw new Exception(
+                $"Speaker suffix \"{suffix}\" not found in dsConfig.speakers. " +
+                $"Candidates: {string.Join(',', dsConfig.speakers)}.");
         }
 
         //used by phonemizer (duration model)

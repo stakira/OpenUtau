@@ -192,13 +192,23 @@ namespace OpenUtau.Core.DiffSinger
             return new string[] { };
         }
 
-        string GetSpeakerAtIndex(Note note, int index){
+        string GetSpeakerAtIndex(Note note, int index) {
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
             var speaker = singer.Subbanks
-                .Where(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone))
-                .FirstOrDefault();
-            if(speaker is null) {
-                return "";
+                .FirstOrDefault(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone));
+            if (speaker is null) {
+                //Fall back to the first subbank matching the voice color
+                speaker = singer.Subbanks
+                    .FirstOrDefault(subbank => subbank.Color == attr.voiceColor);
+            }
+            if (speaker is null) {
+                //Fall back to the first defined subbank
+                speaker = singer.Subbanks.FirstOrDefault();
+            }
+            if (speaker is null) {
+                throw new Exception(
+                    $"No subbanks defined for singer \"{singer.Name}\". " +
+                    "Please check the singer's configuration.");
             }
             return speaker.Suffix;
         }
