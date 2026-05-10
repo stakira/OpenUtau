@@ -40,26 +40,23 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool IsPhonemizerEnabled { get; set; } = true;
         public string PhonemizerOverrideText {
             get {
-                string targetId = PhonemizerOverride ?? "";
+                string? targetId = PhonemizerOverride;
                 bool isDefault = string.IsNullOrEmpty(targetId);
-                if (isDefault && Part != null && DocManager.Inst?.Project?.tracks != null && Part.trackNo < DocManager.Inst.Project.tracks.Count) {
+                if (isDefault) {
+                    if (Part == null) return "Default";
                     var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                    targetId = track.phonemizer ?? "";
-                    if (string.IsNullOrEmpty(targetId) && track.Phonemizer != null) {
-                        targetId = track.Phonemizer.GetType().FullName ?? "";
-                    }
+                    string trackId = !string.IsNullOrEmpty(track.phonemizer) 
+                        ? track.phonemizer 
+                        : track.Phonemizer.GetType().FullName ?? "";
+                    return $"Default ({GetPhonemizerDisplayName(trackId)})";
                 }
-                if (string.IsNullOrEmpty(targetId)) return "Default";
                 var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => 
-                    f.name == targetId || f.GetType().FullName == targetId || f.GetType().Name == targetId);
-                string displayName = factory?.tag ?? "";
-                if (string.IsNullOrEmpty(displayName)) displayName = factory?.language ?? "";
-                if (string.IsNullOrEmpty(displayName)) {
-                    string rawName = targetId.Split('.').Last();
-                    displayName = System.Text.RegularExpressions.Regex.Replace(rawName, "([A-Z])", " $1").Trim();
+                    f.name == targetId || f.type.FullName == targetId || f.type.Name == targetId);
+                if (factory != null) {
+                    string displayName = !string.IsNullOrEmpty(factory.tag) ? factory.tag : factory.language;
+                    return !string.IsNullOrEmpty(displayName) ? displayName : factory.ToString();
                 }
-
-                return isDefault ? $"Default ({displayName})" : displayName;
+                return targetId ?? "Default";
             }
         }
 
@@ -230,7 +227,6 @@ namespace OpenUtau.App.ViewModels {
 
         public void LoadPart(UPart? part) {
             Expressions.Clear();
-            RefreshPhonemizers();
             if (part != null && part is UVoicePart) {
                 this.Part = part as UVoicePart;
                 var track = DocManager.Inst.Project.tracks[part.trackNo];
@@ -247,37 +243,37 @@ namespace OpenUtau.App.ViewModels {
                     }
                 }
                 AttachExpressions();
+                RefreshPhonemizers();
             } else {
                 this.Part = null;
             }
+        }
+
+        private string GetPhonemizerDisplayName(string? targetId) {
+            if (string.IsNullOrEmpty(targetId)) return "Default";
+            var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => 
+                f.name == targetId || f.type.FullName == targetId || f.type.Name == targetId);
+
+            if (factory == null) return targetId;
+            string displayName = !string.IsNullOrEmpty(factory.tag) ? factory.tag : factory.language;
+            return !string.IsNullOrEmpty(displayName) ? displayName : factory.ToString();
         }
 
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
 
             string defaultHeader = "Default";
-            if (Part != null && DocManager.Inst?.Project?.tracks != null && Part.trackNo < DocManager.Inst.Project.tracks.Count) {
+            if (Part != null) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                
-                string trackPhonemizerID = track.phonemizer ?? "";
-                if (!string.IsNullOrEmpty(trackPhonemizerID)) {
-                    var factory = OpenUtau.Api.PhonemizerFactory.Get(trackPhonemizerID);
-                    if (factory != null) defaultHeader = $"Default ({factory.ToString()})";
-                } else if (track.Phonemizer != null) {
-                    string className = track.Phonemizer.GetType().FullName?? "";
-                    var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => f.name == className || f.GetType().FullName == className);
-                    if (factory != null) {
-                        defaultHeader = $"Default ({factory.ToString()})";
-                    } else {
-                        defaultHeader = $"Default ({track.Phonemizer.GetType().Name.Replace("Phonemizer", "")})";
-                    }
-                }
+                string trackId = !string.IsNullOrEmpty(track.phonemizer) 
+                    ? track.phonemizer 
+                    : (track.Phonemizer?.GetType().FullName ?? string.Empty);
+                defaultHeader = $"Default ({GetPhonemizerDisplayName(trackId)})";
             }
-
             items.Add(new MenuItemViewModel() {
                 Header = defaultHeader,
                 Command = SelectPhonemizerCommand,
-                CommandParameter = null,
+                CommandParameter = null
             });
 
             items.Add(new MenuItemViewModel() { Header = "-", Height = 1 });
@@ -415,6 +411,12 @@ namespace OpenUtau.App.ViewModels {
                         VibratoVolLink = note.vibrato.volLink;
                         this.RaisePropertyChanged(nameof(VibratoVolLink));
                     }
+                } else if (cmd is ChangeNotePhonemizerCommand) {
+                    PhonemizerOverride = note.PhonemizerOverride ?? "";
+                    this.RaisePropertyChanged(nameof(PhonemizerOverride));
+                    if (Part != null) {
+                        DocManager.Inst.Project.Validate(new ValidateOptions { Part = Part });
+                    }
                 }
             } else if (cmd is ExpCommand) {
                 if (cmd is PitchExpCommand) {
@@ -433,12 +435,9 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is NotePresetChangedNotification) {
                 PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
                 VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
-            } else if (cmd is ChangeNotePhonemizerCommand) {
-                PhonemizerOverride = note.PhonemizerOverride ?? "";
-                this.RaisePropertyChanged(nameof(PhonemizerOverride));
-                if (Part != null) {
-                    DocManager.Inst.Project.Validate(new ValidateOptions { Part = Part });
-                }
+            } else if (cmd is TrackChangePhonemizerCommand) {
+                RefreshPhonemizers();
+                this.RaisePropertyChanged(nameof(PhonemizerOverrideText));
             }
         }
         #endregion
