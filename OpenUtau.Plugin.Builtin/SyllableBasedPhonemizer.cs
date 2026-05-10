@@ -215,8 +215,8 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            CustomParameters(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours, phonemes.ToArray());
             var finalPhonemes = AssignAllAffixes(phonemes, notes, prevNeighbours);
-            CustomParameters(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours, finalPhonemes);
             return new Result() {
                 phonemes = finalPhonemes
             };
