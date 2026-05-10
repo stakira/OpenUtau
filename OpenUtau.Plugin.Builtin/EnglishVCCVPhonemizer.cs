@@ -117,7 +117,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
         private readonly string[] ucvCs = { "r", "l", "w", "y", "f"};
-        private readonly string[] starlightccs = { "rl", "ll", "nn", "mm" };
+        private readonly string[] starlightccs = { "rl", "ll", "nn", "mm", "rf", "mf", "lf" };
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
