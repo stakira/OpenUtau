@@ -215,8 +215,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            var finalPhonemes = AssignAllAffixes(phonemes, notes, prevNeighbours);
+            CustomParameters(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours, finalPhonemes);
             return new Result() {
-                phonemes = AssignAllAffixes(phonemes, notes, prevNeighbours)
+                phonemes = finalPhonemes
             };
         }
 
@@ -859,6 +861,14 @@ namespace OpenUtau.Plugin.Builtin {
         }
         protected bool IsShort(Ending ending) {
             return TickToMs(ending.duration) < GetTransitionBasicLengthMs() * 2;
+        }
+
+        /// <summary>
+        /// Native API for child phonemizers to automatically apply expressions (vel, alt, clr, etc.)
+        /// This is called internally after all phonemes are generated and aligned, right before returning to the engine.
+        /// </summary>
+        protected virtual void CustomParameters(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours, Phoneme[] phonemes) {
+            // Base implementation does nothing. Child classes override this to implement custom logic.
         }
 
         /// <summary>
