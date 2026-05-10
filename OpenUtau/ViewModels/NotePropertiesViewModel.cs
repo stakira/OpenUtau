@@ -45,9 +45,7 @@ namespace OpenUtau.App.ViewModels {
                 if (isDefault) {
                     if (Part == null) return "Default";
                     var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                    string trackId = !string.IsNullOrEmpty(track.phonemizer) 
-                        ? track.phonemizer 
-                        : track.Phonemizer.GetType().FullName ?? "";
+                    string trackId = track.Phonemizer.GetType().FullName ?? "";
                     return $"Default ({GetPhonemizerDisplayName(trackId)})";
                 }
                 var factory = OpenUtau.Api.PhonemizerFactory.GetAll().FirstOrDefault(f => 
@@ -265,9 +263,7 @@ namespace OpenUtau.App.ViewModels {
             string defaultHeader = "Default";
             if (Part != null) {
                 var track = DocManager.Inst.Project.tracks[Part.trackNo];
-                string trackId = !string.IsNullOrEmpty(track.phonemizer) 
-                    ? track.phonemizer 
-                    : (track.Phonemizer?.GetType().FullName ?? string.Empty);
+                string trackId = track.Phonemizer.GetType().FullName ?? "";
                 defaultHeader = $"Default ({GetPhonemizerDisplayName(trackId)})";
             }
             items.Add(new MenuItemViewModel() {
@@ -411,13 +407,13 @@ namespace OpenUtau.App.ViewModels {
                         VibratoVolLink = note.vibrato.volLink;
                         this.RaisePropertyChanged(nameof(VibratoVolLink));
                     }
-                } else if (cmd is ChangeNotePhonemizerCommand) {
+                }/* else if (cmd is ChangeNotePhonemizerCommand) {
                     PhonemizerOverride = note.PhonemizerOverride ?? "";
                     this.RaisePropertyChanged(nameof(PhonemizerOverride));
                     if (Part != null) {
                         DocManager.Inst.Project.Validate(new ValidateOptions { Part = Part });
                     }
-                }
+                }*/
             } else if (cmd is ExpCommand) {
                 if (cmd is PitchExpCommand) {
                     if (note.pitch.data.Count >= 2) {
@@ -435,9 +431,6 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is NotePresetChangedNotification) {
                 PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
                 VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
-            } else if (cmd is TrackChangePhonemizerCommand) {
-                RefreshPhonemizers();
-                this.RaisePropertyChanged(nameof(PhonemizerOverrideText));
             }
         }
         #endregion
