@@ -201,6 +201,23 @@ namespace OpenUtau.App.Controls {
             });
 
             AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+            
+            this.WhenAnyValue(x => x.ViewModel!.PlaybackViewModel!.PlayPosTick)
+                .Subscribe(tick => {
+                    var notesVm = ViewModel?.NotesViewModel;
+                    
+                    if (notesVm?.Part == null) return;
+                    if (tick < notesVm.Part.position || tick >= notesVm.Part.End) {
+                        var targetPart = notesVm.Project.parts
+                            .OfType<UVoicePart>()
+                            .FirstOrDefault(p => p.trackNo == notesVm.Part.trackNo && p.position <= tick && p.End > tick);
+
+                        if (targetPart != null) {
+                            DocManager.Inst.ExecuteCmd(new LoadPartNotification(targetPart, notesVm.Project, tick));
+                            AttachExpressions();
+                        }
+                    }
+                });
 
             DocManager.Inst.AddSubscriber(this);
         }
