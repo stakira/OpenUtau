@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
@@ -41,7 +42,7 @@ namespace OpenUtau.App.Controls {
             set => SetAndRaise(ItemsProperty, ref _items, value);
         }
 
-        public Border? TrackMover { get; private set; }
+        public Line? TrackMover { get; private set; }
 
         private double trackHeight;
         private double trackOffset;
@@ -106,18 +107,15 @@ namespace OpenUtau.App.Controls {
             base.OnInitialized();
             trackAdder = new TrackAdder();
             trackAdder.Bind(this);
-            TrackMover = new Border() {
-                Height = TrackHeight,
-                Width = 300,
+            TrackMover = new() {
                 IsVisible = false,
-                Margin = new(1),
-                BorderThickness = new(2),
-                CornerRadius = new(2)
+                StartPoint = new(0, 0),
+                EndPoint = new (300, 0),
+                StrokeThickness = 3
             };
-            TrackMover.Bind(Border.BorderBrushProperty,
+            TrackMover.Bind(Shape.StrokeProperty,
                 this.GetResourceObservable("SystemAccentColor")
                     .Select(c => new SolidColorBrush((Color)c!)));
-            TrackMover.Bind(HeightProperty, this.GetObservable(TrackHeightProperty));
             Children.Add(trackAdder);
             Children.Add(TrackMover);
         }

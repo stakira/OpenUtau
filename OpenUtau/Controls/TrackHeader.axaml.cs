@@ -220,7 +220,8 @@ namespace OpenUtau.App.Controls {
                 int tracksMaxIdx = DocManager.Inst.Project.tracks.Count - 1;
                 double sizeHidden = Math.Abs(Offset.Y);
                 if (point.Y > 0 && track != null) {
-                    int position = (int) Math.Round((sizeHidden + point.Y - TrackHeight * 0.5) / TrackHeight);
+                    bool isAboveCenter = Canvas.GetTop(this) + TrackHeight / 2 > point.Y;
+                    int position = (int) Math.Round((sizeHidden + point.Y - (isAboveCenter ? 0 : TrackHeight)) / TrackHeight);
                     int idx = tracksMaxIdx < position ? tracksMaxIdx : position;
 
                     if (track.TrackNo != idx) {
@@ -243,14 +244,14 @@ namespace OpenUtau.App.Controls {
             if (pointer.Properties.IsLeftButtonPressed && e.Pointer.Captured == control && canvas?.TrackMover != null) {
                 canvas.TrackMover.IsVisible = true;
                 Cursor = ViewConstants.cursorSizeNS;
-                double maxHeight = (DocManager.Inst.Project.tracks.Count - 1) * TrackHeight;
+                double maxHeight = DocManager.Inst.Project.tracks.Count * TrackHeight;
                 Point point = e.GetPosition(canvas);
                 double offset = Math.Abs(Offset.Y);
                 double leftOver = offset % TrackHeight;
                 if (point.Y > 0 && track != null) {
-                    double position = Math.Round((point.Y + leftOver) / TrackHeight - 0.5) * TrackHeight;
+                    double position = Math.Round((point.Y + leftOver) / TrackHeight) * TrackHeight;
                     double finalPos = maxHeight < offset + position ? maxHeight - offset : position - leftOver;
-                    Canvas.SetTop(canvas.TrackMover, finalPos - 1);
+                    Canvas.SetTop(canvas.TrackMover, finalPos);
                 }
             }
         }
