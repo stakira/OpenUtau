@@ -58,13 +58,13 @@ namespace OpenUtau.App.Controls {
         }
 
         private string textBoxValue = string.Empty;
-        void OnTextBoxGotFocus(object? sender, GotFocusEventArgs args) {
+        void OnTextBoxGotFocus(object? sender, FocusChangedEventArgs args) {
             Log.Debug("Note property textbox got focus");
             if(sender is TextBox text) {
                 textBoxValue = text.Text ?? string.Empty;
             }
         }
-        void OnTextBoxLostFocus(object? sender, RoutedEventArgs args) {
+        void OnTextBoxLostFocus(object? sender, FocusChangedEventArgs args) {
             Log.Debug("Note property textbox lost focus");
             if (sender is TextBox textBox && textBoxValue != textBox.Text && textBox.Tag is string tag && !string.IsNullOrEmpty(tag)) {
                 DocManager.Inst.StartUndoGroup("command.property.edit");

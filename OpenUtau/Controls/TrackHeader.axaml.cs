@@ -170,11 +170,11 @@ namespace OpenUtau.App.Controls {
             args.Handled = true;
         }
 
-        void TrackSettingsButtonClicked(object sender, RoutedEventArgs args) {
+        async void TrackSettingsButtonClicked(object sender, RoutedEventArgs args) {
             if (track?.Singer != null && track.Singer.Found) {
-                if (VisualRoot is Window window) {
+                if (TopLevel.GetTopLevel(this) is Window window) {
                     var dialog = new Views.TrackSettingsDialog(track);
-                    dialog.ShowDialog(window);
+                    await dialog.ShowDialog(window);
                 }
             }
         }
@@ -203,7 +203,7 @@ namespace OpenUtau.App.Controls {
                 args.Handled = true;
             }
         }
-        void VolumeOrPanTextBoxLostFocus(object sender, RoutedEventArgs args) {
+        void VolumeOrPanTextBoxLostFocus(object sender, FocusChangedEventArgs args) {
             FinishVolumeOrPanInput(sender, true);
             args.Handled = true;
         }

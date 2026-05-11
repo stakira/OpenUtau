@@ -16,30 +16,30 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
-    public class SingersViewModel : ViewModelBase {
+    public partial class SingersViewModel : ViewModelBase {
         public IEnumerable<USinger> Singers => SingerManager.Inst.SingerGroups.Values.SelectMany(l => l);
-        [Reactive] public USinger? Singer { get; set; }
-        [Reactive] public Bitmap? Avatar { get; set; }
-        [Reactive] public string? Info { get; set; }
-        [Reactive] public bool HasWebsite { get; set; }
+        [Reactive] public partial USinger? Singer { get; set; }
+        [Reactive] public partial Bitmap? Avatar { get; set; }
+        [Reactive] public partial string? Info { get; set; }
+        [Reactive] public partial bool HasWebsite { get; set; }
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
         public bool UseSearchAlias => Singer != null && (Singer.SingerType == USingerType.Classic || Singer.SingerType == USingerType.Enunu);
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         public ObservableCollectionExtended<UOto> DisplayedOtos { get; set; } = new ObservableCollectionExtended<UOto>();
-        [Reactive] public bool ZoomInMel { get; set; }
-        [Reactive] public UOto? SelectedOto { get; set; }
-        [Reactive] public int SelectedIndex { get; set; }
+        [Reactive] public partial bool ZoomInMel { get; set; }
+        [Reactive] public partial UOto? SelectedOto { get; set; }
+        [Reactive] public partial int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
-        [Reactive] public bool UseFilenameAsAlias { get; set; } = false;
+        [Reactive] public partial bool UseFilenameAsAlias { get; set; } = false;
 
-        [Reactive] public string SearchAlias { get; set; } = "";
+        [Reactive] public partial string SearchAlias { get; set; } = "";
 
         private readonly ObservableCollectionExtended<USubbank> subbanks
             = new ObservableCollectionExtended<USubbank>();

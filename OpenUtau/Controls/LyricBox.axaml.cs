@@ -20,13 +20,19 @@ namespace OpenUtau.App.Controls {
             box = PART_Box;
             listBox = PART_Suggestions;
             IsVisible = false;
+            viewModel.Suggestions.CollectionChanged += (_, _) => {
+                Dispatcher.UIThread.Post(() => {
+                    listBox.SelectedIndex = -1;
+                    viewModel.SelectedSuggestion = null;
+                }, DispatcherPriority.Input);
+            };
         }
 
-        private void Box_GotFocus(object? sender, GotFocusEventArgs e) {
+        private void Box_GotFocus(object? sender, FocusChangedEventArgs e) {
             box.SelectAll();
         }
 
-        private void Box_LostFocus(object? sender, RoutedEventArgs e) {
+        private void Box_LostFocus(object? sender, FocusChangedEventArgs e) {
             box.CaretIndex = 0;
         }
 
@@ -166,6 +172,7 @@ namespace OpenUtau.App.Controls {
 
         private void FocusTimer_Tick(object? sender, System.EventArgs e) {
             box.Focus();
+            box.SelectAll();
             if (focusTimer != null) {
                 focusTimer.Tick -= FocusTimer_Tick;
                 focusTimer.Stop();

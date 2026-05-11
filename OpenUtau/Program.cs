@@ -8,7 +8,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
@@ -70,14 +70,25 @@ namespace OpenUtau.App {
             } else if (OS.IsMacOS()) {
                 //To avoid text display corruption, specify Hiragino Sans font first.
                 //Due to the specification of AvaloniaUI, this only affects when the language is set to Japanese.
-                fontOptions.DefaultFamilyName = "Hiragino Sans, Segoe UI, San Francisco, Helvetica Neue";
+                fontOptions.DefaultFamilyName = "Hiragino Sans";
+                fontOptions.FontFallbacks = [
+                    new FontFallback { FontFamily = new FontFamily("Helvetica Neue") },
+                    new FontFallback { FontFamily = new FontFamily("Arial") },
+                ];
             }
+
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .LogToTrace()
-                .UseReactiveUI()
+                .UseReactiveUI(_ => { })
                 .With(fontOptions)
-                .With(new X11PlatformOptions {EnableIme = true});
+                .With(new X11PlatformOptions {
+                    RenderingMode = new[] { X11RenderingMode.Glx },
+                    EnableIme = true
+                })
+                .With(new Win32PlatformOptions {
+                    RenderingMode = new[] { Win32RenderingMode.Wgl }
+                });
         }
 
         public static void Run(string[] args)

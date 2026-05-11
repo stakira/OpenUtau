@@ -578,6 +578,9 @@ namespace OpenUtau.App.Controls {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (editState != null) {
+                args.Pointer.Capture(null);
+                editState = null;
+                Cursor = null; 
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
@@ -897,6 +900,7 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             if (editState.MouseButton != args.InitialPressMouseButton) {
+                args.Pointer.Capture(null);
                 return;
             }
             var control = (Control)sender;
@@ -908,6 +912,7 @@ namespace OpenUtau.App.Controls {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+            args.Pointer.Capture(null);
         }
 
         public void NotesCanvasDoubleTapped(object sender, TappedEventArgs args) {
@@ -1040,6 +1045,9 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             if (editState.MouseButton != args.InitialPressMouseButton) {
+                args.Pointer.Capture(null);
+                editState = null;
+                Cursor = null;
                 return;
             }
             var control = (Control)sender;
@@ -1050,6 +1058,7 @@ namespace OpenUtau.App.Controls {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+            args.Pointer.Capture(null);
         }
 
         public void PhonemeCanvasDoubleTapped(object sender, TappedEventArgs args) {
@@ -1168,6 +1177,9 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             if (editState.MouseButton != args.InitialPressMouseButton) {
+                args.Pointer.Capture(null);
+                editState = null;
+                Cursor = null;
                 return;
             }
             var control = (Control)sender;
@@ -1176,6 +1188,7 @@ namespace OpenUtau.App.Controls {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+            args.Pointer.Capture(null);
         }
 
         public void BackgroundPointerMoved(object sender, PointerEventArgs args) {

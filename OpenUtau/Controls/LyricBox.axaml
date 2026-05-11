@@ -18,7 +18,7 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                BorderThickness="0" Background="Transparent"
                Margin="{DynamicResource AutoCompleteListPadding}"
-               ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
+               ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}" SelectionMode="Single"
                Focusable="True" KeyDown="ListBox_KeyDown">
         <ListBox.Styles>
           <Style Selector="ListBoxItem">

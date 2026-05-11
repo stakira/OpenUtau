@@ -4,19 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OpenUtau.Core;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using System.Reactive;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
-    public class PackageRowViewModel : ViewModelBase {
+    public partial class PackageRowViewModel : ViewModelBase {
         public RegistrySoftware? Software { get; }
         public string Id { get; }
         public string Name { get; }
         public string Developer { get; }
         public string Version { get; }
-        [Reactive] public bool IsInstalled { get; set; }
-        [Reactive] public string InstalledVersion { get; set; } = string.Empty;
+        [Reactive] public partial bool IsInstalled { get; set; }
+        [Reactive] public partial string InstalledVersion { get; set; } = string.Empty;
 
         public bool HasRegistry => Software != null;
         public bool IsUpToDate => IsInstalled && HasRegistry && !string.IsNullOrEmpty(InstalledVersion) && InstalledVersion == Version;
@@ -62,9 +62,9 @@ namespace OpenUtau.App.ViewModels {
         }
     }
 
-    public class PackageManagerViewModel : ViewModelBase {
+    public partial class PackageManagerViewModel : ViewModelBase {
         public ObservableCollection<PackageRowViewModel> Available { get; } = new ObservableCollection<PackageRowViewModel>();
-        [Reactive] public string Status { get; set; } = string.Empty;
+        [Reactive] public partial string Status { get; set; } = string.Empty;
         public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
         public ReactiveCommand<PackageRowViewModel, Unit> InstallCommand { get; }
         public ReactiveCommand<PackageRowViewModel, Unit> UninstallCommand { get; }

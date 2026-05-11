@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
@@ -24,11 +24,12 @@
     <PackageReference Include="NWaves" Version="0.9.6" />
     <PackageReference Include="Serilog" Version="4.1.0" />
     <PackageReference Include="SharpCompress" Version="0.38.0" />
-    <PackageReference Include="System.Buffers" Version="4.6.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.3" />
     <PackageReference Include="System.IO.Packaging" Version="9.0.2" />
-    <PackageReference Include="System.Text.Json" Version="9.0.2" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.6" />
     <PackageReference Include="TextCopy" Version="6.2.1" />
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.92.0" />
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />

@@ -6,21 +6,21 @@ using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 
 namespace OpenUtau.App.ViewModels {
-    class LyricBoxViewModel : ViewModelBase {
+    partial class LyricBoxViewModel : ViewModelBase {
         public class SuggestionItem {
             public string Alias { get; set; } = string.Empty;
             public string Source { get; set; } = string.Empty;
         }
 
-        [Reactive] public UVoicePart? Part { get; set; }
-        [Reactive] public LyricBoxNoteOrPhoneme? NoteOrPhoneme { get; set; }
-        [Reactive] public bool IsVisible { get; set; }
-        [Reactive] public string? Text { get; set; }
-        [Reactive] public SuggestionItem? SelectedSuggestion { get; set; }
-        [Reactive] public ObservableCollectionExtended<SuggestionItem> Suggestions { get; set; }
+        [Reactive] public partial UVoicePart? Part { get; set; }
+        [Reactive] public partial LyricBoxNoteOrPhoneme? NoteOrPhoneme { get; set; }
+        [Reactive] public partial bool IsVisible { get; set; }
+        [Reactive] public partial string? Text { get; set; }
+        [Reactive] public partial SuggestionItem? SelectedSuggestion { get; set; }
+        [Reactive] public partial ObservableCollectionExtended<SuggestionItem> Suggestions { get; set; }
 
         public bool IsAliasBox => isAliasBox.Value;
         private readonly ObservableAsPropertyHelper<bool> isAliasBox;

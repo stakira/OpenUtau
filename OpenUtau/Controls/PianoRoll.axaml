@@ -12,12 +12,12 @@
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </UserControl.Styles>
   <Border>
-    <Grid Margin="{Binding $parent[1].WindowDecorationMargin}" PointerMoved="BackgroundPointerMoved">
+    <Grid Margin="{Binding $parent[1].OffScreenMargin}" PointerMoved="BackgroundPointerMoved">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
-        <RowDefinition Height="*"/>
+        <RowDefinition Height="*" MinHeight="60"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="150" 
                        MinHeight="{Binding NotesViewModel.ExpHeightMin}"

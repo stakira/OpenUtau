@@ -23,7 +23,7 @@ namespace OpenUtau.App.Views {
             WindowState = (WindowState)Preferences.Default.PianorollWindowSize.State;
         }
 
-        public void WindowGotFocus(object sender, GotFocusEventArgs e) {
+        public void WindowGotFocus(object sender, FocusChangedEventArgs e) {
             pianoRoll.Focus();
         }
 
