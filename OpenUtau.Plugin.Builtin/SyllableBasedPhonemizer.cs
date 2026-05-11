@@ -31,7 +31,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// If your oto hase same symbols for them, like "n" for stretchable "n" from a long note and "n" from CV,
     /// then you can use a vitrual symbol [N], and then replace it with [n] in ValidateAlias().
     /// </summary>
-    public abstract class SyllableBasedPhonemizer : Phonemizer {
+    public abstract class SyllableBasedPhonemizer : Phonemizer, IG2pSymbols {
 
         /// <summary>
         /// Syllable is [V] [C..] [V]
@@ -1309,6 +1309,10 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             return phonemes.Where(n => n.phoneme != null).ToArray();
+        }
+
+        string[] IG2pSymbols.GetSymbols(Note note) {
+            return GetSymbols(note); // public API to allow access to internal plugins.
         }
 
         #endregion
