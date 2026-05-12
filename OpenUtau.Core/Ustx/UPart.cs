@@ -216,6 +216,8 @@ namespace OpenUtau.Core.Ustx {
                     phoneme.phoneme = phoneme.rawPhoneme;
                     phoneme.preutterDelta = null;
                     phoneme.overlapDelta = null;
+                    phoneme.attackTimeDelta = null;
+                    phoneme.releaseTimeDelta = null;
                     var note = phoneme.Parent;
                     if (note == null) {
                         continue;
@@ -226,6 +228,8 @@ namespace OpenUtau.Core.Ustx {
                         phoneme.phoneme = !string.IsNullOrWhiteSpace(o.phoneme) ? o.phoneme : phoneme.rawPhoneme;
                         phoneme.preutterDelta = o.preutterDelta;
                         phoneme.overlapDelta = o.overlapDelta;
+                        phoneme.attackTimeDelta = o.attackTimeDelta;
+                        phoneme.releaseTimeDelta = o.releaseTimeDelta;
                     }
                 }
                 // Safety treatment after phonemizer output and phoneme overrides.
