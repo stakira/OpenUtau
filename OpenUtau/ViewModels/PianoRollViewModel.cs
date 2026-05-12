@@ -68,6 +68,14 @@ namespace OpenUtau.App.ViewModels {
         public bool PlaybackAutoScroll1 { get => Preferences.Default.PlaybackAutoScroll == 1 ? true : false; }
         public bool PlaybackAutoScroll2 { get => Preferences.Default.PlaybackAutoScroll == 2 ? true : false; }
         public bool PianoRollDetached { get => Preferences.Default.DetachPianoRoll; }
+        public bool ShowPhonemizerTags {
+            get => Preferences.Default.ShowPhonemizerTags;
+            set {
+                Preferences.Default.ShowPhonemizerTags = value;
+                Preferences.Save();
+                this.RaisePropertyChanged(nameof(ShowPhonemizerTags));
+            }
+        }
 
         public ObservableCollectionExtended<MenuItemViewModel> LegacyPlugins { get; private set; }
             = new ObservableCollectionExtended<MenuItemViewModel>();
