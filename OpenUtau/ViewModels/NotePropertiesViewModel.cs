@@ -354,6 +354,10 @@ namespace OpenUtau.App.ViewModels {
         #region ICmdSubscriber
         public void OnNext(UCommand cmd, bool isUndo) {
             var note = selectedNotes.FirstOrDefault();
+            if (cmd is TrackChangePhonemizerCommand) {
+                RefreshPhonemizers();
+                this.RaisePropertyChanged(nameof(PhonemizerOverrideText));
+            }
             if (note == null) { return; }
 
             if (cmd is NoteCommand) {
@@ -407,13 +411,12 @@ namespace OpenUtau.App.ViewModels {
                         VibratoVolLink = note.vibrato.volLink;
                         this.RaisePropertyChanged(nameof(VibratoVolLink));
                     }
-                }/* else if (cmd is ChangeNotePhonemizerCommand) {
+                } else if (cmd is ChangeNotePhonemizerCommand) {
                     PhonemizerOverride = note.PhonemizerOverride ?? "";
-                    this.RaisePropertyChanged(nameof(PhonemizerOverride));
                     if (Part != null) {
                         DocManager.Inst.Project.Validate(new ValidateOptions { Part = Part });
                     }
-                }*/
+                }
             } else if (cmd is ExpCommand) {
                 if (cmd is PitchExpCommand) {
                     if (note.pitch.data.Count >= 2) {
@@ -431,7 +434,7 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is NotePresetChangedNotification) {
                 PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
                 VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
-            }
+            }             
         }
         #endregion
 
