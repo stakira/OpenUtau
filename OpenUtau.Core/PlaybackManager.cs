@@ -196,6 +196,7 @@ namespace OpenUtau.Core {
 
         public void PlayTestSound() {
             masterMix = null;
+            PlayingMaster = false;
             AudioOutput.Stop();
             AudioOutput.Init(new SignalGenerator(44100, 1).Take(TimeSpan.FromSeconds(1)));
             AudioOutput.Play();
@@ -321,7 +322,7 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);
-                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
+                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
                 } catch (IOException ioe) {
                     var customEx = new MessageCustomizableException($"Failed to export {exportPath}.", $"<translate:errors.failed.export>: {exportPath}", ioe);
@@ -400,6 +401,7 @@ namespace OpenUtau.Core {
                 }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
+                renderCancellation?.Cancel();
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {

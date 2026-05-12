@@ -33,8 +33,8 @@ jobs:
           - { name: win-x64, rid: win-x64, arch: x64, os: win, runs-on: windows-latest }
           - { name: win-x86, rid: win-x86, arch: x86, os: win, runs-on: windows-latest }
           - { name: win-arm64, rid: win-arm64, arch: arm64, os: win, runs-on: windows-latest }
-          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-13 }
-          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-13 }
+          - { name: osx-x64, rid: osx-x64, arch: x64, os: osx, runs-on: macos-15-intel }
+          - { name: osx-arm64, rid: osx-arm64, arch: arm64, os: osx, runs-on: macos-15-intel }
           - { name: linux-x64, rid: linux-x64, arch: x64, os: linux, runs-on: ubuntu-latest, linuxarch: x86_64}
           - { name: linux-arm64, rid: linux-arm64, arch: arm64, os: linux, runs-on: ubuntu-latest, linuxarch: aarch64}
 
@@ -66,15 +66,23 @@ jobs:
       - name: Restore
         run: dotnet restore OpenUtau -r ${{ matrix.arch.rid }}
 
-      - name: Publish
+      - name: Build (Windows and Linux)
         run: dotnet publish OpenUtau -c Release -r ${{ matrix.arch.rid }} --self-contained true -o bin/${{ matrix.arch.name }}/
         if: ${{ matrix.arch.os != 'osx' }}
+
+      - name: Build (MacOS)
+        run: dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:SelfContained=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
+        if: ${{ matrix.arch.os == 'osx' }}
+      
+      - name: Write release channel info
+        run: "@{Beta=$${{ inputs.beta }}} | ConvertTo-Json > bin/${{ matrix.arch.name }}/prefs-default.json"
+        shell: pwsh
 
       # Create Zip
       - name: DirectML
         shell: cmd
         run: |
-          curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.12.1 -o Microsoft.AI.DirectML.nupkg
+          curl -L https://www.nuget.org/api/v2/package/Microsoft.AI.DirectML/1.15.4 -o Microsoft.AI.DirectML.nupkg
           mkdir Microsoft.AI.DirectML
           tar -xf Microsoft.AI.DirectML.nupkg -C Microsoft.AI.DirectML
           copy /y Microsoft.AI.DirectML\bin\${{ matrix.arch.arch }}-${{ matrix.arch.os }}\DirectML.dll bin\${{ matrix.arch.name }}\
@@ -112,7 +120,6 @@ jobs:
       # Create Dmg
       - name: Create Dmg
         run: |
-          dotnet msbuild OpenUtau -t:BundleApp -p:Configuration=Release -p:RuntimeIdentifier=${{ matrix.arch.rid }} -p:UseAppHost=true -p:SelfContained=true -p:OutputPath=../bin/${{ matrix.arch.name }}/
           npm install -g create-dmg
           cp OpenUtau/Assets/OpenUtau.icns bin/${{ matrix.arch.name }}/publish/OpenUtau.app/Contents/Resources/
           create-dmg bin/${{ matrix.arch.name }}/publish/OpenUtau.app || true

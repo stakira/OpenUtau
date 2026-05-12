@@ -19,7 +19,6 @@ namespace OpenUtau.Classic {
             Ustx.DYN,
             Ustx.PITD,
             Ustx.CLR,
-            Ustx.SHFT,
             Ustx.ENG,
             Ustx.VEL,
             Ustx.VOL,
@@ -28,6 +27,8 @@ namespace OpenUtau.Classic {
             Ustx.MOD,
             Ustx.MODP,
             Ustx.ALT,
+            Ustx.DIR,
+            Ustx.SHFT
         };
 
         public USingerType SingerType => USingerType.Classic;

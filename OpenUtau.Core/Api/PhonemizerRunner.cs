@@ -96,70 +96,91 @@ namespace OpenUtau.Api {
                     timestamp = request.timestamp,
                 };
             }
-            phonemizer.SetSinger(request.singer);
-            phonemizer.SetTiming(request.timeAxis);
+            phonemizer.SetUpException = null;
             try {
-                phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                phonemizer.SetSinger(request.singer);
             } catch (Exception e) {
-                Log.Error(e, $"phonemizer failed to setup.");
+                Log.Error(e, $"phonemizer failed to set singer.");
+                phonemizer.SetUpException = e;
+            }
+            phonemizer.SetTiming(request.timeAxis);
+            if (phonemizer.SetUpException == null) {
+                try {
+                    phonemizer.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                } catch (Exception e) {
+                    Log.Error(e, $"phonemizer failed to setup.");
+                    phonemizer.SetUpException = e;
+                }
             }
 
             var result = new List<Phonemizer.Phoneme[]>();
-            for (int i = notes.Length - 1; i >= 0; i--) {
-                Phonemizer.Result phonemizerResult;
-                bool prevIsNeighbour = false;
-                bool nextIsNeighbour = false;
-                Phonemizer.Note[] prevs = null;
-                Phonemizer.Note? prev = null;
-                Phonemizer.Note? next = null;
-                if (i > 0) {
-                    prevs = notes[i - 1];
-                    prev = notes[i - 1][0];
-                    var prevLast = notes[i - 1].Last();
-                    prevIsNeighbour = prevLast.position + prevLast.duration >= notes[i][0].position;
+            if (phonemizer.SetUpException != null) {
+                // Short-circuit: return an error phoneme for each note group
+                for (int i = notes.Length - 1; i >= 0; i--) {
+                    result.Insert(0, new Phonemizer.Phoneme[] {
+                        new Phonemizer.Phoneme {
+                            phoneme = "error",
+                            error = phonemizer.SetUpException
+                        }
+                    });
                 }
-                if (i < notes.Length - 1) {
-                    next = notes[i + 1][0];
-                    var thisLast = notes[i].Last();
-                    nextIsNeighbour = thisLast.position + thisLast.duration >= next.Value.position;
-                }
-
-                if (next != null && result.Count > 0 && result[0].Length > 0) {
-                    var end = notes[i].Last().position + notes[i].Last().duration;
-                    int endPushback = Math.Min(0, result[0][0].position - end);
-                    notes[i][notes[i].Length - 1].duration += endPushback;
-                }
-                try {
-                    phonemizerResult = phonemizer.Process(
-                        notes[i],
-                        prev,
-                        next,
-                        prevIsNeighbour ? prev : null,
-                        nextIsNeighbour ? next : null,
-                        (prevIsNeighbour ? prevs : null) ?? new Phonemizer.Note[0]);
-                } catch (Exception e) {
-                    Log.Error(e, $"phonemizer error {notes[i][0].lyric}");
-                    phonemizerResult = new Phonemizer.Result() {
-                        phonemes = new Phonemizer.Phoneme[] {
-                            new Phonemizer.Phoneme {
-                                phoneme = "error"
+            } else {
+                for (int i = notes.Length - 1; i >= 0; i--) {
+                    Phonemizer.Result phonemizerResult;
+                    bool prevIsNeighbour = false;
+                    bool nextIsNeighbour = false;
+                    Phonemizer.Note[] prevs = null;
+                    Phonemizer.Note? prev = null;
+                    Phonemizer.Note? next = null;
+                    if (i > 0) {
+                        prevs = notes[i - 1];
+                        prev = notes[i - 1][0];
+                        var prevLast = notes[i - 1].Last();
+                        prevIsNeighbour = prevLast.position + prevLast.duration >= notes[i][0].position;
+                    }
+                    if (i < notes.Length - 1) {
+                        next = notes[i + 1][0];
+                        var thisLast = notes[i].Last();
+                        nextIsNeighbour = thisLast.position + thisLast.duration >= next.Value.position;
+                    }
+                    if (next != null && result.Count > 0 && result[0].Length > 0) {
+                        var end = notes[i].Last().position + notes[i].Last().duration;
+                        int endPushback = Math.Min(0, result[0][0].position - end);
+                        notes[i][notes[i].Length - 1].duration += endPushback;
+                    }
+                    try {
+                        phonemizerResult = phonemizer.Process(
+                            notes[i],
+                            prev,
+                            next,
+                            prevIsNeighbour ? prev : null,
+                            nextIsNeighbour ? next : null,
+                            (prevIsNeighbour ? prevs : null) ?? new Phonemizer.Note[0]);
+                    } catch (Exception e) {
+                        Log.Error(e, $"phonemizer error {notes[i][0].lyric}");
+                        phonemizerResult = new Phonemizer.Result() {
+                            phonemes = new Phonemizer.Phoneme[] {
+                                new Phonemizer.Phoneme {
+                                    phoneme = "error",
+                                    error = e
+                                }
+                            }
+                        };
+                    }
+                    if (phonemizer.LegacyMapping) {
+                        for (var k = 0; k < phonemizerResult.phonemes.Length; k++) {
+                            var phoneme = phonemizerResult.phonemes[k];
+                            if (request.singer.TryGetMappedOto(phoneme.phoneme, notes[i][0].tone, out var oto)) {
+                                phonemizerResult.phonemes[k].phoneme = oto.Alias;
                             }
                         }
-                    };
-                }
-                if (phonemizer.LegacyMapping) {
-                    for (var k = 0; k < phonemizerResult.phonemes.Length; k++) {
-                        var phoneme = phonemizerResult.phonemes[k];
-                        if (request.singer.TryGetMappedOto(phoneme.phoneme, notes[i][0].tone, out var oto)) {
-                            phonemizerResult.phonemes[k].phoneme = oto.Alias;
-                        }
                     }
+                    for (var j = 0; j < phonemizerResult.phonemes.Length; j++) {
+                        phonemizerResult.phonemes[j].position += notes[i][0].position;
+                    }
+                    result.Insert(0, phonemizerResult.phonemes);
                 }
-                for (var j = 0; j < phonemizerResult.phonemes.Length; j++) {
-                    phonemizerResult.phonemes[j].position += notes[i][0].position;
-                }
-                result.Insert(0, phonemizerResult.phonemes);
-            }
+            } // end else (SetUpException == null)
             try {
                 phonemizer.CleanUp();
             } catch (Exception e) {
