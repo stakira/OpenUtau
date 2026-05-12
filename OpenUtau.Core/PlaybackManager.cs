@@ -284,11 +284,13 @@ namespace OpenUtau.Core {
         private void Render(UProject project, int tick, int endTick, int trackNo) {
             Task.Run(() => {
                 try {
+                    OpenUtau.Classic.ClassicRenderer.LiveWaveformCache.Clear();
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
                     faders = result.Item2;
                     StartingToPlay = false;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
+                    DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
                 } catch (Exception e) {
                     Log.Error(e, "Failed to render.");
                     StopPlayback();
@@ -408,5 +410,8 @@ namespace OpenUtau.Core {
         }
 
         #endregion
+    }
+    public class WaveformReadyNotification : UNotification {
+        public override string ToString() => "Waveform rendered and ready";
     }
 }

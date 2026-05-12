@@ -18,6 +18,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
+using Avalonia.Threading;
 
 namespace OpenUtau.App.Views {
     interface IValueTip {
@@ -1746,6 +1747,10 @@ namespace OpenUtau.App.Views {
                 } else {
                     MessageBox.CloseLoading();
                 }
+            } else if (cmd is WaveformReadyNotification) {
+                Dispatcher.UIThread.Post(() => {
+                    MessageBus.Current.SendMessage(new WaveformRefreshEvent());
+                }, Avalonia.Threading.DispatcherPriority.Normal);
             }
         }
     }
