@@ -59,6 +59,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Color BlackKeyColorRight { get; set; }
         [Reactive] public Color BlackKeyNameColor { get; set; }
 
+        [Reactive] public Color MainColorA { get; set; }
+        [Reactive] public Color MainColorB { get; set; }
+
         public ThemeEditorViewModel(string customThemePath) {
             this.customThemePath = customThemePath;
 
@@ -221,6 +224,11 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(vm => vm.BlackKeyNameColor)
                 .Subscribe(v => Application.Current!.Resources["BlackKeyNameColor"] = v);
+                
+            this.WhenAnyValue(vm => vm.MainColorA)
+                .Subscribe(v => {
+                    Application.Current!.Resources["BlackKeyNameColor"] = v;
+                });
         }
 
         public void Save() {
