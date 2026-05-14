@@ -44,15 +44,12 @@ namespace OpenUtau.App.Controls {
         private double trackHeight;
         private Point offset;
         private int trackNo;
-        private readonly KeyModifiers cmdKey =
-            OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
 
         public TrackHeaderViewModel? ViewModel;
 
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         private UTrack? track;
-        private TrackHeaderCanvas? canvas;
 
         public TrackHeader() {
             InitializeComponent();
@@ -69,7 +66,6 @@ namespace OpenUtau.App.Controls {
 
         internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
             this.track = track;
-            this.canvas = canvas;
             unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
             unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
             unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
@@ -83,21 +79,6 @@ namespace OpenUtau.App.Controls {
                 ViewModel.IsSingerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 3;
                 ViewModel.IsPhonemizerVisible = trackHeight >= ViewConstants.TrackHeightDelta * 4;
                 ViewModel.IsRendererVisible = trackHeight >= ViewConstants.TrackHeightDelta * 5;
-            }
-        }
-
-        void HeaderPointerPressed(object? sender, PointerPressedEventArgs args) {
-            if (!args.GetCurrentPoint(this).Properties.IsLeftButtonPressed ||
-                track == null ||
-                canvas?.DataContext is not TracksViewModel tracksViewModel) {
-                return;
-            }
-            if (args.KeyModifiers == KeyModifiers.Shift) {
-                tracksViewModel.SelectTracksUntil(track);
-            } else if (args.KeyModifiers == cmdKey) {
-                tracksViewModel.ToggleSelectTrack(track);
-            } else {
-                tracksViewModel.SelectTrack(track);
             }
         }
 

@@ -12,7 +12,7 @@
       <StackPanel Spacing="5">
         <Panel>
           <TextBlock VerticalAlignment="Center" Text="IsDarkMode"/>
-          <ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding IsDarkMode}"/>
+          <ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding IsDarkModeEasy}"/>
         </Panel>
         <Separator Margin="0"/>
         <Panel>

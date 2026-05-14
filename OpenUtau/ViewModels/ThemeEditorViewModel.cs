@@ -61,6 +61,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public Color MainColorA { get; set; }
         [Reactive] public Color MainColorB { get; set; }
+        [Reactive] public bool IsDarkModeEasy { get; set; }
 
         public ThemeEditorViewModel(string customThemePath) {
             this.customThemePath = customThemePath;
@@ -113,6 +114,10 @@ namespace OpenUtau.App.ViewModels {
             BlackKeyColorRight = Color.Parse(themeYaml.BlackKeyColorRight);
             BlackKeyNameColor = Color.Parse(themeYaml.BlackKeyNameColor);
 
+            MainColorA = Color.Parse(themeYaml.MainColorA);
+            MainColorB = Color.Parse(themeYaml.MainColorB);
+            IsDarkModeEasy = themeYaml.IsDarkModeEasy;
+
             this.WhenAnyValue(vm => vm.IsDarkMode)
                 .Subscribe(v => {
                     Application.Current!.Resources["IsDarkMode"] = v; 
@@ -122,6 +127,13 @@ namespace OpenUtau.App.ViewModels {
                         Application.Current.RequestedThemeVariant = ThemeVariant.Light;
                     }
                     ThemeManager.LoadTheme();
+                });
+
+
+            this.WhenAnyValue(vm => vm.IsDarkModeEasy)
+                .Subscribe(v => {
+                    Application.Current!.Resources["IsDarkModeEasy"] = v;
+                    UpdateColorsByMain();
                 });
 
             this.WhenAnyValue(vm => vm.BackgroundColor)
@@ -227,7 +239,7 @@ namespace OpenUtau.App.ViewModels {
                 
             this.WhenAnyValue(vm => vm.MainColorA)
                 .Subscribe(v => {
-                    Application.Current!.Resources["BlackKeyNameColor"] = v;
+                    Application.Current!.Resources["MainColorA"] = v;
                 });
         }
 
@@ -273,10 +285,99 @@ namespace OpenUtau.App.ViewModels {
 
                 BlackKeyColorLeft = BlackKeyColorLeft.ToString(),
                 BlackKeyColorRight = BlackKeyColorRight.ToString(),
-                BlackKeyNameColor = BlackKeyNameColor.ToString()
+                BlackKeyNameColor = BlackKeyNameColor.ToString(),
+
+                MainColorA = MainColorA.ToString(),
+                MainColorB = MainColorB.ToString(),
+                IsDarkModeEasy = IsDarkModeEasy
             };
 
             File.WriteAllText(customThemePath, Yaml.DefaultSerializer.Serialize(themeYaml), Encoding.UTF8);
+        }
+
+        private void UpdateColorsByMain() {
+            if (IsDarkModeEasy) {
+                BackgroundColor = Color.FromUInt32(0xFF303030);
+                BackgroundColorPointerOver = Color.FromUInt32(0xFF505050);
+                BackgroundColorPressed = Color.FromUInt32(0xFF707070);
+                BackgroundColorDisabled = Color.FromUInt32(0xFF404040);
+
+                ForegroundColor = Color.FromUInt32(0xFFE0E0E0);
+                ForegroundColorPointerOver = Color.FromUInt32(0xFFFCFCFC);
+                ForegroundColorPressed = Color.FromUInt32(0xFFFFFFFF);
+                ForegroundColorDisabled = Color.FromUInt32(0xFFA0A0A0);
+
+                BorderColor = Color.FromUInt32(0xFF707070);
+                BorderColorPointerOver = Color.FromUInt32(0xFFB0B0B0);
+
+                //SystemAccentColor =
+                //SystemAccentColorLight1 =
+                //SystemAccentColorDark1 =
+
+                NeutralAccentColor = Color.FromUInt32(0xFF808080);
+                NeutralAccentColorPointerOver = Color.FromUInt32(0xFFA0A0A0);
+                //AccentColor1 =
+                //AccentColor2 =
+                //AccentColor3 =
+
+                TickLineColor = Color.FromUInt32(0xFF707070);
+                BarNumberColor = Color.FromUInt32(0xFFD0D0D0);
+                FinalPitchColor = Color.FromUInt32(0xFFD0D0D0);
+                TrackBackgroundAltColor = Color.FromUInt32(0xFF404040);
+
+                //WhiteKeyColorLeft =
+                //WhiteKeyColorRight =
+                WhiteKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
+
+                //CenterKeyColorLeft = 
+                //CenterKeyColorRight = 
+                //CenterKeyNameColor = 
+
+                BlackKeyColorLeft = Color.FromUInt32(0x00000000);
+                BlackKeyColorRight = Color.FromUInt32(0x00000000);
+                BlackKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
+            } else {
+                BackgroundColor = Color.FromUInt32(0xFFFFFFFF);
+                BackgroundColorPointerOver = Color.FromUInt32(0xFFF0F0F0);
+                BackgroundColorPressed = Color.FromUInt32(0xFFE0E0E0);
+                BackgroundColorDisabled = Color.FromUInt32(0xFFD0D0D0);
+
+                ForegroundColor = Color.FromUInt32(0xFF000000);
+                ForegroundColorPointerOver = Color.FromUInt32(0xFF000000);
+                ForegroundColorPressed = Color.FromUInt32(0xFF202020);
+                ForegroundColorDisabled = Color.FromUInt32(0xFF808080);
+
+                BorderColor = Color.FromUInt32(0xFF707070);
+                BorderColorPointerOver = Color.FromUInt32(0xFFB0B0B0);
+
+                //SystemAccentColor =
+                //SystemAccentColorLight1 =
+                //SystemAccentColorDark1 =
+
+                NeutralAccentColor = Color.FromUInt32(0xFFA7A7A7);
+                NeutralAccentColorPointerOver = Color.FromUInt32(0xFF909090);
+                //AccentColor1 =
+                //AccentColor2 =
+                //AccentColor3 =
+
+                TickLineColor = Color.FromUInt32(0xFFB0B0B0);
+                BarNumberColor = Color.FromUInt32(0xFFB0B0B0);
+                FinalPitchColor = Color.FromUInt32(0xFFC0C0C0);
+                TrackBackgroundAltColor = Color.FromUInt32(0xFFF0F0F0);
+
+                WhiteKeyColorLeft = Color.FromUInt32(0x00000000);
+                WhiteKeyColorRight = Color.FromUInt32(0x00000000);
+                //WhiteKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
+
+                //CenterKeyColorLeft = 
+                //CenterKeyColorRight = 
+                //CenterKeyNameColor = 
+
+                //BlackKeyColorLeft = Color.FromUInt32(0x00000000);
+                //BlackKeyColorRight = Color.FromUInt32(0x00000000);
+                BlackKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
+            }
+            IsDarkMode = IsDarkModeEasy;
         }
 
     }
