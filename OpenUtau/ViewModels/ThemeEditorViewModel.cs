@@ -240,6 +240,13 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.MainColorA)
                 .Subscribe(v => {
                     Application.Current!.Resources["MainColorA"] = v;
+                    UpdateColorsByMain();
+                });
+
+            this.WhenAnyValue(vm => vm.MainColorB)
+                .Subscribe(v => {
+                    Application.Current!.Resources["MainColorB"] = v;
+                    UpdateColorsByMain();
                 });
         }
 
@@ -310,28 +317,28 @@ namespace OpenUtau.App.ViewModels {
                 BorderColor = Color.FromUInt32(0xFF707070);
                 BorderColorPointerOver = Color.FromUInt32(0xFFB0B0B0);
 
-                //SystemAccentColor =
-                //SystemAccentColorLight1 =
-                //SystemAccentColorDark1 =
+                SystemAccentColor = MainColorA;
+                SystemAccentColorLight1 = ColorShift(MainColorA, 32);
+                SystemAccentColorDark1 = ColorMultiply(MainColorA, 0.8f);
 
                 NeutralAccentColor = Color.FromUInt32(0xFF808080);
                 NeutralAccentColorPointerOver = Color.FromUInt32(0xFFA0A0A0);
-                //AccentColor1 =
-                //AccentColor2 =
-                //AccentColor3 =
+                AccentColor1 = MainColorA;
+                AccentColor2 = ColorShift(MainColorB, 32);
+                AccentColor3 = ColorMultiply(MainColorB, 0.8f);
 
                 TickLineColor = Color.FromUInt32(0xFF707070);
                 BarNumberColor = Color.FromUInt32(0xFFD0D0D0);
                 FinalPitchColor = Color.FromUInt32(0xFFD0D0D0);
                 TrackBackgroundAltColor = Color.FromUInt32(0xFF404040);
 
-                //WhiteKeyColorLeft =
-                //WhiteKeyColorRight =
+                WhiteKeyColorLeft = ColorMultiply(MainColorB, 0.9f);
+                WhiteKeyColorRight = MainColorB; 
                 WhiteKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
 
-                //CenterKeyColorLeft = 
-                //CenterKeyColorRight = 
-                //CenterKeyNameColor = 
+                CenterKeyColorLeft = ColorMultiply(ColorShift(MainColorB, 152), 0.9f);
+                CenterKeyColorRight = ColorShift(MainColorB, 152);
+                CenterKeyNameColor = MainColorB;
 
                 BlackKeyColorLeft = Color.FromUInt32(0x00000000);
                 BlackKeyColorRight = Color.FromUInt32(0x00000000);
@@ -350,15 +357,15 @@ namespace OpenUtau.App.ViewModels {
                 BorderColor = Color.FromUInt32(0xFF707070);
                 BorderColorPointerOver = Color.FromUInt32(0xFFB0B0B0);
 
-                //SystemAccentColor =
-                //SystemAccentColorLight1 =
-                //SystemAccentColorDark1 =
+                SystemAccentColor = MainColorA;
+                SystemAccentColorLight1 = ColorShift(MainColorA, 32);
+                SystemAccentColorDark1 = ColorMultiply(MainColorA, 0.8f);
 
                 NeutralAccentColor = Color.FromUInt32(0xFFA7A7A7);
                 NeutralAccentColorPointerOver = Color.FromUInt32(0xFF909090);
-                //AccentColor1 =
-                //AccentColor2 =
-                //AccentColor3 =
+                AccentColor1 = MainColorA;
+                AccentColor2 = ColorShift(MainColorB, 32);
+                AccentColor3 = ColorMultiply(MainColorB, 0.8f);
 
                 TickLineColor = Color.FromUInt32(0xFFB0B0B0);
                 BarNumberColor = Color.FromUInt32(0xFFB0B0B0);
@@ -367,17 +374,34 @@ namespace OpenUtau.App.ViewModels {
 
                 WhiteKeyColorLeft = Color.FromUInt32(0x00000000);
                 WhiteKeyColorRight = Color.FromUInt32(0x00000000);
-                //WhiteKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
+                WhiteKeyNameColor = MainColorB;
 
-                //CenterKeyColorLeft = 
-                //CenterKeyColorRight = 
-                //CenterKeyNameColor = 
+                CenterKeyColorLeft = ColorShift(MainColorB, 144);
+                CenterKeyColorRight = ColorShift(MainColorB, 152);
+                CenterKeyNameColor = MainColorB;
 
-                //BlackKeyColorLeft = Color.FromUInt32(0x00000000);
-                //BlackKeyColorRight = Color.FromUInt32(0x00000000);
+                BlackKeyColorLeft = ColorShift(MainColorB, 32);
+                BlackKeyColorRight = MainColorB;
                 BlackKeyNameColor = Color.FromUInt32(0xFFFFFFFF);
             }
             IsDarkMode = IsDarkModeEasy;
+        }
+
+        public static Color ColorMultiply(Color color, float ratio) {
+            return Color.FromArgb(
+                color.A,
+                (byte)((color.R * ratio) > 255 ? 255 : color.R * ratio),
+                (byte)((color.G * ratio) > 255 ? 255 : color.G * ratio),
+                (byte)((color.B * ratio) > 255 ? 255 : color.B * ratio)
+            );
+        }
+        public static Color ColorShift(Color color, int delta) {
+            return Color.FromArgb(
+                color.A,
+                (byte)((color.R + delta) > 255 ? 255 : ((color.R + delta) < 0 ? 0 : color.R + delta)),
+                (byte)((color.G + delta) > 255 ? 255 : ((color.G + delta) < 0 ? 0 : color.G + delta)),
+                (byte)((color.B + delta) > 255 ? 255 : ((color.B + delta) < 0 ? 0 : color.B + delta))
+            );
         }
 
     }
