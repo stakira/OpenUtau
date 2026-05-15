@@ -34,7 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
             
         }
         private string[] diphthongs = Array.Empty<string>();
-        private static string[] c_cR = { "n" };
+        private static string[] c_cR = Array.Empty<string>();
 
         protected override bool IsGroupKeyword(string rulePhoneme) {
             string baseGroup = rulePhoneme.Split(new[] { '!', '+' })[0];
@@ -244,6 +244,15 @@ namespace OpenUtau.Plugin.Builtin {
                                     DiphthongExceptions[df.from] = df.to;
                                 }
                             }
+                        }
+
+                        if (data?.symbols != null) {
+                            string[] targetTypes = { "nasal", "liquid", "semivowel", "fricative", "aspirate" };
+                            c_cR = data.symbols
+                                .Where(s => targetTypes.Contains(s.type?.ToLower()))
+                                .Select(s => s.symbol)
+                                .Distinct()
+                                .ToArray();
                         }
                         
                     } catch (Exception ex) {
