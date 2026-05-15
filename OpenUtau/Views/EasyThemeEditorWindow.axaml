@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" MinWidth="325" Width="325" Height="500"
+        mc:Ignorable="d" MinWidth="325" Width="325" Height="200"
         x:Class="OpenUtau.App.Views.EasyThemeEditorWindow" WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource easythemeeditor.title}"
@@ -11,16 +11,16 @@
     <ScrollViewer Grid.Row="0" Padding="10,0,10,0">
       <StackPanel Spacing="5">
         <Panel>
-          <TextBlock VerticalAlignment="Center" Text="IsDarkMode"/>
+          <TextBlock VerticalAlignment="Center" Text="{DynamicResource isdarkmode.title}"/>
           <ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding IsDarkModeEasy}"/>
         </Panel>
         <Separator Margin="0"/>
         <Panel>
-          <TextBlock VerticalAlignment="Center" Text="MainColorA"/>
+          <TextBlock VerticalAlignment="Center" Text="{DynamicResource easythemeeditor.maincolora}"/>
           <ColorPicker Color="{Binding MainColorA}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
         <Panel>
-          <TextBlock VerticalAlignment="Center" Text="MainColorB"/>
+          <TextBlock VerticalAlignment="Center" Text="{DynamicResource easythemeeditor.maincolorb}"/>
           <ColorPicker Color="{Binding MainColorB}" ColorSpectrumShape="Ring" HorizontalAlignment="Right"/>
         </Panel>
       </StackPanel>
