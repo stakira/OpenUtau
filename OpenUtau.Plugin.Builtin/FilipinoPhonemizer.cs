@@ -809,12 +809,10 @@ namespace OpenUtau.Plugin.Builtin {
                 { "cc1_mix", new string[] { "", " -", "-", " R", "_", "- ", "-" } },
             };
 
-            // Check if the given type exists in the aliasFormats dictionary
             if (!aliasFormats.ContainsKey(type) && !type.Contains("dynamic")) {
                 return alias;
             }
 
-            // Handle dynamic variations when type contains "dynamic"
             if (type.Contains("dynStart")) {
                 string consonant = "";
                 string vowel = "";
@@ -826,10 +824,7 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     consonant = alias;
                 }
-
-                // Handle the alias with space and without space
                 var dynamicVariations = new List<string> {
-                    // Variations with space, dash, and underscore
                     $"- {consonant}{vowel}",        // "- CV"
                     $"- {consonant} {vowel}",       // "- C V"
                     $"-{consonant} {vowel}",        // "-C V"
@@ -837,10 +832,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"-{consonant}_{vowel}",        // "-C_V"
                     $"- {consonant}_{vowel}",       // "- C_V"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation in dynamicVariations) {
-                    if (HasOto(variation, tone) || HasOto(ValidateAlias(variation), tone)) {
+                    if (HasOto(variation, tone)) {
                         return variation;
+                    } else if (HasOto(ValidateAlias(variation), tone)) {
+                        return ValidateAlias(variation);
                     }
                 }
             }
@@ -848,7 +845,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (type.Contains("dynMid")) {
                 string consonant = "";
                 string vowel = "";
-                // If the alias contains a space, split it into consonant and vowel
+
                 if (alias.Contains(" ")) {
                     var parts = alias.Split(' ');
                     consonant = parts[0];
@@ -861,10 +858,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"{consonant} {vowel}",    // "C V"
                     $"{consonant}_{vowel}",    // "C_V"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation1 in dynamicVariations1) {
-                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
+                    if (HasOto(variation1, tone)) {
                         return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
                     }
                 }
             }
@@ -872,7 +871,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (type.Contains("dynEnd")) {
                 string consonant = "";
                 string vowel = "";
-                // If the alias contains a space, split it into consonant and vowel
+
                 if (alias.Contains(" ")) {
                     var parts = alias.Split(' ');
                     consonant = parts[1];
@@ -886,10 +885,12 @@ namespace OpenUtau.Plugin.Builtin {
                     $"{vowel}{consonant}-",    // "VC-"
                     $"{vowel} {consonant} -",    // "V C -"
                 };
-                // Check each dynamically generated format
+
                 foreach (var variation1 in dynamicVariations1) {
-                    if (HasOto(variation1, tone) || HasOto(ValidateAlias(variation1), tone)) {
+                    if (HasOto(variation1, tone)) {
                         return variation1;
+                    } else if (HasOto(ValidateAlias(variation1), tone)) {
+                        return ValidateAlias(variation1);
                     }
                 }
             }
@@ -907,9 +908,11 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     aliasFormat = $"{format}{alias}";
                 }
-                // Check if the formatted alias exists
-                if (HasOto(aliasFormat, tone) || HasOto(ValidateAlias(aliasFormat), tone)) {
+
+                if (HasOto(aliasFormat, tone)) {
                     return aliasFormat;
+                } else if (HasOto(ValidateAlias(aliasFormat), tone)) {
+                    return ValidateAlias(aliasFormat);
                 }
             }
             return alias;
@@ -937,123 +940,23 @@ namespace OpenUtau.Plugin.Builtin {
             return base.ValidateAlias(alias);
         }
 
-        bool PhonemeIsPresent(string alias, string phoneme) {
-            if (string.IsNullOrEmpty(alias) || string.IsNullOrEmpty(phoneme))
-                return false;
+        // Endings has 50 ticks gap
+        protected override bool NoGap => true;
 
-            // Exact token match
-            if (alias == phoneme)
-                return true;
-
-            return alias.EndsWith(phoneme);
-        }
-
-        private bool PhonemeHasEndingSuffix(string alias, string phoneme) {
-            var escapedPhoneme = Regex.Escape(phoneme);
-            if (Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b\s*-") ||
-                Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b-")) {
-                return true;
-            }
-            if (Regex.IsMatch(alias, $@"\b{escapedPhoneme}\b R")) {
-                return true;
-            }
-            return false;
-        }
-
-        protected override double GetTransitionBasicLengthMs(string alias = "") {
-            //I wish these were automated instead :')
-            double transitionMultiplier = 1.0; // Default multiplier
-
-            var fricative_def = 2.3;
-            var aspirate_def = 1.3;
-            var semivowel_def = 1.2;
-            var liquid_def = 1.5;
-            var nasal_def = 1.5;
-            var stop_def = 1.8;
-            var tap_def = 0.5;
-            var affricate_def = 1.5;
-
-            var allConsonants = fricative.Concat(aspirate)
-                        .Concat(semivowel)
-                        .Concat(liquid)
-                        .Concat(nasal)
-                        .Concat(stop)
-                        .Concat(tap)
-                        .Concat(affricate)
-                        .Distinct(); // Ensure no duplicates
-
-            foreach (var c in allConsonants) {
-                if (PhonemeHasEndingSuffix(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            foreach (var v in vowels) {
-                if (alias.EndsWith("-")) {
-                    return base.GetTransitionBasicLengthMs() * 0.5;
-                }
-            }
-
-            // consonant timings
+        protected override double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
+            double otoLength = GetTransitionBasicLengthMsByOto(alias, tone, attr);
 
             var sortedOverrides = PhonemeOverrides.OrderByDescending(kv => kv.Key.Length);
             foreach (var kvp in sortedOverrides) {
-                var overridePhoneme = kvp.Key;
-                var overrideValue = kvp.Value;
-                if (PhonemeIsPresent(alias, overridePhoneme)) {
-                    return base.GetTransitionBasicLengthMs() * overrideValue;
+                var symbol = kvp.Key;
+                var value = kvp.Value;
+
+                if (Regex.IsMatch(alias, $@"(?<![a-zA-Z]){Regex.Escape(symbol)}(?![a-zA-Z])")) {
+                    return GetTransitionBasicLengthMsByConstant() * value;
                 }
             }
 
-            foreach (var c in fricative) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * fricative_def;
-                }
-            }
-
-            foreach (var c in aspirate) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * aspirate_def;
-                }
-            }
-
-            foreach (var c in semivowel) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * semivowel_def;
-                }
-            }
-
-            foreach (var c in liquid) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * liquid_def;
-                }
-            }
-            
-            foreach (var c in nasal) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * nasal_def;
-                }
-            }
-
-            foreach (var c in stop) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * stop_def;
-                }
-            }
-           
-            foreach (var c in tap) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * tap_def;
-                }
-            }
-
-            foreach (var c in affricate) {
-                if (PhonemeIsPresent(alias, c)) {
-                    return base.GetTransitionBasicLengthMs() * affricate_def;
-                }
-            }
-
-            return base.GetTransitionBasicLengthMs() * transitionMultiplier;
+            return otoLength;
         }
     }
 }

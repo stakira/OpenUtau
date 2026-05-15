@@ -68,6 +68,13 @@ namespace OpenUtau.Plugin.Builtin {
             if (original == null) {
                 return null;
             }
+
+            for (int i = 0; i < original.Length; i++) {
+                if (dictionaryReplacements.TryGetValue(original[i], out string replaced)) {
+                    original[i] = replaced;
+                }
+            }
+            
             List<string> finalProcessedPhonemes = new List<string>();
             foreach (string s in original) {
                 switch (s) {
@@ -84,10 +91,6 @@ namespace OpenUtau.Plugin.Builtin {
             // If the original phoneme has an OTO, use it directly.
             if (HasOto(phoneme, tone) || HasOto(ValidateAlias(phoneme), tone)) {
                 return phoneme;
-            }
-            // Otherwise, try to apply the dictionary replacement.
-            if (dictionaryReplacements.TryGetValue(phoneme, out var replaced)) {
-                return replaced;
             }
             return phoneme;
         }
@@ -477,8 +480,12 @@ namespace OpenUtau.Plugin.Builtin {
             return base.ValidateAlias(alias);
         }
 
-        protected override double GetTransitionBasicLengthMs(string alias = "") {
-            return base.GetTransitionBasicLengthMs();
+        protected override bool NoGap => true;
+
+        protected override double GetTransitionBasicLengthMs(string alias, int tone, PhonemeAttributes attr) {
+            double otoLength = GetTransitionBasicLengthMsByOto(alias, tone, attr);
+
+            return otoLength;
         }
     }
 }
