@@ -221,6 +221,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="exps.trackdefault">Track Default</system:String>
   <system:String x:Key="exps.type">Type</system:String>
   <system:String x:Key="exps.type.curve">Curve</system:String>
+  <system:String x:Key="exps.type.morphingcurve">Morphing Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
   <system:String x:Key="exps.type.options">Options</system:String>
 
@@ -639,6 +640,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
   <system:String x:Key="prefs.utau">UTAU</system:String>
+  <system:String x:Key="prefs.advanced.phraselevelmorphing">Phrase Level Morphing</system:String>
+  <system:String x:Key="prefs.advanced.phasemorphing">Phase-locked Morphing</system:String>
 
   <system:String x:Key="progress.cachecleared">Cache cleared.</system:String>
   <system:String x:Key="progress.clearingcache">Clearing cache...</system:String>

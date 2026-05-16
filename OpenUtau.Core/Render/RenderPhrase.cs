@@ -418,7 +418,7 @@ namespace OpenUtau.Core.Render {
             var curves = new List<Tuple<string, float[]>>();
 
             foreach(var descriptor in project.expressions.Values) {
-                if(descriptor.type != UExpressionType.Curve) {
+                if(descriptor.type != UExpressionType.Curve && descriptor.type != UExpressionType.MorphingCurve) {
                     continue;
                 }
                 var curve = part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);

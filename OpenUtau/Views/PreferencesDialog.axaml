@@ -299,6 +299,14 @@
             <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
                     HorizontalAlignment="Stretch" Click="SelectSetParamPath"/>
           </Grid>
+          <Grid>
+            <TextBlock Text="{DynamicResource prefs.advanced.phasemorphing}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding PhaseLocked}" />
+          </Grid>
+          <Grid>
+            <TextBlock Text="{DynamicResource prefs.advanced.phraselevelmorphing}" HorizontalAlignment="Left" />
+            <ToggleSwitch IsChecked="{Binding PhraseLevelMorphing}" />
+          </Grid>
         </StackPanel>
 
         <!-- DiffSinger -->

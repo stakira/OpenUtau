@@ -250,6 +250,8 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = false;
+            public bool PhraseLevelMorphing = false;
+            public bool PhaseLocked = true;
 
             // Legacy
             [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
