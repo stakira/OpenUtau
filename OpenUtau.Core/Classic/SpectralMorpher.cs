@@ -7,7 +7,7 @@ using OpenUtau.Core.Util;
 namespace OpenUtau.Core.Render {
     public static class SpectralMorpher {
         private const int N_FFT = 2048;
-        private const int HOP_LENGTH = 512;
+        private const int HOP_LENGTH = 256;
 
         public static float[] MorphN(float[] baseAudio, List<float[]> colorAudios, List<float[]> colorCurves, int sampleRate = 44100) {
             double[] window = new double[N_FFT];
@@ -44,13 +44,14 @@ namespace OpenUtau.Core.Render {
                 if (usePhaseLocked) {
                     // Phase-Locked (Stable volume, better for smooth vowels)
                     for (int bin = 0; bin < N_FFT; bin++) {
-                        double targetMag = baseWeight * stftBase[i][bin].Magnitude;
-
+                        double targetLogMag = baseWeight * Math.Log(Math.Max(1e-8, stftBase[i][bin].Magnitude));
+                        
                         for (int c = 0; c < numColors; c++) {
                             var frameColor = (i < stftColors[c].Length) ? stftColors[c][i] : stftBase[i];
-                            targetMag += weights[c] * frameColor[bin].Magnitude;
+                            targetLogMag += weights[c] * Math.Log(Math.Max(1e-8, frameColor[bin].Magnitude));
                         }
-
+                        
+                        double targetMag = Math.Exp(targetLogMag);
                         stftMorphed[i][bin] = Complex.FromPolarCoordinates(targetMag, stftBase[i][bin].Phase);
                     }
                 } else {
