@@ -150,6 +150,10 @@ namespace OpenUtau.Classic {
                             if (!File.Exists(item.outputFile)) {
                                 if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                                 lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                                if (!File.Exists(item.outputFile)) {
+                                    DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                }
                                 if (!(item.resampler is WorldlineResampler)) {
                                     VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                                     try { 
@@ -209,6 +213,10 @@ namespace OpenUtau.Classic {
                         if (!File.Exists(item.outputFile)) {
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                             lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                            if (!File.Exists(item.outputFile)) {
+                                DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                            }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
                         progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{item.phone.phoneme}\"");
@@ -305,6 +313,10 @@ namespace OpenUtau.Classic {
                             if (!File.Exists(item.outputFile)) {
                                 if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                                 lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                                if (!File.Exists(item.outputFile)) {
+                                    DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                }
                                 if (!(item.resampler is WorldlineResampler)) {
                                     VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                                     try { 
@@ -526,6 +538,10 @@ namespace OpenUtau.Classic {
                         if (!File.Exists(item.outputFile)) {
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                             if(!item.phone.direct) lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                            if (!File.Exists(item.outputFile)) {
+                                DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                            }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
                         progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{phone.phoneme}\"");
@@ -674,6 +690,10 @@ namespace OpenUtau.Classic {
                         if (!File.Exists(item.outputFile)) {
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                             if(!item.phone.direct) lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
+                            if (!File.Exists(item.outputFile)) {
+                                DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                            }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
                         progress.Complete(1, $"Track {trackNo + 1}: {phrase.wavtool} \"{phone.phoneme}\"");
@@ -788,6 +808,10 @@ namespace OpenUtau.Classic {
                 baseItem.flags = new[] { Tuple.Create(tempFlag, (int?)null, (string)null) };
                 baseItem.outputFile = tempOutputPath;
                 lock (Renderers.GetCacheLock(tempOutputPath)) baseItem.resampler.DoResamplerReturnsFile(baseItem, Log.Logger);
+                if (!File.Exists(tempOutputPath)) {
+                    DocManager.Inst.Project.timeAxis.TickPosToBarBeat(baseItem.phrase.position + baseItem.phone.position, out int bar, out int beat, out int tick);
+                    throw new InvalidDataException($"{baseItem.resampler} failed to resample \"{baseItem.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                }
             } finally { 
                 baseItem.flags = originalFlags; 
                 baseItem.outputFile = originalOutput; 
