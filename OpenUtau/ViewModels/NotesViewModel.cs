@@ -168,7 +168,7 @@ namespace OpenUtau.App.ViewModels {
                             ExpTrackHeight = t.Item1.Height / descriptor.options.Length;
                             ExpShadowOpacity = 0;
                         }
-                        ShowCurveToolbox = descriptor.type == UExpressionType.Curve;
+                        ShowCurveToolbox = descriptor.type == UExpressionType.Curve || descriptor.type == UExpressionType.MorphingCurve;
                     } else {
                         ExpTrackHeight = 0;
                         ExpShadowOpacity = 0.3;

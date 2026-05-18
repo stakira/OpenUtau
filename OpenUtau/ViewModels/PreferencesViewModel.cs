@@ -110,6 +110,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public string SetParamPath => Preferences.Default.SetParamPath;
+        [Reactive] public bool PhraseLevelMorphing { get; set; }
+        [Reactive] public bool PhaseLocked { get; set; }
 
         // Diffsinger
         public List<int> DiffSingerStepsOptions { get; } = new List<int> { 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
@@ -121,7 +123,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double DiffSingerDepth { get; set; }
         [Reactive] public bool DiffSingerTensorCache { get; set; }
         [Reactive] public bool DiffSingerLangCodeHide { get; set; }
-
         // Advanced
         [Reactive] public bool RememberMid { get; set; }
         [Reactive] public bool RememberUst { get; set; }
@@ -191,6 +192,8 @@ namespace OpenUtau.App.ViewModels {
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
             ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
+            PhraseLevelMorphing = Preferences.Default.PhraseLevelMorphing;
+            PhaseLocked = Preferences.Default.PhaseLocked;
 
             MessageBus.Current.Listen<ThemeEditorStateChangedEvent>()
                 .Subscribe(_ => this.RaisePropertyChanged(nameof(IsThemeEditorOpen)));
@@ -401,6 +404,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.SkipRenderingMutedTracks)
                 .Subscribe(skipRenderingMutedTracks => {
                     Preferences.Default.SkipRenderingMutedTracks = skipRenderingMutedTracks;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PhraseLevelMorphing)
+                .Subscribe(index => {
+                    Preferences.Default.PhraseLevelMorphing = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PhaseLocked)
+                .Subscribe(index => {
+                    Preferences.Default.PhaseLocked = index;
                     Preferences.Save();
                 });
         }
