@@ -40,8 +40,7 @@ namespace OpenUtau.Core.Util {
         }
 
         public static string GetOctaveNum(int noteNum) {
-            NameInOctave.TryGetValue(KeysInOctave[noteNum % 12].ToString(), out int num);
-            return noteNum < 0 ? string.Empty : num.ToString();
+            return noteNum < 0 ? string.Empty : (noteNum / 12 - 1).ToString();
         }
 
         //return -1 if error
