@@ -152,7 +152,7 @@ namespace OpenUtau.Classic {
                                 lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                                 if (!File.Exists(item.outputFile)) {
                                     DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{itemOtos[item].Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                                 }
                                 if (!(item.resampler is WorldlineResampler)) {
                                     VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
@@ -166,7 +166,8 @@ namespace OpenUtau.Classic {
                             }
                             otoField.SetValue(item.phone, baseOtos[item.phone]); 
                         }
-                        if (Interlocked.Increment(ref completed) % itemsPerPhone == 0) progress.Complete(1, $"Track {trackNo + 1}: Morph: {item.resampler} \"{item.phone.phoneme}\"");
+                        // 🌟 OUTPUT ALIAS: Show the exact target color alias in the progress bar
+                        if (Interlocked.Increment(ref completed) % itemsPerPhone == 0) progress.Complete(1, $"Track {trackNo + 1}: Morph: {item.resampler} \"{itemOtos[item].Alias}\"");
                     });
 
                     foreach (var item in itemsBase) otoField.SetValue(item.phone, itemOtos[item]);
@@ -215,11 +216,11 @@ namespace OpenUtau.Classic {
                             lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                             if (!File.Exists(item.outputFile)) {
                                 DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.oto.Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                             }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{item.phone.phoneme}\"");
+                        progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{item.phone.oto.Alias}\"");
                     });
                     result.samples = wavtool.Concatenate(standardItems, string.Empty, cancellation);
                 }
@@ -315,7 +316,7 @@ namespace OpenUtau.Classic {
                                 lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                                 if (!File.Exists(item.outputFile)) {
                                     DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                    throw new InvalidDataException($"{item.resampler} failed to resample \"{itemOtos[item].Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                                 }
                                 if (!(item.resampler is WorldlineResampler)) {
                                     VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
@@ -329,7 +330,8 @@ namespace OpenUtau.Classic {
                             }
                             otoField.SetValue(item.phone, baseOtos[item.phone]); 
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {phrase.wavtool} \"{item.phone.phoneme}\"");
+                        // 🌟 OUTPUT ALIAS
+                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {phrase.wavtool} \"{itemOtos[item].Alias}\"");
                     });
 
                     string wavPathBase = wavPath.Replace(".wav", $"_base_{baseHash:X}.wav");
@@ -462,6 +464,7 @@ namespace OpenUtau.Classic {
 
                         if (!File.Exists(masterMorphPath)) {
                             string fileBase = masterMorphPath + ".base.wav";
+                            progress.Complete(0, $"Track {trackNo + 1}: Morph: {itemBase.resampler} \"{baseOtos[phone].Alias}\"");
                             RunResamplerWithFlag(itemBase, staticFlags + baseFlag, fileBase);
 
                             var colorFiles = new List<string>();
@@ -479,7 +482,7 @@ namespace OpenUtau.Classic {
                                 tItem.flags = new[] { Tuple.Create(staticFlags + tracks[i].Flag, (int?)null, (string)null) };
                                 tItem.inputTemp = tItem.inputTemp.Replace(".wav", $"_hij_{tracks[i].Hash:X}.wav");
                                 if (targetOto != baseOtos[phone]) tItem.inputFile = targetOto.File;
-                                
+                                progress.Complete(0, $"Track {trackNo + 1}: Morph: {tItem.resampler} \"{targetOto.Alias}\"");
                                 RunResamplerWithFlag(tItem, staticFlags + tracks[i].Flag, fileTrk);
                             }
                             otoField.SetValue(phone, baseOtos[phone]);
@@ -509,7 +512,7 @@ namespace OpenUtau.Classic {
                                 } catch { }
                             }
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {itemBase.resampler} \"{phone.phoneme}\"");
+                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {itemBase.resampler} \"{phone.oto.Alias}\"");
                     } else {
                         otoField.SetValue(phone, baseOtos[phone]);
                         var item = new ResamplerItem(phrase, phone);
@@ -540,11 +543,11 @@ namespace OpenUtau.Classic {
                             if(!item.phone.direct) lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                             if (!File.Exists(item.outputFile)) {
                                 DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.oto.Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                             }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{phone.phoneme}\"");
+                        progress.Complete(1, $"Track {trackNo + 1}: {item.resampler} \"{phone.oto.Alias}\"");
                     }
                 });
 
@@ -611,6 +614,7 @@ namespace OpenUtau.Classic {
 
                         if (!File.Exists(masterMorphPath)) {
                             string fileBase = masterMorphPath + ".base.wav";
+                            progress.Complete(0, $"Track {trackNo + 1}: Morph: {itemBase.resampler} \"{baseOtos[phone].Alias}\"");
                             RunResamplerWithFlag(itemBase, staticFlags + baseFlag, fileBase);
 
                             var colorFiles = new List<string>();
@@ -628,7 +632,7 @@ namespace OpenUtau.Classic {
                                 tItem.flags = new[] { Tuple.Create(staticFlags + tracks[i].Flag, (int?)null, (string)null) };
                                 tItem.inputTemp = tItem.inputTemp.Replace(".wav", $"_hij_{tracks[i].Hash:X}.wav");
                                 if (targetOto != baseOtos[phone]) tItem.inputFile = targetOto.File;
-                                
+                                progress.Complete(0, $"Track {trackNo + 1}: Morph: {tItem.resampler} \"{targetOto.Alias}\"");
                                 RunResamplerWithFlag(tItem, staticFlags + tracks[i].Flag, fileTrk);
                             }
                             otoField.SetValue(phone, baseOtos[phone]);
@@ -645,7 +649,6 @@ namespace OpenUtau.Classic {
                                 WriteFloatsToWav(SpectralMorpher.MorphN(baseSamples, colorAudios, colorCurves, 44100), masterMorphPath);
 
                                 try {
-                                    try {
                                     if (File.Exists(fileBase)) { 
                                         File.Delete(fileBase); 
                                         CleanUpMetaFiles(fileBase); 
@@ -657,11 +660,9 @@ namespace OpenUtau.Classic {
                                         } 
                                     }
                                 } catch { }
-                                    foreach (var f in colorFiles) if (File.Exists(f)) File.Delete(f);
-                                } catch { }
                             }
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {phrase.wavtool} \"{phone.phoneme}\"");
+                        progress.Complete(1, $"Track {trackNo + 1}: Morph: {phrase.wavtool} \"{phone.oto.Alias}\"");
                     } else {
                         otoField.SetValue(phone, baseOtos[phone]);
                         var item = new ResamplerItem(phrase, phone);
@@ -692,11 +693,11 @@ namespace OpenUtau.Classic {
                             if(!item.phone.direct) lock (Renderers.GetCacheLock(item.outputFile)) item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                             if (!File.Exists(item.outputFile)) {
                                 DocManager.Inst.Project.timeAxis.TickPosToBarBeat(item.phrase.position + item.phone.position, out int bar, out int beat, out int tick);
-                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                                throw new InvalidDataException($"{item.resampler} failed to resample \"{item.phone.oto.Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                             }
                             if (!(item.resampler is WorldlineResampler)) VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                         }
-                        progress.Complete(1, $"Track {trackNo + 1}: {phrase.wavtool} \"{phone.phoneme}\"");
+                        progress.Complete(1, $"Track {trackNo + 1}: {phrase.wavtool} \"{phone.oto.Alias}\"");
                     }
                 });
 
@@ -810,7 +811,7 @@ namespace OpenUtau.Classic {
                 lock (Renderers.GetCacheLock(tempOutputPath)) baseItem.resampler.DoResamplerReturnsFile(baseItem, Log.Logger);
                 if (!File.Exists(tempOutputPath)) {
                     DocManager.Inst.Project.timeAxis.TickPosToBarBeat(baseItem.phrase.position + baseItem.phone.position, out int bar, out int beat, out int tick);
-                    throw new InvalidDataException($"{baseItem.resampler} failed to resample \"{baseItem.phone.phoneme}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
+                    throw new InvalidDataException($"{baseItem.resampler} failed to resample \"{baseItem.phone.oto.Alias}\" at {bar}:{beat}.{string.Format("{0:000}", tick)}");
                 }
             } finally { 
                 baseItem.flags = originalFlags; 

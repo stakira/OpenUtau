@@ -44,14 +44,13 @@ namespace OpenUtau.Core.Render {
                 if (usePhaseLocked) {
                     // Phase-Locked (Stable volume, better for smooth vowels)
                     for (int bin = 0; bin < N_FFT; bin++) {
-                        double targetLogMag = baseWeight * Math.Log(Math.Max(1e-8, stftBase[i][bin].Magnitude));
-                        
+                        double targetMag = baseWeight * stftBase[i][bin].Magnitude;
+
                         for (int c = 0; c < numColors; c++) {
                             var frameColor = (i < stftColors[c].Length) ? stftColors[c][i] : stftBase[i];
-                            targetLogMag += weights[c] * Math.Log(Math.Max(1e-8, frameColor[bin].Magnitude));
+                            targetMag += weights[c] * frameColor[bin].Magnitude;
                         }
-                        
-                        double targetMag = Math.Exp(targetLogMag);
+
                         stftMorphed[i][bin] = Complex.FromPolarCoordinates(targetMag, stftBase[i][bin].Phase);
                     }
                 } else {
