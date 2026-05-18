@@ -12,6 +12,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtau.Core.Format;
 using Serilog;
+using System.Collections.Concurrent;
 
 namespace OpenUtau.Core {
     public class SineGenerator : ISampleProvider {
@@ -167,6 +168,8 @@ namespace OpenUtau.Core {
     }
 
     public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
+        public ConcurrentDictionary<string, (int trackNo, double posMs, float[] samples, DateTime renderTime)> LiveWaveformCache = new ConcurrentDictionary<string, (int, double, float[], DateTime)>();
+
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
             try {
@@ -285,7 +288,7 @@ namespace OpenUtau.Core {
         private void Render(UProject project, int tick, int endTick, int trackNo) {
             Task.Run(() => {
                 try {
-                    OpenUtau.Classic.ClassicRenderer.LiveWaveformCache.Clear();
+                    LiveWaveformCache.Clear();
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
                     faders = result.Item2;
@@ -402,6 +405,7 @@ namespace OpenUtau.Core {
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
                 renderCancellation?.Cancel();
+                LiveWaveformCache.Clear();
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {
