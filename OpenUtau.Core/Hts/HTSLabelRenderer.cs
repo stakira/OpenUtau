@@ -59,17 +59,7 @@ namespace OpenUtau.Core.Hts {
         protected string monoTimingPath = string.Empty;
         protected string fullTimingPath = string.Empty;
 
-        public virtual void SetUp() {
-            phoneDict.Clear();
-            lang = "JPN";//TODO: use singer.language
-            // Lyrics often handled in OpenUtau
-            phoneDict.Add("R", new string[] { "pau" });
-            phoneDict.Add("-", new string[] { "pau" });
-            phoneDict.Add("SP", new string[] { "pau" });
-            phoneDict.Add("AP", new string[] { "br" });
-            LoadDict(monoScorePath, Encoding.UTF8);
-            g2p = LoadG2p();
-        }
+        public abstract void SetUp();
 
         protected virtual void LoadDict(string path, Encoding encoding) {
             if (path.EndsWith(".conf")) {
