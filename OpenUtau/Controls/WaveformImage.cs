@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using ReactiveUI;
 using Serilog;
 
@@ -93,10 +94,10 @@ namespace OpenUtau.App.Controls {
                         bool needsAnotherFrame = false;
                         Array.Clear(sampleData, 0, sampleData.Length);
                         
-                        if (part.Mix != null && !OpenUtau.Core.PlaybackManager.Inst.StartingToPlay) {
+                        if (part.Mix != null && !PlaybackManager.Inst.StartingToPlay) {
                             part.Mix.Mix(samplePos, sampleData, 0, sampleCount);
                         } else {
-                            foreach (var cacheItem in OpenUtau.Classic.ClassicRenderer.LiveWaveformCache.Values) {
+                            foreach (var cacheItem in PlaybackManager.Inst.LiveWaveformCache.Values) {
                                 if (cacheItem.trackNo != part.trackNo) continue;
                                 double phraseStartMs = cacheItem.posMs;
                                 float[] phraseSamples = cacheItem.samples;
@@ -120,7 +121,7 @@ namespace OpenUtau.App.Controls {
                             }
                         }
 
-                        bool isRendering = OpenUtau.Core.PlaybackManager.Inst.StartingToPlay;
+                        bool isRendering = PlaybackManager.Inst.StartingToPlay;
                         if (wasRendering && !isRendering) {
                             mixUnlockTime = DateTime.Now;
                         }
