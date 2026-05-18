@@ -994,6 +994,10 @@ namespace OpenUtau.App.ViewModels {
                 var phrases = Part.renderPhrases.Where(phrase => selectedNotes.Any(note => phrase.notes.Any(rnote => rnote.position == Part.position + note.position - phrase.position && rnote.duration == note.duration)));
                 phrases.ForEach(phrase => phrase.DeleteCacheFiles());
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
+                foreach (var phrase in phrases) {
+                    PlaybackManager.Inst.LiveWaveformCache.TryRemove(phrase.hash.ToString(), out _);
+                }
+                DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
             }
         }
 

@@ -94,11 +94,13 @@ namespace OpenUtau.App.Controls {
                         bool needsAnotherFrame = false;
                         Array.Clear(sampleData, 0, sampleData.Length);
                         
-                        if (part.Mix != null && !PlaybackManager.Inst.StartingToPlay) {
-                            part.Mix.Mix(samplePos, sampleData, 0, sampleCount);
-                        } else {
+                        /*if (OpenUtau.Core.PlaybackManager.Inst.StartingToPlay || 
+                            OpenUtau.Core.PlaybackManager.Inst.IsWaveformBlanked || 
+                            part.Mix == null) 
+                        {*/
                             foreach (var cacheItem in PlaybackManager.Inst.LiveWaveformCache.Values) {
                                 if (cacheItem.trackNo != part.trackNo) continue;
+                                
                                 double phraseStartMs = cacheItem.posMs;
                                 float[] phraseSamples = cacheItem.samples;
                                 int phraseStartSampleIdx = (int)((phraseStartMs - leftMs) * 44100 / 1000);
@@ -110,8 +112,10 @@ namespace OpenUtau.App.Controls {
                                 
                                 float ease = 1.0f - (float)Math.Pow(1.0 - animProgress, 3);
                                 float visualScale = 1.0f * ease; 
+                                
                                 int startJ = Math.Max(0, -phraseStartSampleIdx);
                                 int endJ = Math.Min(phraseSamples.Length, (sampleCount / 2) - phraseStartSampleIdx);
+                                
                                 for (int j = startJ; j < endJ; j++) {
                                     int targetIdx = (phraseStartSampleIdx + j) * 2; 
                                     float scaledSample = phraseSamples[j] * visualScale;
@@ -119,7 +123,11 @@ namespace OpenUtau.App.Controls {
                                     sampleData[targetIdx + 1] += scaledSample; 
                                 }
                             }
-                        }
+                        //} 
+                        //todo: make part.Mix dynamic since it's persistent in the memory
+                        /*else {
+                            part.Mix.Mix(samplePos, sampleData, 0, sampleCount);
+                        }*/
 
                         bool isRendering = PlaybackManager.Inst.StartingToPlay;
                         if (wasRendering && !isRendering) {

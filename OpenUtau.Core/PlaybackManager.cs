@@ -169,7 +169,7 @@ namespace OpenUtau.Core {
 
     public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
         public ConcurrentDictionary<string, (int trackNo, double posMs, float[] samples, DateTime renderTime)> LiveWaveformCache = new ConcurrentDictionary<string, (int, double, float[], DateTime)>();
-
+        public bool IsWaveformBlanked { get; set; } = false;
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
             try {
@@ -289,6 +289,8 @@ namespace OpenUtau.Core {
             Task.Run(() => {
                 try {
                     LiveWaveformCache.Clear();
+                    IsWaveformBlanked = false;
+                    DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
                     faders = result.Item2;
@@ -406,6 +408,7 @@ namespace OpenUtau.Core {
                 StopPlayback();
                 renderCancellation?.Cancel();
                 LiveWaveformCache.Clear();
+                DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {
