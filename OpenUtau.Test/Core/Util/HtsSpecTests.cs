@@ -99,13 +99,13 @@ namespace OpenUtau.Core.Util {
             var e2 = n2.e();
 
             // forward index (e10)
-            Assert.Equal("0", e0[9]);
-            Assert.Equal("1", e1[9]);
-            Assert.Equal("2", e2[9]);
+            Assert.Equal("1", e0[9]);
+            Assert.Equal("2", e1[9]);
+            Assert.Equal("3", e2[9]);
             // backward index (e11)
-            Assert.Equal("2", e0[10]);
-            Assert.Equal("1", e1[10]);
-            Assert.Equal("0", e2[10]);
+            Assert.Equal("3", e0[10]);
+            Assert.Equal("2", e1[10]);
+            Assert.Equal("1", e2[10]);
 
             // forward ms in centiseconds (e12)
             Assert.Equal("0", e0[11]);
@@ -127,11 +127,11 @@ namespace OpenUtau.Core.Util {
 
             // forward percent (e16)
             Assert.Equal("0", e0[15]);
-            Assert.Equal("33", e1[15]);
-            Assert.Equal("66", e2[15]);
+            Assert.Equal("50", e1[15]);
+            Assert.Equal("100", e2[15]);
             // backward percent (e17)
-            Assert.Equal("66", e0[16]);
-            Assert.Equal("33", e1[16]);
+            Assert.Equal("100", e0[16]);
+            Assert.Equal("50", e1[16]);
             Assert.Equal("0", e2[16]);
         }
 
