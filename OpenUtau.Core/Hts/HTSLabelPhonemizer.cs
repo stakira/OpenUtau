@@ -54,8 +54,7 @@ namespace OpenUtau.Core.Hts {
             string rootPath;
             if (File.Exists(Path.Join(singer.Location, "enunux", "enuconfig.yaml"))) {
                 rootPath = Path.Combine(singer.Location, "enunux");
-            }
-            if (File.Exists(Path.Join(singer.Location, "enuconfig.yaml"))) {
+            }else if (File.Exists(Path.Join(singer.Location, "enuconfig.yaml"))) {
                 rootPath = Path.Combine(singer.Location, "enunux");
             } else {
                 rootPath = singer.Location;
@@ -63,7 +62,7 @@ namespace OpenUtau.Core.Hts {
             //Load g2p from enunux.yaml
             //g2p dict should be load after enunu dict
             try {
-                g2p = LoadG2p(singer.Location);
+                g2p = LoadG2p(rootPath);
             } catch (Exception e) {
                 Log.Error(e, "failed to load g2p dictionary");
                 return;
@@ -176,7 +175,7 @@ namespace OpenUtau.Core.Hts {
                 if (existSymbol) {
                     splitFlag = false;
                     continue;
-                } else if (existSymbol && !splitFlag) {
+                } else if (!existSymbol && !splitFlag) {
                     splitFlag = true;
                     continue;
                 }
@@ -659,17 +658,20 @@ namespace OpenUtau.Core.Hts {
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
-            if (!partResult.TryGetValue(notes[0].position, out var phonemes)) {
-                throw new Exception("error");
+            if (partResult.TryGetValue(notes[0].position, out var phonemes)) {
+                return new Result {
+                    phonemes = phonemes
+                        .Select((tu) => new Phoneme() {
+                            phoneme = tu.Item1,
+                            position = tu.Item2,
+                        })
+                        .ToArray(),
+                };
             }
-            return new Result {
-                phonemes = phonemes
-                    .Select((tu) => new Phoneme() {
-                        phoneme = tu.Item1,
-                        position = tu.Item2,
-                    })
-                    .ToArray(),
-            };
+            if (SetUpException != null) {
+                throw new Exception("Phonemizer failed to process.", SetUpException);
+            }
+            throw new Exception("Part result not found");
         }
     }
 }
