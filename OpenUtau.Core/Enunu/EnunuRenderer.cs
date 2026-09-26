@@ -17,6 +17,10 @@ namespace OpenUtau.Core.Enunu {
     public class EnunuRenderer : IRenderer {
         public const int headTicks = 240;
         public const int tailTicks = 240;
+        /// <summary>
+        /// Rests shorter than this (half a beat) do not split phrases (see <see cref="ShouldMergePhrases"/>).
+        /// </summary>
+        const int mergeGapTicks = 240;
         protected string port;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -63,6 +67,17 @@ namespace OpenUtau.Core.Enunu {
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
+        }
+
+        /// <summary>
+        /// Keeps phrases together when the rest between them is shorter than mergeGapTicks, so short
+        /// rests do not cut the song into short phrases. The acoustic model's GV post-filter scales the
+        /// spectrum by the variance within the phrase, and short phrases come out over-emphasized.
+        /// Merging across longer rests made phrases too long to re-render quickly. The rests inside a
+        /// merged phrase are written to the UST as "R" notes.
+        /// </summary>
+        public bool ShouldMergePhrases(UProject project, UTrack track, UPhoneme prev, UPhoneme next) {
+            return prev != null && next != null && next.position - prev.End < mergeGapTicks;
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
@@ -245,7 +260,16 @@ namespace OpenUtau.Core.Enunu {
                 length = headTicks,
                 noteNum = phrase.phones[0].tone,
             });
-            foreach (var phone in phrase.phones) {
+            for (int p = 0; p < phrase.phones.Length; p++) {
+                var phone = phrase.phones[p];
+                // Merged phrases (ShouldMergePhrases) have rests between their phonemes.
+                if (p > 0 && phone.position > phrase.phones[p - 1].end) {
+                    notes.Add(new EnunuNote {
+                        lyric = "R",
+                        length = phone.position - phrase.phones[p - 1].end,
+                        noteNum = phrase.phones[p - 1].tone,
+                    });
+                }
                 string timbre = string.Empty;
                 string result = string.Empty;
                 if (!string.IsNullOrEmpty(phone.suffix)) {
@@ -324,6 +348,9 @@ namespace OpenUtau.Core.Enunu {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(phrase.preEffectHash);
                     foreach (var phone in phrase.phones) {
+                        // The phone hash has no position: without it, merged phrases that differ
+                        // only in the length of a rest would share the UST.
+                        writer.Write(phone.position);
                         writer.Write(phone.toneShift);
                         writer.Write(phone.velocity);
                     }
