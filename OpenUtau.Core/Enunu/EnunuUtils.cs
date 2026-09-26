@@ -1,14 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using OpenUtau.Core.Ustx;
-using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     public struct VersionResult {
         public string name;
         public string version;
         public string author;
+        /// <summary>Added by ENUNUServer 1.0. Null on older servers.</summary>
+        public EnunuServerFeatures? features;
+    }
+
+    public class EnunuServerFeatures {
+        public string[] commands;
+        public bool style_shift;
+        public bool pitch_n_frames;
+        public Dictionary<string, EnunuDiffusionSetting>? diffusion;
+
+        public bool Has(string command) => commands != null && commands.Contains(command);
+        public bool SupportsPitch => Has(EnunuCommand.Pitch) && Has(EnunuCommand.AcousticF0);
+    }
+
+    public class EnunuDiffusionSetting {
+        public string method;
+        public int steps;
     }
 
     public struct VersionResponse {
@@ -49,22 +66,15 @@ namespace OpenUtau.Core.Enunu {
                     writer.WriteLine($"Length={notes[i].length}");
                     writer.WriteLine($"NoteNum={notes[i].noteNum}");
                     writer.WriteLine($"Velocity={notes[i].velocity}");
+                    string flags = "Flags=";
                     if (!string.IsNullOrEmpty(notes[i].timbre)) {
-                        writer.WriteLine($"Flags={notes[i].timbre}S{notes[i].style_shift}");
+                        flags += notes[i].timbre;
                     }
+                    flags += notes[i].style_shift != 0 ? $"S{notes[i].style_shift}" : "";
+                    writer.WriteLine(flags);
                 }
                 writer.WriteLine("[#TRACKEND]");
             }
-        }
-
-        internal static string SetPortNum() {
-             var ver_response = EnunuClient.Inst.SendRequest<VersionResponse>(new string[] { "ver_check" }, "15556", 1);
-             if (ver_response.error != null) {
-                 Log.Error(ver_response.error);
-             } else if (ver_response.result.name != null) {
-                 return "15556";
-             }
-            return "15555";
         }
     }
 }
