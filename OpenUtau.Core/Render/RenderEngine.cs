@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -322,6 +322,21 @@ namespace OpenUtau.Core.Render {
             return requests;
         }
 
+        // A superseded playback/pre-render is expected to cancel its renderer.
+        // Task.Wait wraps that cancellation in AggregateException and would make
+        // the fault continuation stop the newer playback and display an error.
+        internal static RenderResult? WaitForRenderer(Task<RenderResult> task, CancellationTokenSource cancellation) {
+            try {
+                return task.GetAwaiter().GetResult();
+            } catch (OperationCanceledException) when (cancellation.IsCancellationRequested) {
+                return null;
+            } catch (AggregateException e) when (cancellation.IsCancellationRequested
+                    && e.Flatten().InnerExceptions.Count > 0
+                    && e.Flatten().InnerExceptions.All(inner => inner is OperationCanceledException)) {
+                return null;
+            }
+        }
+
         private void RenderRequests(
             RenderPartRequest[] requests,
             CancellationTokenSource cancellation,
@@ -367,30 +382,30 @@ namespace OpenUtau.Core.Render {
                 bool useXsy = phrase.xsy != null && phrase.xsy.Any(x => x > 0);
                 if (!useXsy) {
                     var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true, renderEvents);
-                    task.Wait();
-                    if (cancellation.IsCancellationRequested) {
+                    var result = WaitForRenderer(task, cancellation);
+                    if (result == null || cancellation.IsCancellationRequested) {
                         break;
                     }
-                    planner.RegisterPcm(request.part, phrase.hash, tuple.offsetMs, tuple.estimatedLengthMs, 1, task.Result.samples);
+                    planner.RegisterPcm(request.part, phrase.hash, tuple.offsetMs, tuple.estimatedLengthMs, 1, result.samples);
                 } else {
                     string xsyKey = $"{phrase.hash:x16}|" +
                         string.Join(",", phrase.phones.Select(p => $"{p.oto2?.Set}:{p.oto2?.Alias}"));
                     if (!XsyBlendCache.TryGetValue(xsyKey, out var blended)) {
                         var taskA = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true, renderEvents);
-                        taskA.Wait();
-                        if (cancellation.IsCancellationRequested) {
+                        var resultA = WaitForRenderer(taskA, cancellation);
+                        if (resultA == null || cancellation.IsCancellationRequested) {
                             break;
                         }
-                        float[] samplesA = taskA.Result.samples;
+                        float[] samplesA = resultA.samples;
                         // The secondary render runs on a separate phrase with oto2
                         // substituted, so the live phrase is never mutated.
                         var variant = RenderPhrase.BuildXsyVariant(phrase);
                         var taskB = phrase.renderer.Render(variant, progress, request.trackNo, cancellation, true);
-                        taskB.Wait();
-                        if (cancellation.IsCancellationRequested) {
+                        var resultB = WaitForRenderer(taskB, cancellation);
+                        if (resultB == null || cancellation.IsCancellationRequested) {
                             break;
                         }
-                        float[] samplesB = taskB.Result.samples;
+                        float[] samplesB = resultB.samples;
 
                         const int fftSize = 2048;
                         const int hopSize = 512;
