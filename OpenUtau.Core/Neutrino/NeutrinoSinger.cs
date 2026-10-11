@@ -23,17 +23,18 @@ namespace OpenUtau.Core.Neutrino {
 
         public NeutrinoConfig ReadConfig() {
             var path = Path.Combine(Location, "neutrino.json");
-            var config = JsonSerializer.Deserialize<NeutrinoConfig>(File.ReadAllText(path))
-                ?? throw new InvalidDataException($"Invalid NEUTRINO configuration: {path}");
-            config.EnginePath = Path.GetFullPath(config.EnginePath, Location);
-            config.ModelPath = Path.GetFullPath(config.ModelPath, Location);
-            if (!File.Exists(Path.Combine(config.EnginePath, "bin", "neutrino_client.exe")) ||
-                !File.Exists(Path.Combine(config.EnginePath, "bin", "neutrino_server.exe")) ||
-                !File.Exists(Path.Combine(config.EnginePath, "bin", "musicXMLtoLabel.exe"))) {
-                throw new FileNotFoundException("NEUTRINO Tau 3.2.5.ex bin executables were not found. Check EnginePath in neutrino.json.");
-            }
+            // A self-contained bank keeps info.toml and the four ONNX models next to character.yaml.
+            // Optional legacy configuration can still point to an external model folder.
+            var config = File.Exists(path)
+                ? JsonSerializer.Deserialize<NeutrinoConfig>(File.ReadAllText(path))
+                    ?? throw new InvalidDataException($"Invalid NEUTRINO configuration: {path}")
+                : new NeutrinoConfig();
+            config.ModelPath = Path.GetFullPath(string.IsNullOrWhiteSpace(config.ModelPath) ? "." : config.ModelPath, Location);
             if (!File.Exists(Path.Combine(config.ModelPath, "info.toml"))) {
-                throw new FileNotFoundException("NEUTRINO model info.toml was not found. Check ModelPath in neutrino.json.");
+                throw new FileNotFoundException("NEUTRINO model info.toml was not found in the singer folder.");
+            }
+            foreach (string model in new[] { "t.bin", "p.bin", "s.bin", "v.bin" }) {
+                if (!File.Exists(Path.Combine(config.ModelPath, model))) { throw new FileNotFoundException($"NEUTRINO Tau ONNX model was not found: {Path.Combine(config.ModelPath, model)}"); }
             }
             return config;
         }
