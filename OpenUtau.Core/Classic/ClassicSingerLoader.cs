@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -11,6 +11,8 @@ namespace OpenUtau.Classic {
                     return new Core.Enunu.EnunuSinger(v) as USinger;
                 case USingerType.DiffSinger:
                     return new Core.DiffSinger.DiffSingerSinger(v) as USinger;
+                case USingerType.Neutrino:
+                    return new Core.Neutrino.NeutrinoSinger(v);
                 case USingerType.Voicevox:
                     return new Core.Voicevox.VoicevoxSinger(v) as USinger;
                 default:
