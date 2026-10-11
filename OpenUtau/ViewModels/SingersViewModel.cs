@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,7 +93,7 @@ namespace OpenUtau.App.ViewModels {
                         DisplayedOtos.AddRange(singer.Otos);
                         Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                         HasWebsite = !string.IsNullOrEmpty(singer.Web);
-                        HasCharacterYaml = singer.SingerType is USingerType.Classic or USingerType.Enunu or USingerType.DiffSinger
+                        HasCharacterYaml = singer.SingerType is USingerType.Classic or USingerType.Enunu or USingerType.DiffSinger or USingerType.Neutrino
                             && Directory.Exists(singer.Location);
                         HasDsConfig = HasCharacterYaml && File.Exists(Path.Combine(singer.Location, "dsconfig.yaml"));
                         if (Singer is ClassicSinger cSinger) {
@@ -121,7 +121,7 @@ namespace OpenUtau.App.ViewModels {
                             }
                         ).ToList();
                         var singerTypes = new string[] {
-                            "utau", "enunu", "diffsinger", "voicevox"
+                            "utau", "enunu", "diffsinger", "voicevox", "neutrino"
                         };
                         setSingerTypeMenuItems = singerTypes.Select(singerType =>
                             new MenuItemViewModel((SingerTypeUtils.SingerTypeNames.TryGetValue(singer.SingerType, out var name) ? name : "") == singerType) {
