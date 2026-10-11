@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,8 @@ namespace OpenUtau.Core.Render {
         public const string VOGEN = "VOGEN";
         public const string DIFFSINGER = "DIFFSINGER";
         public const string VOICEVOX = "VOICEVOX";
+        public const string NEUTRINO = "NEUTRINO";
+        static readonly string[] neutrinoRenderers = new[] { NEUTRINO };
 
         static readonly string[] classicRenderers = new[] { WORLDLINE_R, WORLDLINE_R11, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
@@ -34,6 +36,8 @@ namespace OpenUtau.Core.Render {
                     return vogenRenderers;
                 case USingerType.DiffSinger:
                     return diffSingerRenderers;
+                case USingerType.Neutrino:
+                    return neutrinoRenderers;
                 case USingerType.Voicevox:
                     return voicevoxRenderers;
                 default:
@@ -75,6 +79,8 @@ namespace OpenUtau.Core.Render {
                 return new Vogen.VogenRenderer();
             } else if (renderer == DIFFSINGER) {
                 return new DiffSinger.DiffSingerRenderer();
+            } else if (renderer == NEUTRINO) {
+                return new Neutrino.NeutrinoRenderer();
             } else if (renderer == VOICEVOX) {
                 return new Voicevox.VoicevoxRenderer();
             }
