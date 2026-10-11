@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -31,7 +31,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public partial Encoding ArchiveEncoding { get; set; }
         [Reactive] public partial Encoding TextEncoding { get; set; }
         [Reactive] public partial bool MissingInfo { get; set; }
-        public string[] SingerTypes { get; set; } = new[] { "utau", "enunu", "diffsinger" };
+        public string[] SingerTypes { get; set; } = new[] { "utau", "enunu", "diffsinger", "neutrino" };
         [Reactive] public partial string SingerType { get; set; }
 
         private ObservableCollectionExtended<string> textItems;
