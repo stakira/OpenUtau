@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -14,7 +13,8 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Neutrino {
     public class NeutrinoRenderer : IRenderer {
         static readonly SemaphoreSlim gate = new SemaphoreSlim(1);
-        static Process? ownedServer;
+        static NeutrinoOnnxEngine? engine;
+        static string? engineIdentity;
         public USingerType SingerType => USingerType.Neutrino;
         public bool SupportsPhonemeEnvelope => false;
         public override string ToString() => Renderers.NEUTRINO;
@@ -47,30 +47,34 @@ namespace OpenUtau.Core.Neutrino {
                     return silence;
                 }
                 var score = NeutrinoScore.Build(phrase);
-                // Include executable/model identity: changing a wrapper must invalidate the cache.
+                // Include model and backend identity to invalidate incompatible cached audio.
                 string modelInfo = File.ReadAllText(Path.Combine(config.ModelPath, "info.toml"));
-                var exe = new FileInfo(Path.Combine(config.EnginePath, "bin", "neutrino_server.exe"));
-                string identity = $"neutrino-tau-v2\n{config.EnginePath}\n{config.ModelPath}\n{modelInfo}\n{exe.Length}\n{exe.LastWriteTimeUtc.Ticks}\n{score}";
+                string modelIdentity = config.ModelPath + string.Join("|", new[] { "t.bin", "p.bin", "s.bin", "v.bin" }.Select(name => {
+                    var file = new FileInfo(Path.Combine(config.ModelPath, name));
+                    return $"{name}:{file.Length}:{file.LastWriteTimeUtc.Ticks}";
+                }));
+                string identity = $"neutrino-tau-internal-phones-v4\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
                 string hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
                 string prefix = Path.Combine(PathManager.Inst.CachePath, $"neutrino-{hash}");
                 Directory.CreateDirectory(PathManager.Inst.CachePath);
                 string wav = prefix + ".wav";
                 phrase.AddCacheFile(wav);
                 if (!File.Exists(wav)) {
-                    string xml = prefix + ".musicxml", full = prefix + ".full.lab", timing = prefix + ".timing.lab";
-                    string f0 = prefix + ".f0", melspec = prefix + ".melspec", temporaryWav = prefix + ".tmp.wav";
-                    var intermediates = new[] { xml, full, timing, f0, melspec, temporaryWav };
+                    string temporaryWav = prefix + ".tmp.wav";
+                    var intermediates = new[] { temporaryWav };
                     try {
-                        score.Save(xml);
-                        string conversion = await Run(config, "musicXMLtoLabel.exe", new[] { xml, full, timing }, token);
-                        if (conversion.Contains("Undefined lyric", StringComparison.OrdinalIgnoreCase)) {
-                            throw new InvalidDataException("O NEUTRINO encontrou uma letra que não reconhece. Use sílabas japonesas em hiragana ou katakana. " + conversion);
+                        var phones = NeutrinoPhonemes.Build(score);
+                        if (engine == null || engineIdentity != modelIdentity) {
+                            engine?.Dispose();
+                            engine = null;
+                            engine = new NeutrinoOnnxEngine(config.ModelPath);
+                            engineIdentity = modelIdentity;
                         }
-                        if (!File.Exists(full) || new FileInfo(full).Length == 0) {
-                            throw new InvalidDataException("NEUTRINO could not convert the score. Use Japanese kana lyrics on every note.");
+                        double durationMs = Layout(phrase).estimatedLengthMs;
+                        float[] samples48k = await Task.Run(() => engine.Synthesize(phones, durationMs, token), token);
+                        using (var writer = new WaveFileWriter(temporaryWav, WaveFormat.CreateIeeeFloatWaveFormat(48000, 1))) {
+                            writer.WriteSamples(samples48k, 0, samples48k.Length);
                         }
-                        await EnsureServer(config, token);
-                        await Run(config, "neutrino_client.exe", new[] { full, timing, f0, melspec, temporaryWav, config.ModelPath }, token);
                         if (!File.Exists(temporaryWav) || new FileInfo(temporaryWav).Length <= 44) {
                             throw new InvalidDataException("NEUTRINO returned no audio. Check the model and the engine's output in the log.");
                         }
@@ -94,70 +98,8 @@ namespace OpenUtau.Core.Neutrino {
                 Renderers.ApplyDynamics(phrase, result);
                 progress.Complete(phrase.phones.Length, info);
                 return result;
-            } catch (OperationCanceledException) {
-                // Killing the client alone leaves inference running in the daemon.
-                if (ownedServer != null && !ownedServer.HasExited) { ownedServer.Kill(true); }
-                ownedServer?.Dispose();
-                ownedServer = null;
-                throw;
             } finally { gate.Release(); }
         }
 
-        static async Task EnsureServer(NeutrinoConfig config, CancellationToken token) {
-            var owner = new[] { "--owner-pid", Environment.ProcessId.ToString(), "status" };
-            var status = await Run(config, "neutrino_client.exe", owner, token, false);
-            if (!status.Contains("READY", StringComparison.Ordinal)) {
-                if (!status.Contains("BUSY", StringComparison.Ordinal) && (ownedServer == null || ownedServer.HasExited)) {
-                    ownedServer?.Dispose();
-                    var start = CreateStart(config, "neutrino_server.exe");
-                    using var current = Process.GetCurrentProcess();
-                    foreach (var arg in new[] { "--owner-pid", Environment.ProcessId.ToString(), "--owner-created", current.StartTime.ToFileTimeUtc().ToString() }) {
-                        start.ArgumentList.Add(arg);
-                    }
-                    ownedServer = Process.Start(start) ?? throw new InvalidOperationException("Could not start NEUTRINO server.");
-                    ownedServer.OutputDataReceived += (_, e) => { if (e.Data != null) { Serilog.Log.Information("NEUTRINO server: {Output}", e.Data); } };
-                    ownedServer.ErrorDataReceived += (_, e) => { if (e.Data != null) { Serilog.Log.Information("NEUTRINO server: {Output}", e.Data); } };
-                    ownedServer.BeginOutputReadLine();
-                    ownedServer.BeginErrorReadLine();
-                }
-                for (int i = 0; i < 240; i++) {
-                    await Task.Delay(250, token);
-                    status = await Run(config, "neutrino_client.exe", owner, token, false);
-                    if (status.Contains("READY", StringComparison.Ordinal)) { return; }
-                    if (ownedServer != null && ownedServer.HasExited) {
-                        throw new InvalidOperationException($"NEUTRINO server exited with code {ownedServer.ExitCode}. Check that bin contains the engine DLLs.");
-                    }
-                }
-                throw new TimeoutException($"NEUTRINO server was not ready after 60 seconds: {status}");
-            }
-        }
-
-        static ProcessStartInfo CreateStart(NeutrinoConfig config, string executable) => new ProcessStartInfo {
-            FileName = Path.Combine(config.EnginePath, "bin", executable),
-            WorkingDirectory = config.EnginePath,
-            UseShellExecute = false, CreateNoWindow = true,
-            RedirectStandardOutput = true, RedirectStandardError = true,
-        };
-
-        static async Task<string> Run(NeutrinoConfig config, string executable, IEnumerable<string> args,
-                CancellationToken token, bool requireSuccess = true) {
-            var start = CreateStart(config, executable);
-            foreach (string arg in args) { start.ArgumentList.Add(arg); }
-            using var process = Process.Start(start) ?? throw new InvalidOperationException($"Could not start {executable}.");
-            var stdout = process.StandardOutput.ReadToEndAsync();
-            var stderr = process.StandardError.ReadToEndAsync();
-            try { await process.WaitForExitAsync(token); }
-            catch (OperationCanceledException) {
-                if (!process.HasExited) { process.Kill(true); }
-                await process.WaitForExitAsync();
-                throw;
-            }
-            string output = await stdout + "\n" + await stderr;
-            Serilog.Log.Information("NEUTRINO {Executable}: {Output}", executable, output);
-            if (requireSuccess && (process.ExitCode != 0 || output.Contains("ERROR:", StringComparison.OrdinalIgnoreCase) || output.Contains("Error:", StringComparison.OrdinalIgnoreCase) || output.Contains("[ERROR]", StringComparison.OrdinalIgnoreCase))) {
-                throw new InvalidOperationException($"{executable} failed ({process.ExitCode}): {output}");
-            }
-            return output;
-        }
     }
 }
