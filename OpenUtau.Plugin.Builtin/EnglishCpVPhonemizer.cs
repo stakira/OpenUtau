@@ -243,6 +243,11 @@ namespace OpenUtau.Plugin.Builtin {
                     if (i == 0 && !HasOto(vc, syllable.tone)) {
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc", syllable.tone, ""));
                         break;
+                    /// prioritize vc aliases
+                    } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone)) {
+                        TryAddPhoneme(phonemes, syllable.tone, vc, ValidateAlias(vc));
+                        //TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc", syllable.tone, ""));
+                        break;
                         /// use vowel ending
                     } else if (diphthongTails.ContainsKey(prevV) && ((HasOto(vr, syllable.tone) || HasOto(ValidateAlias(vr), syllable.tone) || (HasOto(vr1, syllable.tone) || HasOto(ValidateAlias(vr1), syllable.tone)) && !HasOto(vc, syllable.tone)))) {
                         TryAddPhoneme(phonemes, syllable.vowelTone, AliasFormat($"{diphthongTails[prevV]}", "diph_mix", syllable.vowelTone, ""));
@@ -254,11 +259,6 @@ namespace OpenUtau.Plugin.Builtin {
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc", syllable.tone, ""));
 
                         break;
-                    } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone)) {
-                        TryAddPhoneme(phonemes, syllable.tone, vc, ValidateAlias(vc));
-                        TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{cc[0]}", "cc", syllable.tone, ""));
-                        break;
-                        /// CC+V
                     } else if (CCV) {
                         TryAddPhoneme(phonemes, syllable.tone, vc, ValidateAlias(vc));
                         TryAddPhoneme(phonemes, syllable.tone, AliasFormat($"{string.Join("", cc)}", "cc", syllable.tone, ""));
@@ -425,10 +425,10 @@ namespace OpenUtau.Plugin.Builtin {
                     } else {
                         bool vcAdded = false;
 
-                        if (diphthongTails.ContainsKey(prevV)) {
-                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{diphthongTails[prevV]}", "diph_mix", ending.tone, "", t));
-                        } else if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) {
+                        if (HasOto(vc, ending.tone) || HasOto(ValidateAlias(vc), ending.tone)) {
                             vcAdded = TryAddPhoneme(phonemes, ending.tone, vc, ValidateAlias(vc));
+                        } else if (diphthongTails.ContainsKey(prevV)) {
+                            TryAddPhoneme(phonemes, ending.tone, AliasFormat($"{diphthongTails[prevV]}", "diph_mix", ending.tone, "", t));
                         }
 
                         string c = cc[0];
