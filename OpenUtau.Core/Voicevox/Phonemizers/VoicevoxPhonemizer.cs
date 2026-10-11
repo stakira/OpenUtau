@@ -22,23 +22,22 @@ namespace OpenUtau.Core.Voicevox {
             for (int i = 0; i < notes.Length; i++) {
                 var currentLyric = notes[i][0].lyric.Normalize();
                 var lyricList = currentLyric.Split(" ");
-                if (lyricList.Length > 1) {
-                    currentLyric = lyricList[1];
-                }
-                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(currentLyric)) {
-                    if (VoicevoxUtils.IsDicPau(currentLyric)) {
+                if (!VoicevoxUtils.IsSyllableVowelExtensionNote(lyricList[^1])) {
+                    if (VoicevoxUtils.IsPau(lyricList[^1])) {
                         currentLyric = string.Empty;
-                    } else if (VoicevoxUtils.dic.IsDic(currentLyric)) {
-                        currentLyric = VoicevoxUtils.dic.Lyrictodic(currentLyric);
-                    } else if (!VoicevoxUtils.IsDicKana(currentLyric)) {
+                    } else if (VoicevoxUtils.dic.IsDic(lyricList[^1])) {
+                        currentLyric = VoicevoxUtils.dic.Lyrictodic(lyricList[^1]);
+                    } else if (VoicevoxUtils.IsKana(lyricList[^1])) {
+                        currentLyric = lyricList[^1];
+                    } else {
                         currentLyric = string.Empty;
                     }
                 }
                 vNotes[i] = new VoicevoxNote() {
                     lyric = currentLyric,
                     positionMs = timeAxis.TickPosToMsPos(notes[i][0].position),
-                    durationMs = timeAxis.TickPosToMsPos(notes[i][0].duration),
-                    tone = (int)(notes[i][0].tone + (notes[i][0].phonemeAttributes.Length > 0 ? notes[i][0].phonemeAttributes[0].toneShift : 0))
+                    durationMs = timeAxis.TickPosToMsPos(notes[i][0].position + notes[i][0].duration) - timeAxis.TickPosToMsPos(notes[i][0].position),
+                    tone = notes[i][0].tone + (notes[i][0].phonemeAttributes.FirstOrDefault().toneShift ?? 0)
                 };
             }
             VoicevoxQueryMain vqMain = VoicevoxUtils.NoteGroupsToVQuery(vNotes, timeAxis);
@@ -76,7 +75,14 @@ namespace OpenUtau.Core.Voicevox {
                         list.Remove(list[0]);
                         break;
                     } else if (VoicevoxUtils.phoneme_List.consonants.Contains(list[0].phoneme)) {
-                        phoneme.Add(new Phoneme() { phoneme = list[0].phoneme, position = noteGroup[0].position - (int)timeAxis.MsPosToTickPos((list[0].frame_length / VoicevoxUtils.fps) * 1000) });
+                        double consonantMs = (list[0].frame_length / VoicevoxUtils.fps) * 1000;
+                        //Note positions are absolute ticks, so convert the duration relative to the note.
+                        int notePos = noteGroup[0].position;
+                        int tickOffset = notePos - timeAxis.MsPosToTickPos(timeAxis.TickPosToMsPos(notePos) - consonantMs);
+                        phoneme.Add(new Phoneme() {
+                            phoneme = list[0].phoneme,
+                            position = noteGroup[0].position - tickOffset
+                        });
                     }
                     list.Remove(list[0]);
                 }

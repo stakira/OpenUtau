@@ -10,43 +10,74 @@ using NetSparkleUpdater.AppCastHandlers;
 using NetSparkleUpdater.Enums;
 using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.SignatureVerifiers;
-using Newtonsoft.Json;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI;
+using ReactiveUI.Primitives;
+using ReactiveUI.SourceGenerators;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
-    public class UpdaterViewModel : ViewModelBase {
-        class GithubReleaseAsset {
+    public partial class UpdaterViewModel : ViewModelBase {
+        public class GithubReleaseAsset {
             public string name = string.Empty;
             public string browser_download_url = string.Empty;
         }
-        class GithubRelease {
+        public class GithubRelease {
 #pragma warning disable 0649
             public string html_url = string.Empty;
             public long id = long.MaxValue;
             public bool draft;
             public bool prerelease;
+            public string tag_name = string.Empty;
             public string name = string.Empty;
             public GithubReleaseAsset[] assets = new GithubReleaseAsset[0];
 #pragma warning restore 0649
         }
-        public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
+        public string AppVersion {
+            get {
+                // The channel is derived from the build's own version, not the
+                // update channel pref, which the user may have switched to a
+                // different one.
+                Version? version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version;
+                string suffix = Core.Util.ReleaseChannel.FromVersion(version) is { } channel
+                    ? $" ({channel})" : string.Empty;
+                return $"v{version}{suffix}";
+            }
+        }
         public bool IsDarkMode => ThemeManager.IsDarkMode;
-        [Reactive] public string UpdaterStatus { get; set; }
-        [Reactive] public bool UpdateAvailable { get; set; }
-        [Reactive] public FontWeight UpdateButtonFontWeight { get; set; }
+        [Reactive] public partial string UpdaterStatus { get; set; }
+        [Reactive] public partial bool UpdateAvailable { get; set; }
+        [Reactive] public partial FontWeight UpdateButtonFontWeight { get; set; }
+        // Index into stable / beta / alpha, same order as the preferences dialog.
+        [Reactive] public partial int Channel { get; set; }
+        [Reactive] public partial bool UpdateAccepted { get; set; }
         public Action? CloseApplication { get; set; }
 
         private SparkleUpdater? sparkle;
         private UpdateInfo? updateInfo;
-        private bool updateAccepted;
+        // Bumped on every check so that a check still in flight when the user
+        // switches channel does not overwrite the result of the newer one.
+        private int checkGeneration;
 
         public UpdaterViewModel() {
             UpdaterStatus = string.Empty;
             UpdateAvailable = false;
             UpdateButtonFontWeight = FontWeight.Normal;
+            Channel = Preferences.Default.Channel switch {
+                "beta" => 1,
+                "alpha" => 2,
+                _ => 0
+            };
+            this.WhenAnyValue(vm => vm.Channel).Skip(1).Subscribe(channel => {
+                Preferences.Default.Channel = channel switch {
+                    1 => "beta",
+                    2 => "alpha",
+                    _ => "stable"
+                };
+                Preferences.Save();
+                Init();
+            });
             Init();
         }
 
@@ -79,39 +110,66 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        // Channel filter for GitHub releases. Alpha builds are published as
+        // prereleases tagged `<version>-alpha`, beta builds as prereleases
+        // tagged `<version>-beta`. The alpha channel is the superset: it
+        // sees both alpha and beta releases.
+        public static bool IsReleaseForChannel(GithubRelease release, string channel) {
+            if (release.draft) {
+                return false;
+            }
+            return channel switch {
+                "alpha" => release.prerelease,
+                "beta" => release.prerelease && !release.tag_name.EndsWith("-alpha"),
+                _ => !release.prerelease,
+            };
+        }
+
         static async Task<GithubRelease?> SelectRelease() {
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.DefaultRequestHeaders.Add("User-Agent", "Other");
             client.Timeout = TimeSpan.FromSeconds(30);
-            using var resposne = await client.GetAsync("https://api.github.com/repos/stakira/OpenUtau/releases");
+            // per_page=100: with frequent alpha releases, the default 30-item
+            // page could push the release of the current channel off-page.
+            using var resposne = await client.GetAsync("https://api.github.com/repos/stakira/OpenUtau/releases?per_page=100");
             resposne.EnsureSuccessStatusCode();
             string respBody = await resposne.Content.ReadAsStringAsync();
-            List<GithubRelease>? releases = JsonConvert.DeserializeObject<List<GithubRelease>>(respBody);
+            var releases = Json.Deserialize<List<GithubRelease>>(respBody);
             if (releases == null) {
                 return null;
             }
             return releases
-                .Where(r => !r.draft && r.prerelease == Preferences.Default.Beta)
+                .Where(r => IsReleaseForChannel(r, Preferences.Default.Channel))
                 .OrderByDescending(r => r.id)
                 .FirstOrDefault();
         }
 
         static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
-            string suffix = PathManager.Inst.IsInstalled ? "-installer" : "";
+            string suffix = PathManager.Inst.IsInstalled ? "-installer"
+                            : PathManager.Inst.IsAppImage ? "-appimage"
+                            : "";
             return release.assets
                 .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
                 .FirstOrDefault();
         }
 
         async void Init() {
+            int generation = ++checkGeneration;
+            sparkle?.Dispose();
+            sparkle = null;
+            updateInfo = null;
+            UpdateAvailable = false;
+            UpdateButtonFontWeight = FontWeight.Normal;
             UpdaterStatus = ThemeManager.GetString("updater.status.checking");
-            sparkle = await NewUpdaterAsync();
-            if (sparkle == null) {
-                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+            var newSparkle = await NewUpdaterAsync();
+            var newInfo = newSparkle == null ? null : await newSparkle.CheckForUpdatesQuietly();
+            if (generation != checkGeneration) {
+                newSparkle?.Dispose();
                 return;
             }
-            updateInfo = await sparkle.CheckForUpdatesQuietly();
+            sparkle = newSparkle;
+            updateInfo = newInfo;
             if (updateInfo == null) {
                 UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
                 return;
@@ -145,7 +203,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             UpdateAvailable = false;
-            updateAccepted = true;
+            UpdateAccepted = true;
 
             AppCastItem? downloadedItem = null;
             sparkle.CloseApplication += () => {
@@ -178,12 +236,14 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnClosing() {
-            if (!updateAccepted && updateInfo != null &&
+            if (!UpdateAccepted && updateInfo != null &&
                 (updateInfo.Status == UpdateStatus.UpdateAvailable ||
                 updateInfo.Status == UpdateStatus.UserSkipped) &&
                 updateInfo.Updates.Count > 0) {
                 Log.Information($"Skipping update {updateInfo.Updates[0].Version}");
-                Preferences.Default.SkipUpdate = updateInfo.Updates[0].Version.ToString();
+                // Skip is per-channel so that skipping e.g. an alpha build does
+                // not suppress the same-target beta or stable release.
+                Preferences.Default.SkipUpdate = $"{Preferences.Default.Channel}:{updateInfo.Updates[0].Version}";
                 Preferences.Save();
             }
         }
@@ -240,6 +300,37 @@ namespace OpenUtau.App.ViewModels {
                 return $"{unzipperPath} \"{downloadFilePath}\" \"{restart}\"";
             }
             return downloadFilePath;
+        }
+
+        protected override async Task RunDownloadedInstaller(string downloadFilePath) {
+            if (OS.IsLinux() && Path.GetExtension(downloadFilePath) == ".AppImage" && PathManager.Inst.IsAppImage) {
+                string batchFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".sh");
+                string updateScript = $"""
+                        COUNTER=0;
+                        while ps -p {Environment.ProcessId} > /dev/null;
+                            do sleep 1;
+                            COUNTER=$((++COUNTER));
+                            if [ $COUNTER -eq 90 ]
+                            then
+                                exit -1;
+                            fi;
+                        done;
+
+                        mv -f "{downloadFilePath}" "{PathManager.Inst.AppImagePath}"
+
+                        chmod +x "{PathManager.Inst.AppImagePath}"
+
+                        "{PathManager.Inst.AppImagePath}"
+                    """;
+
+                await File.WriteAllTextAsync(batchFilePath, updateScript.Replace("\r\n", "\n"));
+
+                Exec($"chmod +x '{batchFilePath}' && '{batchFilePath}'", false);
+
+                await QuitApplication();
+            } else {
+                await base.RunDownloadedInstaller(downloadFilePath);
+            }
         }
     }
 }

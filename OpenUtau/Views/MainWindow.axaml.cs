@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reactive;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Notifications;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
@@ -23,8 +25,10 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
+using ReactiveUI.Primitives;
 using Serilog;
 using SharpCompress;
+using Path = System.IO.Path;
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
@@ -33,8 +37,14 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
+        private readonly ValueGlide hScroll;
+        private readonly ValueGlide vScroll;
+        private readonly ZoomGlide xZoom;
+        private readonly ValueGlide trackHeight;
+
         private PianoRollDetachedWindow? pianoRollWindow;
         private PianoRoll? pianoRoll;
+        private WindowNotificationManager notificationManager;
 
         private PartEditState? partEditState;
 
@@ -49,23 +59,37 @@ namespace OpenUtau.App.Views {
 
         private bool shouldOpenPartsContextMenu;
 
-        private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
-        private readonly ReactiveCommand<UPart, Unit> PartGotoFileCommand;
-        private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
-        private readonly ReactiveCommand<UPart, Unit> PartTranscribeCommand;
-        private readonly ReactiveCommand<UPart, Unit> PartMergeCommand;
-        private readonly ReactiveCommand<UPart, Unit> PartSplitCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartRenameCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartGotoFileCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartReplaceAudioCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartTranscribeCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartMergeCommand;
+        private readonly ReactiveCommand<UPart, RxVoid> PartSplitCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
-            InitializeComponent();
-            Log.Information("Initialized main window component.");
+            // Set before InitializeComponent, so bindings to the window's view model resolve on first evaluation.
             DataContext = viewModel = new MainWindowViewModel {
                 // give the viewmodel a way to prompt/save using the view's existing method
                 AskIfSaveAndContinue = AskIfSaveAndContinue
             };
+            InitializeComponent();
+            Log.Information("Initialized main window component.");
 
-            viewModel.NewProject();
+            // Edit commands validate once per frame instead of once per pointer move.
+            DocManager.Inst.RequestFrame = action => RequestAnimationFrame(_ => action());
+
+            var smoothViewport = new SmoothViewport(this);
+            hScroll = smoothViewport.Scroll(HScrollBar);
+            vScroll = smoothViewport.Scroll(VScrollBar);
+            xZoom = smoothViewport.Zoom((position, delta) => viewModel.TracksViewModel.OnXZoomed(position, delta));
+            // Track height steps by TrackHeightDelta per wheel step and glides between the steps.
+            trackHeight = smoothViewport.Value(
+                () => viewModel.TracksViewModel.TrackHeight,
+                height => viewModel.TracksViewModel.SetTrackHeight(height),
+                () => ViewConstants.TrackHeightMin,
+                () => ViewConstants.TrackHeightMax);
+
             viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
             viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
             viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
@@ -87,6 +111,11 @@ namespace OpenUtau.App.Views {
                 DispatcherPriority.Normal,
                 (sender, args) => DocManager.Inst.AutoSave());
             autosaveTimer.Start();
+
+            notificationManager = new WindowNotificationManager(this) {
+                Position = NotificationPosition.BottomCenter,
+                MaxItems = 3
+            };
 
             PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
             PartGotoFileCommand = ReactiveCommand.Create<UPart>(part => GotoFile(part));
@@ -134,6 +163,11 @@ namespace OpenUtau.App.Views {
             var dialog = new TypeInDialog();
             dialog.Title = "BPM";
             dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.TextBox.AddHandler(PointerWheelChangedEvent, (s, e) => {
+                if (double.TryParse(dialog.TextBox.Text, out double bpm)) {
+                    dialog.SetText(HandleBpmScroll(bpm, e).ToString());
+                }
+            });
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
                     viewModel.PlaybackViewModel.SetBpm(bpm);
@@ -144,12 +178,51 @@ namespace OpenUtau.App.Views {
             args.Pointer.Capture(null);
         }
 
+        void OnEditBpmScroll(object sender, PointerWheelEventArgs args) {
+            if (!viewModel.PlaybackViewModel.IsPlaying) viewModel.PlaybackViewModel.SetBpm(HandleBpmScroll(viewModel.PlaybackViewModel.Bpm, args));
+        }
+
+        private double HandleBpmScroll(double bpm, PointerWheelEventArgs args, int decimals = 2) {
+            var multiplier = 1f;
+
+            if (args.KeyModifiers != KeyModifiers.None) {
+                if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+                    multiplier *= 2f;
+                }
+
+                if (args.KeyModifiers.HasFlag(KeyModifiers.Control)) {
+                    multiplier *= 0.1f;
+                } else if (args.KeyModifiers.HasFlag(KeyModifiers.Alt)) {
+                    multiplier *= 0.01f;
+                }
+            } else {
+                multiplier = 1f;
+            }
+
+            if (args.Delta.Y > 0) {
+                bpm += multiplier;
+            } else if (args.Delta.Y < 0) {
+                bpm -= multiplier;
+            }
+
+            if (decimals != -1) {
+                bpm = double.Round(bpm, decimals);
+            }
+
+            return bpm;
+        }
+        
         private void AddTempoChange(int tick) {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog {
                 Title = "BPM"
             };
             dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.TextBox.AddHandler(PointerWheelChangedEvent, (s, e) => {
+                if (double.TryParse(dialog.TextBox.Text, out double bpm)) {
+                    dialog.SetText(HandleBpmScroll(bpm, e).ToString());
+                }
+            });
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
                     DocManager.Inst.StartUndoGroup("command.project.tempo");
@@ -240,7 +313,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.UST,
                 FilePicker.MIDI,
                 FilePicker.UFDATA,
-                FilePicker.MUSICXML);
+                FilePicker.MUSICXML,
+                FilePicker.SVP);
             if (files == null || files.Length == 0) {
                 return;
             }
@@ -269,19 +343,40 @@ namespace OpenUtau.App.Views {
 
         void OnMenuOpenProjectLocation(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
-            if (string.IsNullOrEmpty(project.FilePath) || !project.Saved) {
+            if (string.IsNullOrEmpty(project.FilePath) || !project.Saved || !System.IO.File.Exists(project.FilePath) || !Path.IsPathRooted(project.FilePath)) {
                 MessageBox.Show(
                     this,
                     ThemeManager.GetString("dialogs.export.savefirst"),
                     ThemeManager.GetString("errors.caption"),
                     MessageBox.MessageBoxButtons.Ok);
+                return;
             }
             try {
-                var dir = Path.GetDirectoryName(project.FilePath);
-                if (dir != null) {
-                    OS.OpenFolder(dir);
+                var fullPath = Path.GetFullPath(project.FilePath);
+                var dir = Path.GetDirectoryName(fullPath);
+                if (!string.IsNullOrWhiteSpace(dir) && System.IO.Directory.Exists(dir)) {
+                    // Cross-platform folder opening
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
+                            FileName = "explorer.exe",
+                            Arguments = $"\"{dir}\"", // Quotes protect spaces and commas
+                            UseShellExecute = true
+                        });
+                    } else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
+                            FileName = "open",
+                            Arguments = $"\"{dir}\"",
+                            UseShellExecute = false
+                        });
+                    } else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo {
+                            FileName = "xdg-open",
+                            Arguments = $"\"{dir}\"",
+                            UseShellExecute = false
+                        });
+                    }
                 } else {
-                    Log.Error($"Failed to get project location from {dir}.");
+                    Log.Error($"Failed to get project location from {project.FilePath}.");
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to open project location.");
@@ -336,7 +431,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.UST,
                 FilePicker.MIDI,
                 FilePicker.UFDATA,
-                FilePicker.MUSICXML);
+                FilePicker.MUSICXML,
+                FilePicker.SVP);
             if (files == null || files.Length == 0) {
                 return;
             }
@@ -509,13 +605,7 @@ namespace OpenUtau.App.Views {
         void OnMenuRedo(object sender, RoutedEventArgs args) => viewModel.Redo();
 
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
-            var dialog = new ExpressionsDialog() {
-                DataContext = new ExpressionsViewModel(),
-            };
-            dialog.ShowDialog(this);
-            if (dialog.Position.Y < 0) {
-                dialog.Position = dialog.Position.WithY(0);
-            }
+            ExpressionsDialog.Open(this);
         }
 
         async void OnMenuSingers(object sender, RoutedEventArgs args) {
@@ -562,7 +652,6 @@ namespace OpenUtau.App.Views {
                     });
 
                     dialog = new SingersDialog() { DataContext = vm };
-                    dialog.Show();
                 }
                 if (dialog.Position.Y < 0) {
                     dialog.Position = dialog.Position.WithY(0);
@@ -573,8 +662,16 @@ namespace OpenUtau.App.Views {
                 LoadingWindow.EndLoading();
             }
             if (dialog != null) {
-                dialog.Activate();
+                ShowToolWindow(dialog);
             }
+        }
+
+        private static void ShowToolWindow(Window window) {
+            if (window.WindowState == WindowState.Minimized) {
+                window.WindowState = WindowState.Normal;
+            }
+            window.Show();
+            window.Activate();
         }
 
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
@@ -610,9 +707,20 @@ namespace OpenUtau.App.Views {
 
         void OnMenuPackageManager(object sender, RoutedEventArgs args) {
             try {
-                var dialog = new PackageManagerDialog() { DataContext = new PackageManagerViewModel() };
-                dialog.Show();
+                var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+                if (desktop == null) {
+                    return;
+                }
+                var dialog = desktop.Windows.FirstOrDefault(w => w is PackageManagerDialog) as PackageManagerDialog;
+                if (dialog == null) {
+                    dialog = new PackageManagerDialog() { DataContext = new PackageManagerViewModel() };
+                }
                 if (dialog.Position.Y < 0) dialog.Position = dialog.Position.WithY(0);
+                if (dialog.WindowState == WindowState.Minimized) {
+                    dialog.WindowState = WindowState.Normal;
+                }
+                dialog.Show();
+                dialog.Activate();
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
@@ -624,7 +732,7 @@ namespace OpenUtau.App.Views {
                 : new[] { FilePicker.EXE, FilePicker.UnixExecutable };
 
             var file = await FilePicker.OpenFile(
-                this, "menu.tools.dependency.install", filter);
+                this, "menu.tools.wavtoolresampler.install", filter);
             if (file == null) {
                 return;
             }
@@ -665,6 +773,16 @@ namespace OpenUtau.App.Views {
                 : WindowState.FullScreen;
         }
 
+        void OnMenuDawIntegration(object sender, RoutedEventArgs args) {
+            var dialog = new DawIntegrationDialog() {
+                DataContext = new DawIntegrationViewModel(),
+            };
+            dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
+        }
+
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
             Task.Run(() => {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
@@ -682,7 +800,7 @@ namespace OpenUtau.App.Views {
             if (window == null) {
                 window = new DebugWindow();
             }
-            window.Show();
+            ShowToolWindow(window);
         }
 
         void OnMenuPhoneticAssistant(object sender, RoutedEventArgs args) {
@@ -694,7 +812,7 @@ namespace OpenUtau.App.Views {
             if (window == null) {
                 window = new PhoneticAssistant();
             }
-            window.Show();
+            ShowToolWindow(window);
         }
 
         void OnMenuCheckUpdate(object sender, RoutedEventArgs args) {
@@ -790,20 +908,16 @@ namespace OpenUtau.App.Views {
                 return;
             }
 
-            var tracksVm = viewModel.TracksViewModel;
+            GlobalHotkey(args);
+            if (viewModel.Page == 1) {
+                EditorHotkey(args);
+            }
+        }
 
+        private void GlobalHotkey(KeyEventArgs args) {
             if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;
                 switch (args.Key) {
-                    case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
-                    case Key.Space: PlayOrPause(); break;
-                    case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
-                    case Key.End:
-                        if (viewModel.TracksViewModel.Parts.Count > 0) {
-                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
-                            viewModel.PlaybackViewModel.MovePlayPos(endTick);
-                        }
-                        break;
                     case Key.F11:
                         OnMenuFullScreen(this, new RoutedEventArgs());
                         break;
@@ -824,15 +938,44 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == cmdKey) {
                 args.Handled = true;
                 switch (args.Key) {
+                    case Key.N: NewProject(); break;
+                    case Key.O: Open(); break;
+                    default:
+                        args.Handled = false;
+                        break;
+                }
+            }
+        }
+
+        private void EditorHotkey(KeyEventArgs args) {
+            if (args.KeyModifiers == KeyModifiers.None) {
+                args.Handled = true;
+                switch (args.Key) {
+                    case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
+                    case Key.Space: PlayOrPause(); break;
+                    case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
+                    case Key.End:
+                        if (viewModel.TracksViewModel.Parts.Count > 0) {
+                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
+                            viewModel.PlaybackViewModel.MovePlayPos(endTick);
+                        }
+                        break;
+                    default:
+                        args.Handled = false;
+                        break;
+                }
+            } else if (args.KeyModifiers == cmdKey) {
+                args.Handled = true;
+                switch (args.Key) {
                     case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
                     case Key.N: NewProject(); break;
                     case Key.O: Open(); break;
                     case Key.S: _ = Save(); break;
                     case Key.Z: viewModel.Undo(); break;
                     case Key.Y: viewModel.Redo(); break;
-                    case Key.C: tracksVm.CopyParts(); break;
-                    case Key.X: tracksVm.CutParts(); break;
-                    case Key.V: tracksVm.PasteParts(); break;
+                    case Key.C: viewModel.TracksViewModel.CopyParts(); break;
+                    case Key.X: viewModel.TracksViewModel.CutParts(); break;
+                    case Key.V: viewModel.TracksViewModel.PasteParts(); break;
                     default:
                         args.Handled = false;
                         break;
@@ -871,6 +1014,24 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnCarouselPageKeyDown(object? sender, KeyEventArgs e) {
+            // Avalonia's Carousel navigates pages on arrow/Home/End keys, and it
+            // receives them bubbling up from any descendant (e.g. pressing Alt+Left
+            // in the lyric box switched the window back to the welcome page).
+            // Pages are only switched programmatically via the Page property, so
+            // swallow navigation keys the page content did not handle itself.
+            switch (e.Key) {
+                case Key.Left:
+                case Key.Right:
+                case Key.Up:
+                case Key.Down:
+                case Key.Home:
+                case Key.End:
+                    e.Handled = true;
+                    break;
+            }
+        }
+
         void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
             if (!PianoRollContainer.IsPointerOver && !args.Handled && args.ClickCount == 1) {
                 this.Focus();
@@ -878,9 +1039,9 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnDrop(object? sender, DragEventArgs args) {
-            string[] ProjectExts = { ".ustx", ".ust", ".vsqx", ".ufdata", ".musicxml", ".mid", ".midi" };
+            string[] ProjectExts = { ".ustx", ".ust", ".vsqx", ".ufdata", ".musicxml", ".mid", ".midi", ".svp" };
             string[] ArchiveExts = { ".zip", ".rar", ".uar" };
-            string[] AudioExts = { ".mp3", ".wav", ".ogg", ".flac" };
+            string[] AudioExts = { ".mp3", ".wav", ".ogg", ".flac", ".m4a" };
             string[] SupportedExts = ProjectExts
                 .Concat(ArchiveExts)
                 .Concat(AudioExts)
@@ -889,7 +1050,11 @@ namespace OpenUtau.App.Views {
                 .Append(Core.Vogen.VogenSingerInstaller.FileExt)
                 .Append(PackageManager.OudepExt)
                 .ToArray();
-            var files = args.Data?.GetFiles()?.Where(i => i != null).Select(i => i.Path.LocalPath).ToArray() ?? new string[] { };
+            var files = args.DataTransfer.TryGetFiles()?
+                .Where(i => i != null)
+                .Select(i => i.Path.LocalPath)
+                .ToArray() ?? new string[] { };
+            
             if (files.Length == 0) {
                 return;
             }
@@ -1007,13 +1172,11 @@ namespace OpenUtau.App.Views {
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
+            hScroll.By(-HScrollBar.SmallChange * args.Delta.Y, SmoothViewport.IsWheelStep(args.Delta.Y));
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
+            vScroll.By(-VScrollBar.SmallChange * args.Delta.Y, SmoothViewport.IsWheelStep(args.Delta.Y));
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -1021,11 +1184,11 @@ namespace OpenUtau.App.Views {
             var position = args.GetCurrentPoint((Visual)sender).Position;
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
-            viewModel.TracksViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
+            xZoom.By(position, 0.1 * args.Delta.Y, SmoothViewport.IsWheelStep(args.Delta.Y));
         }
 
         public void ViewScalerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            viewModel.TracksViewModel.OnYZoomed(new Point(0, 0.5), 0.1 * args.Delta.Y);
+            trackHeight.By(Math.Sign(args.Delta.Y) * ViewConstants.TrackHeightDelta, SmoothViewport.IsWheelStep(args.Delta.Y));
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
@@ -1086,7 +1249,9 @@ namespace OpenUtau.App.Views {
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            var hitControl = control.InputHitTest(point.Position);
+            var sourceControl = args.Source as Control;
+            var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
+
             if (partEditState != null) {
                 return;
             }
@@ -1094,51 +1259,56 @@ namespace OpenUtau.App.Views {
                 if (args.KeyModifiers == cmdKey) {
                     partEditState = new PartSelectionEditState(control, viewModel, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
-                } else if (hitControl == control) {
+                } else if (hitPartControl == null) {
+                    // Clicked empty canvas — equivalent to old `hitControl == control`
                     viewModel.TracksViewModel.DeselectParts();
                     var part = viewModel.TracksViewModel.MaybeAddPart(point.Position);
                     if (part != null) {
-                        // Start moving right away
                         partEditState = new PartMoveEditState(control, viewModel, part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
-                } else if (hitControl is PartControl partControl) {
+                } else if (pianoRoll != null &&
+                    hitPartControl.HitPianoRollViewportHandle(point.Position - hitPartControl.Bounds.Position)) {
+                    partEditState = new PianoRollViewportDragState(control, viewModel, pianoRoll.ViewModel.NotesViewModel);
+                    Cursor = HandCursors.Grabbing;
+                } else {
+                    // Clicked on a part
                     bool fadein = false;
                     bool fadeout = false;
-                    if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
-                        var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                    if (hitPartControl.part is UWavePart && point.Position.Y < hitPartControl.Bounds.Top + 6) {
+                        var fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeIn;
                         fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
-                        fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                        fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeOut;
                         fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
                     }
-                    bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    bool skip = point.Position.X < hitPartControl.Bounds.Left + ViewConstants.ResizeMargin;
+                    bool trim = point.Position.X > hitPartControl.Bounds.Right - ViewConstants.ResizeMargin;
                     if (fadein) {
-                        partEditState = new PartFadeInState(control, viewModel, (UWavePart)partControl.part);
+                        partEditState = new PartFadeInState(control, viewModel, (UWavePart)hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (fadeout) {
-                        partEditState = new PartFadeOutState(control, viewModel, (UWavePart)partControl.part);
+                        partEditState = new PartFadeOutState(control, viewModel, (UWavePart)hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (skip) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part, true);
+                        partEditState = new PartResizeEditState(control, viewModel, hitPartControl.part, true);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (trim) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        partEditState = new PartResizeEditState(control, viewModel, hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else {
-                        partEditState = new PartMoveEditState(control, viewModel, partControl.part);
+                        partEditState = new PartMoveEditState(control, viewModel, hitPartControl.part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
-                if (hitControl is PartControl partControl) {
-                    if (!viewModel.TracksViewModel.SelectedParts.Contains(partControl.part)) {
+                if (hitPartControl != null) {
+                    if (!viewModel.TracksViewModel.SelectedParts.Contains(hitPartControl.part)) {
                         viewModel.TracksViewModel.DeselectParts();
-                        viewModel.TracksViewModel.SelectPart(partControl.part);
+                        viewModel.TracksViewModel.SelectPart(hitPartControl.part);
                     }
                     if (PartsContextMenu != null && viewModel.TracksViewModel.SelectedParts.Count > 0) {
                         var menuArgs = new PartsContextMenuArgs {
-                            Part = partControl.part,
+                            Part = hitPartControl.part,
                             PartDeleteCommand = viewModel.PartDeleteCommand,
                             PartGotoFileCommand = PartGotoFileCommand,
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
@@ -1147,7 +1317,7 @@ namespace OpenUtau.App.Views {
                             PartMergeCommand = PartMergeCommand,
                             PartSplitCommand = PartSplitCommand
                         };
-                        if (partControl.part is UVoicePart voicePart) {
+                        if (hitPartControl.part is UVoicePart voicePart) {
                             menuArgs.PartApplyPitchMenuItems = DocManager.Inst.Project.parts
                                 .OfType<UWavePart>()
                                 .OrderBy(p => p.trackNo)
@@ -1185,19 +1355,22 @@ namespace OpenUtau.App.Views {
                 partEditState.Update(point.Pointer, point.Position);
                 return;
             }
-            var hitControl = control.InputHitTest(point.Position);
-            if (hitControl is PartControl partControl) {
+            var sourceControl = args.Source as Control;
+            var hitPartControl = sourceControl?.FindAncestorOfType<PartControl>(includeSelf: true);
+            if (hitPartControl != null) {
                 bool fadein = false;
                 bool fadeout = false;
-                if (partControl.part is UWavePart wavePart && point.Position.Y < partControl.Bounds.Top + 6) {
-                    var fadePos = partControl.Bounds.Left + partControl.FadeIn;
+                if (hitPartControl.part is UWavePart && point.Position.Y < hitPartControl.Bounds.Top + 6) {
+                    var fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeIn;
                     fadein = fadePos < point.Position.X && point.Position.X < fadePos + 6;
-                    fadePos = partControl.Bounds.Left + partControl.FadeOut;
+                    fadePos = hitPartControl.Bounds.Left + hitPartControl.FadeOut;
                     fadeout = fadePos - 6 < point.Position.X && point.Position.X < fadePos;
                 }
-                bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
-                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
-                if (fadein || fadeout) {
+                bool skip = point.Position.X < hitPartControl.Bounds.Left + ViewConstants.ResizeMargin;
+                bool trim = point.Position.X > hitPartControl.Bounds.Right - ViewConstants.ResizeMargin;
+                if (hitPartControl.HitPianoRollViewportHandle(point.Position - hitPartControl.Bounds.Position)) {
+                    Cursor = HandCursors.Grab;
+                } else if (fadein || fadeout) {
                     Cursor = ViewConstants.cursorHand;
                 } else if (skip || trim) {
                     Cursor = ViewConstants.cursorSizeWE;
@@ -1209,13 +1382,20 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public void PartsCanvasPointerExited(object sender, PointerEventArgs args) {
+            // The hover cursor is set on the window; reset it when leaving the canvas from a part edge,
+            // otherwise it stays visible wherever nothing overrides it (e.g. around open popups).
+            if (partEditState == null) {
+                Cursor = null;
+            }
+        }
+
         public void PartsCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
             if (partEditState?.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            partEditState.Update(point.Pointer, point.Position);
             partEditState.End(point.Pointer, point.Position);
             partEditState = null;
             Cursor = null;
@@ -1225,8 +1405,13 @@ namespace OpenUtau.App.Views {
             if (sender is not Canvas canvas) {
                 return;
             }
-            var control = canvas.InputHitTest(args.GetPosition(canvas));
-            if (control is PartControl partControl && partControl.part is UVoicePart) {
+            
+            var point = args.GetPosition(canvas);
+            var visuals = canvas.GetVisualsAt(point);
+            var hitPartControl = visuals
+                .Select(v => v.FindAncestorOfType<PartControl>(includeSelf: true))
+                .FirstOrDefault(pc => pc != null);    
+            if (hitPartControl?.part is UVoicePart) {
                 if (pianoRoll == null) {
                     LoadingWindow.BeginLoading(this);
 
@@ -1259,7 +1444,7 @@ namespace OpenUtau.App.Views {
                     pianoRoll.Focus();
                 }
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
-                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
+                DocManager.Inst.ExecuteCmd(new LoadPartNotification(hitPartControl.part, DocManager.Inst.Project, tick));
                 pianoRoll.AttachExpressions();
             }
         }
@@ -1269,21 +1454,18 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (Preferences.Default.DetachPianoRoll) {
-                pianoRollWindow?.ForceClose();
-                pianoRollWindow = null;
-                PianoRollContainer.Content = pianoRoll;
-                viewModel.ShowPianoRoll = true;
-                Preferences.Default.DetachPianoRoll = false;
-            } else {
                 PianoRollContainer.Content = null;
                 viewModel.ShowPianoRoll = false;
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new(pianoRoll);
                     pianoRollWindow.Show();
                 }
-                Preferences.Default.DetachPianoRoll = true;
+            } else {
+                pianoRollWindow?.ForceClose();
+                pianoRollWindow = null;
+                PianoRollContainer.Content = pianoRoll;
+                viewModel.ShowPianoRoll = true;
             }
-            Preferences.Save();
         }
 
         public void MainPagePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -1293,12 +1475,10 @@ namespace OpenUtau.App.Views {
                     delta = new Vector(delta.Y, delta.X);
                 }
                 if (delta.X != 0) {
-                    HScrollBar.Value = Math.Max(HScrollBar.Minimum,
-                        Math.Min(HScrollBar.Maximum, HScrollBar.Value - HScrollBar.SmallChange * delta.X));
+                    hScroll.By(-HScrollBar.SmallChange * delta.X, SmoothViewport.IsWheelStep(delta.X));
                 }
                 if (delta.Y != 0) {
-                    VScrollBar.Value = Math.Max(VScrollBar.Minimum,
-                        Math.Min(VScrollBar.Maximum, VScrollBar.Value - VScrollBar.SmallChange * delta.Y));
+                    vScroll.By(-VScrollBar.SmallChange * delta.Y, SmoothViewport.IsWheelStep(delta.Y));
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 ViewScalerPointerWheelChanged(VScaler, args);
@@ -1504,7 +1684,6 @@ namespace OpenUtau.App.Views {
                     return;
                 }
 
-                bool cancelled = false;
                 using var cts = new CancellationTokenSource();
                 MessageBox? msgbox = null;
                 EventHandler? closedHandler = null;
@@ -1513,7 +1692,6 @@ namespace OpenUtau.App.Views {
                     string pitchText =  ThemeManager.GetString("context.part.extractingpitch");
                     msgbox = MessageBox.ShowModal(this, $"{midiText} {part.name}", midiText);
                     closedHandler = (_, __) => {
-                        cancelled = true;
                         cts.Cancel();
                     };
                     msgbox.Closed += closedHandler;
@@ -1527,77 +1705,31 @@ namespace OpenUtau.App.Views {
                             return result == MessageBox.MessageBoxResult.Yes;
                         }).GetAwaiter().GetResult();
                     };
-                    UVoicePart? voicePart;
-                    if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
-                        voicePart = await Task.Run(() => {
-                            using (var some = new Some()) {
-                                using (cts.Token.Register(() => some.Interrupt())) {
-                                    if (cts.Token.IsCancellationRequested) {
-                                        return null;
-                                    }
-                                    return some.Transcribe(DocManager.Inst.Project, wavePart,
-                                        null, null,
-                                        confirmLongChunk,
-                                        (processedS, totalS) => {
-                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", midiText, part.name, processedS, totalS));
-                                        });
-                                }
+                    // Run the transcription once. If it fails because GAME or RMVPE is not
+                    // installed, offer to install it and run once more; never loop further.
+                    Exception? lastError = null;
+                    for (int attempt = 0; attempt < 2; ++attempt) {
+                        try {
+                            await RunTranscribe(wavePart, transcribeVm, cts, confirmLongChunk, midiText, pitchText, part.name, msgbox);
+                            lastError = null;
+                            break;
+                        } catch (Exception e) {
+                            if (cts.Token.IsCancellationRequested) {
+                                return;
                             }
-                        });
-                    } else {
-                        var gameOptions = transcribeVm.BuildGameOptions();
-                        var batchingStrategy = transcribeVm.BuildBatchingStrategy();
-                        voicePart = await Task.Run(() => {
-                            using (var game = new Game()) {
-                                using (cts.Token.Register(() => game.Interrupt())) {
-                                    if (cts.Token.IsCancellationRequested) {
-                                        return null;
-                                    }
-                                    return game.Transcribe(DocManager.Inst.Project, wavePart,
-                                        gameOptions, batchingStrategy,
-                                        confirmLongChunk,
-                                        (processedS, totalS) => {
-                                            msgbox.SetText(string.Format("{0} {1}\n{2}s / {3}s", midiText, part.name, processedS, totalS));
-                                        });
-                                }
+                            var missing = MissingPackageException.Collect(e);
+                            if (attempt == 0 && missing.Count > 0) {
+                                await PackageInstallPrompt.EnsureInstalledAsync(this, missing, afterFailure: true);
+                                continue;
                             }
-                        });
-                    }
-                    RmvpeResult? rmvpeResult = null;
-                    if (voicePart != null && transcribeVm.PredictPitd && !cancelled) {
-                        msgbox.SetText($"{pitchText} {part.name}");
-                        rmvpeResult = await Task.Run(() => {
-                            using var rmvpe = new RmvpeTranscriber();
-                            using (cts.Token.Register(() => rmvpe.Interrupt())) {
-                                if (cts.Token.IsCancellationRequested) {
-                                    return null;
-                                }
-                                return rmvpe.Infer(wavePart);
-                            }
-                        });
-                    }
-                    if (voicePart != null && !cancelled) {
-                        var project = DocManager.Inst.Project;
-                        var track = new UTrack(project);
-                        track.TrackNo = project.tracks.Count;
-                        voicePart.trackNo = track.TrackNo;
-                        DocManager.Inst.StartUndoGroup("command.part.transcribe");
-                        DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-                        DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
-                        if (rmvpeResult != null) {
-                            var wavePosMs = project.timeAxis.TickPosToMsPos(wavePart.position);
-                            var voicePosMs = project.timeAxis.TickPosToMsPos(voicePart.position);
-                            var skipMs = wavePart.GetSkipMs(project);
-                            rmvpeResult.ApplyToPart(project, voicePart, wavePosMs - voicePosMs - skipMs);
+                            lastError = e;
+                            break;
                         }
-                        DocManager.Inst.EndUndoGroup();
                     }
-                } catch (Exception e) {
-                    if (cancelled) {
-                        return;
+                    if (lastError != null) {
+                        Log.Error(lastError, $"Failed to transcribe part {part.name}");
+                        _ = MessageBox.ShowError(this, lastError);
                     }
-                    Log.Error(e, $"Failed to transcribe part {part.name}");
-                    _ = MessageBox.ShowError(this, e);
                 } finally {
                     if (msgbox != null) {
                         if (closedHandler != null) {
@@ -1606,6 +1738,76 @@ namespace OpenUtau.App.Views {
                         msgbox.Close();
                     }
                 }
+            }
+        }
+
+        /// <summary>Runs one transcription pass. Throws on cancellation or a missing GAME/RMVPE package.</summary>
+        async Task RunTranscribe(UWavePart wavePart, TranscribeViewModel transcribeVm, CancellationTokenSource cts,
+                Func<bool> confirmLongChunk, string midiText, string pitchText, string partName, MessageBox? msgbox) {
+            UVoicePart? voicePart;
+            if (transcribeVm.SelectedAlgorithm == TranscribeAlgorithm.SOME) {
+                voicePart = await Task.Run(() => {
+                    using (var some = new Some()) {
+                        using (cts.Token.Register(() => some.Interrupt())) {
+                            if (cts.Token.IsCancellationRequested) {
+                                return null;
+                            }
+                            return some.Transcribe(DocManager.Inst.Project, wavePart,
+                                null, null,
+                                confirmLongChunk,
+                                (processedS, totalS) => {
+                                    msgbox?.SetText(string.Format("{0} {1}\n{2}s / {3}s", midiText, partName, processedS, totalS));
+                                });
+                        }
+                    }
+                });
+            } else {
+                var gameOptions = transcribeVm.BuildGameOptions();
+                var batchingStrategy = transcribeVm.BuildBatchingStrategy();
+                voicePart = await Task.Run(() => {
+                    using (var game = new Game()) {
+                        using (cts.Token.Register(() => game.Interrupt())) {
+                            if (cts.Token.IsCancellationRequested) {
+                                return null;
+                            }
+                            return game.Transcribe(DocManager.Inst.Project, wavePart,
+                                gameOptions, batchingStrategy,
+                                confirmLongChunk,
+                                (processedS, totalS) => {
+                                    msgbox?.SetText(string.Format("{0} {1}\n{2}s / {3}s", midiText, partName, processedS, totalS));
+                                });
+                        }
+                    }
+                });
+            }
+            RmvpeResult? rmvpeResult = null;
+            if (voicePart != null && transcribeVm.PredictPitd) {
+                msgbox?.SetText($"{pitchText} {partName}");
+                rmvpeResult = await Task.Run(() => {
+                    using var rmvpe = new RmvpeTranscriber();
+                    using (cts.Token.Register(() => rmvpe.Interrupt())) {
+                        if (cts.Token.IsCancellationRequested) {
+                            return null;
+                        }
+                        return rmvpe.Infer(wavePart);
+                    }
+                });
+            }
+            if (voicePart != null) {
+                var project = DocManager.Inst.Project;
+                var track = new UTrack(project);
+                track.TrackNo = project.tracks.Count;
+                voicePart.trackNo = track.TrackNo;
+                DocManager.Inst.StartUndoGroup("command.part.transcribe");
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+                if (rmvpeResult != null) {
+                    var wavePosMs = project.timeAxis.TickPosToMsPos(wavePart.position);
+                    var voicePosMs = project.timeAxis.TickPosToMsPos(voicePart.position);
+                    var skipMs = wavePart.GetSkipMs(project);
+                    rmvpeResult.ApplyToPart(project, voicePart, wavePosMs - voicePosMs - skipMs);
+                }
+                DocManager.Inst.EndUndoGroup();
             }
         }
 
@@ -1769,8 +1971,53 @@ namespace OpenUtau.App.Views {
                 if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
                     await VoiceColorRemappingAsync(track, oldColors, newColors);
                 }
+                await RemapImportedVocalModesAsync(track);
             }
             DocManager.Inst.EndUndoGroup();
+        }
+
+        async Task RemapImportedVocalModesAsync(UTrack track) {
+            if (track.Singer?.SingerType != USingerType.DiffSinger) return;
+            track.Singer.EnsureLoaded();
+            if (!track.Singer.Loaded) return;
+            var parts = DocManager.Inst.Project.parts.Where(p => p.trackNo == track.TrackNo && p is UVoicePart).Cast<UVoicePart>().ToArray();
+            var modes = parts.SelectMany(p => p.curves)
+                .Where(c => c.descriptor != null && IsImportedVocalModeCurve(c.abbr))
+                .Select(c => c.descriptor.name)
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            if (modes.Length == 0) return;
+
+            var oldModes = new[] { "" }.Concat(modes).ToArray();
+            var colors = track.Singer.Subbanks.Select(s => s.Color).ToArray();
+            var dialog = new VoiceColorMappingDialog { DataContext = new VoiceColorMappingViewModel(oldModes, colors, track.TrackName) };
+            await dialog.ShowDialog(this);
+            if (!dialog.Apply) return;
+
+            foreach (var mapping in ((VoiceColorMappingViewModel)dialog.DataContext).ColorMappings.Where(m => m.OldIndex > 0 && m.SelectedIndex > 0)) {
+                var sourceName = modes[mapping.OldIndex - 1];
+                var sourceDescriptor = DocManager.Inst.Project.expressions.Values.FirstOrDefault(d => d.name.Equals(sourceName, StringComparison.OrdinalIgnoreCase));
+                if (sourceDescriptor == null) continue;
+                string targetAbbr = $"cl{mapping.SelectedIndex:D2}";
+                if (!DocManager.Inst.Project.expressions.TryGetValue(targetAbbr, out var targetDescriptor)) {
+                    targetDescriptor = new UExpressionDescriptor($"voice color {colors[mapping.SelectedIndex]}", targetAbbr, 0, 100, 0) { type = UExpressionType.Curve };
+                    DocManager.Inst.Project.RegisterExpression(targetDescriptor);
+                }
+                foreach (var part in parts) {
+                    var source = part.curves.FirstOrDefault(c => c.abbr == sourceDescriptor.abbr);
+                    if (source == null || part.curves.Any(c => c.abbr == targetAbbr)) continue;
+                    part.curves.Add(new UCurve(targetDescriptor) { xs = source.xs.ToList(), ys = source.ys.Select(y => Math.Clamp(y <= 1 ? y * 100 : y, 0, 100)).ToList() });
+                }
+            }
+        }
+
+        static bool IsImportedVocalModeCurve(string abbr) {
+            if (abbr.StartsWith("cl", StringComparison.OrdinalIgnoreCase)) return false;
+            return abbr != Ustx.DYN && abbr != Ustx.PITD && abbr != Ustx.TENC &&
+                abbr != Ustx.BREC && abbr != Ustx.GENC && abbr != Ustx.VOIC &&
+                abbr != Ustx.SHFC && abbr != Ustx.CLR && abbr != Ustx.CLRY &&
+                abbr != "opec";
         }
         async Task VoiceColorRemappingAsync(UTrack track, string[] oldColors, string[] newColors) {
             var parts = DocManager.Inst.Project.parts
@@ -1834,6 +2081,7 @@ namespace OpenUtau.App.Views {
                     PathManager.Inst.ClearCache();
                     Log.Information("Cache cleared.");
                 }
+                PlaybackManager.Inst.StopPlayback();
                 Preferences.Default.MainWindowSize.Set(Width, Height, Position.X, Position.Y, (int)WindowState);
                 Preferences.Default.RecoveryPath = string.Empty;
                 Preferences.Save();
@@ -1868,6 +2116,12 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
+            // Errors from missing packages become an offer to install them.
+            var missingPackages = MissingPackageException.Collect((cmd as ErrorMessageNotification)?.e ?? (cmd as ToastNotification)?.e);
+            if (missingPackages.Count > 0) {
+                _ = PackageInstallPrompt.EnsureInstalledAsync(this, missingPackages, afterFailure: true);
+                return;
+            }
             if (cmd is ErrorMessageNotification notif) {
                 switch (notif.e) {
                     case Core.Render.NoResamplerException:
@@ -1882,6 +2136,13 @@ namespace OpenUtau.App.Views {
                         MessageBox.ShowError(this, notif.e, notif.message, true);
                         break;
                 }
+            } else if (cmd is TrackChangeRenderSettingCommand renderSettingCmd && !isUndo) {
+                _ = PackageInstallPrompt.EnsureInstalledAsync(this, PackageRequirements.For(renderSettingCmd.track.RendererSettings), afterFailure: false);
+            } else if (cmd is ToastNotification toast) {
+                if (toast.windowType == "Pianoroll" && pianoRollWindow != null) {
+                    if (pianoRollWindow.Toast(toast)) return;
+                }
+                notificationManager.Show(ToastControl.GetNotification(toast, this));
             } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
                 if (voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
                     // Verify whether remapping is required when the voice color lineup changes
@@ -1898,6 +2159,7 @@ namespace OpenUtau.App.Views {
                     } else if (track.ValidateVoiceColor(out var oldColors, out var newColors)) { // Verify whether remapping is required when the singer is changed
                         VoiceColorRemapping(track, oldColors, newColors);
                     }
+                    _ = RemapImportedVocalModesAsync(track);
                 }
             }
         }

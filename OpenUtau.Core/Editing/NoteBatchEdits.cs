@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.DiffSinger;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -456,13 +457,38 @@ namespace OpenUtau.Core.Editing {
         public void RunAsync(
             UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
             Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
+            RunInternal(
+                project, part, selectedNotes, docManager,
+                setProgressCallback, cancellationToken);
+        }
+
+        /// <summary>Live pitch only; must not replace <see cref="RunAsync"/> (BatchEdit interface).</summary>
+        internal void RunLive(
+            UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
+            CancellationToken cancellationToken, double pitchSteps, bool fastRealtime) {
+            RunInternal(
+                project, part, selectedNotes, docManager,
+                (_, _) => { }, cancellationToken,
+                recordUndo: false,
+                showUnsupportedError: false,
+                pitchSteps: pitchSteps,
+                fastRealtime: fastRealtime);
+        }
+
+        void RunInternal(
+            UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
+            Action<int, int> setProgressCallback, CancellationToken cancellationToken,
+            bool recordUndo = true, bool showUnsupportedError = true, double? pitchSteps = null,
+            bool fastRealtime = false) {
             var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
             if (renderer == null || !renderer.SupportsRenderPitch) {
-                var e = new MessageCustomizableException(
-                    "Current renderer doesn't support generating pitch curve", 
-                    $"<translate:errors.editing.autopitch.unsupported>",
-                    new Exception());
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                if (showUnsupportedError) {
+                    var e = new MessageCustomizableException(
+                        "Current renderer doesn't support generating pitch curve", 
+                        $"<translate:errors.editing.autopitch.unsupported>",
+                        new Exception());
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                }
                 return;
             }
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
@@ -476,51 +502,167 @@ namespace OpenUtau.Core.Editing {
             int finished = 0;
             setProgressCallback(0, phrases.Length);
             var commands = new List<SetCurveCommand>();
+            // The model's own pitch goes into the rendered pitch masked curve too, for expression graphs to read.
+            var cleared = new List<(int from, int to)>();
+            var rendered = new List<(int x, float y)>();
+            // A track whose graph prefers the pitch override keeps PITD as the user's own.
+            bool prefersOverride = ExpressionGraph.ExpressionGraphProgram
+                .PrefersPitchOverride(project, project.tracks[part.trackNo]);
             for (int ph_i = phrases.Count() - 1; ph_i >= 0; ph_i--) {
                 var phrase = phrases[ph_i];
-                var result = renderer.LoadRenderedPitch(phrase);
+                Render.RenderPitchResult result;
+                if (pitchSteps.HasValue && renderer is DiffSingerRenderer diffSingerRenderer) {
+                    result = diffSingerRenderer.LoadRenderedPitchLive(
+                        phrase, positions, pitchSteps.Value, fastRealtime);
+                } else {
+                    result = renderer.LoadRenderedPitch(phrase, positions);
+                }
                 if (result == null) {
                     continue;
                 }
-                int? lastX = null;
-                int? lastY = null;
+                int clearedBefore = cleared.Count;
+                int phraseStart = phrase.position - part.position;
+                CollectRenderedPitch(result, phraseStart, phrase.duration, cleared, rendered);
+                // The result's padding (1 s for Voicevox) overlaps the neighbouring phrases; only clear the
+                // phrase's own span, so their rendered pitch is not erased.
+                ClampRanges(cleared, clearedBefore, phraseStart - phrase.leading, phraseStart + phrase.duration);
                 // TODO: Optimize interpolation and command.
                 if (cancellationToken.IsCancellationRequested) break;
+                if (prefersOverride) {
+                    finished += 1;
+                    setProgressCallback(finished, phrases.Length);
+                    continue;
+                }
                 // Take the first negative tick before start and the first tick after end for each segment;
                 // Reverse traversal, so that when the score slices are too close, priority is given to covering the consonant pitch of the next segment, reducing the impact on vowels.
-                for (int i = 0; i < result.tones.Length; i++) {
-                    if (result.tones[i] < 0) {
-                        continue;
-                    }
-                    int x = phrase.position - part.position + (int)result.ticks[i];
-                    if (result.ticks[i] < 0) {
-                        if (i + 1 < result.ticks.Length && result.ticks[i + 1] > 0) { } else
+                foreach (var (start, end) in DiffSingerRetake.GetRetakeFrameRanges(
+                    result.retakeMask, result.tones.Length)) {
+                    int? lastX = null;
+                    int? lastY = null;
+                    for (int i = start; i < end; i++) {
+                        if (result.tones[i] < 0) {
                             continue;
+                        }
+                        // Padding and inter-phoneme gap frames are silence: the
+                        // pitch model's output there is an artifact, and writing
+                        // it back produces a spike at the phrase/gap boundary.
+                        if (result.voiced != null && i < result.voiced.Length && !result.voiced[i]) {
+                            continue;
+                        }
+                        int x = phrase.position - part.position + (int)result.ticks[i];
+                        if (result.ticks[i] < 0) {
+                            if (i + 1 < result.ticks.Length && result.ticks[i + 1] > 0) { } else
+                                continue;
+                        }
+                        if (x >= phrase.position + phrase.duration) {
+                            i = end - 1;
+                        }
+                        int pitchIndex = Math.Clamp((x - (phrase.position - part.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
+                        float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
+                        int y = (int)(result.tones[i] * 100 - basePitch);
+                        lastX ??= x;
+                        lastY ??= y;
+                        if (y > minPitD) {
+                            commands.Add(new SetCurveCommand(
+                                project, part, Format.Ustx.PITD, x, y, lastX.Value, lastY.Value));
+                        }
+                        lastX = x;
+                        lastY = y;
                     }
-                    if (x >= phrase.position + phrase.duration) {
-                        i = result.tones.Length - 1;
-                    }
-                    int pitchIndex = Math.Clamp((x - (phrase.position - part.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
-                    float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
-                    int y = (int)(result.tones[i] * 100 - basePitch);
-                    lastX ??= x;
-                    lastY ??= y;
-                    if (y > minPitD) {
-                        commands.Add(new SetCurveCommand(
-                            project, part, Format.Ustx.PITD, x, y, lastX.Value, lastY.Value));
-                    }
-                    lastX = x;
-                    lastY = y;
                 }
                 finished += 1;
                 setProgressCallback(finished, phrases.Length);
             }
 
+            if (commands.Count == 0 && cleared.Count == 0) {
+                return;
+            }
+            var validateOptions = new ValidateOptions {
+                SkipTiming = true,
+                Part = part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
             DocManager.Inst.PostOnUIThread(() => {
-                docManager.StartUndoGroup("command.batch.note", true);
-                commands.ForEach(docManager.ExecuteCmd);
-                docManager.EndUndoGroup();
+                var all = new List<UCommand>(commands);
+                if (cleared.Count > 0 && project.expressions.ContainsKey(Format.Ustx.RPIT)) {
+                    var curve = part.maskedCurves.FirstOrDefault(c => c.abbr == Format.Ustx.RPIT)?.Clone()
+                        ?? new UMaskedCurve(Format.Ustx.RPIT);
+                    // Every retaken range first, so neighbouring phrases don't clear each other's values.
+                    foreach (var (from, to) in cleared) {
+                        curve.Clear(from, to);
+                    }
+                    curve.SetValues(rendered);
+                    all.Add(new ReplaceMaskedCurveCommand(part, Format.Ustx.RPIT, curve));
+                }
+                if (recordUndo) {
+                    docManager.StartUndoGroup("command.batch.note", true);
+                    all.ForEach(docManager.ExecuteCmd);
+                    docManager.EndUndoGroup();
+                } else {
+                    docManager.ApplyTransient(all, validateOptions, preRender: !fastRealtime);
+                }
             });
+        }
+
+        /// <summary>
+        /// Limits the ranges from <paramref name="startIndex"/> on to [<paramref name="min"/>, <paramref name="max"/>],
+        /// dropping those left empty. A phrase's result also covers its silent padding, which overlaps the
+        /// neighbouring phrases; clearing the pitch stored there would erase pitch the phrase does not own.
+        /// </summary>
+        internal static void ClampRanges(List<(int from, int to)> ranges, int startIndex, int min, int max) {
+            for (int i = ranges.Count - 1; i >= startIndex; i--) {
+                var (from, to) = ranges[i];
+                from = Math.Max(from, min);
+                to = Math.Min(to, max);
+                if (from >= to) {
+                    ranges.RemoveAt(i);
+                } else {
+                    ranges[i] = (from, to);
+                }
+            }
+        }
+
+        /// <summary>
+        /// A result's pitch resampled onto the masked curve grid, in absolute cents: the part-relative tick ranges it
+        /// retakes, and values on the grid between voiced frames, linear from frame to frame. Padding, unvoiced
+        /// frames and rests leave gaps.
+        /// </summary>
+        /// <param name="offset">The part-relative tick of the result's tick 0, i.e. of the phrase.</param>
+        /// <param name="limit">The last tick of the phrase, relative to it; frames after it are padding.</param>
+        internal static void CollectRenderedPitch(Render.RenderPitchResult result, int offset, int limit,
+                List<(int from, int to)> cleared, List<(int x, float y)> values) {
+            bool Voiced(int i) => result.tones[i] >= 0 && result.ticks[i] <= limit
+                && (result.voiced == null || i >= result.voiced.Length || result.voiced[i]);
+            foreach (var (start, end) in DiffSingerRetake.GetRetakeFrameRanges(result.retakeMask, result.tones.Length)) {
+                cleared.Add((offset + (int)Math.Floor(result.ticks[start]), offset + (int)Math.Ceiling(result.ticks[end - 1])));
+                int i = start;
+                while (i < end) {
+                    if (!Voiced(i)) {
+                        i++;
+                        continue;
+                    }
+                    int last = i;
+                    while (last + 1 < end && Voiced(last + 1)) {
+                        last++;
+                    }
+                    // Grid ticks from the first voiced frame to the last, linear between the frames around each.
+                    int k = i;
+                    int first = (int)Math.Ceiling((offset + result.ticks[i]) / UMaskedCurve.interval) * UMaskedCurve.interval;
+                    for (int x = first; x <= offset + result.ticks[last]; x += UMaskedCurve.interval) {
+                        double tick = x - offset;
+                        while (k < last && result.ticks[k + 1] <= tick) {
+                            k++;
+                        }
+                        float y = k == last || result.ticks[k + 1] == result.ticks[k]
+                            ? result.tones[k]
+                            : (float)(result.tones[k] + (tick - result.ticks[k]) / (result.ticks[k + 1] - result.ticks[k])
+                                * (result.tones[k + 1] - result.tones[k]));
+                        values.Add((x, y * 100));
+                    }
+                    i = last + 1;
+                }
+            }
         }
     }
 
@@ -829,17 +971,17 @@ namespace OpenUtau.Core.Editing {
                 finished += 1;
                 setProgressCallback(finished, part.renderPhrases.Count);
             }
-            var commands = curveDict
-                .Select(kv => new MergedSetCurveCommand(
-                    project, part, kv.Key,
-                    kv.Value?.realXs.ToArray() ?? Array.Empty<int>(),
-                    kv.Value?.realYs.ToArray() ?? Array.Empty<int>(),
-                    newXsDict[kv.Key].ToArray(),
-                    newYsDict[kv.Key].ToArray(),
-                    true))
-                .ToList();
 
             DocManager.Inst.PostOnUIThread(() => {
+                var commands = curveDict
+                    .Select(kv => new MergedSetCurveCommand(
+                        project, part, kv.Key,
+                        kv.Value?.realXs.ToArray() ?? Array.Empty<int>(),
+                        kv.Value?.realYs.ToArray() ?? Array.Empty<int>(),
+                        newXsDict[kv.Key].ToArray(),
+                        newYsDict[kv.Key].ToArray(),
+                        true))
+                    .ToList();
                 docManager.StartUndoGroup("command.batch.note", true);
                 commands.ForEach(docManager.ExecuteCmd);
                 docManager.EndUndoGroup();

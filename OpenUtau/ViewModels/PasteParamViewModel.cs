@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using OpenUtau.Core;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
+using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public class PasteParamViewModel {
@@ -9,7 +10,7 @@ namespace OpenUtau.App.ViewModels {
             Params.Add(new PasteParameter("pitch points", ""));
             Params.Add(new PasteParameter("vibrato", ""));
             foreach(var exp in DocManager.Inst.Project.expressions) {
-                if(exp.Value.type != Core.Ustx.UExpressionType.Curve) {
+                if(exp.Value.type is Core.Ustx.UExpressionType.Numerical or Core.Ustx.UExpressionType.Options) {
                     Params.Add(new PasteParameter(exp.Value.name, exp.Key));
                 }
             }
@@ -19,14 +20,14 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollection<PasteParameter> Params { get; } = new ObservableCollection<PasteParameter>();
     }
 
-    public class PasteParameter {
+    public partial class PasteParameter: ReactiveObject {
         public PasteParameter(string name, string abbr) {
             Name = name;
             Abbr = abbr;
         }
         public string Name { get; set; }
         public string Abbr { get; set; }
-        [Reactive] public bool IsSelected { get; set; } = false;
+        [Reactive] public partial bool IsSelected { get; set; } = false;
 
         public override string ToString() { return Name; }
     }

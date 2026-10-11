@@ -16,9 +16,27 @@ namespace OpenUtau.App.ViewModels {
         public int Resolution => Project.resolution;
         public int PlayPosTick => DocManager.Inst.playPosTick;
         public TimeSpan PlayPosTime => TimeSpan.FromMilliseconds((int)Project.timeAxis.TickPosToMsPos(DocManager.Inst.playPosTick));
+        public bool Metronome {
+            get => PlaybackManager.Inst.Metronome;
+            set {
+                if (PlaybackManager.Inst.Metronome != value) {
+                    PlaybackManager.Inst.Metronome = value;
+                    this.RaisePropertyChanged(nameof(Metronome));
+                }
+            }
+        }
         public bool HasRangeSelection => DocManager.Inst.rangeEndTick > DocManager.Inst.rangeStartTick;
         public bool IsPlaying => PlaybackManager.Inst.PlayingMaster;
         public bool ShowPlayPosHighlight => !IsPlaying || HasRangeSelection;
+        public bool LoopPlayback {
+            get => PlaybackManager.Inst.LoopPlayback;
+            set {
+                if (PlaybackManager.Inst.LoopPlayback != value) {
+                    PlaybackManager.Inst.LoopPlayback = value;
+                    this.RaisePropertyChanged(nameof(LoopPlayback));
+                }
+            }
+        }
 
         public PlaybackViewModel() {
             DocManager.Inst.AddSubscriber(this);

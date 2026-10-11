@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -47,6 +47,15 @@ namespace OpenUtau.Core.Format {
             if (ext == ".aiff" || ext == ".aif" || ext == ".aifc") {
                 return new AiffFileReader(filepath);
             }
+            // M4A/AAC: MP4 container has a "ftyp" box at bytes 4–7
+            string ftyp = System.Text.Encoding.ASCII.GetString(buffer.AsSpan(4, 4));
+            if (ftyp == "ftyp" || ext == ".m4a" || ext == ".mp4") {
+#if WINDOWS
+                return new MediaFoundationReader(filepath);
+#else
+                return new AACWaveReader(filepath);
+#endif
+            }
             throw new Exception("Unsupported audio file format.");
         }
 
@@ -59,6 +68,25 @@ namespace OpenUtau.Core.Format {
                 provider = provider.ToStereo();
             }
             return GetSamples(provider);
+        }
+
+        /// <summary>Writes a 44.1 kHz mono float buffer as a 16-bit WAV — the renderer cache file format.</summary>
+        public static void WriteMono16Wav(string path, float[] samples) {
+            using var writer = new WaveFileWriter(path, new WaveFormat(44100, 16, 1));
+            var pcm = new byte[samples.Length * 2];
+            for (int i = 0; i < samples.Length; ++i) {
+                float v = samples[i];
+                if (v > 1f) {
+                    v = 1f;
+                }
+                if (v < -1f) {
+                    v = -1f;
+                }
+                var s = (short)(v * short.MaxValue);
+                pcm[i * 2] = (byte)(s & 0xFF);
+                pcm[i * 2 + 1] = (byte)((s >> 8) & 0xFF);
+            }
+            writer.Write(pcm, 0, pcm.Length);
         }
 
         public static float[] GetSamples(ISampleProvider sampleProvider) {

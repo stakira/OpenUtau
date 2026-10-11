@@ -8,7 +8,6 @@ using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Format;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OpenUtau.Plugins {
     public abstract class PhonemizerTestBase {
@@ -67,7 +66,6 @@ namespace OpenUtau.Plugins {
             timeAxis.BuildSegments(project);
 
             var phonemizer = CreatePhonemizer();
-            phonemizer.Testing = true;
             phonemizer.SetSinger(singer);
             phonemizer.SetTiming(timeAxis);
             phonemizer.SetUp(groups.ToArray(), project, track);
