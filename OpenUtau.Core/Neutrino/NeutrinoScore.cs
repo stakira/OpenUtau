@@ -17,8 +17,9 @@ namespace OpenUtau.Core.Neutrino {
         static string NormalizeLyric(string lyric) {
             lyric = lyric.Trim();
             if (IsRestLyric(lyric)) { return ""; }
+            if (lyric == "+") { return lyric; }
             if (!Regex.IsMatch(lyric, @"^[\u3041-\u3096\u3099\u309A\u30A1-\u30FA\u30FC]+$")) {
-                throw new ArgumentException($"NEUTRINO não reconhece a letra '{lyric}'. Use hiragana ou katakana; aliases UTAU precisam ser convertidos. Notas '+' ainda não são suportadas.");
+                throw new ArgumentException($"NEUTRINO não reconhece a letra '{lyric}'. Use hiragana ou katakana; aliases UTAU precisam ser convertidos.");
             }
             return lyric;
         }
@@ -99,6 +100,7 @@ namespace OpenUtau.Core.Neutrino {
             }
             AddSegment(padding, null, null);
             double origin = notes[0].PositionMs;
+            bool canExtend = false;
             foreach (var note in notes) {
                 if (note.Tone < 0 || note.Tone > 127 || note.DurationMs <= 0) {
                     throw new ArgumentException("Invalid NEUTRINO note pitch or duration.");
@@ -106,6 +108,10 @@ namespace OpenUtau.Core.Neutrino {
                 string lyric = NormalizeLyric(note.Lyric);
                 int start = padding + (int)Math.Round(note.PositionMs - origin);
                 if (start < cursor) { throw new ArgumentException("Overlapping notes cannot be rendered by NEUTRINO."); }
+                if (lyric == "+" && (!canExtend || start != cursor)) {
+                    throw new ArgumentException("NEUTRINO: '+' precisa seguir uma sílaba cantada sem pausa entre as notas.");
+                }
+                canExtend = lyric.Length != 0;
                 AddSegment(start - cursor, null, null);
                 int end = padding + (int)Math.Round(note.PositionMs + note.DurationMs - origin);
                 AddSegment(Math.Max(1, end - start), lyric.Length == 0 ? null : note.Tone, lyric);
