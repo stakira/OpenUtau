@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +38,8 @@ namespace OpenUtau.Classic {
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
             };
-            using (var archive = ArchiveFactory.OpenArchive(path, readerOptions)) {
+            using var archiveStream = File.OpenRead(path);
+            using (var archive = ArchiveFactory.OpenArchive(archiveStream, readerOptions)) {
                 var touches = new List<string>();
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
@@ -69,9 +70,9 @@ namespace OpenUtau.Classic {
                             using (var stream = File.Open(filePath, FileMode.Open)) {
                                 config = VoicebankConfig.Load(stream);
                             }
-                            if (string.IsNullOrEmpty(config.SingerType)) {
+                            if (config.SingerType != singerType) {
                                 config.SingerType = singerType;
-                                using (var stream = File.Open(filePath, FileMode.Open)) {
+                                using (var stream = File.Open(filePath, FileMode.Create)) {
                                     config.Save(stream);
                                 }
                             }
@@ -80,10 +81,16 @@ namespace OpenUtau.Classic {
                 }
                 foreach (var touch in touches) {
                     File.WriteAllText(touch, "\n");
-                    var config = new VoicebankConfig() {
-                        TextFileEncoding = textEncoding.WebName,
-                    };
-                    using (var stream = File.Open(touch.Replace(".txt", ".yaml"), FileMode.Create)) {
+                    string yamlPath = Path.Combine(Path.GetDirectoryName(touch)!, kCharacterYaml);
+                    VoicebankConfig config;
+                    if (File.Exists(yamlPath)) {
+                        using var input = File.OpenRead(yamlPath);
+                        config = VoicebankConfig.Load(input);
+                    } else {
+                        config = new VoicebankConfig { TextFileEncoding = textEncoding.WebName };
+                    }
+                    config.SingerType = singerType;
+                    using (var stream = File.Open(yamlPath, FileMode.Create)) {
                         config.Save(stream);
                     }
                 }
