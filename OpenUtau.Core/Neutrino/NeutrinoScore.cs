@@ -11,11 +11,14 @@ namespace OpenUtau.Core.Neutrino {
     public static class NeutrinoScore {
         public const int PaddingMs = 500;
 
+        public static bool IsBreathLyric(string lyric) => lyric.Trim() is "br" or "息" or "R";
+
         public static bool IsRestLyric(string lyric) => Regex.IsMatch(lyric.Trim(),
-            @"^(?:br(?:_in|_out)?(?:[A-G][#b]?-?\d+)?|breath|R|pau|sil)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            @"^(?:br(?:_in|_out)(?:[A-G][#b]?-?\d+)?|p|pau|sil)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
         static string NormalizeLyric(string lyric) {
             lyric = lyric.Trim();
+            if (IsBreathLyric(lyric)) { return "br"; }
             if (IsRestLyric(lyric)) { return ""; }
             if (lyric == "+") { return lyric; }
             if (!Regex.IsMatch(lyric, @"^[\u3041-\u3096\u3099\u309A\u30A1-\u30FA\u30FC]+$")) {
@@ -111,7 +114,7 @@ namespace OpenUtau.Core.Neutrino {
                 if (lyric == "+" && (!canExtend || start != cursor)) {
                     throw new ArgumentException("NEUTRINO: '+' precisa seguir uma sílaba cantada sem pausa entre as notas.");
                 }
-                canExtend = lyric.Length != 0;
+                canExtend = lyric.Length != 0 && lyric != "br";
                 AddSegment(start - cursor, null, null);
                 int end = padding + (int)Math.Round(note.PositionMs + note.DurationMs - origin);
                 AddSegment(Math.Max(1, end - start), lyric.Length == 0 ? null : note.Tone, lyric);
