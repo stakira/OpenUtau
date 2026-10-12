@@ -520,12 +520,6 @@ namespace OpenUtau.Core.Editing {
                 if (result == null) {
                     continue;
                 }
-                int clearedBefore = cleared.Count;
-                int phraseStart = phrase.position - part.position;
-                CollectRenderedPitch(result, phraseStart, phrase.duration, cleared, rendered);
-                // The result's padding (1 s for Voicevox) overlaps the neighbouring phrases; only clear the
-                // phrase's own span, so their rendered pitch is not erased.
-                ClampRanges(cleared, clearedBefore, phraseStart - phrase.leading, phraseStart + phrase.duration);
                 // Renderers without partial retake regenerate the whole phrase;
                 // write back only the selected notes so other notes' pitch is kept.
                 var retakeMask = result.retakeMask;
@@ -541,7 +535,9 @@ namespace OpenUtau.Core.Editing {
                             retakeMask, frameMs, result.voiced, WriteBackFadeMs);
                     }
                 }
-                CollectRenderedPitch(result, phrase.position - part.position, phrase.duration, cleared, rendered, retakeMask);
+                CollectPhraseRenderedPitch(
+                    result, phrase.position - part.position, phrase.duration, phrase.leading,
+                    cleared, rendered, retakeMask);
                 // TODO: Optimize interpolation and command.
                 if (cancellationToken.IsCancellationRequested) break;
                 if (prefersOverride) {
@@ -623,6 +619,21 @@ namespace OpenUtau.Core.Editing {
                     docManager.ApplyTransient(all, validateOptions, preRender: options?.FastRealtime != true);
                 }
             });
+        }
+
+        /// <summary>
+        /// <see cref="CollectRenderedPitch"/> for one phrase, with the cleared ranges limited to the phrase's own span.
+        /// The result's padding (1 s for Voicevox) overlaps the neighbouring phrases; clearing there would erase
+        /// their rendered pitch. Call it once per phrase, with the mask of the frames that are written back.
+        /// </summary>
+        /// <param name="phraseStart">The part-relative tick of the phrase.</param>
+        /// <param name="duration">The length of the phrase in ticks.</param>
+        /// <param name="leading">The ticks before the phrase start that the phrase's first phoneme occupies.</param>
+        internal static void CollectPhraseRenderedPitch(Render.RenderPitchResult result, int phraseStart, int duration,
+                int leading, List<(int from, int to)> cleared, List<(int x, float y)> values, bool[]? retakeMask) {
+            int clearedBefore = cleared.Count;
+            CollectRenderedPitch(result, phraseStart, duration, cleared, values, retakeMask);
+            ClampRanges(cleared, clearedBefore, phraseStart - leading, phraseStart + duration);
         }
 
         /// <summary>

@@ -105,6 +105,76 @@ namespace OpenUtau.Core.Render {
             AssertWeights(new[] { 0, 0, 0, 0, 0.5, 1 }, weights);
         }
 
+        // A Voicevox-like result for a phrase of ticks 0..1920 with notes at 0, 640 and 1280:
+        // 1 s (960 ticks) of silent padding on both sides, which is not voiced.
+        static RenderPitchResult PaddedResult() {
+            var ticks = new List<float>();
+            var voiced = new List<bool>();
+            for (int t = -960; t <= 2880; t += 10) {
+                ticks.Add(t);
+                voiced.Add(t >= 0 && t <= 1920);
+            }
+            return new RenderPitchResult {
+                ticks = ticks.ToArray(),
+                tones = ticks.Select(_ => 60f).ToArray(),
+                voiced = voiced.ToArray(),
+            };
+        }
+
+        // Runs what LoadRenderedPitch does for one phrase: the write-back mask for the selected note, then the
+        // rendered pitch (RPIT) it clears and writes.
+        static (List<(int from, int to)> cleared, List<(int x, float y)> values) CollectFor(int selectedNoteTick) {
+            var result = PaddedResult();
+            var noteRel = new[] { 0, 640, 1280 };
+            var mask = PitchRetake.BuildWriteBackMask(0, noteRel, new HashSet<int> { selectedNoteTick }, result.ticks);
+            var cleared = new List<(int from, int to)>();
+            var values = new List<(int x, float y)>();
+            OpenUtau.Core.Editing.LoadRenderedPitch.CollectPhraseRenderedPitch(
+                result, 0, 1920, 0, cleared, values, mask);
+            return (cleared, values);
+        }
+
+        [Fact]
+        public void CollectPhraseRenderedPitch_OnlyTouchesTheSelectedNote() {
+            var (cleared, values) = CollectFor(640);
+
+            // Not the whole phrase: the first and last notes keep their rendered pitch.
+            Assert.Equal(new[] { (640, 1270) }, cleared);
+            Assert.NotEmpty(values);
+            Assert.All(values, v => Assert.InRange(v.x, 640, 1270));
+        }
+
+        [Fact]
+        public void CollectPhraseRenderedPitch_LastNoteStopsAtThePhraseEnd() {
+            var (cleared, values) = CollectFor(1280);
+
+            // The last note owns the tail padding in the mask, but clearing must not reach the next phrase.
+            Assert.Equal(new[] { (1280, 1920) }, cleared);
+            Assert.All(values, v => Assert.InRange(v.x, 1280, 1920));
+        }
+
+        [Fact]
+        public void CollectPhraseRenderedPitch_FirstNoteStartsAtThePhraseStart() {
+            var (cleared, values) = CollectFor(0);
+
+            Assert.Equal(new[] { (0, 630) }, cleared);
+            Assert.All(values, v => Assert.InRange(v.x, 0, 630));
+        }
+
+        [Fact]
+        public void CollectPhraseRenderedPitch_WholePhraseIsLimitedToThePhrase() {
+            var result = PaddedResult();
+            var cleared = new List<(int from, int to)> { (-5000, -4000) };
+            var values = new List<(int x, float y)>();
+
+            OpenUtau.Core.Editing.LoadRenderedPitch.CollectPhraseRenderedPitch(
+                result, 0, 1920, 0, cleared, values, null);
+
+            // The range of an earlier phrase is left alone; this phrase's own is limited to its span.
+            Assert.Equal(new[] { (-5000, -4000), (0, 1920) }, cleared);
+            Assert.All(values, v => Assert.InRange(v.x, 0, 1920));
+        }
+
         [Fact]
         public void BuildWriteBackMask_NoneOrAllSelectedReturnsNull() {
             var noteRel = new[] { 0, 480 };
