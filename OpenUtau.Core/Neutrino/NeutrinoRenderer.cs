@@ -53,12 +53,14 @@ namespace OpenUtau.Core.Neutrino {
                     var file = new FileInfo(Path.Combine(config.ModelPath, name));
                     return $"{name}:{file.Length}:{file.LastWriteTimeUtc.Ticks}";
                 }));
-                string identity = $"neutrino-tau-internal-phones-v4\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
+                string identity = $"neutrino-tau-internal-phones-v5\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
                 string hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
                 string prefix = Path.Combine(PathManager.Inst.CachePath, $"neutrino-{hash}");
                 Directory.CreateDirectory(PathManager.Inst.CachePath);
                 string wav = prefix + ".wav";
                 phrase.AddCacheFile(wav);
+                var elapsed = System.Diagnostics.Stopwatch.StartNew();
+                Serilog.Log.Information("NEUTRINO {Singer}: {DurationMs} ms, cache={Cached}", singer.Name, Layout(phrase).estimatedLengthMs, File.Exists(wav));
                 if (!File.Exists(wav)) {
                     string temporaryWav = prefix + ".tmp.wav";
                     var intermediates = new[] { temporaryWav };
@@ -67,10 +69,13 @@ namespace OpenUtau.Core.Neutrino {
                         if (engine == null || engineIdentity != modelIdentity) {
                             engine?.Dispose();
                             engine = null;
+                            progress.Complete(0, info + " — loading ONNX models");
                             engine = new NeutrinoOnnxEngine(config.ModelPath);
+                            Serilog.Log.Information("NEUTRINO {Singer}: models loaded in {Seconds} s", singer.Name, elapsed.Elapsed.TotalSeconds);
                             engineIdentity = modelIdentity;
                         }
                         double durationMs = Layout(phrase).estimatedLengthMs;
+                        progress.Complete(0, info + " — synthesizing");
                         float[] samples48k = await Task.Run(() => engine.Synthesize(phones, durationMs, token), token);
                         using (var writer = new WaveFileWriter(temporaryWav, WaveFormat.CreateIeeeFloatWaveFormat(48000, 1))) {
                             writer.WriteSamples(samples48k, 0, samples48k.Length);
@@ -96,6 +101,7 @@ namespace OpenUtau.Core.Neutrino {
                 int length = (int)Math.Ceiling(result.estimatedLengthMs * 44.1);
                 if (result.samples.Length > length) { Array.Resize(ref result.samples, length); }
                 Renderers.ApplyDynamics(phrase, result);
+                Serilog.Log.Information("NEUTRINO {Singer}: audio ready in {Seconds} s, {Samples} samples", singer.Name, elapsed.Elapsed.TotalSeconds, result.samples.Length);
                 progress.Complete(phrase.phones.Length, info);
                 return result;
             } finally { gate.Release(); }
