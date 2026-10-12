@@ -18,7 +18,7 @@ namespace OpenUtau.Core.Neutrino {
         public USingerType SingerType => USingerType.Neutrino;
         public bool SupportsPhonemeEnvelope => false;
         public override string ToString() => Renderers.NEUTRINO;
-        public bool SupportsExpression(UExpressionDescriptor descriptor) => descriptor.abbr == Format.Ustx.DYN;
+        public bool SupportsExpression(UExpressionDescriptor descriptor) => descriptor.abbr is Format.Ustx.DYN or Format.Ustx.PITD;
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) => null!;
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings settings) => Array.Empty<UExpressionDescriptor>();
         public (double HeadMs, double TailMs) PhrasePadding(USinger singer, IEnumerable<UPhoneme> phonemes)
@@ -47,13 +47,17 @@ namespace OpenUtau.Core.Neutrino {
                     return silence;
                 }
                 var score = NeutrinoScore.Build(phrase);
+                var pitchOffsets = SamplePitchOffsets(phrase);
+                byte[] pitchBytes = new byte[pitchOffsets.Length * sizeof(float)];
+                Buffer.BlockCopy(pitchOffsets, 0, pitchBytes, 0, pitchBytes.Length);
+                string pitchIdentity = Convert.ToHexString(SHA256.HashData(pitchBytes));
                 // Include model and backend identity to invalidate incompatible cached audio.
                 string modelInfo = File.ReadAllText(Path.Combine(config.ModelPath, "info.toml"));
                 string modelIdentity = config.ModelPath + string.Join("|", new[] { "t.bin", "p.bin", "s.bin", "v.bin" }.Select(name => {
                     var file = new FileInfo(Path.Combine(config.ModelPath, name));
                     return $"{name}:{file.Length}:{file.LastWriteTimeUtc.Ticks}";
                 }));
-                string identity = $"neutrino-tau-internal-phones-v6\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
+                string identity = $"neutrino-tau-internal-phones-v7\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{pitchIdentity}\n{score}";
                 string hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
                 string prefix = Path.Combine(PathManager.Inst.CachePath, $"neutrino-{hash}");
                 Directory.CreateDirectory(PathManager.Inst.CachePath);
@@ -76,7 +80,7 @@ namespace OpenUtau.Core.Neutrino {
                         }
                         double durationMs = Layout(phrase).estimatedLengthMs;
                         progress.Complete(0, info + " — synthesizing");
-                        float[] samples48k = await Task.Run(() => engine.Synthesize(phones, durationMs, token), token);
+                        float[] samples48k = await Task.Run(() => engine.Synthesize(phones, durationMs, token, pitchOffsets), token);
                         using (var writer = new WaveFileWriter(temporaryWav, WaveFormat.CreateIeeeFloatWaveFormat(48000, 1))) {
                             writer.WriteSamples(samples48k, 0, samples48k.Length);
                         }
@@ -107,5 +111,24 @@ namespace OpenUtau.Core.Neutrino {
             } finally { gate.Release(); }
         }
 
+        internal static float[] SamplePitchOffsets(RenderPhrase phrase) {
+            double startMs = phrase.notes[0].positionMs - NeutrinoScore.PaddingMs;
+            int frames = Math.Max(1, (int)Math.Ceiling((phrase.notes[^1].endMs - phrase.notes[0].positionMs + 2 * NeutrinoScore.PaddingMs) / 10));
+            var offsets = new float[frames];
+            int noteIndex = 0;
+            for (int f = 0; f < frames; f++) {
+                double ms = startMs + f * 10;
+                if (ms < phrase.notes[0].positionMs || ms >= phrase.notes[^1].endMs) { continue; }
+                while (noteIndex < phrase.notes.Length - 1 && ms >= phrase.notes[noteIndex].endMs) { noteIndex++; }
+                var note = phrase.notes[noteIndex];
+                if (ms < note.positionMs || NeutrinoScore.IsRestLyric(note.lyric) || NeutrinoScore.IsBreathLyric(note.lyric)) { continue; }
+                double index = (phrase.timeAxis.MsPosToTickPos(ms) - phrase.position + phrase.leading) / 5d;
+                index = Math.Clamp(index, 0, phrase.pitches.Length - 1);
+                int left = (int)Math.Floor(index), right = Math.Min(left + 1, phrase.pitches.Length - 1);
+                double cents = phrase.pitches[left] + (phrase.pitches[right] - phrase.pitches[left]) * (index - left);
+                offsets[f] = (float)(cents - note.tone * 100);
+            }
+            return offsets;
+        }
     }
 }
