@@ -6,6 +6,21 @@ using Xunit;
 
 namespace OpenUtau.Test.Core.Neutrino {
     public class NeutrinoPhonemesTest {
+        [Theory]
+        [InlineData("br")]
+        [InlineData("息")]
+        [InlineData("R")]
+        public void BreathAliasesProduceUnvoicedBreathPhones(string lyric) {
+            var phones = NeutrinoPhonemes.Build(NeutrinoScore.Build(new[] {
+                new NeutrinoScoreNote(lyric, 60, 0, 500),
+                new NeutrinoScoreNote("p", 60, 500, 500),
+            }));
+            Assert.Equal(new[] { "pau", "br", "pau" }, phones.Select(p => p.Symbol));
+            Assert.Equal(0, phones[1].Hz);
+            Assert.Equal(.5, phones[1].Start, 7);
+            Assert.Equal(1, phones[1].End, 7);
+        }
+
         [Fact]
         public void PlusSustainsVowelAcrossPitchChangesWithoutRepeatingConsonants() {
             var score = NeutrinoScore.Build(new[] {
@@ -25,7 +40,7 @@ namespace OpenUtau.Test.Core.Neutrino {
         }
 
         [Theory]
-        [InlineData("R", 500)]
+        [InlineData("p", 500)]
         [InlineData("か", 600)]
         public void PlusCannotCrossRestOrGap(string lyric, int start) {
             Assert.Throws<ArgumentException>(() => NeutrinoScore.Build(new[] {
@@ -53,7 +68,7 @@ namespace OpenUtau.Test.Core.Neutrino {
             // The long first note crosses a measure; every phone shares its score interval.
             var score = NeutrinoScore.Build(new[] {
                 new NeutrinoScoreNote("きゃ", 60, 0, 4200),
-                new NeutrinoScoreNote("R", 60, 4200, 300),
+                new NeutrinoScoreNote("p", 60, 4200, 300),
                 new NeutrinoScoreNote("シ", 62, 4500, 500),
             });
             var phones = NeutrinoPhonemes.Build(score);
