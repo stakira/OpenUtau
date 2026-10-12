@@ -6,6 +6,13 @@ using Xunit;
 namespace OpenUtau.Test.Core.Neutrino {
     public class NeutrinoOnnxEngineTest {
         [Fact]
+        public void PitchOffsetsPreserveUnvoicedFramesAndApplyCents() {
+            float[] f0 = { 440, 0, 440, 440 };
+            NeutrinoOnnxEngine.ApplyPitchOffsets(f0, 1, new float[] { 0, 1200, 1200, -1200, 0 });
+            Assert.Equal(new float[] { 880, 0, 220, 440 }, f0);
+        }
+
+        [Fact]
         public void VocoderReceivesMelFirstAndF0InLastChannelOfEachFrame() {
             float[] packed = new float[4 * 101];
             float[] mel = new float[200];
