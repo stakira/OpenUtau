@@ -6,6 +6,34 @@ using Xunit;
 
 namespace OpenUtau.Test.Core.Neutrino {
     public class NeutrinoPhonemesTest {
+        [Fact]
+        public void PlusSustainsVowelAcrossPitchChangesWithoutRepeatingConsonants() {
+            var score = NeutrinoScore.Build(new[] {
+                new NeutrinoScoreNote("か", 60, 0, 500),
+                new NeutrinoScoreNote("+", 60, 500, 500),
+                new NeutrinoScoreNote("+", 64, 1000, 500),
+                new NeutrinoScoreNote("+", 67, 1500, 500),
+            });
+            var phones = NeutrinoPhonemes.Build(score);
+            Assert.Equal(new[] { "pau", "k", "a", "a", "a", "pau" }, phones.Select(p => p.Symbol));
+            Assert.Equal(1.5, phones[1].End, 7);
+            Assert.Equal(1.5, phones[3].Start, 7);
+            Assert.Equal(2.0, phones[4].Start, 7);
+            Assert.InRange(phones[3].Hz, 329.62f, 329.64f);
+            Assert.InRange(phones[4].Hz, 391.99f, 392.01f);
+            Assert.Equal(0, phones[3].InNote);
+        }
+
+        [Theory]
+        [InlineData("R", 500)]
+        [InlineData("か", 600)]
+        public void PlusCannotCrossRestOrGap(string lyric, int start) {
+            Assert.Throws<ArgumentException>(() => NeutrinoScore.Build(new[] {
+                new NeutrinoScoreNote(lyric, 60, 0, 500),
+                new NeutrinoScoreNote("+", 64, start, 500),
+            }));
+        }
+
         [Theory]
         [InlineData("あ", "a")]
         [InlineData("シ", "sh i")]
