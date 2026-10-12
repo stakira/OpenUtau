@@ -62,7 +62,7 @@ namespace OpenUtau.Core.Neutrino {
             return new Phone(symbol, id, symbol is "pau" or "br" ? 0 : (float)(440 * Math.Pow(2, (tone - 69) / 12d)), (float)(end - start), inNote, start, end);
         }
 
-        internal float[] Synthesize(Phone[] phones, double durationMs, CancellationToken token) {
+        internal float[] Synthesize(Phone[] phones, double durationMs, CancellationToken token, float[]? pitchOffsets = null) {
             int totalFrames = Math.Max(1, (int)Math.Ceiling(durationMs / 10));
             float[] packed = new float[checked(totalFrames * 101)];
             for (int f = 0; f < totalFrames; f++) { for (int m = 0; m < 100; m++) { packed[f * 101 + m] = -7; } }
@@ -72,7 +72,7 @@ namespace OpenUtau.Core.Neutrino {
                 if (IsRest(phones[position])) { position++; continue; }
                 int end = position + 1;
                 while (end < phones.Length && !IsRest(phones[end])) { end++; }
-                RenderGroup(phones[position..end], packed, totalFrames, token);
+                RenderGroup(phones[position..end], packed, totalFrames, token, pitchOffsets);
                 position = end;
             }
             var wave = Run(vocoder, new[] { F("input", packed, 1, totalFrames, 101) }, token);
@@ -82,7 +82,7 @@ namespace OpenUtau.Core.Neutrino {
 
         static bool IsRest(Phone phone) => phone.Symbol is "pau" or "sil";
 
-        void RenderGroup(Phone[] phones, float[] packed, int totalFrames, CancellationToken token) {
+        void RenderGroup(Phone[] phones, float[] packed, int totalFrames, CancellationToken token, float[]? pitchOffsets) {
             int n = phones.Length;
             long[] ids = phones.Select(p => p.Id).ToArray(), numbers = phones.Select(p => p.InNote).ToArray();
             float[] hz = phones.Select(p => p.Hz).ToArray(), noteDurations = phones.Select(p => p.NoteDuration).ToArray();
@@ -113,10 +113,19 @@ namespace OpenUtau.Core.Neutrino {
             };
             var f0 = Run(pitch, features, token);
             if (f0.Length != frames || f0.Any(x => !float.IsFinite(x) || x < 0)) { throw new InvalidDataException("NEUTRINO pitch model returned invalid F0."); }
+            if (pitchOffsets != null) { ApplyPitchOffsets(f0, firstFrame, pitchOffsets); }
             features.Add(F("photon", f0, 1, frames));
             var mel = Run(spectral, features, token);
             if (mel.Length != frames * 100 || mel.Any(x => !float.IsFinite(x))) { throw new InvalidDataException("NEUTRINO spectral model returned invalid mel features."); }
             CopyVocoderFeatures(packed, firstFrame, mel, f0);
+        }
+
+        internal static void ApplyPitchOffsets(float[] f0, int firstFrame, float[] offsets) {
+            if (firstFrame < 0 || firstFrame + f0.Length > offsets.Length) { throw new ArgumentException("Invalid pitch curve length."); }
+            for (int i = 0; i < f0.Length; i++) {
+                if (!float.IsFinite(offsets[firstFrame + i])) { throw new ArgumentException("Invalid pitch offset."); }
+                if (f0[i] > 0) { f0[i] *= (float)Math.Pow(2, offsets[firstFrame + i] / 1200d); }
+            }
         }
 
         // v.bin slices input[..., 0:100] as mel and input[..., -1:] as F0.
