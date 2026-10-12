@@ -53,7 +53,7 @@ namespace OpenUtau.Core.Neutrino {
                     var file = new FileInfo(Path.Combine(config.ModelPath, name));
                     return $"{name}:{file.Length}:{file.LastWriteTimeUtc.Ticks}";
                 }));
-                string identity = $"neutrino-tau-internal-phones-v5\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
+                string identity = $"neutrino-tau-internal-phones-v6\n{config.ModelPath}\n{modelInfo}\n{modelIdentity}\n{score}";
                 string hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
                 string prefix = Path.Combine(PathManager.Inst.CachePath, $"neutrino-{hash}");
                 Directory.CreateDirectory(PathManager.Inst.CachePath);
