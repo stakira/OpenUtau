@@ -47,7 +47,28 @@ namespace OpenUtau.Core.Neutrino {
                     }
                 }
             }
+            var resolved = new List<(string Lyric, int Tone, double Start, double End)>();
+            string? sustained = null;
             foreach (var note in notes) {
+                if (note.Lyric == "+") {
+                    if (sustained == null || resolved.Count == 0 || Math.Abs(resolved[^1].End - note.Start) > 1e-7) {
+                        throw new InvalidDataException("NEUTRINO: '+' precisa seguir uma sílaba cantada sem pausa.");
+                    }
+                    var previous = resolved[^1];
+                    if (previous.Tone == note.Tone) {
+                        resolved[^1] = (previous.Lyric, previous.Tone, previous.Start, note.End);
+                    } else {
+                        resolved.Add((sustained, note.Tone, note.Start, note.End));
+                    }
+                } else {
+                    resolved.Add(note);
+                    var symbols = note.Lyric.Length == 0 ? Array.Empty<string>() : ConvertLyric(note.Lyric);
+                    sustained = symbols.LastOrDefault() switch {
+                        "a" => "あ", "i" => "い", "u" => "う", "e" => "え", "o" => "お", "N" => "ん", _ => null,
+                    };
+                }
+            }
+            foreach (var note in resolved) {
                 // Native labels quantize elapsed time to 100 ns, shared by all phones of a syllable.
                 double start = Math.Floor(note.Start * 1e7) / 1e7;
                 double end = Math.Floor(note.End * 1e7) / 1e7;
