@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
 using SharpCompress.Archives;
+using SharpCompress.Readers;
 
 namespace OpenUtau.Core.Vogen {
     [Serializable]
@@ -70,15 +69,13 @@ namespace OpenUtau.Core.Vogen {
             VogenMeta meta;
             byte[] model;
             byte[] avatar = null;
-            using (var archive = ArchiveFactory.Open(filePath)) {
+            using (var archive = ArchiveFactory.OpenArchive(filePath, new ReaderOptions())) {
                 var metaEntry = archive.Entries.First(e => e.Key == "meta.json");
                 if (metaEntry == null) {
                     throw new ArgumentException("missing meta.json");
                 }
                 using (var stream = metaEntry.OpenEntryStream()) {
-                    using var reader = new StreamReader(stream, Encoding.UTF8);
-                    JsonSerializer serializer = new JsonSerializer();
-                    meta = (VogenMeta)serializer.Deserialize(reader, typeof(VogenMeta));
+                    meta = Json.Deserialize<VogenMeta>(stream);
                 }
                 model = Zip.ExtractBytes(archive, "model.onnx");
                 if (model == null) {

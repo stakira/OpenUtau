@@ -1,11 +1,13 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="650"
+        x:DataType="vm:MainWindowViewModel"
         x:Class="OpenUtau.App.Views.MainWindow"
+        x:CompileBindings="True"
         Icon="/Assets/open-utau.ico"
         Title="{Binding Title}" MinWidth="300" MinHeight="200" Width="{Binding Width}" Height="{Binding Height}"
         Focusable="True" KeyDown="OnKeyDown" PointerPressed="OnPointerPressed" Closing="WindowClosing"
@@ -16,7 +18,7 @@
     </Style>
   </Window.Styles>
   <Grid>
-    <Grid Name="MainGrid" Margin="{Binding $parent[1].WindowDecorationMargin}">
+    <Grid Name="MainGrid" Margin="{Binding $parent[Window].WindowDecorationMargin}">
       <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24"
                 Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave"
                 ZIndex="1">
@@ -67,6 +69,7 @@
               <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.tools.fullscreen}" InputGesture="F11" Click="OnMenuFullScreen"/>
+            <MenuItem Header="{DynamicResource menu.tools.dawintegration}" Click="OnMenuDawIntegration"/>
             <MenuItem Header="{Binding ClearCacheHeader}" Click="OnMenuClearCache"/>
             <MenuItem Header="{DynamicResource menu.tools.debugwindow}" Click="OnMenuDebugWindow"/>
             <MenuItem Header="{DynamicResource phoneticassistant.caption}" Click="OnMenuPhoneticAssistant"/>
@@ -85,7 +88,7 @@
         </Menu>
       <Carousel SelectedIndex="{Binding Page}" >
         <!--Welcome page-->
-        <Grid Margin="60,50,60,40" RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*,*">
+        <Grid Margin="60,50,60,40" RowDefinitions="Auto,Auto,Auto,*" ColumnDefinitions="*,*" KeyDown="OnCarouselPageKeyDown">
           <!--Startup warnings-->
           <StackPanel Grid.Row="0" Grid.ColumnSpan="2">
             <Button Click="OnWelcomeRecovery" Height="40" Content="{Binding RecoveryString}"
@@ -207,7 +210,7 @@
         </Grid>
       
         <!--Main page-->
-        <Grid ColumnDefinitions="300,*,24" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid ColumnDefinitions="300,*,24" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" KeyDown="OnCarouselPageKeyDown">
           <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
             <RowDefinition Height="24"/>
@@ -232,7 +235,7 @@
                   </TextBlock.Text>
                 </TextBlock>
                 <TextBlock Width="42" HorizontalAlignment="Right"
-                            Background="Transparent" PointerPressed="OnEditBpm">
+                            Background="Transparent" PointerPressed="OnEditBpm" PointerWheelChanged="OnEditBpmScroll">
                   <TextBlock.Text>
                     <MultiBinding StringFormat="{}{0:#0.00}">
                       <Binding Path="PlaybackViewModel.Bpm"/>
@@ -241,24 +244,34 @@
                 </TextBlock>
               </Grid>
             </Border>
-            <Border Classes="playback" Width="88" HorizontalAlignment="Center">
+            <Border Classes="playback" HorizontalAlignment="Center">
               <StackPanel Orientation="Horizontal">
-                <Button Command="{Binding PlaybackViewModel.SeekStart}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
+                <Button Command="{Binding PlaybackViewModel.SeekStart}" Height="18">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M5.35 4.3H7.44V13.7H5.35ZM7.44 9L12.65 4.3V13.7Z"/>
                 </Button>
-                <Button Click="OnPlayOrPause">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 7 6.5 L 0 13 Z"/>
+                <Button Click="OnPlayOrPause" Height="18">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M5.35 4.3L12.65 9.01L5.35 13.7Z"/>
                 </Button>
-                <Button Command="{Binding PlaybackViewModel.Pause}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
+                <Button Command="{Binding PlaybackViewModel.Pause}" Height="18">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M5.35 4.3H7.78V13.7H5.35ZM10.22 4.3H12.65V13.7H10.22Z"/>
                 </Button>
-                <Button Command="{Binding PlaybackViewModel.SeekEnd}">
-                  <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
+                <Button Command="{Binding PlaybackViewModel.SeekEnd}" Height="18">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M5.35 4.3L10.56 9L5.35 13.7ZM10.56 4.3H12.65V13.7H10.56Z"/>
                 </Button>
+                <ToggleButton IsChecked="{Binding PlaybackViewModel.LoopPlayback}"
+                              ToolTip.Tip="{DynamicResource tip.playback.loop}" Height="18">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M5.19 4.86H11.11V2.8l2.53 3.09-2.53 3.1V6.93H6.05V8.99H4.35V6.93c0-1.14.34-2.07.84-2.07ZM12.81 13.13H6.88v2.07L4.35 12.1l2.53-3.1V11.06h5.08V8.99H13.65v2.07c0 1.14-.34 2.07-.84 2.07Z"/>
+                </ToggleButton>
+                <ToggleButton IsChecked="{Binding PlaybackViewModel.Metronome}" Height="18"
+                              ToolTip.Tip="{DynamicResource prefs.playback.metronome}">
+                  <Path Fill="{Binding $parent[Window].Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="18" Width="18"
+                        Data="M7.93 4.3a.43.34 0 0 0-.41.25L4.33 13.25a.43.34 0 0 0 .41.45h8.5a.43.34 0 0 0 .41-.45L12.32 9.65l-1.89 1.36c-.09.56-.7 1.02-1.42 1.02-.78 0-1.44-.54-1.44-1.18 0-.64.66-1.18 1.44-1.18.01 0 .02 0 .03 0l2.61-1.85-1.2-3.27a.43.34 0 0 0-.41-.25ZM14.65 6.13a.8.66 0 0 0-.48.16L9.13 9.92a1.17.95 0 0 0-1.17.95 1.17.95 0 0 0 1.17.95 1.17.95 0 0 0 1.16-.9l5.06-3.65a.8.66 0 0 0 .07-.92.8.66 0 0 0-.66-.22Z"/>
+                </ToggleButton>
               </StackPanel>
             </Border>
             <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
@@ -288,7 +301,8 @@
                   PointerWheelChanged="TimelinePointerWheelChanged"
                   PointerPressed="TimelinePointerPressed"
                   PointerMoved="TimelinePointerMoved"
-                  PointerReleased="TimelinePointerReleased">
+                  PointerReleased="TimelinePointerReleased"
+                  DoubleTapped="TimelineDoubleTapped">
             <Path Name="PlayPos"
                   Canvas.Left="{Binding TracksViewModel.PlayPosX}"
                   Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
@@ -297,7 +311,7 @@
             <Canvas.ContextMenu>
               <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
                 <ContextMenu.Styles>
-                  <Style Selector="MenuItem">
+                  <Style Selector="MenuItem" x:DataType="vm:MenuItemViewModel">
                     <Setter Property="Header" Value="{Binding Header}"/>
                     <Setter Property="Command" Value="{Binding Command}"/>
                     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
@@ -312,7 +326,8 @@
                               TrackHeight="{Binding TrackHeight}"
                               TrackOffset="{Binding TrackOffset}"
                               Items="{Binding Tracks}"
-                              PointerWheelChanged="MainPagePointerWheelChanged"/>
+                              PointerWheelChanged="MainPagePointerWheelChanged"
+                              Cursor="Arrow"/>
           <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                             Foreground="{DynamicResource TrackBackgroundAltBrush}"
                             DataContext="{Binding TracksViewModel}"
@@ -327,16 +342,20 @@
                             TickOffset="{Binding TracksViewModel.TickOffset}"
                             SnapDiv="{Binding TracksViewModel.SnapDiv}"
                             SnapTicks="{Binding TracksViewModel.SnapTicks}"
-                            ShowBarNumber="True"/>
+                            ShowBar="True"/>
           <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                         DataContext="{Binding TracksViewModel}"
                         TickWidth="{Binding TickWidth}"
                         TrackHeight="{Binding TrackHeight}"
                         TickOffset="{Binding TickOffset}"
                         TrackOffset="{Binding TrackOffset}"
+                        PianoRollOpenPart="{Binding PianoRollOpenPart}"
+                        PianoRollViewTickOffset="{Binding PianoRollViewTickOffset}"
+                        PianoRollViewViewportTicks="{Binding PianoRollViewViewportTicks}"
                         Items="{Binding Parts}"
                         PointerPressed="PartsCanvasPointerPressed"
                         PointerMoved="PartsCanvasPointerMoved"
+                        PointerExited="PartsCanvasPointerExited"
                         PointerReleased="PartsCanvasPointerReleased"
                         DoubleTapped="PartsCanvasDoubleTapped"
                         PointerWheelChanged="MainPagePointerWheelChanged">
@@ -346,7 +365,15 @@
                       Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
                       Canvas.Top="0"
                       Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                      IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).PlaybackViewModel.ShowPlayPosHighlight}"
                       IsHitTestVisible="False"/>
+            <Rectangle Name="PlayPosLine"
+                       Canvas.Left="{Binding PlayPosX}"
+                       Canvas.Top="0" Width="1"
+                       Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                       ZIndex="99" IsHitTestVisible="False"
+                       IsVisible="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).PlaybackViewModel.IsPlaying}"
+                       Fill="{DynamicResource AccentBrush2}"/>
             <Rectangle Name="SelectionBox" StrokeThickness="2"
                       Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
                       Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
@@ -354,7 +381,8 @@
             <c:PartsCanvas.ContextMenu>
               <ContextMenu Name="PartsContextMenu"
                           Opening="PartsContextMenuOpening"
-                          Closing="PartsContextMenuClosing">
+                          Closing="PartsContextMenuClosing"
+                          x:DataType="vm:PartsContextMenuArgs">
                 <MenuItem Header="{DynamicResource context.part.delete}"
                           Command="{Binding PartDeleteCommand}"
                           CommandParameter="{Binding Part}"/>
@@ -401,9 +429,7 @@
           </Border>
           <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                         Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth" IsVisible="{Binding ShowPianoRoll}"/>
-          <Canvas Grid.Row="4" Grid.ColumnSpan="3" IsVisible="{Binding ShowPianoRoll}">
-            <ContentControl Name="PianoRollContainer" Width="{Binding $parent[Canvas].Bounds.Width}" Height="{Binding $parent[Canvas].Bounds.Height}"/>
-          </Canvas>
+          <ContentControl Grid.Row="4" Grid.ColumnSpan="3" Name="PianoRollContainer"/>
           <TextBlock Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
           <ProgressBar Grid.Row="6" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
         </Grid>

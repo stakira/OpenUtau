@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,40 +15,44 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.Primitives;
+using ReactiveUI.SourceGenerators;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
-    public class SingersViewModel : ViewModelBase {
+    public partial class SingersViewModel : ViewModelBase {
         public IEnumerable<USinger> Singers => SingerManager.Inst.SingerGroups.Values.SelectMany(l => l);
-        [Reactive] public USinger? Singer { get; set; }
-        [Reactive] public Bitmap? Avatar { get; set; }
-        [Reactive] public string? Info { get; set; }
-        [Reactive] public bool HasWebsite { get; set; }
+        [Reactive] public partial USinger? Singer { get; set; }
+        [Reactive] public partial Bitmap? Avatar { get; set; }
+        [Reactive] public partial string? Info { get; set; }
+        [Reactive] public partial bool HasWebsite { get; set; }
+        // Singers loaded from a voicebank folder, which keep their settings in character.yaml.
+        [Reactive] public partial bool HasCharacterYaml { get; set; }
+        [Reactive] public partial bool HasDsConfig { get; set; }
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
         public bool UseSearchAlias => Singer != null && (Singer.SingerType == USingerType.Classic || Singer.SingerType == USingerType.Enunu);
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         public ObservableCollectionExtended<UOto> DisplayedOtos { get; set; } = new ObservableCollectionExtended<UOto>();
-        [Reactive] public bool ZoomInMel { get; set; }
-        [Reactive] public UOto? SelectedOto { get; set; }
-        [Reactive] public int SelectedIndex { get; set; }
+        [Reactive] public partial bool ZoomInMel { get; set; }
+        [Reactive] public partial UOto? SelectedOto { get; set; }
+        [Reactive] public partial int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetSingerTypeMenuItems => setSingerTypeMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
-        [Reactive] public bool UseFilenameAsAlias { get; set; } = false;
+        [Reactive] public partial bool UseFilenameAsAlias { get; set; } = false;
 
-        [Reactive] public string SearchAlias { get; set; } = "";
+        [Reactive] public partial string SearchAlias { get; set; } = "";
 
         private readonly ObservableCollectionExtended<USubbank> subbanks
             = new ObservableCollectionExtended<USubbank>();
         private readonly ObservableCollectionExtended<UOto> otos
             = new ObservableCollectionExtended<UOto>();
-        private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
+        private readonly ReactiveCommand<Encoding, RxVoid> setEncodingCommand;
         private List<MenuItemViewModel> setEncodingMenuItems;
-        private readonly ReactiveCommand<string, Unit> setSingerTypeCommand;
+        private readonly ReactiveCommand<string, RxVoid> setSingerTypeCommand;
         private List<MenuItemViewModel> setSingerTypeMenuItems;
-        private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
+        private readonly ReactiveCommand<Api.PhonemizerFactory, RxVoid> setDefaultPhonemizerCommand;
         private List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
         public SingersViewModel() {
@@ -63,7 +66,7 @@ namespace OpenUtau.App.ViewModels {
                 Singer = Singers.FirstOrDefault();
             }
             this.WhenAnyValue(vm => vm.Singer)
-                .WhereNotNull()
+                .OfType<USinger>()
                 .Subscribe(singer => {
                     if (LoadingWindow.IsLoading()) {
                         try {
@@ -90,6 +93,9 @@ namespace OpenUtau.App.ViewModels {
                         DisplayedOtos.AddRange(singer.Otos);
                         Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                         HasWebsite = !string.IsNullOrEmpty(singer.Web);
+                        HasCharacterYaml = singer.SingerType is USingerType.Classic or USingerType.Enunu or USingerType.DiffSinger
+                            && Directory.Exists(singer.Location);
+                        HasDsConfig = HasCharacterYaml && File.Exists(Path.Combine(singer.Location, "dsconfig.yaml"));
                         if (Singer is ClassicSinger cSinger) {
                             UseFilenameAsAlias = cSinger.UseFilenameAsAlias ?? false;
                         }
@@ -223,7 +229,38 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public static void SetSearchTerms(USinger singer, string text) {
+            var terms = SplitSearchTerms(text);
+            try {
+                // Null leaves the key out of the file.
+                WriteConfig(singer, config => config.SearchTerms = terms.Length > 0 ? terms : null!);
+                // Updated in place instead of reloading the singer, which not every singer type does from its config.
+                if (!singer.SearchTerms.IsReadOnly) {
+                    singer.SearchTerms.Clear();
+                    foreach (var term in terms) {
+                        singer.SearchTerms.Add(term);
+                    }
+                }
+            } catch (Exception e) {
+                var customEx = new MessageCustomizableException("Failed to save singer config", "<translate:errors.failed.savesingerconfig>", e);
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(customEx));
+            }
+        }
+
+        /// <summary>Splits terms separated by commas, including CJK ones, or semicolons.</summary>
+        public static string[] SplitSearchTerms(string text) {
+            return text.Split(new[] { ',', '\uFF0C', '\u3001', ';', '\uFF1B' },
+                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct()
+                .ToArray();
+        }
+
         private void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
+            WriteConfig(singer, modify);
+            RefreshSinger();
+        }
+
+        static void WriteConfig(USinger singer, Action<VoicebankConfig> modify) {
             var yamlFile = Path.Combine(singer.Location, "character.yaml");
             VoicebankConfig? config = null;
             if (File.Exists(yamlFile)) {
@@ -238,7 +275,6 @@ namespace OpenUtau.App.ViewModels {
             using (var stream = File.Open(yamlFile, FileMode.Create)) {
                 config.Save(stream);
             }
-            RefreshSinger();
         }
 
         public void ErrorReport() {
@@ -328,16 +364,22 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OpenLocation() {
+            if (Singer != null) {
+                OpenSingerLocation(Singer);
+            }
+        }
+
+        // Not an OpenLocation overload: the Location button binds OpenLocation by name, and a
+        // same-named overload makes Avalonia compile an invalid command for it.
+        public static void OpenSingerLocation(USinger singer) {
             try {
-                if (Singer != null) {
-                    var location = Singer.Location;
-                    if (File.Exists(location)) {
-                        //Vogen voicebank is a singlefile
-                        OS.GotoFile(location);
-                    } else {
-                        //classic or ENUNU voicebank is a folder
-                        OS.OpenFolder(location);
-                    }
+                var location = singer.Location;
+                if (File.Exists(location)) {
+                    //Vogen voicebank is a singlefile
+                    OS.GotoFile(location);
+                } else {
+                    //classic or ENUNU voicebank is a folder
+                    OS.OpenFolder(location);
                 }
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
@@ -367,13 +409,19 @@ namespace OpenUtau.App.ViewModels {
             Avatar = LoadAvatar(Singer);
             Otos.Clear();
             Otos.AddRange(Singer.Otos);
+            // Reload replaces the oto objects. Do not leave the editor bound to the old ones.
+            Search();
             LoadSubbanks();
 
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification(Singer));
             DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
-            if (Otos.Count > 0) {
-                index = Math.Clamp(index, 0, Otos.Count - 1);
+            if (DisplayedOtos.Count > 0) {
+                index = Math.Clamp(index, 0, DisplayedOtos.Count - 1);
                 SelectedIndex = index;
+                SelectedOto = DisplayedOtos[index];
+            } else {
+                SelectedIndex = -1;
+                SelectedOto = null;
             }
         }
 

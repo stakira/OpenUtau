@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Util;
-using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
     internal class ExeResampler : IResampler {
         public string Name { get; private set; }
         public string FilePath { get; private set; }
+        public bool NoWrapperScript { get; private set; }
         public bool isLegalPlugin => _isLegalPlugin;
         public ResamplerManifest Manifest { get; private set; }
         readonly string _name;
@@ -65,10 +64,12 @@ namespace OpenUtau.Classic {
                 _name = Path.GetRelativePath(basePath, filePath);
                 _isLegalPlugin = true;
             }
-            //Check if should use wine
+            //Since we can't call Linux/MacOS native resamplers in wine, we need call them directly
             string ext = Path.GetExtension(filePath).ToLower();
+            NoWrapperScript = ext != ".exe" && ext != ".bat";
+            //Check if should use wine
             winePath = Preferences.Default.WinePath;
-            useWine = !OS.IsWindows() && !string.IsNullOrEmpty(winePath) && (ext == ".exe" || ext == ".bat");
+            useWine =  !string.IsNullOrEmpty(winePath) && !NoWrapperScript;
             //Load Resampler Manifest
             Manifest = LoadManifest();
             //Make moresampler happy
@@ -102,10 +103,17 @@ namespace OpenUtau.Classic {
             string ArgParam = FormattableString.Invariant(
                 $"\"{args.inputTemp}\" \"{tmpFile}\" {MusicMath.GetToneName(args.tone)} {args.velocity} \"{args.GetFlagsString()}\" {args.offset} {args.durRequired} {args.consonant} {args.cutoff} {args.volume} {args.modulation} !{args.tempo} {Base64.Base64EncodeInt12(args.pitches)}");
             logger.Information($" > [thread-{threadId}] {FilePath} {ArgParam}");
+            string resamplerOutput;
             if (useWine) {
-                ProcessRunner.Run(winePath, $"{FilePath} {ArgParam}", logger);
+                resamplerOutput = ProcessRunner.Run(winePath, $"{FilePath} {ArgParam}", logger);
             } else {
-                ProcessRunner.Run(FilePath, ArgParam, logger);
+                resamplerOutput = ProcessRunner.Run(FilePath, ArgParam, logger);
+            }
+            // check if the file has been created
+            if (!File.Exists(tmpFile)) {
+                throw new Core.Render.ResamplerFailedException(
+                    $" > [thread-{threadId}]\n{resamplerOutput}"
+                );
             }
             return tmpFile;
         }

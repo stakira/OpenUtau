@@ -86,7 +86,7 @@ namespace OpenUtau.Api {
             /// <summary>
             /// Tone shift. Shifts the note tone used for oto lookup.
             /// </summary>
-            public int toneShift;
+            public int? toneShift;
             /// <summary>
             /// Alternate index. The number suffix of duplicate aliases.
             /// </summary>
@@ -94,7 +94,7 @@ namespace OpenUtau.Api {
             /// <summary>
             /// Voice color.
             /// </summary>
-            public string voiceColor;
+            public string? voiceColor;
         }
 
         public struct PhonemeExpression {
@@ -165,6 +165,12 @@ namespace OpenUtau.Api {
         /// such as a custom dictionary file in the singer directory.
         /// Use singer.Location to access the singer directory.
         ///
+        /// This method, SetUp, Process and CleanUp are always called from a single
+        /// background thread and never concurrently, so it is fine to block here
+        /// while loading. Do not load on another thread: Process may otherwise run
+        /// against half-initialized state. OpenUtau shows a progress indicator if
+        /// this call takes long.
+        ///
         /// Do not modify the singer.
         /// </summary>
         /// <param name="singer"></param>
@@ -176,7 +182,13 @@ namespace OpenUtau.Api {
         /// </summary>
         public virtual bool LegacyMapping => false;
 
-        public virtual void SetUp(Note[][] notes, UProject project, UTrack track) { }
+        public UProject? project;
+        public UTrack? track;
+
+        public virtual void SetUp(Note[][] notes, UProject project, UTrack track) {
+            this.project = project;
+            this.track = track;
+        }
 
         /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
@@ -233,21 +245,11 @@ namespace OpenUtau.Api {
             return result;
         }
 
-        public bool Testing { get; set; } = false;
+        [Obsolete("No-op. Load synchronously in SetSinger; phonemizer methods run on a single thread and OpenUtau reports progress itself.")]
+        protected void OnAsyncInitStarted() { }
 
-        protected void OnAsyncInitStarted() {
-            if (!Testing) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
-            }
-        }
-
-        protected void OnAsyncInitFinished() {
-            if (!Testing) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
-                DocManager.Inst.ExecuteCmd(new PreRenderNotification());
-            }
-        }
+        [Obsolete("No-op. Load synchronously in SetSinger; phonemizer methods run on a single thread and OpenUtau reports progress itself.")]
+        protected void OnAsyncInitFinished() { }
 
         protected Result MakeSimpleResult(string phoneme) {
             return new Result() {
@@ -257,6 +259,47 @@ namespace OpenUtau.Api {
                     }
                 }
             };
+        }
+
+        public double GetParentConsonantStretchRatio() {
+            if (project != null && track != null) {
+                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.VEL, out var trackVEL)) {
+                    return Math.Pow(2, 1.0 - trackVEL.CustomDefaultValue / 100.0);
+                }
+            }
+            return 1;
+        }
+
+        public int GetParentToneShift() {
+            if (project != null && track != null) {
+                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.SHFT, out var trackTS)) {
+                    return (int)trackTS.CustomDefaultValue;
+                }
+            }
+            return 0;
+        }
+
+        public int? GetParentAlternate() {
+            if (project != null && track != null) {
+                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.ALT, out var trackAlt)) {
+                    if (trackAlt.CustomDefaultValue != 0) {
+                        return (int)trackAlt.CustomDefaultValue;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public string GetParentVoiceColor() {
+            if (project != null && track != null) {
+                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.CLR, out var trackCLR) && trackCLR.options != null) {
+                    int index = (int)trackCLR.CustomDefaultValue;
+                    if (index >= 0 && index < trackCLR.options.Length) {
+                        return trackCLR.options[index] ?? string.Empty;
+                    }
+                }
+            }
+            return string.Empty;
         }
 
         /// <summary>

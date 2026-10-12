@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        x:DataType="vm:ThemeEditorViewModel"
         mc:Ignorable="d" MinWidth="325" Width="325" Height="500"
         x:Class="OpenUtau.App.Views.ThemeEditorWindow" WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
@@ -150,8 +152,8 @@
       </StackPanel>
     </ScrollViewer>
     <Grid Grid.Row="1" HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*" Margin="10,0,10,0">
-      <Button Grid.Column="0" Content="{DynamicResource themeeditor.cancel}" HorizontalAlignment="Stretch" Click="OnCancel" />
-      <Button Grid.Column="2" Content="{DynamicResource themeeditor.save}" HorizontalAlignment="Stretch" Click="OnSave"/>
+      <Button Grid.Column="0" Content="{DynamicResource button.cancel}" HorizontalAlignment="Stretch" Click="OnCancel" />
+      <Button Grid.Column="2" Content="{DynamicResource button.save}" HorizontalAlignment="Stretch" Click="OnSave"/>
     </Grid>
   </Grid>
 </Window>

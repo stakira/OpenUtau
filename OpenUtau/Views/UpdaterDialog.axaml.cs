@@ -19,7 +19,13 @@ namespace OpenUtau.App.Views {
             ViewModel.OnClosing();
         }
 
+        /// <summary>Whether CheckForUpdate runs. UI tests turn it off to stay offline.</summary>
+        public static bool CheckForUpdateEnabled { get; set; } = true;
+
         public static void CheckForUpdate(Action<Window> showDialog, Action closeApplication, TaskScheduler scheduler) {
+            if (!CheckForUpdateEnabled) {
+                return;
+            }
             Task.Run(async () => {
                 using var updater = await UpdaterViewModel.NewUpdaterAsync();
                 if (updater == null) {
@@ -27,7 +33,11 @@ namespace OpenUtau.App.Views {
                 }
                 var info = await updater.CheckForUpdatesQuietly(true);
                 if (info.Status == UpdateStatus.UpdateAvailable) {
-                    if (info.Updates[0].Version.ToString() == Preferences.Default.SkipUpdate) {
+                    // SkipUpdate is stored as "<channel>:<version>". The bare
+                    // form without a channel prefix is the legacy format.
+                    string version = info.Updates[0].Version.ToString();
+                    if (Preferences.Default.SkipUpdate == version ||
+                        Preferences.Default.SkipUpdate == $"{Preferences.Default.Channel}:{version}") {
                         return false;
                     }
                     return true;

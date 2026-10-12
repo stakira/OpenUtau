@@ -49,6 +49,10 @@ namespace OpenUtau.Core.Ustx {
         public string[] expSelectors = new string[] { Format.Ustx.DYN, Format.Ustx.PITD, Format.Ustx.CLR, Format.Ustx.ENG, Format.Ustx.VEL, Format.Ustx.VOL, Format.Ustx.ATK, Format.Ustx.DEC, Format.Ustx.GEN, Format.Ustx.BRE };
         public int expPrimary = 0;
         public int expSecondary = 1;
+        /// <summary>The expression graph library; null when the project has none.</summary>
+        public List<ExpressionGraph.UExpressionGraph>? expressionGraphs;
+        /// <summary>The default graph id for each renderer; tracks can override it.</summary>
+        public Dictionary<string, string>? defaultExpressionGraphs;
         public int key = 0;//Music key of the project, 0 = C, 1 = C#, 2 = D, ..., 11 = B
         public List<UTimeSignature> timeSignatures;
         public List<UTempo> tempos;
@@ -87,18 +91,24 @@ namespace OpenUtau.Core.Ustx {
 
         public void MargeExpression(string oldAbbr, string newAbbr) {
             if (parts != null && parts.Count > 0) {
-                parts.Where(p => p is UVoicePart)
-                    .OfType<UVoicePart>()
-                    .ForEach(p => p.notes.ForEach(n => ConvertNoteExp(n, tracks[p.trackNo])));
+                foreach (UVoicePart p in parts.Where(p => p is UVoicePart).OfType<UVoicePart>()) {
+                    foreach (var n in p.notes) {
+                        ConvertNoteExp(n, tracks[p.trackNo]);
+                    }
+                }
             } else if (voiceParts != null && voiceParts.Count > 0) {
-                voiceParts.ForEach(p => p.notes.ForEach(n => ConvertNoteExp(n, tracks[p.trackNo])));
+                foreach (var p in voiceParts) {
+                    foreach (var n in p.notes) {
+                        ConvertNoteExp(n, tracks[p.trackNo]);
+                    }
+                }
             }
             expressions.Remove(oldAbbr);
 
             void ConvertNoteExp(UNote note, UTrack track) {
                 if (note.phonemeExpressions.Any(e => e.abbr == oldAbbr)) {
                     var toRemove = new List<UExpression>();
-                    note.phonemeExpressions.Where(e => e.abbr == oldAbbr).ForEach(oldExp => {
+                    foreach (var oldExp in note.phonemeExpressions.Where(e => e.abbr == oldAbbr)) {
                         if (!note.phonemeExpressions.Any(newExp => newExp.abbr == newAbbr && newExp.index == oldExp.index)) {
                             // When there is only old exp, convert it to new exp
                             oldExp.abbr = newAbbr;
@@ -109,7 +119,7 @@ namespace OpenUtau.Core.Ustx {
                             // When both old and new exp exist, remove the old one
                             toRemove.Add(oldExp);
                         }
-                    });
+                    }
                     toRemove.ForEach(exp => note.phonemeExpressions.Remove(exp));
                 }
             }
@@ -161,6 +171,12 @@ namespace OpenUtau.Core.Ustx {
             foreach (var kv in expressions) {
                 project.expressions.Add(kv.Key, kv.Value.Clone());
             }
+            // The graph library and each renderer's default go along; track overrides don't, as the
+            // template's tracks are new.
+            project.expressionGraphs = expressionGraphs?.Select(g => g.Clone()).ToList();
+            project.defaultExpressionGraphs = defaultExpressionGraphs == null
+                ? null
+                : new Dictionary<string, string>(defaultExpressionGraphs);
             return project;
         }
 
@@ -184,6 +200,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var part in parts) {
                 part.AfterLoad(this, tracks[part.trackNo]);
             }
+            ExpressionGraph.ExpressionGraphProgram.LogProblems(this);
         }
 
         public void Validate(ValidateOptions options) {
