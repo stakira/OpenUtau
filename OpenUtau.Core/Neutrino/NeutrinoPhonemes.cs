@@ -81,6 +81,7 @@ namespace OpenUtau.Core.Neutrino {
         }
 
         internal static string[] ConvertLyric(string lyric) {
+            if (NeutrinoScore.IsBreathLyric(lyric)) { return new[] { "br" }; }
             lyric = lyric.Normalize(System.Text.NormalizationForm.FormC);
             lyric = new string(lyric.Select(c => c >= 'ァ' && c <= 'ヶ' ? (char)(c - 0x60) : c).ToArray());
             string? special = lyric switch {
