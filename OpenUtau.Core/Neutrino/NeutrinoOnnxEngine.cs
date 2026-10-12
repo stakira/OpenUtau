@@ -59,7 +59,7 @@ namespace OpenUtau.Core.Neutrino {
 
         internal static Phone CreatePhone(string symbol, int tone, long inNote, double start, double end) {
             if (!phoneIds.TryGetValue(symbol, out long id)) { throw new InvalidDataException($"Unsupported NEUTRINO phoneme: {symbol}"); }
-            return new Phone(symbol, id, symbol == "pau" ? 0 : (float)(440 * Math.Pow(2, (tone - 69) / 12d)), (float)(end - start), inNote, start, end);
+            return new Phone(symbol, id, symbol is "pau" or "br" ? 0 : (float)(440 * Math.Pow(2, (tone - 69) / 12d)), (float)(end - start), inNote, start, end);
         }
 
         internal float[] Synthesize(Phone[] phones, double durationMs, CancellationToken token) {
@@ -80,7 +80,7 @@ namespace OpenUtau.Core.Neutrino {
             return wave;
         }
 
-        static bool IsRest(Phone phone) => phone.Symbol is "pau" or "sil" or "br";
+        static bool IsRest(Phone phone) => phone.Symbol is "pau" or "sil";
 
         void RenderGroup(Phone[] phones, float[] packed, int totalFrames, CancellationToken token) {
             int n = phones.Length;
