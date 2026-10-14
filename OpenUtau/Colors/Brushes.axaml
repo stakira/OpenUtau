@@ -110,6 +110,10 @@
                    Color="{DynamicResource BorderColor}" />
   <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver"
                    Color="{DynamicResource BorderColorPointerOver}" />
+  <SolidColorBrush x:Key="TextControlBorderBrush"
+                   Color="{DynamicResource BorderColor}" />
+  <SolidColorBrush x:Key="TextControlBorderBrushPointerOver"
+                   Color="{DynamicResource BorderColorPointerOver}" />
 
   <SolidColorBrush x:Key="TickLineBrush"
                    Color="{DynamicResource TickLineColor}" />
