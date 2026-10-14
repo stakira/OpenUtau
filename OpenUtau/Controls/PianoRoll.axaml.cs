@@ -930,7 +930,7 @@ namespace OpenUtau.App.Controls {
                 }
             }
             // Note context menu
-            if (ViewModel.EditTool.IsMatch([EditTools.CursorTool, EditTools.PenTool, EditTools.KnifeTool]) || args.KeyModifiers == cmdKey) {
+            if (ViewModel.EditTool.IsMatch([EditTools.CursorTool, EditTools.PenTool, EditTools.KnifeTool, EditTools.PitchPointTool]) || args.KeyModifiers == cmdKey) {
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
                 var vibHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
                 if ((hitInfo.hitBody && hitInfo.note != null) || vibHitInfo.hit) {

@@ -83,7 +83,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrWhiteSpace(Abbr)) {
                 return new string[] { "Abbreviation must be set.", "<translate:errors.expression.abbrset>" };
             }
-            if (ExpressionType == (int)UExpressionType.MaskedCurve && Min >= Max) {
+            if ((ExpressionType is (int)UExpressionType.Curve or (int)UExpressionType.MaskedCurve) && Min >= Max) {
                 return new string[] { "Min must be smaller than max.", $"<translate:errors.expression.min>: {Name}" };
             }
             if (ExpressionType == 0 || ExpressionType == 4) { // Numerical or MorphingCurve

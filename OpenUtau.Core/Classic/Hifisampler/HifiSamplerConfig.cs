@@ -8,8 +8,8 @@ using OpenUtau.Core.DiffSinger;
 namespace OpenUtau.Classic.Hifisampler {
     /// <summary>
     /// config.py / config.default.yaml. The audio settings must match the vocoder; the
-    /// processing settings are config.default.yaml's. Loop mode is the e flag and loudness
-    /// normalization the P flag, per note, rather than global settings.
+    /// processing settings are config.default.yaml's. Loop mode is the e flag, per note, rather
+    /// than a global setting; P is Worldline's auto gain rather than loudness normalization.
     /// </summary>
     public class HifiSamplerConfig {
         public int SampleRate = 44100;
@@ -23,8 +23,6 @@ namespace OpenUtau.Classic.Hifisampler {
         public double MelFmax = 16000;
         /// <summary>Mel frames kept beyond the note on each side, for the vocoder's context.</summary>
         public int Fill = 6;
-        public bool TrimSilence = true;
-        public double SilenceThreshold = -52.0;
         public double PeakLimit = 1.0;
 
         /// <summary>Throws when the vocoder was trained with other mel settings.</summary>

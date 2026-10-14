@@ -265,10 +265,10 @@ namespace OpenUtau.Core {
 
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
-        // One cancellation source per render lane so starting playback, pre-rendering
-        // or exporting no longer cancel each other in flight.
+        // Playback and pre-render share one lane: both publish into MixPlanner, so a
+        // newer pass simply takes over from the older one. Export renders into its own
+        // planner and keeps its own lane.
         CancellationTokenSource renderCancellation;
-        CancellationTokenSource preRenderCancellation;
         CancellationTokenSource exportCancellation;
         UVoicePart preRenderFocusPart;
         int preRenderFocusTick = -1;
@@ -613,11 +613,13 @@ namespace OpenUtau.Core {
 
         void SchedulePreRender() {
             Log.Information("SchedulePreRender");
+            // While playing, this pass takes over from the playback pass, so it has to
+            // render from the playhead, not from the part being edited.
             var engine = new RenderEngine(
                 DocManager.Inst.Project,
-                focusPart: preRenderFocusPart,
-                focusTick: preRenderFocusTick);
-            engine.PreRenderProject(ref preRenderCancellation, MixPlanner);
+                focusPart: PlayingMaster ? null : preRenderFocusPart,
+                focusTick: PlayingMaster ? DocManager.Inst.playPosTick : preRenderFocusTick);
+            engine.PreRenderProject(ref renderCancellation, MixPlanner);
         }
 
         #region ICmdSubscriber
@@ -650,7 +652,6 @@ namespace OpenUtau.Core {
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
                 renderCancellation?.Cancel();
-                preRenderCancellation?.Cancel();
                 exportCancellation?.Cancel();
                 MixPlanner.Clear();
                 DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());

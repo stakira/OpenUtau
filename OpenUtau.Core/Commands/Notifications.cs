@@ -190,6 +190,37 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set progress {Progress} {Info}";
     }
 
+    /// <summary>
+    /// A warning that needs the user's attention. DocManager keeps it until a
+    /// <see cref="ClearWarningsNotification"/>; the main window shows a warning sign
+    /// next to the main menu while any are kept. A warning replaces an earlier one
+    /// with the same key, so a check that runs repeatedly doesn't pile up copies.
+    /// Title and detail are string resource keys, formatted with <see cref="Args"/>
+    /// ({0}, {1}, ...) in the UI language.
+    /// </summary>
+    public class WarningNotification : UNotification {
+        public string Key { get; }
+        public string TitleKey { get; }
+        public string? DetailKey { get; }
+        public object[] Args { get; }
+        public WarningNotification(string key, string titleKey, string? detailKey = null, params object[] args) {
+            Key = key;
+            TitleKey = titleKey;
+            DetailKey = detailKey;
+            Args = args;
+        }
+        public override string ToString() => $"Warning: {TitleKey} {string.Join(", ", Args)}";
+    }
+
+    /// <summary>Clears the warning with <paramref name="key"/>, or all warnings when null.</summary>
+    public class ClearWarningsNotification : UNotification {
+        public readonly string? key;
+        public ClearWarningsNotification(string? key = null) {
+            this.key = key;
+        }
+        public override string ToString() => key == null ? "Clear warnings" : $"Clear warning {key}";
+    }
+
     public class VolumeChangeNotification : UNotification {
         public double Volume;
         public int TrackNo;

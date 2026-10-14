@@ -232,7 +232,8 @@ namespace OpenUtau.Core.Pipeline {
 
         internal PhonemeSource(UPhoneme phoneme, int noteIndex, TimeAxis axis,
                 int partPosition, UTrack track, UProject project,
-                string trackResampler, IReadOnlyList<UExpressionDescriptor>? graphExpressions) {
+                string trackResampler, IReadOnlyList<UExpressionDescriptor> flagExpressions,
+                IReadOnlyList<UExpressionDescriptor>? graphExpressions) {
             Position = phoneme.position;
             Duration = phoneme.Duration;
             End = phoneme.End;
@@ -274,7 +275,7 @@ namespace OpenUtau.Core.Pipeline {
                 && !string.IsNullOrEmpty(engDescriptor.options[eng])) {
                 Resampler = engDescriptor.options[eng];
             }
-            Flags = phoneme.GetResamplerFlags(project, track);
+            Flags = UPhoneme.BuildResamplerFlags(flagExpressions, abbr => phoneme.GetExpression(project, track, abbr).Item1);
             string voiceColor = phoneme.GetVoiceColor(project, track);
             Suffix = track.Singer.Subbanks
                 .FirstOrDefault(subbank => subbank.Color == voiceColor)?.Suffix ?? string.Empty;
@@ -371,8 +372,8 @@ namespace OpenUtau.Core.Pipeline {
         public readonly IReadOnlyDictionary<string, UMaskedRun[]>? MaskedCurves;
         /// <summary>The per-phoneme values graph inputs read. Only set when the track has a graph.</summary>
         public readonly ExpressionGraph.PhonemeAnchors? PhonemeAnchors;
-        /// <summary>The track's expressions in flag order. Only set when the track has a graph.</summary>
-        public readonly UExpressionDescriptor[] FlagExpressions = Array.Empty<UExpressionDescriptor>();
+        /// <summary>The track's expressions in flag order.</summary>
+        public readonly UExpressionDescriptor[] FlagExpressions;
         /// <summary>The per-phoneme expressions a graph can drive, by abbreviation.</summary>
         public readonly IReadOnlyDictionary<string, UExpressionDescriptor> DrivablePhonemeExpressions =
             new Dictionary<string, UExpressionDescriptor>();
@@ -429,9 +430,9 @@ namespace OpenUtau.Core.Pipeline {
                 .ToDictionary(d => d.abbr, d => (int)d.defaultValue);
 
             ExpressionGraph = OpenUtau.Core.ExpressionGraph.ExpressionGraphProgram.ForTrack(project, track);
+            FlagExpressions = UPhoneme.GetExpressionDescriptors(project, track).ToArray();
             List<UExpressionDescriptor>? graphExpressions = null;
             if (ExpressionGraph != null) {
-                FlagExpressions = UPhoneme.GetExpressionDescriptors(project, track).ToArray();
                 graphExpressions = FlagExpressions
                     .Where(d => d.type is UExpressionType.Numerical or UExpressionType.Options)
                     .ToList();
@@ -448,7 +449,7 @@ namespace OpenUtau.Core.Pipeline {
                 var p = phonemes[i];
                 Phonemes[i] = new PhonemeSource(p,
                     p.Parent != null ? noteIndexByNote[p.Parent] : -1,
-                    Axis, part.position, track, project, Resampler, graphExpressions);
+                    Axis, part.position, track, project, Resampler, FlagExpressions, graphExpressions);
             }
             PhraseGroups = groups;
             PhraseNoteIndex = new Lazy<int[][]>(() => PhraseGroups

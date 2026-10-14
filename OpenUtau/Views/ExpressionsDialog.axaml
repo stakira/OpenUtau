@@ -82,11 +82,11 @@
           </DockPanel>
           <DockPanel IsVisible="{Binding !Expression.IsOptions}">
             <TextBlock Text="{DynamicResource exps.minvalue}" Classes="label"/>
-            <c:FloatEditor IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Min}"/>
+            <c:FloatEditor Value="{Binding Expression.Min}"/>
           </DockPanel>
           <DockPanel IsVisible="{Binding !Expression.IsOptions}">
             <TextBlock Text="{DynamicResource exps.maxvalue}" Classes="label"/>
-            <c:FloatEditor IsEnabled="{Binding Expression.IsCustom}" Value="{Binding Expression.Max}"/>
+            <c:FloatEditor Value="{Binding Expression.Max}"/>
           </DockPanel>
           <DockPanel IsVisible="{Binding Expression.IsCurve}">
             <TextBlock Text="{DynamicResource exps.defaultvalue}" Classes="label"/>

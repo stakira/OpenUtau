@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using NWaves.Signals;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Primitives;
@@ -119,6 +117,17 @@ namespace OpenUtau.App.Controls {
             set => SetAndRaise(PianoRollViewViewportTicksProperty, ref pianoRollViewViewportTicks, value);
         }
 
+        private bool _pianoRollViewportHovered;
+        private bool PianoRollViewportHovered {
+            get => _pianoRollViewportHovered;
+            set {
+                if (_pianoRollViewportHovered != value) {
+                    _pianoRollViewportHovered = value;
+                    InvalidateVisual();
+                }
+            }
+        }
+
         private double tickWidth;
         private double trackHeight;
         private double viewWidth;
@@ -134,20 +143,20 @@ namespace OpenUtau.App.Controls {
 
         public readonly UPart part;
         private readonly PartsCanvas partsCanvas;
-        private readonly Pen notePen = new Pen(Brushes.White, 3);
+        private const byte ContentAlpha = 0xF8;
+        private readonly Pen notePen = new Pen(new SolidColorBrush(Color.FromArgb(ContentAlpha, 255, 255, 255)), 3);
         private static readonly IBrush viewportFill = new SolidColorBrush(Color.FromArgb(28, 255, 255, 255));
         private static readonly IPen viewportPen = new Pen(Brushes.White, 2);
         private const double GripDot = 2;
         private const double GripGap = 3;
         private readonly Pen fadePen = new Pen(Brushes.White);
         private List<IDisposable> unbinds = new List<IDisposable>();
-        private WriteableBitmap? bitmap;
-        private int[] bitmapData;
+        private static readonly IBrush waveformFill = new SolidColorBrush(Color.FromArgb(ContentAlpha, 255, 255, 255));
+        private readonly WaveformEnvelope waveform = new WaveformEnvelope();
 
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
             partsCanvas = canvas;
-            bitmapData = new int[0];
             pointGeometry = new EllipseGeometry(new Rect(0, 0, 6, 6));
 
             unbinds.Add(this.Bind(TickWidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty)));
@@ -174,6 +183,10 @@ namespace OpenUtau.App.Controls {
                     }
                 }, CancellationToken.None, TaskContinuationOptions.None, scheduler);
             }
+
+            this.PointerMoved += (o, e) => PointerChanged(e.GetPosition(this));
+            this.PointerEntered += (o, e) => PointerChanged(e.GetPosition(this));
+            this.PointerExited += (_, _) => PianoRollViewportHovered = false;
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
@@ -210,6 +223,13 @@ namespace OpenUtau.App.Controls {
                 FadeIn = wavePart.fadein;
                 FadeOut = wavePart.fadeout;
             }
+            InvalidateWaveform();
+        }
+
+        /// <summary>Redraws, rebuilding the waveform, as after a tempo change.</summary>
+        public void InvalidateWaveform() {
+            waveform.Invalidate();
+            InvalidateVisual();
         }
 
         public override void Render(DrawingContext context) {
@@ -247,7 +267,7 @@ namespace OpenUtau.App.Controls {
                 // Highlight
                 if (PianoRollViewportRect() is Rect vpRect) {
                     context.DrawRectangle(viewportFill, viewportPen, new RoundedRect(vpRect, new CornerRadius(3)));
-                    if (GripRect(vpRect) is Rect grip) {
+                    if (PianoRollViewportHovered && GripRect(vpRect) is Rect grip) {
                         // A 3 by 3 grid of dots.
                         for (int column = 0; column < 3; ++column) {
                             for (int row = 0; row < 3; ++row) {
@@ -262,14 +282,9 @@ namespace OpenUtau.App.Controls {
             } else if (part is UWavePart wavePart) {
                 // Waveform
                 try {
-                    DrawWaveform(wavePart, GetBitmap(ViewWidth));
-                    if (bitmap != null) {
-                        var srcRect = Bounds.WithY(0);
-                        var dstRect = Bounds.WithX(1).WithY(0);
-                        context.DrawImage(bitmap, srcRect, dstRect);
-                    }
+                    DrawWaveform(context, wavePart);
                 } catch (Exception e) {
-                    Log.Error(e, "failed to draw bitmap");
+                    Log.Error(e, "failed to draw waveform");
                 }
                 // Fade
                 var brush = Brushes.White;
@@ -331,99 +346,73 @@ namespace OpenUtau.App.Controls {
                 && grip.Inflate(new Thickness(6, 8)).Contains(point);
         }
 
-        private WriteableBitmap GetBitmap(double width) {
-            int w = 128 * (int)(width / 128 + 1);
-            if (bitmap == null || bitmap.Size.Width < w) {
-                bitmap?.Dispose();
-                var size = new PixelSize(w, (int)ViewConstants.TrackHeightMax);
-                Log.Information($"created bitmap {size}");
-                bitmap = new WriteableBitmap(
-                    size, new Vector(96, 96),
-                    Avalonia.Platform.PixelFormat.Rgba8888,
-                    Avalonia.Platform.AlphaFormat.Unpremul);
-                bitmapData = new int[size.Width * size.Height];
+        private void PointerChanged(Point point) {
+            if (PianoRollViewportRect() is Rect vpRect) {
+                PianoRollViewportHovered = vpRect.Contains(point);
             }
-            return bitmap;
         }
 
-        private void DrawWaveform(UWavePart wavePart, WriteableBitmap bitmap) {
-            if (wavePart.Peaks == null ||
-                !wavePart.Peaks.IsCompletedSuccessfully ||
-                wavePart.Peaks.Result == null) {
+        // The file's channels as lanes, on a grid from the part's start: scrolling
+        // moves the whole control, so it never re-bins the samples.
+        private void DrawWaveform(DrawingContext context, UWavePart wavePart) {
+            if (wavePart.Peaks is not { IsCompletedSuccessfully: true, Result: WavePeaks peaks }) {
                 return;
             }
-            var wholePeaks = wavePart.Peaks.Result;
-            int skipCount = (int)(wavePart.peaksSampleRate * wavePart.GetSkipMs(Core.DocManager.Inst.Project) / 1000);
-            if (skipCount >= wholePeaks[0].Length) return;
-
-            double height = TrackHeight;
-            double monoChnlAmp = (height - 4.0) / 2;
-            double stereoChnlAmp = (height - 6.0) / 4;
-
-            var timeAxis = Core.DocManager.Inst.Project.timeAxis;
-            DiscreteSignal[] peaks = new DiscreteSignal[wholePeaks.Length];
-            for (int i = 0; i < wholePeaks.Length; i++) {
-                var newSamples = wholePeaks[i].Samples.Skip(skipCount);
-                peaks[i] = new DiscreteSignal(wavePart.peaksSampleRate, newSamples);
+            var project = Core.DocManager.Inst.Project;
+            double scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
+            // Everything below is in device pixels. left is where the part starts,
+            // from the left edge of the canvas.
+            double pixelsPerTick = TickWidth * scale;
+            double left = Bounds.X * scale;
+            int columns = (int)Math.Ceiling(wavePart.Duration * pixelsPerTick);
+            int visibleStart = Math.Clamp((int)Math.Floor(-left), 0, columns);
+            int visibleEnd = Math.Clamp((int)Math.Ceiling(ViewWidth * scale - left) + 1, visibleStart, columns);
+            if (visibleEnd <= visibleStart) {
+                return;
             }
-            int x = 0;
-            if (TickOffset <= wavePart.position) {
-                // Part starts in or to the right of view.
-                x = (int)(TickWidth * (wavePart.position - TickOffset));
-            }
-            int posTick = (int)(TickOffset + x / TickWidth);
-            double posMs = timeAxis.TickPosToMsPos(posTick);
-            double offsetMs = timeAxis.TickPosToMsPos(wavePart.position);
-            int sampleIndex = (int)(wavePart.peaksSampleRate * (posMs - offsetMs) * 0.001);
-            sampleIndex = Math.Clamp(sampleIndex, 0, peaks[0].Length);
-            using (var frameBuffer = bitmap.Lock()) {
-                Array.Clear(bitmapData, 0, bitmapData.Length);
-                while (x < frameBuffer.Size.Width) {
-                    if (posTick >= wavePart.position + wavePart.Duration) {
-                        break;
-                    }
-                    int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
-                    double nexPosMs = timeAxis.TickPosToMsPos(nextPosTick);
-                    int nextSampleIndex = (int)(wavePart.peaksSampleRate * (nexPosMs - offsetMs) * 0.001);
-                    nextSampleIndex = Math.Clamp(nextSampleIndex, 0, peaks[0].Length);
-                    if (nextSampleIndex > sampleIndex) {
-                        for (int i = 0; i < peaks.Length; ++i) {
-                            var segment = new ArraySegment<float>(peaks[i].Samples, sampleIndex, nextSampleIndex - sampleIndex);
-                            float min = segment.Min();
-                            float max = segment.Max();
-                            double ySpan = peaks.Length == 1 ? monoChnlAmp : stereoChnlAmp;
-                            double yOffset = i == 1 ? monoChnlAmp : 0;
-                            DrawPeak(bitmapData, frameBuffer.Size.Width, x,
-                                (int)(ySpan * (1 + -min) + yOffset) + 2,
-                                (int)(ySpan * (1 + -max) + yOffset) + 2);
-                        }
-                    }
-                    x++;
-                    posTick = nextPosTick;
-                    posMs = nexPosMs;
-                    sampleIndex = nextSampleIndex;
-                }
-                Marshal.Copy(bitmapData, 0, frameBuffer.Address, bitmapData.Length);
-            }
+            double fileStartMs = project.timeAxis.TickPosToMsPos(wavePart.position) - wavePart.GetSkipMs(project);
+            waveform.Update(project.timeAxis, (peaks, fileStartMs), wavePart.position, pixelsPerTick,
+                Lanes(peaks.Channels, Math.Round(Bounds.Height * scale), scale), visibleStart, visibleEnd, 0, columns,
+                (edges, min, max) => FillColumns(peaks, fileStartMs, edges, min, max));
+            // Snap the columns to whole device pixels of the canvas.
+            waveform.Draw(context, Bounds.Size, scale, Math.Round(left) - left, waveformFill);
         }
 
-        private void DrawPeak(int[] data, int width, int x, int y1, int y2) {
-            const int white = unchecked((int)0xFFFFFFFF);
-            if (y1 > y2) {
-                int temp = y2;
-                y2 = y1;
-                y1 = temp;
+        // One band per channel, 2 pixels from the edges and from each other.
+        private static (double y, double height)[] Lanes(int channels, double height, double scale) {
+            double gap = Math.Round(2 * scale);
+            double laneHeight = Math.Floor((height - gap * (channels + 1)) / channels);
+            var lanes = new (double y, double height)[channels];
+            for (int i = 0; i < channels; ++i) {
+                lanes[i] = (gap + i * (laneHeight + gap), laneHeight);
             }
-            for (var y = y1; y <= y2; ++y) {
-                data[x + width * y] = white;
+            return lanes;
+        }
+
+        private static bool FillColumns(WavePeaks peaks, double fileStartMs, double[] edges, float[][] min, float[][] max) {
+            int Frame(double ms) => (int)Math.Floor((ms - fileStartMs) * peaks.SampleRate / 1000);
+            for (int i = 0; i + 1 < edges.Length; ++i) {
+                int f0 = Frame(edges[i]);
+                int f1 = Math.Min(Frame(edges[i + 1]), peaks.Frames);
+                for (int lane = 0; lane < min.Length; ++lane) {
+                    if (f0 < 0 || f0 >= peaks.Frames) {
+                        min[lane][i] = max[lane][i] = float.NaN;
+                    } else if (f1 > f0) {
+                        peaks.MinMax(lane, f0, f1, out min[lane][i], out max[lane][i]);
+                    } else {
+                        // Zoomed in past one sample per column: hold the last sample.
+                        int f = Math.Max(0, f0 - 1);
+                        peaks.MinMax(lane, f, f + 1, out min[lane][i], out max[lane][i]);
+                    }
+                }
             }
+            return true;
         }
 
         public void Report(int value) {
         }
 
         public void Dispose() {
-            bitmap?.Dispose();
             unbinds.ForEach(u => u.Dispose());
             unbinds.Clear();
         }

@@ -292,7 +292,18 @@ namespace OpenUtau.Core.Render {
 
         const int ResamplerPadding = 2;
         // world::kFloorF0StoneMask, the voiced threshold of the resampler auto gain.
-        const double ResamplerVoicedF0 = 40.0;
+        internal const double ResamplerVoicedF0 = 40.0;
+
+        /// <summary>
+        /// The resampler auto gain, (0.5 / peak)^(P / 100): the peak is the output's blended with
+        /// the whole source file's by voiced ratio, so a mostly unvoiced note (a consonant, a
+        /// breath) takes the file's peak instead of being overamplified.
+        /// </summary>
+        internal static double ResamplerAutoGain(double outMax, double wavMax, double voicedRatio, int peakComp) {
+            double weight = 1.0 / (1.0 + Math.Exp(5.0 - 10.0 * voicedRatio));
+            double max = outMax * weight + wavMax * (1.0 - weight);
+            return max == 0 ? 1.0 : Math.Pow(0.5 / max, peakComp * 0.01);
+        }
 
         /// <summary>
         /// Worldline resampler: renders one note to exactly item.durRequired ms,
@@ -378,14 +389,10 @@ namespace OpenUtau.Core.Render {
                 output[i] = (float)samples[startSample + i];
             }
 
-            // Auto gain between the synthesized output and the whole source file,
-            // weighted by voiced ratio to avoid overamplifying consonants.
             double voicedRatio = f0.Count(f => f > ResamplerVoicedF0) / (double)f0.Length;
-            double weight = 1.0 / (1.0 + Math.Exp(5.0 - 10.0 * voicedRatio));
             double outMax = output.Length > 0 ? output.Max(s => Math.Abs(s)) : 0;
-            double max = outMax * weight + segment.wavMax * (1.0 - weight);
             double gain = (item.phone.direct ? 0 : item.volume) * 0.01;
-            double autoGain = max == 0 ? 1.0 : Math.Pow(0.5 / max, GetFlag(item, "P", 86) * 0.01);
+            double autoGain = ResamplerAutoGain(outMax, segment.wavMax, voicedRatio, GetFlag(item, "P", 86));
             if (autoGain * gain != 1) {
                 for (int i = 0; i < output.Length; ++i) {
                     output[i] = (float)(output[i] * autoGain * gain);
@@ -414,6 +421,14 @@ namespace OpenUtau.Core.Render {
             public int p1;
             public int p3;
             public int p4;
+
+            /// <summary>
+            /// The phrase frames in [p0, p4) the segment has analysis for. A preutterance lengthened
+            /// past the oto's skips a negative amount, leaving frames before the analysis; those stay
+            /// silent, as the wavtool leaves them.
+            /// </summary>
+            public int FirstFrame => Math.Max(p0, p0 - skipFrames);
+            public int EndFrame => Math.Min(p4, p0 - skipFrames + f0.size);
 
             // Worldline-R1.1 only (null / unset otherwise): the harmonic part's spectral
             // envelope on the same frames as spEnv (ap then holds the separation's power
@@ -689,7 +704,7 @@ namespace OpenUtau.Core.Render {
 
                 for (int i = 0; i < segments.Count; ++i) {
                     var segment = segments[i];
-                    for (int j = segment.p0; j < segment.p4; ++j) {
+                    for (int j = segment.FirstFrame; j < segment.EndFrame; ++j) {
                         double weight = 1.0;
                         if (j < segment.p1) {
                             weight = (double)(j - segment.p0) / (segment.p1 - segment.p0);
@@ -782,7 +797,7 @@ namespace OpenUtau.Core.Render {
                     var segSp = segment.spEnv.ToArray<double>();
                     var segSpHarmonic = segment.spEnvHarmonic!.ToArray<double>();
                     var segAp = segment.ap.ToArray<double>();
-                    for (int j = segment.p0; j < segment.p4; ++j) {
+                    for (int j = segment.FirstFrame; j < segment.EndFrame; ++j) {
                         double weight = 1.0;
                         if (j < segment.p1) {
                             weight = (double)(j - segment.p0) / (segment.p1 - segment.p0);

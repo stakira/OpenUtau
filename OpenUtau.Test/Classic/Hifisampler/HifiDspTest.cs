@@ -93,22 +93,6 @@ namespace OpenUtau.Classic.Hifisampler {
         }
 
         [Fact]
-        public void LoudnessOfFullScaleSine() {
-            // BS.1770: a 997 Hz sine at 0 dBFS in one channel reads -3.01 LUFS.
-            var x = Enumerable.Range(0, 44100 * 3).Select(i => Math.Sin(2 * Math.PI * 997 * i / 44100.0)).ToArray();
-            // pyloudnorm's cookbook K-weighting filters are close to, not exactly, the standard's.
-            Assert.InRange(HifiLoudnessMeter.IntegratedLoudness(x, 44100), -3.11, -2.91);
-        }
-
-        [Fact]
-        public void LoudnessNormalizeReachesTarget() {
-            var x = Enumerable.Range(0, 44100 * 2).Select(i => (float)(0.05 * Math.Sin(2 * Math.PI * 440 * i / 44100.0))).ToArray();
-            var y = HifiLoudness.Normalize(x, 44100, trimSilence: false, silenceThreshold: -52, strength: 100);
-            Assert.Equal(x.Length, y.Length);
-            Assert.Equal(-16.0, HifiLoudnessMeter.IntegratedLoudness(y.Select(v => (double)v).ToArray(), 44100), 2);
-        }
-
-        [Fact]
         public void GrowlStrengthZeroIsIdentity() {
             var x = Noise(4410, 3).Select(v => (float)v).ToArray();
             Assert.Equal(x, HifiGrowl.Apply(x, 44100, 80, 0));

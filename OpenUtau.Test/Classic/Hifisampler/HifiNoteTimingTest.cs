@@ -41,6 +41,18 @@ namespace OpenUtau.Classic.Hifisampler {
         }
 
         [Fact]
+        public void VoicedRatioCountsTheKeptFrames() {
+            var t = Timing(loop: false);
+            // 10 ms f0 frames over the source.
+            Assert.Equal(1.0, t.VoicedRatio(Enumerable.Repeat(200.0, 300).ToArray(), 0.01, 40));
+            Assert.Equal(0.0, t.VoicedRatio(new double[300], 0.01, 40));
+            // Unvoiced up to the consonant end (150 ms): of the kept 500 ms, the first 50 ms are the
+            // consonant and the rest the stretched vowel.
+            var vowelOnly = Enumerable.Range(0, 300).Select(i => i >= 15 ? 200.0 : 0).ToArray();
+            Assert.InRange(t.VoicedRatio(vowelOnly, 0.01, 40), 0.85, 0.95);
+        }
+
+        [Fact]
         public void OutputIsLengthPlusStretchedConsonant() {
             // hifisampler renders length + velocity-stretched consonant, kept as is.
             var t = Timing(loop: false, velocity: 0);

@@ -78,8 +78,17 @@ namespace OpenUtau.Classic.Hifisampler {
             int cutEnd = Math.Clamp((int)(timing.NewEnd * config.SampleRate), cutStart, wavCon.Length);
             var render = wavCon[cutStart..cutEnd];
 
+            // Worldline's auto gain: the whole source's peak, and the voiced ratio of the kept frames
+            // from the source f0 (its .frq when there is one), on Worldline's resampler frames.
+            double wavMax = HifiArray.MaxAbs(wave);
+            double VoicedRatio() {
+                var cfg = Worldline.InitAnalysisConfig(config.SampleRate, 441, 2048);
+                var f0Src = Worldline.SourceF0(inputFile, wave, cfg);
+                return timing.VoicedRatio(f0Src, cfg.frame_ms / 1000, Worldline.ResamplerVoicedF0);
+            }
+
             return HifiPostProcess.Apply(render, features.Scale, flags, config, pitchRender, t,
-                timing.NewStart, timing.NewEnd, volume, growl, tempo);
+                timing.NewStart, timing.NewEnd, timing.LengthReq, volume, growl, tempo, wavMax, VoicedRatio);
         }
     }
 
@@ -248,6 +257,37 @@ namespace OpenUtau.Classic.Hifisampler {
         }
 
         /// <summary>
+        /// The fraction of the vocoder frames in the requested length (the output's first
+        /// <see cref="LengthReq"/>, the part the wavtool keeps) whose source frame is voiced, as
+        /// Worldline's resampler counts its output frames for the auto gain.
+        /// </summary>
+        /// <param name="sourceF0">The source's f0 (Hz, 0 unvoiced) every <paramref name="f0FrameSeconds"/>.</param>
+        public double VoicedRatio(double[] sourceF0, double f0FrameSeconds, double voicedF0) {
+            if (sourceF0.Length == 0) {
+                return 0;
+            }
+            var times = SourceTimes();
+            int last = tAreaOrigin.Length - 1;
+            int count = 0;
+            int voiced = 0;
+            for (int k = 0; k < times.Length; k++) {
+                // Vocoder frame k is at k * Thop; the output starts at NewStart.
+                double t = k * Thop;
+                if (t < NewStart || t >= NewStart + LengthReq) {
+                    continue;
+                }
+                int frame = Math.Clamp((int)Math.Round(times[k] / ThopOrigin - 0.5), 0, last);
+                double sourceSeconds = (SourceFrame(frame) + 0.5) * ThopOrigin;
+                int i = Math.Clamp((int)(sourceSeconds / f0FrameSeconds), 0, sourceF0.Length - 1);
+                count++;
+                if (sourceF0[i] > voicedF0) {
+                    voiced++;
+                }
+            }
+            return count == 0 ? 0 : voiced / (double)count;
+        }
+
+        /// <summary>
         /// The note's curves (on the pitch bend grid, from <see cref="NewStart"/>) carried back to
         /// the source frames through the time map. A source frame the loop uses more than once
         /// takes the average of its uses; frames the note doesn't use take the nearest values.
@@ -354,12 +394,7 @@ namespace OpenUtau.Classic.Hifisampler {
             string? dir = PackageManager.Inst.GetInstalledPath(PackageId);
             string? configPath = dir == null ? null : Path.Combine(dir, "vocoder.yaml");
             if (configPath == null || !File.Exists(configPath)) {
-                throw new MessageCustomizableException(
-                    $"Error loading package \"{PackageId}\"",
-                    "<translate:packages.errors.missing>",
-                    new Exception($"Error loading package \"{PackageId}\""),
-                    true,
-                    new string[] { PackageId });
+                throw new MissingPackageException(PackageId);
             }
             var config = Yaml.DefaultDeserializer.Deserialize<DsVocoderConfig>(
                 File.ReadAllText(configPath, System.Text.Encoding.UTF8));
@@ -391,6 +426,7 @@ namespace OpenUtau.Classic.Hifisampler {
         }
 
         float[] Run(List<NamedOnnxValue> inputs) {
+            using var dmlScope = Onnx.EnterDmlScope();
             using var results = session.Run(inputs);
             return results.First().AsTensor<float>().ToArray();
         }
@@ -398,13 +434,16 @@ namespace OpenUtau.Classic.Hifisampler {
 
     /// <summary>
     /// After the vocoder: A (pitch-slope amplitude modulation), undo the analysis scale, growl
-    /// (the growl curve, hifisampler's HG flag), P (loudness normalization), the peak limit,
-    /// and volume.
+    /// (the growl curve, hifisampler's HG flag), P (Worldline's resampler auto gain, in place of
+    /// hifisampler's loudness normalization), the peak limit, and volume.
     /// </summary>
     internal static class HifiPostProcess {
+        /// <param name="lengthReq">The requested length (s): the output's part the wavtool keeps.</param>
+        /// <param name="wavMax">The whole source file's peak.</param>
+        /// <param name="voicedRatio">The voiced ratio of the kept frames, only called when P is not 0.</param>
         public static float[] Apply(float[] render, double scale, HifiFlags flags, HifiSamplerConfig config,
-                double[] pitchRender, double[] t, double newStart, double newEnd, int volume,
-                float[]? growl, double tempo) {
+                double[] pitchRender, double[] t, double newStart, double newEnd, double lengthReq, int volume,
+                float[]? growl, double tempo, double wavMax, Func<double> voicedRatio) {
             int aFlag = flags.Get("A") ?? 0;
             if (aFlag != 0 && pitchRender.Length > 1 && t.Length > 1) {
                 double a = Math.Clamp(aFlag, -100, 100);
@@ -424,8 +463,6 @@ namespace OpenUtau.Classic.Hifisampler {
             for (int i = 0; i < render.Length; i++) {
                 render[i] = (float)(render[i] / scale);
             }
-            // Measured here, applied after growl and normalization, as hifisampler does.
-            double newMax = HifiArray.MaxAbs(render);
 
             if (growl != null && growl.Length > 0) {
                 // The curve starts at the output start, a point every 5 ticks.
@@ -438,12 +475,18 @@ namespace OpenUtau.Classic.Hifisampler {
                 });
             }
 
-            if (flags.Has("P")) {
-                double strength = flags.Get("P") ?? 100;
-                render = HifiLoudness.Normalize(render, config.SampleRate, config.TrimSilence,
-                    config.SilenceThreshold, loudness: -16.0, blockSize: 0.400, strength: strength);
+            // P as Worldline's resampler takes it (86 when absent), from the kept part's peak.
+            int kept = Math.Min(render.Length, (int)(lengthReq * config.SampleRate));
+            int peakComp = flags.Get("P") ?? 86;
+            if (peakComp != 0) {
+                double outMax = HifiArray.MaxAbs(render.AsSpan(0, kept));
+                double gain = Worldline.ResamplerAutoGain(outMax, wavMax, voicedRatio(), peakComp);
+                for (int i = 0; i < render.Length; i++) {
+                    render[i] = (float)(render[i] * gain);
+                }
             }
 
+            double newMax = HifiArray.MaxAbs(render.AsSpan(0, kept));
             if (newMax > config.PeakLimit) {
                 for (int i = 0; i < render.Length; i++) {
                     render[i] = (float)(render[i] / newMax);
