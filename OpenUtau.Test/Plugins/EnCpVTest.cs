@@ -14,15 +14,15 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("en_CpV_full",
+        [InlineData("en_cpv_full",
             new string[] { "test", "words" },
             new string[] { "C4", "C4" },
             new string[] { "- t", "eh", "s", "tt", "w", "er", "dd", "z", "z -" })]
-        [InlineData("en_CpV_noVC",
+        [InlineData("en_cpv_novc",
             new string[] { "test", "words" },
             new string[] { "C4", "C4" },
             new string[] { "- t", "eh", "s", "t", "w", "er", "d", "z" })]
-        [InlineData("en_CpV_5Vowel",
+        [InlineData("en_cpv_5Vowel",
             new string[] { "test", "words" },
             new string[] { "C4", "C4" },
             new string[] { "t", "e", "s", "t", "u", "o", "r", "d" })]
@@ -38,15 +38,15 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("en_CpV_full",
+        [InlineData("en_cpv_full",
             new string[] { "my", "go" },
             new string[] { "C4", "C4" },
             new string[] { "- m", "ay", "ay-", "g", "ow", "ow -" })]
-        [InlineData("en_CpV_noVC",
+        [InlineData("en_cpv_novc",
             new string[] { "my", "go" },
             new string[] { "C4", "C4" },
             new string[] { "m", "ay", "y", "g", "ow", "w" })]
-        [InlineData("en_CpV_5Vowel",
+        [InlineData("en_cpv_5Vowel",
             new string[] { "my", "go" },
             new string[] { "C4", "C4" },
             new string[] { "m", "a", "g", "o", "u" })]
@@ -62,15 +62,15 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("en_CpV_full",
+        [InlineData("en_cpv_full",
             new string[] { "players", "+" },
             new string[] { "C4", "C4" },
             new string[] { "- p", "l", "ey", "ey-", "er", "z", "z -" })]
-        [InlineData("en_CpV_noVC",
+        [InlineData("en_cpv_novc",
             new string[] { "players", "+" },
             new string[] { "C4", "C4" },
             new string[] { "- p", "l", "ey", "y", "er", "z" })]
-        [InlineData("en_CpV_5Vowel",
+        [InlineData("en_cpv_5Vowel",
             new string[] { "players", "+" },
             new string[] { "C4", "C4" },
             new string[] { "p", "l", "e", "o", "z" })]
@@ -86,15 +86,15 @@ namespace OpenUtau.Plugins {
         }
 
         [Theory]
-        [InlineData("en_CpV_full",
+        [InlineData("en_cpv_full",
             new string[] { "streets", "marx" },
             new string[] { "C4", "C4" },
             new string[] { "- s", "tt", "r", "iy", "tt", "s", "m", "ar", "ar-", "kk", "s", "s -" })]
-        [InlineData("en_CpV_noVC",
+        [InlineData("en_cpv_novc",
              new string[] { "streets", "marx" },
             new string[] { "C4", "C4" },
             new string[] { "- s", "t", "r", "iy", "t", "s", "m", "aa", "r", "k", "s" })]
-        [InlineData("en_CpV_5Vowel",
+        [InlineData("en_cpv_5Vowel",
              new string[] { "streets", "marx" },
             new string[] { "C4", "C4" },
             new string[] { "s", "t", "r", "i", "t", "s", "m", "a", "r", "k", "s" })]
@@ -114,7 +114,7 @@ namespace OpenUtau.Plugins {
         [InlineData("asdfjkl", "s t aa r", new string[] { "- s", "tt", "aa", "aa r", "r -" })]
         [InlineData("", "s t ar", new string[] { "- s", "tt", "ar", "ar -" })]
         public void HintTest(string lyric, string hint, string[] aliases) {
-            RunPhonemizeTest("en_CpV_full", new NoteParams[] {
+            RunPhonemizeTest("en_cpv_full", new NoteParams[] {
                 new NoteParams {
                     lyric = lyric,
                     hint = hint,
