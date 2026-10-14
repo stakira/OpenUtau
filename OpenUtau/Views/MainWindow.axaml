@@ -118,13 +118,13 @@
                           <StackPanel Grid.Column="1" Spacing="4">
                             <SelectableTextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"/>
                             <SelectableTextBlock Text="{Binding Detail}" FontSize="12" TextWrapping="Wrap"
-                                                 Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                 Foreground="{DynamicResource ForegroundBrushSecondary}"
                                                  IsVisible="{Binding Detail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                           </StackPanel>
                           <Button Grid.Column="2" Classes="clear" Width="24" Height="24" Margin="6,-3,0,0" Padding="0"
                                   VerticalAlignment="Top" ToolTip.Tip="{DynamicResource warnings.dismiss}" Click="OnDismissWarning">
                             <Path Width="8" Height="8" Stretch="Uniform" StrokeThickness="1.5"
-                                  Stroke="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                  Stroke="{DynamicResource ForegroundBrushSecondary}"
                                   Data="M0,0 L8,8 M8,0 L0,8"/>
                           </Button>
                         </Grid>

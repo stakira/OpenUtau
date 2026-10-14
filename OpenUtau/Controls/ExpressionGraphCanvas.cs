@@ -245,7 +245,7 @@ namespace OpenUtau.App.Controls {
         Ellipse Dot() => new Ellipse {
             Width = DotSize,
             Height = DotSize,
-            Fill = (IBrush?)FindBrush("SystemControlForegroundBaseMediumBrush") ?? Brushes.Gray,
+            Fill = (IBrush?)FindBrush("ForegroundBrushSecondary") ?? Brushes.Gray,
             VerticalAlignment = VerticalAlignment.Center,
             Cursor = new Cursor(StandardCursorType.Hand),
         };
@@ -656,7 +656,7 @@ namespace OpenUtau.App.Controls {
                 if (graph == null) {
                     return;
                 }
-                var brush = (IBrush?)owner.FindBrush("SystemControlForegroundBaseMediumBrush") ?? Brushes.Gray;
+                var brush = (IBrush?)owner.FindBrush("ForegroundBrushSecondary") ?? Brushes.Gray;
                 var pen = new Pen(brush, 2);
                 foreach (var link in graph.links) {
                     if (owner.outputDots.TryGetValue((link.from, owner.OutputIndexOf(link)), out var fromDot)
