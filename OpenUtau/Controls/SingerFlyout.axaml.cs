@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
@@ -15,8 +16,8 @@ namespace OpenUtau.App.Controls {
         const double TileHeight = 40;
         const int MinRows = 3;
         const double WheelStep = 60;
-        // Flyout presenter padding and border plus the footer row, around the tile grid.
-        const double ChromeHeight = 50;
+        // Flyout presenter padding and border plus the search box and footer rows, around the tile grid.
+        const double ChromeHeight = 78;
         // Flyout presenter padding and border left and right of the tile grid.
         const double ChromeWidth = 20;
         // Hover scroll speed in px/s, from the inner to the outer edge of a grabber.
@@ -25,7 +26,9 @@ namespace OpenUtau.App.Controls {
 
         private int maxRows = int.MaxValue;
         private int maxColumns = int.MaxValue;
+        private int rows = 1;
         private IDisposable? tilesSubscription;
+        private IDisposable? sizeSubscription;
         private readonly DispatcherTimer hoverTimer;
         private readonly Stopwatch hoverClock = new Stopwatch();
         private Control? hoveredGrabber;
@@ -42,10 +45,21 @@ namespace OpenUtau.App.Controls {
             base.OnDataContextChanged(e);
             tilesSubscription?.Dispose();
             tilesSubscription = null;
+            sizeSubscription?.Dispose();
+            sizeSubscription = null;
             if (DataContext is SingerFlyoutViewModel viewModel) {
-                tilesSubscription = viewModel.WhenAnyValue(x => x.Tiles)
+                // Sized for all singers, so searching doesn't resize the flyout.
+                sizeSubscription = viewModel.WhenAnyValue(x => x.AllTileCount)
                     .Subscribe(_ => UpdateSize());
+                tilesSubscription = viewModel.WhenAnyValue(x => x.Tiles)
+                    .Subscribe(_ => UpdateTiles());
             }
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e) {
+            base.OnAttachedToVisualTree(e);
+            // Once the flyout is open, so typing searches right away.
+            Dispatcher.UIThread.Post(() => SearchBox.Focus(), DispatcherPriority.Input);
         }
 
         /// <summary>
@@ -77,11 +91,18 @@ namespace OpenUtau.App.Controls {
         }
 
         void UpdateSize() {
-            int count = (DataContext as SingerFlyoutViewModel)?.Tiles.Count ?? 0;
-            int rows = Math.Clamp(count, 1, Math.Max(1, maxRows));
+            int count = (DataContext as SingerFlyoutViewModel)?.AllTileCount ?? 0;
+            rows = Math.Clamp(count, 1, Math.Max(1, maxRows));
             int columns = Math.Max(1, (count + rows - 1) / rows);
             TileScroller.Height = rows * TileHeight;
             TileScroller.Width = Math.Min(columns, maxColumns) * TileWidth;
+            UpdateTiles();
+        }
+
+        void UpdateTiles() {
+            if (DataContext is SingerFlyoutViewModel viewModel) {
+                SectionDividers.Update(TileWidth, TileHeight, rows, viewModel.Tiles.Count, viewModel.SectionStarts);
+            }
             TileScroller.Offset = new Vector(0, 0);
             UpdateGrabbers();
         }
@@ -147,6 +168,20 @@ namespace OpenUtau.App.Controls {
             hoverClock.Reset();
         }
 
+        void SearchBoxKeyDown(object? sender, KeyEventArgs e) {
+            if (DataContext is not SingerFlyoutViewModel viewModel) {
+                return;
+            }
+            if (e.Key == Key.Enter) {
+                viewModel.SelectFirst();
+                e.Handled = true;
+            } else if (e.Key == Key.Escape && !string.IsNullOrEmpty(viewModel.SearchText)) {
+                // Clears the search first; the next Escape closes the flyout.
+                viewModel.SearchText = string.Empty;
+                e.Handled = true;
+            }
+        }
+
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e) {
             StopHoverScroll();
             base.OnDetachedFromVisualTree(e);
@@ -173,6 +208,31 @@ namespace OpenUtau.App.Controls {
                 DataContext is SingerFlyoutViewModel viewModel) {
                 viewModel.Select(tileViewModel);
             }
+        }
+
+        void TileContextRequested(object? sender, ContextRequestedEventArgs e) {
+            e.Handled = true;
+            if (sender is not Control { DataContext: SingerTileViewModel tile } control ||
+                DataContext is not SingerFlyoutViewModel viewModel || tile.IsMissing) {
+                return;
+            }
+            // Built on demand, so the many tiles don't each carry a menu.
+            MenuItem Item(string header, Action onClick) {
+                var item = new MenuItem() { Header = this.FindResource(header) };
+                item.Classes.Add("context");
+                item.Click += (_, _) => onClick();
+                return item;
+            }
+            var items = new List<MenuItem> {
+                Item("tracks.openlocation", () => viewModel.OpenLocation(tile)),
+                Item("tracks.searchterms.edit", () => viewModel.EditSearchTerms(tile)),
+            };
+            if (viewModel.IsRecent(tile)) {
+                items.Add(Item("tracks.removefromrecent", () => viewModel.RemoveFromRecent(tile)));
+            }
+            var menu = new ContextMenu() { ItemsSource = items };
+            menu.Classes.Add("context");
+            menu.Open(control);
         }
 
         // Handled here so the press doesn't reach the tile and select the singer.
