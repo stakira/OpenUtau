@@ -278,6 +278,11 @@ namespace OpenUtau.Core.Render {
                 } catch (Exception e) {
                     if (!newCancellation.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
+                        // During playback this pass is what feeds the session, so a
+                        // failure ends playback just like a failed playback pass.
+                        if (PlaybackManager.Inst.PlayingMaster) {
+                            PlaybackManager.Inst.StopPlayback();
+                        }
                         DocManager.Inst.ExecuteCmd(new ToastNotification("Pianoroll", "Failed to pre-render.", "errors.failed.prerender", e));
                     }
                 }

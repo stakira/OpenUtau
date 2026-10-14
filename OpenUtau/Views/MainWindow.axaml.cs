@@ -341,6 +341,20 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        void OnClearWarnings(object sender, RoutedEventArgs args) {
+            WarningsButton.Flyout?.Hide();
+            viewModel.ClearWarnings();
+        }
+
+        void OnDismissWarning(object sender, RoutedEventArgs args) {
+            if (sender is Button { DataContext: WarningItem warning }) {
+                viewModel.ClearWarnings(warning.Key);
+                if (!viewModel.HasWarnings) {
+                    WarningsButton.Flyout?.Hide();
+                }
+            }
+        }
+
         void OnMenuOpenProjectLocation(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (string.IsNullOrEmpty(project.FilePath) || !project.Saved || !System.IO.File.Exists(project.FilePath) || !Path.IsPathRooted(project.FilePath)) {
