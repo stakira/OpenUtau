@@ -297,15 +297,17 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.not">NOT</system:String>
   <system:String x:Key="expressiongraph.node.if_else">If / Else</system:String>
   <system:String x:Key="expressiongraph.copy">copy</system:String>
+  <system:String x:Key="expressiongraph.copynodes">Copy</system:String>
   <system:String x:Key="expressiongraph.cycle">That link would make a loop.</system:String>
   <system:String x:Key="expressiongraph.default">Default for this renderer</system:String>
   <system:String x:Key="expressiongraph.delete">Delete</system:String>
   <system:String x:Key="expressiongraph.deletenode">Delete Node</system:String>
   <system:String x:Key="expressiongraph.duplicate">Duplicate</system:String>
+  <system:String x:Key="expressiongraph.duplicatenodes">Duplicate</system:String>
   <system:String x:Key="expressiongraph.error">Not used, because</system:String>
   <system:String x:Key="expressiongraph.export">Export...</system:String>
   <system:String x:Key="expressiongraph.graph">graph</system:String>
-  <system:String x:Key="expressiongraph.hint">Right-click to add a node. Drag from a node's output to an input to link them.</system:String>
+  <system:String x:Key="expressiongraph.hint">Right-click to add a node. Drag from a node's output to an input to link them. Scroll to zoom, Shift-drag to select several, Home to fit.</system:String>
   <system:String x:Key="expressiongraph.hint.nograph">Click New to create a graph for a renderer.</system:String>
   <system:String x:Key="expressiongraph.import">Import...</system:String>
   <system:String x:Key="expressiongraph.import.added">Added expressions</system:String>
@@ -340,6 +342,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.subtract">Subtract</system:String>
   <system:String x:Key="expressiongraph.noexpression">Choose an expression.</system:String>
   <system:String x:Key="expressiongraph.output">Out</system:String>
+  <system:String x:Key="expressiongraph.pastenodes">Paste</system:String>
   <system:String x:Key="expressiongraph.pitchcurve">Draw and load pitch into</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pitd">Pitch deviation (PITD)</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pito">Pitch override (PITO)</system:String>
