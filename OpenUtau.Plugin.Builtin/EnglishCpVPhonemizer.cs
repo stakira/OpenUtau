@@ -625,78 +625,28 @@ namespace OpenUtau.Plugin.Builtin {
             { "o", new[] { "ao", "ow" } },
             { "u", new[] { "uw", "uh" } },
             // Diphthong splits
-            { "ay-", new[] { "iy-", "iy", "i" } },
-            { "ey-", new[] { "iy-", "iy", "i"  } },
-            { "oy-", new[] { "iy-", "iy", "i"  } },
-            { "aw-", new[] { "uw-", "uw", "uh",  "u"  } },
-            { "ow-", new[] { "uw-", "uw", "uh",  "u"  } },
+            { "ay-", new[] { "iy-", "y" ,"iy", "i" } },
+            { "ey-", new[] { "iy-", "y" , "iy", "i"  } },
+            { "oy-", new[] { "iy-", "y" , "iy", "i"  } },
+            { "aw-", new[] { "uw-", "w" , "uw", "uh",  "u"  } },
+            { "ow-", new[] { "uw-", "w" , "uw", "uh",  "u"  } },
         };
 
         private string ApplyContextualFallbacks(string alias, int tone) {
             if (string.IsNullOrEmpty(alias)) return alias;
-
-            bool isEnding = IsEndingAlias(alias);
-            if (!isEnding && VowelFallbacks.TryGetValue(alias, out var directFallbacks)) {
-                foreach (var fb in directFallbacks) {
-                    if (HasOto(fb, tone)) return fb;
-                }
-            }
-
-            string prefix = "";
-            string suffix = "";
-            string core = alias;
-
-            // Strip C+V prefixes
-            if (core.StartsWith("- ")) { prefix = "- "; core = core.Substring(2); }
-            else if (core.StartsWith("-")) { prefix = "-"; core = core.Substring(1); }
-            else if (core.StartsWith("_")) { prefix = "_"; core = core.Substring(1); }
-            else if (core.StartsWith("*")) { prefix = "*"; core = core.Substring(1); }
-
-            // Strip C+V suffixes / endings
-            if (core.EndsWith(" -")) { suffix = " -"; core = core.Substring(0, core.Length - 2); isEnding = true; }
-            else if (core.EndsWith("-")) { suffix = "-"; core = core.Substring(0, core.Length - 1); isEnding = true; }
-            else if (core.EndsWith(" R")) { suffix = " R"; core = core.Substring(0, core.Length - 2); isEnding = true; }
-            else if (core.EndsWith("R")) { suffix = "R"; core = core.Substring(0, core.Length - 1); isEnding = true; }
-            else if (tails != null) {
-                foreach (var tail in tails.Where(t => !string.IsNullOrEmpty(t))) {
-                    if (core.EndsWith($" {tail}")) {
-                        suffix = $" {tail}";
-                        core = core.Substring(0, core.Length - suffix.Length);
-                        isEnding = true;
-                        break;
-                    }
-                    if (core.EndsWith(tail)) {
-                        suffix = tail;
-                        core = core.Substring(0, core.Length - suffix.Length);
-                        isEnding = true;
-                        break;
-                    }
-                }
-            }
-
-            if (VowelFallbacks.TryGetValue(core, out var fallbacks)) {
+            if (HasOto(alias, tone)) return alias;
+            if (VowelFallbacks.TryGetValue(alias, out var fallbacks)) {
                 foreach (var fb in fallbacks) {
-                    if (isEnding) {
-                        // Check primary ending format (e.g., "ah -")
-                        string formatted = $"{prefix}{fb}{suffix}";
-                        if (HasOto(formatted, tone)) return formatted;
-                        if (suffix == " -" && HasOto($"{prefix}{fb}-", tone)) return $"{prefix}{fb}-";
-                        if (suffix == "-" && HasOto($"{prefix}{fb} -", tone)) return $"{prefix}{fb} -";
-                    } else {
-                        // Non-ending (e.g., "- ax", "_ax", "ax")
-                        string formatted = $"{prefix}{fb}{suffix}";
-                        if (HasOto(formatted, tone)) return formatted;
-                        // Fall back to bare vowel only for starting/internal vowels
-                        if (HasOto(fb, tone)) return fb;
+                    if (HasOto(fb, tone)) {
+                        return fb;
                     }
                 }
             }
-
             return alias;
         }
 
         protected override string ValidateAlias(string alias, int tone = 0) {
-
+            if (string.IsNullOrEmpty(alias)) return alias;
             // VALIDATE ALIAS DEPENDING ON METHOD
             if (HasOto(alias, tone)) return alias;
             // Prioritize contextual fb before yaml
