@@ -63,13 +63,22 @@ namespace OpenUtau.App.ViewModels {
             RefreshSelectionStyle();
         }
 
-        public TrackHeaderViewModel(UTrack track) {
+        public TrackHeaderViewModel(UTrack track, object? parentDataContext) {
             this.track = track;
             SelectSingerCommand = ReactiveCommand.Create<USinger>(singer => {
+                var selectedTracks = new List<UTrack>();
+                if (parentDataContext is TracksViewModel tracksViewModel) {
+                    selectedTracks = tracksViewModel.SelectedTracks;
+                } else {
+                    selectedTracks.Add(this.track);
+                }
+                
                 if (track.Singer != singer) {
                     DocManager.Inst.StartUndoGroup("command.track.singer");
-                    ApplySingerToTrack(track, singer);
-                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
+                    foreach (var selectedTrack in selectedTracks) {
+                        ApplySingerToTrack(selectedTrack, singer);
+                        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
+                    }
                     DocManager.Inst.EndUndoGroup();
                     UpdateRecentSingers(singer);
                     Preferences.Save();
@@ -82,10 +91,19 @@ namespace OpenUtau.App.ViewModels {
             });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
+                    var selectedTracks = new List<UTrack>();
+                    if (parentDataContext is TracksViewModel tracksViewModel) {
+                        selectedTracks = tracksViewModel.SelectedTracks;
+                    } else {
+                        selectedTracks.Add(this.track);
+                    }
+                    
                     DocManager.Inst.StartUndoGroup("command.track.setting");
                     var phonemizer = factory.Create();
                     Log.Information($"Loading Phonemizer: {phonemizer.ToString()}");
-                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
+                    foreach (var selectedTrack in selectedTracks) {
+                        DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, selectedTrack, phonemizer));
+                    }
                     DocManager.Inst.EndUndoGroup();
                     var name = phonemizer.GetType().FullName!;
                     if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
@@ -103,11 +121,21 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
             });
             SelectRendererCommand = ReactiveCommand.Create<string>(name => {
+                var selectedTracks = new List<UTrack>();
+                if (parentDataContext is TracksViewModel tracksViewModel) {
+                    selectedTracks = tracksViewModel.SelectedTracks;
+                } else {
+                    selectedTracks.Add(this.track);
+                }
+                
                 var settings = new URenderSettings {
                     renderer = name,
                 };
                 DocManager.Inst.StartUndoGroup("command.track.setting");
-                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
+                foreach (var selectedTrack in selectedTracks) {
+                    DocManager.Inst.ExecuteCmd(
+                        new TrackChangeRenderSettingCommand(DocManager.Inst.Project, selectedTrack, settings));
+                }
                 DocManager.Inst.EndUndoGroup();
                 this.RaisePropertyChanged(nameof(Renderer));
             });
