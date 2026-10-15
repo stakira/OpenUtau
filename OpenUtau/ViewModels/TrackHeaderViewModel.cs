@@ -73,17 +73,15 @@ namespace OpenUtau.App.ViewModels {
                     selectedTracks.Add(this.track);
                 }
                 
-                if (track.Singer != singer) {
-                    DocManager.Inst.StartUndoGroup("command.track.singer");
-                    foreach (var selectedTrack in selectedTracks) {
-                        ApplySingerToTrack(selectedTrack, singer);
-                        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
-                    }
-                    DocManager.Inst.EndUndoGroup();
-                    UpdateRecentSingers(singer);
-                    Preferences.Save();
+                DocManager.Inst.StartUndoGroup("command.track.singer");
+                foreach (var selectedTrack in selectedTracks.Where(selTrack => selTrack.Singer != singer)) {
+                    ApplySingerToTrack(selectedTrack, singer);
+                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
                     MessageBus.Current.SendMessage(new PianorollRefreshEvent("Part"));
                 }
+                DocManager.Inst.EndUndoGroup();
+                UpdateRecentSingers(singer);
+                Preferences.Save();
                 MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 this.RaisePropertyChanged(nameof(Singer));
                 this.RaisePropertyChanged(nameof(Renderer));
