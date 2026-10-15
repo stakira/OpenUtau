@@ -844,6 +844,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
   <system:String x:Key="prefs.utau">UTAU</system:String>
+  <system:String x:Key="prefs.placeholdertext.none">(None)</system:String>
 
   <system:String x:Key="progress.cachecleared">Cache cleared.</system:String>
   <system:String x:Key="progress.clearingcache">Clearing cache...</system:String>
@@ -1037,6 +1038,13 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
+  <system:String x:Key="warnings">Warnings</system:String>
+  <system:String x:Key="warnings.clear">Clear all</system:String>
+  <system:String x:Key="warnings.dismiss">Dismiss</system:String>
+  <system:String x:Key="warnings.singers.duplicate">Duplicate voicebank folder "{0}"</system:String>
+  <system:String x:Key="warnings.singers.duplicate.detail">Using: {1}
+Ignored: {2}
+Rename the ignored folder to load it.</system:String>
 
   <system:String x:Key="welcome.new">New</system:String>
   <system:String x:Key="welcome.new.description">Create a new project</system:String>

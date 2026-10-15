@@ -86,6 +86,7 @@ public sealed class Hnsep {
     });
 
     float[] Run(DenseTensor<float> input) {
+        using var dmlScope = Onnx.EnterDmlScope();
         using var results = session.Run(new[] { NamedOnnxValue.CreateFromTensor(session.InputNames[0], input) });
         return results.First().AsTensor<float>().ToDenseTensor().Buffer.ToArray();
     }

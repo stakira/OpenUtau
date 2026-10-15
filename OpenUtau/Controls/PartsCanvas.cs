@@ -145,7 +145,7 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.Listen<TimeAxisChangedEvent>()
                 .Subscribe(e => {
                     foreach (var (part, control) in partControls) {
-                        control.ResetRenderBlocks();
+                        control.InvalidateWaveform();
                     }
                 });
             MessageBus.Current.Listen<ThemeChangedEvent>()

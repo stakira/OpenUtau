@@ -793,6 +793,44 @@ namespace OpenUtau.Core.ExpressionGraph {
         }
 
         [Fact]
+        public void ClearedRangesAreLimitedToThePhrase() {
+            var ranges = new List<(int from, int to)> { (0, 50), (-30, 20), (60, 90), (120, 200), (100, 100) };
+            OpenUtau.Core.Editing.LoadRenderedPitch.ClampRanges(ranges, 0, 10, 100);
+            Assert.Equal(new[] { (10, 50), (10, 20), (60, 90) }, ranges);
+
+            // Ranges before the start index belong to other phrases and are left alone.
+            ranges = new List<(int from, int to)> { (0, 1000), (-500, 700) };
+            OpenUtau.Core.Editing.LoadRenderedPitch.ClampRanges(ranges, 1, 0, 480);
+            Assert.Equal(new[] { (0, 1000), (0, 480) }, ranges);
+        }
+
+        [Fact]
+        public void LongPaddingDoesNotClearTheNeighbouringPhrases() {
+            // A Voicevox-like result: 1 s of silent padding (about 960 ticks) on both sides of a 480 tick phrase.
+            var ticks = new List<float>();
+            var voiced = new List<bool>();
+            for (int t = -960; t <= 1440; t += 10) {
+                ticks.Add(t);
+                voiced.Add(t >= 0 && t <= 480);
+            }
+            var result = new RenderPitchResult {
+                ticks = ticks.ToArray(),
+                tones = ticks.Select(_ => 60f).ToArray(),
+                voiced = voiced.ToArray(),
+            };
+            var cleared = new List<(int from, int to)>();
+            var values = new List<(int x, float y)>();
+            OpenUtau.Core.Editing.LoadRenderedPitch.CollectRenderedPitch(result, 100, 480, cleared, values);
+            // The whole result is cleared, padding included: it reaches into the neighbouring phrases.
+            Assert.Equal(new[] { (100 - 960, 100 + 1440) }, cleared);
+
+            OpenUtau.Core.Editing.LoadRenderedPitch.ClampRanges(cleared, 0, 100, 100 + 480);
+
+            Assert.Equal(new[] { (100, 580) }, cleared);
+            Assert.All(values, v => Assert.InRange(v.x, 100, 580));
+        }
+
+        [Fact]
         public void GraphsCanPreferThePitchOverride() {
             var graph = Graph(new[] { Node(1, GraphNodeTypes.Constant) });
             var (project, track, _) = Fixture(graph);
