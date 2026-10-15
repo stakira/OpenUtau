@@ -49,6 +49,15 @@ namespace OpenUtau.Core.Render {
         /// Per-frame mask indicating retaken frames. Null means full retake.
         /// </summary>
         public bool[]? retakeMask;
+
+        /// <summary>
+        /// Per-frame flag: true when the frame belongs to a voiced segment.
+        /// Padding and inter-phoneme gap frames carry no meaningful pitch even
+        /// when the model returns a positive value for them, so callers must
+        /// not turn those frames into curve points. Null means every frame is
+        /// voiced (renderers that do not report rests).
+        /// </summary>
+        public bool[]? voiced;
     }
 
     public class RenderRealCurveResult {
@@ -87,15 +96,51 @@ namespace OpenUtau.Core.Render {
     /// </summary>
     public interface IRenderer {
         USingerType SingerType { get; }
-        bool SupportsRenderPitch { get; }
-        bool SupportsRealCurve { get { return false; } }
+        bool SupportsRenderPitch => false;
+        bool SupportsRealCurve => false;
+        bool SupportsPhonemeEnvelope => true;
         bool SupportsExpression(UExpressionDescriptor descriptor);
         RenderResult Layout(RenderPhrase phrase);
+
+        /// <summary>
+        /// How much (ms) this renderer pads the rendered audio before the first
+        /// phoneme (head) and after the last phoneme (tail) of a phrase.
+        /// </summary>
+        (double HeadMs, double TailMs) PhrasePadding(USinger singer, IEnumerable<UPhoneme> phonemes) { return (0, 0); }
+
+        /// <summary>
+        /// Whether two adjacent phoneme groups (prev then next, separated by a
+        /// gap) should stay in one phrase because their padded audio overlaps.
+        /// </summary>
+        bool ShouldMergePhrases(UProject project, UTrack track, UPhoneme prev, UPhoneme next)
+            => GapOverlapsPadding(this, track, prev, next);
+
+        /// <summary>
+        /// Shared test behind <see cref="ShouldMergePhrases"/>: true when the gap
+        /// between two phoneme groups is smaller than the renderer's tail + head
+        /// padding, so their padded audio would overlap.
+        /// </summary>
+        static bool GapOverlapsPadding(IRenderer renderer, UTrack track, UPhoneme prev, UPhoneme next) {
+            if (prev == null || next == null) {
+                return false;
+            }
+            double gapMs = next.PositionMs - prev.EndMs;
+            var (_, tailMs) = renderer.PhrasePadding(track.Singer, new[] { prev });
+            var (headMs, _) = renderer.PhrasePadding(track.Singer, new[] { next });
+            return gapMs < headMs + tailMs;
+        }
+
         Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender = false, RenderPhraseEvents? renderEvents = null);
         RenderPitchResult LoadRenderedPitch(RenderPhrase phrase);
         RenderPitchResult LoadRenderedPitch(RenderPhrase phrase, HashSet<int> selectedNotePositions) { return LoadRenderedPitch(phrase); }
         List<RenderRealCurveResult> LoadRenderedRealCurves(RenderPhrase phrase) { return new List<RenderRealCurveResult>(0);}
         void ScheduleRealCurveRefresh(UProject project, UVoicePart part, UCommand command) { }
         UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings);
+
+        /// <summary>
+        /// The renderer id whose expression graphs this renderer uses: its own by default.
+        /// Renderers that render the same expressions can share one slot.
+        /// </summary>
+        string ExpressionGraphSlot => ToString()!;
     }
 }

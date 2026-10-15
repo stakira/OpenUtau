@@ -29,17 +29,34 @@ namespace OpenUtau.Core {
             Log.Information("Searching singers.");
             Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
-            var singers = ClassicSingerLoader.FindAllSingers()
+            var oldSingers = Singers.Values.ToList();
+            var found = ClassicSingerLoader.FindAllSingers()
                 .Concat(Vogen.VogenSingerLoader.FindAllSingers())
-                .Distinct();
+                .ToList();
+            // Singers with the same id are equal (see USinger.Equals), so this keeps the first.
+            var singers = found.Distinct();
             Singers = singers
                 .ToLookup(s => s.Id)
                 .ToDictionary(g => g.Key, g => g.First());
             SingerGroups = singers
                 .GroupBy(s => s.SingerType)
                 .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.LocalizedName).ToList());
+            foreach (var old in oldSingers) {
+                (old as IDisposable)?.Dispose();
+            }
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            // The id is the folder path relative to its singers root, so same-named
+            // folders under different roots collide and only the first one is used.
+            foreach (var duplicates in found.GroupBy(s => s.Id).Where(g => g.Count() > 1)) {
+                DocManager.Inst.ExecuteCmd(new WarningNotification(
+                    $"singers.duplicate:{duplicates.Key}",
+                    "warnings.singers.duplicate",
+                    "warnings.singers.duplicate.detail",
+                    duplicates.Key,
+                    duplicates.First().Location,
+                    string.Join("\n", duplicates.Skip(1).Select(s => s.Location))));
+            }
         }
 
         public USinger GetSinger(string name) {
@@ -105,8 +122,10 @@ namespace OpenUtau.Core {
             }
         }
 
-        //Check which singers are in use and free memory for those that are not
+        //Check which singers are in use and free memory for those that are not.
+        //UI thread only: it mutates the singer map the UI reads.
         public void ReleaseSingersNotInUse(UProject project) {
+            Util.ThreadGuard.AssertUi();
             //Check which singers are in use
             var singersInUse = new HashSet<USinger>();
             foreach (var track in project.tracks) {

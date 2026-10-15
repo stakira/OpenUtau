@@ -37,6 +37,40 @@ namespace OpenUtau.Core {
             }
         }
     }
+    public class ToastNotification : UNotification {
+        public readonly string windowType;
+        public readonly string message;
+        public readonly string translationKey;
+
+        /// <summary>
+        /// Not currently in use
+        /// </summary>
+        public string? title;
+        /// <summary>
+        /// Not currently in use (The color of the toast might change in the future).
+        /// </summary>
+        public string type = "Warning";
+        /// <summary>
+        /// Toast display time. If 0 is specified, it will not close automatically.
+        /// </summary>
+        public long durationSec = 4;
+        public Exception? e;
+
+        /// <summary>
+        /// Displays a toast message in the window that does not interfere with the user's operations.
+        /// </summary>
+        /// <param name="windowType">"MainWindow" or "Pianoroll" (If the specified window is not on top, a toast will always appear in the main window).</param>
+        /// <param name="message">This is not displayed in the UI. The actual text is specified by translationKey.</param>
+        /// <param name="translationKey">The key for the text that actually appears on the toast.</param>
+        /// <param name="e">If there are any associated exceptions, clicking the toast notification will display a standard error dialog.</param>
+        public ToastNotification(string windowType, string message, string translationKey, Exception? e = null) {
+            this.windowType = windowType;
+            this.message = message;
+            this.translationKey = translationKey;
+            this.e = e;
+        }
+        public override string ToString() => $"Toast notification: {message}";
+    }
 
     public class LoadingNotification : UNotification {
         public readonly Type window;
@@ -86,6 +120,10 @@ namespace OpenUtau.Core {
     }
 
     public class PhonemizedNotification : UNotification {
+        public readonly UVoicePart part;
+        public PhonemizedNotification(UVoicePart part) {
+            this.part = part;
+        }
         public override string ToString() => "Phonemized";
     }
 
@@ -150,6 +188,37 @@ namespace OpenUtau.Core {
             Info = info;
         }
         public override string ToString() => $"Set progress {Progress} {Info}";
+    }
+
+    /// <summary>
+    /// A warning that needs the user's attention. DocManager keeps it until a
+    /// <see cref="ClearWarningsNotification"/>; the main window shows a warning sign
+    /// next to the main menu while any are kept. A warning replaces an earlier one
+    /// with the same key, so a check that runs repeatedly doesn't pile up copies.
+    /// Title and detail are string resource keys, formatted with <see cref="Args"/>
+    /// ({0}, {1}, ...) in the UI language.
+    /// </summary>
+    public class WarningNotification : UNotification {
+        public string Key { get; }
+        public string TitleKey { get; }
+        public string? DetailKey { get; }
+        public object[] Args { get; }
+        public WarningNotification(string key, string titleKey, string? detailKey = null, params object[] args) {
+            Key = key;
+            TitleKey = titleKey;
+            DetailKey = detailKey;
+            Args = args;
+        }
+        public override string ToString() => $"Warning: {TitleKey} {string.Join(", ", Args)}";
+    }
+
+    /// <summary>Clears the warning with <paramref name="key"/>, or all warnings when null.</summary>
+    public class ClearWarningsNotification : UNotification {
+        public readonly string? key;
+        public ClearWarningsNotification(string? key = null) {
+            this.key = key;
+        }
+        public override string ToString() => key == null ? "Clear warnings" : $"Clear warning {key}";
     }
 
     public class VolumeChangeNotification : UNotification {

@@ -40,6 +40,10 @@ namespace OpenUtau.Core {
                 }
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
+                AppImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
+                if (File.Exists(AppImagePath)) {
+                    IsAppImage = Environment.GetEnvironmentVariable("IS_OPENUTAU_APPIMAGE").Equals("true");
+                }
             } else {
                 // AppContext.BaseDirectory correctly resolves to the application's output
                 // directory in both normal execution (portable/installed mode) and during
@@ -71,6 +75,8 @@ namespace OpenUtau.Core {
         public string CachePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
         public bool IsInstalled { get; private set; }
+        public bool IsAppImage { get; private set; }
+        public string AppImagePath { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
@@ -146,14 +152,8 @@ namespace OpenUtau.Core {
                 }
             }
             OpenUtau.Core.PlaybackManager.Inst.StopPlayback();
-            OpenUtau.Core.PlaybackManager.Inst.LiveWaveformCache.Clear();
-            if (OpenUtau.Core.DocManager.Inst.Project != null) {
-                foreach (var part in OpenUtau.Core.DocManager.Inst.Project.parts) {
-                    if (part is OpenUtau.Core.Ustx.UVoicePart voicePart) {
-                        voicePart.Mix = null!; 
-                    }
-                }
-            }
+            // Drop the slot registry's cache and session: everything below is re-rendered.
+            OpenUtau.Core.PlaybackManager.Inst.MixPlanner.Clear();
             OpenUtau.Core.DocManager.Inst.ExecuteCmd(new OpenUtau.Core.WaveformReadyNotification());
         }
 

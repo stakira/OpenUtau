@@ -47,6 +47,8 @@ namespace OpenUtau.Core.DiffSinger {
 
         public bool SupportsRealCurve => true;
 
+        public bool SupportsPhonemeEnvelope => false;
+
         public bool IsVoiceColorCurve(string abbr, out int subBankId) {
             subBankId = 0;
             if (abbr.StartsWith(VoiceColorHeader) && int.TryParse(abbr.Substring(2), out subBankId)) {;
@@ -79,9 +81,30 @@ namespace OpenUtau.Core.DiffSinger {
             };
         }
 
+        public (double HeadMs, double TailMs) PhrasePadding(USinger singer, IEnumerable<UPhoneme> phonemes) {
+            var dsSinger = singer as DiffSingerSinger;
+            if (dsSinger == null) {
+                return (0, 0);
+            }
+            double frameMs = dsSinger.dsConfig.frameMs();
+            return (DiffSingerUtils.GetHeadMs(frameMs), DiffSingerUtils.GetTailMs(frameMs));
+        }
+
+        /// <summary>
+        /// Merging is opt-in (piano roll toggle): it changes how the model sees
+        /// a passage, so it stays off unless the user enables it.
+        /// </summary>
+        public bool ShouldMergePhrases(UProject project, UTrack track, UPhoneme prev, UPhoneme next) {
+            return Preferences.Default.DiffSingerMergeNearbyPhrases
+                && IRenderer.GapOverlapsPadding(this, track, prev, next);
+        }
+
         public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo, CancellationTokenSource cancellation, bool isPreRender, RenderPhraseEvents? renderEvents = null) {
             var task = Task.Run(() => {
                 lock (lockObj) {
+                    // The static lock serializes DiffSinger renders; the DirectML scope additionally
+                    // keeps them from overlapping pitch/variance work or session disposal.
+                    using var dmlScope = Onnx.EnterDmlScope();
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
@@ -116,17 +139,11 @@ namespace OpenUtau.Core.DiffSinger {
                     if (result.samples == null) {
                         result.samples = InvokeDiffsinger(phrase, depth, steps, cancellation, renderEvents);
                         if (result.samples != null) {
-                            var source = new WaveSource(0, 0, 0, 1);
-                            source.SetSamples(result.samples);
-                            WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                            Wave.WriteMono16Wav(wavPath, result.samples);
                         }
                     }
                     if (result.samples != null) {
                         Renderers.ApplyDynamics(phrase, result);
-                        PlaybackManager.Inst.LiveWaveformCache[phrase.hash.ToString()] = (trackNo, phrase.positionMs - phrase.leadingMs, result.samples, DateTime.Now);
-                        Task.Factory.StartNew(() => {
-                            DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
-                        }, CancellationToken.None, TaskCreationOptions.None, DocManager.Inst.MainScheduler);
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
                     return result;
@@ -235,11 +252,9 @@ namespace OpenUtau.Core.DiffSinger {
             //durations: phoneme duration in frames
             //f0: pitch curve in Hz by frame
             //speedup: Diffusion render speedup, int
-            var tokens = phrase.phones
-                .Select(p => p.phoneme)
-                .Prepend("SP")
-                .Append("SP")
-                .Select(phoneme => (Int64)singer.PhonemeTokenize(phoneme))
+            var segments = DiffSingerUtils.PaddedSegments(phrase, frameMs, headFrames, tailFrames);
+            var tokens = segments
+                .Select(segment => (Int64)singer.PhonemeTokenize(segment.Phoneme))
                 .ToList();
             var durations = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames)
                 .ToList();
@@ -296,13 +311,10 @@ namespace OpenUtau.Core.DiffSinger {
             }
             //Language id
             if(singer.dsConfig.use_lang_id){
-                var langIdByPhone = phrase.phones
-                    .Select(p => (long)singer.languageIds.GetValueOrDefault(
-                        DiffSingerUtils.PhonemeLanguage(p.phoneme),0
-                        ))
-                    .Prepend(0)
-                    .Append(0)
-                    .ToArray();
+                var langIdByPhone = DiffSingerUtils.PaddedLanguageIds(
+                    phrase, frameMs, headFrames, tailFrames,
+                    phoneme => (long)singer.languageIds.GetValueOrDefault(
+                        DiffSingerUtils.PhonemeLanguage(phoneme), 0));
                 var langIdTensor = new DenseTensor<Int64>(langIdByPhone, new int[] { langIdByPhone.Length }, false)
                     .Reshape(new int[] { 1, langIdByPhone.Length });
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("languages", langIdTensor));
@@ -520,45 +532,61 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
+            return LoadRenderedPitch(phrase, pitchSteps: null);
+        }
+
+        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase, double? pitchSteps, bool fastRealtime = false) {
             DiffSingerSinger singer = (DiffSingerSinger) phrase.singer;
             if (!singer.HasPitchPredictor) {
                 throw new Exception("This singer has no pitch predictor.");
             }
-            var pitchPredictor = singer.getPitchPredictor()!;
+            using var dmlScope = Onnx.EnterDmlScope();
+            // Use the reference inside SessionLock so a concurrent FreeMemory cannot dispose it first.
             lock (singer.SessionLock) {
-                return pitchPredictor.Process(phrase);
+                return singer.getPitchPredictor()!.Process(phrase, pitchSteps, fastRealtime);
             }
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase, HashSet<int> selectedNotePositions) {
-            if (!Preferences.Default.DiffSingerLocalRetaking) {
-                return LoadRenderedPitch(phrase);
-            }
+            return LoadRenderedPitch(phrase, selectedNotePositions, pitchSteps: null, fastRealtime: false);
+        }
+
+        /// <summary>Live pitch: partial retake for changed notes with fast sampling settings.</summary>
+        internal RenderPitchResult LoadRenderedPitchLive(
+            RenderPhrase phrase, HashSet<int> selectedNotePositions, double pitchSteps, bool fastRealtime) {
+            return LoadRenderedPitch(phrase, selectedNotePositions, pitchSteps, fastRealtime);
+        }
+
+        RenderPitchResult LoadRenderedPitch(
+            RenderPhrase phrase,
+            HashSet<int> selectedNotePositions,
+            double? pitchSteps,
+            bool fastRealtime) {
             DiffSingerSinger singer = (DiffSingerSinger) phrase.singer;
             if (!singer.HasPitchPredictor) {
                 throw new Exception("This singer has no pitch predictor.");
             }
-            var pitchPredictor = singer.getPitchPredictor()!;
+            using var dmlScope = Onnx.EnterDmlScope();
             var noteRelativePositions = new int[phrase.notes.Length];
             for (int i = 0; i < phrase.notes.Length; i++) {
                 noteRelativePositions[i] = phrase.notes[i].position;
             }
             var retakeNoteIndexes = DiffSingerRetake.MapSelectedPositionsToNoteIndexes(
                 phrase.position, noteRelativePositions, selectedNotePositions);
-            if (retakeNoteIndexes.Count == 0 || retakeNoteIndexes.Count == phrase.notes.Length) {
-                lock (singer.SessionLock) {
-                    return pitchPredictor.Process(phrase);
-                }
-            }
-            var frameMs = pitchPredictor.FrameMs;
-            int headFrames = DiffSingerUtils.headFrames;
-            int tailFrames = DiffSingerUtils.tailFrames;
-            var ph_dur = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames);
-            int totalFrames = ph_dur.Sum();
-            var existingPitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
-                x => x * 0.01).Select(f => (float)f).ToArray();
+            // Use the reference inside SessionLock so a concurrent FreeMemory cannot dispose it first.
             lock (singer.SessionLock) {
-                return pitchPredictor.Process(phrase, retakeNoteIndexes, existingPitch);
+                var pitchPredictor = singer.getPitchPredictor()!;
+                if (retakeNoteIndexes.Count == 0 || retakeNoteIndexes.Count == phrase.notes.Length) {
+                    return pitchPredictor.Process(phrase, pitchSteps, fastRealtime);
+                }
+                var frameMs = pitchPredictor.FrameMs;
+                int headFrames = DiffSingerUtils.headFrames;
+                int tailFrames = DiffSingerUtils.tailFrames;
+                var ph_dur = DiffSingerUtils.PaddedPhoneDurations(phrase, frameMs, headFrames, tailFrames);
+                int totalFrames = ph_dur.Sum();
+                var existingPitch = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames,
+                    x => x * 0.01).Select(f => (float)f).ToArray();
+                return pitchPredictor.Process(phrase, pitchSteps, fastRealtime, retakeNoteIndexes, existingPitch);
             }
         }
 
@@ -574,9 +602,10 @@ namespace OpenUtau.Core.DiffSinger {
             if (!singer.HasVariancePredictor) {
                 return new List<RenderRealCurveResult>(0);
             }
-            var variancePredictor = singer.getVariancePredictor()!;
+            using var dmlScope = Onnx.EnterDmlScope();
+            // Use the reference inside SessionLock so a concurrent FreeMemory cannot dispose it first.
             lock (singer.SessionLock) {
-                var result = variancePredictor.Process(phrase);
+                var result = singer.getVariancePredictor()!.Process(phrase);
                 return BuildRenderedRealCurves(phrase, result);
             }
         }

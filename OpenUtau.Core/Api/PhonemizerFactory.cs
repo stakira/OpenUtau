@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OpenUtau.Core;
 
 namespace OpenUtau.Api {
     public class PhonemizerFactory {
@@ -23,24 +25,24 @@ namespace OpenUtau.Api {
             ? $"[{tag}] {name}"
             : $"[{tag}] {name} (Contributed by {author})";
 
-        private static Dictionary<Type, PhonemizerFactory> factories = new Dictionary<Type, PhonemizerFactory>();
+        private static readonly ConcurrentDictionary<Type, PhonemizerFactory> factories = new();
         private static PhonemizerFactory[] orderedFactories = [];
         public static PhonemizerFactory Get(Type type) {
-            if (!factories.TryGetValue(type, out var factory)) {
-                var attr = type.GetCustomAttribute<PhonemizerAttribute>();
-                if (attr == null || string.IsNullOrEmpty(attr.Name) || string.IsNullOrEmpty(attr.Tag)) {
-                    return null;
-                }
-                factory = new PhonemizerFactory() {
-                    type = type,
-                    name = attr.Name,
-                    tag = attr.Tag,
-                    author = attr.Author,
-                    language = attr.Language,
-                };
-                factories[type] = factory;
+            if (factories.TryGetValue(type, out var factory)) {
+                return factory;
             }
-            return factory;
+            var attr = type.GetCustomAttribute<PhonemizerAttribute>();
+            if (attr == null || string.IsNullOrEmpty(attr.Name) || string.IsNullOrEmpty(attr.Tag)) {
+                return null;
+            }
+            factory = new PhonemizerFactory() {
+                type = type,
+                name = attr.Name,
+                tag = attr.Tag,
+                author = attr.Author,
+                language = attr.Language,
+            };
+            return factories.GetOrAdd(type, factory);
         }
 
         public static PhonemizerFactory? Get(string typeFullName) {
@@ -57,5 +59,11 @@ namespace OpenUtau.Api {
         }
 
         public static PhonemizerFactory[] GetAll() => orderedFactories;
+    }
+
+    /// <summary>The installed phonemizers, by the type name a default_phonemizer key takes.</summary>
+    public class PhonemizerTypeValues : IYamlValueSource {
+        public IEnumerable<YamlValue> GetValues() => (PhonemizerFactory.GetAll() ?? Array.Empty<PhonemizerFactory>())
+            .Select(factory => new YamlValue(factory.type.FullName ?? factory.type.Name, factory.ToString()));
     }
 }

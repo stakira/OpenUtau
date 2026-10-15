@@ -59,6 +59,8 @@ namespace OpenUtau.Core.Enunu {
 
         public bool SupportsRenderPitch => true;
 
+        public bool SupportsPhonemeEnvelope => false;
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
         }
@@ -173,9 +175,7 @@ namespace OpenUtau.Core.Enunu {
                                 signal = NWaves.Operations.Operation.Resample(signal, 44100);
                                 result.samples = signal.Samples;
                             }
-                            var source = new WaveSource(0, 0, 0, 1);
-                            source.SetSamples(result.samples);
-                            WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                            Wave.WriteMono16Wav(wavPath, result.samples);
                         }
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
@@ -185,10 +185,6 @@ namespace OpenUtau.Core.Enunu {
                         }
                         if (result.samples != null) {
                             Renderers.ApplyDynamics(phrase, result);
-                            PlaybackManager.Inst.LiveWaveformCache[phrase.hash.ToString()] = (trackNo, phrase.positionMs - phrase.leadingMs, result.samples, DateTime.Now);
-                            Task.Factory.StartNew(() => {
-                                DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
-                            }, CancellationToken.None, TaskCreationOptions.None, DocManager.Inst.MainScheduler);
                         }
                     } else {
                         result.samples = new float[0];

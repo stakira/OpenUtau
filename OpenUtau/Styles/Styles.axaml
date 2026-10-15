@@ -1,6 +1,8 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Style>
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:notif="using:Avalonia.Controls.Notifications">
+    <Style>
     <Style.Resources>
       <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
       <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
@@ -45,7 +47,7 @@
     <Setter Property="Height" Value="1" />
   </Style>
 
-  <Style Selector="MenuItem.MenuItemWithSubMenu MenuItem">
+  <Style Selector="MenuItem.MenuItemWithSubMenu MenuItem" x:DataType="vm:MenuItemViewModel">
     <Setter Property="Header" Value="{Binding Header}"/>
     <Setter Property="Command" Value="{Binding Command}"/>
     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
@@ -59,7 +61,7 @@
     <Setter Property="Padding" Value="4,2,4,2"/>
   </Style>
 
-  <Style Selector="ContextMenu.WithCommand MenuItem">
+  <Style Selector="ContextMenu.WithCommand MenuItem" x:DataType="vm:MenuItemViewModel">
     <Setter Property="Header" Value="{Binding Header}"/>
     <Setter Property="Command" Value="{Binding Command}"/>
     <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
@@ -492,4 +494,43 @@
     <Setter Property="Margin" Value="0"/>
   </Style>
 
+  <Style Selector="NotificationCard">
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <LayoutTransformControl Name="PART_LayoutTransformControl">
+          <Border Name="PART_ShadowBorder"
+                  CornerRadius="{TemplateBinding CornerRadius}"
+                  BoxShadow="0 4 12 0 #20000000"
+                  Margin="0,0,0,8">
+            <Border Name="PART_Border"
+                    Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    ClipToBounds="True">
+              <Grid ColumnDefinitions="6, *, Auto">
+                <Rectangle Name="PART_AccentBar"
+                           Grid.Column="0"
+                           Width="6"
+                           VerticalAlignment="Stretch"
+                           Fill="{DynamicResource AccentBrush1}"/>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Grid.Column="1"
+                                  Content="{TemplateBinding Content}"
+                                  Margin="14,10"
+                                  VerticalAlignment="Center">
+                  <ContentPresenter.ContentTemplate>
+                    <DataTemplate x:DataType="notif:Notification">
+                      <TextBlock Text="{Binding Message}"
+                                 TextWrapping="Wrap"
+                                 VerticalAlignment="Center"/>
+                    </DataTemplate>
+                  </ContentPresenter.ContentTemplate>
+                </ContentPresenter>
+              </Grid>
+            </Border>
+          </Border>
+        </LayoutTransformControl>
+      </ControlTemplate>
+    </Setter>
+  </Style>
 </Styles>

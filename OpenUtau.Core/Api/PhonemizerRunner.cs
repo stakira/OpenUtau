@@ -72,6 +72,36 @@ namespace OpenUtau.Api {
             }
         }
 
+        /// <summary>
+        /// Calls SetSinger, showing "Initializing phonemizer..." only if it takes
+        /// noticeably long, so the common no-op call does not flicker the progress bar.
+        /// </summary>
+        static void SetSingerWithProgress(Phonemizer p, USinger singer) {
+            const int showAfterMs = 300;
+            var gate = new object();
+            bool shown = false;
+            bool done = false;
+            using var timer = new Timer(_ => {
+                lock (gate) {
+                    if (done) {
+                        return;
+                    }
+                    shown = true;
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Initializing {p.Name}..."));
+                }
+            }, null, showAfterMs, Timeout.Infinite);
+            try {
+                p.SetSinger(singer);
+            } finally {
+                lock (gate) {
+                    done = true;
+                    if (shown) {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                    }
+                }
+            }
+        }
+
         void SendResponse(PhonemizerResponse response) {
             Task.Factory.StartNew(_ => {
                 if (DocManager.Inst.Project.parts.Contains(response.part)) {
@@ -82,7 +112,7 @@ namespace OpenUtau.Api {
                     Part = response.part,
                     SkipPhonemizer = true,
                 });
-                DocManager.Inst.ExecuteCmd(new PhonemizedNotification());
+                DocManager.Inst.ExecuteCmd(new PhonemizedNotification(response.part));
             }, null, CancellationToken.None, TaskCreationOptions.None, mainScheduler);
         }
 
@@ -101,7 +131,7 @@ namespace OpenUtau.Api {
             foreach (var p in phonemizers) {
                 p.SetUpException = null;
                 try {
-                    p.SetSinger(request.singer);
+                    SetSingerWithProgress(p, request.singer);
                 } catch (Exception e) {
                     Log.Error(e, $"phonemizer failed to set singer.");
                     p.SetUpException = e;

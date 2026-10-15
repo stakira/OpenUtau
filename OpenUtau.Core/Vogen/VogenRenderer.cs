@@ -75,16 +75,10 @@ namespace OpenUtau.Core.Vogen {
                     }
                     if (result.samples == null) {
                         result.samples = InvokeVogen(phrase);
-                        var source = new WaveSource(0, 0, 0, 1);
-                        source.SetSamples(result.samples);
-                        WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                        Wave.WriteMono16Wav(wavPath, result.samples);
                     }
                     if (result.samples != null) {
                         Renderers.ApplyDynamics(phrase, result);
-                        PlaybackManager.Inst.LiveWaveformCache[phrase.hash.ToString()] = (trackNo, phrase.positionMs - phrase.leadingMs, result.samples, DateTime.Now);
-                        Task.Factory.StartNew(() => {
-                            DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
-                        }, CancellationToken.None, TaskCreationOptions.None, DocManager.Inst.MainScheduler);
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
                     return result;

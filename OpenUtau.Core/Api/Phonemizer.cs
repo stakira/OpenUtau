@@ -165,6 +165,12 @@ namespace OpenUtau.Api {
         /// such as a custom dictionary file in the singer directory.
         /// Use singer.Location to access the singer directory.
         ///
+        /// This method, SetUp, Process and CleanUp are always called from a single
+        /// background thread and never concurrently, so it is fine to block here
+        /// while loading. Do not load on another thread: Process may otherwise run
+        /// against half-initialized state. OpenUtau shows a progress indicator if
+        /// this call takes long.
+        ///
         /// Do not modify the singer.
         /// </summary>
         /// <param name="singer"></param>
@@ -239,21 +245,11 @@ namespace OpenUtau.Api {
             return result;
         }
 
-        public bool Testing { get; set; } = false;
+        [Obsolete("No-op. Load synchronously in SetSinger; phonemizer methods run on a single thread and OpenUtau reports progress itself.")]
+        protected void OnAsyncInitStarted() { }
 
-        protected void OnAsyncInitStarted() {
-            if (!Testing) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
-            }
-        }
-
-        protected void OnAsyncInitFinished() {
-            if (!Testing) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
-                DocManager.Inst.ExecuteCmd(new PreRenderNotification());
-            }
-        }
+        [Obsolete("No-op. Load synchronously in SetSinger; phonemizer methods run on a single thread and OpenUtau reports progress itself.")]
+        protected void OnAsyncInitFinished() { }
 
         protected Result MakeSimpleResult(string phoneme) {
             return new Result() {
@@ -296,8 +292,11 @@ namespace OpenUtau.Api {
 
         public string GetParentVoiceColor() {
             if (project != null && track != null) {
-                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.CLR, out var trackCLR)) {
-                    return track.VoiceColorExp.options[(int)trackCLR.CustomDefaultValue];
+                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.CLR, out var trackCLR) && trackCLR.options != null) {
+                    int index = (int)trackCLR.CustomDefaultValue;
+                    if (index >= 0 && index < trackCLR.options.Length) {
+                        return trackCLR.options[index] ?? string.Empty;
+                    }
                 }
             }
             return string.Empty;

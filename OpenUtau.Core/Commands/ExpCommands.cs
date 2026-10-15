@@ -9,6 +9,7 @@ namespace OpenUtau.Core {
         public UVoicePart Part;
         public UNote Note;
         public string Key;
+        public override Pipeline.ImpactSet Impact => Pipeline.ImpactSet.CurvesOf(Part, Key);
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
                 SkipTiming = true,

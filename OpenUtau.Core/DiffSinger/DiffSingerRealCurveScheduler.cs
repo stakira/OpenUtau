@@ -99,5 +99,13 @@ namespace OpenUtau.Core.DiffSinger {
             }
             return updates;
         }
+        public static void CancelAll() {
+            lock (lockObj) {
+                foreach (var cts in pending.Values) {
+                    cts.Cancel();
+                }
+                pending.Clear();
+            }
+        }
     }
 }

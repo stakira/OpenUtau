@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using OpenUtau.Core;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {
@@ -19,8 +18,8 @@ namespace OpenUtau.Core.Format {
     internal static class SVPImporter {
         public static UProject Load(string svpFilePath, bool isSv2) {
             try {
-                var json = File.ReadAllText(svpFilePath);
-                var svpProject = JsonConvert.DeserializeObject<SVPProject>(json);
+                var json = File.ReadAllText(svpFilePath).TrimEnd('\0');
+                var svpProject = Json.Deserialize<SVPProject>(json);
                 if (svpProject == null) {
                     throw new FileFormatException($"Failed to parse {(isSv2 ? "SV2" : "SVP")} file");
                 }
@@ -30,10 +29,10 @@ namespace OpenUtau.Core.Format {
             }
         }
 
-        private static double ParseVocalModeParam(JToken token) {
+        private static double ParseVocalModeParam(JsonNode token) {
             if (token == null) return 0;
-            if (token.Type == JTokenType.Object) return token["timbre"]?.Value<double>() ?? 0;
-            if (token.Type == JTokenType.Float || token.Type == JTokenType.Integer) return token.Value<double>();
+            if (token.GetValueKind() == JsonValueKind.Object) return token["timbre"]?.GetValue<double>() ?? 0;
+            if (token.GetValueKind() == JsonValueKind.Number) return token.GetValue<double>();
             return 0;
         }
 
@@ -111,21 +110,21 @@ namespace OpenUtau.Core.Format {
                             audioFile = string.IsNullOrEmpty(dir) ? Path.GetFullPath(audioFile) : Path.GetFullPath(Path.Combine(dir, audioFile));
                         }
 
-                        if (!File.Exists(audioFile)) continue;
-
+                        // A file that is absent or unreadable still becomes a part, so the
+                        // track keeps its place and shows as missing instead of vanishing.
                         long startBlickAudio = reference.blickAbsoluteBegin > 0 ? reference.blickAbsoluteBegin : reference.blickOffset;
                         int startTick = Math.Max(0, (int)Math.Round(startBlickAudio / blicksPerTick));
-                        double startMs = timeAxis.TickPosToMsPos(startTick);
-                        int endTick = timeAxis.MsPosToTickPos(startMs + (reference.audio.duration * 1000.0));
-                        int durTick = Math.Max(project.resolution * 4, endTick - startTick);
 
                         var wavePart = new UWavePart {
                             name = Path.GetFileName(audioFile),
                             FilePath = audioFile,
                             position = startTick,
-                            Duration = durTick,
+                            // The SVP records the audio length itself, so the part keeps its
+                            // length when the wave file can't be opened to measure it.
+                            fileDurationMs = reference.audio.duration * 1000.0,
                             trackNo = track.TrackNo
                         };
+                        wavePart.Load(project);
 
                         project.parts.Add(wavePart);
                         trackHasContent = true;
@@ -287,10 +286,10 @@ namespace OpenUtau.Core.Format {
                         foreach (var kvp in group.vocalModes) {
                             string modeName = kvp.Key;
                             if (!grpModes.ContainsKey(modeName)) grpModes[modeName] = new List<(double x, double y)>();
-                            if (kvp.Value.Type == JTokenType.Object) {
-                                ParseFlatCurve(kvp.Value.ToObject<SVPCurve>()?.points, grpModes[modeName], 0, blicksPerTick, 1f);
-                            } else if (kvp.Value.Type == JTokenType.Float || kvp.Value.Type == JTokenType.Integer) {
-                                double val = kvp.Value.Value<double>();
+                            if (kvp.Value.GetValueKind() == JsonValueKind.Object) {
+                                ParseFlatCurve(Json.Deserialize<SVPCurve>(kvp.Value)?.points, grpModes[modeName], 0, blicksPerTick, 1f);
+                            } else if (kvp.Value.GetValueKind() == JsonValueKind.Number) {
+                                double val = kvp.Value.GetValue<double>();
                                 grpModes[modeName].Add((0, val));
                                 grpModes[modeName].Add((part.Duration, val));
                             }
@@ -510,7 +509,7 @@ namespace OpenUtau.Core.Format {
             public string name { get; set; }
             public List<SVPNote> notes { get; set; }
             public SVPParameters parameters { get; set; }
-            public Dictionary<string, JToken> vocalModes { get; set; }
+            public Dictionary<string, JsonNode> vocalModes { get; set; }
             public List<SVPPitchControl> pitchControls { get; set; }
         }
         private class SVPPitchControl { public long pos { get; set; } public double pitch { get; set; } }
@@ -546,7 +545,7 @@ namespace OpenUtau.Core.Format {
             public SVPVoice voice { get; set; }
         }
         private class SVPVoice {
-            public Dictionary<string, JToken> vocalModeParams { get; set; }
+            public Dictionary<string, JsonNode> vocalModeParams { get; set; }
             public double? tF0Offset, tF0Left, tF0Right, dF0Left, dF0Right, dF0Vbr, fF0Vbr, tF0VbrStart;
             public double? tension, breathiness, gender, voicing, toneShift, mouthOpening;
             public double? paramTension, paramBreathiness, paramGender, paramVoicing, paramToneShift;
@@ -564,7 +563,7 @@ namespace OpenUtau.Core.Format {
             public SVPAttributes systemAttributes { get; set; }
         }
         private class SVPAttributes {
-            public Dictionary<string, JToken> vocalModeParams { get; set; }
+            public Dictionary<string, JsonNode> vocalModeParams { get; set; }
             public double? tF0Offset, tF0Left, tF0Right, dF0Left, dF0Right, dF0Vbr, fF0Vbr, tF0VbrStart;
             public double? tension, breathiness, gender, voicing, toneShift, mouthOpening;
         }

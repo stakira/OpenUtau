@@ -1,10 +1,14 @@
 on:
+  schedule:
+    # Daily alpha build. Skipped if master has no new commits since the
+    # last alpha release (see the next-version job below).
+    - cron: '0 12 * * *'
   workflow_dispatch:
     inputs:
       channel:
         description: "Release channel"
         type: choice
-        default: beta
+        default: alpha
         options:
           - stable
           - beta
@@ -23,6 +27,12 @@ on:
         default: true
         description: "Draft"
 
+# Keep same-trigger-type runs from overlapping, e.g. a slow scheduled build
+# still running when the next day's cron fires.
+concurrency:
+  group: release-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   next-version:
     runs-on: ubuntu-latest
@@ -33,17 +43,38 @@ jobs:
       name: ${{ steps.nv.outputs.name }}
       release: ${{ steps.nv.outputs.release }}
       draft: ${{ steps.nv.outputs.draft }}
+      skip: ${{ steps.check.outputs.skip }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
+      - id: check
+        # Scheduled runs skip the build entirely when master hasn't moved
+        # since the last alpha release, so a quiet day publishes nothing.
+        if: github.event_name == 'schedule'
+        run: |
+          latest_tag=$(git tag --list '*-alpha' | sort -V | tail -1)
+          if [ -z "$latest_tag" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            last_sha=$(git rev-list -n 1 "$latest_tag")
+            head_sha=$(git rev-parse HEAD)
+            if [ "$last_sha" = "$head_sha" ]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
       - id: nv
+        if: steps.check.outputs.skip != 'true'
         env:
-          CHANNEL: ${{ inputs.channel }}
+          # Scheduled runs always build and publish an alpha release.
+          EVENT: ${{ github.event_name }}
+          CHANNEL: ${{ github.event_name == 'schedule' && 'alpha' || inputs.channel }}
           VERSION: ${{ inputs.version }}
-          RELEASE: ${{ inputs.release }}
-          DRAFT: ${{ inputs.draft }}
+          RELEASE: ${{ github.event_name == 'schedule' && 'true' || inputs.release }}
+          DRAFT: ${{ github.event_name == 'schedule' && 'false' || inputs.draft }}
         run: |
           set -u
           # Alpha is the only auto-versioned channel; stable and beta take
@@ -52,7 +83,7 @@ jobs:
             git ls-remote --tags origin > tags.txt
             version=$(python .github/scripts/next-version.py < tags.txt)
             tag="$version-alpha"
-            name="${version%.*} Alpha"
+            name="$version Alpha"
           else
             if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+[.][0-9]+[.][0-9]+$'; then
               echo "::error::version must be X.Y.Z for the $CHANNEL channel (got '$VERSION')"
@@ -77,6 +108,7 @@ jobs:
           } | tee -a "$GITHUB_OUTPUT" >> "$GITHUB_STEP_SUMMARY"
   build:
     needs: next-version
+    if: needs.next-version.outputs.skip != 'true'
     runs-on: ${{ matrix.arch.runs-on }}
 
     strategy:
@@ -101,8 +133,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install NSIS via Chocolatey
-        run: choco install nsis --version=3.11 --no-progress
+      - uses: repolevedavaj/install-nsis@v1
+        with:
+          nsis-version: '3.11'
         if: ${{ matrix.arch.os == 'win' }}
       - uses: justalemon/VersionPatcher@v0.7.1
         with:
@@ -111,7 +144,7 @@ jobs:
 
       # Test
       - name: Test
-        run: dotnet test OpenUtau.Test
+        run: dotnet run --project OpenUtau.Test/OpenUtau.Test.csproj
 
       # Build
       - name: Restore
@@ -204,56 +237,95 @@ jobs:
           cp OpenUtau/Assets/AppRun bin/${{ matrix.arch.name }}
           chmod 755 bin/${{ matrix.arch.name }}/AppRun
           ARCH=${{ matrix.arch.linuxarch }} linuxdeploy --appdir bin/${{ matrix.arch.name }} --output appimage
+          # linuxdeploy names the output by linux arch (OpenUtau-x86_64.AppImage);
+          # rename to the matrix name so artifact, file, and release all match.
+          mv OpenUtau-${{ matrix.arch.linuxarch }}.AppImage OpenUtau-${{ matrix.arch.name }}.AppImage
         if: ${{ matrix.arch.os == 'linux' }}
 
+      # Always upload so successful legs keep their artifacts even when the
+      # release job is skipped (draft/no-release dispatches) or gated off
+      # by a failed leg.
       # Upload Artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.tar.gz
           path: OpenUtau-${{ matrix.arch.name }}.tar.gz
-        if: ${{ needs.next-version.outputs.release != 'true' && matrix.arch.os == 'linux' }}
+        if: ${{ matrix.arch.os == 'linux' }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.zip
           path: OpenUtau-${{ matrix.arch.name }}.zip
-        if: ${{ needs.next-version.outputs.release != 'true' && matrix.arch.os == 'win' }}
+        if: ${{ matrix.arch.os == 'win' }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.exe
           path: OpenUtau-${{ matrix.arch.name }}.exe
-        if: ${{ needs.next-version.outputs.release != 'true' && matrix.arch.os == 'win' }}
+        if: ${{ matrix.arch.os == 'win' }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.AppImage
-          path: OpenUtau-${{ matrix.arch.linuxarch }}.AppImage
-        if: ${{ needs.next-version.outputs.release != 'true' && matrix.arch.os == 'linux' }}
+          path: OpenUtau-${{ matrix.arch.name }}.AppImage
+        if: ${{ matrix.arch.os == 'linux' }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: OpenUtau-${{ matrix.arch.name }}.dmg
           path: OpenUtau-${{ matrix.arch.name }}.dmg
-        if: ${{ needs.next-version.outputs.release != 'true' && matrix.arch.os == 'osx' }}
+        if: ${{ matrix.arch.os == 'osx' }}
+
+  release:
+    # needs: build means this job only runs when EVERY matrix leg succeeded,
+    # so a release is never published from a partially failed build.
+    needs: [next-version, build]
+    if: needs.next-version.outputs.release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-win-x64.zip
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-win-x64.exe
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-win-arm64.zip
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-win-arm64.exe
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-osx-arm64.dmg
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-linux-x64.tar.gz
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-linux-x64.AppImage
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-linux-arm64.tar.gz
+      - uses: actions/download-artifact@v4
+        with:
+          name: OpenUtau-linux-arm64.AppImage
 
       # Appcast
-      - name: Appcast Windows
-        shell: cmd
+      - name: Appcast
         run: |
-          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.zip
-          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=${{ matrix.arch.name }}-installer -f=OpenUtau-${{ matrix.arch.name }}.exe
-        if: ${{ needs.next-version.outputs.release == 'true' && matrix.arch.os == 'win' }}
-
-      - name: Appcast MacOS
-        run: |
-          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=macos -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.dmg
-        if: ${{ needs.next-version.outputs.release == 'true' && matrix.arch.os == 'osx' }}
-
-      - name: Appcast Linux
-        run: |
-          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=linux -r=${{ matrix.arch.name }} -f=OpenUtau-${{ matrix.arch.name }}.tar.gz
-        if: ${{ needs.next-version.outputs.release == 'true' && matrix.arch.os == 'linux' }}
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=win-x64 -f=OpenUtau-win-x64.zip
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=win-x64-installer -f=OpenUtau-win-x64.exe
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=win-arm64 -f=OpenUtau-win-arm64.zip
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=windows -r=win-arm64-installer -f=OpenUtau-win-arm64.exe
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=macos -r=osx-arm64 -f=OpenUtau-osx-arm64.dmg
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=linux -r=linux-x64 -f=OpenUtau-linux-x64.tar.gz
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=linux -r=linux-arm64 -f=OpenUtau-linux-arm64.tar.gz
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=linux -r=linux-x64-appimage -f=OpenUtau-linux-x64.AppImage
+          python appcast.py -v=${{ needs.next-version.outputs.version }} --tag=${{ needs.next-version.outputs.tag }} -o=linux -r=linux-arm64-appimage -f=OpenUtau-linux-arm64.AppImage
 
       # Release
       - name: Release
@@ -264,8 +336,12 @@ jobs:
           prerelease: ${{ needs.next-version.outputs.channel != 'stable' }}
           draft: ${{ needs.next-version.outputs.draft }}
           files: |
-            appcast.${{ matrix.arch.name }}*.xml
-            OpenUtau-${{ matrix.arch.name }}.*
+            appcast.*.xml
+            OpenUtau-*.zip
+            OpenUtau-*.exe
+            OpenUtau-*.dmg
+            OpenUtau-*.tar.gz
+            OpenUtau-*.AppImage
           body: |
             See [Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) for how to use.
 
@@ -273,4 +349,3 @@ jobs:
 
             ## macOS says "This app is damaged"
             Open a terminal and run `xattr -rc /Applications/OpenUtau.app`. Try opening OpenUtau again.
-        if: ${{ needs.next-version.outputs.release == 'true' }}
