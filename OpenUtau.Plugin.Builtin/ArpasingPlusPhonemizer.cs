@@ -1549,7 +1549,7 @@ namespace OpenUtau.Plugin.Builtin {
                 dict1 = ccConsonant1Fallbacks; dict2 = ccConsonant2Fallbacks;
             } 
             else if (type1 == 1 && type2 == 1) { // VV
-                dict1 = vvVowel1Fallbacks; dict2 = vvVowel2Fallbacks;
+                dict1 = vvVowel2Fallbacks; dict2 = vvVowel1Fallbacks;
             }
             else if (type1 == 0 && type2 == 1) { // Starting Vowel (- V)
                 dict2 = cvVowelFallbacks; // Fallback the vowel normally
