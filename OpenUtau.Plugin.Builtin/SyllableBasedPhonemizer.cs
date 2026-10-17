@@ -613,7 +613,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 UpdateYamlIfNeeded(globalFile, true);
-                UpdateYamlIfNeeded(singerFile, false);
+                //UpdateYamlIfNeeded(singerFile, false); preserve singer YAML if it exists, do not overwrite
 
                 // add to parsing list (Global first, Singer second)
                 var filesToParse = new List<string>();
