@@ -274,6 +274,48 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (HasOto($"{prevV}{v}", syllable.vowelTone) || HasOto(ValidateAlias($"{prevV}{v}"), syllable.vowelTone)) {
                         basePhoneme = $"{prevV}{v}";
                     } 
+
+                    else if (vvExceptions.ContainsKey(prevV)) {
+                        var tail = vvExceptions[prevV];
+                        var vcSpace = $"{prevV} {tail}";
+                        var vcNoSpace = $"{prevV}{tail}";
+                        var cv = $"{tail}{v}";
+                        var cvSpace = $"{tail} {v}";
+
+                        TryAddPhoneme(phonemes, syllable.tone, vcSpace, ValidateAlias(vcSpace), vcNoSpace, ValidateAlias(vcNoSpace));
+
+                        if (HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) {
+                            basePhoneme = cv;
+                        } else if (HasOto(cvSpace, syllable.vowelTone) || HasOto(ValidateAlias(cvSpace), syllable.vowelTone)) {
+                            basePhoneme = cvSpace;
+                        } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
+                            basePhoneme = v;
+                        } else {
+                            basePhoneme = ValidateAlias($"- {v}");
+                            phonemes.Add($"{prevV} -");
+                        }
+                    }
+
+                    else if (Delta5vvExceptions.ContainsKey(prevV)) {
+                        var tail = Delta5vvExceptions[prevV];
+                        var vcSpace = $"{prevV} {tail}";
+                        var vcNoSpace = $"{prevV}{tail}";
+                        var cv = $"{tail}{v}";
+                        var cvSpace = $"{tail} {v}";
+
+                        TryAddPhoneme(phonemes, syllable.tone, vcSpace, ValidateAlias(vcSpace), vcNoSpace, ValidateAlias(vcNoSpace));
+
+                        if (HasOto(cv, syllable.vowelTone) || HasOto(ValidateAlias(cv), syllable.vowelTone)) {
+                            basePhoneme = cv;
+                        } else if (HasOto(cvSpace, syllable.vowelTone) || HasOto(ValidateAlias(cvSpace), syllable.vowelTone)) {
+                            basePhoneme = cvSpace;
+                        } else if (HasOto(v, syllable.vowelTone) || HasOto(ValidateAlias(v), syllable.vowelTone)) {
+                            basePhoneme = v;
+                        } else {
+                            basePhoneme = ValidateAlias($"- {v}");
+                            phonemes.Add($"{prevV} -");
+                        }
+                    }
                     
                     // Diphthong Fallbacks
                     else if (diphthongSplits.ContainsKey(prevV) || diphthongTails.ContainsKey(prevV)) {

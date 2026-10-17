@@ -1541,22 +1541,29 @@ namespace OpenUtau.Plugin.Builtin {
             var dict1 = new Dictionary<string, string[]>(StringComparer.Ordinal);
             var dict2 = new Dictionary<string, string[]>(StringComparer.Ordinal);
 
-            if (!suppressP1) {
-                if (type1 == 2 && type2 == 1) dict1 = cvConsonantFallbacks;
-                else if (type1 == 1 && type2 == 2) dict1 = vcVowelFallbacks;
-                else if (type1 == 2 && type2 == 2) dict1 = ccConsonant1Fallbacks;
-                else if (type1 == 1 && type2 == 1) dict1 = vvVowel1Fallbacks;
-                else if (type1 == 1 && type2 == 0) dict1 = vcVowelFallbacks;
-                else if (type1 == 2 && type2 == 0) dict1 = vcConsonantFallbacks;
+            if (type1 == 2 && type2 == 1) { // CV
+                dict1 = cvConsonantFallbacks; dict2 = cvVowelFallbacks;
+            } 
+            else if (type1 == 1 && type2 == 2) { // VC
+                dict1 = vcVowelFallbacks; dict2 = vcConsonantFallbacks;
+            } 
+            else if (type1 == 2 && type2 == 2) { // CC
+                dict1 = ccConsonant1Fallbacks; dict2 = ccConsonant2Fallbacks;
+            } 
+            else if (type1 == 1 && type2 == 1) { // VV
+                dict1 = vvVowel2Fallbacks; dict2 = vvVowel1Fallbacks;
             }
-
-            if (!suppressP2) {
-                if (type1 == 2 && type2 == 1) dict2 = cvVowelFallbacks;
-                else if (type1 == 1 && type2 == 2) dict2 = vcConsonantFallbacks;
-                else if (type1 == 2 && type2 == 2) dict2 = ccConsonant2Fallbacks;
-                else if (type1 == 1 && type2 == 1) dict2 = vvVowel2Fallbacks;
-                else if (type1 == 0 && type2 == 1) dict2 = cvVowelFallbacks;
-                else if (type1 == 0 && type2 == 2) dict2 = cvConsonantFallbacks;
+            else if (type1 == 0 && type2 == 1) { // Starting Vowel (- V)
+                dict2 = cvVowelFallbacks; // Fallback the vowel normally
+            }
+            else if (type1 == 1 && type2 == 0) { // Ending Vowel (V -)
+                dict1 = vcVowelFallbacks; // Fallback the vowel normally
+            }
+            else if (type1 == 0 && type2 == 2) { // Starting Consonant (- C)
+                dict2 = cvConsonantFallbacks; 
+            }
+            else if (type1 == 2 && type2 == 0) { // Ending Consonant (C -)
+                dict1 = vcConsonantFallbacks; 
             }
 
             return FindValidCombination(p1, p2, dict1, dict2, tone, hasSpace) ?? alias;
