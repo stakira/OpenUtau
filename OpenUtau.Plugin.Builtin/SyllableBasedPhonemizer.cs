@@ -531,31 +531,41 @@ namespace OpenUtau.Plugin.Builtin {
             if (string.IsNullOrEmpty(filePath)) return;
 
             bool isOutdated = false;
-            string currentVersion = "unknown";
+            string currentVersion = string.Empty;
 
             if (File.Exists(filePath)) {
                 try {
                     currentVersion = ReadVersionFast(filePath);
 
                     if (string.IsNullOrEmpty(currentVersion)) {
-                        isOutdated = true;
+                        string initialBaseline = YamlVersion ?? "1.0";
+
+                        if (System.Version.TryParse(targetVersion, out System.Version targetV) &&
+                            System.Version.TryParse(initialBaseline, out System.Version initV)) {
+                            if (targetV > initV) {
+                                isOutdated = true; // Version bump detected in template
+                            }
+                        } else if (!string.IsNullOrEmpty(targetVersion) && 
+                                !string.Equals(targetVersion, initialBaseline, StringComparison.OrdinalIgnoreCase)) {
+                            isOutdated = true;
+                        }
                     } else if (System.Version.TryParse(currentVersion, out System.Version currV) &&
                             System.Version.TryParse(targetVersion, out System.Version targetV)) {
                         if (currV < targetV) {
                             isOutdated = true;
                         }
-                    } else if (currentVersion != targetVersion) {
-                        // Fallback comparison for non-standard semver strings (e.g. "1.2b")
+                    } else if (!string.Equals(currentVersion, targetVersion, StringComparison.OrdinalIgnoreCase)) {
                         isOutdated = true;
                     }
                 } catch (Exception ex) {
-                    Log.Error(ex, $"[YamlUpdate] Syntax error in '{filePath}'. Skipping auto-update to protect user data.");
+                    Log.Error(ex, $"[YamlUpdate] Syntax error in '{filePath}'. Skipping auto-update.");
                     return;
                 }
             } else if (isGlobal) {
-                // Create global template if it does not exist yet
+                // Initial creation of global template if missing
                 try {
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    string dir = Path.GetDirectoryName(filePath);
+                    if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
                     File.WriteAllBytes(filePath, YamlTemplate);
                     Log.Information($"[YamlUpdate] Created new global template at '{filePath}' (v{targetVersion})");
                 } catch (Exception ex) {
@@ -567,24 +577,17 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
 
-            if (!isOutdated) return;
-
-            if (!isGlobal) {
-                bool migrated = MigrateAndWriteYaml(filePath, currentVersion, targetVersion);
-                if (migrated) return; 
-            }
-
+            if (!isOutdated) return; // Exits untouched if unversioned and targetVersion == initial baseline
+            bool migrated = MigrateAndWriteYaml(filePath, currentVersion, targetVersion);
+            if (migrated) return;
             try {
-                string backupVersion = string.IsNullOrEmpty(currentVersion) ? "unknown" : currentVersion;
+                string backupVersion = string.IsNullOrEmpty(currentVersion) ? "unversioned" : currentVersion;
                 string backupFile = Path.Combine(
-                    Path.GetDirectoryName(filePath),
+                    Path.GetDirectoryName(filePath) ?? string.Empty,
                     $"{Path.GetFileNameWithoutExtension(filePath)}_backup({backupVersion}).yaml"
                 );
 
-                if (File.Exists(backupFile)) File.Delete(backupFile);
-                File.Move(filePath, backupFile);
-                Log.Information($"[YamlUpdate] Backed up '{filePath}' to '{backupFile}'");
-
+                File.Copy(filePath, backupFile, overwrite: true);
                 File.WriteAllBytes(filePath, YamlTemplate);
                 Log.Information($"[YamlUpdate] Updated '{filePath}' to template version {targetVersion}");
             } catch (Exception ex) {
@@ -631,7 +634,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var mergedTimings = newTemplate.timings?.ToList() ?? new List<YAMLData.Timings>();
                 if (userYaml.timings != null) {
                     foreach (var ut in userYaml.timings) {
-                        mergedTimings.RemoveAll(t => t.symbol == ut.symbol);
+                        mergedTimings.RemoveAll(t => string.Equals(t.symbol, ut.symbol, StringComparison.Ordinal));
                         mergedTimings.Add(ut);
                     }
                 }
@@ -664,12 +667,12 @@ namespace OpenUtau.Plugin.Builtin {
                 var mergedSustains = newTemplate.vowelsustains?.ToList() ?? new List<YAMLData.VowelSustainData>();
                 if (userYaml.vowelsustains != null) {
                     foreach (var us in userYaml.vowelsustains) {
-                        mergedSustains.RemoveAll(s => s.symbol == us.symbol);
+                        mergedSustains.RemoveAll(s => string.Equals(s.symbol, us.symbol, StringComparison.Ordinal));
                         mergedSustains.Add(us);
                     }
                 }
 
-                // Merge Symbols
+                // Merge Symbols (User symbols override defaults by symbol name)
                 var mergedSymbols = newTemplate.symbols?.ToList() ?? new List<YAMLData.SymbolData>();
                 if (userYaml.symbols != null) {
                     foreach (var usym in userYaml.symbols) {
@@ -689,17 +692,16 @@ namespace OpenUtau.Plugin.Builtin {
                 // Create safety backup
                 string backupVersion = string.IsNullOrEmpty(currentVersion) ? "unknown" : currentVersion;
                 string backupFile = Path.Combine(
-                    Path.GetDirectoryName(filePath),
+                    Path.GetDirectoryName(filePath) ?? string.Empty,
                     $"{Path.GetFileNameWithoutExtension(filePath)}_backup({backupVersion}).yaml"
                 );
-                if (File.Exists(backupFile)) File.Delete(backupFile);
-                File.Move(filePath, backupFile);
+                File.Copy(filePath, backupFile, overwrite: true);
 
-                var serializer = new SerializerBuilder()
-                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                var serializer = new YamlDotNet.Serialization.SerializerBuilder()
+                    .WithNamingConvention(YamlDotNet.Serialization.NamingConventions.UnderscoredNamingConvention.Instance)
                     .ConfigureDefaultValuesHandling(
-                        DefaultValuesHandling.OmitNull | 
-                        DefaultValuesHandling.OmitEmptyCollections
+                        YamlDotNet.Serialization.DefaultValuesHandling.OmitNull | 
+                        YamlDotNet.Serialization.DefaultValuesHandling.OmitEmptyCollections
                     )
                     .WithIndentedSequences()
                     .WithEventEmitter(next => new SbpFlowStyleEventEmitter(next))
@@ -707,7 +709,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 string tempYaml = serializer.Serialize(newTemplate);
 
-                //  Merge custom dynamic fields (ExtensionData)
+                // Merge custom dynamic fields (ExtensionData)
                 var mergedMap = TolerantDeserializer.Deserialize<Dictionary<string, object>>(tempYaml) 
                                 ?? new Dictionary<string, object>(StringComparer.Ordinal);
 
