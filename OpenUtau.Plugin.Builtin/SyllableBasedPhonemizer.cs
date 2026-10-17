@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 using static OpenUtau.Api.Phonemizer;
 using System.Collections;
 using OpenUtau.Core;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.EventEmitters;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -466,9 +471,12 @@ namespace OpenUtau.Plugin.Builtin {
 
         private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, (DateTime lastModified, YAMLData data)> YamlCache = new();
 
-        private static string ReadVersionFast(string filePath) {
+        /// <summary>
+        /// Core version parser that reads line-by-line from any TextReader stream.
+        /// </summary>
+        private static string ReadVersionFast(TextReader reader) {
+            if (reader == null) return string.Empty;
             try {
-                using var reader = new StreamReader(filePath, Encoding.UTF8);
                 string line;
                 while ((line = reader.ReadLine()) != null) {
                     var trimmed = line.Trim();
@@ -480,9 +488,250 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             } catch {
-                // Fall back if file reading fails
+                // Fallback if parsing fails
             }
             return string.Empty;
+        }
+        /// Overload for byte[].
+        private static string ReadVersionFast(byte[] bytes) {
+            if (bytes == null || bytes.Length == 0) return string.Empty;
+            using var ms = new MemoryStream(bytes);
+            using var reader = new StreamReader(ms, Encoding.UTF8);
+            return ReadVersionFast(reader);
+        }
+        /// Overload for file paths
+        private static string ReadVersionFast(string filePath) {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return string.Empty;
+            try {
+                using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream, Encoding.UTF8);
+                return ReadVersionFast(reader);
+            } catch {
+                return string.Empty;
+            }
+        }
+
+        private void CheckAndUpdateYamls(string globalFile, string singerFile) {
+            if (YamlTemplate == null) return;
+
+            string targetVersion = ReadVersionFast(YamlTemplate);
+            if (string.IsNullOrEmpty(targetVersion)) {
+                targetVersion = YamlVersion ?? "1.0"; 
+            }
+
+            // Global Plugin YAML
+            UpdateYamlIfNeeded(globalFile, targetVersion, isGlobal: true);
+            // Singer Local YAML
+            if (!string.IsNullOrEmpty(singerFile)) {
+                UpdateYamlIfNeeded(singerFile, targetVersion, isGlobal: false);
+            }
+        }
+
+        private void UpdateYamlIfNeeded(string filePath, string targetVersion, bool isGlobal) {
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            bool isOutdated = false;
+            string currentVersion = "unknown";
+
+            if (File.Exists(filePath)) {
+                try {
+                    currentVersion = ReadVersionFast(filePath);
+
+                    if (string.IsNullOrEmpty(currentVersion)) {
+                        isOutdated = true;
+                    } else if (System.Version.TryParse(currentVersion, out System.Version currV) &&
+                            System.Version.TryParse(targetVersion, out System.Version targetV)) {
+                        if (currV < targetV) {
+                            isOutdated = true;
+                        }
+                    } else if (currentVersion != targetVersion) {
+                        // Fallback comparison for non-standard semver strings (e.g. "1.2b")
+                        isOutdated = true;
+                    }
+                } catch (Exception ex) {
+                    Log.Error(ex, $"[YamlUpdate] Syntax error in '{filePath}'. Skipping auto-update to protect user data.");
+                    return;
+                }
+            } else if (isGlobal) {
+                // Create global template if it does not exist yet
+                try {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    File.WriteAllBytes(filePath, YamlTemplate);
+                    Log.Information($"[YamlUpdate] Created new global template at '{filePath}' (v{targetVersion})");
+                } catch (Exception ex) {
+                    Log.Error(ex, $"[YamlUpdate] Failed to write global template to '{filePath}'");
+                }
+                return;
+            } else {
+                // Singer files remain optional
+                return;
+            }
+
+            if (!isOutdated) return;
+
+            if (!isGlobal) {
+                bool migrated = MigrateAndWriteYaml(filePath, currentVersion, targetVersion);
+                if (migrated) return; 
+            }
+
+            try {
+                string backupVersion = string.IsNullOrEmpty(currentVersion) ? "unknown" : currentVersion;
+                string backupFile = Path.Combine(
+                    Path.GetDirectoryName(filePath),
+                    $"{Path.GetFileNameWithoutExtension(filePath)}_backup({backupVersion}).yaml"
+                );
+
+                if (File.Exists(backupFile)) File.Delete(backupFile);
+                File.Move(filePath, backupFile);
+                Log.Information($"[YamlUpdate] Backed up '{filePath}' to '{backupFile}'");
+
+                File.WriteAllBytes(filePath, YamlTemplate);
+                Log.Information($"[YamlUpdate] Updated '{filePath}' to template version {targetVersion}");
+            } catch (Exception ex) {
+                Log.Error(ex, $"[YamlUpdate] Failed to update '{filePath}'");
+            }
+        }
+
+        /// <summary>
+        /// Forces mapping items inside list sequences to format in compact Flow style: - {from: a, to: b}
+        /// </summary>
+        private class SbpFlowStyleEventEmitter : ChainedEventEmitter {
+            private int _sequenceDepth = 0;
+            public SbpFlowStyleEventEmitter(IEventEmitter next) : base(next) { }
+
+            public override void Emit(MappingStartEventInfo eventInfo, IEmitter emitter) {
+                if (_sequenceDepth > 0) {
+                    eventInfo.Style = MappingStyle.Flow;
+                }
+                base.Emit(eventInfo, emitter);
+            }
+            public override void Emit(SequenceStartEventInfo eventInfo, IEmitter emitter) {
+                if (_sequenceDepth > 0) {
+                    eventInfo.Style = SequenceStyle.Flow;
+                }
+                _sequenceDepth++;
+                base.Emit(eventInfo, emitter);
+            }
+            public override void Emit(SequenceEndEventInfo eventInfo, IEmitter emitter) {
+                _sequenceDepth--;
+                base.Emit(eventInfo, emitter);
+            }
+        }
+
+        private bool MigrateAndWriteYaml(string filePath, string currentVersion, string targetVersion) {
+            try {
+                if (YamlTemplate == null || YamlTemplate.Length == 0) return false;
+
+                var userYaml = LoadYamlCached(filePath);
+                var newTemplate = TolerantDeserializer.Deserialize<YAMLData>(Encoding.UTF8.GetString(YamlTemplate));
+
+                if (userYaml == null || newTemplate == null) return false;
+
+                // Merge Timings
+                var mergedTimings = newTemplate.timings?.ToList() ?? new List<YAMLData.Timings>();
+                if (userYaml.timings != null) {
+                    foreach (var ut in userYaml.timings) {
+                        mergedTimings.RemoveAll(t => t.symbol == ut.symbol);
+                        mergedTimings.Add(ut);
+                    }
+                }
+
+                // Merge Replacements & normalize default 'where: inside'
+                var mergedReplacements = newTemplate.replacements?.ToList() ?? new List<Replacement>();
+                if (userYaml.replacements != null) {
+                    foreach (var ur in userYaml.replacements) {
+                        mergedReplacements.RemoveAll(r => GetReplacementKey(r) == GetReplacementKey(ur));
+                        mergedReplacements.Add(ur);
+                    }
+                }
+                foreach (var r in mergedReplacements) {
+                    if (r.where == "inside") r.where = null;
+                }
+
+                // Merge Fallbacks
+                var mergedFallbacks = newTemplate.fallbacks?.ToList() ?? new List<Replacement>();
+                if (userYaml.fallbacks != null) {
+                    foreach (var uf in userYaml.fallbacks) {
+                        mergedFallbacks.RemoveAll(f => GetReplacementKey(f) == GetReplacementKey(uf));
+                        mergedFallbacks.Add(uf);
+                    }
+                }
+                foreach (var f in mergedFallbacks) {
+                    if (f.where == "inside") f.where = null;
+                }
+
+                // Merge Vowel Sustains
+                var mergedSustains = newTemplate.vowelsustains?.ToList() ?? new List<YAMLData.VowelSustainData>();
+                if (userYaml.vowelsustains != null) {
+                    foreach (var us in userYaml.vowelsustains) {
+                        mergedSustains.RemoveAll(s => s.symbol == us.symbol);
+                        mergedSustains.Add(us);
+                    }
+                }
+
+                // Merge Symbols
+                var mergedSymbols = newTemplate.symbols?.ToList() ?? new List<YAMLData.SymbolData>();
+                if (userYaml.symbols != null) {
+                    foreach (var usym in userYaml.symbols) {
+                        mergedSymbols.RemoveAll(s => string.Equals(s.symbol, usym.symbol, StringComparison.Ordinal));
+                        mergedSymbols.Add(usym);
+                    }
+                }
+
+                // Set properties on new template base
+                newTemplate.version = targetVersion;
+                newTemplate.timings = mergedTimings.ToArray();
+                newTemplate.replacements = mergedReplacements.ToArray();
+                newTemplate.fallbacks = mergedFallbacks.ToArray();
+                newTemplate.vowelsustains = mergedSustains.ToArray();
+                newTemplate.symbols = mergedSymbols.ToArray();
+
+                // Create safety backup
+                string backupVersion = string.IsNullOrEmpty(currentVersion) ? "unknown" : currentVersion;
+                string backupFile = Path.Combine(
+                    Path.GetDirectoryName(filePath),
+                    $"{Path.GetFileNameWithoutExtension(filePath)}_backup({backupVersion}).yaml"
+                );
+                if (File.Exists(backupFile)) File.Delete(backupFile);
+                File.Move(filePath, backupFile);
+
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                    .ConfigureDefaultValuesHandling(
+                        DefaultValuesHandling.OmitNull | 
+                        DefaultValuesHandling.OmitEmptyCollections
+                    )
+                    .WithIndentedSequences()
+                    .WithEventEmitter(next => new SbpFlowStyleEventEmitter(next))
+                    .Build();
+
+                string tempYaml = serializer.Serialize(newTemplate);
+
+                //  Merge custom dynamic fields (ExtensionData)
+                var mergedMap = TolerantDeserializer.Deserialize<Dictionary<string, object>>(tempYaml) 
+                                ?? new Dictionary<string, object>(StringComparer.Ordinal);
+
+                if (userYaml.ExtensionData != null) {
+                    foreach (var kvp in userYaml.ExtensionData) {
+                        mergedMap[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                string finalOutput = serializer.Serialize(mergedMap);
+                File.WriteAllText(filePath, finalOutput, Encoding.UTF8);
+
+                Log.Information($"[Migration] Successfully migrated '{filePath}' from v{currentVersion} to v{targetVersion}");
+                return true;
+            } catch (Exception ex) {
+                Log.Error(ex, $"[Migration] Failed migrating '{filePath}'.");
+                return false;
+            }
+        }
+        
+        private static string GetReplacementKey(Replacement r) {
+            if (r == null) return string.Empty;
+            string fromStr = string.Join(",", r.FromList);
+            return $"{fromStr}:{r.where}";
         }
 
         private static YAMLData LoadYamlCached(string filePath) {
@@ -497,6 +746,29 @@ namespace OpenUtau.Plugin.Builtin {
                 using var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 using var reader = new StreamReader(stream, Encoding.UTF8);
                 var parsed = TolerantDeserializer.Deserialize<YAMLData>(reader);
+
+                if (parsed != null) {
+                    try {
+                        stream.Position = 0;
+                        using var rawReader = new StreamReader(stream, Encoding.UTF8);
+                        var rawMap = TolerantDeserializer.Deserialize<Dictionary<string, object>>(rawReader);
+
+                        if (rawMap != null) {
+                            var knownKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+                                "version", "isglides", "symbols", "replacements", "fallbacks",
+                                "timings", "diphthongs", "vowelsustains"
+                            };
+                            parsed.ExtensionData.Clear();
+                            foreach (var kvp in rawMap) {
+                                if (!knownKeys.Contains(kvp.Key)) {
+                                    parsed.ExtensionData[kvp.Key] = kvp.Value;
+                                }
+                            }
+                        }
+                    } catch {
+                        // Ignores raw map errors if custom parsing fails
+                    }
+                }
                 YamlCache[fullPath] = (lastWrite, parsed);
                 return parsed;
             } catch (Exception ex) {
@@ -551,69 +823,7 @@ namespace OpenUtau.Plugin.Builtin {
                     : null;
 
                 // Local helper function to update and backup YAML files safely
-                void UpdateYamlIfNeeded(string filePath, bool isGlobal) {
-                    if (string.IsNullOrEmpty(filePath)) return;
-
-                    bool shouldWriteTemplate = false;
-                    bool shouldBackupOldFile = false;
-                    string currentVersion = "unknown";
-
-                    if (File.Exists(filePath)) {
-                        if (YamlTemplate != null && !string.IsNullOrEmpty(YamlVersion)) {
-                            try {
-                                currentVersion = ReadVersionFast(filePath);
-
-                                // Update if missing, or if the parsed decimal is strictly lower than the target YamlVersion
-                                if (string.IsNullOrEmpty(currentVersion)) {
-                                    shouldWriteTemplate = true;
-                                    shouldBackupOldFile = true;
-                                } else if (Version.TryParse(currentVersion, out Version currV) && 
-                                        Version.TryParse(YamlVersion, out Version targetV)) {
-                                    if (currV < targetV) {
-                                        shouldWriteTemplate = true;
-                                        shouldBackupOldFile = true;
-                                    }
-                                } else if (currentVersion != YamlVersion && !double.TryParse(currentVersion, out _)) {
-                                    // Fallback string check if version formats aren't purely numeric (e.g., "1.3b")
-                                    shouldWriteTemplate = true;
-                                    shouldBackupOldFile = true;
-                                }
-                            } catch (Exception ex) {
-                                Log.Error(ex, $"Syntax error detected in '{filePath}'. Skipping template update to protect data.");
-                                return; 
-                            }
-                        }
-                    } else if (isGlobal && YamlTemplate != null) {
-                        shouldWriteTemplate = true;
-                    }
-
-                    if (shouldBackupOldFile && File.Exists(filePath)) {
-                        try {
-                            // Include the version in the backup file name, e.g., arpa_backup(1.2).yaml
-                            string safeVersion = string.IsNullOrEmpty(currentVersion) ? "unknown" : currentVersion;
-                            string backupFile = Path.Combine(Path.GetDirectoryName(filePath), $"{Path.GetFileNameWithoutExtension(YamlFileName)}_backup({safeVersion}){Path.GetExtension(YamlFileName)}");
-                            
-                            if (File.Exists(backupFile)) File.Delete(backupFile);
-                            File.Move(filePath, backupFile);
-                            Log.Information($"Old {YamlFileName} backed up to {backupFile}");
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to back up {filePath}. Aborting overwrite.");
-                            return;
-                        }
-                    }
-
-                    if (shouldWriteTemplate) {
-                        try {
-                            File.WriteAllBytes(filePath, YamlTemplate);
-                            Log.Information($"'{filePath}' created or updated to version {YamlVersion ?? "default"}");
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to write template to {filePath}");
-                        }
-                    }
-                }
-
-                UpdateYamlIfNeeded(globalFile, true);
-                //UpdateYamlIfNeeded(singerFile, false); preserve singer YAML if it exists, do not overwrite
+                CheckAndUpdateYamls(globalFile, singerFile);
 
                 // add to parsing list (Global first, Singer second)
                 var filesToParse = new List<string>();
@@ -1666,11 +1876,20 @@ namespace OpenUtau.Plugin.Builtin {
             public Timings[] timings { get; set; } = Array.Empty<Timings>();
             public DiphthongData[] diphthongs { get; set; } = Array.Empty<DiphthongData>();
             public VowelSustainData[] vowelsustains { get; set; } = Array.Empty<VowelSustainData>();
+            public EntryData[] entries { get; set; } = Array.Empty<EntryData>();
+
+            /// <summary>
+            /// Automatically captures child-specific or custom YAML fields (e.g., wanakana, vcVowels etc)
+            /// so they are preserved and written back out during migration.
+            /// </summary>
+            [YamlDotNet.Serialization.YamlIgnore]
+            public Dictionary<string, object> ExtensionData { get; set; } = new Dictionary<string, object>(StringComparer.Ordinal);
 
             public class SymbolData { public string symbol { get; set; } public string type { get; set; } }
             public class Timings { public string symbol { get; set; } public double value { get; set; } }
             public class DiphthongData { public string from { get; set; } public string to { get; set; } }
             public class VowelSustainData { public string symbol { get; set; } public string sustain { get; set; } public double offset { get; set; } }
+            public class EntryData { public string grapheme { get; set; } public string[] phonemes { get; set; } }
         }
 
         public class Replacement {
@@ -1678,6 +1897,7 @@ namespace OpenUtau.Plugin.Builtin {
             public object to { get; set; }
             public string where { get; set; } = "inside";
 
+            [YamlDotNet.Serialization.YamlIgnore]
             public List<string> FromList {
                 get {
                     if (from is string s) return new List<string> { s };
@@ -1686,6 +1906,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            [YamlDotNet.Serialization.YamlIgnore]
             public List<string> ToList {
                 get {
                     if (to is string s) return new List<string> { s };
