@@ -128,6 +128,10 @@ namespace OpenUtau.Api {
                     timestamp = request.timestamp,
                 };
             }
+            // DiffSinger phonemizers run the linguistic and duration models on the CPU, on the
+            // same cores the background pre-render pass is saturating; the pass would be
+            // invalidated by the phonemes this call produces anyway, so let it go first.
+            using var preRenderHold = PlaybackManager.Inst.HoldPreRender();
             foreach (var p in phonemizers) {
                 p.SetUpException = null;
                 try {
