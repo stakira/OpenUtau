@@ -533,7 +533,7 @@ namespace OpenUtau.Core.Editing {
                 // The result's padding (1 s for Voicevox) overlaps the neighbouring phrases; only clear the
                 // phrase's own span, so their rendered pitch is not erased.
                 ClampRanges(cleared, clearedBefore, phraseStart - phrase.leading, phraseStart + phrase.duration);
-                // TODO: Optimize interpolation and command.
+                // TODO: Optimize interpolation.
                 if (cancellationToken.IsCancellationRequested) break;
                 if (prefersOverride) {
                     finished += 1;
