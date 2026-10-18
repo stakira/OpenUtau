@@ -438,6 +438,8 @@ namespace OpenUtau.Core {
             playbackEndTick = -1;
             playbackMix = null;
             loopProjectOnPlaybackEnd = false;
+            // A pass deferred while playback was paused has nothing to protect any more.
+            RunDeferredPreRender();
         }
 
         public void PausePlayback() {
@@ -651,11 +653,21 @@ namespace OpenUtau.Core {
                 if (preRenderHolders > 0) {
                     preRenderHolders--;
                 }
+            }
+            RunDeferredPreRender();
+        }
+
+        /// <summary>
+        /// Starts the pass a hold or a notification left owed, once nothing holds the gate and
+        /// playback is not sitting paused on its own render task.
+        /// </summary>
+        void RunDeferredPreRender() {
+            lock (preRenderGate) {
                 if (preRenderHolders > 0 || !preRenderDeferred) {
                     return;
                 }
                 // A paused session keeps its render task, and its slots would not match the
-                // new phrase hashes anyway. Leave the pass owed until playback moves on.
+                // new phrase hashes anyway. Leave the pass owed until playback stops.
                 if (!PlayingMaster && playbackMix != null) {
                     return;
                 }
