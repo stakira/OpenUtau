@@ -623,17 +623,21 @@ namespace OpenUtau.Core {
 
         /// <summary>
         /// Keeps the background pre-render out of the way until the returned token is
-        /// disposed: the pass in flight is cancelled (unless playback needs it, where the
-        /// same pass feeds the transport) and a new pass is scheduled on release. The pass
-        /// is always owed afterwards, because the edit this gate is held for invalidates
-        /// whatever the cancelled pass produced - and because a pass cancelled here must
-        /// not be lost if the edit fails.
+        /// disposed: the pass in flight is cancelled and a new pass is scheduled on release.
+        /// The pass is always owed afterwards, because the edit this gate is held for
+        /// invalidates whatever the cancelled pass produced - and because a pass cancelled
+        /// here must not be lost if the edit fails.
+        /// A live playback session is left alone, playing or paused: that pass feeds the
+        /// transport, and a pause keeps the same adapter for <see cref="Play"/> to resume.
         /// </summary>
         public IDisposable HoldPreRender() {
             lock (preRenderGate) {
                 preRenderHolders++;
                 preRenderDeferred = true;
-                if (!PlayingMaster) {
+                // PausePlayback leaves playbackMix and its render task alive, so a paused
+                // session is not a safe cancellation target: resuming reuses the adapter
+                // without starting a new pass, and the slots this would cancel stay pending.
+                if (!PlayingMaster && playbackMix == null) {
                     CancelPreRender(renderCancellation);
                 }
             }
