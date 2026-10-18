@@ -420,8 +420,8 @@ namespace OpenUtau.Core {
                 PlayingMaster = true;
                 metronomeEngine.StartPlayback(project.timeAxis, DocManager.Inst.playPosTick);
                 AudioOutput.Play();
-                // A pass deferred during the pause can run again now that the session is live.
-                RunDeferredPreRender();
+                // No pre-render here: the pass deferred during the pause must not replace the
+                // session this resume is reading from. It runs when playback stops.
                 return;
             }
             AudioOutput.Stop();
