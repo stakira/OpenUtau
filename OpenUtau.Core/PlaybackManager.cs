@@ -654,6 +654,11 @@ namespace OpenUtau.Core {
                 if (preRenderHolders > 0 || !preRenderDeferred) {
                     return;
                 }
+                // A paused session keeps its render task, and its slots would not match the
+                // new phrase hashes anyway. Leave the pass owed until playback moves on.
+                if (!PlayingMaster && playbackMix != null) {
+                    return;
+                }
                 preRenderDeferred = false;
             }
             if (Preferences.Default.PreRender) {
