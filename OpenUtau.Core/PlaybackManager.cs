@@ -420,6 +420,8 @@ namespace OpenUtau.Core {
                 PlayingMaster = true;
                 metronomeEngine.StartPlayback(project.timeAxis, DocManager.Inst.playPosTick);
                 AudioOutput.Play();
+                // A pass deferred during the pause can run again now that the session is live.
+                RunDeferredPreRender();
                 return;
             }
             AudioOutput.Stop();
@@ -658,17 +660,12 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// Starts the pass a hold or a notification left owed, once nothing holds the gate and
-        /// playback is not sitting paused on its own render task.
+        /// Starts the pass a hold or a notification left owed. SchedulePreRender puts it back
+        /// if a hold is still active or playback is paused, so the decision lives in one place.
         /// </summary>
         void RunDeferredPreRender() {
             lock (preRenderGate) {
                 if (preRenderHolders > 0 || !preRenderDeferred) {
-                    return;
-                }
-                // A paused session keeps its render task, and its slots would not match the
-                // new phrase hashes anyway. Leave the pass owed until playback stops.
-                if (!PlayingMaster && playbackMix != null) {
                     return;
                 }
                 preRenderDeferred = false;
@@ -693,6 +690,12 @@ namespace OpenUtau.Core {
         void SchedulePreRender() {
             lock (preRenderGate) {
                 if (preRenderHolders > 0) {
+                    preRenderDeferred = true;
+                    return;
+                }
+                // Starting a pass swaps the cancellation source, and a paused session is still
+                // filling slots whose hashes a new pass would not match. Wait for stop or resume.
+                if (!PlayingMaster && playbackMix != null) {
                     preRenderDeferred = true;
                     return;
                 }
