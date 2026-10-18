@@ -660,12 +660,13 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// Starts the pass a hold or a notification left owed. SchedulePreRender puts it back
-        /// if a hold is still active or playback is paused, so the decision lives in one place.
+        /// Starts the pass a hold or a notification left owed. Only a stopped transport has
+        /// nothing to protect: a live session asks for its own pass through
+        /// <see cref="PreRenderNotification"/>.
         /// </summary>
         void RunDeferredPreRender() {
             lock (preRenderGate) {
-                if (preRenderHolders > 0 || !preRenderDeferred) {
+                if (preRenderHolders > 0 || !preRenderDeferred || playbackMix != null) {
                     return;
                 }
                 preRenderDeferred = false;
