@@ -687,15 +687,18 @@ namespace OpenUtau.Core {
                     preRenderDeferred = true;
                     return;
                 }
+                Log.Information("SchedulePreRender");
+                // While playing, this pass takes over from the playback pass, so it has to
+                // render from the playhead, not from the part being edited.
+                // The new cancellation source is installed under the gate as well: a holder
+                // that arrived between the check and the install would cancel the old source
+                // and leave this pass running for the whole edit.
+                var engine = new RenderEngine(
+                    DocManager.Inst.Project,
+                    focusPart: PlayingMaster ? null : preRenderFocusPart,
+                    focusTick: PlayingMaster ? DocManager.Inst.playPosTick : preRenderFocusTick);
+                engine.PreRenderProject(ref renderCancellation, MixPlanner);
             }
-            Log.Information("SchedulePreRender");
-            // While playing, this pass takes over from the playback pass, so it has to
-            // render from the playhead, not from the part being edited.
-            var engine = new RenderEngine(
-                DocManager.Inst.Project,
-                focusPart: PlayingMaster ? null : preRenderFocusPart,
-                focusTick: PlayingMaster ? DocManager.Inst.playPosTick : preRenderFocusTick);
-            engine.PreRenderProject(ref renderCancellation, MixPlanner);
         }
 
         #region ICmdSubscriber
