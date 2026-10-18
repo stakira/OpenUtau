@@ -624,9 +624,10 @@ namespace OpenUtau.Core {
         public IDisposable HoldPreRender() {
             lock (preRenderGate) {
                 preRenderHolders++;
-                preRenderDeferred = true;
-                // Paused playback keeps its render task alive and resumes without a new pass.
-                if (!PlayingMaster && playbackMix == null) {
+                // A pass this gate cancels is owed a replacement. A paused playback session
+                // keeps its own task, and with nothing in flight there is nothing to restart.
+                if (!PlayingMaster && playbackMix == null && renderCancellation != null) {
+                    preRenderDeferred = true;
                     CancelPreRender(renderCancellation);
                 }
             }
