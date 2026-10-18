@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OpenUtau.Core.Render;
 using Serilog;
 
@@ -42,7 +41,7 @@ namespace OpenUtau.Core.Voicevox {
         public List<double> f0 = new List<double>();
         public List<double> volume = new List<double>();
         public List<Phonemes> phonemes = new List<Phonemes>();
-        public int volumeScale = 1;
+        public double volumeScale = 1;
         public int outputSamplingRate = 24000;
         public bool outputStereo = false;
 
@@ -185,15 +184,15 @@ namespace OpenUtau.Core.Voicevox {
         public static bool InitializedSpeaker(string id, bool skipReinit = false) {
             var queryurl = new VoicevoxURL() { method = "GET", path = "/is_initialized_speaker", query = new Dictionary<string, string> { { "speaker", id } } };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
-            var jObj = JObject.Parse(response.Item1);
-            if (jObj.ContainsKey("detail")) {
+            var jObj = JsonObject.Parse(response.Item1) as JsonObject;
+            if (jObj?.AsObject().ContainsKey("detail") == true) {
                 Log.Error($"Response was incorrect. : {jObj}");
                 return false;
-            } else if (jObj.TryGetValue("json", out var jsonToken)) {
-                if (!jsonToken.Value<bool>()) {
+            } else if (jObj.TryGetPropertyValue("json", out var jsonToken)) {
+                if (!jsonToken.GetValue<bool>()) {
                     queryurl = new VoicevoxURL() { method = "POST", path = "/initialize_speaker", query = new Dictionary<string, string> { { "speaker", id }, { "skip_reinit", skipReinit.ToString() } } };
                     response = VoicevoxClient.Inst.SendRequest(queryurl);
-                    jObj = JObject.Parse(response.Item1);
+                    jObj = JsonObject.Parse(response.Item1) as JsonObject;
                     if (jObj.ContainsKey("detail")) {
                         Log.Error($"Response was incorrect. : {jObj}");
                         return false;
@@ -207,14 +206,14 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public static VoicevoxSynthParams VoicevoxVoiceBase(VoicevoxQueryMain vqMain, string id) {
-            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqMain) };
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_audio_query", query = new Dictionary<string, string> { { "speaker", id } }, body = Json.Serialize(vqMain) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
-            var jObj = JObject.Parse(response.Item1);
+            var jObj = JsonObject.Parse(response.Item1) as JsonObject;
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
                 throw new VoicevoxException($"Response was incorrect. : \n{jObj}\nScore:{string.Join(" ", vqMain.notes.Select(n => n.lyric))}");
             }
-            return jObj.ToObject<VoicevoxSynthParams>();
+            return Json.Deserialize<VoicevoxSynthParams>(jObj);
         }
 
         public static void Loaddic(VoicevoxSinger singer) {
@@ -234,6 +233,48 @@ namespace OpenUtau.Core.Voicevox {
                 return false;
             }
             return plosives.Any(p => lyric.StartsWith(p));
+        }
+
+        //Converts an absolute position in ms to the nearest frame on the absolute frame grid.
+        public static int ToFrame(double ms) {
+            return (int)Math.Round((ms / 1000.0) * fps, MidpointRounding.AwayFromZero);
+        }
+
+        //Snaps an absolute position in ms to the frame grid.
+        public static double SnapMs(double ms) {
+            return ToFrame(ms) * 1000.0 / fps;
+        }
+
+        public static bool IsPhonemeNoteCountMatch(RenderPhrase phrase) {
+            return phrase.phones.Length == phrase.notes.Where(note => !IsSyllableVowelExtensionNote(note.lyric)).Count() && phrase.phones.All(p => phoneme_List.kanas.ContainsKey(p.phoneme));
+        }
+
+        //Returns the absolute range (ms) that the synthesized frames cover, excluding the head and tail pau.
+        //Synthesis and Layout both go through this, so the audio and its layout cannot diverge.
+        public static (double startMs, double endMs) GetSynthSpan(RenderPhrase phrase) {
+            if (phrase.notes.Length > 0 && IsPhonemeNoteCountMatch(phrase)) {
+                var last = phrase.notes[^1];
+                return (phrase.notes[0].positionMs, last.positionMs + last.durationMs);
+            }
+            return (phrase.positionMs, phrase.endMs);
+        }
+
+        //Builds the layout of a phrase whose synthesized frames start at startMs and end at endMs.
+        public static RenderResult ComputeLayout(double startMs, double endMs, double leadingMs) {
+            double frameMs = 1000.0 / fps;
+            int headFrames = (int)Math.Round(headS * fps);
+            int tailFrames = (int)Math.Round(tailS * fps);
+            const int AlignmentFrames = 1;
+
+            double correctionMs = (headFrames + AlignmentFrames) * frameMs;
+            double snappedStartMs = SnapMs(startMs);
+
+            return new RenderResult() {
+                leadingMs = leadingMs,
+                positionMs = snappedStartMs - correctionMs,
+                // Head pau + leading + synthesized frames + tail pau.
+                estimatedLengthMs = correctionMs + leadingMs + (endMs - snappedStartMs) + tailFrames * frameMs,
+            };
         }
 
         //Returns the end frame of a segment starting at startFrame.
@@ -263,7 +304,7 @@ namespace OpenUtau.Core.Voicevox {
                 VoicevoxNote lastNote = new VoicevoxNote();
                 //Holds the end frame of the previous note so that notes stay contiguous.
                 int cursor = vNotes.Length > 0
-                    ? (int)Math.Round((vNotes[0].positionMs / 1000.0) * fps, MidpointRounding.AwayFromZero)
+                    ? ToFrame(vNotes[0].positionMs)
                     : 0;
                 for (int index = 0; index < vNotes.Length;) {
                     string lyric = dic.Notetodic(vNotes, index);
@@ -351,30 +392,30 @@ namespace OpenUtau.Core.Voicevox {
 
         public static List<double> QueryToF0(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
             VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams };
-            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_f0", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_f0", query = new Dictionary<string, string> { { "speaker", id } }, body = Json.Serialize(vqParams) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
             List<double> f0s = new List<double>();
-            var jObj = JObject.Parse(response.Item1);
+            var jObj = JsonObject.Parse(response.Item1) as JsonObject;
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
                 throw new VoicevoxException($"Response was incorrect. : \n{jObj}\nScore:{string.Join(" ", vqMain.notes.Select(n => n.lyric))}");
             } else {
-                f0s = jObj["json"].ToObject<List<double>>();
+                f0s = Json.Deserialize<List<double>>(jObj?["json"]);
             }
             return f0s;
         }
 
         public static List<double> QueryToVolume(VoicevoxQueryMain vqMain, VoicevoxSynthParams vsParams, string id) {
             VoicevoxQueryParams vqParams = new VoicevoxQueryParams() { score = vqMain, frame_audio_query = vsParams };
-            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_volume", query = new Dictionary<string, string> { { "speaker", id } }, body = JsonConvert.SerializeObject(vqParams) };
+            var queryurl = new VoicevoxURL() { method = "POST", path = "/sing_frame_volume", query = new Dictionary<string, string> { { "speaker", id } }, body = Json.Serialize(vqParams) };
             var response = VoicevoxClient.Inst.SendRequest(queryurl);
             List<double> volumes = new List<double>();
-            var jObj = JObject.Parse(response.Item1);
+            var jObj = JsonObject.Parse(response.Item1) as JsonObject;
             if (jObj.ContainsKey("detail")) {
                 Log.Error($"Response was incorrect. : {jObj}");
                 throw new VoicevoxException($"Response was incorrect. : \n{jObj}\nScore:{string.Join(" ", vqMain.notes.Select(n => n.lyric))}");
             } else {
-                volumes = jObj["json"].ToObject<List<double>>();
+                volumes = Json.Deserialize<List<double>>(jObj?["json"]);
             }
             return volumes;
         }
@@ -419,9 +460,11 @@ namespace OpenUtau.Core.Voicevox {
                     Array.Fill(result, defaultValue);
                     return result;
                 }
+                double synthStartMs = SnapMs(GetSynthSpan(phrase).startMs);
 
                 for (int i = 0; i < length - headFrames - tailFrames; i++) {
-                    double posMs = phrase.positionMs - phrase.leadingMs + (i * frameMs) + offset;
+                    //Frame i is synthesized at snapped start frame + i, so sample at that time.
+                    double posMs = synthStartMs - phrase.leadingMs + (i * frameMs) + offset;
                     int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
                     int index = Math.Max(0, (int)((double)ticks / interval));
                     if (index < curve.Length) {

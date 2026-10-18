@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 
@@ -141,10 +140,11 @@ namespace OpenUtau.Core.DiffSinger {
 
                 //variance curves
                 if (options.exportVariance && singer.HasVariancePredictor) {
-                    var variancePredictor = singer.getVariancePredictor();
                     VarianceResult varianceResult;
+                    using var dmlScope = Onnx.EnterDmlScope();
+                    // Take the reference inside SessionLock so a concurrent FreeMemory cannot dispose it first.
                     lock (singer.SessionLock) {
-                        varianceResult = variancePredictor.Process(phrase);
+                        varianceResult = singer.getVariancePredictor().Process(phrase);
                     }
                     if (varianceResult.energy != null) {
                         energy = ComputeVarianceCurve(
@@ -206,7 +206,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(x => new DiffSingerScript(x, options).toRaw())
                 .ToArray();
             File.WriteAllText(filePath,
-                JsonConvert.SerializeObject(ScriptArray, Formatting.Indented),
+                Json.Serialize(ScriptArray),
                 new UTF8Encoding(false));
         }
     }

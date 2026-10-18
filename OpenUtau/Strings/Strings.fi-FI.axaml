@@ -103,8 +103,7 @@
 
   <system:String x:Key="dialogs.about.caption">OpenUtausta</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtaun tavoitteena on olla avoimen lähdekoodin editointiympäristö UTAU-yhteisölle, jossa on moderni käyttökokemus ja älykäs foneettinen tuki. Vieraile Githubissa.
-  </system:String>
+OpenUtaun tavoitteena on olla avoimen lähdekoodin editointiympäristö UTAU-yhteisölle, jossa on moderni käyttökokemus ja älykäs foneettinen tuki. Vieraile Githubissa.</system:String>
   <system:String x:Key="dialogs.exitsave.caption">Lopeta OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">Tämänhetkinen projekti sisältää tallentamattomia muutoksia. Haluatko tallentaa muutokset?</system:String>
   <system:String x:Key="dialogs.export.caption">Vie</system:String>
@@ -189,6 +188,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <!--<system:String x:Key="errors.failed.openfile">Failed to open</system:String>-->
   <!--<system:String x:Key="errors.failed.openlocation">Failed to open location</system:String>-->
   <!--<system:String x:Key="errors.failed.opennewerproject">Project file is newer than software! Upgrade OpenUtau!</system:String>-->
+  <!--<system:String x:Key="errors.failed.prerender">Failed to render in the background.</system:String>-->
   <!--<system:String x:Key="errors.failed.render">Failed to render.</system:String>-->
   <!--<system:String x:Key="errors.failed.runeditingmacro">Failed to run editing macro</system:String>-->
   <!--<system:String x:Key="errors.failed.save">Failed to save</system:String>-->
@@ -202,6 +202,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <!--<system:String x:Key="errors.lyrics.regex">Character not allowed in regular expression</system:String>-->
   <!--<system:String x:Key="errors.lyrics.regexpreview">- regular expression error -</system:String>-->
   <!--<system:String x:Key="errors.resampler.failed.message">Resampler failed to create output file(s). Resampler errors like this are often caused by oto.ini configuration issues. Consider generating a singer error report to check for such issues.</system:String>-->
+  <!--<system:String x:Key="errors.toast.details">(Click here for details)</system:String>-->
 
   <!--<system:String x:Key="exesetup.installing">Installing "{0}"...</system:String>-->
   <!--<system:String x:Key="exesetup.linux">To use exe resamplers or wavtools on Linux:
@@ -452,6 +453,8 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="packages.unknownversion">unknown version</system:String>-->
   <!--<system:String x:Key="packages.update">Update</system:String>-->
 
+  <!--<system:String x:Key="phoneme.show.error">Alt + Click to view the full error</system:String>-->
+
   <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
   <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
 
@@ -460,6 +463,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.batch.running">Running batch edit</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.external">External</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics">Sanoitus</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.addphonetichints">Add Phonetic Hint</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplustilda">Replace "-" with "+~"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
@@ -519,6 +523,8 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.expressions">View Expressions (L)</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.hidepianoroll">Hide Piano Roll</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.livepitch.fast">Live Pitch (Fast): auto-regenerate DiffSinger pitch after edits (fastest)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.livepitch.normal">Live Pitch (Normal): auto-regenerate DiffSinger pitch after edits</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.overwritepitch">Toggle Overwrite Pitch Mode</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Näytä foneemit (O)</system:String>
@@ -597,6 +603,9 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.appearance.detachpianoroll">Show piano roll in separate window</system:String>-->
   <!--<system:String x:Key="prefs.appearance.diffsingerlangcodehide">Hide language prefix from phoneme editor</system:String>-->
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
+  <!--<system:String x:Key="prefs.appearance.notehoverglow">Note hover glow</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.playbacknotebounce">Bounce notes on playback</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.playbacknotehighlight">Highlight notes on playback</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showicon">Show icon on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
@@ -609,6 +618,10 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>-->
   <!--<system:String x:Key="prefs.cache.diffsingertensorcache">DiffSinger Tensor Cache</system:String>-->
   <system:String x:Key="prefs.caption">Asetukset</system:String>
+  <!--<system:String x:Key="prefs.channel">Release Channel</system:String>-->
+  <!--<system:String x:Key="prefs.channel.alpha">Alpha</system:String>-->
+  <!--<system:String x:Key="prefs.channel.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.channel.stable">Stable</system:String>-->
   <!--<system:String x:Key="prefs.diffsinger">DiffSinger</system:String>-->
   <!--<system:String x:Key="prefs.editing">Editing</system:String>-->
   <!--<system:String x:Key="prefs.general">General</system:String>-->
@@ -631,6 +644,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.mini">MiniAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.sdl3">SDL 3</system:String>-->
   <!--<system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Margin</system:String>-->
   <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
   <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
@@ -642,6 +656,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.rendering">Renderöi</system:String>
   <!--<system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger Render Depth</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.diffsingerpitchlocalretaking">DiffSinger Pitch Local Retaking</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingersteps">DiffSinger Render Steps for Acoustic</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepspitch">DiffSinger Render Steps for Pitch</system:String>-->
   <!--<system:String x:Key="prefs.rendering.diffsingerstepsvariance">DiffSinger Render Steps for Variance</system:String>-->
@@ -656,9 +671,7 @@ Warning: this option removes custom presets.</system:String>-->
   1. Set "resampler-compatibility" to "on" in moreconfig.txt.
   2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
   3. Patiently wait for moresampler to generate missing llsm files.</system:String>-->
-  <system:String x:Key="prefs.rendering.resampler.note">
-    HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.
-  </system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.</system:String>
   <!--<system:String x:Key="prefs.rendering.skipmuted">Skip muted tracks</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">Warning: too many render threads may cause OpenUtau to run slowly.</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
@@ -769,6 +782,8 @@ The voicebank may not work on another OS.</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
   <!--<system:String x:Key="singersetup.title">Singer Setup</system:String>-->
 
+  <!--<system:String x:Key="themeeditor.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="themeeditor.save">Save</system:String>-->
   <!--<system:String x:Key="themeeditor.title">Theme Editor</system:String>-->
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->

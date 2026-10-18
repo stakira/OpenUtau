@@ -50,6 +50,10 @@ namespace OpenUtau.Core.Ustx {
         public string[] expSelectors = new string[] { Format.Ustx.DYN, Format.Ustx.PITD, Format.Ustx.CLR, Format.Ustx.ENG, Format.Ustx.VEL, Format.Ustx.VOL, Format.Ustx.ATK, Format.Ustx.DEC, Format.Ustx.GEN, Format.Ustx.BRE };
         public int expPrimary = 0;
         public int expSecondary = 1;
+        /// <summary>The expression graph library; null when the project has none.</summary>
+        public List<ExpressionGraph.UExpressionGraph>? expressionGraphs;
+        /// <summary>The default graph id for each renderer; tracks can override it.</summary>
+        public Dictionary<string, string>? defaultExpressionGraphs;
         public Note key = Scale.Default().Tonic;
         public Mode mode = Scale.Default().Mode;
         public List<UTimeSignature> timeSignatures;
@@ -169,6 +173,12 @@ namespace OpenUtau.Core.Ustx {
             foreach (var kv in expressions) {
                 project.expressions.Add(kv.Key, kv.Value.Clone());
             }
+            // The graph library and each renderer's default go along; track overrides don't, as the
+            // template's tracks are new.
+            project.expressionGraphs = expressionGraphs?.Select(g => g.Clone()).ToList();
+            project.defaultExpressionGraphs = defaultExpressionGraphs == null
+                ? null
+                : new Dictionary<string, string>(defaultExpressionGraphs);
             return project;
         }
 
@@ -192,6 +202,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var part in parts) {
                 part.AfterLoad(this, tracks[part.trackNo]);
             }
+            ExpressionGraph.ExpressionGraphProgram.LogProblems(this);
         }
 
         public void Validate(ValidateOptions options) {

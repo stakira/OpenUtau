@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -18,7 +17,7 @@ namespace OpenUtau.Core.Util {
         public static void Save() {
             try {
                 File.WriteAllText(PathManager.Inst.NotePresetsFilePath,
-                    JsonConvert.SerializeObject(Default, Formatting.Indented),
+                    Json.Serialize(Default),
                     Encoding.UTF8);
             } catch (Exception e) {
                 Log.Error(e, "Failed to save note presets.");
@@ -28,7 +27,7 @@ namespace OpenUtau.Core.Util {
         private static void Load() {
             try {
                 if (File.Exists(PathManager.Inst.NotePresetsFilePath)) {
-                    Default = JsonConvert.DeserializeObject<SerializableNotePresets>(
+                    Default = Json.Deserialize<SerializableNotePresets>(
                         File.ReadAllText(PathManager.Inst.NotePresetsFilePath, Encoding.UTF8));
                 } else {
                     Reset();
@@ -104,6 +103,8 @@ namespace OpenUtau.Core.Util {
             public float VibratoShift = 0;
             public float VibratoDrift = 0;
             public float VibratoVolLink = 0;
+
+            public VibratoPreset() { }
 
             public VibratoPreset(string name, float length, float period, float depth, float fadein, float fadeout, float shift, float drift, float volLink) {
                 Name = name;
