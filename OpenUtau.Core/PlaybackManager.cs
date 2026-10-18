@@ -273,12 +273,8 @@ namespace OpenUtau.Core {
         UVoicePart preRenderFocusPart;
         int preRenderFocusTick = -1;
 
-        // Interactive edits run ONNX per phrase under the same session (and DirectML) lock
-        // the render lane takes for every variance/acoustic/vocoder run. With a pre-render
-        // pass in flight - the default after a project load - a pass over N phrases makes
-        // each phrase of the edit wait for a whole audio phrase render, so an edit that
-        // should take seconds takes as long as the pass. Interactive work holds this gate:
-        // the running pass is cancelled and a fresh one is scheduled once it is released.
+        // Interactive ONNX edits share the render lane's session (and DirectML) lock, so a
+        // pre-render pass in flight makes them wait one audio phrase render per phrase.
         readonly object preRenderGate = new object();
         int preRenderHolders;
         bool preRenderDeferred;
@@ -622,21 +618,14 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// Keeps the background pre-render out of the way until the returned token is
-        /// disposed: the pass in flight is cancelled and a new pass is scheduled on release.
-        /// The pass is always owed afterwards, because the edit this gate is held for
-        /// invalidates whatever the cancelled pass produced - and because a pass cancelled
-        /// here must not be lost if the edit fails.
-        /// A live playback session is left alone, playing or paused: that pass feeds the
-        /// transport, and a pause keeps the same adapter for <see cref="Play"/> to resume.
+        /// Keeps the background pre-render off the ONNX locks until the token is disposed:
+        /// the pass in flight is cancelled and a fresh one is scheduled on release.
         /// </summary>
         public IDisposable HoldPreRender() {
             lock (preRenderGate) {
                 preRenderHolders++;
                 preRenderDeferred = true;
-                // PausePlayback leaves playbackMix and its render task alive, so a paused
-                // session is not a safe cancellation target: resuming reuses the adapter
-                // without starting a new pass, and the slots this would cancel stay pending.
+                // Paused playback keeps its render task alive and resumes without a new pass.
                 if (!PlayingMaster && playbackMix == null) {
                     CancelPreRender(renderCancellation);
                 }
@@ -645,10 +634,8 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// A pass that is still in flight is cancelled cooperatively: the render lane only
-        /// checks the token before a phrase and before each inference, so this never
-        /// interrupts a Run or disposes a session - the serialization the DirectML fixes
-        /// rely on stays exactly as it is.
+        /// Cancels cooperatively: the render lane checks the token between phrases and before
+        /// each inference, never inside a Run or a session teardown.
         /// </summary>
         static void CancelPreRender(CancellationTokenSource? cancellation) {
             try {
@@ -694,9 +681,8 @@ namespace OpenUtau.Core {
                 Log.Information("SchedulePreRender");
                 // While playing, this pass takes over from the playback pass, so it has to
                 // render from the playhead, not from the part being edited.
-                // The new cancellation source is installed under the gate as well: a holder
-                // that arrived between the check and the install would cancel the old source
-                // and leave this pass running for the whole edit.
+                // Install the new cancellation source under the gate too, or a holder arriving
+                // in between would cancel only the old one and leave this pass running.
                 var engine = new RenderEngine(
                     DocManager.Inst.Project,
                     focusPart: PlayingMaster ? null : preRenderFocusPart,

@@ -457,9 +457,8 @@ namespace OpenUtau.Core.Editing {
         public void RunAsync(
             UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager,
             Action<int, int> setProgressCallback, CancellationToken cancellationToken) {
-            // One pitch inference per phrase; if the background pre-render is left running it
-            // holds the same ONNX session (and DirectML) lock for a full audio phrase render,
-            // so the edit would advance one audio render per phrase instead of one inference.
+            // The pre-render pass holds the same ONNX locks for whole audio phrases, which
+            // would cost one audio render per phrase of this edit.
             using var preRenderHold = PlaybackManager.Inst.HoldPreRender();
             RunInternal(
                 project, part, selectedNotes, docManager,
@@ -507,9 +506,8 @@ namespace OpenUtau.Core.Editing {
 
             int finished = 0;
             setProgressCallback(0, phrases.Length);
-            // Points are collected, not commands: a 3-minute part yields tens of thousands of them,
-            // and one command per point meant one publish, snapshot invalidation and validate merge
-            // each - the tail that used to run long after the progress bar filled.
+            // Points, not commands: one command per point meant a publish, a snapshot
+            // invalidation and a validate merge each, tens of thousands of times.
             var points = new List<(int x, int y, int lastX, int lastY)>();
             // The model's own pitch goes into the rendered pitch masked curve too, for expression graphs to read.
             var cleared = new List<(int from, int to)>();
@@ -594,9 +592,8 @@ namespace OpenUtau.Core.Editing {
             DocManager.Inst.PostOnUIThread(() => {
                 var all = new List<UCommand>();
                 if (points.Count > 0 && pitdDescriptor != null) {
-                    // Same result as one SetCurveCommand per point, as one undoable command: the curve
-                    // is edited in memory and replaced wholesale, so the UI sees a single change.
-                    // Reading and writing part.curves stays on the UI thread.
+                    // Same curve as one command per point, but one undo step and one publish.
+                    // part.curves is only touched here, on the UI thread.
                     var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
                     var oldXs = curve?.xs.ToArray();
                     var oldYs = curve?.ys.ToArray();
@@ -959,8 +956,8 @@ namespace OpenUtau.Core.Editing {
                 return;
             }
 
-            // Same story as LoadRenderedPitch: the variance runs need the lock the
-            // background pre-render takes for its audio phrases.
+            // Same reason as LoadRenderedPitch: the variance runs need the locks the
+            // pre-render pass holds for whole audio phrases.
             using var preRenderHold = PlaybackManager.Inst.HoldPreRender();
             int finished = 0;
             setProgressCallback(0, part.renderPhrases.Count);

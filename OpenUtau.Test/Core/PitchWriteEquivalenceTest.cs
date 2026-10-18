@@ -5,9 +5,8 @@ using Xunit;
 
 namespace OpenUtau.Core {
     /// <summary>
-    /// LoadRenderedPitch used to write the pitch curve as one SetCurveCommand per point. It now
-    /// edits a copy and commits a single MergedSetCurveCommand, which must land on exactly the
-    /// same curve - including the reverse-order runs that make Set delete between points.
+    /// LoadRenderedPitch commits the pitch curve as one MergedSetCurveCommand; it must land on
+    /// exactly the same curve as the per-point SetCurveCommand writes it replaced.
     /// </summary>
     public class PitchWriteEquivalenceTest {
         static List<(int x, int y, int lastX, int lastY)> PitchLikePoints() {
