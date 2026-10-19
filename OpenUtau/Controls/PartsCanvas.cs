@@ -117,7 +117,7 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(_ => {
                     foreach (var (part, control) in partControls) {
                         control.SetPosition();
-                        control.ResetRenderBlocks();
+                        control.InvalidateVisual();
                     }
                 });
             MessageBus.Current.Listen<PartsSelectionEvent>()
@@ -133,7 +133,6 @@ namespace OpenUtau.App.Controls {
                         control.SetSize();
                         control.SetPosition();
                         control.Refersh();
-                        control.ResetRenderBlocks();
                     }
                 });
             MessageBus.Current.Listen<PartRedrawEvent>()

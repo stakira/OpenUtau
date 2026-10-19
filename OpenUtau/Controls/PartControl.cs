@@ -229,6 +229,7 @@ namespace OpenUtau.App.Controls {
                 FadeIn = wavePart.fadein;
                 FadeOut = wavePart.fadeout;
             }
+            ResetRenderBlocks();
             InvalidateWaveform();
         }
 
@@ -241,7 +242,7 @@ namespace OpenUtau.App.Controls {
         public override void Render(DrawingContext context) {
             var backgroundBrush = Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
             // Background
-            if (Preferences.Default.RenderStatusInTrackBar && part is UVoicePart) {
+            if (Preferences.Default.RenderStatusInTrackBar && part is UVoicePart && ((UVoicePart) part).notes.Count > 0) {
                 context.DrawRectangle(Selected ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush1Semi, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
             } else {
                 context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
@@ -250,7 +251,7 @@ namespace OpenUtau.App.Controls {
             if (part is UVoicePart voicePart) {
                 // Note Render Status
                 
-                if (Preferences.Default.RenderStatusInTrackBar) {
+                if (Preferences.Default.RenderStatusInTrackBar && voicePart.notes.Count > 0) {
                     // Reset phrase states to match part phrases
                     if (renderPhraseStates.Count != voicePart.renderPhrases.Count) {
                         renderPhraseStates.Clear();
@@ -483,12 +484,11 @@ namespace OpenUtau.App.Controls {
         }
 
         /// <summary>
-        /// Resets the internal record of the render phrases, prompting a render phrase recalculation,
-        /// and invalidates the visual to redraw new render blocks.
+        /// Clears internal record of phrase blocks.
+        /// Does not trigger a visual update.
         /// </summary>
         public void ResetRenderBlocks() {
             renderPhraseStates.Clear();
-            InvalidateVisual();
         }
         
         public void Report(int value) {

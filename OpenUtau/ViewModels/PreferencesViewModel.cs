@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using MonoMac.Darwin;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -421,7 +422,10 @@ namespace OpenUtau.App.ViewModels {
             PersistOn(this.WhenAnyValue(vm => vm.LyricsHelperBrackets),
                 brackets => Preferences.Default.LyricsHelperBrackets = brackets);
             PersistOn(this.WhenAnyValue(vm => vm.RenderStatusInTrackBar),
-                renderStatus => Preferences.Default.RenderStatusInTrackBar = renderStatus);
+                renderStatus => {
+                    Preferences.Default.RenderStatusInTrackBar = renderStatus;
+                    MessageBus.Current.SendMessage(new TracksRefreshEvent());
+                });
             PersistOn(this.WhenAnyValue(vm => vm.OtoEditor),
                 index => Preferences.Default.OtoEditor = index);
             PersistOn(this.WhenAnyValue(vm => vm.NumRenderThreads),
