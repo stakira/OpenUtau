@@ -5,11 +5,12 @@ using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     class EnunuClient : Util.SingletonBase<EnunuClient> {
+        /// <summary>
+        /// For the Korean phonemizer, whose timing server listens on 15555.
+        /// Returns a default response when the server does not respond.
+        /// </summary>
         internal T SendRequest<T>(string[] args) {
-            return SendRequest<T>(args, "15555");
-        }
-        internal T SendRequest<T>(object[] args, string port, int second = 300) {
-            string? message = Send(args, port, second);
+            string? message = Send(args, "15555", 300);
             if (string.IsNullOrEmpty(message)) {
                 return (T)Activator.CreateInstance(typeof(T))!;
             }

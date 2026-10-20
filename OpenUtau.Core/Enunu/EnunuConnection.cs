@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -20,6 +21,35 @@ namespace OpenUtau.Core.Enunu {
 
     interface IEnunuResponse {
         string? Error { get; }
+    }
+
+    public struct VersionResult {
+        public string name;
+        public string version;
+        public string author;
+        /// <summary>Added by ENUNUServer 2. Null on older servers.</summary>
+        public EnunuServerFeatures? features;
+    }
+
+    public class EnunuServerFeatures {
+        public string[] commands;
+        public bool style_shift;
+        public bool pitch_n_frames;
+        public Dictionary<string, EnunuDiffusionSetting>? diffusion;
+
+        public bool Has(string command) => commands != null && commands.Contains(command);
+        public bool SupportsPitch => Has(EnunuCommand.Pitch) && Has(EnunuCommand.AcousticF0);
+    }
+
+    public class EnunuDiffusionSetting {
+        public string method;
+        public int steps;
+    }
+
+    public struct VersionResponse : IEnunuResponse {
+        public string? error;
+        public VersionResult result;
+        public readonly string? Error => error;
     }
 
     struct TimingResult {
@@ -91,12 +121,6 @@ namespace OpenUtau.Core.Enunu {
         string? port;
         EnunuServerFeatures? features;
         readonly ConcurrentDictionary<string, bool> lf0Conditioning = new ConcurrentDictionary<string, bool>();
-
-        /// <summary>
-        /// Features found by the last ver_check. Does not contact the server:
-        /// null before the first request and for servers older than ENUNUServer 1.0.
-        /// </summary>
-        public EnunuServerFeatures? Features => features;
 
         /// <summary>Connects if needed and returns the server's features (null for older servers).</summary>
         public EnunuServerFeatures? GetFeatures() {
@@ -174,9 +198,10 @@ namespace OpenUtau.Core.Enunu {
 
         // Same rule as the former EnunuUtils.SetPortNum. Stage 2 replaces this with the port setting.
         static (string port, EnunuServerFeatures? features) Detect() {
-            var response = EnunuClient.Inst.SendRequest<VersionResponse>(new object[] { EnunuCommand.VerCheck }, "15556", VerCheckTimeoutSec);
-            if (response.error != null) {
-                Log.Error(response.error);
+            string? message = EnunuClient.Inst.Send(new object[] { EnunuCommand.VerCheck }, "15556", VerCheckTimeoutSec);
+            var response = string.IsNullOrEmpty(message) ? default : Json.Deserialize<VersionResponse>(message);
+            if (response.Error != null) {
+                Log.Error(response.Error);
             } else if (response.result.name != null) {
                 Log.Information($"ENUNU server {response.result.name} {response.result.version} on 15556, new commands: {response.result.features?.SupportsPitch == true}");
                 return ("15556", response.result.features);

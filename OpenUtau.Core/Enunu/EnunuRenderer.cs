@@ -9,9 +9,7 @@ using NAudio.Wave;
 using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
@@ -60,8 +58,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
-            var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
-            var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
+            var (headMs, tailMs) = HeadTailMs(phrase);
             return new RenderResult() {
                 leadingMs = headMs,
                 positionMs = phrase.positionMs,
@@ -84,56 +81,14 @@ namespace OpenUtau.Core.Enunu {
                     var config = EnunuConfig.Load(phrase.singer);
                     var result = Layout(phrase);
                     if (!File.Exists(paths.WavPath)) {
-                        bool useSynthe = config.extensions.wav_synthesizer.Contains("synthe") || config.feature_type.Equals("melf0");
-                        if (features?.SupportsPitch == true) {
-                            // The server caches features itself, so ask every time: the npy files depend on the pitch.
-                            RunAcousticWithEditorPitch(phrase, config, paths);
-                        } else if (useSynthe
-                            ? !File.Exists(paths.F0Path) || !File.Exists(paths.MelPath) || !File.Exists(paths.VuvPath)
-                            : !File.Exists(paths.F0Path) || !File.Exists(paths.SpPath) || !File.Exists(paths.ApPath)) {
-                            Log.Information($"Starting enunu acoustic \"{paths.UstPath}\"");
-                            EnsureUst(phrase, config, paths.UstPath);
-                            EnunuConnection.Inst.Acoustic(paths.UstPath, paths.VoicebankNameHash);
-                        }
+                        EnsureAcousticFeatures(phrase, config, paths, features);
                         if (cancellation.IsCancellationRequested) {
                             return new RenderResult();
                         }
-                        var f0 = np.Load<double[]>(paths.F0Path);
-                        int totalFrames = f0.Length;
-                        var (headFrames, tailFrames) = HeadTailFrames(phrase, config);
-                        var editorF0 = SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
-                        if (useSynthe) {
-                            // Always write it: synthe replaces the cached pitch with this file, and a stale one
-                            // would win. It is also how models without lf0 conditioning get the editor pitch.
-                            np.Save(editorF0, paths.EditorF0Path);
-                            EnunuConnection.Inst.Synthe(paths.UstPath, paths.WavPath, paths.VoicebankNameHash);
+                        if (config.UsesSynthe) {
+                            SynthesizeOnServer(phrase, config, paths);
                         } else {
-                            var sp = np.Load<double[,]>(paths.SpPath);
-                            var ap = np.Load<double[,]>(paths.ApPath);
-                            var gender = SampleCurve(phrase, phrase.gender, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
-                            var tension = SampleCurve(phrase, phrase.tension, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
-                            var breathiness = SampleCurve(phrase, phrase.breathiness, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
-                            var voicing = SampleCurve(phrase, phrase.voicing, 1.0, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.01 * x);
-                            int fftSize = (sp.GetLength(1) - 1) * 2;
-                            for (int i = 0; i < f0.Length; i++) {
-                                if (f0[i] < 50) {
-                                    editorF0[i] = 0;
-                                }
-                            }
-                            var samples = Worldline.WorldSynthesis(
-                                editorF0,
-                                sp, false, sp.GetLength(1),
-                                ap, false, fftSize,
-                                config.framePeriod, config.sampleRate,
-                                gender, tension, breathiness, voicing);
-                            result.samples = samples.Select(d => (float)d).ToArray();
-                            Wave.CorrectSampleScale(result.samples);
-                            if (config.sampleRate != 44100) {
-                                var signal = new NWaves.Signals.DiscreteSignal(config.sampleRate, result.samples);
-                                signal = NWaves.Operations.Operation.Resample(signal, 44100);
-                                result.samples = signal.Samples;
-                            }
-                            Wave.WriteMono16Wav(paths.WavPath, result.samples);
+                            SynthesizeWithWorld(phrase, config, paths);
                         }
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
@@ -154,7 +109,81 @@ namespace OpenUtau.Core.Enunu {
         }
 
         /// <summary>
-        /// ENUNUServer 1.0: pitch → acoustic_f0, so the voice follows the editor pitch.
+        /// Has the server write the phrase's npy files (f0, and mel / vuv or spectrogram / aperiodicity).
+        /// </summary>
+        void EnsureAcousticFeatures(RenderPhrase phrase, EnunuConfig config, EnunuPaths paths, EnunuServerFeatures? features) {
+            if (features?.SupportsPitch == true) {
+                // The server caches features itself, so ask every time: the npy files depend on the pitch.
+                RunAcousticWithEditorPitch(phrase, config, paths);
+                return;
+            }
+            bool hasNpy = config.UsesSynthe
+                ? File.Exists(paths.F0Path) && File.Exists(paths.MelPath) && File.Exists(paths.VuvPath)
+                : File.Exists(paths.F0Path) && File.Exists(paths.SpPath) && File.Exists(paths.ApPath);
+            if (!hasNpy) {
+                Log.Information($"Starting enunu acoustic \"{paths.UstPath}\"");
+                EnsureUst(phrase, config, paths.UstPath);
+                EnunuConnection.Inst.Acoustic(paths.UstPath, paths.VoicebankNameHash);
+            }
+        }
+
+        /// <summary>
+        /// The server's vocoder writes the wav.
+        /// </summary>
+        void SynthesizeOnServer(RenderPhrase phrase, EnunuConfig config, EnunuPaths paths) {
+            int frames = np.Load<double[]>(paths.F0Path).Length;
+            // Always write it: synthe replaces the cached pitch with this file, and a stale one
+            // would win. It is also how models without lf0 conditioning get the editor pitch.
+            np.Save(EditorF0(phrase, config, frames), paths.EditorF0Path);
+            EnunuConnection.Inst.Synthe(paths.UstPath, paths.WavPath, paths.VoicebankNameHash);
+        }
+
+        /// <summary>
+        /// WORLD synthesis from the server's spectrogram and aperiodicity, with the editor pitch and curves.
+        /// </summary>
+        void SynthesizeWithWorld(RenderPhrase phrase, EnunuConfig config, EnunuPaths paths) {
+            var f0 = np.Load<double[]>(paths.F0Path);
+            var sp = np.Load<double[,]>(paths.SpPath);
+            var ap = np.Load<double[,]>(paths.ApPath);
+            int totalFrames = f0.Length;
+            var (headFrames, tailFrames) = HeadTailFrames(phrase, config);
+            var editorF0 = EditorF0(phrase, config, totalFrames);
+            var gender = SampleCurve(phrase, phrase.gender, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+            var tension = SampleCurve(phrase, phrase.tension, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+            var breathiness = SampleCurve(phrase, phrase.breathiness, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+            var voicing = SampleCurve(phrase, phrase.voicing, 1.0, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.01 * x);
+            int fftSize = (sp.GetLength(1) - 1) * 2;
+            for (int i = 0; i < f0.Length; i++) {
+                if (f0[i] < 50) {
+                    editorF0[i] = 0;
+                }
+            }
+            var samples = Worldline.WorldSynthesis(
+                editorF0,
+                sp, false, sp.GetLength(1),
+                ap, false, fftSize,
+                config.framePeriod, config.sampleRate,
+                gender, tension, breathiness, voicing);
+            var floats = samples.Select(d => (float)d).ToArray();
+            Wave.CorrectSampleScale(floats);
+            if (config.sampleRate != 44100) {
+                var signal = new NWaves.Signals.DiscreteSignal(config.sampleRate, floats);
+                signal = NWaves.Operations.Operation.Resample(signal, 44100);
+                floats = signal.Samples;
+            }
+            Wave.WriteMono16Wav(paths.WavPath, floats);
+        }
+
+        /// <summary>
+        /// The editor pitch in Hz for each server frame; 0 in the head and tail rests.
+        /// </summary>
+        double[] EditorF0(RenderPhrase phrase, EnunuConfig config, int frames) {
+            var (headFrames, tailFrames) = HeadTailFrames(phrase, config);
+            return SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, frames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
+        }
+
+        /// <summary>
+        /// ENUNUServer 2: pitch → acoustic_f0, so the voice follows the editor pitch.
         /// Models without an lf0_model ignore the editor pitch in acoustic_f0 but would still miss the
         /// server's cache on every pitch edit, so they use plain acoustic and get the pitch in synthe.
         /// </summary>
@@ -167,9 +196,7 @@ namespace OpenUtau.Core.Enunu {
                 frames = connection.Pitch(paths.UstPath, paths.VoicebankNameHash).result.n_frames;
             }
             if (connection.Lf0Conditioning(paths.VoicebankNameHash) == true) {
-                var (headFrames, tailFrames) = HeadTailFrames(phrase, config);
-                var editorF0 = SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, frames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
-                connection.AcousticF0(paths.UstPath, paths.VoicebankNameHash, editorF0);
+                connection.AcousticF0(paths.UstPath, paths.VoicebankNameHash, EditorF0(phrase, config, frames));
             } else {
                 connection.Acoustic(paths.UstPath, paths.VoicebankNameHash);
             }
@@ -194,9 +221,17 @@ namespace OpenUtau.Core.Enunu {
             EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
         }
 
-        (int headFrames, int tailFrames) HeadTailFrames(RenderPhrase phrase, EnunuConfig config) {
+        /// <summary>
+        /// Lengths of the head and tail rests that the UST adds around the phrase.
+        /// </summary>
+        static (double headMs, double tailMs) HeadTailMs(RenderPhrase phrase) {
             var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
             var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
+            return (headMs, tailMs);
+        }
+
+        (int headFrames, int tailFrames) HeadTailFrames(RenderPhrase phrase, EnunuConfig config) {
+            var (headMs, tailMs) = HeadTailMs(phrase);
             return ((int)Math.Round(headMs / config.framePeriod), (int)Math.Round(tailMs / config.framePeriod));
         }
 

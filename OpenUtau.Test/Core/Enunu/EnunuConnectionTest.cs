@@ -36,7 +36,7 @@ namespace OpenUtau.Core {
             Assert.Null(legacy.result.features);
 
             var current = Json.Deserialize<VersionResponse>(
-                "{\"result\": {\"name\": \"SimpleENUNUServer\", \"version\": \"1.0.0\", \"author\": \"roku10shi\", " +
+                "{\"result\": {\"name\": \"SimpleENUNUServer\", \"version\": \"2.0.0\", \"author\": \"roku10shi\", " +
                 "\"features\": {\"commands\": [\"timing\", \"acoustic\", \"pitch\", \"acoustic_f0\", \"synthe\", \"config\"], " +
                 "\"style_shift\": true, \"pitch_n_frames\": true, " +
                 "\"diffusion\": {\"mgc\": {\"method\": \"ddim\", \"steps\": 25}}}}}");

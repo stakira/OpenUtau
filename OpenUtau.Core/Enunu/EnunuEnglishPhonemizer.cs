@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using K4os.Hash.xxHash;
 using OpenUtau.Api;
-using OpenUtau.Core.Editing;
-using OpenUtau.Core.Ustx;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {

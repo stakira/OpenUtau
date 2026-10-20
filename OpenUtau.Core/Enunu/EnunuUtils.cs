@@ -1,38 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
-    public struct VersionResult {
-        public string name;
-        public string version;
-        public string author;
-        /// <summary>Added by ENUNUServer 1.0. Null on older servers.</summary>
-        public EnunuServerFeatures? features;
-    }
-
-    public class EnunuServerFeatures {
-        public string[] commands;
-        public bool style_shift;
-        public bool pitch_n_frames;
-        public Dictionary<string, EnunuDiffusionSetting>? diffusion;
-
-        public bool Has(string command) => commands != null && commands.Contains(command);
-        public bool SupportsPitch => Has(EnunuCommand.Pitch) && Has(EnunuCommand.AcousticF0);
-    }
-
-    public class EnunuDiffusionSetting {
-        public string method;
-        public int steps;
-    }
-
-    public struct VersionResponse {
-        public string error;
-        public VersionResult result;
-    }
-
     public struct EnunuNote {
         public string lyric;
         public int length;
