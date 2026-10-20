@@ -37,5 +37,26 @@ namespace OpenUtau.Core {
             Assert.Equal("kana.table", config.tablePath);
             Assert.Equal("qst.hed", config.questionPath);
         }
+
+        [Fact]
+        public void LyricsOutsideTheTableAreUnknown() {
+            var table = new System.Collections.Generic.Dictionary<string, string[]> {
+                ["あ"] = new[] { "a" }, ["さ"] = new[] { "s", "a" }, ["っ"] = new[] { "cl" }, ["R"] = new[] { "pau" }, ["息"] = new[] { "br" },
+            };
+            var phonemes = new System.Collections.Generic.HashSet<string> { "a", "s", "cl", "pau", "br", "i", "B" };
+            // Table keys, phonemes written directly, and a mix of both.
+            Assert.True(EnunuSinger.IsKnownLyric("あ", table, phonemes));
+            Assert.True(EnunuSinger.IsKnownLyric("i B", table, phonemes));
+            Assert.True(EnunuSinger.IsKnownLyric("a R", table, phonemes));
+            // っ is split off as utaupy does.
+            Assert.True(EnunuSinger.IsKnownLyric("さっ", table, phonemes));
+            // Not in the table.
+            Assert.False(EnunuSinger.IsKnownLyric("さ子音", table, phonemes));
+            Assert.False(EnunuSinger.IsKnownLyric("息_あ", table, phonemes));
+            Assert.False(EnunuSinger.IsKnownLyric("xi", table, phonemes));
+            Assert.False(EnunuSinger.IsKnownLyric("", table, phonemes));
+            // Nothing to check against when the table did not load.
+            Assert.True(EnunuSinger.IsKnownLyric("xi", new System.Collections.Generic.Dictionary<string, string[]>(), phonemes));
+        }
     }
 }
