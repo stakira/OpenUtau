@@ -36,6 +36,9 @@ namespace OpenUtau.Core {
         public int rangeStartTick = 0;
         public int rangeEndTick = 0;
 
+        private readonly List<WarningNotification> warnings = new List<WarningNotification>();
+        public IReadOnlyList<WarningNotification> Warnings => warnings;
+
         public TaskScheduler MainScheduler => mainScheduler;
         public Action<Action> PostOnUIThread { get; set; }
         /// <summary>
@@ -307,6 +310,11 @@ namespace OpenUtau.Core {
                 } else if (cmd is SetRangeSelectionNotification setRange) {
                     rangeStartTick = setRange.startTick;
                     rangeEndTick = setRange.endTick;
+                } else if (cmd is WarningNotification warning) {
+                    warnings.RemoveAll(w => w.Key == warning.Key);
+                    warnings.Add(warning);
+                } else if (cmd is ClearWarningsNotification clearWarnings) {
+                    warnings.RemoveAll(w => clearWarnings.key == null || w.Key == clearWarnings.key);
                 } else if (cmd is RealCurvesUpdatedNotification realCurvesNotif) {
                     if (realCurvesNotif.part is UVoicePart voicePart) {
                         RealCurveUpdater.Apply(Project, voicePart, realCurvesNotif.updates);

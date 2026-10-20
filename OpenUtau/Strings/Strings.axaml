@@ -297,15 +297,35 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.not">NOT</system:String>
   <system:String x:Key="expressiongraph.node.if_else">If / Else</system:String>
   <system:String x:Key="expressiongraph.copy">copy</system:String>
+  <system:String x:Key="expressiongraph.copynodes">Copy</system:String>
   <system:String x:Key="expressiongraph.cycle">That link would make a loop.</system:String>
   <system:String x:Key="expressiongraph.default">Default for this renderer</system:String>
   <system:String x:Key="expressiongraph.delete">Delete</system:String>
   <system:String x:Key="expressiongraph.deletenode">Delete Node</system:String>
   <system:String x:Key="expressiongraph.duplicate">Duplicate</system:String>
+  <system:String x:Key="expressiongraph.duplicatenodes">Duplicate</system:String>
   <system:String x:Key="expressiongraph.error">Not used, because</system:String>
   <system:String x:Key="expressiongraph.export">Export...</system:String>
   <system:String x:Key="expressiongraph.graph">graph</system:String>
   <system:String x:Key="expressiongraph.hint">Right-click to add a node. Drag from a node's output to an input to link them.</system:String>
+  <system:String x:Key="expressiongraph.help">How to use</system:String>
+  <system:String x:Key="expressiongraph.help.add">Add a node</system:String>
+  <system:String x:Key="expressiongraph.help.add.gesture">Right-click empty space</system:String>
+  <system:String x:Key="expressiongraph.help.copy">Copy / Cut / Paste</system:String>
+  <system:String x:Key="expressiongraph.help.fit">Fit all nodes</system:String>
+  <system:String x:Key="expressiongraph.help.link">Link</system:String>
+  <system:String x:Key="expressiongraph.help.link.gesture">Drag from an output to an input</system:String>
+  <system:String x:Key="expressiongraph.help.move">Move</system:String>
+  <system:String x:Key="expressiongraph.help.move.gesture">Drag a node's title; selected nodes move together</system:String>
+  <system:String x:Key="expressiongraph.help.pan">Pan</system:String>
+  <system:String x:Key="expressiongraph.help.pan.gesture">Drag empty space, or middle-drag anywhere</system:String>
+  <system:String x:Key="expressiongraph.help.select">Select several</system:String>
+  <system:String x:Key="expressiongraph.help.select.gesture">Shift-drag empty space, or Shift-click a node's title</system:String>
+  <system:String x:Key="expressiongraph.help.selectall">Select all / none</system:String>
+  <system:String x:Key="expressiongraph.help.unlink">Unlink</system:String>
+  <system:String x:Key="expressiongraph.help.unlink.gesture">Drag a linked input away and drop it</system:String>
+  <system:String x:Key="expressiongraph.help.zoom">Zoom</system:String>
+  <system:String x:Key="expressiongraph.help.zoom.gesture">Mouse wheel</system:String>
   <system:String x:Key="expressiongraph.hint.nograph">Click New to create a graph for a renderer.</system:String>
   <system:String x:Key="expressiongraph.import">Import...</system:String>
   <system:String x:Key="expressiongraph.import.added">Added expressions</system:String>
@@ -340,6 +360,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.subtract">Subtract</system:String>
   <system:String x:Key="expressiongraph.noexpression">Choose an expression.</system:String>
   <system:String x:Key="expressiongraph.output">Out</system:String>
+  <system:String x:Key="expressiongraph.pastenodes">Paste</system:String>
   <system:String x:Key="expressiongraph.pitchcurve">Draw and load pitch into</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pitd">Pitch deviation (PITD)</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pito">Pitch override (PITO)</system:String>
@@ -1037,6 +1058,13 @@ General
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
   <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
+  <system:String x:Key="warnings">Warnings</system:String>
+  <system:String x:Key="warnings.clear">Clear all</system:String>
+  <system:String x:Key="warnings.dismiss">Dismiss</system:String>
+  <system:String x:Key="warnings.singers.duplicate">Duplicate voicebank folder "{0}"</system:String>
+  <system:String x:Key="warnings.singers.duplicate.detail">Using: {1}
+Ignored: {2}
+Rename the ignored folder to load it.</system:String>
 
   <system:String x:Key="welcome.new">New</system:String>
   <system:String x:Key="welcome.new.description">Create a new project</system:String>

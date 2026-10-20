@@ -45,7 +45,6 @@ namespace OpenUtau.Classic {
             string noExt = source.Substring(0, source.Length - ext.Length);
             string frqExt = ext.Replace('.', '_') + ".frq";
             string tempExt = Path.GetExtension(sourceTemp);
-            var exeResampler = resampler as ExeResampler;
             string tempNoExt = sourceTemp.Substring(0, sourceTemp.Length - ext.Length);
             string tempFrqExt = tempExt.Replace('.', '_') + ".frq";
             var ResamplerFiles = new List<Tuple<string, string>>() {
@@ -65,8 +64,9 @@ namespace OpenUtau.Classic {
                 Tuple.Create(noExt + ".hifi.npz", tempNoExt + ".hifi.npz"),
                 //Tuple.Create(noExt + ".lessaudio", tempNoExt + ".lessaudio"),
             };
-            if (exeResampler.Manifest != null && exeResampler.Manifest.files != null) {
-                var files = exeResampler.Manifest.files;
+            // Any resampler can reach here: RenderExternal copies for the built-in ones too.
+            var files = resampler?.Manifest?.files;
+            if (files != null) {
                 for (int i = 0; i < files.Length; i++) {
                     ResamplerFiles.Add(Tuple.Create(noExt + $"{files[i]}", tempNoExt + $"{files[i]}"));
                 }

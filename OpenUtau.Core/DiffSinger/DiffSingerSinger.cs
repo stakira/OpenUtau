@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Classic;
+using OpenUtau.Classic.Hifisampler;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -205,10 +206,30 @@ namespace OpenUtau.Core.DiffSinger {
             lock (SessionLock) {
                 if(vocoder is null) {
                     if(File.Exists(Path.Join(Location, "dsvocoder", "vocoder.yaml"))) {
+                        // Voicebank bundles its own vocoder.
                         vocoder = new DsVocoder(Path.Join(Location, "dsvocoder"));
-                        return vocoder;
+                    } else if(!string.IsNullOrEmpty(dsConfig.vocoder)) {
+                        // The author named a vocoder dependency; use it when installed.
+                        var named = Path.Combine(PathManager.Inst.DependencyPath, dsConfig.vocoder);
+                        if(File.Exists(Path.Combine(named, "vocoder.yaml"))) {
+                            vocoder = new DsVocoder(named);
+                        } else {
+                            // The named vocoder (e.g. an early "nsf_hifigan") is missing:
+                            // fall back to the universal pc-nsf-hifigan so older voicebanks
+                            // still render (and gain SHFC). If even that is absent, the install
+                            // prompt offers it instead of a stack trace.
+                            var pc = HifiVocoder.PackageId;
+                            var pcPath = Path.Combine(PathManager.Inst.DependencyPath, pc);
+                            if(File.Exists(Path.Combine(pcPath, "vocoder.yaml"))) {
+                                vocoder = new DsVocoder(pcPath);
+                            } else {
+                                throw new MissingPackageException(pc);
+                            }
+                        }
+                    } else {
+                        // No vocoder declared; keep the original "download a vocoder" hint.
+                        vocoder = new DsVocoder(Path.Combine(PathManager.Inst.DependencyPath, dsConfig.vocoder));
                     }
-                    vocoder = new DsVocoder(Path.Combine(PathManager.Inst.DependencyPath, dsConfig.vocoder));
                 }
                 return vocoder;
             }
