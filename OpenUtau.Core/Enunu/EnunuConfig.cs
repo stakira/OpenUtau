@@ -14,6 +14,12 @@ namespace OpenUtau.Core.Enunu {
         public bool unLoadSubBanks = false;
         public EnunuExtensions extensions;
 
+        /// <summary>
+        /// Whether the server synthesizes the wav (synthe) instead of OpenUtau running WORLD on spectrogram.npy / aperiodicity.npy.
+        /// The server skips those files when this is true (ENUNU.client_reads_world_params is its negation); change both together.
+        /// </summary>
+        public bool UsesSynthe => extensions.wav_synthesizer.Contains("synthe") || feature_type.Equals("melf0");
+
         public static EnunuConfig Load(USinger singer) {
             var configPath = Path.Join(singer.Location, "enuconfig.yaml");
             var config = new RawEnunuConfig();

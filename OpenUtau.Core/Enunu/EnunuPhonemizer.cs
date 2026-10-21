@@ -14,24 +14,10 @@ namespace OpenUtau.Core.Enunu {
         readonly string PhonemizerType = "ENUNU";
 
         protected EnunuSinger singer;
-        protected string port;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
-
-        struct TimingResult {
-            public string path_full_timing;
-            public string path_mono_timing;
-        }
-
-        struct TimingResponse {
-            public string error;
-            public TimingResult result;
-        }
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as EnunuSinger;
-            if (port == null) {
-                port = EnunuUtils.SetPortNum();
-            }
         }
 
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
@@ -52,10 +38,7 @@ namespace OpenUtau.Core.Enunu {
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
                 Log.Information(this.singer.Name + ":" + voicebankNameHash);
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
-                var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath,"", voicebankNameHash, "600" }, port);
-                if (response.error != null) {
-                    throw new Exception(response.error);
-                }
+                EnunuConnection.Inst.Timing(ustPath, voicebankNameHash);
             }
             var noteIndexes = LabelToNoteIndex(scorePath, enunuNotes);
             var timing = ParseLabel(timingPath);
