@@ -258,6 +258,13 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers changed.";
     }
 
+    /// <summary>
+    /// Packages in the Dependencies folder were installed, removed or edited.
+    /// </summary>
+    public class PackagesChangedNotification : UNotification {
+        public override string ToString() => "Packages changed.";
+    }
+
     public class SingersRefreshedNotification : UNotification {
         public readonly USinger? singer;
         public SingersRefreshedNotification() { }

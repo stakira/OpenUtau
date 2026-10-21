@@ -163,6 +163,14 @@
 
   <system:String x:Key="debug.clear">Clear</system:String>
   <system:String x:Key="debug.copylog">Copy Log</system:String>
+  <system:String x:Key="debug.filter">Filter</system:String>
+  <system:String x:Key="debug.filter.level">Lowest level shown</system:String>
+  <system:String x:Key="debug.livereload">Live Reload Packages</system:String>
+  <system:String x:Key="debug.livereload.tooltip">While this window is open, reload JavaScript phonemizers and themes when a file in the Dependencies folder changes.</system:String>
+  <system:String x:Key="debug.packages">Packages</system:String>
+  <system:String x:Key="debug.packages.createphonemizer">Create New Phonemizer...</system:String>
+  <system:String x:Key="debug.packages.createphonemizer.prompt">Package id, also its folder name in Dependencies.</system:String>
+  <system:String x:Key="debug.packages.openlocation">Open Packages Location</system:String>
   <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
@@ -482,7 +490,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.dawintegration">DAW Integration...</system:String>
-  <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Developer Window</system:String>
   <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
   <system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
@@ -703,6 +711,7 @@ Warning: this option removes custom presets.</system:String>
     Right click to reset</system:String>
   <system:String x:Key="pianoroll.tool.curve.line">Line Tool
     Left click to draw (draw straight line)
+    Hold Shift + Left click to draw (draw horizontal line)
     Right click to reset</system:String>
   <system:String x:Key="pianoroll.tool.curve.eraser">Eraser Tool
     Click to reset</system:String>
@@ -982,8 +991,8 @@ The voicebank may not work on another OS.</system:String>
     Right Button Draw: Reset expressions
 Curve Type
     Left Button Draw: Draw
-    Shift + Ctrl + Left Button Draw: Line Draw
-    Shift + Left Button Draw: Horizontal Line Draw
+    Line Tool Left Button Draw: Line Draw
+    Line Tool Shift + Left Button Draw: Horizontal Line Draw
     Right Button Draw: Reset Line</system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
