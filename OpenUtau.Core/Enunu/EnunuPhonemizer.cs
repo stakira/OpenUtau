@@ -62,6 +62,8 @@ namespace OpenUtau.Core.Enunu {
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
+                            // Lyrics outside the table are sent as rests (NoteGroupsToEnunu).
+                            writer.Write(singer.IsKnownLyric(n.lyric));
                             if(n.phoneticHint!= null) {
                                 writer.Write("["+n.phoneticHint+"]");
                             }
@@ -91,6 +93,10 @@ namespace OpenUtau.Core.Enunu {
                     position = notes[index][0].position;
                 } else {
                     var lyric = notes[index][0].lyric;
+                    // Lyrics outside the table would reach the model as unknown phonemes; sing them as rests.
+                    if (!singer.IsKnownLyric(lyric)) {
+                        lyric = "R";
+                    }
                     result.Add(new EnunuNote {
                         lyric = lyric,
                         length = notes[index].Sum(n => n.duration),
