@@ -109,6 +109,13 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] internal long phraseAppliedGeneration;
         [YamlIgnore] internal readonly Pipeline.PhraseBuildGate phraseGate = new Pipeline.PhraseBuildGate();
 
+        /// <summary>
+        /// Drops the phonemizers made for notes' phonemizer overrides, so the next validate makes new ones.
+        /// </summary>
+        internal void ResetOverridePhonemizers() {
+            overridePhonemizers.Clear();
+        }
+
         public override void Validate(ValidateOptions options, UProject project, UTrack track) {
             UNote lastNote = null;
             foreach (UNote note in notes) {
