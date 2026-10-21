@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MonoMac.Darwin;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;

@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using NWaves.Signals;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
@@ -159,7 +157,7 @@ namespace OpenUtau.App.Controls {
         private readonly WaveformEnvelope waveform = new WaveformEnvelope();
 
         private Dictionary<RenderPhrase, bool> renderPhraseStates = [];
-        
+
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
             partsCanvas = canvas;
@@ -206,7 +204,7 @@ namespace OpenUtau.App.Controls {
             // invalidates itself; redrawing every part here made scrolling the piano
             // roll redraw all parts, waveforms included, on every frame.
             if (change.Property == SelectedProperty ||
-                change.Property == TextProperty || 
+                change.Property == TextProperty ||
                 change.Property == FadeInProperty ||
                 change.Property == FadeOutProperty) {
                 InvalidateVisual();
@@ -250,33 +248,33 @@ namespace OpenUtau.App.Controls {
 
             if (part is UVoicePart voicePart) {
                 // Note Render Status
-                
+
                 if (Preferences.Default.RenderStatusInTrackBar && voicePart.notes.Count > 0) {
                     // Reset phrase states to match part phrases
                     if (renderPhraseStates.Count != voicePart.renderPhrases.Count) {
                         renderPhraseStates.Clear();
                         foreach (var phrase in voicePart.renderPhrases) renderPhraseStates.Add(phrase, false);
                     }
-                    
+
                     List<Rect> renderBlocks = [];
-                
+
                     // Draw part phrase blocks over background - accounting for whitespace.
                     for (int i = 0; i < renderPhraseStates.Count; i++) {
                         var (phrase, rendered) = renderPhraseStates.ElementAt(i);
-                    
+
                         int phraseStart = (int)(phrase.position * tickWidth);
                         int startX = (int)renderBlocks.ElementAtOrDefault(i-1).Right;
                         int width = (int)((phrase.end * tickWidth - phrase.position * tickWidth) + (phraseStart - startX));
                         int endX = startX + width;
 
                         if (i == renderPhraseStates.Count - 1) endX = (int)(part.End * tickWidth);
-                    
+
                         Point topLeft = new Point(startX, 1);
                         Point bottomRight = new Point(endX, Height - 1);
-                    
+
                         var rect = new Rect(topLeft, bottomRight);
                         renderBlocks.Add(rect);
-                    
+
                         // Draw part phrase blocks if phrase is rendered.
                         if (rendered) {
                             if (i == 0) {
@@ -291,7 +289,7 @@ namespace OpenUtau.App.Controls {
                         }
                     }
                 }
-                
+
                 // Notes
                 if (voicePart.notes.Count > 0) {
                     int maxTone = voicePart.notes.Max(note => note.tone);
@@ -346,7 +344,7 @@ namespace OpenUtau.App.Controls {
                     context.DrawLine(fadePen, new Point(Width - 1, Height - 2), new Point(FadeOut, 2));
                 }
             }
-            
+
             // Text
             var textLayout = TextLayoutCache.Get(Text, Brushes.White, 12);
             using (var state = context.PushTransform(Matrix.CreateTranslation(3, 2))) {
@@ -490,7 +488,7 @@ namespace OpenUtau.App.Controls {
         public void ResetRenderBlocks() {
             renderPhraseStates.Clear();
         }
-        
+
         public void Report(int value) {
         }
 

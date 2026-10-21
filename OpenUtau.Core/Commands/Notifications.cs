@@ -201,7 +201,7 @@ namespace OpenUtau.Core {
             TickRange = new Range(startTick, endTick);
             Rendered = rendered;
         }
-        
+
         public PhraseRenderStateNotification(UVoicePart part, Range tickRange, bool rendered) {
             Part = part;
             TickRange = tickRange;
@@ -214,11 +214,11 @@ namespace OpenUtau.Core {
             TickRange = new Range(phrase.position, phrase.end);
             Rendered = rendered;
         }
-        
+
         public string ToLogString() => Rendered
             ? $"{Part.DisplayName} | Rendered {TickRange.Start}-{TickRange.End}"
             : $"{Part.DisplayName} | Unrendered {TickRange.Start}-{TickRange.End}";
-        
+
         public override string ToString() => "Phrase Render State";
     }
 

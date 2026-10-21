@@ -212,7 +212,7 @@ namespace OpenUtau.App.Controls {
                 }
             }
         }
-        
+
         public void HandlePhraseRenderStateEvent(UVoicePart part, RenderPhrase phrase, bool rendered) {
             foreach (var control in partControls) {
                 if (control.Key.Equals(part)) {
@@ -221,7 +221,7 @@ namespace OpenUtau.App.Controls {
                 }
             }
         }
-        
+
         void InvalidatePartViewport() {
             if (_pianoRollOpenPart != null && partControls.TryGetValue(_pianoRollOpenPart, out var control)) {
                 control.InvalidateVisual();

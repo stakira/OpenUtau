@@ -370,7 +370,7 @@ namespace OpenUtau.Core.Render {
                         publishedUpdates = PublishRealCurveUpdates(request.part, phrase, realCurves);
                     })
                     : null;
-                
+
                 bool useXsy = phrase.xsy != null && phrase.xsy.Any(x => x > 0);
                 if (!useXsy) {
                     var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true, renderEvents);
