@@ -259,7 +259,7 @@ namespace OpenUtau.App.Controls {
                         int width = (int)((phrase.end * tickWidth - phrase.position * tickWidth) + (phraseStart - startX));
                         int endX = startX + width;
 
-                        if (i == phraseBlocks.Length - 1) endX = (int)(part.End * tickWidth);
+                        if (i == phraseBlocks.Length - 1) endX = (int)((part.End - part.position) * tickWidth);
 
                         Point topLeft = new Point(startX, 1);
                         Point bottomRight = new Point(endX, Height - 1);

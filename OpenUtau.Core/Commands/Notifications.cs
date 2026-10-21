@@ -225,7 +225,7 @@ namespace OpenUtau.Core {
             Part = part;
         }
 
-        public override string ToString() => $"Rebuild phrase blocks | {Part.DisplayName} ";
+        public override string ToString() => $"Rebuild phrase blocks | {Part.DisplayName}";
     }
 
     /// <summary>
