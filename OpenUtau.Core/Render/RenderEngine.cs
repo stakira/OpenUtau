@@ -338,7 +338,7 @@ namespace OpenUtau.Core.Render {
             var tuples = new List<(RenderPhrase phrase, double offsetMs, double estimatedLengthMs, RenderPartRequest request)>();
             foreach (var req in requests) {
                 if (req.phrases.Length > 0) {
-                    DocManager.Inst.ExecuteCmd(new RebuildPhraseBlocksNotification(req.part));
+                    DocManager.Inst.PostOnUIThread(() => DocManager.Inst.ExecuteCmd(new RebuildPhraseBlocksNotification(req.part)));
                     DocManager.Inst.ExecuteCmd(new PhraseRenderStateNotification(req.part, req.phrases[0].position,
                         req.phrases[^1].end, false));
                 }
