@@ -204,10 +204,10 @@ namespace OpenUtau.App.Controls {
             Children.Remove(control);
         }
 
-        public void HandlePhraseRenderStateEvent(UVoicePart part, Range tickRange, bool rendered) {
+        public void HandlePhraseRenderStateEvent(UVoicePart part, int startTick, int endTick, bool rendered) {
             foreach (var control in partControls) {
                 if (control.Key.Equals(part)) {
-                    control.Value.UpdateRenderStatus(tickRange, rendered);
+                    control.Value.UpdateRenderStatus(startTick, endTick, rendered);
                     return;
                 }
             }
@@ -217,6 +217,17 @@ namespace OpenUtau.App.Controls {
             foreach (var control in partControls) {
                 if (control.Key.Equals(part)) {
                     control.Value.UpdateRenderStatus(phrase, rendered);
+                    return;
+                }
+            }
+        }
+
+        public void RebuildPhraseBlocksEvent(UVoicePart part) {
+            foreach (var control in partControls) {
+                if (control.Key.Equals(part)) {
+                    if (control.Value.RebuildPhraseBlocks(part)) {
+                        control.Value.InvalidateVisual();
+                    }
                     return;
                 }
             }

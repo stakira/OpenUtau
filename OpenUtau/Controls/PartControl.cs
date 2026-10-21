@@ -156,7 +156,7 @@ namespace OpenUtau.App.Controls {
         private static readonly IBrush waveformFill = new SolidColorBrush(Color.FromArgb(ContentAlpha, 255, 255, 255));
         private readonly WaveformEnvelope waveform = new WaveformEnvelope();
 
-        private Dictionary<RenderPhrase, bool> renderPhraseStates = [];
+        private (RenderPhrase phrase, bool rendered)[] phraseBlocks = [];
 
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
@@ -227,7 +227,6 @@ namespace OpenUtau.App.Controls {
                 FadeIn = wavePart.fadein;
                 FadeOut = wavePart.fadeout;
             }
-            ResetRenderBlocks();
             InvalidateWaveform();
         }
 
@@ -240,7 +239,7 @@ namespace OpenUtau.App.Controls {
         public override void Render(DrawingContext context) {
             var backgroundBrush = Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
             // Background
-            if (Preferences.Default.RenderStatusInTrackBar && part is UVoicePart && ((UVoicePart) part).notes.Count > 0) {
+            if (Preferences.Default.RenderStatusInTrackBar && part is UVoicePart { notes.Count: > 0 }) {
                 context.DrawRectangle(Selected ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush1Semi, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
             } else {
                 context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
@@ -248,39 +247,32 @@ namespace OpenUtau.App.Controls {
 
             if (part is UVoicePart voicePart) {
                 // Note Render Status
-
-                if (Preferences.Default.RenderStatusInTrackBar && voicePart.notes.Count > 0) {
-                    // Reset phrase states to match part phrases
-                    if (renderPhraseStates.Count != voicePart.renderPhrases.Count) {
-                        renderPhraseStates.Clear();
-                        foreach (var phrase in voicePart.renderPhrases) renderPhraseStates.Add(phrase, false);
-                    }
-
-                    List<Rect> renderBlocks = [];
+                if (Preferences.Default.RenderStatusInTrackBar) {
+                    List<Rect> phraseRects = [];
 
                     // Draw part phrase blocks over background - accounting for whitespace.
-                    for (int i = 0; i < renderPhraseStates.Count; i++) {
-                        var (phrase, rendered) = renderPhraseStates.ElementAt(i);
+                    for (int i = 0; i < phraseBlocks.Length; i++) {
+                        var (phrase, rendered) = phraseBlocks[i];
 
                         int phraseStart = (int)(phrase.position * tickWidth);
-                        int startX = (int)renderBlocks.ElementAtOrDefault(i-1).Right;
+                        int startX = (int) phraseRects.ElementAtOrDefault(i-1).Right;
                         int width = (int)((phrase.end * tickWidth - phrase.position * tickWidth) + (phraseStart - startX));
                         int endX = startX + width;
 
-                        if (i == renderPhraseStates.Count - 1) endX = (int)(part.End * tickWidth);
+                        if (i == phraseBlocks.Length - 1) endX = (int)(part.End * tickWidth);
 
                         Point topLeft = new Point(startX, 1);
                         Point bottomRight = new Point(endX, Height - 1);
 
                         var rect = new Rect(topLeft, bottomRight);
-                        renderBlocks.Add(rect);
+                        phraseRects.Add(rect);
 
                         // Draw part phrase blocks if phrase is rendered.
                         if (rendered) {
                             if (i == 0) {
                                 var roundedRect = new RoundedRect(rect, new CornerRadius(4, 0, 0, 4));
                                 context.DrawRectangle(backgroundBrush, null, roundedRect);
-                            } else if (i == renderPhraseStates.Count - 1) {
+                            } else if (i == phraseBlocks.Length - 1) {
                                 var roundedRect = new RoundedRect(rect, new CornerRadius(0, 4, 4, 0));
                                 context.DrawRectangle(backgroundBrush, null, roundedRect);
                             } else {
@@ -459,38 +451,89 @@ namespace OpenUtau.App.Controls {
         }
 
         /// <summary>
-        /// Updates the internal record of rendered phrases, then invalidates the visual to render updated visuals.
+        /// Updates render status of phrases within the range, then updates visual if any change.
         /// Supports updating multiple phrases based on startTick/endTick positions.
         /// </summary>
-        public void UpdateRenderStatus(Range tickRange, bool rendered) {
-            bool triggerRender = false;
-            foreach (var phraseState in renderPhraseStates) {
-                if (phraseState.Key.position >= tickRange.Start.Value && phraseState.Key.position <= tickRange.End.Value) {
-                    renderPhraseStates[phraseState.Key] = rendered;
-                    triggerRender = true;
-                }
+        public void UpdateRenderStatus(int startTick, int endTick, bool rendered) {
+            if (startTick > endTick) {
+                Log.Error("StartTick cannot be greater than EndTick in UpdateRenderStatus, update ignored.");
+                return;
             }
+
+            bool triggerRender = false;
+            for (var index = 0; index < phraseBlocks.Length; index++) {
+                var phraseBlock = phraseBlocks[index];
+                bool withinStart = false;
+                bool withinEnd = false;
+
+                if (startTick <= phraseBlock.phrase.position) withinStart = true;
+                if (endTick >= phraseBlock.phrase.position) withinEnd = true;
+
+                // Filters phrases outside range.
+                if (phraseBlock.rendered == rendered || (withinStart || withinEnd)) continue;
+
+                phraseBlocks[index] = phraseBlock with { rendered = rendered };
+                triggerRender = true;
+            }
+
             if (triggerRender) InvalidateVisual();
         }
 
         /// <summary>
-        /// Updates the internal record of the render phrase, and invalidates the visual to render new visuals.
+        /// Updates render status of phrase if exists, then updates visual if it changes
         /// </summary>
         public void UpdateRenderStatus(RenderPhrase phrase, bool rendered) {
-            renderPhraseStates[phrase] = rendered;
-            InvalidateVisual();
+            for (var i = 0; i < phraseBlocks.Length; i++) {
+                var phraseBlock = phraseBlocks[i];
+
+                if (!phraseBlock.phrase.hash.Equals(phrase.hash)) continue;
+                if (phraseBlock.rendered == rendered) return;
+
+                phraseBlocks[i] = phraseBlock with { rendered = rendered };
+                InvalidateVisual();
+                return;
+            }
         }
 
         /// <summary>
-        /// Clears internal record of phrase blocks.
-        /// Does not trigger a visual update.
+        /// Updates the phrase blocks based on voicePart, retains render status if phrases match.
         /// </summary>
-        public void ResetRenderBlocks() {
-            renderPhraseStates.Clear();
+        /// <param name="voicePart">VoicePart to check render blocks by</param>
+        /// <returns>Visual update required</returns>
+        public bool RebuildPhraseBlocks(UVoicePart voicePart) {
+            bool requiresVisualUpdate = voicePart.renderPhrases.Count != phraseBlocks.Length;
+            List<(RenderPhrase phrase, bool rendered)> newPhraseBlocks = [];
+            Log.Information("Rebuilding phrase blocks for {0}", voicePart.DisplayName);
+
+            for (int i = 0; i < voicePart.renderPhrases.Count; i++) {
+                var partPhrase = voicePart.renderPhrases[i];
+                var newPhraseBlock = (phrase: partPhrase, rendered: false);
+
+                if (i < phraseBlocks.Length) {
+                    var oldPhraseBlock = phraseBlocks[i];
+
+                    if (oldPhraseBlock.phrase.hash.Equals(partPhrase.hash) && oldPhraseBlock.rendered) {
+                        newPhraseBlock.rendered = oldPhraseBlock.rendered;
+                    }
+                    if (oldPhraseBlock.rendered != newPhraseBlock.rendered) requiresVisualUpdate = true;
+                }
+
+                newPhraseBlocks.Add(newPhraseBlock);
+            }
+
+            phraseBlocks = newPhraseBlocks.ToArray();
+            return requiresVisualUpdate;
         }
 
-        public void Report(int value) {
+        public void SetAllBlocks(bool state) {
+            for (int i = 0; i < phraseBlocks.Length; i++) {
+                var phraseBlock = phraseBlocks[i];
+                phraseBlocks[i] = phraseBlock with { rendered = state };
+            }
+            InvalidateVisual();
         }
+
+        public void Report(int value) { }
 
         public void Dispose() {
             unbinds.ForEach(u => u.Dispose());

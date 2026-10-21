@@ -190,36 +190,42 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set progress {Progress} {Info}";
     }
 
-    public class PhraseRenderStateNotification : UNotification{
+    public class PhraseRenderStateNotification : UNotification {
         public UVoicePart Part { get; }
-        public Range TickRange { get; }
         public RenderPhrase? Phrase { get; }
+        public int StartTick { get; }
+        public int EndTick { get; }
         public bool Rendered { get; }
+        public override bool Silent => true;
 
         public PhraseRenderStateNotification(UVoicePart part, int startTick, int endTick, bool rendered) {
             Part = part;
-            TickRange = new Range(startTick, endTick);
-            Rendered = rendered;
-        }
-
-        public PhraseRenderStateNotification(UVoicePart part, Range tickRange, bool rendered) {
-            Part = part;
-            TickRange = tickRange;
+            StartTick = startTick;
+            EndTick = endTick;
             Rendered = rendered;
         }
 
         public PhraseRenderStateNotification(UVoicePart part, RenderPhrase phrase, bool rendered) {
             Part = part;
             Phrase = phrase;
-            TickRange = new Range(phrase.position, phrase.end);
+            StartTick = phrase.position;
+            EndTick = phrase.end;
             Rendered = rendered;
         }
 
-        public string ToLogString() => Rendered
-            ? $"{Part.DisplayName} | Rendered {TickRange.Start}-{TickRange.End}"
-            : $"{Part.DisplayName} | Unrendered {TickRange.Start}-{TickRange.End}";
+        public override string ToString() => Rendered
+            ? $"Phrase Status | {Part.DisplayName} {StartTick}-{EndTick} Rendered"
+            : $"Phrase Status | {Part.DisplayName} {StartTick}-{EndTick} Unrendered ";
+    }
 
-        public override string ToString() => "Phrase Render State";
+    public class RebuildPhraseBlocksNotification : UNotification {
+        public UVoicePart Part { get; }
+
+        public RebuildPhraseBlocksNotification(UVoicePart part) {
+            Part = part;
+        }
+
+        public override string ToString() => $"Rebuild phrase blocks | {Part.DisplayName} ";
     }
 
     /// <summary>
