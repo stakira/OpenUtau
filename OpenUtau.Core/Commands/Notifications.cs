@@ -190,6 +190,7 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set progress {Progress} {Info}";
     }
 
+    // Notification to update the phrase blocks in PartControl, optional RenderPhrase for exact update.
     public class PhraseRenderStateNotification : UNotification {
         public UVoicePart Part { get; }
         public RenderPhrase? Phrase { get; }

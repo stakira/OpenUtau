@@ -117,7 +117,7 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(_ => {
                     foreach (var (part, control) in partControls) {
                         control.SetPosition();
-                        control.InvalidateVisual();
+                        control.SetAllBlocks(false);
                     }
                 });
             MessageBus.Current.Listen<PartsSelectionEvent>()
