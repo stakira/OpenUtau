@@ -133,6 +133,7 @@ namespace OpenUtau.App.Controls {
                         control.SetSize();
                         control.SetPosition();
                         control.Refersh();
+                        control.SetAllBlocks(false);
                     }
                 });
             MessageBus.Current.Listen<PartRedrawEvent>()
