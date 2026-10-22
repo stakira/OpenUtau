@@ -155,7 +155,6 @@ namespace OpenUtau.App {
                 RealCurveStrokeBrush = (IBrush)outVar!;
                 RealCurvePen = new Pen(RealCurveStrokeBrush, 2, DashStyle.Dash);
             }
-
             SetKeyboardBrush();
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
@@ -168,7 +167,7 @@ namespace OpenUtau.App {
             try {
                 IResourceDictionary resDict = Application.Current.Resources;
                 TrackColor tcolor = GetTrackColor(color);
-                
+
                 resDict["SelectedTrackAccentBrush"] = tcolor.AccentColor;
                 resDict["SelectedTrackAccentLightBrush"] = tcolor.AccentColorLight;
                 resDict["SelectedTrackAccentLightBrushSemi"] = tcolor.AccentColorLightSemi;
