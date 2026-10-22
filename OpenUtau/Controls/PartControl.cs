@@ -281,7 +281,6 @@ namespace OpenUtau.App.Controls {
                         }
                     }
                 }
-
                 // Notes
                 if (voicePart.notes.Count > 0) {
                     int maxTone = voicePart.notes.Max(note => note.tone);
@@ -451,8 +450,8 @@ namespace OpenUtau.App.Controls {
         }
 
         /// <summary>
-        /// Updates render status of phrases within the range, then updates visual if any change.
-        /// Supports updating multiple phrases based on startTick/endTick positions.
+        /// Updates render status of phrases within range, then updates visual if any change.
+        /// Supports updating multiple phrases if any part of phrase within startTick/endTick.
         /// </summary>
         public void UpdateRenderStatus(int startTick, int endTick, bool rendered) {
             if (startTick > endTick) {
@@ -470,7 +469,8 @@ namespace OpenUtau.App.Controls {
                 if (endTick >= phraseBlock.phrase.position) withinEnd = true;
 
                 // Filters phrases outside range.
-                if (phraseBlock.rendered == rendered || (withinStart || withinEnd)) continue;
+                if (!withinStart && !withinEnd) continue;
+                if (phraseBlock.rendered == rendered) continue;
 
                 phraseBlocks[index] = phraseBlock with { rendered = rendered };
                 triggerRender = true;
@@ -486,12 +486,13 @@ namespace OpenUtau.App.Controls {
             for (var i = 0; i < phraseBlocks.Length; i++) {
                 var phraseBlock = phraseBlocks[i];
 
-                if (!phraseBlock.phrase.hash.Equals(phrase.hash)) continue;
-                if (phraseBlock.rendered == rendered) return;
+                if (phraseBlock.phrase.Equals(phrase)) {
+                    if (phraseBlock.rendered == rendered) return;
 
-                phraseBlocks[i] = phraseBlock with { rendered = rendered };
-                InvalidateVisual();
-                return;
+                    phraseBlocks[i] = phraseBlock with { rendered = rendered };
+                    InvalidateVisual();
+                    return;
+                }
             }
         }
 
@@ -525,6 +526,9 @@ namespace OpenUtau.App.Controls {
             return requiresVisualUpdate;
         }
 
+        /// <summary>
+        /// Sets all phrase blocks, and updates visual.
+        /// </summary>
         public void SetAllBlocks(bool state) {
             for (int i = 0; i < phraseBlocks.Length; i++) {
                 var phraseBlock = phraseBlocks[i];
