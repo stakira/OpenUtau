@@ -163,6 +163,14 @@
 
   <system:String x:Key="debug.clear">Clear</system:String>
   <system:String x:Key="debug.copylog">Copy Log</system:String>
+  <system:String x:Key="debug.filter">Filter</system:String>
+  <system:String x:Key="debug.filter.level">Lowest level shown</system:String>
+  <system:String x:Key="debug.livereload">Live Reload Packages</system:String>
+  <system:String x:Key="debug.livereload.tooltip">While this window is open, reload JavaScript phonemizers and themes when a file in the Dependencies folder changes.</system:String>
+  <system:String x:Key="debug.packages">Packages</system:String>
+  <system:String x:Key="debug.packages.createphonemizer">Create New Phonemizer...</system:String>
+  <system:String x:Key="debug.packages.createphonemizer.prompt">Package id, also its folder name in Dependencies.</system:String>
+  <system:String x:Key="debug.packages.openlocation">Open Packages Location</system:String>
   <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
@@ -299,15 +307,35 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.not">NOT</system:String>
   <system:String x:Key="expressiongraph.node.if_else">If / Else</system:String>
   <system:String x:Key="expressiongraph.copy">copy</system:String>
+  <system:String x:Key="expressiongraph.copynodes">Copy</system:String>
   <system:String x:Key="expressiongraph.cycle">That link would make a loop.</system:String>
   <system:String x:Key="expressiongraph.default">Default for this renderer</system:String>
   <system:String x:Key="expressiongraph.delete">Delete</system:String>
   <system:String x:Key="expressiongraph.deletenode">Delete Node</system:String>
   <system:String x:Key="expressiongraph.duplicate">Duplicate</system:String>
+  <system:String x:Key="expressiongraph.duplicatenodes">Duplicate</system:String>
   <system:String x:Key="expressiongraph.error">Not used, because</system:String>
   <system:String x:Key="expressiongraph.export">Export...</system:String>
   <system:String x:Key="expressiongraph.graph">graph</system:String>
   <system:String x:Key="expressiongraph.hint">Right-click to add a node. Drag from a node's output to an input to link them.</system:String>
+  <system:String x:Key="expressiongraph.help">How to use</system:String>
+  <system:String x:Key="expressiongraph.help.add">Add a node</system:String>
+  <system:String x:Key="expressiongraph.help.add.gesture">Right-click empty space</system:String>
+  <system:String x:Key="expressiongraph.help.copy">Copy / Cut / Paste</system:String>
+  <system:String x:Key="expressiongraph.help.fit">Fit all nodes</system:String>
+  <system:String x:Key="expressiongraph.help.link">Link</system:String>
+  <system:String x:Key="expressiongraph.help.link.gesture">Drag from an output to an input</system:String>
+  <system:String x:Key="expressiongraph.help.move">Move</system:String>
+  <system:String x:Key="expressiongraph.help.move.gesture">Drag a node's title; selected nodes move together</system:String>
+  <system:String x:Key="expressiongraph.help.pan">Pan</system:String>
+  <system:String x:Key="expressiongraph.help.pan.gesture">Drag empty space, or middle-drag anywhere</system:String>
+  <system:String x:Key="expressiongraph.help.select">Select several</system:String>
+  <system:String x:Key="expressiongraph.help.select.gesture">Shift-drag empty space, or Shift-click a node's title</system:String>
+  <system:String x:Key="expressiongraph.help.selectall">Select all / none</system:String>
+  <system:String x:Key="expressiongraph.help.unlink">Unlink</system:String>
+  <system:String x:Key="expressiongraph.help.unlink.gesture">Drag a linked input away and drop it</system:String>
+  <system:String x:Key="expressiongraph.help.zoom">Zoom</system:String>
+  <system:String x:Key="expressiongraph.help.zoom.gesture">Mouse wheel</system:String>
   <system:String x:Key="expressiongraph.hint.nograph">Click New to create a graph for a renderer.</system:String>
   <system:String x:Key="expressiongraph.import">Import...</system:String>
   <system:String x:Key="expressiongraph.import.added">Added expressions</system:String>
@@ -342,6 +370,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="expressiongraph.node.subtract">Subtract</system:String>
   <system:String x:Key="expressiongraph.noexpression">Choose an expression.</system:String>
   <system:String x:Key="expressiongraph.output">Out</system:String>
+  <system:String x:Key="expressiongraph.pastenodes">Paste</system:String>
   <system:String x:Key="expressiongraph.pitchcurve">Draw and load pitch into</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pitd">Pitch deviation (PITD)</system:String>
   <system:String x:Key="expressiongraph.pitchcurve.pito">Pitch override (PITO)</system:String>
@@ -464,7 +493,7 @@ Do you want to continue by splitting at the nearest position after current playh
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.dawintegration">DAW Integration...</system:String>
-  <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Developer Window</system:String>
   <system:String x:Key="menu.tools.dependency.install">Install Dependency (.oudep)...</system:String>
   <system:String x:Key="menu.tools.fullscreen">Full Screen</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
@@ -685,6 +714,7 @@ Warning: this option removes custom presets.</system:String>
     Right click to reset</system:String>
   <system:String x:Key="pianoroll.tool.curve.line">Line Tool
     Left click to draw (draw straight line)
+    Hold Shift + Left click to draw (draw horizontal line)
     Right click to reset</system:String>
   <system:String x:Key="pianoroll.tool.curve.eraser">Eraser Tool
     Click to reset</system:String>
@@ -966,8 +996,8 @@ The voicebank may not work on another OS.</system:String>
     Right Button Draw: Reset expressions
 Curve Type
     Left Button Draw: Draw
-    Shift + Ctrl + Left Button Draw: Line Draw
-    Shift + Left Button Draw: Horizontal Line Draw
+    Line Tool Left Button Draw: Line Draw
+    Line Tool Shift + Left Button Draw: Horizontal Line Draw
     Right Button Draw: Reset Line</system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
