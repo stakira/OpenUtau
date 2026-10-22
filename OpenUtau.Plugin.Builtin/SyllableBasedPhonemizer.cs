@@ -1347,7 +1347,7 @@ namespace OpenUtau.Plugin.Builtin {
                 symbols = new string[] { "" };
             }
 
-            symbols = ApplyReplacements(symbols.ToList(), false).ToArray();
+            symbols = ApplyReplacements(symbols.ToList(), isBoundary: false, isRawStream: true).ToArray();
             symbols = ApplyExtensions(symbols, notes);
             List<int> vowelIds = ExtractVowels(symbols);
             if (vowelIds.Count == 0) {
@@ -1989,167 +1989,117 @@ namespace OpenUtau.Plugin.Builtin {
             return true;
         }
 
-        protected virtual List<string> ApplyReplacements(List<string> inputPhonemes, bool isBoundary) {
+        protected virtual List<string> ApplyReplacements(List<string> inputPhonemes, bool isBoundary = false, bool isRawStream = false) {
             if (!mergingReplacements.Any() && !splittingReplacements.Any()) return inputPhonemes;
 
             List<string> finalPhonemes = new List<string>();
             int idx = 0;
             
-            // Sort validRules by the length of the matching array descending.
-            // This guarantees multi-phoneme matches evaluate BEFORE 1:1 matches.
-            var validRules = mergingReplacements.Concat(splittingReplacements)
-                .Where(r => r.where == "all" || (!isBoundary && r.where == "inside") || (isBoundary && r.where == "boundary"))
+            var allRules = mergingReplacements.Concat(splittingReplacements)
                 .OrderByDescending(r => r.FromList.Count)
-                .ThenByDescending(r => r.FromList.Sum(s => s.Length)) // Prioritize longer strings
-                .ToList();
-                
-            var validSplits = splittingReplacements
-                .Where(r => r.where == "all" || (!isBoundary && r.where == "inside") || (isBoundary && r.where == "boundary"))
-                .OrderByDescending(r => r.FromList.Sum(s => s.Length)) // Sort fallback splits too
+                .ThenByDescending(r => r.FromList.Sum(s => s.Length))
                 .ToList();
 
             while (idx < inputPhonemes.Count) {
                 bool replaced = false;
-                
-                foreach (var rule in validRules) {
-                    List<string> fromArray = rule.FromList;
-                    
-                    if (fromArray != null && fromArray.Count > 0 && idx + fromArray.Count <= inputPhonemes.Count) {
-                        bool match = true;
-                        var captures = new Dictionary<string, List<string>>(StringComparer.Ordinal);
-                        
-                        for (int j = 0; j < fromArray.Count; j++) {
-                            string rulePh = fromArray[j];
-                            string actualPh = inputPhonemes[idx + j];
-                            
-                            string cleanRulePh = rulePh.Trim('(', ')');
-                            string baseRulePh = cleanRulePh.Split(new[] { '!', '=', '&' })[0];
-                            
-                            if (IsGroupKeyword(baseRulePh)) {
-                                if (IsGroupMatch(rulePh, actualPh)) {
-                                    if (!captures.ContainsKey(baseRulePh)) captures[baseRulePh] = new List<string>();
-                                    captures[baseRulePh].Add(actualPh);
-                                } else {
-                                    match = false; break;
-                                }
-                            } else if (!string.Equals(rulePh, actualPh, StringComparison.Ordinal)) {
-                                match = false; break;
-                            }
+
+                foreach (var rule in allRules) {
+                    bool shouldEvaluate = false;
+
+                    if (isRawStream) {
+                        if (rule.where == "inside" || rule.where == "all") {
+                            shouldEvaluate = true;
                         }
-                        
-                        if (match) {
-                            List<string> toArray = rule.ToList;
-
-                            if (toArray != null && toArray.Count > 0) {
-                                var captureIndices = new Dictionary<string, int>(StringComparer.Ordinal);
-                                
-                                foreach (string toPh in toArray) {
-                                    // Split by + for concatenation
-                                    string[] parts = toPh.Split('+');
-                                    string[] cleanParts = new string[parts.Length];
-                                    string baseGroupTo = null;
-
-                                    for (int k = 0; k < parts.Length; k++) {
-                                        // Strip parenthesis to find the base group cleanly
-                                        string partNoParens = parts[k].Trim('(', ')');
-                                        int cutoff = partNoParens.IndexOfAny(new[] { '!', '=', '&' });
-                                        string potentialGroup = cutoff >= 0 ? partNoParens.Substring(0, cutoff) : partNoParens;
-                                        
-                                        if (baseGroupTo == null && IsGroupKeyword(potentialGroup)) {
-                                            baseGroupTo = potentialGroup;
-                                            cleanParts[k] = potentialGroup; // Store just the base group name
-                                        } else {
-                                            cleanParts[k] = partNoParens; // Store literals
-                                        }
-                                    }
-
-                                    if (baseGroupTo != null && captures.ContainsKey(baseGroupTo) && captures[baseGroupTo].Count > 0) {
-                                        if (!captureIndices.ContainsKey(baseGroupTo)) captureIndices[baseGroupTo] = 0;
-                                        int cIdx = captureIndices[baseGroupTo];
-                                        if (cIdx >= captures[baseGroupTo].Count) cIdx = captures[baseGroupTo].Count - 1;
-                                        
-                                        string capturedPhoneme = captures[baseGroupTo][cIdx];
-                                        
-                                        string reconstructed = "";
-                                        for (int k = 0; k < cleanParts.Length; k++) {
-                                            if (string.Equals(cleanParts[k], baseGroupTo, StringComparison.Ordinal)) {
-                                                reconstructed += capturedPhoneme;
-                                            } else {
-                                                reconstructed += cleanParts[k]; 
-                                            }
-                                        }
-                                        finalPhonemes.Add(reconstructed);
-                                        captureIndices[baseGroupTo]++;
-                                    } else {
-                                        finalPhonemes.Add(string.Join("", cleanParts));
-                                    }
-                                }
-                            }
-                            
-                            idx += fromArray.Count;
-                            replaced = true;
-                            break;
+                    } else {
+                        if (rule.where == "boundary") {
+                            shouldEvaluate = true;
+                        } else if (rule.where == "all" && rule.FromList.Count > 1) {
+                            shouldEvaluate = true;
                         }
                     }
-                }
 
-                // Fallback for single-phoneme splitting rules
-                if (!replaced && validSplits.Any()) {
-                    string currentPhoneme = inputPhonemes[idx];
-                    bool singleReplaced = false;
-                    foreach (var rule in validSplits) {
+                    if (shouldEvaluate) {
                         List<string> fromArray = rule.FromList;
-                        if (fromArray == null || fromArray.Count != 1) continue;
-
-                        string rulePh = fromArray[0];
-                        string cleanRulePh = rulePh.Trim('(', ')');
-                        string baseRulePh = cleanRulePh.Split(new[] { '!', '=', '&' })[0];
-
-                        if (IsGroupKeyword(baseRulePh) ? IsGroupMatch(rulePh, currentPhoneme) : string.Equals(rulePh, currentPhoneme, StringComparison.Ordinal)) {
+                        
+                        if (fromArray != null && fromArray.Count > 0 && idx + fromArray.Count <= inputPhonemes.Count) {
+                            bool match = true;
+                            var captures = new Dictionary<string, List<string>>();
                             
-                            List<string> toArray = rule.ToList;
-
-                            if (toArray != null && toArray.Count > 0) {
-                                foreach(string toPh in toArray) {
-                                    string[] parts = toPh.Split('+');
-                                    string[] cleanParts = new string[parts.Length];
-                                    string baseGroupTo = null;
-
-                                    for (int k = 0; k < parts.Length; k++) {
-                                        string partNoParens = parts[k].Trim('(', ')');
-                                        int cutoff = partNoParens.IndexOfAny(new[] { '!', '=', '&' });
-                                        string potentialGroup = cutoff >= 0 ? partNoParens.Substring(0, cutoff) : partNoParens;
-                                        
-                                        if (baseGroupTo == null && IsGroupKeyword(potentialGroup)) {
-                                            baseGroupTo = potentialGroup;
-                                            cleanParts[k] = potentialGroup;
-                                        } else {
-                                            cleanParts[k] = partNoParens;
-                                        }
+                            for (int j = 0; j < fromArray.Count; j++) {
+                                string rulePh = fromArray[j];
+                                string actualPh = inputPhonemes[idx + j];
+                                
+                                string cleanRulePh = rulePh.Trim('(', ')');
+                                string baseRulePh = cleanRulePh.Split(new[] { '!', '=', '&' })[0];
+                                
+                                if (IsGroupKeyword(baseRulePh)) {
+                                    if (IsGroupMatch(rulePh, actualPh)) {
+                                        if (!captures.ContainsKey(baseRulePh)) captures[baseRulePh] = new List<string>();
+                                        captures[baseRulePh].Add(actualPh);
+                                    } else {
+                                        match = false; break;
                                     }
+                                } else if (rulePh != actualPh) {
+                                    match = false; break;
+                                }
+                            }
+                            
+                            if (match) {
+                                List<string> toArray = rule.ToList;
 
-                                    if (baseGroupTo != null) {
-                                        string reconstructed = "";
-                                        for (int k = 0; k < cleanParts.Length; k++) {
-                                            if (string.Equals(cleanParts[k], baseGroupTo, StringComparison.Ordinal)) {
-                                                reconstructed += currentPhoneme;
+                                if (toArray != null && toArray.Count > 0) {
+                                    var captureIndices = new Dictionary<string, int>();
+                                    
+                                    foreach (string toPh in toArray) {
+                                        string[] parts = toPh.Split('+');
+                                        string[] cleanParts = new string[parts.Length];
+                                        string baseGroupTo = null;
+
+                                        for (int k = 0; k < parts.Length; k++) {
+                                            string partNoParens = parts[k].Trim('(', ')');
+                                            int cutoff = partNoParens.IndexOfAny(new[] { '!', '=', '&' });
+                                            string potentialGroup = cutoff >= 0 ? partNoParens.Substring(0, cutoff) : partNoParens;
+                                            
+                                            if (baseGroupTo == null && IsGroupKeyword(potentialGroup)) {
+                                                baseGroupTo = potentialGroup;
+                                                cleanParts[k] = potentialGroup;
                                             } else {
-                                                reconstructed += cleanParts[k];
+                                                cleanParts[k] = partNoParens;
                                             }
                                         }
-                                        finalPhonemes.Add(reconstructed);
-                                    } else {
-                                        finalPhonemes.Add(string.Join("", cleanParts));
+
+                                        if (baseGroupTo != null && captures.ContainsKey(baseGroupTo) && captures[baseGroupTo].Count > 0) {
+                                            if (!captureIndices.ContainsKey(baseGroupTo)) captureIndices[baseGroupTo] = 0;
+                                            int cIdx = captureIndices[baseGroupTo];
+                                            if (cIdx >= captures[baseGroupTo].Count) cIdx = captures[baseGroupTo].Count - 1;
+                                            
+                                            string capturedPhoneme = captures[baseGroupTo][cIdx];
+                                            
+                                            string reconstructed = "";
+                                            for (int k = 0; k < cleanParts.Length; k++) {
+                                                if (cleanParts[k] == baseGroupTo) {
+                                                    reconstructed += capturedPhoneme;
+                                                } else {
+                                                    reconstructed += cleanParts[k]; 
+                                                }
+                                            }
+                                            finalPhonemes.Add(reconstructed);
+                                            captureIndices[baseGroupTo]++;
+                                        } else {
+                                            finalPhonemes.Add(string.Join("", cleanParts));
+                                        }
                                     }
                                 }
-                                singleReplaced = true;
+                                
+                                idx += fromArray.Count;
+                                replaced = true;
                                 break;
                             }
                         }
                     }
-                    if (!singleReplaced) finalPhonemes.Add(inputPhonemes[idx]);
-                    idx++;
-                } else if (!replaced) {
+                }
+
+                if (!replaced) {
                     finalPhonemes.Add(inputPhonemes[idx]);
                     idx++;
                 }
@@ -2169,8 +2119,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (syllable.cc != null) currentPhonemes.AddRange(syllable.cc);
             if (hasV) currentPhonemes.Add(syllable.v);
 
-            bool isBoundary = (hasPrevV && syllable.position == 0) || !hasPrevV;
-            List<string> finalPhonemes = ApplyReplacements(currentPhonemes, isBoundary);
+            List<string> finalPhonemes = ApplyReplacements(currentPhonemes, isBoundary: true, isRawStream: false);
 
             string newPrevV = "";
             string newV = "";
@@ -2181,17 +2130,17 @@ namespace OpenUtau.Plugin.Builtin {
                 
                 if (firstPh == "null") {
                     newPrevV = "";
-                    finalPhonemes.RemoveAt(0);
                 } else {
                     newPrevV = firstPh;
-                    finalPhonemes.RemoveAt(0);
                 }
+                finalPhonemes.RemoveAt(0);
+
                 if (hasV && finalPhonemes.Count > 0) {
                     var vowelsList = GetVowels();
                     int vIndex = finalPhonemes.Count - 1;
                     
                     for (int i = finalPhonemes.Count - 1; i >= 0; i--) {
-                        if (vowelsList.Contains(finalPhonemes[i], StringComparer.Ordinal)) {
+                        if (vowelsList.Contains(finalPhonemes[i])) {
                             vIndex = i;
                             break;
                         }
@@ -2224,7 +2173,7 @@ namespace OpenUtau.Plugin.Builtin {
             bool hasTail = ending.HasTail;
             currentPhonemes.Add(hasTail ? ending.tail : "null");
 
-            List<string> finalPhonemes = ApplyReplacements(currentPhonemes, true);
+            List<string> finalPhonemes = ApplyReplacements(currentPhonemes, isBoundary: true, isRawStream: false);
 
             string newPrevV = "";
             string newTail = "";
