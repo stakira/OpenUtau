@@ -266,7 +266,7 @@ namespace OpenUtau.App.ViewModels {
                 .Select(n => n > SafeMaxThreadCount)
                 .ToProperty(this, vm => vm.HighThreads, out highThreads);
             this.WhenAnyValue(vm => vm.OnnxRunner)
-                .Select(runner => runner == "DirectML" || runner == "CUDA")
+                .Select(runner => runner == "DirectML" || runner == "CUDA" || runner == "WebGPU")
                 .ToProperty(this, vm => vm.ShowOnnxGpu, out showOnnxGpu);
             this.WhenAnyValue(vm => vm.ThemeName)
                 .Select(themeName => themeName != "Light" && themeName != "Dark" && !Colors.CustomTheme.IsPackageTheme(themeName))
