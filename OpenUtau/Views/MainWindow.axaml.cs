@@ -2210,6 +2210,8 @@ namespace OpenUtau.App.Views {
                 }
             } else if (cmd is RebuildPhraseBlocksNotification phraseBlocksNotif) {
                 partsCanvas.RebuildPhraseBlocksEvent(phraseBlocksNotif.Part);
+            } else if (cmd is TrackChangeSingerCommand changeSingerCommand) {
+                partsCanvas.BlankAllRenderPhrases(changeSingerCommand.track);
             }
         }
     }

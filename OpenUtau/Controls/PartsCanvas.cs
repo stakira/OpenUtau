@@ -117,7 +117,6 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(_ => {
                     foreach (var (part, control) in partControls) {
                         control.SetPosition();
-                        control.SetAllBlocks(false);
                     }
                 });
             MessageBus.Current.Listen<PartsSelectionEvent>()
@@ -133,7 +132,6 @@ namespace OpenUtau.App.Controls {
                         control.SetSize();
                         control.SetPosition();
                         control.Refersh();
-                        control.SetAllBlocks(false);
                     }
                 });
             MessageBus.Current.Listen<PartRedrawEvent>()
@@ -230,6 +228,14 @@ namespace OpenUtau.App.Controls {
                         control.Value.InvalidateVisual();
                     }
                     return;
+                }
+            }
+        }
+
+        public void BlankAllRenderPhrases(UTrack track) {
+            foreach (var control in partControls) {
+                if (control.Key.trackNo.Equals(track.TrackNo)) {
+                    control.Value.SetAllBlocks(false);
                 }
             }
         }
