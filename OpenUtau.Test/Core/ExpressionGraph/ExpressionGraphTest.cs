@@ -389,6 +389,27 @@ namespace OpenUtau.Core.ExpressionGraph {
         }
 
         [Fact]
+        public void PastesCopiedNodesWithTheLinksAmongThem() {
+            var graph = Graph(
+                new[] { Node(1, GraphNodeTypes.Abs), Node(2, GraphNodeTypes.Abs), Node(3, GraphNodeTypes.Abs) },
+                Link(1, 2), Link(2, 3));
+            graph.nodes[1].x = 100;
+            var copied = ExpressionGraphEdits.CopyNodes(graph, new[] { 2, 3 });
+            // The link from node 1 stays behind: it isn't among the copied nodes.
+            Assert.Equal((2, 3), (copied.links.Single().from, copied.links.Single().to));
+
+            var ids = ExpressionGraphEdits.PasteNodes(graph, copied, 20, 30);
+            Assert.Equal(new[] { 4, 5 }, ids);
+            Assert.Equal(120, graph.nodes.Single(n => n.id == 4).x);
+            Assert.Equal(30, graph.nodes.Single(n => n.id == 4).y);
+            Assert.Contains(graph.links, l => l.from == 4 && l.to == 5);
+            Assert.Equal(3, graph.links.Count);
+            // Pasting again doesn't reuse ids, and leaves the copy untouched.
+            Assert.Equal(new[] { 6, 7 }, ExpressionGraphEdits.PasteNodes(graph, copied, 0, 0));
+            Assert.Equal(new[] { 2, 3 }, copied.nodes.Select(n => n.id));
+        }
+
+        [Fact]
         public void MapsACurveToAnother() {
             // tenc = dyn mapped from [-12, 0] dB to [0, 100], clamped.
             var graph = Graph(new[] {
