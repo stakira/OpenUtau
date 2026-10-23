@@ -100,6 +100,13 @@ namespace OpenUtau.Core {
                 }
                 webGpuDevices = found;
                 Log.Information("WebGPU runner is ready with {Count} device(s).", found.Count);
+                for (int i = 0; i < found.Count; i++) {
+                    // Logged in full because a second entry can be the same physical GPU
+                    // enumerated twice, and picking it aborts the process (see getGpuInfo).
+                    Log.Information("WebGPU device {Index}: {Description} [{Metadata}]", i,
+                        describe(found[i]),
+                        string.Join(", ", found[i].HardwareDevice.Metadata.Entries.Select(entry => $"{entry.Key}={entry.Value}")));
+                }
                 return true;
             } catch (Exception e) {
                 // Registration validates the plugin ABI, so a mismatched core fails
@@ -194,6 +201,14 @@ namespace OpenUtau.Core {
                 if (!IsWebGpuAvailable()) {
                     return new List<GpuInfo>();
                 }
+                // Every enumerated device is offered. Which index actually works is not
+                // stable across machines (there are reports of the second entry rendering
+                // while the first does not), so the picker must not assume index 0 is the
+                // good one. A device that cannot be used aborts the process inside the
+                // plugin (ep::adapter::CreateTensorFromApiValue -> std::terminate,
+                // microsoft/onnxruntime#33557), which no managed fallback can catch, so
+                // the list is logged in full - see RegisterWebGpu - to make the next
+                // report diagnosable.
                 return webGpuDevices
                     .Select((device, index) => new GpuInfo { deviceId = index, description = describe(device) })
                     .ToList();
