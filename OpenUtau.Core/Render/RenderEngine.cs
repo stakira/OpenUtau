@@ -337,6 +337,11 @@ namespace OpenUtau.Core.Render {
             }
             var tuples = new List<(RenderPhrase phrase, double offsetMs, double estimatedLengthMs, RenderPartRequest request)>();
             foreach (var req in requests) {
+                if (req.phrases.Length > 0) {
+                    DocManager.Inst.PostOnUIThread(() => DocManager.Inst.ExecuteCmd(new RebuildPhraseBlocksNotification(req.part)));
+                    DocManager.Inst.ExecuteCmd(new PhraseRenderStateNotification(req.part, req.phrases[0].position,
+                        req.phrases[^1].end, false));
+                }
                 for (int i = 0; i < req.phrases.Length; ++i) {
                     tuples.Add((req.phrases[i], req.phraseOffsetMs[i], req.phraseEstimatedLengthMs[i], req));
                 }
@@ -369,6 +374,7 @@ namespace OpenUtau.Core.Render {
                         publishedUpdates = PublishRealCurveUpdates(request.part, phrase, realCurves);
                     })
                     : null;
+
                 bool useXsy = phrase.xsy != null && phrase.xsy.Any(x => x > 0);
                 if (!useXsy) {
                     var task = phrase.renderer.Render(phrase, progress, request.trackNo, cancellation, true, renderEvents);
@@ -430,6 +436,7 @@ namespace OpenUtau.Core.Render {
                 if (coverageRanges != null && publishedUpdates != null) {
                     AccumulateCoverage(coverageRanges, request.part, publishedUpdates);
                 }
+                DocManager.Inst.ExecuteCmd(new PhraseRenderStateNotification(request.part, phrase, true));
                 if (++request.completedPhrases == request.phrases.Length) {
                     planner.MarkPartComplete(request.part, request.phrases.Select(p => p.hash));
                     if (coverageRanges != null &&
