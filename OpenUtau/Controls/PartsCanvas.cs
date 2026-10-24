@@ -232,6 +232,12 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        public void BlankAllRenderPhrases() {
+            foreach (var control in partControls) {
+                control.Value.SetAllBlocks(false);
+            }
+        }
+
         public void BlankAllRenderPhrases(UTrack track) {
             foreach (var control in partControls) {
                 if (control.Key.trackNo.Equals(track.TrackNo)) {

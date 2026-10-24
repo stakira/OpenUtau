@@ -802,6 +802,7 @@ namespace OpenUtau.App.Views {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
+                partsCanvas.BlankAllRenderPhrases();
             });
         }
 
