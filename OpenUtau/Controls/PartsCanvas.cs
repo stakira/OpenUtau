@@ -232,16 +232,35 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        public void BlankAllRenderPhrases() {
+        /// <summary>
+        /// Set the rendered status on all RenderPhrases in every part.
+        /// </summary>
+        public void SetAllRenderPhrases(bool state) {
             foreach (var control in partControls) {
-                control.Value.SetAllBlocks(false);
+                control.Value.SetAllBlocks(state);
             }
         }
 
-        public void BlankAllRenderPhrases(UTrack track) {
+        /// <summary>
+        /// Set the rendered status on all RenderPhrases in UTrack.
+        /// </summary>
+        public void SetAllRenderPhrases(UTrack track, bool state) {
             foreach (var control in partControls) {
                 if (control.Key.trackNo.Equals(track.TrackNo)) {
-                    control.Value.SetAllBlocks(false);
+                    control.Value.SetAllBlocks(state);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the rendered status on all RenderPhrases in UVoicePart.
+        /// </summary>
+        public void SetAllRenderPhrases(UVoicePart voicePart, bool state) {
+            foreach (var control in partControls) {
+                if (control.Key.Equals(voicePart)) {
+                    control.Value.SetAllBlocks(state);
+                    return;
                 }
             }
         }

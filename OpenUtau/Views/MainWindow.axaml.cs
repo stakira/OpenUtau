@@ -802,7 +802,7 @@ namespace OpenUtau.App.Views {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.clearingcache")));
                 PathManager.Inst.ClearCache();
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ThemeManager.GetString("progress.cachecleared")));
-                partsCanvas.BlankAllRenderPhrases();
+                partsCanvas.SetAllRenderPhrases(false);
             });
         }
 
@@ -2212,7 +2212,11 @@ namespace OpenUtau.App.Views {
             } else if (cmd is RebuildPhraseBlocksNotification phraseBlocksNotif) {
                 partsCanvas.RebuildPhraseBlocksEvent(phraseBlocksNotif.Part);
             } else if (cmd is TrackChangeSingerCommand changeSingerCommand) {
-                partsCanvas.BlankAllRenderPhrases(changeSingerCommand.track);
+                partsCanvas.SetAllRenderPhrases(changeSingerCommand.track, false);
+            } else if (cmd is MovePartCommand movePartCommand) {
+                if (movePartCommand.part is UVoicePart voicePart) {
+                    partsCanvas.SetAllRenderPhrases(voicePart, false);
+                }
             }
         }
     }
