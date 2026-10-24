@@ -254,12 +254,11 @@ namespace OpenUtau.App.Controls {
                     for (int i = 0; i < phraseBlocks.Length; i++) {
                         var (phrase, rendered) = phraseBlocks[i];
 
-                        int phraseStart = (int)(phrase.position * tickWidth);
                         int startX = (int) phraseRects.ElementAtOrDefault(i-1).Right;
-                        int width = (int)((phrase.end * tickWidth - phrase.position * tickWidth) + (phraseStart - startX));
-                        int endX = startX + width;
+                        int endX = (int)(phrase.end * tickWidth);
 
-                        if (i == phraseBlocks.Length - 1) endX = (int)((part.End - part.position) * tickWidth);
+                        // Extend to end of part if notes aren't at end of part.
+                        if (i == phraseBlocks.Length - 1) endX = (int)(part.End * tickWidth);
 
                         Point topLeft = new Point(startX, 1);
                         Point bottomRight = new Point(endX, Height - 1);
