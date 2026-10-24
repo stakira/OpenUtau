@@ -461,14 +461,9 @@ namespace OpenUtau.App.Controls {
             bool triggerRender = false;
             for (var index = 0; index < phraseBlocks.Length; index++) {
                 var phraseBlock = phraseBlocks[index];
-                bool withinStart = false;
-                bool withinEnd = false;
-
-                if (startTick <= phraseBlock.phrase.position) withinStart = true;
-                if (endTick >= phraseBlock.phrase.position) withinEnd = true;
 
                 // Filters phrases outside range.
-                if (!withinStart && !withinEnd) continue;
+                if (phraseBlock.phrase.end <= startTick || endTick >= phraseBlock.phrase.position) continue;
                 if (phraseBlock.rendered == rendered) continue;
 
                 phraseBlocks[index] = phraseBlock with { rendered = rendered };
